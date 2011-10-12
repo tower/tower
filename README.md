@@ -73,6 +73,7 @@ cake build
 - http://imulus.com/blog/casey/javascript/coffeescript-namespaces-modules-and-inheritance/
 - https://github.com/jashkenas/coffee-script/wiki/FAQ
 - https://github.com/joyent/node/wiki/modules
+- http://npmjs.org/doc/developers.html
 
 ### Other Projects
 
@@ -81,7 +82,3 @@ cake build
 ### Docs
 
 - http://nodejs.org/docs/v0.3.1/api/assert.html
-
-## Notes
-
-- Personally I would recommend a stack of express(Server, view engine, middleware), now(Client-Server communication), cradle(CouchDB database abstraction), backbone(Lightweight MVC abstraction), underscore.

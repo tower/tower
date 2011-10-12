@@ -11,4 +11,3 @@ describe "file", ->
       for file in files
         data = fs.readFileSync [dirPath, file].join("/"), 'utf8'
         javascript = javascript + uglify.compress(data.toString()) + ';'
-    console.log javascript
