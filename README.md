@@ -73,6 +73,7 @@ cake build
 - https://github.com/TrevorBurnham/snockets/blob/master/src/snockets.coffee
 - https://github.com/sstephenson/sprockets
 - https://github.com/stoyan/yuicompressor/blob/master/ports/js/cssmin.js
+- https://github.com/maccman/spine/blob/master/src/spine.coffee
 
 - https://github.com/LearnBoost/juice (inject styles to html for emails)
 - http://visionmedia.github.com/nib/ (cross browser css)
