@@ -1,2 +1,3 @@
-class Metro.Asset.CSSProcessor
+class CSSProcessor
   
+exports.CSSProcessor = CSSProcessor

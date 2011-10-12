@@ -1,2 +1,3 @@
-class Metro.Asset.JSProcessor
+class JSProcessor
   
+exports.JSProcessor = JSProcessor

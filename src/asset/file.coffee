@@ -1,2 +1,3 @@
-class Metro.Asset.File
+class File
   
+exports.File = File
