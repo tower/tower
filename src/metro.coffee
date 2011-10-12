@@ -1,4 +1,4 @@
 Metro =
-  Asset: require('../lib/asset').Metro.Asset
+  Asset: require('../lib/asset').Asset
   
-exports.Metro = Metro
+exports = module.exports = Metro

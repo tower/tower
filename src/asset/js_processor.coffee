@@ -1,3 +1,3 @@
 class JSProcessor
   
-exports.JSProcessor = JSProcessor
+exports = module.exports = JSProcessor

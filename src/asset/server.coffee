@@ -9,7 +9,7 @@ class Server
     
   findAsset: (path) ->
     
-exports.Server = ->
+exports = module.exports = ->
   (req, res, next) ->
     new Server.call(req, res, next)
     

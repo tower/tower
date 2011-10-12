@@ -1,3 +1,3 @@
 class CSSProcessor
   
-exports.CSSProcessor = CSSProcessor
+exports = module.exports = CSSProcessor

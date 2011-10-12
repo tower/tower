@@ -1,14 +1,13 @@
 {
-  "name": "underscore.url.js",
+  "name": "metro.js",
   "version": "0.2.0",
-  "description": "Coffeescript + Jasmine + Node.js Template for Packaged Javascript Libraries",
-  "homepage": "http://viatropos.github.com/underscore.url.js",
-  "main": "underscore.url.js",
+  "description": "Rails-esque Framework for Node.js",
+  "homepage": "http://viatropos.github.com/metro.js",
+  "main": "lib/metro.js",
+  "author": "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
-    "factory",
-    "tdd",
-    "bdd",
-    "unit-test",
+    "framework",
+    "compression",
     "node"
   ],
   "licenses": [
@@ -18,17 +17,18 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/viatropos/underscore.url.js/issues"
+    "url": "https://github.com/viatropos/metro.js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/viatropos/underscore.url.js.git"
+    "url": "https://github.com/viatropos/metro.js.git"
   },
-  "engines": [
-    "node"
-  ],
+  "engines": { "node": ">= 0.4.0" }
   "directories": {
-    "doc": "docs",
     "test": "spec"
+  },
+  "dependencies": {
+    "coffee-script": ">= 1.1.0",
+    "uglify-js": ">= 1.1.1"
   }
 }

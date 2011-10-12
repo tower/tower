@@ -1,3 +1,3 @@
 class File
   
-exports.File = File
+exports = module.exports = File

@@ -12,4 +12,4 @@ class UglifyJSCompressor
     @_parser ?= require("uglify-js").parser
     @_parser
     
-exports.UglifyJSCompressor = UglifyJSCompressor
+exports = module.exports = UglifyJSCompressor

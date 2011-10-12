@@ -5,4 +5,4 @@ class YUICompressor
   compressor: ->
     @_compressor ?= require("../../vendor/cssmin").cssmin
     
-exports.YUICompressor = YUICompressor
+exports = module.exports = YUICompressor

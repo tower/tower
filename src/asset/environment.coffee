@@ -1,3 +1,3 @@
 class Environment
 
-exports.Environment = Environment
+exports = module.exports = Environment

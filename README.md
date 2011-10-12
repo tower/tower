@@ -72,6 +72,11 @@ cake build
 
 - http://imulus.com/blog/casey/javascript/coffeescript-namespaces-modules-and-inheritance/
 - https://github.com/jashkenas/coffee-script/wiki/FAQ
+- https://github.com/joyent/node/wiki/modules
+
+### Other Projects
+
+- https://github.com/c4milo/node-inotify
 
 ### Docs
 
