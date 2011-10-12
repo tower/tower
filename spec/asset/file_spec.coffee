@@ -1,6 +1,6 @@
 Metro  = require('../../lib/metro')
-yui    = new Metro.Asset.YUICompressor
-uglify = new Metro.Asset.UglifyJSCompressor
+yui    = new Metro.Asset.YuiCompressor
+uglifier = new Metro.Asset.UglifierCompressor
 fs     = require('fs')
 file   = require("file")
 
@@ -10,4 +10,4 @@ describe "file", ->
     file.walkSync "./lib/asset", (dirPath, dirs, files) ->
       for file in files
         data = fs.readFileSync [dirPath, file].join("/"), 'utf8'
-        javascript = javascript + uglify.compress(data.toString()) + ';'
+        javascript = javascript + uglifier.compress(data.toString()) + ';'

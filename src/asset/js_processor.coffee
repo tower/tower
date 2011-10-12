@@ -1,3 +1,6 @@
-class JSProcessor
+Processor = require('./processor')
+
+class JsProcessor extends Processor
+  extension: 'js'
   
-exports = module.exports = JSProcessor
+exports = module.exports = JsProcessor

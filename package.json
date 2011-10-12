@@ -30,6 +30,8 @@
   "dependencies": {
     "coffee-script": ">= 1.1.0",
     "uglify-js": ">= 1.1.1",
-    "file": ">= 0.1.1"
+    "file": ">= 0.1.1",
+    "underscore": ">= 1.2.0",
+    "underscore.string": ">= 1.1.7"
   }
 }
