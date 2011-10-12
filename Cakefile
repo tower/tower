@@ -10,7 +10,7 @@ task 'build', ->
   file.walkSync "./lib", (dirPath, dirs, files) ->
     for file in files
       data = fs.readFileSync [dirPath, file].join("/"), 'utf8'
-      src = src + data
+      src = src + data + '\n'
       min = min + uglify.compress(data)
-  fs.writeFileSync "metro.js", src
+  #fs.writeFileSync "metro.js", src
   fs.writeFileSync "metro.min.js", min
