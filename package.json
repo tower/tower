@@ -1,5 +1,5 @@
 {
-  "name": "metro.js",
+  "name": "metro",
   "version": "0.2.0",
   "description": "Rails-esque Framework for Node.js",
   "homepage": "http://viatropos.github.com/metro.js",
