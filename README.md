@@ -13,6 +13,8 @@ npm install metro
 ### Compression
 
 ``` coffeescript
+Metro = require("metro")
+
 css = '''
 body {
   background: red;
@@ -31,6 +33,13 @@ js_compressor = new Metro.Asset.UglifyJSCompressor
 js_compressor.compress(js)
   # '$(document).ready(function(){alert("ready!")})'
 
+```
+
+### Models
+
+``` coffeescript
+class User
+  @include Metro.Model
 ```
 
 ## Development
