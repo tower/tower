@@ -12,7 +12,7 @@ class Processor
   process: (options) ->
     self   = @
     result = {}
-
+    
     if _.isArray(options.files)
       options.map = _.inject(
         options.files, 

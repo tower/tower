@@ -1,5 +1,6 @@
 Metro =
   Asset:      require('../lib/asset').Asset
+  Support:    require('../lib/support').Support
   
   configure:  (callback) ->
     self   = @

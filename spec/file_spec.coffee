@@ -1,4 +1,4 @@
-Metro  = require('../../lib/metro')
+Metro  = require('../lib/metro')
 yui    = new Metro.Asset.YuiCompressor
 uglifier = new Metro.Asset.UglifierCompressor
 fs     = require('fs')
