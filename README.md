@@ -16,7 +16,7 @@ npm install metro
 Metro = require("metro")
 
 Metro.configure ->
-  @assets.path            = "./spec/tmp/assets"
+  @assets.path            = "./public/assets"
   @assets.css_compressor  = "yui"
   @assets.js_compressor   = "uglifier"
   @assets.js              = ["application.js"]
