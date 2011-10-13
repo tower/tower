@@ -3,23 +3,19 @@ class Application
   
   @routes: -> @instance().routes()
   
-  @instance: ->
-    @_instance ?= new Metro.Application
+  @instance: -> @_instance ?= new Metro.Application
   
   app: ->
   
   call: (env) ->
   
-  env_config: ->
-    @_env_config ?= {}
+  env_config: -> @_env_config ?= {}
     
-  routes: ->
-    @_routes ?= new Metro.Route.Collection
+  routes: -> @_routes ?= new Metro.Route.Collection
   
   initializers: ->
     
-  config: ->
-    @_config ?= new Metro.Application.Configuration
+  config: -> @_config ?= new Metro.Application.Configuration
     
   default_middleware_stack: ->    
   
