@@ -4,7 +4,7 @@ describe "route", ->
   describe "mapper", ->
     beforeEach ->
       Metro.Application.routes().draw ->
-        @match "/login", to: "sessions#new", via: "get", as: "login"
+        @match "/login",          to: "sessions#new", via: "get", as: "login"
         
         @match "/users",          to: "users#index", via: "get"
         @match "/users/:id/edit", to: "users#edit", via: "get"
@@ -21,3 +21,4 @@ describe "route", ->
       route   = routes[0]
       
       expect(route.path).toEqual("/login(.:format)")
+      
