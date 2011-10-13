@@ -89,6 +89,8 @@ cake build
 - https://github.com/sstephenson/sprockets
 - https://github.com/stoyan/yuicompressor/blob/master/ports/js/cssmin.js
 - https://github.com/maccman/spine/blob/master/src/spine.coffee
+- https://github.com/chriso/packnode
+- https://github.com/joyent/node/wiki/modules
 
 - https://github.com/LearnBoost/juice (inject styles to html for emails)
 - http://visionmedia.github.com/nib/ (cross browser css)
@@ -116,6 +118,8 @@ cake build
 - https://github.com/visionmedia/node-querystring
 - https://github.com/felixge/node-formidable
 - https://github.com/visionmedia/davis.js
+- digest: https://github.com/brainfucker/hashlib
+- https://github.com/sstephenson/hike/blob/master/lib/hike/trail.rb
 
 ### Docs
 

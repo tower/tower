@@ -1,34 +1,77 @@
-# https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/asset_attributes.rb
+fs      = require('fs')
+crypto  = require('crypto')
+mime    = require('mime')
+_path    = require('path')
+
 class File
-  constructor: (environment, logical_path, pathname) ->
-    @environment  = environment
-    @logical_path = logical_path.to_s
-    @pathname     = Pathname.new(pathname)
-    @id           = @environment.digest.update(object_id.to_s).to_s
+  @stat: (path) ->
+    fs.statSync(path)
   
   ###
-  Returns `Content-Type` from pathname.
+  see http://nodejs.org/docs/v0.3.1/api/crypto.html#crypto
+  ###
+  @digest_hash: ->
+    crypto.createHash('md5')
+    
+  @digest: (path, data) ->
+    stat = @stat(path)
+    return unless stat?
+    data ?= @read(path)
+    return unless data?
+    @digest_hash().update(data).digest("hex")
+      
+  @read: (path) ->
+    fs.readFileSync(path)
+    
+  @content_type: (path) ->
+    mime.lookup(path)
+    
+  @mtime: (path) ->
+    @stat(path).mtime
+    
+  @expand_path: (path) ->
+    _path.normalize(path)
+  
+  @basename: (path) ->
+    _path.basename(path)
+    
+  @extname: (path) ->
+    _path.extname(path)
+    
+  @exists: (path) ->
+    _path.exists(path)
+    
+  constructor: (environment, path) ->
+    @environment = environment
+    @path        = @constructor.expand_path(path)
+    #@id           = @environment.digest.update(object_id)
+  
+  stat: ->
+    @constructor.stat(@path)
+  
+  ###
+  Returns `Content-Type` from path.
   ###
   content_type: ->
-    @_content_type ?= @environment.content_type_of(@pathname)
+    @_content_type ?= @constructor.content_type(@path)
   
   ###
   Get mtime at the time the `Asset` is built.
   ###
   mtime: ->
-    @_mtime ?= @environment.stat(@pathname).mtime
+    @_mtime ?= @constructor.stat(@path).mtime
   
   ###
-  Get length at the time the `Asset` is built.
+  Get size at the time the `Asset` is built.
   ###
-  length: ->
-    @_length ?= @environment.stat(@pathname).size
+  size: ->
+    @_size ?= @constructor.stat(@path).size
   
   ###
   Get content digest at the time the `Asset` is built.
   ###
   digest: ->
-    @_digest ?= @environment.file_digest(@pathname).hexdigest
+    @_digest ?= @constructor.digest(@path)
   
   ###
   Return logical path with digest spliced in.
@@ -36,7 +79,7 @@ class File
     "foo/bar-37b51d194a7513e45b56f6524f2d51f2.js"
   ###
   digest_path: ->
-    @environment.attributes_for(@logical_path()).path_with_fingerprint(@digest())
+    @path_with_fingerprint(@digest())
   
   ###
   Returns `Array` of extension `String`s.
@@ -45,8 +88,8 @@ class File
       # => [".js", ".coffee"]
   ###
   extensions: ->
-    @_extensions ?= @pathname.basename.to_s.scan(/\.[^.]+/)
- 
+    @_extensions ?= @path.basename.to_s.scan(/\.[^.]+/)
+  
   ###
   Gets digest fingerprint.
   
@@ -54,8 +97,9 @@ class File
       # => "0aa2105d29558f3eb790d411d7d8fb66"
   ###
   path_fingerprint: ->
-    @pathname.basename(extensions.join).to_s =~ /-([0-9a-f]{7,40})$/ ? $1 : null
-
+    result = @constructor.basename(@path).match(/-([0-9a-f]{32})\.?/)
+    if result? then result[1] else null
+  
   ###
   Injects digest fingerprint into path.
   
@@ -64,9 +108,8 @@ class File
   ###
   path_with_fingerprint: (digest) ->
     if old_digest = @path_fingerprint()
-      @pathname.sub(old_digest, digest).to_s
+      @path.replace(old_digest, digest)
     else
-      @
-      #@pathname.to_s.sub(/\.(\w+)$/) { |ext| "-#{digest}#{ext}" }
+      @path.replace(/\.(\w+)$/, "-#{digest}.\$1")
 
 exports = module.exports = File
