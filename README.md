@@ -40,7 +40,9 @@ class User
 npm install uglify-js jasmine-node
 coffee -c --no-wrap -o lib -w src
 coffee -c -o lib -w src
+./node_modules/coffee-script/bin/coffee -o lib -w src
 jasmine-node --coffee spec/.
+./node_modules/jasmine-node/bin/jasmine-node --coffee ./spec
 cake build
 ```
 

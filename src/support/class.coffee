@@ -21,9 +21,19 @@ class Class
     extended = obj.extended
     extended.apply(this) if extended
     @
+  
+  @new: ->
+    new @(arguments...)
+  
+  instance_exec: ->
+    arguments[0].apply(@, arguments[1..-1]...)
+  
+  instance_eval: (block) ->
+    block.apply(@)
 
 # add it to the function prototype!
 for key, value of Class
   Function.prototype[key] = value
 
 exports = module.exports = Class
+global.Class = Class

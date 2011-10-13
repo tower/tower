@@ -13,4 +13,5 @@ class Environment
       data = fs.readFileSync file, 'utf8'
       result = result + data + '\n'
     result
+
 exports = module.exports = Environment
