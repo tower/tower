@@ -1,7 +1,8 @@
 fs      = require('fs')
 crypto  = require('crypto')
 mime    = require('mime')
-_path    = require('path')
+_path   = require('path')
+util    = require('util')
 
 class File
   @stat: (path) ->
@@ -40,6 +41,17 @@ class File
     
   @exists: (path) ->
     _path.exists(path)
+    
+  @extensions: (path) ->
+    @basename(path).split(".")[1..-1]
+  
+  # http://stackoverflow.com/questions/4568689/how-do-i-move-file-a-to-a-different-partition-in-node-js  
+  # https://gist.github.com/992478
+  @copy: (from, to) ->
+    old_file = fs.createReadStream(from)
+    new_file = fs.createWriteStream(to)
+    new_file.once 'open', (data) ->
+      util.pump(old_file, new_file)
     
   constructor: (environment, path) ->
     @environment = environment
@@ -88,7 +100,7 @@ class File
       # => [".js", ".coffee"]
   ###
   extensions: ->
-    @_extensions ?= @path.basename.to_s.scan(/\.[^.]+/)
+    @_extensions ?= @constructor.extensions(@path)
   
   ###
   Gets digest fingerprint.
@@ -111,5 +123,31 @@ class File
       @path.replace(old_digest, digest)
     else
       @path.replace(/\.(\w+)$/, "-#{digest}.\$1")
+  
+  ###
+  Returns file contents as its `body`.
+  ###
+  body: ->
+    @constructor.read(@path)
+    
+  write: (to, options) ->
+    # Gzip contents if filename has '.gz'
+    options.compress ?= @constructor.extname(to) == '.gz'
+    
+    if options.compress
+      # Open file and run it through `Zlib`
+      fs.readFile @path, (data) ->
+        fs.writeFile "#{to}+", data
+    else
+      # If no compression needs to be done, we can just copy it into place.
+      @constructor.copy(@path, "#{to}+")
+    
+    # Atomic write
+    FileUtils.mv("#{filename}+", filename)
+
+    # Set mtime correctly
+    File.utime(mtime, mtime, filename)
+
+    nil
 
 exports = module.exports = File

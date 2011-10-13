@@ -31,3 +31,10 @@ describe "file", ->
   it "should add fingerprint to path", ->
     path = @file.path_with_fingerprint("49fdaad23a42d2ce96e4190c34457b5a")
     expect(path).toEqual "spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
+    
+  it "should extract extensions", ->
+    @file = new Metro.Asset.File(@environment, "./spec/fixtures/javascripts/application.js")
+    expect(@file.extensions()).toEqual ["js"]
+    
+    @file = new Metro.Asset.File(@environment, "./spec/fixtures/javascripts/application.js.coffee")
+    expect(@file.extensions()).toEqual ["js", "coffee"]
