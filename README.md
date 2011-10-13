@@ -33,19 +33,26 @@ Metro.Asset.compile()
 Metro.Application.routes().draw ->
   @match "/login",          to: "sessions#new", via: "get", as: "login"
   
-  @match "/users",          to: "users#index", via: "get"
-  @match "/users/:id/edit", to: "users#edit", via: "get"
-  @match "/users/:id",      to: "users#show", via: "get"
-  @match "/users",          to: "users#create", via: "post"
-  @match "/users/:id",      to: "users#update", via: "put"
-  @match "/users/:id",      to: "users#destroy", via: "delete"
+  @match "/posts",          to: "posts#index", via: "get"
+  @match "/posts/:id/edit", to: "posts#edit", via: "get"
+  @match "/posts/:id",      to: "posts#show", via: "get"
+  @match "/posts",          to: "posts#create", via: "post"
+  @match "/posts/:id",      to: "posts#update", via: "put"
+  @match "/posts/:id",      to: "posts#destroy", via: "delete"
 ```
 
 ### Models
 
 ``` coffeescript
-class User
+class Post
   @include Metro.Model
+```
+
+### Controllers
+
+``` coffeescript
+class PostsController
+  @include Metro.ResourceController
 ```
 
 ## Development
