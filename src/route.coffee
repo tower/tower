@@ -1,6 +1,6 @@
 require './support/class'
 
-class Route
+class Route extends Class
   @Collection:              require('../lib/route/collection')
   @Mapper:                  require('../lib/route/mapper')
   

@@ -92,6 +92,12 @@ cake build
 - https://github.com/jashkenas/coffee-script/wiki/FAQ
 - https://github.com/joyent/node/wiki/modules
 - http://npmjs.org/doc/developers.html
+- https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope
+- https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function#Methods_2
+- http://matchingnotes.com/coffeescript-and-the-number-prototype
+- https://github.com/jashkenas/coffee-script/wiki/Mixins
+- https://github.com/jashkenas/coffee-script/wiki/%5BExtensibility%5D-Writing-DSLs
+- https://github.com/jashkenas/coffee-script/wiki/Easy-modules-with-CoffeeScript
 
 ### Other Projects
 

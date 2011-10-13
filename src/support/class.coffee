@@ -12,7 +12,7 @@ class Class
     included = obj.included
     included.apply(this) if included
     @
-
+  
   @extend: (obj) ->
     throw new Error('extend(obj) requires obj') unless obj
     for key, value of obj when key not in moduleKeywords
@@ -30,10 +30,10 @@ class Class
   
   instance_eval: (block) ->
     block.apply(@)
-
+  
 # add it to the function prototype!
 for key, value of Class
-  Function.prototype[key] = value
-
+  Function.prototype[key] = value  
+  
 exports = module.exports = Class
 global.Class = Class
