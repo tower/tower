@@ -107,6 +107,8 @@ cake build
 - https://github.com/jashkenas/coffee-script/wiki/Mixins
 - https://github.com/jashkenas/coffee-script/wiki/%5BExtensibility%5D-Writing-DSLs
 - https://github.com/jashkenas/coffee-script/wiki/Easy-modules-with-CoffeeScript
+- http://shinetech.com/thoughts/thought-articles/139-asynchronous-code-design-with-nodejs-
+- http://blog.monitis.com/index.php/2011/07/09/6-node-js-recipes-working-with-the-file-system/
 
 ### Other Projects
 
@@ -120,6 +122,7 @@ cake build
 - https://github.com/visionmedia/davis.js
 - digest: https://github.com/brainfucker/hashlib
 - https://github.com/sstephenson/hike/blob/master/lib/hike/trail.rb
+- https://github.com/ryanmcgrath/wrench-js
 
 ### Docs
 

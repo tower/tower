@@ -144,9 +144,9 @@ class File
     
     # Atomic write
     FileUtils.mv("#{filename}+", filename)
-
+    
     # Set mtime correctly
-    File.utime(mtime, mtime, filename)
+    @constructor.utime(mtime, mtime, filename)
 
     nil
 
