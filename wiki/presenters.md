@@ -30,7 +30,7 @@ class PostsController
 ``` html
 <body>
   <script>
-    var post = #{@view.to_json};
+    var post = <%= JSON.stringify(@view) %>;
   </script>
   <script id='post-template' type='text/html'>
     <article>
