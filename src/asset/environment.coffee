@@ -1,17 +1,21 @@
 class Environment
-  compress: (files) ->
-    result = ''
-    file.walkSync path, (dirPath, dirs, files) ->
-      for file in files
-        data = fs.readFileSync [dirPath, file].join("/"), 'utf8'
-        result = result + data + '\n'
-    result
-  
-  compressFiles: (files) ->
-    result = ''
-    for file in files
-      data = fs.readFileSync file, 'utf8'
-      result = result + data + '\n'
-    result
+  ###
+  # Mmm, CoffeeScript
+  register_engine '.coffee', Tilt::CoffeeScriptTemplate
+
+  # JST engines
+  register_engine '.jst',    JstProcessor
+  register_engine '.eco',    EcoTemplate
+  register_engine '.ejs',    EjsTemplate
+
+  # CSS engines
+  register_engine '.less',   Tilt::LessTemplate
+  register_engine '.sass',   Tilt::SassTemplate
+  register_engine '.scss',   Tilt::ScssTemplate
+
+  # Other
+  register_engine '.erb',    Tilt::ERBTemplate
+  register_engine '.str',    Tilt::StringTemplate
+  ###
 
 exports = module.exports = Environment

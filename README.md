@@ -109,6 +109,13 @@ cake build
 ### Other Projects
 
 - https://github.com/c4milo/node-inotify
+- https://github.com/technoweenie/coffee-resque
+- https://github.com/LearnBoost/mongoose
+- https://github.com/LearnBoost/kue
+- https://github.com/LearnBoost/knox (s3)
+- https://github.com/visionmedia/node-querystring
+- https://github.com/felixge/node-formidable
+- https://github.com/visionmedia/davis.js
 
 ### Docs
 

@@ -49,6 +49,12 @@ describe "metro.asset", ->
         @assets.css             = ["application.css"]
         @assets.css_paths       = ["./spec/fixtures/stylesheets"]
         @assets.js_paths        = ["./spec/fixtures/javascripts"]
+        @assets.host            = "http://cloud.example.com"
+        @assets.host            = (source) -> 
+          if source.match(/images/)
+            "http://img.example.com"
+          else
+            "http://assets.example.com"
         
     it "should process through the api", ->
       result = Metro.Asset.process()
@@ -61,5 +67,7 @@ describe "metro.asset", ->
     
     it "should write", ->
       Metro.Asset.compile()
+      
+    it "should create a digest for a file", ->
       
       
