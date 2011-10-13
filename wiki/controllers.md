@@ -39,4 +39,4 @@ class PostsController
   @include Metro.ResourceController
 ```
 
-That's it!
+*Todo
