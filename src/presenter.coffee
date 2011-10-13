@@ -1,1 +1,1 @@
-Metro.Presenter ?= {}
+class Presenter
