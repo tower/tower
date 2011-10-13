@@ -3,6 +3,7 @@ Metro =
   Support:      require('../lib/support').Support
   Application:  require('../lib/application')
   Route:        require('../lib/route').Route
+  Model:        require('../lib/model')
   
   configure:  (callback) ->
     self   = @
