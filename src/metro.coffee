@@ -4,7 +4,7 @@ Metro =
   Application:  require('../lib/application')
   Route:        require('../lib/route').Route
   Model:        require('../lib/model')
-  Controller    require('../lib/controller')
+  Controller:   require('../lib/controller')
   
   configure:  (callback) ->
     self   = @
