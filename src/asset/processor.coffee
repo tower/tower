@@ -22,17 +22,19 @@ class Processor
     else
       options.map = {}
       files = []
-      for key of options.files
-        options.map[key.replace(/\.(js|css)$/, "")] = options.files[key]
+      for key, value of options.files
+        options.map[key.replace(/\.(js|css)$/, "")] = value
+        files = files.concat value
       options.files = files
     
+    console.log options
     for key, files of options.map
       string = ''
       for path in options.paths
         file.walkSync path, (_path, _directories, _files) ->
           items = _.intersection(options.files, _files)
           for item in items
-            string = string + self.compressor().compress(fs.readFileSync([_path, item].join("/"), 'utf8'))
+            string = string + self.compressor().compress(fs.readFileSync([_path, item].join("/"), 'utf8')) + ";"
       result[key] = string
     result
     

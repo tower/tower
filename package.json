@@ -1,6 +1,6 @@
 {
   "name": "metro",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Rails-esque Framework for Node.js",
   "homepage": "http://viatropos.github.com/metro.js",
   "main": "lib/metro.js",
@@ -31,6 +31,7 @@
     "coffee-script": ">= 1.1.0",
     "uglify-js": ">= 1.1.1",
     "file": ">= 0.1.1",
+    "underscore": ">= 1.1.6",
     "underscore.string": ">= 1.1.6",
     "mime": ">= 1.2.4"
   }
