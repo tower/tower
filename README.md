@@ -8,9 +8,15 @@
 npm install metro
 ```
 
-## Usage
+## Generate an App
 
-### Compression
+(or just setup the files manually, I like that better)
+
+``` bash
+metro new my-app
+```
+
+## Compression
 
 ``` coffeescript
 Metro = require("metro")
@@ -27,7 +33,7 @@ Metro.configure ->
 Metro.Asset.compile()
 ```
 
-### Routes
+## Routes
 
 ``` coffeescript
 Metro.Application.routes().draw ->
@@ -41,14 +47,14 @@ Metro.Application.routes().draw ->
   @match "/posts/:id",      to: "posts#destroy", via: "delete"
 ```
 
-### Models
+## Models
 
 ``` coffeescript
 class Post
   @include Metro.Model
 ```
 
-### Controllers
+## Controllers
 
 ``` coffeescript
 class PostsController
