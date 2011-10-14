@@ -33,6 +33,7 @@
     "file": ">= 0.1.1",
     "underscore": ">= 1.1.6",
     "underscore.string": ">= 1.1.6",
-    "mime": ">= 1.2.4"
+    "mime": ">= 1.2.4",
+    "watch": ">= 0.3.3"
   }
 }

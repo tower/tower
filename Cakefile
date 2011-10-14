@@ -1,31 +1,32 @@
 fs     = require('fs')
+watch  = require('./node_modules/watch')
 Metro  = require('./lib/metro')
-yui    = new Metro.Asset.YUICompressor
-uglify = new Metro.Asset.UglifyJSCompressor
-file   = require("./node_modules/file")
-{print} = require 'sys'
-{spawn} = require 'child_process'
+_      = require('./node_modules/underscore')
 
-task 'compress', ->
-  src = ''
-  min = ''
-  file.walkSync "./lib", (dirPath, dirs, files) ->
-    for file in files
-      data = fs.readFileSync [dirPath, file].join("/"), 'utf8'
-      src = src + data + '\n'
-      min = min + uglify.compress(data)
-  #fs.writeFileSync "metro.js", src
-  fs.writeFileSync "metro.min.js", min
-
-build = (callback) ->
-  coffee = spawn 'coffee', ['-c', '-o', 'lib', 'src']
-  coffee.stderr.on 'data', (data) ->
-    process.stderr.write data.toString()
-  coffee.stdout.on 'data', (data) ->
-    print data.toString()
-  coffee.on 'exit', (code) ->
-    callback?() if code is 0
-
-task 'build', 'Build lib/ from src/', ->
-  build()
+Metro.configure ->
+  @assets.path            = "./spec/tmp/assets"
+  @assets.css_compressor  = "yui"
+  @assets.js_compressor   = "uglifier"
+  @assets.js              = ["application.js"]
+  @assets.js_paths        = ["./spec/fixtures"]
   
+task 'watch', ->
+  watch.watchTree './spec/fixtures', (f, curr, prev) ->
+    if typeof f == "object" && prev == null && curr == null
+      #Finished walking the tree
+      console.log "walked"
+      @
+    else if prev == null
+      # f is a new file
+      console.log "new"
+      @
+    else if curr.nlink == 0
+      # f was removed
+      console.log "removed"
+      @
+    else
+      # f was changed
+      console.log "changed"
+      Metro.Asset.compile()
+      @
+    # console.log curr

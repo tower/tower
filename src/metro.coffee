@@ -4,7 +4,9 @@ Metro =
   Application:  require('../lib/application')
   Route:        require('../lib/route').Route
   Model:        require('../lib/model')
+  View:         require('../lib/view')
   Controller:   require('../lib/controller')
+  Template:     require('../lib/template')
   
   configure:  (callback) ->
     self   = @
@@ -18,7 +20,7 @@ Metro =
             
   configuration:  null
   logger:         null
-  root:           null
+  root:           "."
   env:            null
   cache:          null
   version:        "0.2.0"

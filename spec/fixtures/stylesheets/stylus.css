@@ -1,0 +1,13 @@
+body {
+  background: url("http://foo.com/bar.png");
+}
+#wrapper {
+  background: url("/images/gopher.jpg");
+}
+#footer {
+  background: url("/images/gradient.svg");
+}
+.sprite {
+  background: url("/images/sprite.gif");
+  background: url("sprite.gif");
+}

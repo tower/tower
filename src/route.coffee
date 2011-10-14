@@ -10,6 +10,9 @@ class Route extends Class
   
   @include @Mapper
   
+  @bootstrap: ->
+    require("#{Metro.root}/config/routes.js")
+  
   app:      null
   name:     null
   path:     null

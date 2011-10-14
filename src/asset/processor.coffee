@@ -27,7 +27,6 @@ class Processor
         files = files.concat value
       options.files = files
     
-    console.log options
     for key, files of options.map
       string = ''
       for path in options.paths

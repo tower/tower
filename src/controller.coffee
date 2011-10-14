@@ -1,4 +1,7 @@
 class Controller extends Class
+  @bootstrap: ->
+    @
+    
   constructor: ->
     @_headers  = 
       "Content-Type": "text/html"

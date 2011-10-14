@@ -109,6 +109,10 @@ cake build
 - https://github.com/jashkenas/coffee-script/wiki/Easy-modules-with-CoffeeScript
 - http://shinetech.com/thoughts/thought-articles/139-asynchronous-code-design-with-nodejs-
 - http://blog.monitis.com/index.php/2011/07/09/6-node-js-recipes-working-with-the-file-system/
+- http://nodejs.org/docs/v0.4.7/api/events.html
+- http://elegantcode.com/2011/04/06/taking-baby-steps-with-node-js-pumping-data-between-streams/
+- https://github.com/visionmedia/express/blob/master/lib/router/route.js
+- http://redis.io/topics/memory-optimization
 
 ### Other Projects
 
@@ -123,6 +127,28 @@ cake build
 - digest: https://github.com/brainfucker/hashlib
 - https://github.com/sstephenson/hike/blob/master/lib/hike/trail.rb
 - https://github.com/ryanmcgrath/wrench-js
+- https://github.com/joyent/libuv
+- https://github.com/mikeal/watch
+- https://github.com/hij1nx/EventEmitter2
+- https://github.com/jeromeetienne/microevent.js/blob/master/microevent.js#L12-31
+- https://github.com/pkrumins/node-lazy
+- https://github.com/masylum/dialect/
+- https://github.com/naholyr/node-jus-i18n
+- https://github.com/mashpie/i18n-node
+- https://github.com/substack/node-findit
+- https://github.com/cloudhead/node-static
+- https://github.com/hookio/hook.io
+- http://bricksjs.com/index.html
+- https://github.com/substack/node-browserify
+- https://github.com/substack/js-traverse
+- https://github.com/substack/mrcolor
+- https://github.com/substack/node-jadeify
+- https://github.com/cliftonc/calipso
+- https://github.com/joyent/node/wiki/modules#wiki-templating
+- https://github.com/visionmedia/lingo
+- https://github.com/isaacs/abbrev-js/
+- https://github.com/maritz/node-sprintf
+- npm install sprintf
 
 ### Docs
 

@@ -60,10 +60,10 @@ describe "metro.asset", ->
       result = Metro.Asset.process()
       
       expect(result.css).toEqual
-        'application': 'body{background:red}'
+        'application': 'body{background:red};'
         
       expect(result.js).toEqual
-        'application': '$(document).ready(function(){alert("ready!")})'
+        'application': '$(document).ready(function(){alert("ready!")});'
     
     it "should write", ->
       Metro.Asset.compile()

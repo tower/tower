@@ -34,6 +34,10 @@ template = Tilt.new('templates/foo.erb')
 output = template.render
 => "Hello world!"
 ###
-class Template
+Template =
+  Stylus:   require('../lib/template/stylus')
+  Jade:     require('../lib/template/jade')
+  Haml:     require('../lib/template/haml')
+  Ejs:      require('../lib/template/ejs')
   
 exports = module.exports = Template
