@@ -1,8 +1,8 @@
 require './support/class'
 
 class Route extends Class
-  @Collection:              require('../lib/route/collection')
-  @Mapper:                  require('../lib/route/mapper')
+  @Collection:              require('./route/collection')
+  @Mapper:                  require('./route/mapper')
   
   @ANCHOR_CHARACTERS_REGEX: /\A(\\A|\^)|(\\Z|\\z|\$)\Z/
   @SHORTHAND_REGEX:         /[\w/]+$/

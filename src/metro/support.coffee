@@ -1,7 +1,7 @@
 Metro =
-  #Watcher: require('../lib/support/watcher')
+  #Watcher: require('./support/watcher')
   Support:
-    Class: require('../lib/support/class')
+    Class: require('./support/class')
   
   ###
   Metro.watch "./assets/javascripts", -> Metro.Asset.compile()

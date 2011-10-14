@@ -1,14 +1,14 @@
 Metro =
-  Asset:        require('../lib/asset').Asset
-  Support:      require('../lib/support').Support
-  Application:  require('../lib/application')
-  Route:        require('../lib/route').Route
-  Model:        require('../lib/model')
-  View:         require('../lib/view')
-  Controller:   require('../lib/controller')
-  Presenter:    require('../lib/presenter')
-  Template:     require('../lib/template')
-  Services:     require('../lib/services')
+  Asset:        require('./metro/asset').Asset
+  Support:      require('./metro/support').Support
+  Application:  require('./metro/application')
+  Route:        require('./metro/route').Route
+  Model:        require('./metro/model')
+  View:         require('./metro/view')
+  Controller:   require('./metro/controller')
+  Presenter:    require('./metro/presenter')
+  Template:     require('./metro/template')
+  Services:     require('./metro/services')
   
   configure:  (callback) ->
     self   = @

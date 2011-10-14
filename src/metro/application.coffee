@@ -1,7 +1,7 @@
 #express = require('express')
 
 class Application
-  @Configuration: require('../lib/application/configuration')
+  @Configuration: require('./application/configuration')
   
   @routes: -> @instance().routes()
   

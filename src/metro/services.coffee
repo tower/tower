@@ -1,5 +1,5 @@
 # https://github.com/geemus/fog
 Services =
-  S3: require('../lib/services/s3')
+  S3: require('./services/s3')
   
 exports = module.exports = Services
