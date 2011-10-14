@@ -1,6 +1,6 @@
 # Metro.js
 
-> Rails-esque Framework For Node.js
+> Rails-esque Framework For Node.js (just hacking for now)
 
 ## Install
 
