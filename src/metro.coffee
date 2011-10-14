@@ -6,6 +6,7 @@ Metro =
   Model:        require('../lib/model')
   View:         require('../lib/view')
   Controller:   require('../lib/controller')
+  Presenter:    require('../lib/presenter')
   Template:     require('../lib/template')
   Services:     require('../lib/services')
   

@@ -16,7 +16,7 @@ class Uplaoder
   upload: (from, to, callback) ->
     @client().putFile from, to, callback
     
-  update: (remote, options)
+  update: (remote, options) ->
     @client().put remote, options
   
 exports = module.exports = Uplaoder
