@@ -7,7 +7,7 @@ class UserModule
 class UserExtendingFunction
   @include UserModule
   
-class UserExtendingClass extends Metro.Support.Class
+class UserExtendingClass extends Class
   @include UserModule
 
 describe "module", ->

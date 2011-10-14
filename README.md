@@ -58,7 +58,8 @@ class Post
 
 ``` coffeescript
 class PostsController
-  @include Metro.ResourceController
+  @include Metro.Controllers.ResourceController
+  # @include Metro.C.R
 ```
 
 ## Development
@@ -70,7 +71,13 @@ coffee -c -o lib -w src
 ./node_modules/coffee-script/bin/coffee -o lib -w src
 jasmine-node --coffee spec/.
 ./node_modules/jasmine-node/bin/jasmine-node --coffee ./spec
+./node_modules/docco/bin/docco src/*.coffee
 cake build
+```
+
+``` javascript
+var stack = new Error().stack
+require("sys").puts( stack )
 ```
 
 ## Resources
@@ -119,6 +126,7 @@ cake build
 - http://elegantcode.com/2011/04/06/taking-baby-steps-with-node-js-pumping-data-between-streams/
 - https://github.com/visionmedia/express/blob/master/lib/router/route.js
 - http://redis.io/topics/memory-optimization
+- http://stackoverflow.com/questions/4768748/requireing-a-coffeescript-file-from-a-javascript-file-or-repl
 
 ### Other Projects
 
@@ -154,6 +162,7 @@ cake build
 - https://github.com/visionmedia/lingo
 - https://github.com/isaacs/abbrev-js/
 - https://github.com/maritz/node-sprintf
+- https://github.com/visionmedia/dox
 - npm install sprintf
 
 ### Docs

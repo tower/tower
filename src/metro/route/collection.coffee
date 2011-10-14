@@ -14,4 +14,8 @@ class Collection
     @named[name] = route if name?
     route
     
+  clear: ->
+    @set    = []
+    @named  = {}
+    
 exports = module.exports = Collection

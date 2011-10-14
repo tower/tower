@@ -1,0 +1,22 @@
+<!DOCTYPE html>  <html> <head>   <title>controller.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="application.html">                 application.coffee               </a>                                           <a class="source" href="asset.html">                 asset.coffee               </a>                                           <a class="source" href="controller.html">                 controller.coffee               </a>                                           <a class="source" href="model.html">                 model.coffee               </a>                                           <a class="source" href="presenter.html">                 presenter.coffee               </a>                                           <a class="source" href="route.html">                 route.coffee               </a>                                           <a class="source" href="services.html">                 services.coffee               </a>                                           <a class="source" href="settings.html">                 settings.coffee               </a>                                           <a class="source" href="support.html">                 support.coffee               </a>                                           <a class="source" href="template.html">                 template.coffee               </a>                                           <a class="source" href="view.html">                 view.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               controller.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Controller</span> <span class="k">extends</span> <span class="nx">Class</span>
+  <span class="vi">@bootstrap: </span><span class="o">-&gt;</span>
+    <span class="err">@</span>
+    
+  <span class="nv">constructor: </span><span class="o">-&gt;</span>
+    <span class="vi">@_headers  = </span>
+      <span class="s2">&quot;Content-Type&quot;</span><span class="o">:</span> <span class="s2">&quot;text/html&quot;</span>
+    <span class="vi">@_status   = </span><span class="mi">200</span>
+    <span class="vi">@_request  = </span><span class="kc">null</span>
+    <span class="vi">@_response = </span><span class="kc">null</span>
+    <span class="vi">@_routes   = </span><span class="kc">null</span>
+    
+  <span class="nv">params: </span><span class="o">-&gt;</span>
+    <span class="nx">@_params</span> <span class="o">?=</span> <span class="nx">@request</span><span class="p">.</span><span class="nx">parameters</span><span class="p">()</span>
+  
+  <span class="vi">@controller_name: </span><span class="o">-&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">underscore</span><span class="p">(</span><span class="nx">@name</span><span class="p">)</span>
+  
+  <span class="nv">controller_name: </span><span class="o">-&gt;</span>
+    <span class="nx">@constructor</span><span class="p">.</span><span class="nx">controller_name</span><span class="p">()</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

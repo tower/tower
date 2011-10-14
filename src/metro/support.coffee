@@ -1,7 +1,6 @@
 Metro =
-  #Watcher: require('./support/watcher')
-  Support:
-    Class: require('./support/class')
+  Class:    require('./support/class')
+  Logger:   require('./support/logger')
   
   ###
   Metro.watch "./assets/javascripts", -> Metro.Asset.compile()
@@ -11,5 +10,4 @@ Metro =
   watch: (paths, callback) ->
     paths = Array(paths)
     
-
 exports = module.exports = Metro

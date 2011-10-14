@@ -11,7 +11,7 @@ class Route extends Class
   @include @Mapper
   
   @bootstrap: ->
-    require("#{Metro.root}/config/routes.js")
+    require("#{Metro.root}/config/routes")
   
   app:      null
   name:     null
@@ -39,8 +39,5 @@ class Route extends Class
   
   build_path: (path) ->
     "#{path}(.:format)"
-    
-Metro =
-  Route: Route
-
-exports = module.exports = Metro
+  
+exports = module.exports = Route

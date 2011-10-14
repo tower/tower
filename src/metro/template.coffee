@@ -40,4 +40,12 @@ Template =
   Haml:     require('./template/haml')
   Ejs:      require('./template/ejs')
   
+  engines: ->
+    @_engines ?= {
+      "stylus": Metro.Template.Stylus
+      "jade":   Metro.Template.Jade
+      "haml":   Metro.Template.Haml
+      "ejs":    Metro.Template.Ejs
+    }
+  
 exports = module.exports = Template

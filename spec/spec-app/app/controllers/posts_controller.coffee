@@ -1,0 +1,1 @@
+class PostsController extends ApplicationController

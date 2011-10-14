@@ -4,8 +4,10 @@ fs      = require('fs')
 
 class Jade
   # compile "./application.jade", (error, result) -> console.log(result)
-  compile: (path, options, callback) ->
+  compile: (path, options) ->
     callback = options if typeof(options) == "function"
-    jade.render(fs.readFileSync(path, 'utf8'), options || {}, callback)
+    result = null
+    jade.render fs.readFileSync(path, 'utf8'), options || {}, (error, data) -> result = data
+    result
     
 exports = module.exports = Jade

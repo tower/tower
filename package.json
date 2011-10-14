@@ -34,6 +34,7 @@
     "underscore": ">= 1.1.6",
     "underscore.string": ">= 1.1.6",
     "mime": ">= 1.2.4",
-    "watch": ">= 0.3.3"
+    "connect": ">= 1.7.1",
+    "findit": ">= 0.1.1"
   }
 }

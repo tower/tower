@@ -3,6 +3,8 @@ Metro    = require('../lib/metro')
 describe "route", ->
   describe "mapper", ->
     beforeEach ->
+      Metro.Application.routes().clear()
+      
       Metro.Application.routes().draw ->
         @match "/login",          to: "sessions#new", via: "get", as: "login"
         

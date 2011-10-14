@@ -2,7 +2,7 @@ Metro =
   Asset:        require('./metro/asset').Asset
   Support:      require('./metro/support').Support
   Application:  require('./metro/application')
-  Route:        require('./metro/route').Route
+  Route:        require('./metro/route')
   Model:        require('./metro/model')
   View:         require('./metro/view')
   Controller:   require('./metro/controller')
@@ -12,8 +12,9 @@ Metro =
             
   configuration:  null
   logger:         null
-  root:           "."
-  env:            null
+  root:           (process.cwd() + "/spec/spec-app")
+  env:            "test"
+  port:           1597
   cache:          null
   version:        "0.2.0"
   application: ->
