@@ -7,6 +7,7 @@ Metro =
   View:         require('../lib/view')
   Controller:   require('../lib/controller')
   Template:     require('../lib/template')
+  Services:     require('../lib/services')
   
   configure:  (callback) ->
     self   = @
