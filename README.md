@@ -18,7 +18,7 @@ metro new my-app
 
 ## Assets
 
-This:
+This
 
 ``` javascript
 //= require ./spec/fixtures/javascripts/directive_child_a.js
@@ -27,7 +27,7 @@ This:
 alert("directives");
 ```
 
-...becomes:
+...becomes
 
 ``` javascript
 alert("directive a");
