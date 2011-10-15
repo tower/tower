@@ -49,7 +49,7 @@ Metro.configure ->
   @assets.css_paths       = ["./app/assets/stylesheets"]
   @assets.js_paths        = ["./app/assets/javascripts"]
 
-Metro.Asset.compile()
+Metro.Assets.compile()
 ```
 
 ## Routes
