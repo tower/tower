@@ -16,7 +16,26 @@ npm install metro
 metro new my-app
 ```
 
-## Compression
+## Assets
+
+This:
+
+``` javascript
+//= require ./spec/fixtures/javascripts/directive_child_a.js
+//= require ./spec/fixtures/javascripts/directive_child_b.js
+
+alert("directives");
+```
+
+...becomes:
+
+``` javascript
+alert("directive a");
+alert("directive b");
+alert("directives");
+```
+
+### Asset Compression
 
 ``` coffeescript
 Metro = require("metro")
