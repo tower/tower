@@ -71,6 +71,18 @@ Metro.Application.routes().draw ->
 ``` coffeescript
 class Post
   @include Metro.Models.Base
+  
+  @key "title"
+  @key "body"
+  @key "slug"
+  @key "created_at", type: Date
+  
+  @validates "title", presence: true
+  
+  @before_save "parameterize"
+  
+  parameterize: ->
+    @slug = _.parameterize(@title)
 ```
 
 ## Controllers
@@ -78,6 +90,33 @@ class Post
 ``` coffeescript
 class PostsController
   @include Metro.Controllers.Base
+  
+  index: ->
+    @posts = Post.all()
+    
+  new: ->
+    @post = Post.new
+    
+  create: ->
+    @post = Post.new(@params.post)
+    
+    super (success, failure) ->
+      @success.html -> @render "posts/edit"
+      @success.json -> @render text: "success!"
+      @failure.html -> @render text: "Error", status: 404
+      @failure.json -> @render text: "Error", status: 404
+    
+  show: ->
+    @post = Post.find(@params.id)
+    
+  edit: ->
+    @post = Post.find(@params.id)
+    
+  update: ->
+    @post = Post.find(@params.id)
+    
+  destroy: ->
+    @post = Post.find(@params.id)
 ```
 
 ## Development
