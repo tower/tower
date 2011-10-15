@@ -1,12 +1,12 @@
 Metro    = require('../lib/metro')
-yui      = new Metro.Asset.YuiCompressor
-uglifier = new Metro.Asset.UglifierCompressor
+yui      = new Metro.Assets.YuiCompressor
+uglifier = new Metro.Assets.UglifierCompressor
 
 describe "metro.asset", ->
   describe "configuration", ->
     it "should configure", ->
-      expect(Metro.Asset.config.js_compressor).toEqual("uglifier")
-      expect(Metro.Asset.config.css_compressor).toEqual("yui")
+      expect(Metro.Assets.config.js_compressor).toEqual("uglifier")
+      expect(Metro.Assets.config.css_compressor).toEqual("yui")
       
       Metro.configure ->
         @assets.precompile     = ["application.js", "vendor.js", "application.css", "theme.css"]
@@ -17,8 +17,8 @@ describe "metro.asset", ->
         @assets.css_paths      = ["./spec/fixtures/stylesheets"]
         @assets.js_paths       = ["./spec/fixtures/javascripts"]
       
-      expect(Metro.Asset.config.js_compressor).toEqual("random")
-      expect(Metro.Asset.config.css_compressor).toEqual("scss")
+      expect(Metro.Assets.config.js_compressor).toEqual("random")
+      expect(Metro.Assets.config.css_compressor).toEqual("scss")
       
   describe "css", ->
     it "should use the YUI compressor", ->
@@ -41,7 +41,7 @@ describe "metro.asset", ->
   
   describe "processor", ->
     it "should process javascript directives", ->
-      processor = new Metro.Asset.JsProcessor(new Metro.Asset.UglifierCompressor)
+      processor = new Metro.Assets.JsProcessor(new Metro.Assets.UglifierCompressor)
       result = processor.process
         paths: ["./spec/fixtures/javascripts"]
         files: ["directives.js"]
@@ -66,7 +66,7 @@ describe "metro.asset", ->
             "http://assets.example.com"
         
     it "should process through the api", ->
-      result = Metro.Asset.process()
+      result = Metro.Assets.process()
       
       expect(result.css).toEqual
         'application': 'body{background:red};'
@@ -75,7 +75,7 @@ describe "metro.asset", ->
         'application': '$(document).ready(function(){alert("ready!")})'
     
     it "should write", ->
-      Metro.Asset.compile()
+      Metro.Assets.compile()
       
     it "should create a digest for a file", ->
       

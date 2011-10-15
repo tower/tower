@@ -6,7 +6,7 @@ describe "application", ->
     @application = Metro.Application.bootstrap()
     
   it "should be configured", ->
-    expect(Metro.Asset.config.path).toEqual "#{Metro.root}/public/assets"
+    expect(Metro.Assets.config.path).toEqual "#{Metro.root}/public/assets"
     
   it "should load routes", ->
     expect(Metro.Application.routes().set.length).toEqual 1

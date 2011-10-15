@@ -16,7 +16,7 @@ Support =
   load_classes: (directory) ->
     files = require('findit').sync directory
     for file in files
-      klass = Metro.Asset.File.basename(file).split(".")[0]
+      klass = Metro.Assets.File.basename(file).split(".")[0]
       klass = _.camelize("_#{klass}")
       global[klass] = require(file)
     

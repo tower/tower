@@ -21,7 +21,7 @@ class Application
   
   call: (env) ->
     
-  routes: -> @_routes ?= new Metro.Route.Collection
+  routes: -> @_routes ?= new Metro.Routes.Collection
   
   config: -> @_config ?= new Metro.Application.Configuration
     
@@ -37,10 +37,10 @@ class Application
     
   @bootstrap: ->
     require("#{Metro.root}/config/application")
-    Metro.Route.bootstrap()
-    Metro.Model.bootstrap()
-    Metro.View.bootstrap()
-    Metro.Controller.bootstrap()
+    Metro.Routes.bootstrap()
+    Metro.Models.bootstrap()
+    Metro.Views.bootstrap()
+    Metro.Controllers.bootstrap()
     Metro.Application.instance()
   
   @run: ->

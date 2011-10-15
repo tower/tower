@@ -1,5 +1,5 @@
 class ApplicationController
-  @include  Metro.Controller
+  @include  Metro.Controllers.Base
   
   @helpers  "application"
   @layout   "application"

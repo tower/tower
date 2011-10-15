@@ -1,18 +1,18 @@
 Metro =
-  Asset:        require('./metro/asset').Asset
+  Assets:       require('./metro/assets')
   Support:      require('./metro/support')
   Application:  require('./metro/application')
-  Route:        require('./metro/route')
-  Model:        require('./metro/model')
-  View:         require('./metro/view')
-  Controller:   require('./metro/controller')
-  Presenter:    require('./metro/presenter')
-  Template:     require('./metro/template')
+  Routes:       require('./metro/routes')
+  Models:       require('./metro/models')
+  Views:        require('./metro/views')
+  Controllers:  require('./metro/controllers')
+  Presenters:   require('./metro/presenters')
+  Templates:    require('./metro/templates')
   Services:     require('./metro/services')
   Middleware:   require('./metro/middleware')
   Commands:     require('./metro/commands')
   Generators:   require('./metro/generators')
-            
+  
   configuration:  null
   logger:         null
   root:           (process.cwd() + "/spec/spec-app")
@@ -31,7 +31,7 @@ Metro =
       switch key
         when "assets"
           for asset_key of config[key]
-            self.Asset.config[asset_key] = config[key][asset_key]
+            self.Assets.config[asset_key] = config[key][asset_key]
   
 exports = module.exports = Metro
 

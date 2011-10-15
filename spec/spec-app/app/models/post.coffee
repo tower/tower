@@ -1,3 +1,3 @@
 class Post
-  @include Metro.Model
+  @include Metro.Models.Base
   

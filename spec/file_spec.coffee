@@ -3,8 +3,8 @@ Metro  = require('../lib/metro')
 describe "file", ->
   beforeEach ->
     @path        = "./spec/fixtures/javascripts/application.js"
-    @environment = new Metro.Asset.Environment
-    @file        = new Metro.Asset.File(@environment, @path)
+    @environment = new Metro.Assets.Environment
+    @file        = new Metro.Assets.File(@environment, @path)
   
   it "should stat file", ->
     expect(@file.stat()).toBeTruthy()
@@ -22,10 +22,10 @@ describe "file", ->
     expect(@file.size()).toEqual 54
     
   it "should have the path fingerprint", ->
-    @file = new Metro.Asset.File(@environment, "./spec/fixtures/javascripts/application.js")
+    @file = new Metro.Assets.File(@environment, "./spec/fixtures/javascripts/application.js")
     expect(@file.path_fingerprint()).toEqual null
     
-    @file = new Metro.Asset.File(@environment, "./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
+    @file = new Metro.Assets.File(@environment, "./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
     expect(@file.path_fingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
     
   it "should add fingerprint to path", ->
@@ -33,8 +33,8 @@ describe "file", ->
     expect(path).toEqual "spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
     
   it "should extract extensions", ->
-    @file = new Metro.Asset.File(@environment, "./spec/fixtures/javascripts/application.js")
+    @file = new Metro.Assets.File(@environment, "./spec/fixtures/javascripts/application.js")
     expect(@file.extensions()).toEqual ["js"]
     
-    @file = new Metro.Asset.File(@environment, "./spec/fixtures/javascripts/application.js.coffee")
+    @file = new Metro.Assets.File(@environment, "./spec/fixtures/javascripts/application.js.coffee")
     expect(@file.extensions()).toEqual ["js", "coffee"]
