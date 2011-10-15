@@ -28,9 +28,6 @@ class Route extends Class
     @verb       = scope.request_method || //
     @ip         = scope.ip || //
   
-  to: ->
-    @options.to
-    
   default_controller: ->
     @options.controller || @scope.controller
   
@@ -39,5 +36,10 @@ class Route extends Class
   
   build_path: (path) ->
     "#{path}(.:format)"
+  
+  matches: (request) ->
+    
+  call: (request, response) ->
+    global[controller_class_name].new(request.params.action).call(request, response)
   
 exports = module.exports = Route

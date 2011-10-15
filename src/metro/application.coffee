@@ -20,17 +20,14 @@ class Application
     @app ?= connect()#.createServer()
   
   call: (env) ->
-  
-  env_config: -> @_env_config ?= {}
     
   routes: -> @_routes ?= new Metro.Route.Collection
   
-  initializers: ->
-    
   config: -> @_config ?= new Metro.Application.Configuration
     
   stack: ->
-    @app.use Metro.Controller.Dispatcher.middleware
+    #@app.use Metro.Controller.Dispatcher.middleware
+    #@app.use @routes()
     @app
     
   listen: ->

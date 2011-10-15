@@ -1,6 +1,6 @@
 Metro =
   Asset:        require('./metro/asset').Asset
-  Support:      require('./metro/support').Support
+  Support:      require('./metro/support')
   Application:  require('./metro/application')
   Route:        require('./metro/route')
   Model:        require('./metro/model')
@@ -9,6 +9,9 @@ Metro =
   Presenter:    require('./metro/presenter')
   Template:     require('./metro/template')
   Services:     require('./metro/services')
+  Middleware:   require('./metro/middleware')
+  Commands:     require('./metro/commands')
+  Generators:   require('./metro/generators')
             
   configuration:  null
   logger:         null

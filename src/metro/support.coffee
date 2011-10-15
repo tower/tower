@@ -1,4 +1,7 @@
-Metro =
+_ = require("underscore")
+_.mixin(require("underscore.string"))
+
+Support =
   Class:    require('./support/class')
   Logger:   require('./support/logger')
   
@@ -10,4 +13,11 @@ Metro =
   watch: (paths, callback) ->
     paths = Array(paths)
     
-exports = module.exports = Metro
+  load_classes: (directory) ->
+    files = require('findit').sync directory
+    for file in files
+      klass = Metro.Asset.File.basename(file).split(".")[0]
+      klass = _.camelize("_#{klass}")
+      global[klass] = require(file)
+    
+exports = module.exports = Support

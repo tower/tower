@@ -28,17 +28,21 @@
     "test": "spec"
   },
   "dependencies": {
-    "coffee-script": ">= 1.1.0",
-    "uglify-js": ">= 1.1.1",
-    "file": ">= 0.1.1",
-    "underscore": ">= 1.1.6",
-    "underscore.string": ">= 1.1.6",
-    "mime": ">= 1.2.4",
-    "connect": ">= 1.7.1",
-    "findit": ">= 0.1.1",
-    "stylus": ">= 0.17.0",
-    "ejs": ">= 0.4.3",
-    "hamljs": ">= 0.5.1",
-    "jade": ">= 0.16.2"
+    "coffee-script":      ">= 1.1.0",
+    "uglify-js":          ">= 1.1.1",
+    "file":               ">= 0.1.1",
+    "underscore":         ">= 1.1.6",
+    "underscore.string":  ">= 1.1.6",
+    "mime":               ">= 1.2.4",
+    "connect":            ">= 1.7.1",
+    "findit":             ">= 0.1.1",
+    "stylus":             ">= 0.17.0",
+    "ejs":                ">= 0.4.3",
+    "hamljs":             ">= 0.5.1",
+    "jade":               ">= 0.16.2",
+    "less":               ">= 1.1.4",
+    "scss":               ">= 0.2.0"
+    "mustache":           ">= 0.3.1"
+    "markdown":           ">= 0.2.1"
   }
 }

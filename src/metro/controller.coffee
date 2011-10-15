@@ -1,15 +1,6 @@
-_ = require("underscore")
-_.mixin(require("underscore.string"))
-
 class Controller extends Class
-  @Dispatcher: require('./controller/dispatcher')
-  
   @bootstrap: ->
-    files = require('findit').sync "#{Metro.root}/app/controllers"
-    for file in files
-      klass = Metro.Asset.File.basename(file).split(".")[0]
-      klass = _.camelize("_#{klass}")
-      global[klass] = require(file)
+    Metro.Support.load_classes("#{Metro.root}/app/controllers")
   
   @controller_name: ->
     @_controller_name ?= _.underscore(@name)
@@ -26,10 +17,19 @@ class Controller extends Class
     @_response = null
     @_routes   = null
     
-  params: ->
-    @_params ?= @request.parameters()
+  params:     {}
+  request:    null
+  response:   null
   
   controller_name: ->
     @constructor.controller_name()
+  
+  call: (request, response, next) ->
+    @request  = request
+    @response = response
+    @process(request.params.action)
+    
+  process: (action) ->
+    @[action]()
 
 exports = module.exports = Controller

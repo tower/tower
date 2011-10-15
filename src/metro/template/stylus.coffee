@@ -5,7 +5,9 @@ fs      = require('fs')
 class Stylus
   
   # compile "./application.styl", (error, result) -> console.log(result)
-  compile: (path, callback) ->
-    stylus(fs.readFileSync(path, 'utf8')).set('filename', path).render(callback)
+  compile: (path) ->
+    result = null
+    stylus.render fs.readFileSync(path, 'utf8'), {}, (error, data) -> result = data
+    result
     
 exports = module.exports = Stylus

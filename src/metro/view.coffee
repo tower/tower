@@ -1,6 +1,8 @@
 class View
   @Renderer: require('./view/renderer')
   
+  @load_paths: []
+  
   @bootstrap: ->
     @
     
