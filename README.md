@@ -70,15 +70,14 @@ Metro.Application.routes().draw ->
 
 ``` coffeescript
 class Post
-  @include Metro.Model
+  @include Metro.Models.Base
 ```
 
 ## Controllers
 
 ``` coffeescript
 class PostsController
-  @include Metro.Controllers.ResourceController
-  # @include Metro.C.R
+  @include Metro.Controllers.Base
 ```
 
 ## Development
