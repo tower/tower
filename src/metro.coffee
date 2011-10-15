@@ -1,4 +1,6 @@
-Metro =
+exports = module.exports = global.Metro = class Metro
+  
+api =
   Assets:       require('./metro/assets')
   Support:      require('./metro/support')
   Application:  require('./metro/application')
@@ -12,6 +14,7 @@ Metro =
   Middleware:   require('./metro/middleware')
   Commands:     require('./metro/commands')
   Generators:   require('./metro/generators')
+  Settings:     require('./metro/settings')
   
   configuration:  null
   logger:         null
@@ -32,7 +35,5 @@ Metro =
         when "assets"
           for asset_key of config[key]
             self.Assets.config[asset_key] = config[key][asset_key]
-  
-exports = module.exports = Metro
 
-global.Metro = Metro
+Metro[key] = value for key, value of api

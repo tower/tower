@@ -1,4 +1,4 @@
-Metro =
-  Settings: {}
+Settings =
+  Locale: require('./settings/locale')
   
-exports = module.exports = Metro
+exports = module.exports = Settings
