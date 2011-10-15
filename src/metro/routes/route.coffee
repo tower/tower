@@ -28,8 +28,10 @@ class Route
     "#{path}(.:format)"
   
   matches: (request) ->
+    console.log request
+    true
     
-  call: (request, response) ->
+  call: (request, response, next) ->
     global[controller_class_name].new(request.params.action).call(request, response)
   
 exports = module.exports = Route

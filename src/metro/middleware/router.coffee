@@ -1,3 +1,6 @@
+url = require('url')
+
+# http://nodejs.org/docs/v0.4.7/api/url.html
 class Router
   @middleware: (request, result, next) -> (new Router).call(request, result, next)
   
@@ -10,7 +13,13 @@ class Router
     next()
     
   call: (request, response, next) ->
-    routes = Metro.Application.routes()
+    routes  = Metro.Application.routes()
+    request.params = url.parse(request.url)
+    route = routes[0]
+    route.controller_class_name = "PostsController"
+    request.params = {}
+    request.params.action = "index"
+    route.call(request, response)
     for route in routes
       if route.matches(request)
         route.call(request, response)

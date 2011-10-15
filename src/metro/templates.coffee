@@ -22,5 +22,7 @@ Templates =
       "sass":    Metro.Template.Sass
       "mustache":    Metro.Template.Mustache
     }
+    
+  engine: "jade"
   
 exports = module.exports = Templates

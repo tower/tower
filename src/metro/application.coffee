@@ -26,8 +26,7 @@ class Application
   config: -> @_config ?= new Metro.Application.Configuration
     
   stack: ->
-    #@app.use Metro.Controller.Dispatcher.middleware
-    #@app.use @routes()
+    @app.use Metro.Middleware.Router.middleware
     @app
     
   listen: ->
