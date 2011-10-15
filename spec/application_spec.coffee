@@ -19,4 +19,4 @@ describe "application", ->
     expect(PostsController).toBeTruthy()
     
   it "should respond to requests", ->
-    console.log @application.app
+    #console.log @application.app

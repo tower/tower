@@ -1,0 +1,1 @@
+alert("child b");

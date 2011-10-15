@@ -38,6 +38,15 @@ describe "metro.asset", ->
       result    = uglifier.compress(string)
       
       expect(result).toEqual(expected)
+  
+  describe "processor", ->
+    it "should process javascript directives", ->
+      processor = new Metro.Asset.JsProcessor(new Metro.Asset.UglifierCompressor)
+      result = processor.process
+        paths: ["./spec/fixtures/javascripts"]
+        files: ["directives.js"]
+        
+      expect(result).toEqual {directives: 'alert("child a"),alert("child b"),alert("directives")'}
       
   describe "compressor", ->
     beforeEach ->
@@ -63,7 +72,7 @@ describe "metro.asset", ->
         'application': 'body{background:red};'
         
       expect(result.js).toEqual
-        'application': '$(document).ready(function(){alert("ready!")});'
+        'application': '$(document).ready(function(){alert("ready!")})'
     
     it "should write", ->
       Metro.Asset.compile()

@@ -164,6 +164,7 @@ require("sys").puts( stack )
 - https://github.com/maritz/node-sprintf
 - https://github.com/visionmedia/dox
 - npm install sprintf
+- http://rejex.heroku.com/
 
 ### Docs
 
