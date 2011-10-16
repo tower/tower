@@ -5,4 +5,4 @@ Models =
   bootstrap: ->
     Metro.Support.load_classes("#{Metro.root}/app/models")
   
-exports = module.exports = Models
+module.exports = Models

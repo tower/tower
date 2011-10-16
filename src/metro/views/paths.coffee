@@ -3,5 +3,4 @@ class Paths
     
   template_paths: ->
     
-  
-exports = module.exports = Paths
+module.exports = Paths

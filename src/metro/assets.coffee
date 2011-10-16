@@ -71,4 +71,4 @@ Asset =
   js_compressor: ->
     @_js_compressor ?= new @[_.titleize(@config.js_compressor) + "Compressor"]
     
-exports = module.exports = Asset
+module.exports = Asset

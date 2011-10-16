@@ -6,4 +6,4 @@ Routes =
   bootstrap: ->
     require("#{Metro.root}/config/routes")
     
-exports = module.exports = Routes
+module.exports = Routes

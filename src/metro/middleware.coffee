@@ -5,4 +5,4 @@ Middleware =
   Query:    require('./middleware/query')
   Body:     require('./middleware/body')
   
-exports = module.exports = Middleware
+module.exports = Middleware

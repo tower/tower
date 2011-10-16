@@ -10,4 +10,4 @@ class Base
   read: ->
     fs.readFileSync(@path, "utf-8")
   
-exports = module.exports = Base
+module.exports = Base

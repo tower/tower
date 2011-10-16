@@ -1,4 +1,4 @@
 Settings =
   Locale: require('./settings/locale')
   
-exports = module.exports = Settings
+module.exports = Settings

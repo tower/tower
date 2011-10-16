@@ -1,4 +1,4 @@
 Presenters =
   Base: require('./presenters/base')
   
-exports = module.exports = Presenters
+module.exports = Presenters

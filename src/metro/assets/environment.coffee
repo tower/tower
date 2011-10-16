@@ -22,4 +22,4 @@ class Environment
   register_engine '.str',    Tilt::StringTemplate
   ###
 
-exports = module.exports = Environment
+module.exports = Environment

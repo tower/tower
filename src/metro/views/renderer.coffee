@@ -9,4 +9,4 @@ class Renderer
     template = new template
     template.compile("#{view}.#{options.type}")
     
-exports = module.exports = Renderer
+module.exports = Renderer

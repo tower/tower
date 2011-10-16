@@ -1,4 +1,4 @@
 Commands =
   Server: require('./commands/server')
   
-exports = module.exports = Commands
+module.exports = Commands

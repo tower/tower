@@ -20,4 +20,4 @@ Support =
       klass = _.camelize("_#{klass}")
       global[klass] = require(file)
     
-exports = module.exports = Support
+module.exports = Support

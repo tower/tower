@@ -1,3 +1,3 @@
 class Server
   
-exports = module.exports = Server
+module.exports = Server

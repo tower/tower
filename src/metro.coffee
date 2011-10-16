@@ -1,4 +1,4 @@
-exports = module.exports = global.Metro = class Metro
+module.exports = global.Metro = class Metro
   
 api =
   Assets:       require('./metro/assets')

@@ -49,4 +49,4 @@ class Application
     Metro.Application.instance().stack()
     Metro.Application.instance().listen()
   
-exports = module.exports = Application
+module.exports = Application

@@ -25,4 +25,4 @@ Templates =
     
   engine: "jade"
   
-exports = module.exports = Templates
+module.exports = Templates

@@ -47,4 +47,4 @@ class Router
     
     controller
     
-exports = module.exports = Router
+module.exports = Router

@@ -7,4 +7,4 @@ class Body
   call: (request, response, next) ->
     next() if next?
     
-exports = module.exports = Body
+module.exports = Body

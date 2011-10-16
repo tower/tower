@@ -5,4 +5,4 @@ Views =
   bootstrap: ->
     @
 
-exports = module.exports = Views
+module.exports = Views

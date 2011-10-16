@@ -19,4 +19,4 @@ class Uplaoder
   update: (remote, options) ->
     @client().put remote, options
   
-exports = module.exports = Uplaoder
+module.exports = Uplaoder

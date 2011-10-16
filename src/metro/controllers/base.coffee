@@ -48,4 +48,4 @@ class Base extends Class
     @response.setHeader(@headers)
     @response.end(body)
     
-exports = module.exports = Base
+module.exports = Base

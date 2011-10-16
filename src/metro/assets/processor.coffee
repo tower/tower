@@ -85,4 +85,4 @@ class Processor
       name = [dir, key].join("/") + ext
       fs.writeFileSync name, string
     
-exports = module.exports = Processor
+module.exports = Processor

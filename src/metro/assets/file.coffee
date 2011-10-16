@@ -135,4 +135,4 @@ class File
 
     nil
 
-exports = module.exports = File
+module.exports = File
