@@ -1,6 +1,9 @@
-class Base extends Class
+_ = require("underscore")
+_.mixin(require("underscore.string"))
+
+class Base
   @controller_name: ->
-    @_controller_name ?= _.underscore(@name)
+    @_controller_name ?= _.underscored(@::constructor.name)
     
   @helper: (object) ->
     @_helpers ?= []
@@ -37,7 +40,6 @@ class Base extends Class
     @[@params.action]()
     
   process_query: ->
-    
     
   render: (context, options) ->
     view = new Metro.Views.Base(@)

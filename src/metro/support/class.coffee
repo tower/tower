@@ -1,4 +1,5 @@
-moduleKeywords = ['included', 'extended']
+moduleKeywords = ['included', 'extended', 'prototype']
+_ = require("underscore")
 
 class Class
   # Rename an instance method

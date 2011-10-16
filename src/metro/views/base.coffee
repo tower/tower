@@ -3,7 +3,7 @@ _ = require("underscore")
 
 class Base
   constructor: (controller) ->
-    @controller = controller || {}
+    @controller = controller || (new Metro.Controllers.Base)
     
   render: (path, options) ->
     options  ?= {}
@@ -14,8 +14,11 @@ class Base
     engine.compile(template, @context(options))
   
   context: (options) ->
-    locals  = _.extend(@controller, @locals || {}, options.locals)
-    
+    controller = @controller
+    locals = {}
+    _.each _.keys(controller.constructor.prototype), (key) ->
+      locals[key] = controller[key] unless key == "constructor"
+    locals  = _.extend(locals, @locals || {}, options.locals)
     locals
   
 module.exports = Base

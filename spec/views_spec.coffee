@@ -24,11 +24,11 @@ describe "views", ->
   describe "helpers", ->
     it "should have stylesheet helpers", ->
       view    = new Metro.Views.Base
-      view.locals = Metro.Views.Helpers
+      view.locals = _.extend({}, new Metro.Views.Helpers)
       result  = view.render "posts/show"
       expect(result).toEqual '<link href="application.css"></link>'
       
     it "should have stylesheet helpers from controller", ->
       controller  = new SessionsController
-      result      = view.render "posts/show"
+      result      = controller.render "posts/show"
       expect(result).toEqual '<link href="application.css"></link>'
