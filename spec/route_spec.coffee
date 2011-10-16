@@ -16,19 +16,35 @@ describe "route", ->
       expect(match[1]).toEqual("10")
       expect(match[2]).toEqual("one/two/three")
       
+      expect(route.keys[0]).toEqual { name: 'id', optional: false, splat: false }
+      expect(route.keys[1]).toEqual { name: 'categories', optional: false, splat: true }
+      
     it "should match routes with optional splats", ->
       route = new Metro.Routes.Route(path: "/users/:id(/*categories)")
       match = route.match("/users/10/one/two/three")
       
       expect(match[1]).toEqual("10")
       expect(match[2]).toEqual("one/two/three")
+      
+      expect(route.keys[0]).toEqual { name: 'id', optional: false, splat: false }
+      expect(route.keys[1]).toEqual { name: 'categories', optional: true, splat: true }
+      
+    it "should match routes with optional formats", ->
+      route = new Metro.Routes.Route(path: "/users/:id.:format?")
+      match = route.match("/users/10.json")
+      
+      expect(match[1]).toEqual("10")
+      expect(match[2]).toEqual("json")
+      
+      expect(route.keys[0]).toEqual { name: 'id', optional: false, splat: false }
+      expect(route.keys[1]).toEqual { name : 'format', optional : true, splat : false }
   
   describe "mapper", ->
     beforeEach ->
       Metro.Application.routes().clear()
       
       Metro.Application.routes().draw ->
-        @match "/login",          to: "sessions#new", via: "get", as: "login"
+        @match "/login.:format?",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}
         
         @match "/users",          to: "users#index", via: "get"
         @match "/users/:id/edit", to: "users#edit", via: "get"
@@ -44,4 +60,20 @@ describe "route", ->
       
       route   = routes[0]
       
-      expect(route.path).toEqual("/login")
+      expect(route.path).toEqual("/login.:format?")
+      expect(route.controller.name).toEqual("sessions_controller")
+      expect(route.controller.class_name).toEqual("SessionsController")
+      expect(route.controller.action).toEqual("new")
+      expect(route.method).toEqual("get")
+      expect(route.name).toEqual("login")
+      expect(route.defaults).toEqual {flow: "signup"}
+    
+    it "should be found in the router", ->
+      Metro.Application.bootstrap()
+      router      = new Metro.Middleware.Router
+      request     = {method: "get", url: "/login"}
+      controller  = router.process(request)
+      
+      expect(request.params).toEqual { flow : 'signup', action : 'new' }
+      
+      expect(controller.params).toEqual { flow : 'signup', action : 'new' }

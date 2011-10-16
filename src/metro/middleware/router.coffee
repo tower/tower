@@ -1,4 +1,5 @@
-url = require('url')
+_url = require('url')
+_   = require('underscore')
 
 # http://nodejs.org/docs/v0.4.7/api/url.html
 class Router
@@ -9,37 +10,41 @@ class Router
     next() if next?
     
   routes: ->
-    Metro.Application.routes()
+    Metro.Application.routes().set
     
-  process: (request, response)
+  process: (request, response) ->
     routes = @routes()
     for route in routes
-      if match = route.match(request)
-        @process_params(match, route, request, response)
-        @process_controller(route, request, response)
-        break
+      if controller = @process_route(route, request, response)
+        return controller
+    null
     
-  process_params: (match, route, request, response) ->
-    method = request.method.toLowerCase()
-    url = parse(request.url)
+  process_route: (route, request, response) ->
+    url = _url.parse(request.url)
     path = url.pathname
+    match = route.match(path)
+    return null unless match
+    method = request.method.toLowerCase()
     keys  = route.keys
-    params = {}
+    params = _.extend({}, route.defaults)
+    match = match[1..-2]
     
     for capture, i in match
-      capture     = decodeURIComponent(capture)
-      key         = keys[i]
-      params[key] = capture
+      params[keys[i].name] = decodeURIComponent(capture)
     
-    if controller = route.options.controller
-      params.action = controller.action
-      params.controller = controller.name
-      
+    controller = route.controller
+    
+    params.action = controller.action if controller
+    
     request.params = params
     
-  process_controller: (route, request, response) ->
-    if controller = route.options.controller
-      controller = new global[controller.class_name]
+    if controller
+      try
+        controller = new global[route.controller.class_name]
+      catch error
+        throw(new Error("#{route.controller.class_name} wasn't found"))
       controller.call(request, response)
+    
+    controller
     
 exports = module.exports = Router

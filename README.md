@@ -133,6 +133,34 @@ cake build
 delete require.cache['/home/shimin/test2.js']
 ```
 
+## Todo
+
+- css sprites
+- upload assets to amazon
+- asset manifest
+- better asset watcher
+- asset server
+- asset digest in name
+- asset helpers
+
+- route regular expressions
+- params parser
+- query parser
+
+- view lookups
+- partial lookups
+
+- development environment reload
+
+- json api with presenters
+- view responders
+- view layouts
+
+- resourceful controller
+- resourceful routes
+
+- internationalization
+
 ``` javascript
 var stack = new Error().stack
 require("sys").puts( stack )
@@ -189,6 +217,7 @@ require("sys").puts( stack )
 - https://github.com/guille/jsconf-todo-demo/blob/master/server.js
 - http://michaux.ca/articles/the-command-pattern-in-javascript-encapsulating-function-property-calls
 - https://github.com/eriwen/javascript-stacktrace
+- https://github.com/caolan/quip
 
 ### Other Projects
 

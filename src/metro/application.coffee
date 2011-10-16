@@ -26,6 +26,9 @@ class Application
   config: -> @_config ?= new Metro.Application.Configuration
     
   stack: ->
+    @app.use Metro.Middleware.Static.middleware
+    @app.use Metro.Middleware.Cookies.middleware
+    @app.use Metro.Middleware.Query.middleware
     @app.use Metro.Middleware.Router.middleware
     @app
     

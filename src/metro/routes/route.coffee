@@ -5,21 +5,23 @@ class Route
   name:     null
   path:     null
   ip:       null
-  method:   "get"
-  options:  {}
-  pattern:  //
-  segments: []
-  keys:     []
+  method:   null
+  options:  null
+  pattern:  null
+  keys:     null
   
   constructor: (options) ->
     options    ?= options
     @path       = options.path
     @name       = options.name
-    @method     = options.method || "get"
+    @method     = options.method
     @ip         = options.ip
+    @defaults   = options.defaults || {}
+    @constraints  = options.constraints
     @options    = options
+    @controller = options.controller
+    @keys       = []
     @pattern    = @extract_pattern(@path)
-    #console.log @pattern
     
   match: (path) ->
     @pattern.exec(path)
@@ -27,21 +29,32 @@ class Route
   extract_pattern: (path, case_sensitive, strict) ->
     return path if path instanceof RegExp
     self = @
-    path = path.concat((if !!strict then "" else "/?")).replace(/\/\(/g, "(?:/").replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, (_, slash, format, key, capture, optional) ->
-      self.keys.push
-        name:     key
-        optional: !!optional
-
-      slash = slash or ""
-      "" + (if optional then "" else slash) + "(?:" + (if optional then slash else "") + (format or "") + (capture or (format and "([^/.]+?)" or "([^/]+?)")) + ")" + (optional or "")
-    ).replace(/([\/.])/g, "\\$1").replace(/(\()?\/\*([^\)\/]*)\)?(\/)?/g, (_, optional, key, slash) ->
-      self.keys.push
-        name:     key
-        optional: !!optional
+    
+    path = path.replace(/(\(?)(\/)?(\.)?([:\*])(\w+)(\))?(\?)?/g, (_, open, slash, format, symbol, key, close, optional) ->
+      optional = (!!optional) || (open + close == "()")
+      splat    = symbol == "*"
       
-      slash = slash or ""
-      "" + (if optional then "" else slash) + "(?:" + (if optional then slash else "") + "(.*))"
-    )#.replace(/\*.*/g, "(.*)")
+      self.keys.push
+        name:     key
+        optional: !!optional
+        splat:    splat
+      
+      slash   ?= ""
+      result = ""
+      result += slash unless optional
+      result += "(?:"
+      result += slash if optional
+      if format?
+        result += format
+        result += if splat then "([^.]+?)" else "([^/.]+?)"
+      else
+        result += if splat then "(.+?)" else "([^/]+?)"
+      result += ")"
+      result += "?" if optional
+      
+      result
+    )
+    
     new RegExp('^' + path + '$', !!case_sensitive ? '' : 'i')
 
   

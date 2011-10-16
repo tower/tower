@@ -3,3 +3,5 @@ class ApplicationController
   
   @helpers  "application"
   @layout   "application"
+  
+exports = module.exports = ApplicationController

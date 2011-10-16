@@ -22,8 +22,11 @@ class Base extends Class
   
   call: (request, response, next) ->
     @request  = request
-    @response = response
-    @params   = @request.params
+    @response = response || {}
+    @params   = @request.params || {}
+    @cookies  = @request.cookies || {}
+    @query    = @request.query || {}
+    @session  = @request.session || {}
     @process()
     
   process: ->  

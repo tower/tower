@@ -19,6 +19,7 @@ api =
   configuration:  null
   logger:         null
   root:           (process.cwd() + "/spec/spec-app")
+  public_path:    (process.cwd() + "/public")
   env:            "test"
   port:           1597
   cache:          null

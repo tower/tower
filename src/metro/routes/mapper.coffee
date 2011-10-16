@@ -264,26 +264,30 @@ class Mapper extends Class
     options.path    = path
     format          = @_extract_format(options)
     options.path    = @_extract_path(options)
-    request_method  = @_extract_request_method(options)
-    segments        = @_extract_segments(options)
+    method          = @_extract_request_method(options)
     constraints     = @_extract_constraints(options)
     defaults        = @_extract_defaults(options)
     controller      = @_extract_controller(options)
+    anchor          = @_extract_anchor(options)
+    name            = @_extract_name(options)
     
     options         = _.extend options,
-      request_method: request_method
+      method:         method
       constraints:    constraints
       defaults:       defaults
-      name:           options.as
+      name:           name
       path:           path
       format:         format
       controller:     controller
-      anchor:         options.anchor
+      anchor:         anchor
       ip:             options.ip
     
     options
     
   _extract_format: (options) ->
+    
+  _extract_name: (options) ->
+    options.as
     
   _extract_constraints: (options) ->
     options.constraints || {}
@@ -292,13 +296,13 @@ class Mapper extends Class
     options.defaults || {}
     
   _extract_path: (options) ->
-    "#{options.path}(.:format)"
+    options.path
     
   _extract_request_method: (options) ->
     options.via || options.request_method
   
-  _extract_segments: (options) ->
-    _.map(options.path.match(/:\w+/g) || [], (key) -> key.replace(/^:/, ""))
+  _extract_anchor: (options) ->
+    options.anchor
     
   _extract_controller: (options) ->
     to = options.to.split('#')
@@ -310,6 +314,9 @@ class Mapper extends Class
     
     controller   ?= (options.controller || @scope.controller)
     action       ?= (options.action || @scope.action)
+    
+    controller  = controller.toLowerCase().replace(/(?:_controller)?$/, "_controller")
+    action      = action.toLowerCase()
     
     name: controller, action: action, class_name: _.camelize("_#{controller}")
 
