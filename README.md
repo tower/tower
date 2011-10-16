@@ -130,6 +130,7 @@ jasmine-node --coffee spec/.
 ./node_modules/jasmine-node/bin/jasmine-node --coffee ./spec
 ./node_modules/docco/bin/docco src/*.coffee
 cake build
+delete require.cache['/home/shimin/test2.js']
 ```
 
 ``` javascript
@@ -184,6 +185,10 @@ require("sys").puts( stack )
 - https://github.com/visionmedia/express/blob/master/lib/router/route.js
 - http://redis.io/topics/memory-optimization
 - http://stackoverflow.com/questions/4768748/requireing-a-coffeescript-file-from-a-javascript-file-or-repl
+- http://stackoverflow.com/questions/1972242/auto-reload-of-files-in-node-js
+- https://github.com/guille/jsconf-todo-demo/blob/master/server.js
+- http://michaux.ca/articles/the-command-pattern-in-javascript-encapsulating-function-property-calls
+- https://github.com/eriwen/javascript-stacktrace
 
 ### Other Projects
 
@@ -222,6 +227,17 @@ require("sys").puts( stack )
 - https://github.com/visionmedia/dox
 - npm install sprintf
 - http://rejex.heroku.com/
+
+## Gists
+
+``` javascript
+require.paths.unshift(__dirname + '/support/express/lib/',
+                      __dirname + '/support/express/support/connect/lib',
+                      __dirname + '/support/socket.io/lib/',
+                      __dirname + '/support/nodestream/lib/',
+                      __dirname + '/support/mongoose/',
+                      __dirname + '/support/jade/lib/');
+```
 
 ### Docs
 

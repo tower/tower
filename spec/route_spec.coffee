@@ -1,6 +1,28 @@
 Metro    = require('../lib/metro')
 
 describe "route", ->
+  describe "route", ->
+    it "should match routes with keys", ->
+      route = new Metro.Routes.Route(path: "/users/:id/:tag")
+      match = route.match("/users/10/symbols")
+      
+      expect(match[1]).toEqual("10")
+      expect(match[2]).toEqual("symbols")
+      
+    it "should match routes with splats", ->
+      route = new Metro.Routes.Route(path: "/users/:id/*categories")
+      match = route.match("/users/10/one/two/three")
+      
+      expect(match[1]).toEqual("10")
+      expect(match[2]).toEqual("one/two/three")
+      
+    it "should match routes with optional splats", ->
+      route = new Metro.Routes.Route(path: "/users/:id(/*categories)")
+      match = route.match("/users/10/one/two/three")
+      
+      expect(match[1]).toEqual("10")
+      expect(match[2]).toEqual("one/two/three")
+  
   describe "mapper", ->
     beforeEach ->
       Metro.Application.routes().clear()
@@ -22,5 +44,4 @@ describe "route", ->
       
       route   = routes[0]
       
-      expect(route.path).toEqual("/login(.:format)")
-      
+      expect(route.path).toEqual("/login")

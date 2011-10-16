@@ -12,15 +12,15 @@ Templates =
   
   engines: ->
     @_engines ?= {
-      "stylus": Metro.Template.Stylus
-      "jade":   Metro.Template.Jade
-      "haml":   Metro.Template.Haml
-      "ejs":    Metro.Template.Ejs
-      "coffee":    Metro.Template.CoffeeScript
-      "less":    Metro.Template.Less
-      #"scss":    Metro.Template.Scss
-      "sass":    Metro.Template.Sass
-      "mustache":    Metro.Template.Mustache
+      "stylus":   Metro.Templates.Stylus
+      "jade":     Metro.Templates.Jade
+      "haml":     Metro.Templates.Haml
+      "ejs":      Metro.Templates.Ejs
+      "coffee":   Metro.Templates.CoffeeScript
+      "less":     Metro.Templates.Less
+      #"scss":    Metro.Templates.Scss
+      "sass":     Metro.Templates.Sass
+      "mustache": Metro.Templates.Mustache
     }
     
   engine: "jade"

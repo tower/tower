@@ -15,10 +15,9 @@ class Collection
     mapper              = new Metro.Routes.Mapper(@).instance_eval(callback)
     @
     
-  add: (path, conditions, defaults, name) ->
-    route               = Metro.Routes.Route.new(path, conditions, defaults, name)
+  add: (route) ->
     @set.push route
-    @named[name] = route if name?
+    @named[route.name] = route if route.name?
     route
     
   clear: ->
