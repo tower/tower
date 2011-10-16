@@ -20,27 +20,27 @@ class Router
     null
     
   process_route: (route, request, response) ->
-    url = _url.parse(request.url)
-    path = url.pathname
-    match = route.match(path)
+    url                    = _url.parse(request.url)
+    path                   = url.pathname
+    match                  = route.match(path)
     return null unless match
-    method = request.method.toLowerCase()
-    keys  = route.keys
-    params = _.extend({}, route.defaults)
-    match = match[1..-2]
+    method                 = request.method.toLowerCase()
+    keys                   = route.keys
+    params                 = _.extend({}, route.defaults)
+    match                  = match[1..-2]
     
     for capture, i in match
       params[keys[i].name] = decodeURIComponent(capture)
     
-    controller = route.controller
+    controller             = route.controller
     
-    params.action = controller.action if controller
+    params.action          = controller.action if controller
     
-    request.params = params
+    request.params         = params
     
     if controller
       try
-        controller = new global[route.controller.class_name]
+        controller         = new global[route.controller.class_name]
       catch error
         throw(new Error("#{route.controller.class_name} wasn't found"))
       controller.call(request, response)
