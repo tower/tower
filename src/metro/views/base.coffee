@@ -14,17 +14,7 @@ class Base
     engine.compile(template, @context(options))
   
   context: (options) ->
-    controller = @controller
-    
-    locals =
-      request:  controller.request
-      session:  controller.session
-      params:   controller.params
-      query:    controller.query
-      cookies:  controller.cookies
-      headers:  controller.headers
-      
-    locals  = _.extend(locals, @locals || {}, options.locals)
+    locals  = _.extend(@controller, @locals || {}, options.locals)
     
     locals
   

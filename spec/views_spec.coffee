@@ -27,3 +27,8 @@ describe "views", ->
       view.locals = Metro.Views.Helpers
       result  = view.render "posts/show"
       expect(result).toEqual '<link href="application.css"></link>'
+      
+    it "should have stylesheet helpers from controller", ->
+      controller  = new SessionsController
+      result      = view.render "posts/show"
+      expect(result).toEqual '<link href="application.css"></link>'

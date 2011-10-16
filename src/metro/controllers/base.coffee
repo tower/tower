@@ -2,7 +2,9 @@ class Base extends Class
   @controller_name: ->
     @_controller_name ?= _.underscore(@name)
     
-  @helpers: ->
+  @helper: (object) ->
+    @_helpers ?= []
+    @_helpers.push(object)
     
   @layout: ->
     
