@@ -10,19 +10,4 @@ Compilers =
   Sass:           require('./compilers/sass')
   Markdown:       require('./compilers/markdown')
   
-  engines: ->
-    @_engines ?= {
-      "stylus":   Metro.Compilers.Stylus
-      "jade":     Metro.Compilers.Jade
-      "haml":     Metro.Compilers.Haml
-      "ejs":      Metro.Compilers.Ejs
-      "coffee":   Metro.Compilers.CoffeeScript
-      "less":     Metro.Compilers.Less
-      #"scss":    Metro.Compilers.Scss
-      "sass":     Metro.Compilers.Sass
-      "mustache": Metro.Compilers.Mustache
-    }
-    
-  engine: "jade"
-  
 module.exports = Compilers

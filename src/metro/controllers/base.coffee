@@ -22,7 +22,7 @@ class Base extends Class
   
   call: (request, response, next) ->
     @request  = request
-    @response = response || {}
+    @response = response
     @params   = @request.params || {}
     @cookies  = @request.cookies || {}
     @query    = @request.query || {}
@@ -38,14 +38,11 @@ class Base extends Class
     
     
   render: (context, options) ->
-    options ?= {}
-    type      = options.type || Metro.Templates.engine
-    path      = "#{Metro.root}/app/views/#{context}.#{type}"
-    template  = Metro.Templates.engines()[type]
-    template  = new template
-    body      = template.compile path, options
-    
-    @response.setHeader(@headers)
-    @response.end(body)
+    view = new Metro.Views.Base(@)
+    body = view.render(context, options)
+    if @response
+      @response.setHeader(@headers)
+      @response.end(body)
+    body
     
 module.exports = Base

@@ -63,10 +63,3 @@ describe "compilers", ->
       result = template.compile "./spec/fixtures/docs/markdown.markdown"
       expect(result).toEqual fs.readFileSync("./spec/fixtures/docs/markdown.html", 'utf8')
       
-  describe "renderer", ->
-    it "should find templates by name", ->
-      renderer = new Metro.Views.Renderer
-      expect(Metro.Views.template_paths_by_name["posts/edit"]).toEqual null
-      template = renderer.lookup("posts/edit")
-      expect(template).toEqual "spec/spec-app/app/views/posts/edit.jade"
-      expect(Metro.Views.template_paths_by_name["posts/edit"]).toEqual template
