@@ -13,6 +13,8 @@ Asset =
   BundledFile:        require('./assets/bundled_file')
   Server:             require('./assets/server')
   
+  load_paths: ["./app/assets", "./lib/assets", "./vendor/assets"]
+  
   config:
     css:                []
     js:                 []

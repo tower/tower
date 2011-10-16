@@ -9,7 +9,7 @@ api =
   Views:        require('./metro/views')
   Controllers:  require('./metro/controllers')
   Presenters:   require('./metro/presenters')
-  Templates:    require('./metro/templates')
+  Compilers:    require('./metro/compilers')
   Services:     require('./metro/services')
   Middleware:   require('./metro/middleware')
   Commands:     require('./metro/commands')

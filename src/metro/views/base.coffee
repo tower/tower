@@ -1,6 +1,4 @@
 class Base
-  @load_paths: []
-  
   constructor: (name, options) ->
     @path = name
     
