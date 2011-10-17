@@ -9,7 +9,8 @@ class Base
     @_helpers ?= []
     @_helpers.push(object)
     
-  @layout: ->
+  @layout: (layout) ->
+    @_layout = layout
     
   constructor: ->
     @headers    = "Content-Type": "text/html"
@@ -45,8 +46,18 @@ class Base
     view = new Metro.Views.Base(@)
     body = view.render(context, options)
     if @response
-      @response.setHeader(@headers)
-      @response.end(body)
+      @response.writeHead(200, @headers)
+      @response.write(body)
+      @response.end()
+      @response = null
+      @request  = null
     body
+  
+  layout: ->
+    layout = @constructor._layout
+    if typeof(layout) == "function"
+      layout.apply(@)
+    else
+      layout
     
 module.exports = Base

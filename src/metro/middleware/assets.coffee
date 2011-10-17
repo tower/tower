@@ -1,7 +1,7 @@
 # https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/server.rb
-class Server
+class Assets
   @middleware: (req, res, next) ->
-    new Server.call(req, res, next)
+    new Assets.call(req, res, next)
   
   call: (req, res, next) ->
     start_time = new Date()
@@ -12,4 +12,4 @@ class Server
     
   findAsset: (path) ->
     
-module.exports = Server
+module.exports = Assets

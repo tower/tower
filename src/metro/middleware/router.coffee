@@ -8,6 +8,7 @@ class Router
   call: (request, response, next) ->
     @process(request, response)
     next() if next?
+    response
     
   routes: ->
     Metro.Application.routes().set

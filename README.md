@@ -218,6 +218,9 @@ require("sys").puts( stack )
 - http://michaux.ca/articles/the-command-pattern-in-javascript-encapsulating-function-property-calls
 - https://github.com/eriwen/javascript-stacktrace
 - https://github.com/caolan/quip
+- https://github.com/paulca/eyeballs.js
+- http://stackoverflow.com/questions/3601080/how-do-i-pass-content-from-a-template-to-a-layout-in-express
+- http://stackoverflow.com/questions/7042340/node-js-error-cant-set-headers-after-they-are-sent
 
 ### Other Projects
 
@@ -271,3 +274,5 @@ require.paths.unshift(__dirname + '/support/express/lib/',
 ### Docs
 
 - http://nodejs.org/docs/v0.3.1/api/assert.html
+
+http://svt.se/ug/

@@ -9,7 +9,7 @@ Views =
     @resolve_template_paths()
     
   resolve_load_paths: ->
-    file = Metro.Assets.File
+    file = Metro.Support.File
     @load_paths = _.map @load_paths, (path) -> file.expand_path(path)
     
   lookup: (view) ->  
@@ -42,6 +42,7 @@ Views =
   paths:         []
   paths_by_name: {}
   engine: "jade"
+  pretty_print:   false
   
   engines: ->
     @_engines ?= {

@@ -6,4 +6,9 @@ Routes =
   bootstrap: ->
     require("#{Metro.root}/config/routes")
     
+  reload: ->
+    delete require.cache["#{Metro.root}/config/routes"]
+    Metro.Application._routes = null
+    @bootstrap()
+    
 module.exports = Routes

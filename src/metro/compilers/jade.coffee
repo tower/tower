@@ -7,7 +7,12 @@ class Jade
   compile: (path, options) ->
     callback = options if typeof(options) == "function"
     result = null
-    jade.render fs.readFileSync(path, 'utf8'), options || {}, (error, data) -> result = data
+    options ?= {}
+    jade.render fs.readFileSync(path, 'utf8'), options, (error, data) ->
+      if error
+        result = error.toString()
+      else
+        result = data
     result
     
 exports = module.exports = Jade

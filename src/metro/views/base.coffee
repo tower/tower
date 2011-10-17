@@ -11,14 +11,24 @@ class Base
     engine    = Metro.Views.engines()[type]
     engine    = new engine
     template  = Metro.Views.lookup(path)
-    engine.compile(template, @context(options))
+    locals    = @context(options)
+    body      = engine.compile(template, locals)
+    layout    = options.layout || @controller.layout()
+    if layout
+      layout  = Metro.Views.lookup("layouts/#{layout}")
+      locals.yield = body
+      body    = engine.compile(layout, locals)
+    body
   
   context: (options) ->
     controller = @controller
     locals = {}
-    _.each _.keys(controller.constructor.prototype), (key) ->
+    for key of controller
       locals[key] = controller[key] unless key == "constructor"
     locals  = _.extend(locals, @locals || {}, options.locals)
+    
+    locals.pretty = true if Metro.Views.pretty_print
+    
     locals
   
 module.exports = Base

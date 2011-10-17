@@ -19,4 +19,4 @@ class Logger
       args.unshift(log_level)
       @log.apply(@, args)
   
-exports = module.exports = Logger
+module.exports = Logger

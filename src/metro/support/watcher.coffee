@@ -5,4 +5,4 @@
 class Watcher
   change: ->
   
-exports = module.exports = Watcher
+module.exports = Watcher
