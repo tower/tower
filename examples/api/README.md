@@ -13,3 +13,5 @@ npm install metro
 heroku create --stack cedar
 git push heroku master
 ```
+
+Make sure to add any new node modules to `package.json`.
