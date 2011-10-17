@@ -1,0 +1,18 @@
+!!! 5
+html
+  head
+    meta(charset="UTF-8")
+    title= t("title")
+    meta(name="description", content=t("description"))
+    meta(name="keywords", content=t("keywords"))
+    //-!= stylesheet_link_tag("application")
+  body(role="application")
+    nav#navigation(role="navigation")
+      .frame
+    header#header
+      .frame
+    section#body
+      .frame
+        != yield
+    footer#footer
+      .frame

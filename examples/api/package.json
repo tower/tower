@@ -1,0 +1,51 @@
+{
+  "name": "metro-bootstrap",
+  "version": "0.2.3",
+  "description": "Rails-esque Framework for Node.js",
+  "homepage": "http://viatropos.github.com/metro.js",
+  "main": "lib/metro.js",
+  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "keywords": [
+    "framework",
+    "compression",
+    "node"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mths.be/mit"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/viatropos/metro.js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viatropos/metro.js.git"
+  },
+  "engines": { "node": ">= 0.4.0" },
+  "directories": {
+    "test": "spec"
+  },
+  "dependencies": {
+    "coffee-script":      ">= 1.1.0",
+    "uglify-js":          ">= 1.1.1",
+    "file":               ">= 0.1.1",
+    "underscore":         ">= 1.1.6",
+    "underscore.string":  ">= 1.1.6",
+    "mime":               ">= 1.2.4",
+    "connect":            ">= 1.7.1",
+    "findit":             ">= 0.1.1",
+    "stylus":             ">= 0.17.0",
+    "ejs":                ">= 0.4.3",
+    "hamljs":             ">= 0.5.1",
+    "jade":               ">= 0.16.2",
+    "less":               ">= 1.1.4",
+    "sass":               ">= 0.5.0",
+    "scss":               ">= 0.2.0",
+    "mustache":           ">= 0.3.1-dev",
+    "markdown":           ">= 0.2.1",
+    "qs":                 ">= 0.3.1",
+    "metro":              ">= 0.2.5"
+  }
+}
