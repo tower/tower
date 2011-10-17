@@ -7,6 +7,12 @@ brew install https://raw.github.com/mxcl/homebrew/cb6a4b4765ca4439eb03cd137cc6cb
 npm install metro
 ```
 
+## Run
+
+```
+node server.js
+```
+
 ## Deploy to Heroku
 
 ```
