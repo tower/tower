@@ -6,8 +6,9 @@ class Router
   @middleware: (request, result, next) -> (new Router).call(request, result, next)
   
   call: (request, response, next) ->
-    @process(request, response)
-    next() if next?
+    unless !!@process(request, response)
+      @error(request, response)
+      #next() if next?
     response
     
   routes: ->
@@ -28,7 +29,7 @@ class Router
     method                 = request.method.toLowerCase()
     keys                   = route.keys
     params                 = _.extend({}, route.defaults)
-    match                  = match[1..-2]
+    match                  = match[1..-1]
     
     for capture, i in match
       params[keys[i].name] = decodeURIComponent(capture)
@@ -48,4 +49,10 @@ class Router
     
     controller
     
+  error: (request, response) ->
+    if response
+      response.statusCode = 404
+      response.setHeader('Content-Type', 'text/plain')
+      response.end("No path matches #{request.url}")
+      
 module.exports = Router

@@ -25,6 +25,9 @@ class Environment
   
   compute_asset_host: (source) ->
     host = @asset_host
+    
+  is_url: (path) ->
+    !!path.match(/^[-a-z]+:\/\/|^cid:|^\/\//)
   
   # Return the filesystem path for the source
   compute_source_path: (source, dir, ext) ->

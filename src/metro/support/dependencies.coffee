@@ -3,6 +3,10 @@ _.mixin(require("underscore.string"))
 
 fs = require('fs')
 
+# _require = global.require
+# global.require = (path) ->
+#   Metro.Support.Dependencies.load_path(path)
+
 class Dependencies
   @load: (directory) ->
     paths = require('findit').sync directory

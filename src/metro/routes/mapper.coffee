@@ -276,7 +276,6 @@ class Mapper extends Class
       constraints:    constraints
       defaults:       defaults
       name:           name
-      path:           path
       format:         format
       controller:     controller
       anchor:         anchor

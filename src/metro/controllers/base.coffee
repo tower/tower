@@ -12,11 +12,16 @@ class Base
   @layout: (layout) ->
     @_layout = layout
     
+  @respond_to: ->
+    @_respond_to ?= []
+    @_respond_to = @_respond_to.concat(arguments)
+    
   constructor: ->
-    @headers    = "Content-Type": "text/html"
-    @status     = 200
-    @request    = null
-    @response   = null
+    @headers      = {}
+    @status       = 200
+    @request      = null
+    @response     = null
+    @content_type = "text/html"
   
   params:     {}
   request:    null
@@ -33,6 +38,9 @@ class Base
     @cookies  = @request.cookies || {}
     @query    = @request.query || {}
     @session  = @request.session || {}
+    @format   = @params.format
+    @headers  = {}
+    @content_type = Metro.Support.File.content_type(@format || "html")
     @process()
     
   process: ->  
@@ -42,16 +50,30 @@ class Base
     
   process_query: ->
     
-  render: (context, options) ->
+  render: ->
     view = new Metro.Views.Base(@)
-    body = view.render(context, options)
+    body = view.render(arguments...)
     if @response
+      @headers["Content-Type"] ?= @content_type
       @response.writeHead(200, @headers)
       @response.write(body)
       @response.end()
       @response = null
       @request  = null
     body
+    
+  respond_with: ->
+    data  = arguments[0]
+    if arguments.length > 1 && typeof(arguments[arguments.length - 1]) == "function"
+      callback = arguments[arguments.length - 1]
+      
+    switch(@format)
+      when "json"
+        @render json: data
+      when "xml"
+        @render xml: data
+      else
+        @render action: @action
   
   layout: ->
     layout = @constructor._layout
