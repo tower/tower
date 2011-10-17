@@ -26,7 +26,9 @@ class Base
     else if options.json
       body    = if typeof(options.json) == "string" then options.json else JSON.stringify(options.json)
     else
-      template  = Metro.Views.lookup(options.template)
+      unless options.inline
+        template = Metro.Views.lookup(options.template)
+      
       body      = engine.compile(template, locals)
       
     if options.hasOwnProperty("layout") && options.layout == false
