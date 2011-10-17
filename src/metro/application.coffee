@@ -28,6 +28,7 @@ class Application
   stack: ->
     @app.use connect.favicon()
     @app.use Metro.Middleware.Static.middleware
+    @app.use connect.bodyParser()
     @app.use Metro.Middleware.Dependencies.middleware
     @app.use Metro.Middleware.Cookies.middleware
     @app.use Metro.Middleware.Query.middleware

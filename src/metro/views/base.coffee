@@ -12,8 +12,9 @@ class Base
       else
         options = arguments[0]
     else
+      template = arguments[0]
       options = arguments[1]
-      options.template = arguments[0]
+      options.template = template
     
     options  ?= {}  
     locals    = @context(options)

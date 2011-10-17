@@ -28,7 +28,7 @@ class Router
     return null unless match
     method                 = request.method.toLowerCase()
     keys                   = route.keys
-    params                 = _.extend({}, route.defaults)
+    params                 = _.extend({}, route.defaults, request.query || {}, request.body || {})
     match                  = match[1..-1]
     
     for capture, i in match

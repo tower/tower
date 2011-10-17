@@ -74,6 +74,9 @@ class Base
         @render xml: data
       else
         @render action: @action
+        
+  redirect_to: ->
+    
   
   layout: ->
     layout = @constructor._layout

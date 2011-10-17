@@ -295,7 +295,7 @@ class Mapper extends Class
     options.defaults || {}
     
   _extract_path: (options) ->
-    options.path
+    "#{options.path}.:format?"
     
   _extract_request_method: (options) ->
     options.via || options.request_method

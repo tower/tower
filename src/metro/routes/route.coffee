@@ -29,6 +29,7 @@ class Route
   extract_pattern: (path, case_sensitive, strict) ->
     return path if path instanceof RegExp
     self = @
+    return new RegExp('^' + path + '$') if path == "/"
     
     path = path.replace(/(\(?)(\/)?(\.)?([:\*])(\w+)(\))?(\?)?/g, (_, open, slash, format, symbol, key, close, optional) ->
       optional = (!!optional) || (open + close == "()")
@@ -41,12 +42,11 @@ class Route
       
       slash   ?= ""
       result = ""
-      result += slash unless optional
+      result += slash if (!optional || !splat)
       result += "(?:"
-      result += slash if optional
+      # result += slash if optional
       if format?
-        result += format
-        result += if splat then "([^.]+?)" else "([^/.]+?)"
+        result += if splat then "(.[^.]+?)" else "(.[^/.]+?)"
       else
         result += if splat then "(.+?)" else "([^/]+?)"
       result += ")"
