@@ -46,7 +46,7 @@ class Route
       result += "(?:"
       # result += slash if optional
       if format?
-        result += if splat then "(.[^.]+?)" else "(.[^/.]+?)"
+        result += if splat then "(\\.[^.]+?)" else "(\\.[^/.]+?)"
       else
         result += if splat then "(.+?)" else "([^/]+?)"
       result += ")"
