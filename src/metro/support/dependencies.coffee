@@ -1,6 +1,3 @@
-_ = require("underscore")
-_.mixin(require("underscore.string"))
-
 fs = require('fs')
 
 # _require = global.require
@@ -16,15 +13,10 @@ class Dependencies
     self  = @
     keys  = @keys
     klass = Metro.Support.File.basename(path).split(".")[0]
-    klass = _.camelize("_#{klass}")
+    klass = Metro.Support.String.camelize("_#{klass}")
     unless keys[klass]
       keys[klass]   = new Metro.Support.File(path)
       global[klass] = require(path)
-      #fs.watchFile path, (curr, prev) ->
-      # if +curr.mtime != +prev.mtime
-      #   self.clear_dependency(klass)
-      #   keys[klass]   = path 
-      #   global[klass] = require(path)
       
   @clear: ->
     @clear_dependency(key) for key, file of @keys

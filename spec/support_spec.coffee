@@ -80,3 +80,12 @@ describe "support", ->
       
       result = @lookup.find("application.coffee")
       expect(result).toEqual []
+  
+  describe "to_ruby", ->
+    beforeEach ->
+      Metro.Support.to_ruby()
+      
+    it "should have string methods", ->
+      string = "UserModel"
+      expect(string.underscore()).toEqual "user_model"
+      expect(string.underscore().camelize()).toEqual "UserModel"
