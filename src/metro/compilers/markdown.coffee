@@ -1,11 +1,7 @@
-# https://github.com/learnboost/stylus
-markdown  = require('markdown')
-fs        = require('fs')
-
 class Markdown
+  engine: -> require('markdown')
   
-  # compile "./application.mustache"
-  compile: (path, options) ->
-    markdown.parse fs.readFileSync(path, 'utf8')
+  compile: (content, options) ->
+    @engine().parse content
     
 exports = module.exports = Markdown

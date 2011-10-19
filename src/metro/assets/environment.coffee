@@ -19,7 +19,7 @@ class Environment
   stylesheet_lookup: ->
     directory   = @stylesheet_directory
     extensions  = @stylesheet_extensions
-    paths       = _.map @load_paths, (path) -> Metro.Support.File.join(path, directory)
+    paths       = _.map @load_paths, (path) -> Metro.Support.Path.join(path, directory)
     
     @_stylesheet_lookup ?= new Metro.Support.Lookup
       root:       Metro.root
@@ -29,7 +29,7 @@ class Environment
   javascript_lookup: ->
     directory   = @javascript_directory
     extensions  = @javascript_extensions
-    paths       = _.map @load_paths, (path) -> Metro.Support.File.join(path, directory)
+    paths       = _.map @load_paths, (path) -> Metro.Support.Path.join(path, directory)
     
     @_javascript_lookup ?= new Metro.Support.Lookup
       root:       Metro.root
@@ -48,7 +48,7 @@ class Environment
   # When :request, the protocol will be the request protocol
   # Otherwise, the protocol is used (E.g. :http, :https, etc)
   compute_public_path: (source, options = {}) ->
-    return source if Metro.Support.File.is_url(source)
+    return source if Metro.Support.Path.is_url(source)
     extension = options.extension
     source = @normalize_extension(source, extension) if extension
     source = @normalize_asset_path(source, options)
@@ -60,13 +60,13 @@ class Environment
     if typeof(@asset_host) == "function" then @asset_host.call(@) else @asset_host
     
   normalize_extension: (source, extension) ->
-    Metro.Support.File.slug(source) + ".#{extension}"
+    Metro.Support.Path.slug(source) + ".#{extension}"
   
   normalize_asset_path: (source, options = {}) ->
-    if Metro.Support.File.is_absolute(source)
+    if Metro.Support.Path.is_absolute(source)
       source
     else
-      source = Metro.Support.File.join(options.directory, source)
+      source = Metro.Support.Path.join(options.directory, source)
       source = @digest(source) unless options.digest == false
       source = "/#{source}" unless !!source.match(/^\//)
       source
@@ -99,7 +99,7 @@ class Environment
     new Metro.Assets.Asset(paths[0])
     
   lookup: (source, options = {}) ->
-    options.extension ?= Metro.Support.File.extname(source)[1..-1]
+    options.extension ?= Metro.Support.Path.extname(source)[1..-1]
     
     if options.extension == "css"
       @stylesheet_lookup().find(source)

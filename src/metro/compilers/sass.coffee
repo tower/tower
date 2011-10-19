@@ -1,10 +1,7 @@
-sass      = require('sass')
-fs        = require('fs')
-
 class Sass
+  engine: -> require('sass')
   
-  # compile "./application.sass"
-  compile: (path, options) ->
-    sass.render(fs.readFileSync(path, 'utf8'))
+  compile: (content, options) ->
+    @engine().render(content)
     
 exports = module.exports = Sass

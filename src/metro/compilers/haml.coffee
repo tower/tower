@@ -1,12 +1,10 @@
-# https://github.com/learnboost/stylus
-haml    = require('hamljs')
-fs      = require('fs')
-
 class Haml
+  engine: -> require('hamljs')
+  
   # compile "./application.haml", (error, result) -> console.log(result)
-  compile: (path, options, callback) ->
+  compile: (content, options, callback) ->
     callback = options if typeof(options) == "function"
-    data = haml.render(fs.readFileSync(path, 'utf8'), options || {})
+    data = @engine().render(content, options || {})
     callback.call(@, null, data)
     data
     

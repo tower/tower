@@ -9,7 +9,7 @@ Views =
     @resolve_template_paths()
     
   resolve_load_paths: ->
-    file = Metro.Support.File
+    file = Metro.Support.Path
     @load_paths = _.map @load_paths, (path) -> file.expand_path(path)
     
   lookup: (view) ->  

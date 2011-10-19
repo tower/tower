@@ -12,10 +12,10 @@ class Dependencies
   @load_path: (path) ->
     self  = @
     keys  = @keys
-    klass = Metro.Support.File.basename(path).split(".")[0]
+    klass = Metro.Support.Path.basename(path).split(".")[0]
     klass = Metro.Support.String.camelize("_#{klass}")
     unless keys[klass]
-      keys[klass]   = new Metro.Support.File(path)
+      keys[klass]   = new Metro.Support.Path(path)
       global[klass] = require(path)
       
   @clear: ->

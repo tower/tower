@@ -9,7 +9,6 @@ Asset =
   CssProcessor:       require('./assets/css_processor')
   JsProcessor:        require('./assets/js_processor')
   Asset:              require('./assets/asset')
-  Bundle:             require('./assets/bundle')
   Environment:        require('./assets/environment')
   
   load_paths: ["./app/assets", "./lib/assets", "./vendor/assets"]

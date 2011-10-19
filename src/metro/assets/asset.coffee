@@ -1,9 +1,9 @@
-class Asset extends (require("../support/file"))
+class Asset extends (require("../support/path"))
   @digest_path: (path) ->
     @path_with_fingerprint(path, @digest(path))
     
   @path_fingerprint: (path) ->
-    result = Metro.Support.File.basename(path).match(/-([0-9a-f]{32})\.?/)
+    result = Metro.Support.Path.basename(path).match(/-([0-9a-f]{32})\.?/)
     if result? then result[1] else null
     
   @path_with_fingerprint: (path, digest) ->
@@ -13,7 +13,7 @@ class Asset extends (require("../support/file"))
       path.replace(/\.(\w+)$/, "-#{digest}.\$1")
   
   constructor: (path) ->
-    @path        = Metro.Support.File.expand_path(path)
+    @path        = Metro.Support.Path.expand_path(path)
     #@id           = @environment.digest.update(object_id)
   
   # Return logical path with digest spliced in.
@@ -39,14 +39,10 @@ class Asset extends (require("../support/file"))
   # 
   path_with_fingerprint: (digest) ->
     @constructor.path_with_fingerprint(@path, digest)
-  
-  # Returns file contents as its `body`.
-  body: ->
-    Metro.Support.File.read(@path)
     
   write: (to, options) ->
     # Gzip contents if filename has '.gz'
-    options.compress ?= Metro.Support.File.extname(to) == '.gz'
+    options.compress ?= Metro.Support.Path.extname(to) == '.gz'
     
     if options.compress
       # Open file and run it through `Zlib`
@@ -54,13 +50,13 @@ class Asset extends (require("../support/file"))
         fs.writeFile "#{to}+", data
     else
       # If no compression needs to be done, we can just copy it into place.
-      Metro.Support.File.copy(@path, "#{to}+")
+      Metro.Support.Path.copy(@path, "#{to}+")
     
     # Atomic write
     FileUtils.mv("#{filename}+", filename)
     
     # Set mtime correctly
-    Metro.Support.File.utime(mtime, mtime, filename)
+    Metro.Support.Path.utime(mtime, mtime, filename)
 
     nil
 

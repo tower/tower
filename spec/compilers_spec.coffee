@@ -5,64 +5,75 @@ _       = require('underscore')
 describe "compilers", ->
   describe "stylus", ->
     it "should compile stylus", ->
-      template = new Metro.Compilers.Stylus
-      result = template.compile "./spec/fixtures/stylesheets/stylus.styl"
-      expect(result).toEqual fs.readFileSync("./spec/fixtures/stylesheets/stylus.css", 'utf8')
+      template  = new Metro.Compilers.Stylus
+      input     = Metro.Support.Path.read("./spec/fixtures/stylesheets/stylus.styl")
+      output    = Metro.Support.Path.read("./spec/fixtures/stylesheets/stylus.css")
+      expect(template.compile(input)).toEqual output
         
   describe "jade", ->
     it "should compile jade", ->
-      template = new Metro.Compilers.Jade
-      template.compile "./spec/fixtures/views/jade.jade", (error, result) ->
-        expect(result).toEqual fs.readFileSync("./spec/fixtures/views/jade.html", 'utf8')
+      template  = new Metro.Compilers.Jade
+      input     = Metro.Support.Path.read("./spec/fixtures/views/jade.jade")
+      output    = Metro.Support.Path.read("./spec/fixtures/views/jade.html")
+      template.compile input, (error, result) ->
+        expect(result).toEqual output
   
   describe "haml", ->
     it "should compile haml", ->
-      template = new Metro.Compilers.Haml
-      template.compile "./spec/fixtures/views/haml.haml", (error, result) ->
-        expect(result).toEqual fs.readFileSync("./spec/fixtures/views/haml.html", 'utf8')
+      template  = new Metro.Compilers.Haml
+      input     = Metro.Support.Path.read("./spec/fixtures/views/haml.haml")
+      output    = Metro.Support.Path.read("./spec/fixtures/views/haml.html")
+      template.compile input, (error, result) ->
+        expect(result).toEqual output
   
   describe "ejs", ->
     it "should compile ejs", ->
-      template = new Metro.Compilers.Ejs
-      template.compile "./spec/fixtures/views/ejs.ejs", {locals: {name: "My Name"}}, (error, result) ->
-        expect(result).toEqual fs.readFileSync("./spec/fixtures/views/ejs.html", 'utf8')
+      template  = new Metro.Compilers.Ejs
+      input     = Metro.Support.Path.read("./spec/fixtures/views/ejs.ejs")
+      output    = Metro.Support.Path.read("./spec/fixtures/views/ejs.html")
+      template.compile input, {locals: {name: "My Name"}}, (error, result) ->
+        expect(result).toEqual output
   
   describe "coffee_script", ->
     it "should compile coffee script", ->
-      template = new Metro.Compilers.CoffeeScript
-      result = template.compile "./spec/fixtures/javascripts/coffee.coffee", {locals: {name: "My Name"}}
-      expect(result).toEqual fs.readFileSync("./spec/fixtures/javascripts/coffee.js", 'utf8')
+      template  = new Metro.Compilers.CoffeeScript
+      input     = Metro.Support.Path.read("./spec/fixtures/javascripts/coffee.coffee")
+      output    = Metro.Support.Path.read("./spec/fixtures/javascripts/coffee.js")
+      result = template.compile input, {locals: {name: "My Name"}}
+      expect(result).toEqual output
   
   describe "less", ->
     it "should compile less", ->
-      template = new Metro.Compilers.Less
-      result = template.compile "./spec/fixtures/stylesheets/less.less"
-      expect(result).toEqual fs.readFileSync("./spec/fixtures/stylesheets/less.css", 'utf8')
-      
-  # describe "scss", ->
-  #   it "should compile scss", ->
-  #     template = new Metro.Compilers.Scss
-  #     result = template.compile "./spec/fixtures/stylesheets/scss.scss"
-  #     expect(result).toEqual fs.readFileSync("./spec/fixtures/stylesheets/scss.css", 'utf8')
+      template  = new Metro.Compilers.Less
+      input     = Metro.Support.Path.read("./spec/fixtures/stylesheets/less.less")
+      output    = Metro.Support.Path.read("./spec/fixtures/stylesheets/less.css")
+      result    = template.compile input
+      expect(result).toEqual output
   
   describe "mustache", ->
     it "should compile mustache", ->
-      template = new Metro.Compilers.Mustache
+      template  = new Metro.Compilers.Mustache
+      input     = Metro.Support.Path.read("./spec/fixtures/views/mustache.mustache")
+      output    = Metro.Support.Path.read("./spec/fixtures/views/mustache.html")
       locals = {name: "World", say_hello: -> "Hello" }
-      result = template.compile "./spec/fixtures/views/mustache.mustache", locals: locals
-      expect(result).toEqual fs.readFileSync("./spec/fixtures/views/mustache.html", 'utf8')
+      result = template.compile input, locals: locals
+      expect(result).toEqual output
       
   describe "sass", ->
     it "should compile sass", ->
-      template = new Metro.Compilers.Sass
-      result = template.compile "./spec/fixtures/stylesheets/sass.sass"
-      expect(result).toEqual fs.readFileSync("./spec/fixtures/stylesheets/sass.css", 'utf8')
+      template  = new Metro.Compilers.Sass
+      input     = Metro.Support.Path.read("./spec/fixtures/stylesheets/sass.sass")
+      output    = Metro.Support.Path.read("./spec/fixtures/stylesheets/sass.css")
+      result = template.compile input
+      expect(result).toEqual output
       
   describe "markdown", ->
     it "should compile markdown", ->
-      template = new Metro.Compilers.Markdown
-      result = template.compile "./spec/fixtures/docs/markdown.markdown"
-      expect(result).toEqual fs.readFileSync("./spec/fixtures/docs/markdown.html", 'utf8')
+      template  = new Metro.Compilers.Markdown
+      input     = Metro.Support.Path.read("./spec/fixtures/docs/markdown.markdown")
+      output    = Metro.Support.Path.read("./spec/fixtures/docs/markdown.html")
+      result = template.compile input
+      expect(result).toEqual output
 ###      
   describe "sprite", ->
     it "should create a sprite map", ->

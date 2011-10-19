@@ -1,9 +1,4 @@
-# http://www.imagemagick.org/script/montage.php
-# https://github.com/rsms/node-imagemagick
-# http://www.alistapart.com/articles/sprites
-_ = require('underscore')
-
-class Sprite# extends Metro.Assets.Asset
+class Sprite
   engine: -> require('imagemagick')
   
   render: (options, callback) ->
@@ -65,7 +60,7 @@ class Sprite# extends Metro.Assets.Asset
     
     @engine().identify image, (error, features) ->
       features.path   = image
-      features.slug   = Metro.Support.File.slug(image)
+      features.slug   = Metro.Support.Path.slug(image)
       features.format = features.format.toLowerCase()
       
       data[images.indexOf(image)] = features

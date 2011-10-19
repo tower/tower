@@ -24,9 +24,9 @@ class Lookup
     result = []
     
     for path in @paths
-      full_path = Metro.Support.File.join(path, source)
-      directory = Metro.Support.File.dirname full_path
-      basename  = Metro.Support.File.basename full_path
+      full_path = Metro.Support.Path.join(path, source)
+      directory = Metro.Support.Path.dirname full_path
+      basename  = Metro.Support.Path.basename full_path
       
       # in case they try to use "../../.." to get to a directory that's not supposed to be accessed.
       if @paths_include(directory)
@@ -50,7 +50,7 @@ class Lookup
       
     matches = @sort(matches, basename)
     for match, i in matches
-      matches[i] = Metro.Support.File.join(directory, match)
+      matches[i] = Metro.Support.Path.join(directory, match)
     
     matches
     
@@ -60,7 +60,7 @@ class Lookup
   _normalize_paths: (paths) ->
     result = []
     for path in paths
-      result.push Metro.Support.File.expand_path path
+      result.push Metro.Support.Path.expand_path path
     result
     
   _normalize_source: (source) ->
@@ -99,7 +99,7 @@ class Lookup
   entries: (path) ->
     unless @_entries[path]
       result  = []
-      entries = Metro.Support.File.entries(path)
+      entries = Metro.Support.Path.entries(path)
       
       for entry in entries
         result.push(entry) unless entry.match(/^\.|~$|^\#.*\#$/)
@@ -115,9 +115,9 @@ class Lookup
   #
   #     build_pattern("index.html") #=> /^index(.html|.htm)(.builder|.erb)*$/  
   build_pattern: (source) ->
-    extension   = Metro.Support.File.extname(source)
+    extension   = Metro.Support.Path.extname(source)
     
-    slug        = Metro.Support.File.basename(source, extension)
+    slug        = Metro.Support.Path.basename(source, extension)
     extensions  = [extension]
     extensions  = extensions.concat @aliases[extension] if @aliases[extension]
     

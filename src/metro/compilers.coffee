@@ -5,7 +5,6 @@ Compilers =
   Ejs:            require('./compilers/ejs')
   CoffeeScript:   require('./compilers/coffee_script')
   Less:           require('./compilers/less')
-  # Scss:           require('./compilers/scss')
   Mustache:       require('./compilers/mustache')
   Sass:           require('./compilers/sass')
   Markdown:       require('./compilers/markdown')

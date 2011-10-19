@@ -44,7 +44,7 @@ class Base
     @format   = @params.format
     @headers  = {}
     if @format && @format != "undefined"
-      @content_type = Metro.Support.File.content_type(@format)
+      @content_type = Metro.Support.Path.content_type(@format)
     else 
       @content_type = "text/html"
     @process()

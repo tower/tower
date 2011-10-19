@@ -1,11 +1,11 @@
-ejs     = require('ejs')
-fs      = require('fs')
-
 class Ejs
+  engine: -> require('ejs')
+  
   # compile "./application.haml", (error, result) -> console.log(result)
-  compile: (path, options, callback) ->
-    callback = options if typeof(options) == "function"
-    data = ejs.render(fs.readFileSync(path, 'utf8'), options || {})
+  compile: (content, options, callback) ->
+    options   ?= {}
+    callback  = options if typeof(options) == "function"
+    data      = @engine().render(content, options)
     callback.call(@, null, data)
     data
     

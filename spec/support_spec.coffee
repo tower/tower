@@ -28,7 +28,7 @@ describe "support", ->
   describe "file", ->
     beforeEach ->
       @path        = "./spec/fixtures/javascripts/application.js"
-      @file        = new Metro.Support.File(@path)#.Assets.Asset(@environment, @path)
+      @file        = new Metro.Support.Path(@path)#.Assets.Asset(@environment, @path)
   
     it "should stat file", ->
       expect(@file.stat()).toBeTruthy()
@@ -46,11 +46,11 @@ describe "support", ->
       expect(@file.size()).toEqual 54
       
     it "should find entries in a directory", ->
-      expect(Metro.Support.File.entries("./spec/fixtures/javascripts")[0]).toEqual 'application.js' 
+      expect(Metro.Support.Path.entries("./spec/fixtures/javascripts")[0]).toEqual 'application.js' 
   
   describe "lookup", ->
     beforeEach ->
-      # Metro.Support.File.glob("./spec/fixtures/javascripts")
+      # Metro.Support.Path.glob("./spec/fixtures/javascripts")
       @lookup = new Metro.Support.Lookup
         paths:      ["./spec/fixtures/javascripts"]
         extensions: ["js", "coffee"]
@@ -80,12 +80,17 @@ describe "support", ->
       
       result = @lookup.find("application.coffee")
       expect(result).toEqual []
-  
-  describe "to_ruby", ->
-    beforeEach ->
-      Metro.Support.to_ruby()
-      
+###  
+  describe "mixins", ->
     it "should have string methods", ->
+      Metro.Support.to_ruby()
       string = "UserModel"
       expect(string.underscore()).toEqual "user_model"
       expect(string.underscore().camelize()).toEqual "UserModel"
+      
+    it "should convert to underscore", ->
+      _ = require('underscore')
+      _.mixin Metro.Support.to_underscore()
+      
+      expect(_.extract_options([1, 2, 3, {one: "two"}])).toEqual({one:"two"})
+###      

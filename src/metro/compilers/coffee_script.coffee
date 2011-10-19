@@ -1,12 +1,10 @@
-# https://github.com/learnboost/stylus
-coffee  = require('coffee-script')
-fs      = require('fs')
-
 class CoffeeScript
+  engine: -> require('coffee-script')
+  
   # compile "./application.coffee"
-  compile: (path, options) ->
+  compile: (content, options) ->
     options ?= {}
     options.bare = true if options.bare == undefined
-    coffee.compile(fs.readFileSync(path, 'utf8'), options)
+    @engine().compile(content, options)
     
 exports = module.exports = CoffeeScript

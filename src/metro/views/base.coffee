@@ -28,6 +28,7 @@ class Base
     else
       unless options.inline
         template = Metro.Views.lookup(options.template)
+        template = Metro.Support.Path.read(template)
       
       body      = engine.compile(template, locals)
       

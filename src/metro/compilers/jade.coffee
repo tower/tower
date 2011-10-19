@@ -1,14 +1,12 @@
-# https://github.com/learnboost/stylus
-jade    = require('jade')
-fs      = require('fs')
-
 class Jade
+  engine: -> require('jade')
+  
   # compile "./application.jade", (error, result) -> console.log(result)
-  compile: (path, options) ->
+  compile: (content, options) ->
     callback = options if typeof(options) == "function"
     result = null
     options ?= {}
-    jade.render fs.readFileSync(path, 'utf8'), options, (error, data) ->
+    @engine().render content, options, (error, data) ->
       if error
         result = error.toString()
       else
