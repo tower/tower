@@ -30,7 +30,7 @@ class Route
     return path if path instanceof RegExp
     self = @
     return new RegExp('^' + path + '$') if path == "/"
-    
+    # console.log(path)
     path = path.replace(/(\(?)(\/)?(\.)?([:\*])(\w+)(\))?(\?)?/g, (_, open, slash, format, symbol, key, close, optional) ->
       optional = (!!optional) || (open + close == "()")
       splat    = symbol == "*"
@@ -42,19 +42,21 @@ class Route
       
       slash   ?= ""
       result = ""
-      result += slash if (!optional || !splat)
+      if !optional || !splat
+        result += slash
+      
       result += "(?:"
       # result += slash if optional
       if format?
-        result += if splat then "(\\.[^.]+?)" else "(\\.[^/.]+?)"
+        result += if splat then "\\.([^.]+?)" else "\\.([^/.]+?)"
       else
-        result += if splat then "(.+?)" else "([^/]+?)"
+        result += if splat then "/?(.+)" else "([^/\\.]+)"
       result += ")"
       result += "?" if optional
       
       result
     )
-    
+    # console.log(path)
     new RegExp('^' + path + '$', !!case_sensitive ? '' : 'i')
 
   

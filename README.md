@@ -190,6 +190,9 @@ require("sys").puts( stack )
 - https://github.com/maccman/spine/blob/master/src/spine.coffee
 - https://github.com/chriso/packnode
 - https://github.com/joyent/node/wiki/modules
+- https://github.com/cloudhead/eyes.js
+- https://github.com/cloudhead/hijs
+- https://github.com/jakesgordon/sprite-factory/
 
 - https://github.com/LearnBoost/juice (inject styles to html for emails)
 - http://visionmedia.github.com/nib/ (cross browser css)

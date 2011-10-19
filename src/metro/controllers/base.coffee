@@ -12,6 +12,9 @@ class Base
   @layout: (layout) ->
     @_layout = layout
     
+  @theme: (theme) ->
+    @_theme = theme
+    
   @respond_to: ->
     @_respond_to ?= []
     @_respond_to = @_respond_to.concat(arguments)

@@ -22,6 +22,7 @@ class Application
   call: (env) ->
     
   routes: -> @_routes ?= new Metro.Routes.Collection
+  assets: -> @_assets ?= new Metro.Assets.Environment
   
   config: -> @_config ?= new Metro.Application.Configuration
     

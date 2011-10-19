@@ -32,7 +32,7 @@ class Router
     match                  = match[1..-1]
     
     for capture, i in match
-      params[keys[i].name] = decodeURIComponent(capture)
+      params[keys[i].name] = if capture then decodeURIComponent(capture) else null
     
     controller             = route.controller
     

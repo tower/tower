@@ -22,6 +22,9 @@ class File
   @read: (path) ->
     fs.readFileSync(path)
     
+  @slug: (path) ->
+    @basename(path).replace(new RegExp(@extname(path) + "$"), "")
+    
   @content_type: (path) ->
     mime.lookup(path)
     

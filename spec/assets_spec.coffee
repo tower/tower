@@ -79,4 +79,3 @@ describe "metro.asset", ->
       
     it "should create a digest for a file", ->
       
-      

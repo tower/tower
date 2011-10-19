@@ -9,5 +9,6 @@ Compilers =
   Mustache:       require('./compilers/mustache')
   Sass:           require('./compilers/sass')
   Markdown:       require('./compilers/markdown')
+  Sprite:         require('./compilers/sprite')
   
 module.exports = Compilers

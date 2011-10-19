@@ -1,5 +1,6 @@
 Metro   = require('../lib/metro')
 fs      = require('fs')
+_       = require('underscore')
 
 describe "compilers", ->
   describe "stylus", ->
@@ -63,3 +64,80 @@ describe "compilers", ->
       result = template.compile "./spec/fixtures/docs/markdown.markdown"
       expect(result).toEqual fs.readFileSync("./spec/fixtures/docs/markdown.html", 'utf8')
       
+  describe "sprite", ->
+    it "should create a sprite map", ->
+      engine = new Metro.Compilers.Sprite
+      images = _.map ["facebook.png", "github.png", "linkedIn.png", "twitter.png"], (file) -> "./spec/fixtures/images/#{file}"
+      
+      data = {}
+      
+      runs ->
+        engine.montage images: images, (result) ->
+          data = result
+      
+      waits 500
+      
+      runs ->
+        expect(data[0]).toEqual
+          format: 'png', width: 64, height: 64, depth: 8, path: './spec/fixtures/images/facebook.png', slug: 'facebook', y: 5
+        expect(data[1]).toEqual
+          format: 'png', width: 64, height: 64, depth: 8, path: './spec/fixtures/images/github.png', slug: 'github', y: 69
+        expect(data[2]).toEqual
+          format: 'png', width: 64, height: 64, depth: 8, path: './spec/fixtures/images/linkedIn.png', slug: 'linkedIn', y: 133
+        expect(data[3]).toEqual
+          format: 'png', width: 64, height: 64, depth: 8, path: './spec/fixtures/images/twitter.png', slug: 'twitter', y: 197
+          
+    it "should render stylus", ->
+      engine = new Metro.Compilers.Sprite
+      images = _.map ["facebook.png", "github.png", "linkedIn.png", "twitter.png"], (file) -> "./spec/fixtures/images/#{file}"
+      
+      stylus = ""
+      
+      runs ->
+        engine.render images: images, format: "stylus", (result) ->
+          stylus = result
+          
+      waits 500
+      
+      runs ->
+        expect(stylus).toEqual '''
+sprite(slug, x, y)
+  if slug == "facebook"
+    background: url(./spec/fixtures/images/facebook.png) 0px 5px no-repeat;
+  else if slug == "github"
+    background: url(./spec/fixtures/images/github.png) 0px 69px no-repeat;
+  else if slug == "linkedIn"
+    background: url(./spec/fixtures/images/linkedIn.png) 0px 133px no-repeat;
+  else slug == "twitter"
+    background: url(./spec/fixtures/images/twitter.png) 0px 197px no-repeat;
+
+        '''
+        
+    it "should render css", ->
+      engine = new Metro.Compilers.Sprite
+      images = _.map ["facebook.png", "github.png", "linkedIn.png", "twitter.png"], (file) -> "./spec/fixtures/images/#{file}"
+      
+      stylus = ""
+      
+      runs ->
+        engine.render images: images, format: "css", name: "sprite", (result) ->
+          stylus = result
+          
+      waits 500
+      
+      runs ->
+        expect(stylus).toEqual '''
+.facebook-sprite {
+  background: url(./spec/fixtures/images/facebook.png) 0px 5px no-repeat;
+}
+.github-sprite {
+  background: url(./spec/fixtures/images/github.png) 0px 69px no-repeat;
+}
+.linkedIn-sprite {
+  background: url(./spec/fixtures/images/linkedIn.png) 0px 133px no-repeat;
+}
+.twitter-sprite {
+  background: url(./spec/fixtures/images/twitter.png) 0px 197px no-repeat;
+}
+
+        '''

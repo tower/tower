@@ -5,7 +5,7 @@ class Assets
   
   call: (req, res, next) ->
     start_time = new Date()
-    asset      = @findAsset(req.path)
+    asset      = Metro.Application.assets().find()
   
   forbiddenRequest: (req) ->
     false

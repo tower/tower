@@ -44,7 +44,7 @@ describe "route", ->
       Metro.Application.routes().clear()
       
       Metro.Application.routes().draw ->
-        @match "/login.:format?",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}
+        @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}
         
         @match "/users",          to: "users#index", via: "get"
         @match "/users/:id/edit", to: "users#edit", via: "get"
@@ -74,6 +74,6 @@ describe "route", ->
       request     = {method: "get", url: "/login"}
       controller  = router.process(request)
       
-      expect(request.params).toEqual { flow : 'signup', action : 'new' }
+      expect(request.params).toEqual { flow : 'signup', format : null, action : 'new' }
       
-      expect(controller.params).toEqual { flow : 'signup', action : 'new' }
+      expect(controller.params).toEqual { flow : 'signup', format : null, action : 'new' }
