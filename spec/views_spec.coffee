@@ -20,7 +20,7 @@ describe "views", ->
       view    = new Metro.Views.Base
       result  = view.render "posts/edit", locals: title: "First Commit"
       expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
-      
+###      
   describe "helpers", ->
     it "should have stylesheet helpers", ->
       view    = new Metro.Views.Base
@@ -32,3 +32,4 @@ describe "views", ->
       controller  = new SessionsController
       result      = controller.render "posts/show"
       expect(result).toEqual '<link href="application.css"></link>'
+###

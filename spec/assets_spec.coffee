@@ -2,7 +2,27 @@ Metro    = require('../lib/metro')
 yui      = new Metro.Assets.YuiCompressor
 uglifier = new Metro.Assets.UglifierCompressor
 
-describe "metro.asset", ->
+describe "assets", ->
+  describe "asset", ->
+    beforeEach ->
+      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js")
+    
+    it "should have the path fingerprint", ->
+      expect(@file.path_fingerprint()).toEqual null
+    
+      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
+      expect(@file.path_fingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
+    
+    it "should add fingerprint to path", ->
+      path = @file.path_with_fingerprint("49fdaad23a42d2ce96e4190c34457b5a")
+      expect(path).toEqual "spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
+    
+    it "should extract extensions", ->
+      expect(@file.extensions()).toEqual ["js"]
+    
+      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js.coffee")
+      expect(@file.extensions()).toEqual ["js", "coffee"]
+      
   describe "configuration", ->
     it "should configure", ->
       expect(Metro.Assets.config.js_compressor).toEqual("uglifier")
@@ -19,15 +39,13 @@ describe "metro.asset", ->
       
       expect(Metro.Assets.config.js_compressor).toEqual("random")
       expect(Metro.Assets.config.css_compressor).toEqual("scss")
-      
-  describe "css", ->
+    
     it "should use the YUI compressor", ->
       expected  = "body{background:red}"
       result    = yui.compress("body { background: red; }")
       
       expect(result).toEqual(expected)
     
-  describe "js", ->
     it "should use the UglifyJS compressor", ->
       string    = '''
       $(document).ready(function() {
@@ -38,8 +56,7 @@ describe "metro.asset", ->
       result    = uglifier.compress(string)
       
       expect(result).toEqual(expected)
-  
-  describe "processor", ->
+    
     it "should process javascript directives", ->
       processor = new Metro.Assets.JsProcessor(new Metro.Assets.UglifierCompressor)
       result = processor.process
@@ -78,4 +95,35 @@ describe "metro.asset", ->
       Metro.Assets.compile()
       
     it "should create a digest for a file", ->
+  
+  describe "environment", ->
+    beforeEach ->
+      @environment  = new Metro.Assets.Environment
+      @environment.public_path          = "./spec/spec-app/public"
+      @environment.load_paths           = ["./spec/fixtures"]
+      @environment.javascript_directory = "javascripts"
+    
+    it "should normalize the extension", ->
+      expect(@environment.normalize_extension("application", "js")).toEqual "application.js"
+      expect(@environment.normalize_extension("application.js", "js")).toEqual "application.js"
+    
+    it "should normalize the asset directory", ->
+      expect(@environment.normalize_asset_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
       
+    it "should compute the asset path", ->
+      expect(@environment.compute_public_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
+
+    it "should lookup the asset paths", ->
+      result = @environment.lookup("application.js")
+      console.log result
+###    
+    it "should compute the public path given a key", ->
+      dir = "#{process.cwd()}/spec/fixtures/javascripts"
+    
+      expect(@environment.rewrite_extension("application", "js")).toEqual "application.js"
+      expect(@environment.rewrite_asset_path("application.js", dir, ext: "js", digest: false)).toEqual "#{process.cwd()}/spec/fixtures/javascripts/application.js"
+      expect(@environment.rewrite_asset_path("application.js", dir, ext: "js", digest: true)).toEqual "#{process.cwd()}/spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
+      
+      expect(@environment.compute_public_path("application", dir, ext: "js")).toEqual "./spec/spec-app/public/javascripts/application.js"
+      
+###

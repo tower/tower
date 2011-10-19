@@ -24,6 +24,7 @@ Asset =
     css_paths:          []
     js_paths:           []
     path:               "./assets"
+    public_path:        "./public"
     
     compress:           true
     compile:            true

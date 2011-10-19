@@ -6,8 +6,13 @@ class Helpers
   #  klass = "Metro.Components.#{this.toUpperCase()}"
   #  @::["#{this}_for"] = -> global[klass].new(arguments...).render()
     
-  stylesheet_link_tag: (path) ->
-    "<link href=\"#{path}\"></link>"
+  stylesheet_link_tag: (source) ->
+    "<link href=\"#{@asset_path(source, directory: Metro.Assets.stylesheet_directory, ext: "css")}\"></link>"
+    
+  asset_path: (source, options = {}) ->
+    if options.digest == undefined
+      options.digest = !!Metro.env.match(/(development|test)/) 
+    Metro.Application.assets().compute_public_path(source, options)
     
   javascript_include_tag: (path) ->
     

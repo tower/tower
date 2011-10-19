@@ -30,12 +30,15 @@ class File
     
   @mtime: (path) ->
     @stat(path).mtime
+  
+  @size: (path) ->
+    @stat(path).size
     
   @expand_path: (path) ->
     _path.normalize(path)
   
-  @basename: (path) ->
-    _path.basename(path)
+  @basename: ->
+    _path.basename(arguments...)
     
   @extname: (path) ->
     _path.extname(path)
@@ -45,6 +48,28 @@ class File
     
   @extensions: (path) ->
     @basename(path).split(".")[1..-1]
+    
+  @join: ->
+    Array.prototype.slice.call(arguments, 0, arguments.length).join("/").replace(/\/+/, "/")
+    
+  @is_url: (path) ->
+    !!path.match(/^[-a-z]+:\/\/|^cid:|^\/\//)
+    
+  @is_absolute: (path) ->
+    path.charAt(0) == "/"
+    
+  @glob: ->
+    paths   = Array.prototype.slice.call(arguments, 0, arguments.length)
+    result  = []
+    for path in paths
+      result = result.concat require('findit').sync(path)
+    result
+    
+  @entries: (path) ->
+    fs.readdirSync(path)
+    
+  @dirname: (path) ->
+    _path.dirname(path)
   
   # http://stackoverflow.com/questions/4568689/how-do-i-move-file-a-to-a-different-partition-in-node-js  
   # https://gist.github.com/992478
@@ -72,7 +97,31 @@ class File
     
     result
     
+  stat: ->
+    Metro.Support.File.stat(@path)
+
+  # Returns `Content-Type` from path.
+  content_type: ->
+    @constructor.content_type(@path)
+
+  # Get mtime at the time the `Asset` is built.
   mtime: ->
     @constructor.mtime(@path)
+
+  # Get size at the time the `Asset` is built.
+  size: ->
+    @constructor.size(@path)
+
+  # Get content digest at the time the `Asset` is built.
+  digest: ->
+    @constructor.digest(@path)
+  
+  # Returns `Array` of extension `String`s.
+  # 
+  #     "foo.js.coffee"
+  #     # => [".js", ".coffee"]
+  # 
+  extensions: ->
+    @constructor.extensions(@path)
 
 module.exports = File

@@ -63,7 +63,7 @@ describe "compilers", ->
       template = new Metro.Compilers.Markdown
       result = template.compile "./spec/fixtures/docs/markdown.markdown"
       expect(result).toEqual fs.readFileSync("./spec/fixtures/docs/markdown.html", 'utf8')
-      
+###      
   describe "sprite", ->
     it "should create a sprite map", ->
       engine = new Metro.Compilers.Sprite
@@ -86,7 +86,7 @@ describe "compilers", ->
           format: 'png', width: 64, height: 64, depth: 8, path: './spec/fixtures/images/linkedIn.png', slug: 'linkedIn', y: 133
         expect(data[3]).toEqual
           format: 'png', width: 64, height: 64, depth: 8, path: './spec/fixtures/images/twitter.png', slug: 'twitter', y: 197
-          
+    
     it "should render stylus", ->
       engine = new Metro.Compilers.Sprite
       images = _.map ["facebook.png", "github.png", "linkedIn.png", "twitter.png"], (file) -> "./spec/fixtures/images/#{file}"
@@ -97,7 +97,7 @@ describe "compilers", ->
         engine.render images: images, format: "stylus", (result) ->
           stylus = result
           
-      waits 500
+      waits 1000
       
       runs ->
         expect(stylus).toEqual '''
@@ -123,7 +123,7 @@ sprite(slug, x, y)
         engine.render images: images, format: "css", name: "sprite", (result) ->
           stylus = result
           
-      waits 500
+      waits 1000
       
       runs ->
         expect(stylus).toEqual '''
@@ -141,3 +141,4 @@ sprite(slug, x, y)
 }
 
         '''
+###        

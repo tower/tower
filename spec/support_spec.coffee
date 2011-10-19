@@ -28,7 +28,7 @@ describe "support", ->
   describe "file", ->
     beforeEach ->
       @path        = "./spec/fixtures/javascripts/application.js"
-      @file        = new Metro.Assets.Asset(@environment, @path)
+      @file        = new Metro.Support.File(@path)#.Assets.Asset(@environment, @path)
   
     it "should stat file", ->
       expect(@file.stat()).toBeTruthy()
@@ -44,21 +44,39 @@ describe "support", ->
     
     it "should get the file size", ->
       expect(@file.size()).toEqual 54
+      
+    it "should find entries in a directory", ->
+      expect(Metro.Support.File.entries("./spec/fixtures/javascripts")[0]).toEqual 'application.js' 
+  
+  describe "lookup", ->
+    beforeEach ->
+      # Metro.Support.File.glob("./spec/fixtures/javascripts")
+      @lookup = new Metro.Support.Lookup
+        paths:      ["./spec/fixtures/javascripts"]
+        extensions: ["js", "coffee"]
+        aliases:
+          js: ["coffee", "coffeescript"]
+          coffee: ["coffeescript"]
+          
+    it "should normalize extensions and aliases", ->
+      expect(@lookup.extensions).toEqual ['.js', '.coffee']
+      expect(@lookup.aliases).toEqual
+        ".js":      ['.coffee', '.coffeescript']
+        ".coffee":  [".coffeescript"]
     
-    it "should have the path fingerprint", ->
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js")
-      expect(@file.path_fingerprint()).toEqual null
-    
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
-      expect(@file.path_fingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
-    
-    it "should add fingerprint to path", ->
-      path = @file.path_with_fingerprint("49fdaad23a42d2ce96e4190c34457b5a")
-      expect(path).toEqual "spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
-    
-    it "should extract extensions", ->
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js")
-      expect(@file.extensions()).toEqual ["js"]
-    
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js.coffee")
-      expect(@file.extensions()).toEqual ["js", "coffee"]
+    it "should build a pattern for a basename", ->
+      pattern = @lookup.build_pattern("application.js")
+      expect(pattern.toString()).toEqual /^application(?:\.js|\.coffee|\.coffeescript).*/.toString()
+      
+      pattern = @lookup.build_pattern("application.coffee")
+      expect(pattern.toString()).toEqual /^application(?:\.coffee|\.coffeescript).*/.toString()
+      
+      pattern = @lookup.build_pattern("application.js.coffee")
+      expect(pattern.toString()).toEqual /^application\.js(?:\.coffee|\.coffeescript).*/.toString()
+      
+    it "should find", ->
+      result = @lookup.find("application.js")
+      expect(result).toEqual ['spec/fixtures/javascripts/application.js', 'spec/fixtures/javascripts/application.js.coffee']
+      
+      result = @lookup.find("application.coffee")
+      expect(result).toEqual []
