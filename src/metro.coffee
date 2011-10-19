@@ -27,6 +27,8 @@ api =
   application: ->
     Metro.Application.instance()
   
+  assets: -> Metro.Application.instance().assets()
+  
   configure:  (callback) ->
     self   = @
     config = assets: {}

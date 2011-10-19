@@ -5,12 +5,12 @@ uglifier = new Metro.Assets.UglifierCompressor
 describe "assets", ->
   describe "asset", ->
     beforeEach ->
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js")
+      @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application.js")
     
     it "should have the path fingerprint", ->
       expect(@file.path_fingerprint()).toEqual null
     
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
+      @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
       expect(@file.path_fingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
     
     it "should add fingerprint to path", ->
@@ -20,7 +20,7 @@ describe "assets", ->
     it "should extract extensions", ->
       expect(@file.extensions()).toEqual ["js"]
     
-      @file = new Metro.Assets.Asset(@environment, "./spec/fixtures/javascripts/application.js.coffee")
+      @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application.js.coffee")
       expect(@file.extensions()).toEqual ["js", "coffee"]
       
   describe "configuration", ->
@@ -98,10 +98,11 @@ describe "assets", ->
   
   describe "environment", ->
     beforeEach ->
-      @environment  = new Metro.Assets.Environment
+      @environment                      = new Metro.Assets.Environment
       @environment.public_path          = "./spec/spec-app/public"
       @environment.load_paths           = ["./spec/fixtures"]
       @environment.javascript_directory = "javascripts"
+      Metro.Application.instance()._assets  = @environment
     
     it "should normalize the extension", ->
       expect(@environment.normalize_extension("application", "js")).toEqual "application.js"
@@ -115,7 +116,25 @@ describe "assets", ->
 
     it "should lookup the asset paths", ->
       result = @environment.lookup("application.js")
-      console.log result
+      expect(result).toEqual [
+        'spec/fixtures/javascripts/application.js',
+        'spec/fixtures/javascripts/application.js.coffee' 
+      ]
+      
+    it "should find and build assets", ->
+      result = @environment.find("application.js")
+      expect(result.read()).toEqual '''
+$(document).ready(function() {
+  alert("ready!");
+});
+
+      '''
+      expect(Metro.Application.instance().assets().find("application.js").read()).toEqual '''
+$(document).ready(function() {
+  alert("ready!");
+});
+
+      '''
 ###    
     it "should compute the public path given a key", ->
       dir = "#{process.cwd()}/spec/fixtures/javascripts"

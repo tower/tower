@@ -90,7 +90,7 @@ class File
     new_mtime   = @mtime()
     result      = old_mtime.getTime() != new_mtime.getTime()
     
-    console.log "stale? #{result.toString()}, old_mtime: #{old_mtime}, new_mtime: #{new_mtime}"
+    # console.log "stale? #{result.toString()}, old_mtime: #{old_mtime}, new_mtime: #{new_mtime}"
     
     # update
     @previous_mtime = new_mtime
@@ -123,5 +123,8 @@ class File
   # 
   extensions: ->
     @constructor.extensions(@path)
+    
+  read: ->
+    fs.readFileSync(@path, "utf-8")
 
 module.exports = File

@@ -52,6 +52,27 @@ Metro.configure ->
 Metro.Assets.compile()
 ```
 
+### Inject Raw Assets into the HTML Source
+
+``` coffeescript
+app     = Metro.Application.instance()
+script  = (source) -> app.assets().find(source).read()
+```
+
+``` html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/javascripts/application.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      #{script("application.js")}
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
+```
+
 ## Routes
 
 ``` coffeescript

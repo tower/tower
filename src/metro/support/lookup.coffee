@@ -11,7 +11,7 @@ class Lookup
   constructor: (options = {}) ->
     @root       = options.root
     @extensions = @_normalize_extensions(options.extensions)
-    @aliases    = @_normalize_aliases(options.aliases)
+    @aliases    = @_normalize_aliases(options.aliases || {})
     @paths      = @_normalize_paths(options.paths)
     @patterns   = {}
     @_entries   = {}

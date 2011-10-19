@@ -12,8 +12,7 @@ class Asset extends (require("../support/file"))
     else
       path.replace(/\.(\w+)$/, "-#{digest}.\$1")
   
-  constructor: (environment, path) ->
-    @environment = environment
+  constructor: (path) ->
     @path        = Metro.Support.File.expand_path(path)
     #@id           = @environment.digest.update(object_id)
   

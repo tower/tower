@@ -92,24 +92,20 @@ class Environment
   # find path from source and extension
   # this method must be given a real file path!
   find: (source, options = {}) ->
-    path = @lookup(source, options)
+    paths = @lookup(source, options)
     
-    return null unless path?
+    return null unless paths && paths.length > 0
     
-    new Metro.Assets.Asset(path)
+    new Metro.Assets.Asset(paths[0])
     
   lookup: (source, options = {}) ->
     options.extension ?= Metro.Support.File.extname(source)[1..-1]
     
-    # "/stylesheets/application.css" becomes "stylesheets/application.css"
-    # for relative lookup
-    source = source[1..-1]
-    
     if options.extension == "css"
-      stylesheet_lookup.find(source)
+      @stylesheet_lookup().find(source)
     else if options.extension == "js"
-      javascript_lookup.find(source)
+      @javascript_lookup().find(source)
     else
-      null
+      []
     
 module.exports = Environment
