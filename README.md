@@ -37,6 +37,8 @@ alert("directives");
 
 ### Asset Compression
 
+Can also create CSS sprites [description coming soon]
+
 ``` coffeescript
 Metro = require("metro")
 
