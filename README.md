@@ -216,6 +216,10 @@ require("sys").puts( stack )
 - https://github.com/cloudhead/eyes.js
 - https://github.com/cloudhead/hijs
 - https://github.com/jakesgordon/sprite-factory/
+- http://nodejsdb.org/
+- https://github.com/creationix/node-persistence
+- https://github.com/creationix/postgres-js
+- https://github.com/mongoid/mongoid/tree/master/lib/mongoid
 
 - https://github.com/LearnBoost/juice (inject styles to html for emails)
 - http://visionmedia.github.com/nib/ (cross browser css)
@@ -247,6 +251,7 @@ require("sys").puts( stack )
 - https://github.com/paulca/eyeballs.js
 - http://stackoverflow.com/questions/3601080/how-do-i-pass-content-from-a-template-to-a-layout-in-express
 - http://stackoverflow.com/questions/7042340/node-js-error-cant-set-headers-after-they-are-sent
+- http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html
 
 ### Other Projects
 
@@ -300,5 +305,9 @@ require.paths.unshift(__dirname + '/support/express/lib/',
 ### Docs
 
 - http://nodejs.org/docs/v0.3.1/api/assert.html
+
+## Testing
+
+- https://github.com/pivotal/jasmine/wiki/Spies
 
 http://svt.se/ug/

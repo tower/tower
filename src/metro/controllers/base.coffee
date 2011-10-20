@@ -1,9 +1,6 @@
-_ = require("underscore")
-_.mixin(require("underscore.string"))
-
 class Base
   @controller_name: ->
-    @_controller_name ?= _.underscored(@::constructor.name)
+    Metro.Support.String.underscore(@::constructor.name)
     
   @helper: (object) ->
     @_helpers ?= []

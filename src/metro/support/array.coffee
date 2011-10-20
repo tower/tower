@@ -3,4 +3,3 @@ class Array
     Array.prototype.slice.call(args, 0, args.length)
   
 module.exports = Array
-  

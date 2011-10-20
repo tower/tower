@@ -1,6 +1,4 @@
-Metro   = require('../lib/metro')
-fs      = require('fs')
-_       = require('underscore')
+require('./helper')
 
 describe "views", ->
   describe "configuration", ->

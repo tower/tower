@@ -15,6 +15,7 @@ api =
   Commands:     require('./metro/commands')
   Generators:   require('./metro/generators')
   Settings:     require('./metro/settings')
+  Spec:         require('./metro/spec')
   
   configuration:  null
   logger:         null

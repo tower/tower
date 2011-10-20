@@ -1,5 +1,4 @@
-Metro  = require('../lib/metro')
-# http://visionmedia.github.com/expresso/
+require('./helper')
 
 describe "application", ->
   beforeEach ->
@@ -20,3 +19,7 @@ describe "application", ->
     
   it "should respond to requests", ->
     #console.log @application.app
+    #expect(request(app)).toRespond(
+    #  { url: '/login' },
+    #  { body: 'blog', status: 200 }
+    #)

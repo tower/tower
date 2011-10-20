@@ -1,4 +1,4 @@
-Metro    = require('../lib/metro')
+require('./helper')
 
 describe "route", ->
   describe "route", ->

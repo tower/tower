@@ -14,7 +14,6 @@ class Asset extends (require("../support/path"))
   
   constructor: (path) ->
     @path        = Metro.Support.Path.expand_path(path)
-    #@id           = @environment.digest.update(object_id)
   
   # Return logical path with digest spliced in.
   # 
@@ -59,5 +58,11 @@ class Asset extends (require("../support/path"))
     Metro.Support.Path.utime(mtime, mtime, filename)
 
     nil
+    
+  render: ->
+    Metro.Assets.processor_for(@extension).render(@path)
+    
+  body: ->
+    @render()
 
 module.exports = Asset

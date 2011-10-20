@@ -11,6 +11,9 @@ class String
   @underscore: ->
     _.underscored(arguments[0] || @)
     
+  @titleize: ->
+    _.titleize(arguments[0] || @)
+    
   @to_s: ->
     (arguments[0] || @).toString()
     

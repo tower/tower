@@ -1,8 +1,4 @@
-fs     = require('fs')
-_      = require("underscore")
-_.mixin(require("underscore.string"))
-
-Asset =
+Assets =
   YuiCompressor:      require('./assets/yui_compressor')
   UglifierCompressor: require('./assets/uglifier_compressor')
   Processor:          require('./assets/processor')
@@ -67,9 +63,15 @@ Asset =
     @_js_processor ?= new @JsProcessor(@js_compressor())
     
   css_compressor: ->
-    @_css_compressor ?= new @[_.titleize(@config.css_compressor) + "Compressor"]
+    @_css_compressor ?= new @[Metro.Support.String.titleize(@config.css_compressor) + "Compressor"]
     
   js_compressor: ->
-    @_js_compressor ?= new @[_.titleize(@config.js_compressor) + "Compressor"]
+    @_js_compressor ?= new @[Metro.Support.String.titleize(@config.js_compressor) + "Compressor"]
     
-module.exports = Asset
+  processor_for: (extension) ->
+    if extension == ".js"
+      @js_processor()
+    else
+      @css_compressor()
+    
+module.exports = Assets

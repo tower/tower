@@ -1,6 +1,3 @@
-fs = require("fs")
-_ = require("underscore")
-
 class Base
   constructor: (controller) ->
     @controller = controller || (new Metro.Controllers.Base)
@@ -48,7 +45,7 @@ class Base
     locals = {}
     for key of controller
       locals[key] = controller[key] unless key == "constructor"
-    locals  = _.extend(locals, @locals || {}, options.locals)
+    locals  = require("underscore").extend(locals, @locals || {}, options.locals)
     
     locals.pretty = true if Metro.Views.pretty_print
     
