@@ -5,7 +5,7 @@ class Environment
   load_paths: ["./app/assets"]
   
   # This is appended to the load paths and public paths
-  assets_directory:     "assets"
+  asset_directory:     "assets"
   
   stylesheet_directory: "stylesheets"
   stylesheet_extensions: ["css", "styl", "scss", "less"]
@@ -99,6 +99,8 @@ class Environment
     new Metro.Assets.Asset(paths[0])
     
   lookup: (source, options = {}) ->
+    source = source.replace(@path_pattern(), "")
+    
     options.extension ?= Metro.Support.Path.extname(source)[1..-1]
     
     if options.extension == "css"
@@ -107,5 +109,11 @@ class Environment
       @javascript_lookup().find(source)
     else
       []
+      
+  match: (path) ->
+    !!path.match(@path_pattern())
+    
+  path_pattern: ->
+    @_path_pattern ?= new RegExp("^/(#{@asset_directory}|#{@stylesheet_directory}|#{@javascript_directory})/")
     
 module.exports = Environment

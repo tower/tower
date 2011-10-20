@@ -61,6 +61,9 @@ class Processor
       result[key] = self.compressor().compress(string)
     result
     
+  render: (string) ->
+    @process_directives(string)
+    
   process_directives: (string) ->
     self                    = @
     directive_pattern       = @constructor.DIRECTIVE_PATTERN
@@ -72,9 +75,9 @@ class Processor
       for line in lines
         directive           = line.match(directive_pattern)
         if directive
-          directives_string = directives_string + self.process_directives(fs.readFileSync(directive[2], 'utf8')) + ';'
+          directives_string = directives_string + self.process_directives(fs.readFileSync(directive[2], 'utf8')) + self.terminator
     
-    directives_string + string + ";"
+    directives_string + string + self.terminator
   
   compile: (options) ->
     dir  = options.path

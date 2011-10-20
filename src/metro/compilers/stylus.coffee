@@ -6,4 +6,4 @@ class Stylus
     @engine().render content, options, (error, data) -> result = data
     result
     
-exports = module.exports = Stylus
+module.exports = Stylus

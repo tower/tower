@@ -19,10 +19,10 @@ describe "assets", ->
       expect(path).toEqual "spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
     
     it "should extract extensions", ->
-      expect(@file.extensions()).toEqual ["js"]
+      expect(@file.extensions()).toEqual [".js"]
     
       @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application.js.coffee")
-      expect(@file.extensions()).toEqual ["js", "coffee"]
+      expect(@file.extensions()).toEqual [".js", ".coffee"]
       
   describe "configuration", ->
     it "should configure", ->
@@ -87,7 +87,7 @@ describe "assets", ->
       result = Metro.Assets.process()
       
       expect(result.css).toEqual
-        'application': 'body{background:red};'
+        'application': 'body{background:red}'
         
       expect(result.js).toEqual
         'application': '$(document).ready(function(){alert("ready!")})'

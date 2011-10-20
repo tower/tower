@@ -1,6 +1,6 @@
 {
   "name": "metro",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Rails-esque Framework for Node.js",
   "homepage": "http://viatropos.github.com/metro.js",
   "main": "lib/metro.js",
@@ -45,7 +45,6 @@
     "mustache":           ">= 0.3.1-dev",
     "markdown":           ">= 0.2.1",
     "qs":                 ">= 0.3.1",
-    "imagemagick":        ">= 0.1.2",
-    "mongodb":            ">= 0.9.6-22"
+    "imagemagick":        ">= 0.1.2"
   }
 }

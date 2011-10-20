@@ -7,6 +7,7 @@ Views =
   bootstrap: ->
     @resolve_load_paths()
     @resolve_template_paths()
+    Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")
     
   resolve_load_paths: ->
     file = Metro.Support.Path
@@ -43,19 +44,5 @@ Views =
   paths_by_name: {}
   engine: "jade"
   pretty_print:   false
-  
-  engines: ->
-    @_engines ?= {
-      "stylus":   Metro.Compilers.Stylus
-      "jade":     Metro.Compilers.Jade
-      "haml":     Metro.Compilers.Haml
-      "ejs":      Metro.Compilers.Ejs
-      "coffee":   Metro.Compilers.CoffeeScript
-      "less":     Metro.Compilers.Less
-      #"scss":    Metro.Compilers.Scss
-      "sass":     Metro.Compilers.Sass
-      "mustache": Metro.Compilers.Mustache
-    }
-
 
 module.exports = Views

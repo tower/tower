@@ -1,3 +1,4 @@
 class Application
+  #@include Metro.Generators.DSL  
   
-exports = module.exports = Application
+module.exports = Application

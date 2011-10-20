@@ -1,4 +1,5 @@
 require('../lib/metro')
+require('./secrets')
 
 SpecHelper = 
   toRespondWith: (request, response) ->

@@ -29,10 +29,11 @@ class Application
   stack: ->
     @app.use connect.favicon(Metro.public_path + "/favicon.ico")
     @app.use Metro.Middleware.Static.middleware
+    @app.use Metro.Middleware.Query.middleware 
+    @app.use Metro.Middleware.Assets.middleware
     @app.use connect.bodyParser()
     @app.use Metro.Middleware.Dependencies.middleware
     @app.use Metro.Middleware.Cookies.middleware
-    @app.use Metro.Middleware.Query.middleware
     @app.use Metro.Middleware.Router.middleware
     @app
     

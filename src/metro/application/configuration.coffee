@@ -1,3 +1,3 @@
 class Configuration
 
-exports = module.exports = Configuration
+module.exports = Configuration

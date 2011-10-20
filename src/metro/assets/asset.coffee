@@ -60,7 +60,24 @@ class Asset extends (require("../support/path"))
     nil
     
   render: ->
-    Metro.Assets.processor_for(@extension).render(@path)
+    data        = Metro.Assets.processor_for(@extensions()[0][1..-1]).process_directives(@read())
+    compilers   = @compilers()
+    for compiler in compilers
+      data = compiler.compile(data)
+    data
+    
+  compilers: ->
+    unless @_compilers
+      extensions  = @extensions()
+      result      = []
+      
+      for extension in extensions
+        compiler = Metro.Compilers.find(extension[1..-1])
+        result.push(compiler) if compiler
+        
+      @compilers = result
+      
+    @compilers
     
   body: ->
     @render()

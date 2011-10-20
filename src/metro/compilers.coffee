@@ -10,4 +10,19 @@ Compilers =
   Markdown:       require('./compilers/markdown')
   Sprite:         require('./compilers/sprite')
   
+  find: (key) ->
+    @keys()[key]
+    
+  keys: ->
+    @_keys ?= {    
+      "styl":   new Metro.Compilers.Stylus
+      "jade":     new Metro.Compilers.Jade
+      "haml":     new Metro.Compilers.Haml
+      "ejs":      new Metro.Compilers.Ejs
+      "coffee":   new Metro.Compilers.CoffeeScript
+      "less":     new Metro.Compilers.Less
+      "sass":     new Metro.Compilers.Sass
+      "mustache": new Metro.Compilers.Mustache
+    }
+  
 module.exports = Compilers

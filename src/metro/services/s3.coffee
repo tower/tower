@@ -18,13 +18,15 @@ class S3
     bucket: 'learnboost'
   ###
   constructor: (options) ->
-    @client = knox.createClient
-      key: '<api-key-here>'
-      secret: '<secret-here>'
-      bucket: 'learnboost'
+    @client = require("knox").createClient
+      key:    options.key
+      secret: options.secret
+      bucket: options.bucket
 
   upload: (from, to, callback) ->
-    @client().putFile from, to, callback
+    @client.putFile from, to, callback
 
   update: (remote, options) ->
-    @client().put remote, options
+    @client.put remote, options
+
+module.exports = S3

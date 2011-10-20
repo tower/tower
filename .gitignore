@@ -27,3 +27,5 @@ doc/**/*
 node_modules
 node_modules/*
 node_modules/**/*
+
+spec/secrets.coffee

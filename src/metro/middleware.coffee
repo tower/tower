@@ -4,6 +4,6 @@ Middleware =
   Cookies:      require('./middleware/cookies')
   Static:       require('./middleware/static')
   Query:        require('./middleware/query')
-  Body:         require('./middleware/body')
+  Assets:       require('./middleware/assets')
   
 module.exports = Middleware

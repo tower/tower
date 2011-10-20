@@ -2,14 +2,22 @@ class Assets
   @middleware: (request, response, next) -> (new Assets).call(request, response, next)
   
   call: (request, response, next) ->
-    start_time = new Date()
-    asset      = Metro.Application.assets().find(request.path)
+    assets      = Metro.Application.instance().assets()
+    
+    return next() unless assets.match(request.uri.pathname)
+    
+    asset       = assets.find(request.uri.pathname)
+    
     if !asset
-      @not_found_response()
-    else if @not_modified(asset)
-      @not_modified_response(asset)
+      result = @not_found_response()
+    #else if @not_modified(asset)
+    #  @not_modified_response(asset)
     else
-      @ok_response(asset)
+      result = @ok_response(asset)
+    
+    response.writeHead result[0], result[1]
+    response.write result[2]
+    response.end()
   
   forbidden_request: (request) ->
     !!request.url.match(/\.{2}/)
@@ -18,7 +26,7 @@ class Assets
     env["HTTP_IF_MODIFIED_SINCE"] == asset.mtime.httpdate
     
   # Returns a 304 Not Modified response tuple
-  not_modified_response: (asset, env) ->
+  not_modified_response: (asset) ->
     [304, {}, []]
     
   forbidden_response: ->
@@ -29,21 +37,23 @@ class Assets
     
   # Returns a 200 OK response tuple
   ok_response: (asset) ->
-    if @body_only(env)
-      [200, @headers(env, asset, asset.size()), [asset.body()]]
-    else
-      [200, @headers(env, asset, asset.length), asset]
+    #if @body_only(env)
+    #  [200, @headers(asset, asset.size()), [asset.body()]]
+    #else
+    [200, @headers(asset, asset.size()), asset.body()]
+      
+  body_only: ->
     
-  headers: (env, asset, length) ->
+  headers: (asset, length) ->
     headers = {}
     # Set content type and length headers
-    headers["Content-Type"]   = asset.content_type
-    headers["Content-Length"] = length.to_s
-
+    headers["Content-Type"]   = Metro.Support.Path.content_type("text/#{asset.extensions()[0][1..-1]}")
+    headers["Content-Length"] = length
+    
     # Set caching headers
     headers["Cache-Control"]  = "public"
-    headers["Last-Modified"]  = asset.mtime.httpdate
-    headers["ETag"]           = etag(asset)
+    headers["Last-Modified"]  = asset.mtime()#.httpdate
+    headers["ETag"]           = @etag(asset)
     
     # If the request url contains a fingerprint, set a long
     # expires on the response
@@ -56,6 +66,6 @@ class Assets
     headers
   
   etag: (asset) ->
-    "#{asset.digest}"
+    "#{asset.digest()}"
     
 module.exports = Assets

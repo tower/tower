@@ -47,7 +47,7 @@ class File
     _path.exists(path)
     
   @extensions: (path) ->
-    @basename(path).split(".")[1..-1]
+    @basename(path).match(/(\.\w+)/g)
     
   @join: ->
     Array.prototype.slice.call(arguments, 0, arguments.length).join("/").replace(/\/+/, "/")
@@ -123,6 +123,9 @@ class File
   # 
   extensions: ->
     @constructor.extensions(@path)
+    
+  extension: ->
+    @constructor.extname(@path)
     
   read: ->
     fs.readFileSync(@path, "utf-8")

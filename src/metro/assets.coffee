@@ -7,7 +7,7 @@ Assets =
   Asset:              require('./assets/asset')
   Environment:        require('./assets/environment')
   
-  load_paths: ["./app/assets", "./lib/assets", "./vendor/assets"]
+  load_paths:         ["./app/assets", "./lib/assets", "./vendor/assets"]
   
   config:
     css:                []
@@ -69,9 +69,12 @@ Assets =
     @_js_compressor ?= new @[Metro.Support.String.titleize(@config.js_compressor) + "Compressor"]
     
   processor_for: (extension) ->
-    if extension == ".js"
+    if extension.match(/(js|coffee)/)
       @js_processor()
-    else
-      @css_compressor()
+    else if extension.match(/(css|styl|scss|sass|less)/)
+      @css_processor()
+      
+  upload: ->
+    
     
 module.exports = Assets

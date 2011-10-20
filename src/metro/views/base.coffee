@@ -16,8 +16,7 @@ class Base
     options  ?= {}  
     locals    = @context(options)
     type      = options.type || Metro.Views.engine
-    engine    = Metro.Views.engines()[type]
-    engine    = new engine
+    engine    = Metro.Compilers.find(type)
     if options.text
       body    = options.text
     else if options.json
@@ -36,6 +35,7 @@ class Base
       
     if layout
       layout  = Metro.Views.lookup("layouts/#{layout}")
+      layout  = Metro.Support.Path.read(layout)
       locals.yield = body
       body    = engine.compile(layout, locals)
     body
