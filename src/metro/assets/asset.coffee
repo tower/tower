@@ -12,8 +12,9 @@ class Asset extends (require("../support/path"))
     else
       path.replace(/\.(\w+)$/, "-#{digest}.\$1")
   
-  constructor: (path) ->
+  constructor: (path, extension) ->
     @path        = Metro.Support.Path.expand_path(path)
+    @extension   = extension || @extensions()[0]
   
   # Return logical path with digest spliced in.
   # 
@@ -60,7 +61,24 @@ class Asset extends (require("../support/path"))
     nil
     
   render: ->
-    data        = Metro.Assets.processor_for(@extensions()[0][1..-1]).process_directives(@read())
+    extension   = @extension
+    parts       = Metro.Assets.processor_for(extension[1..-1]).parse @read()
+    result      = ""
+    terminator  = ";"
+    
+    for part in parts
+      if part.hasOwnProperty("content")
+        result += @compile(part.content) + terminator
+      else
+        child = Metro.Application.instance().assets().find(part.path, extension: extension)
+        if child
+          result += child.render() + terminator
+        else
+          result += ""
+        
+    result
+    
+  compile: (data) ->
     compilers   = @compilers()
     for compiler in compilers
       data = compiler.compile(data)
@@ -75,9 +93,9 @@ class Asset extends (require("../support/path"))
         compiler = Metro.Compilers.find(extension[1..-1])
         result.push(compiler) if compiler
         
-      @compilers = result
+      @_compilers = result
       
-    @compilers
+    @_compilers
     
   body: ->
     @render()

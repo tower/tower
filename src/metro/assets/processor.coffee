@@ -23,7 +23,7 @@ class Processor
   #     //= require foo
   #     //= require "foo"
   #
-  @DIRECTIVE_PATTERN: /(?:\/\/|#| *)\s*=\s*(require)\s*['"]?(.+)['"]?[\s]*?\n?/
+  @DIRECTIVE_PATTERN: /(?:\/\/|#| *)\s*=\s*(require)\s*['"]?([^'"]+)['"]?[\s]*?\n?/
   
   constructor: (compressor) ->
     @_compressor = compressor
@@ -64,20 +64,39 @@ class Processor
   render: (string) ->
     @process_directives(string)
     
-  process_directives: (string) ->
+  process_directives: (string, callback) ->
     self                    = @
     directive_pattern       = @constructor.DIRECTIVE_PATTERN
     lines                   = string.match(@constructor.HEADER_PATTERN)
     directives_string       = ''
+    callback ?= (path) -> fs.readFileSync(path, 'utf8')
     if lines && lines.length > 0
       last                  = lines[lines.length - 1]
       # string                = string.substr(string.indexOf(last) + last.length)
       for line in lines
         directive           = line.match(directive_pattern)
         if directive
-          directives_string = directives_string + self.process_directives(fs.readFileSync(directive[2], 'utf8')) + self.terminator
+          directives_string = directives_string + self.process_directives(callback(directive[2])) + self.terminator
     
     directives_string + string + self.terminator
+  
+  parse: (string) ->
+    self                    = @
+    directive_pattern       = @constructor.DIRECTIVE_PATTERN
+    lines                   = string.match(@constructor.HEADER_PATTERN)
+    directives_string       = ''
+    parts                   = []
+    if lines && lines.length > 0
+      last                  = lines[lines.length - 1]
+      # string                = string.substr(string.indexOf(last) + last.length)
+      for line in lines
+        directive           = line.match(directive_pattern)
+        if directive
+          parts.push(path: directive[2])
+    
+    parts.push(content: string)
+    
+    parts
   
   compile: (options) ->
     dir  = options.path

@@ -35,6 +35,9 @@ class Environment
       root:       Metro.root
       paths:      paths
       extensions: extensions
+      aliases:
+        js: ["coffee", "coffeescript"]
+        coffee: ["coffeescript"]
       
   digest: (source) ->
     @digests[source] || source
@@ -60,7 +63,7 @@ class Environment
     if typeof(@asset_host) == "function" then @asset_host.call(@) else @asset_host
     
   normalize_extension: (source, extension) ->
-    Metro.Support.Path.slug(source) + ".#{extension}"
+    Metro.Support.Path.basename(source, extension) + extension
   
   normalize_asset_path: (source, options = {}) ->
     if Metro.Support.Path.is_absolute(source)
@@ -96,16 +99,16 @@ class Environment
     
     return null unless paths && paths.length > 0
     
-    new Metro.Assets.Asset(paths[0])
+    new Metro.Assets.Asset(paths[0], options.extension)
     
   lookup: (source, options = {}) ->
     source = source.replace(@path_pattern(), "")
     
-    options.extension ?= Metro.Support.Path.extname(source)[1..-1]
+    options.extension ?= Metro.Support.Path.extname(source)
     
-    if options.extension == "css"
+    if options.extension == ".css"
       @stylesheet_lookup().find(source)
-    else if options.extension == "js"
+    else if options.extension == ".js"
       @javascript_lookup().find(source)
     else
       []

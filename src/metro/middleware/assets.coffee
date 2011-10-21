@@ -48,7 +48,7 @@ class Assets
     headers = {}
     # Set content type and length headers
     headers["Content-Type"]   = Metro.Support.Path.content_type("text/#{asset.extensions()[0][1..-1]}")
-    headers["Content-Length"] = length
+    # headers["Content-Length"] = length
     
     # Set caching headers
     headers["Cache-Control"]  = "public"
