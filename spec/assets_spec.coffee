@@ -1,7 +1,7 @@
 require('./helper')
 
-yui      = new Metro.Assets.YuiCompressor
-uglifier = new Metro.Assets.UglifierCompressor
+yui      = new Metro.Compilers.Yui
+uglifier = new Metro.Compilers.Uglifier
 
 describe "assets", ->
   describe "asset", ->
@@ -59,7 +59,7 @@ describe "assets", ->
       expect(result).toEqual(expected)
     
     it "should process javascript directives", ->
-      processor = new Metro.Assets.JsProcessor(new Metro.Assets.UglifierCompressor)
+      processor = new Metro.Assets.Processor(new Metro.Compilers.Uglifier, extension: ".js", terminator: ";")
       result = processor.process
         paths: ["./spec/fixtures/javascripts"]
         files: ["directives.js"]
@@ -91,9 +91,6 @@ describe "assets", ->
         
       expect(result.js).toEqual
         'application': '$(document).ready(function(){alert("ready!")})'
-    
-    it "should write", ->
-      Metro.Assets.compile()
       
     it "should create a digest for a file", ->
   
@@ -106,8 +103,8 @@ describe "assets", ->
       Metro.Application.instance()._assets  = @environment
     
     it "should normalize the extension", ->
-      expect(@environment.normalize_extension("application", "js")).toEqual "application.js"
-      expect(@environment.normalize_extension("application.js", "js")).toEqual "application.js"
+      expect(@environment.normalize_extension("application", ".js")).toEqual "application.js"
+      expect(@environment.normalize_extension("application.js", ".js")).toEqual "application.js"
     
     it "should normalize the asset directory", ->
       expect(@environment.normalize_asset_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"

@@ -65,6 +65,7 @@ class Asset extends (require("../support/path"))
     parts       = Metro.Assets.processor_for(extension[1..-1]).parse @read()
     result      = ""
     terminator  = ";"
+    self        = @
     
     for part in parts
       if part.hasOwnProperty("content")
@@ -74,6 +75,7 @@ class Asset extends (require("../support/path"))
         if child
           result += child.render() + terminator
         else
+          console.log "Dependency '#{part.path}' not found in #{self.path}"
           result += ""
         
     result

@@ -19,7 +19,11 @@ class Environment
   stylesheet_lookup: ->
     directory   = @stylesheet_directory
     extensions  = @stylesheet_extensions
-    paths       = _.map @load_paths, (path) -> Metro.Support.Path.join(path, directory)
+    paths       = []
+    for path in @load_paths
+      path = Metro.Support.Path.join(path, directory)
+      paths.push(path)
+      paths = paths.concat Metro.Support.Path.directories(path)
     
     @_stylesheet_lookup ?= new Metro.Support.Lookup
       root:       Metro.root
@@ -29,7 +33,11 @@ class Environment
   javascript_lookup: ->
     directory   = @javascript_directory
     extensions  = @javascript_extensions
-    paths       = _.map @load_paths, (path) -> Metro.Support.Path.join(path, directory)
+    paths       = []
+    for path in @load_paths
+      path = Metro.Support.Path.join(path, directory)
+      paths.push(path)
+      paths = paths.concat Metro.Support.Path.directories(path)
     
     @_javascript_lookup ?= new Metro.Support.Lookup
       root:       Metro.root

@@ -1,14 +1,16 @@
 Compilers =
-  Stylus:         require('./compilers/stylus')
-  Jade:           require('./compilers/jade')
-  Haml:           require('./compilers/haml')
-  Ejs:            require('./compilers/ejs')
-  CoffeeScript:   require('./compilers/coffee_script')
-  Less:           require('./compilers/less')
-  Mustache:       require('./compilers/mustache')
-  Sass:           require('./compilers/sass')
-  Markdown:       require('./compilers/markdown')
-  Sprite:         require('./compilers/sprite')
+  Stylus:               require('./compilers/stylus')
+  Jade:                 require('./compilers/jade')
+  Haml:                 require('./compilers/haml')
+  Ejs:                  require('./compilers/ejs')
+  CoffeeScript:         require('./compilers/coffee_script')
+  Less:                 require('./compilers/less')
+  Mustache:             require('./compilers/mustache')
+  Sass:                 require('./compilers/sass')
+  Markdown:             require('./compilers/markdown')
+  Sprite:               require('./compilers/sprite')
+  Yui:                  require('./compilers/yui')
+  Uglifier:             require('./compilers/uglifier')
   
   find: (key) ->
     @keys()[key]

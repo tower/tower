@@ -1,10 +1,6 @@
 Assets =
-  YuiCompressor:      require('./assets/yui_compressor')
-  UglifierCompressor: require('./assets/uglifier_compressor')
-  Processor:          require('./assets/processor')
-  CssProcessor:       require('./assets/css_processor')
-  JsProcessor:        require('./assets/js_processor')
   Asset:              require('./assets/asset')
+  Processor:          require('./assets/processor')
   Environment:        require('./assets/environment')
   
   load_paths:         ["./app/assets", "./lib/assets", "./vendor/assets"]
@@ -57,16 +53,16 @@ Assets =
     @compile_css()
   
   css_processor: ->
-    @_css_processor ?= new @CssProcessor(@css_compressor())
+    @_css_processor ?= new Metro.Assets.Processor(@css_compressor(), extension: ".css")
     
   js_processor: ->
-    @_js_processor ?= new @JsProcessor(@js_compressor())
+    @_js_processor ?= new Metro.Assets.Processor(@js_compressor(), extension: ".js", terminator: ";")
     
   css_compressor: ->
-    @_css_compressor ?= new @[Metro.Support.String.titleize(@config.css_compressor) + "Compressor"]
+    @_css_compressor ?= new Metro.Compilers[Metro.Support.String.titleize(@config.css_compressor)]
     
   js_compressor: ->
-    @_js_compressor ?= new @[Metro.Support.String.titleize(@config.js_compressor) + "Compressor"]
+    @_js_compressor ?= new Metro.Compilers[Metro.Support.String.titleize(@config.js_compressor)]
     
   processor_for: (extension) ->
     if extension.match(/(js|coffee)/)

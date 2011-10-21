@@ -1,4 +1,4 @@
-class UglifierCompressor
+class Uglifier
   compress: (string) ->
     ast = @parser().parse(string)
     ast = @compressor().ast_mangle(ast)
@@ -12,4 +12,4 @@ class UglifierCompressor
     @_parser ?= require("uglify-js").parser
     @_parser
     
-module.exports = UglifierCompressor
+module.exports = Uglifier

@@ -59,10 +59,26 @@ class File
     path.charAt(0) == "/"
     
   @glob: ->
-    paths   = Metro.Support.Array.extract_args(arguments...)
+    paths   = Metro.Support.Array.extract_args(arguments)
     result  = []
     for path in paths
       result = result.concat require('findit').sync(path)
+    result
+    
+  @files: ->
+    paths   = @glob(arguments...)
+    result  = []
+    self    = @
+    for path in paths
+      result.push(path) if self.is_file(path)
+    result
+    
+  @directories: ->
+    paths   = @glob(arguments...)
+    result  = []
+    self    = @
+    for path in paths
+      result.push(path) if self.is_directory(path)
     result
     
   @entries: (path) ->
@@ -70,6 +86,12 @@ class File
     
   @dirname: (path) ->
     _path.dirname(path)
+    
+  @is_directory: (path) ->
+    @stat(path).isDirectory()
+    
+  @is_file: (path) ->
+    !@is_directory(path)
   
   # http://stackoverflow.com/questions/4568689/how-do-i-move-file-a-to-a-different-partition-in-node-js  
   # https://gist.github.com/992478

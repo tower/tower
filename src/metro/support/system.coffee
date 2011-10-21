@@ -1,5 +1,5 @@
-sys = require('sys')
-exec = require('child_process').exec
+sys   = require('sys')
+exec  = require('child_process').exec
 
 class System
   @command: (command, callback) ->

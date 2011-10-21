@@ -25,8 +25,10 @@ class Processor
   #
   @DIRECTIVE_PATTERN: /(?:\/\/|#| *)\s*=\s*(require)\s*['"]?([^'"]+)['"]?[\s]*?\n?/
   
-  constructor: (compressor) ->
-    @_compressor = compressor
+  constructor: (compressor, options = {}) ->
+    @_compressor  = compressor
+    @extension    = options.extension
+    @terminator   = options.terminator || ""
     
   compressor: ->
     @_compressor
@@ -70,6 +72,7 @@ class Processor
     lines                   = string.match(@constructor.HEADER_PATTERN)
     directives_string       = ''
     callback ?= (path) -> fs.readFileSync(path, 'utf8')
+    
     if lines && lines.length > 0
       last                  = lines[lines.length - 1]
       # string                = string.substr(string.indexOf(last) + last.length)
@@ -97,14 +100,5 @@ class Processor
     parts.push(content: string)
     
     parts
-  
-  compile: (options) ->
-    dir  = options.path
-    throw new Error("You must pass in a directory as 'path'") unless dir?
-    data = @process(options)
-    ext  = "." + @extension
-    for key, string of data
-      name = [dir, key].join("/") + ext
-      fs.writeFileSync name, string
     
 module.exports = Processor
