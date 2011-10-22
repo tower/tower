@@ -1,3 +1,6 @@
+_     = require('underscore')
+async = require('async')
+
 class Asset extends (require("../support/path"))
   @digest_path: (path) ->
     @path_with_fingerprint(path, @digest(path))
@@ -60,30 +63,54 @@ class Asset extends (require("../support/path"))
 
     nil
     
-  render: ->
-    extension   = @extension
-    parts       = Metro.Assets.processor_for(extension[1..-1]).parse @read()
-    result      = ""
-    terminator  = ";"
-    self        = @
-    
-    for part in parts
+  render: (options, callback) ->
+    parts       = Metro.Assets.processor_for(@extension[1..-1]).parse @read()
+    _callback    = (error) ->
+      console.log "DONE!"
+    iterator = (part, callback) ->
       if part.hasOwnProperty("content")
-        result += @compile(part.content) + terminator
+        @compile part.content, options, (data) ->
+          render_parts.apply(self, _.extend({}, options), data + terminator)
       else
         child = Metro.Application.instance().assets().find(part.path, extension: extension)
         if child
-          result += child.render() + terminator
+          child.render options, (data) ->
+            callback.apply(self, data + terminator)
         else
           console.log "Dependency '#{part.path}' not found in #{self.path}"
-          result += ""
-        
-    result
+          callback.apply(self, "")
+    else
+      callback.apply(self, "")
+    async.forEachSeries(parts, iterator, _callback)
+    #@render_parts(parts, options, callback)
     
-  compile: (data) ->
+  render_parts: (parts, options, result, callback) ->
+    result ?= ""
+    
+    if parts.length > 0
+      extension   = @extension
+      terminator  = ";"
+      self        = @
+      part        = parts.shift()
+      
+      if part.hasOwnProperty("content")
+        @compile part.content, options, (data) ->
+          render_parts.apply(self, _.extend({}, options), data + terminator)
+      else
+        child = Metro.Application.instance().assets().find(part.path, extension: extension)
+        if child
+          child.render options, (data) ->
+            callback.apply(self, data + terminator)
+        else
+          console.log "Dependency '#{part.path}' not found in #{self.path}"
+          callback.apply(self, "")
+    else
+      callback.apply(self, "")
+    
+  compile: (data, options = {}) ->
     compilers   = @compilers()
     for compiler in compilers
-      data = compiler.compile(data)
+      data = compiler.compile(data, _.extend({}, options))
     data
     
   compilers: ->

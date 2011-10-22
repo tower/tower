@@ -40,7 +40,8 @@ class Assets
     #if @body_only(env)
     #  [200, @headers(asset, asset.size()), [asset.body()]]
     #else
-    [200, @headers(asset, asset.size()), asset.body()]
+    paths = Metro.Application.instance().assets().paths_for(asset.extension)
+    [200, @headers(asset, asset.size()), asset.render(paths: paths)]
       
   body_only: ->
     

@@ -1,5 +1,4 @@
 connect = require('connect')
-#http    = require('http')
 
 class Application
   @Configuration: require('./application/configuration')
@@ -17,7 +16,7 @@ class Application
   env: -> process.env()
     
   constructor: ->
-    @app ?= connect()#.createServer()
+    @server ?= connect()#.createServer()
   
   call: (env) ->
     
@@ -27,19 +26,19 @@ class Application
   config: -> @_config ?= new Metro.Application.Configuration
     
   stack: ->
-    @app.use connect.favicon(Metro.public_path + "/favicon.ico")
-    @app.use Metro.Middleware.Static.middleware
-    @app.use Metro.Middleware.Query.middleware 
-    @app.use Metro.Middleware.Assets.middleware
-    @app.use connect.bodyParser()
-    @app.use Metro.Middleware.Dependencies.middleware
-    @app.use Metro.Middleware.Cookies.middleware
-    @app.use Metro.Middleware.Router.middleware
-    @app
+    @server.use connect.favicon(Metro.public_path + "/favicon.ico")
+    @server.use Metro.Middleware.Static.middleware
+    @server.use Metro.Middleware.Query.middleware 
+    @server.use Metro.Middleware.Assets.middleware
+    @server.use connect.bodyParser()
+    @server.use Metro.Middleware.Dependencies.middleware
+    @server.use Metro.Middleware.Cookies.middleware
+    @server.use Metro.Middleware.Router.middleware
+    @server
     
   listen: ->
     unless Metro.env == "test"
-      @app.listen(Metro.port)
+      @server.listen(Metro.port)
       console.log("Metro server listening on port #{Metro.port}")
     
   @bootstrap: ->

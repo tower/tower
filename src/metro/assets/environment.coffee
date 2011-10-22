@@ -29,6 +29,8 @@ class Environment
       root:       Metro.root
       paths:      paths
       extensions: extensions
+      aliases:
+        css:      ["styl", "less", "scss", "sass"]
       
   javascript_lookup: ->
     directory   = @javascript_directory
@@ -44,8 +46,16 @@ class Environment
       paths:      paths
       extensions: extensions
       aliases:
-        js: ["coffee", "coffeescript"]
+        js:     ["coffee", "coffeescript"]
         coffee: ["coffeescript"]
+        
+  paths_for: (extension) ->
+    if extension == ".css"
+      @stylesheet_lookup().paths
+    else if extension == ".js"
+      @javascript_lookup().paths
+    else
+      []
       
   digest: (source) ->
     @digests[source] || source
@@ -113,6 +123,9 @@ class Environment
     source = source.replace(@path_pattern(), "")
     
     options.extension ?= Metro.Support.Path.extname(source)
+    
+    pattern = "(?:" + Metro.Support.Lookup.prototype.escape(options.extension) + ")?$"
+    source = source.replace(new RegExp(pattern), options.extension)
     
     if options.extension == ".css"
       @stylesheet_lookup().find(source)

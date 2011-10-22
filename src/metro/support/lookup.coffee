@@ -46,7 +46,8 @@ class Lookup
     matches = []
     
     for entry in entries
-      matches.push(entry) if !!entry.match(pattern)
+      if Metro.Support.Path.is_file(Metro.Support.Path.join(directory, entry)) && !!entry.match(pattern)
+        matches.push(entry)
       
     matches = @sort(matches, basename)
     for match, i in matches

@@ -16,19 +16,24 @@ api =
   Generators:   require('./metro/generators')
   Settings:     require('./metro/settings')
   Spec:         require('./metro/spec')
-  
+
+Metro[key] = value for key, value of api
+
+api =
   configuration:  null
-  logger:         null
-  root:           (process.cwd() + "/spec/spec-app")
-  public_path:    (process.cwd() + "/public")
+  logger:         new Metro.Support.Logger
+  root:           process.cwd()
+  public_path:    process.cwd() + "/public"
   env:            "test"
   port:           1597
   cache:          null
   version:        "0.2.0"
+  
   application: ->
     Metro.Application.instance()
   
-  assets: -> Metro.Application.instance().assets()
+  assets: -> 
+    Metro.Application.instance().assets()
   
   configure:  (callback) ->
     self   = @

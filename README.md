@@ -2,6 +2,8 @@
 
 > Rails-esque Framework For Node.js (just hacking for now)
 
+- Every `response.write(data)` counts as a "flush".
+
 ## Install
 
 ``` bash
