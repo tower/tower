@@ -57,14 +57,6 @@ describe "compilers", ->
       result = template.compile input, locals: locals
       expect(result).toEqual output
       
-  describe "sass", ->
-    it "should compile sass", ->
-      template  = new Metro.Compilers.Sass
-      input     = Metro.Support.Path.read("./spec/fixtures/stylesheets/sass.sass")
-      output    = Metro.Support.Path.read("./spec/fixtures/stylesheets/sass.css")
-      result = template.compile input
-      expect(result).toEqual output
-      
   describe "markdown", ->
     it "should compile markdown", ->
       template  = new Metro.Compilers.Markdown

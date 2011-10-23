@@ -83,7 +83,7 @@ class Processor
     
     directives_string + string + self.terminator
   
-  parse: (string) ->
+  parse: (string, path) ->
     self                    = @
     directive_pattern       = @constructor.DIRECTIVE_PATTERN
     lines                   = string.match(@constructor.HEADER_PATTERN)
@@ -97,7 +97,7 @@ class Processor
         if directive
           parts.push(path: directive[2])
     
-    parts.push(content: string)
+    parts.push(path: path, content: string)
     
     parts
     

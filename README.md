@@ -1,8 +1,8 @@
 # Metro.js
 
-> Rails-esque Framework For Node.js (just hacking for now)
+> Fulfilling Web Development
 
-- Every `response.write(data)` counts as a "flush".
+Metro.js &reg; is an open source web framework for the Rails-prone Node.js hackers.
 
 ## Install
 

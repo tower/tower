@@ -58,13 +58,13 @@ describe "assets", ->
       
       expect(result).toEqual(expected)
     
-    it "should process javascript directives", ->
-      processor = new Metro.Assets.Processor(new Metro.Compilers.Uglifier, extension: ".js", terminator: ";")
-      result = processor.process
-        paths: ["./spec/fixtures/javascripts"]
-        files: ["directives.js"]
-        
-      expect(result).toEqual {directives: 'alert("child a"),alert("child b"),alert("directives")'}
+    # it "should process javascript directives", ->
+    #   processor = new Metro.Assets.Processor(new Metro.Compilers.Uglifier, extension: ".js", terminator: ";")
+    #   result = processor.process
+    #     paths: ["./spec/fixtures/javascripts"]
+    #     files: ["directives.js"]
+    #     
+    #   expect(result).toEqual {directives: 'alert("child a"),alert("child b"),alert("directives")'}
       
   describe "compressor", ->
     beforeEach ->
@@ -93,6 +93,23 @@ describe "assets", ->
         'application': '$(document).ready(function(){alert("ready!")})'
       
     it "should create a digest for a file", ->
+    
+  describe "render", ->
+    it "should render async", ->
+      environment = Metro.Application.instance().assets()
+      environment.load_paths = ["./spec/fixtures"]
+      asset = new Metro.Assets.Asset("./spec/fixtures/javascripts/directives.js", ".js")
+      asset.render (result) ->
+        expect(result).toEqual '''
+alert("child a");
+alert("child b");
+//= require directive_child_a
+//= require directive_child_b
+
+alert("directives");
+
+
+        '''
   
   describe "environment", ->
     beforeEach ->

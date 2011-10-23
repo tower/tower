@@ -1,9 +1,9 @@
 Assets =
-  Asset:              require('./assets/asset')
-  Processor:          require('./assets/processor')
-  Environment:        require('./assets/environment')
+  Asset:                require('./assets/asset')
+  Processor:            require('./assets/processor')
+  Environment:          require('./assets/environment')
   
-  load_paths:         ["./app/assets", "./lib/assets", "./vendor/assets"]
+  load_paths:           ["./app/assets", "./lib/assets", "./vendor/assets"]
   
   config:
     css:                []
@@ -69,8 +69,5 @@ Assets =
       @js_processor()
     else if extension.match(/(css|styl|scss|sass|less)/)
       @css_processor()
-      
-  upload: ->
-    
     
 module.exports = Assets

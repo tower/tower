@@ -21,13 +21,28 @@ Metro[key] = value for key, value of api
 
 api =
   configuration:  null
-  logger:         new Metro.Support.Logger
+  logger:         new (require("common-logger"))(colorized: true)
   root:           process.cwd()
   public_path:    process.cwd() + "/public"
   env:            "test"
   port:           1597
   cache:          null
   version:        "0.2.0"
+  
+  locale:
+    en:
+      errors:
+        missing_callback: "You must pass a callback to %s."
+        not_found: "%s not found."
+  
+  raise: ->
+    args    = Array.prototype.slice.call(arguments)
+    path    = args.shift().split(".")
+    message = Metro.locale.en
+    message = message[node] for node in path
+    i       = 0
+    message = message.replace /%s/g, -> args[i++]
+    throw new Error(message)
   
   application: ->
     Metro.Application.instance()

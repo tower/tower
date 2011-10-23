@@ -6,7 +6,6 @@ Compilers =
   CoffeeScript:         require('./compilers/coffee_script')
   Less:                 require('./compilers/less')
   Mustache:             require('./compilers/mustache')
-  Sass:                 require('./compilers/sass')
   Markdown:             require('./compilers/markdown')
   Sprite:               require('./compilers/sprite')
   Yui:                  require('./compilers/yui')
@@ -17,13 +16,12 @@ Compilers =
     
   keys: ->
     @_keys ?= {    
-      "styl":   new Metro.Compilers.Stylus
+      "styl":     new Metro.Compilers.Stylus
       "jade":     new Metro.Compilers.Jade
       "haml":     new Metro.Compilers.Haml
       "ejs":      new Metro.Compilers.Ejs
       "coffee":   new Metro.Compilers.CoffeeScript
       "less":     new Metro.Compilers.Less
-      "sass":     new Metro.Compilers.Sass
       "mustache": new Metro.Compilers.Mustache
     }
   

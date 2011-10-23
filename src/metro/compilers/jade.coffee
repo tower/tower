@@ -1,16 +1,18 @@
 class Jade
   engine: -> require('jade')
   
-  # compile "./application.jade", (error, result) -> console.log(result)
-  compile: (content, options) ->
-    callback = options if typeof(options) == "function"
-    result = null
+  compile: (content, options, callback) ->
+    self          = @
+    result        = ""
+    if typeof(options) == "function"
+      callback    = options
+      options     = {}
     options ?= {}
+    
     @engine().render content, options, (error, data) ->
-      if error
-        result = error.toString()
-      else
-        result = data
+      result = data
+      callback.call(self, error, result) if callback
+      
     result
     
 exports = module.exports = Jade

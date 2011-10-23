@@ -1,6 +1,9 @@
 require('../lib/metro')
 require('./secrets')
 
+Metro.root        = process.cwd() + "/spec/spec-app"
+Metro.public_path = Metro.root + "/public"
+
 SpecHelper = 
   toRespondWith: (request, response) ->
     new Metro.Spec.Http(Metro.Application.instance())

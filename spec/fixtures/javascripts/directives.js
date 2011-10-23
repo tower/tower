@@ -1,4 +1,4 @@
-//= require ./spec/fixtures/javascripts/directive_child_a.js
-//= require ./spec/fixtures/javascripts/directive_child_b.js
+//= require directive_child_a
+//= require directive_child_b
 
 alert("directives");

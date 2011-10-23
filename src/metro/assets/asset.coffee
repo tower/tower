@@ -62,56 +62,90 @@ class Asset extends (require("../support/path"))
     Metro.Support.Path.utime(mtime, mtime, filename)
 
     nil
+  
+  paths: (options, callback) ->
+    self = @
+    @parts options, (parts) ->
+      paths = []
+      paths.push(part.path) for part in parts
+      callback.call self, paths
     
+  parts: (options, callback) ->
+    if typeof(options) == "function"
+      callback  = options
+      options   = {}
+    options    ?= {}
+    
+    self        = @
+    extension   = @extension
+    
+    require_directives = if options.hasOwnProperty("require") then options.require else true
+    
+    data = @read()
+    
+    if require_directives
+      callback.call self, Metro.Assets.processor_for(extension[1..-1]).parse(data, self.path)
+    else
+      callback.call self, [content: data, path: self.path]
+    
+  parse: (options, callback) ->
+    if typeof(options) == "function"
+      callback  = options
+      options   = {}
+    options    ?= {}
+    
+    Metro.raise("errors.missing_callback", "Asset#render") unless callback
+    
+    self        = @
+    extension   = @extension
+    result      = []
+    terminator  = "\n"
+    
+    @parts (options, parts) ->
+      iterate = (part, next) ->
+        if part.hasOwnProperty("content")
+          self.compile part.content, _.extend({}, options), (data) ->
+            part.content = data
+            result.push(part)
+            next()
+        else
+          child = Metro.Application.instance().assets().find(part.path, extension: extension)
+          if child
+            child.render _.extend({}, options), (data) ->
+              part.content = data
+              result.push(part)
+              next()
+          else
+            console.log "Dependency '#{part.path}' not found in #{self.path}"
+            next()
+    
+      async.forEachSeries parts, iterate, ->
+        callback.call(self, result)
+        
   render: (options, callback) ->
-    parts       = Metro.Assets.processor_for(@extension[1..-1]).parse @read()
-    _callback    = (error) ->
-      console.log "DONE!"
-    iterator = (part, callback) ->
-      if part.hasOwnProperty("content")
-        @compile part.content, options, (data) ->
-          render_parts.apply(self, _.extend({}, options), data + terminator)
-      else
-        child = Metro.Application.instance().assets().find(part.path, extension: extension)
-        if child
-          child.render options, (data) ->
-            callback.apply(self, data + terminator)
-        else
-          console.log "Dependency '#{part.path}' not found in #{self.path}"
-          callback.apply(self, "")
-    else
-      callback.apply(self, "")
-    async.forEachSeries(parts, iterator, _callback)
-    #@render_parts(parts, options, callback)
+    if typeof(options) == "function"
+      callback  = options
+      options   = {}
+    options    ?= {}
+    result      = ""
+    terminator  = "\n"
+    self        = @
+    @parse options, (parts) ->
+      for part in parts
+        result += part.content
+      result += terminator
+      callback.call(self, result)
     
-  render_parts: (parts, options, result, callback) ->
-    result ?= ""
+  compile: (data, options, callback) ->
+    options ?= {}
+    self    = @
+    iterate = (compiler, next) ->
+      compiler.compile data, _.extend({}, options), (error, result) ->
+        data = result
+        next()
     
-    if parts.length > 0
-      extension   = @extension
-      terminator  = ";"
-      self        = @
-      part        = parts.shift()
-      
-      if part.hasOwnProperty("content")
-        @compile part.content, options, (data) ->
-          render_parts.apply(self, _.extend({}, options), data + terminator)
-      else
-        child = Metro.Application.instance().assets().find(part.path, extension: extension)
-        if child
-          child.render options, (data) ->
-            callback.apply(self, data + terminator)
-        else
-          console.log "Dependency '#{part.path}' not found in #{self.path}"
-          callback.apply(self, "")
-    else
-      callback.apply(self, "")
-    
-  compile: (data, options = {}) ->
-    compilers   = @compilers()
-    for compiler in compilers
-      data = compiler.compile(data, _.extend({}, options))
-    data
+    async.forEachSeries @compilers(), iterate, ->
+      callback.call(self, data)
     
   compilers: ->
     unless @_compilers
@@ -125,8 +159,5 @@ class Asset extends (require("../support/path"))
       @_compilers = result
       
     @_compilers
-    
-  body: ->
-    @render()
-
+  
 module.exports = Asset

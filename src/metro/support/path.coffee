@@ -22,6 +22,9 @@ class File
   @read: (path) ->
     fs.readFileSync(path, "utf-8")
     
+  @read_async: (path, callback) ->
+    fs.readFile(path, "utf-8", callback)
+    
   @slug: (path) ->
     @basename(path).replace(new RegExp(@extname(path) + "$"), "")
     
@@ -150,6 +153,9 @@ class File
     @constructor.extname(@path)
     
   read: ->
-    fs.readFileSync(@path, "utf-8")
+    @constructor.read(@path)
+    
+  read_async: (callback) ->
+    @constructor.read_async(@path, callback)
 
 module.exports = File

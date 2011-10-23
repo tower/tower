@@ -1,6 +1,5 @@
 Support =
   Class:          require('./support/class')
-  Logger:         require('./support/logger')
   Path:           require('./support/path')
   String:         require('./support/string')
   Hash:           require('./support/hash')
