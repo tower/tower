@@ -1,5 +1,7 @@
 fs = require('fs')
-
+# https://github.com/fairfieldt/coffeescript-concat/blob/master/coffeescript-concat.coffee
+# https://github.com/serpentem/coffee-toaster
+# http://requirejs.org/
 # _require = global.require
 # global.require = (path) ->
 #   Metro.Support.Dependencies.load_path(path)

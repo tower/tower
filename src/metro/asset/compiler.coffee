@@ -1,4 +1,4 @@
-class Compiler  
+class Compiler
   process_css: ->
     @css_processor().process
       paths: @config.css_paths

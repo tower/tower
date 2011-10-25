@@ -2,5 +2,6 @@ class Serialization
   toXML: ->
     
   toJSON: ->
+    JSON.stringify(@attributes)
     
-module.exports.Serialization = Metro.Model.Serialization = Serialization
+module.exports = Serialization

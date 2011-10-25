@@ -133,31 +133,3 @@ class Asset
     @_compilers
   
 module.exports = Asset
-
-
-Assets =
-  Asset:                require('./assets/asset')
-  Processor:            require('./assets/processor')
-  Environment:          require('./assets/environment')
-  
-  load_paths:           ["./app/assets", "./lib/assets", "./vendor/assets"]
-  
-  config:
-    css:                []
-    js:                 []
-    version:            1.0
-    enabled:            true
-    js_compressor:      "uglifier"
-    css_compressor:     "yui"
-    css_paths:          []
-    js_paths:           []
-    path:               "./assets"
-    public_path:        "./public"
-    
-    compress:           true
-    compile:            true
-    digest:             true
-    debug:              false
-  
-    
-module.exports = Assets

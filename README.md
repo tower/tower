@@ -10,6 +10,16 @@ Metro.js &reg; is an open source web framework for the Rails-prone Node.js hacke
 npm install metro
 ```
 
+## Build
+
+``` coffeescript
+content.replace(/(\s*)\@([A-Z]\w*):\s*require\s*\(?\s*['"]([^'"]+)['"]\s*\)?/, (_, tab, name, path) ->
+  lines = fs.readFileSync(path).split("\n")
+  for line, index in lines
+    lines[index] = "#{tab}  "
+  "class @#{name}\n" + lines
+```
+
 ## Events
 
 ``` coffeescript

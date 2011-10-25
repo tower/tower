@@ -1,2 +1,3 @@
-class Metro.Mailer
+class Mailer
   
+module.exports = Mailer

@@ -1,13 +1,13 @@
 _ = require("underscore")
 _.mixin(require("underscore.string"))
 
-class Mapper extends Class
+class DSL
   constructor: (collection) ->
     @collection = collection
   
   match: ->
     @scope ?= {}
-    @collection.add(new Metro.Routes.Route(@_extract_options(arguments...)))
+    @collection.add(new Metro.Route(@_extract_options(arguments...)))
     
   get: ->
     @match_method("get", arguments...)

@@ -1,4 +1,6 @@
 class Route
+  @DSL: require './route/dsl'
+  
   @normalize_path: (path) ->
     "/" + path.replace(/^\/|\/$/, "")
   
@@ -9,6 +11,19 @@ class Route
   options:  null
   pattern:  null
   keys:     null
+  
+  draw: (callback) ->
+    mapper              = new Metro.Routes.Mapper(@).instance_eval(callback)
+    @
+    
+  add: (route) ->
+    @set.push route
+    @named[route.name] = route if route.name?
+    route
+    
+  clear: ->
+    @set    = []
+    @named  = {}
   
   constructor: (options) ->
     options    ?= options
@@ -61,3 +76,18 @@ class Route
 
   
 exports = module.exports = Route
+
+Routes =
+  Route:        require('./routes/route')
+  Collection:   require('./routes/collection')
+  Mapper:       require('./routes/mapper')
+  
+  bootstrap: ->
+    require("#{Metro.root}/config/routes")
+    
+  reload: ->
+    delete require.cache["#{Metro.root}/config/routes"]
+    Metro.Application._routes = null
+    @bootstrap()
+    
+module.exports = Routes
