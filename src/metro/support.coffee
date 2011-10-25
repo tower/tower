@@ -1,22 +1,19 @@
-Support =
-  Class:          require('./support/class')
-  Path:           require('./support/path')
-  String:         require('./support/string')
-  Hash:           require('./support/hash')
-  Object:         require('./support/object')
-  Array:          require('./support/array')
-  Date:           require('./support/date')
-  Dependencies:   require('./support/dependencies')
-  System:         require('./support/system')
-  Lookup:         require('./support/lookup')
-  
-  # Applies the helpers to native objects, so
-  # Metro.Support.String.constantize("User") becomes
-  # "User".constantize
-  to_ruby: ->
-    String.prototype[key] = value for key, value of Metro.Support.String
+module.exports = Metro.Support =
+  Array:          require './support/array'
+  Class:          require './support/class'
+  Callbacks:      require './support/callbacks'
+  Concern:        require './support/concern'
+  Date:           require './support/date'
+  Dependencies:   require './support/dependencies'
+  Hash:           require './support/hash'
+  IE:             require './support/ie'
+  I18n:           require './support/i18n'
+  Inflector:      require './support/inflector'
+  Lookup:         require './support/lookup'
+  Object:         require './support/object'
+  Path:           require './support/path'
+  String:         require './support/string'
+  System:         require './support/system'
+
+  agent: if typeof(window) != 'undefined' then navigator.userAgent else 'node'
     
-  to_underscore: ->
-    require('underscore').extend {}, Metro.Support.String, Metro.Support.Hash, Metro.Support.Array
-    
-module.exports = Support

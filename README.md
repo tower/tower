@@ -10,6 +10,20 @@ Metro.js &reg; is an open source web framework for the Rails-prone Node.js hacke
 npm install metro
 ```
 
+## Events
+
+``` coffeescript
+Metro.on "attributeChange", (event) ->
+  event.target
+  
+User.on "attributeChange"  
+
+user.on "attributeChange"
+
+User.on "afterCreate", (event) ->
+  
+```
+
 ## Generate an App
 
 (or just setup the files manually, I like that better)

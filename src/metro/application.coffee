@@ -1,7 +1,8 @@
 connect = require('connect')
 
 class Application
-  @Configuration: require('./application/configuration')
+  @Configuration: require './application/configuration'
+  @Server:        require './application/server'
   
   @routes: -> @instance().routes()
   
