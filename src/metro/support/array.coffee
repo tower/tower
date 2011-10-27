@@ -38,7 +38,7 @@ class ArrayExtension
     
     valueComparator = (x, y) ->
       if x > y then 1 else (if x < y then -1 else 0)
-    
+      
     arrayComparator = (a, b) ->
       x = []
       y = []
@@ -48,11 +48,11 @@ class ArrayExtension
         direction = sorting[1]
         aValue    = a[attribute]
         bValue    = b[attribute]
-
+        
         unless typeof callbacks[attribute] is "undefined"
           aValue  = callbacks[attribute](aValue)
           bValue  = callbacks[attribute](bValue)
-
+        
         x.push(direction * valueComparator(aValue, bValue))
         y.push(direction * valueComparator(bValue, aValue))
 
@@ -60,12 +60,13 @@ class ArrayExtension
     
     sortings = sortings.map (sorting) ->
       sorting = [sorting, "asc"] unless sorting instanceof Array
-      if sorting[1] is "desc"
+      
+      if sorting[1] == "desc"
         sorting[1] = -1
       else
         sorting[1] = 1
       sorting
-
+    
     objects.sort (a, b) ->
       arrayComparator a, b
   

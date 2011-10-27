@@ -1,4 +1,6 @@
 class Scopes
+  #constructor: -> super
+  
   # Create named scope class method finders for a model.
   #
   # @example Add scope to a User model
@@ -31,7 +33,7 @@ class Scopes
     @scoped().includes(arguments...)
   
   @scoped: ->
-    new Metro.Model.Cursor(@name)
+    new Metro.Model.Scope(@name)
     
   @all: (callback) ->
     @store().all(callback)

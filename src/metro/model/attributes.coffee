@@ -5,28 +5,26 @@ class Attributes
   @key: (key, options) ->
     @keys()[key] = options
     
-    Object.defineProperty @prototype, key, enumerable: true, configurable: true, 
-      get: -> @getField(key)
-      set: (value) -> @setField(key, value)
+    Object.defineProperty @prototype, key, 
+      enumerable: true
+      configurable: true
+      get: -> @getAttribute(key)
+      set: (value) -> @setAttribute(key, value)
     
     @
     
   @keys: ->
     @_keys ?= {}
   
-  constructor: ->
-    @attributes = {}
-    @changes    = {}
-  
-  getField: (name) ->
-    @fields[name]
+  getAttribute: (name) ->
+    @attributes[name]
     
   @alias "get", "getField" unless @hasOwnProperty("get")
   
-  setField: (name, value) ->
+  setAttribute: (name, value) ->
     beforeValue = @_trackChangedAttribute(attribute, value)
     @attributes[name] = value
-    @emit("fieldChanged", beforeValue: beforeValue, value: value)
+    #@emit("fieldChanged", beforeValue: beforeValue, value: value)
     
   @alias "set", "setField" unless @hasOwnProperty("set")
   
@@ -41,5 +39,12 @@ class Attributes
       delete @changes[attribute]
       
     beforeValue
+  
+  constructor: (attrs = {}) ->
+    #console.log "HERE!!!"
+    @attributes = attrs
+    #console.log @attributes
+    @changes    = {}
+    #super
   
 module.exports = Attributes

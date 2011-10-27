@@ -8,6 +8,8 @@ class UserExtendingFunction
   @include UserModule
 
 class UserExtendingClass extends Metro.Support.Class
+  constructor: -> super
+  
   @include UserModule
   
 describe "support", ->

@@ -1,4 +1,6 @@
 class Rendering
+  constructor: -> super
+  
   render: ->
     view = new Metro.Views.Base(@)
     body = view.render(arguments...)
@@ -22,3 +24,6 @@ class Rendering
   # private
   _render_template: (options) ->
     @template.render(view_context, options)
+
+module.exports = Rendering
+    

@@ -1,12 +1,14 @@
 class Persistence
-  @create: (options) ->
+  #constructor: -> super
   
-  create: (options) ->
+  @create: (attrs) ->
+    record = new @(attrs)
+    @store().create(record)
+    record
     
   save: (options) ->
     
   update: (options) ->
     
-  
   
 module.exports = Persistence

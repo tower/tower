@@ -1,4 +1,6 @@
 class Controller
+  constructor: -> super
+  
   @Flash:         require './controller/flash'
   @Redirecting:   require './controller/redirecting'
   @Rendering:     require './controller/rendering'
@@ -33,14 +35,5 @@ class Controller
   
   @getter "controller_name", @,   -> Metro.Support.String.underscore(@name)
   @getter "controller_name", @::, -> @constructor.controller_name
-  
-  constructor: ->
-    @headers      = {}
-    @status       = 200
-    @request      = null
-    @response     = null
-    @content_type = "text/html"
-    @params       = {}
-    @query        = {}
   
 module.exports = Controller

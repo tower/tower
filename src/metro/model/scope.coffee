@@ -1,8 +1,8 @@
 # All finder methods return a Cursor, which optimizes traversal and query construction.
 class Scope
-  constructor: (sourceClassName, store) ->
+  constructor: (sourceClassName) ->
     @sourceClassName = sourceClassName
-    @store      = store
+    @store = global[@sourceClassName].store()
     @conditions = []
   
   anyIn: ->
@@ -38,15 +38,30 @@ class Scope
     @
     
   all: (callback) ->
-    @store.all(@conditions, callback)
+    @store.all(@query(), callback)
     
   first: (callback) ->
-    @store.first(@conditions, callback)
+    @store.first(@query(), callback)
     
   last: (callback) ->
-    @store.last(@conditions, callback)
+    @store.last(@query(), callback)
   
   sourceClass: ->
     global[@sourceClassName]
+    
+  query: ->
+    conditions = @conditions
+    result = {}
+    
+    for condition in conditions
+      switch condition[0]
+        when "where"
+          item = condition[1][0]
+          for key, value of item
+            result[key] = value
+        when "order"
+          result._sort = condition[1][0]
+    
+    result
 
 module.exports = Scope

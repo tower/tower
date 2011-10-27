@@ -1,4 +1,6 @@
 class Concern  
+  constructor: -> super
+  
   @included: ->
     @_dependencies ?= []
     @extend   @ClassMethods if @hasOwnProperty("ClassMethods")

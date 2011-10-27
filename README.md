@@ -172,6 +172,10 @@ class Post
     @slug = _.parameterize(@title)
 ```
 
+``` coffeescript
+User.where(first_name: "=~": "a").order(["first_name", "desc"]).all()
+```
+
 ## Controllers
 
 ``` coffeescript

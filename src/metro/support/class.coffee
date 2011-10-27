@@ -64,8 +64,34 @@ class Class
     
     @extend(obj)
     
-    for key, value of obj.prototype when key not in moduleKeywords
+    #for key, value of obj.prototype when key not in moduleKeywords
+    #  @::[key] = value
+    
+    c = @
+    child = @
+    parent = obj
+    
+    sn = if child.__super__ then child.__super__.constructor.name else "null"
+    console.log "#{@name}.__super__ (WAS) #{sn} and WILL BE #{parent.name}"
+    
+    clone = (fct)->
+      clone = ->
+        fct.apply this, arguments
+        
+      clone:: = fct::
+      for property of fct
+        clone[property] = fct[property] if fct.hasOwnProperty(property) and property isnt "prototype"
+      clone
+      
+    oldproto = child.__super__ if child.__super__
+    cloned = clone(parent)
+    newproto = cloned.prototype
+    
+    for key, value of cloned.prototype when key not in moduleKeywords
       @::[key] = value
+    
+    cloned.prototype = oldproto if oldproto
+    child.__super__ = newproto
     
     included = obj.included
     included.apply(obj.prototype) if included

@@ -1,5 +1,7 @@
 class Responding
-  @include Metro.Support.Concern
+  #constructor: -> super
+  
+  #@include Metro.Support.Concern
     
   @respond_to: ->
     @_respond_to ?= []
@@ -39,5 +41,14 @@ class Responding
     @[@params.action]()
     
   process_query: ->
+  
+  constructor: ->
+    @headers      = {}
+    @status       = 200
+    @request      = null
+    @response     = null
+    @content_type = "text/html"
+    @params       = {}
+    @query        = {}
     
 module.exports = Responding

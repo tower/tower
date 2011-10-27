@@ -1,4 +1,6 @@
 class Model
+  constructor: -> super
+  
   @Association:   require './model/association'
   @Associations:  require './model/associations'
   @Attributes:    require './model/attributes'
@@ -9,14 +11,18 @@ class Model
   @Validation:    require './model/validation'
   @Validations:   require './model/validations'
   
+  @include @Persistence
+  @include @Scopes
+  @include @Attributes
+  
   @initialize: ->
     Metro.Support.Dependencies.load("#{Metro.root}/app/models")
     
   @teardown: ->
     delete @_store
   
-  @toString: -> 
-    "#{@className}(#{@attributes.join(", ")})"
+  #@toString: -> 
+  #  "#{@className}(#{@attributes.join(", ")})"
   
   # Add the global store to your model.
   # 
