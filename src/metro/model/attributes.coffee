@@ -19,7 +19,7 @@ class Attributes
   @alias "get", "getField" unless @hasOwnProperty("get")
   
   setAttribute: (name, value) ->
-    beforeValue = @_trackChangedAttribute(attribute, value)
+    beforeValue = @_trackChangedAttribute(name, value)
     @attributes[name] = value
     #@emit("fieldChanged", beforeValue: beforeValue, value: value)
     

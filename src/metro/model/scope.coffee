@@ -2,7 +2,6 @@
 class Scope
   constructor: (sourceClassName) ->
     @sourceClassName = sourceClassName
-    @store = global[@sourceClassName].store()
     @conditions = []
   
   where: ->
@@ -30,16 +29,19 @@ class Scope
     @
     
   all: (callback) ->
-    @store.all(@query(), callback)
+    @store().all(@query(), callback)
     
   first: (callback) ->
-    @store.first(@query(), callback)
+    @store().first(@query(), callback)
     
   last: (callback) ->
-    @store.last(@query(), callback)
+    @store().last(@query(), callback)
   
   sourceClass: ->
     global[@sourceClassName]
+    
+  store: ->
+    global[@sourceClassName].store()
     
   query: ->
     conditions = @conditions

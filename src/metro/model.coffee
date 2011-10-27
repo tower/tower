@@ -14,6 +14,7 @@ class Model
   @include @Persistence
   @include @Scopes
   @include @Associations
+  @include @Validations
   @include @Attributes
   
   @initialize: ->

@@ -1,9 +1,16 @@
 class Validations
+  constructor: -> super
+  
   @validates: ->
     attributes = Array.prototype.slice.call(arguments, 0, arguments.length)
     options    = attributes.pop()
     
     Metro.throw_error("missing_options", "#{@name}.validates") unless typeof(options) == "object"
+    
+    validators = @validators()
+    
+    for key, value of options
+      validators.push new Metro.Model.Validation(key, attributes...)
     
   @validators: ->
     @_validators ?= []
@@ -12,11 +19,15 @@ class Validations
     self        = @
     validators  = @constructor.validators()
     success     = true
+    @errors().length = 0
     
     for validator in validators
       unless validator.validate(self)
         success = false
         
     success
+  
+  errors: ->
+    @_errors ?= []
 
 module.exports = Validations

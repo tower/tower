@@ -9,9 +9,13 @@ class global.User# extends Function
   @include Metro.Model
   
   @key "id"
-  @key "first_name"
+  @key "firstName"
+  
+  @scope "bySanta", @where(firstName: "=~": "Santa")
   
   @hasMany "posts", className: "Page"
+    
+  @validates "firstName", presence: true
   
 class global.Page extends Metro.Model
   @key "id"
@@ -25,33 +29,37 @@ describe 'Metro.Model', ->
       User.deleteAll()
       
     beforeEach ->
-      @user = User.create(id: 1, first_name: "lance")
-      
-      User.create(id: 2, first_name: "dane")
+      @user = User.create(id: 1, firstName: "Lance")
+      User.create(id: 2, firstName: "Dane")
       
     it 'should have a getter', ->
-      expect(@user.first_name).toEqual "lance"
+      expect(@user.firstName).toEqual "Lance"
       
     it 'should have where scope', ->
-      user = User.where(first_name: "lance").first()
+      user = User.where(firstName: "Lance").first()
       
-      expect(user.first_name).toEqual "lance"
+      expect(user.firstName).toEqual "Lance"
       
-      users = User.where(first_name: "=~": "c").all()
+      users = User.where(firstName: "=~": "c").all()
       expect(users.length).toEqual 1
-      expect(users[0].first_name).toEqual "lance"
+      expect(users[0].firstName).toEqual "Lance"
       
-      users = User.where(first_name: "=~": "a").order("first_name").all()
+      users = User.where(firstName: "=~": "a").order("firstName").all()
       expect(users.length).toEqual 2
-      expect(users[0].first_name).toEqual "dane"
+      expect(users[0].firstName).toEqual "Dane"
       
-      users = User.where(first_name: "=~": "a").order(["first_name", "desc"]).all()
+      users = User.where(firstName: "=~": "a").order(["firstName", "desc"]).all()
       expect(users.length).toEqual 2
-      expect(users[0].first_name).toEqual "lance"
+      expect(users[0].firstName).toEqual "Lance"
+    
+    it 'should have named scopes', ->  
+      User.create(id: 3, firstName: "Santa")
+      
+      expect(User.bySanta.first().firstName).toEqual "Santa"
       
   describe 'associations', ->
     beforeEach ->
-      @user = User.create(id: 1, first_name: "lance")
+      @user = User.create(id: 1, firstName: "Lance")
       @post = Page.create(id: 1, title: "First Post", userId: @user.id)
       
     afterEach ->
@@ -65,4 +73,25 @@ describe 'Metro.Model', ->
       posts = @user.posts.where(title: "=~": "first").all()
       expect(posts.length).toEqual 0
     
+  describe 'validations', ->
+    beforeEach ->
+      @user = new User(id: 1)
     
+    it 'should be invalid', ->
+      expect(@user.validate()).toEqual false
+      expect(@user.errors()).toEqual [
+        { attribute : 'firstName', message : "firstName can't be blank" }
+      ]
+      
+      @user.firstName = "Joe"
+      
+      expect(@user.validate()).toEqual true
+      expect(@user.errors()).toEqual []
+      
+      @user.firstName = null
+      
+      expect(@user.validate()).toEqual false
+      expect(@user.errors()).toEqual [
+        { attribute : 'firstName', message : "firstName can't be blank" }
+      ]
+  
