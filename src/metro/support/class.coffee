@@ -71,8 +71,8 @@ class Class
     child = @
     parent = obj
     
-    sn = if child.__super__ then child.__super__.constructor.name else "null"
-    console.log "#{@name}.__super__ (WAS) #{sn} and WILL BE #{parent.name}"
+    #sn = if child.__super__ then child.__super__.constructor.name else "null"
+    #console.log "#{@name}.__super__ (WAS) #{sn} and WILL BE #{parent.name}"
     
     clone = (fct)->
       clone = ->
