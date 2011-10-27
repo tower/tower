@@ -95,3 +95,28 @@ describe 'Metro.Model', ->
         { attribute : 'firstName', message : "firstName can't be blank" }
       ]
   
+  describe 'serialization', ->
+    beforeEach ->
+      @user = new User(firstName: 'Terminator', id: 1)
+      
+    it 'should serialize to JSON', ->
+      expect(@user.toJSON()).toEqual '{"firstName":"Terminator","id":1}'
+      
+    it 'should unmarshall from JSON', ->
+      user = User.fromJSON('{"firstName":"Terminator","id":1}')[0]
+      expect(user).toEqual(@user)
+  
+  describe 'attributes', ->    
+    beforeEach ->
+      @user = new User(firstName: 'Terminator', id: 1)
+      
+    it 'should track attribute changes', ->
+      expect(@user.changes).toEqual {}
+      
+      @user.firstName = "T1000"
+      
+      expect(@user.changes).toEqual firstName: ["Terminator", "T1000"]
+      
+      @user.firstName = "Smith"
+      
+      expect(@user.changes).toEqual firstName: ["Terminator", "Smith"]

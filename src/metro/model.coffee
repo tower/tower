@@ -3,16 +3,19 @@ class Model
   
   @Association:   require './model/association'
   @Associations:  require './model/associations'
+  @Attribute:     require './model/attribute'
   @Attributes:    require './model/attributes'
   @Observing:     require './model/observing'
   @Persistence:   require './model/persistence'
   @Scope:         require './model/scope'
   @Scopes:        require './model/scopes'
+  @Serialization: require './model/serialization'
   @Validation:    require './model/validation'
   @Validations:   require './model/validations'
   
   @include @Persistence
   @include @Scopes
+  @include @Serialization
   @include @Associations
   @include @Validations
   @include @Attributes
