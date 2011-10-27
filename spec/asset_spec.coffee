@@ -31,6 +31,8 @@ describe "assets", ->
     it 'should find file if file is named same as folder in a different load path', ->
     
     it 'should find files with . dots in their name', ->
+    
+    it 'should ignore files starting with a ~ tilde', ->
       
   describe "compression", ->
     it "should use the YUI compressor", ->
