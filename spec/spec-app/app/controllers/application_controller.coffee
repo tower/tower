@@ -1,6 +1,6 @@
 class ApplicationController
-  @include  Metro.Controllers.Base
+  @include  Metro.Controller
   
   @layout   "application"
   
-exports = module.exports = ApplicationController
+module.exports = ApplicationController

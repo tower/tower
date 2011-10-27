@@ -36,6 +36,18 @@ Metro.js &reg; is an open source web framework for the Rails-prone Node.js hacke
 npm install metro
 ```
 
+## Application
+
+``` coffeescript
+class MyApp.Application extends Metro.Application
+  @config.encoding = "utf-8"
+  @config.filter_parameters += [:password, :password_confirmation]
+  @config.autoload_paths += []
+  config.i18n.load_path += Dir[File.join(Rails.root, 'config', 'locales', '**', '*.{rb,yml}')]
+  
+MyApp.Application.initialize!
+```
+
 ## Build
 
 ``` coffeescript
@@ -192,6 +204,29 @@ class PostsController
     
   destroy: ->
     @post = Post.find(@params.id)
+```
+
+## Binding
+
+It's easy to do binding from a model to a view, because we're creating the models and can dispatch events.  Without events, you have to run a timer.
+
+Manual form:
+
+``` coffeescript
+post = new Post(title: "First Post")
+
+Metro.bind $("#title").get(0), "innerHTML", post, "title"
+Metro.bind $("title").get(0), "innerHTML", post, "title"
+```
+
+## Observer
+
+``` coffeescript
+class ImagesPresenter
+  afterShow: ->
+    view = $(@body)
+    view.appendTo("body").popup()
+    Metro.bind $(".caption", view).get(0), "innerHTML", @image, "title"
 ```
 
 ## Development

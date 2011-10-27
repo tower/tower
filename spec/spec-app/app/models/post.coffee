@@ -1,3 +1,4 @@
 class Post
-  @include Metro.Models.Base
+  @include Metro.Model
   
+module.exports = Post

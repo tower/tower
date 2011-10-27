@@ -1,16 +1,38 @@
-class Metro.Controller
-  @Configuration: require './controller/configuration'
-  @Callbacks:     require './controller/callbacks'
-  @Errors:        require './controller/errors'
+class Controller
   @Flash:         require './controller/flash'
-  @Responding:    require './controller/responding'
+  @Redirecting:   require './controller/redirecting'
   @Rendering:     require './controller/rendering'
+  @Responding:    require './controller/responding'
   
-  @include @Configuration
   @include @Flash
   @include @Redirecting
   @include @Rendering
   @include @Responding
+  
+  @initialize: ->
+    Metro.Support.Dependencies.load("#{Metro.root}/app/controllers")
+    
+  @teardown: ->
+    delete @_helpers
+    delete @_layout
+    delete @_theme
+  
+  @helper: (object) ->
+    @_helpers ?= []
+    @_helpers.push(object)
+  
+  @layout: (layout) ->
+    @_layout = layout
+  
+  @theme: (theme) ->
+    @_theme = theme
+    
+  layout: ->
+    layout = @constructor._layout
+    if typeof(layout) == "function" then layout.apply(@) else layout
+  
+  @getter "controller_name", @,   -> Metro.Support.String.underscore(@name)
+  @getter "controller_name", @::, -> @constructor.controller_name
   
   constructor: ->
     @headers      = {}
@@ -21,3 +43,4 @@ class Metro.Controller
     @params       = {}
     @query        = {}
   
+module.exports = Controller

@@ -1,50 +1,136 @@
+async = require 'async'
+_     = require 'underscore'
+
 class Compiler
-  process_css: ->
-    @css_processor().process
-      paths: @config.css_paths
-      files: @config.css
+  # Directives will only be picked up if they are in the header
+  # of the source file. C style (/* */), JavaScript (//), and
+  # Ruby/Coffeescript (#) comments are supported.
+  #
+  # Directives in comments after the first non-whitespace line
+  # of code will not be processed.
+  #
+  @HEADER_PATTERN: /^(\/\*\s*(?:(?!\*\/).|\n)*\*\/)|(?:\#\#\#\s*(?:(?!\#\#\#).|\n)*\#\#\#)|(?:\/\/\s*.*\s*?)+|(?:#\s*.*\s*?)/g
   
-  process_js: ->
-    @js_processor().process
-      paths: @config.js_paths
-      files: @config.js
+  # Directives are denoted by a `=` followed by the name, then
+  # argument list.
+  #
+  # A few different styles are allowed:
+  #
+  #     // =require foo
+  #     //= require foo
+  #     //= require "foo"
+  #
+  @DIRECTIVE_PATTERN: /(?:\/\/|#| *)\s*=\s*(require)\s*['"]?([^'"]+)['"]?[\s]*?\n?/
+  
+  render: (options, callback) ->
+    if typeof(options) == "function"
+      callback  = options
+      options   = {}
+    options ?= {}
+    
+    result      = ""
+    terminator  = "\n"
+    self        = @
+    
+    @parse options, (parts) ->
+      for part in parts
+        result += part.content
+      result += terminator
+      callback.call(self, result)
+  
+  parse: (options, callback) ->
+    Metro.raise("errors.missing_callback", "Asset#parse") unless callback and typeof(callback) == "function"
+    
+    self        = @
+    extension   = @extension
+    result      = []
+    terminator  = "\n"
+    
+    @parts options, (parts) ->
+      iterate = (part, next) ->
+        if part.hasOwnProperty("content")
+          self.compile part.content, _.extend({}, options), (data) ->
+            part.content = data
+            result.push(part)
+            next()
+        else
+          child = Metro.Asset.find(part.path, extension: extension)
+          if child
+            child.render _.extend({}, options), (data) ->
+              part.content = data
+              result.push(part)
+              next()
+          else
+            console.log "Dependency '#{part.path}' not found in #{self.path}"
+            next()
+    
+      async.forEachSeries parts, iterate, ->
+        callback.call(self, result)
+  
+  parts: (options, callback) ->
+    Metro.raise("errors.missing_option", "path", "Asset#parse") unless @path
+    
+    self        = @
+    extension   = @extension
+    
+    require_directives = if options.hasOwnProperty("require") then options.require else true
+    
+    data = @read()
+    
+    if require_directives
+      callback.call self, self.parse_directives(data, self.path)
+    else
+      callback.call self, [content: data, path: self.path]
+  
+  parse_directives: (string, path) ->
+    self                    = @
+    directive_pattern       = @constructor.DIRECTIVE_PATTERN
+    
+    lines                   = string.match(@constructor.HEADER_PATTERN)
+    directives_string       = ''
+    parts                   = []
+    
+    if lines && lines.length > 0
+      last                  = lines[lines.length - 1]
+      # string                = string.substr(string.indexOf(last) + last.length)
+      for line in lines
+        directive           = line.match(directive_pattern)
+        if directive
+          parts.push(path: directive[2])
+          
+    parts.push(path: path, content: string)
+
+    parts
+    
+  compile: (data, options, callback) ->
+    options ?= {}
+    self    = @
+    iterate = (engine, next) ->
+      engine.render data, _.extend({}, options), (error, result) ->
+        data = result
+        next()
+
+    async.forEachSeries @engines(), iterate, ->
+      callback.call(self, data)
+  
+  paths: (options, callback) ->
+    self = @
+    @parts options, (parts) ->
+      paths = []
+      paths.push(part.path) for part in parts
+      callback.call self, paths
+    
+  engines: ->
+    unless @_engines
+      extensions  = @extensions()
+      result      = []
       
-  process: ->
-    css:  @process_css()
-    js:   @process_js()
-    
-  compile_js: ->
-    @js_processor().compile
-      paths: @config.js_paths
-      files: @config.js
-      path:  @config.path
+      for extension in extensions
+        engine = Metro.engine(extension[1..-1])
+        result.push(engine) if engine
+        
+      @_engines = result
       
-  compile_css: ->
-    @css_processor().compile
-      paths: @config.css_paths
-      files: @config.css
-      path:  @config.path
-  
-  compile: ->
-    @compile_js()
-    @compile_css()
-  
-  css_processor: ->
-    @_css_processor ?= new Metro.Assets.Processor(@css_compressor(), extension: ".css")
-    
-  js_processor: ->
-    @_js_processor ?= new Metro.Assets.Processor(@js_compressor(), extension: ".js", terminator: ";")
-    
-  css_compressor: ->
-    @_css_compressor ?= new Metro.Compilers[Metro.Support.String.titleize(@config.css_compressor)]
-    
-  js_compressor: ->
-    @_js_compressor ?= new Metro.Compilers[Metro.Support.String.titleize(@config.js_compressor)]
-    
-  processor_for: (extension) ->
-    if extension.match(/(js|coffee)/)
-      @js_processor()
-    else if extension.match(/(css|styl|scss|sass|less)/)
-      @css_processor()
-  
+    @_engines
+
 module.exports = Compiler

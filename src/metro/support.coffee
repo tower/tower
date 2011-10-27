@@ -1,4 +1,4 @@
-module.exports = Metro.Support =
+Support =
   Array:          require './support/array'
   Class:          require './support/class'
   Callbacks:      require './support/callbacks'
@@ -16,4 +16,5 @@ module.exports = Metro.Support =
   System:         require './support/system'
 
   agent: if typeof(window) != 'undefined' then navigator.userAgent else 'node'
-    
+  
+module.exports = Support

@@ -39,3 +39,5 @@ class Responding
     @[@params.action]()
     
   process_query: ->
+    
+module.exports = Responding

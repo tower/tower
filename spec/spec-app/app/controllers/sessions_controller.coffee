@@ -1,5 +1,5 @@
 class SessionsController extends ApplicationController
-  @include Metro.Views.Helpers
+  #@include Metro.View.Helpers
   
   new: ->
     

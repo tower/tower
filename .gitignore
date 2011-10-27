@@ -21,11 +21,7 @@ pkg
 ## PROJECT::SPECIFIC
 
 doc
-doc/*
-doc/**/*
-
 node_modules
-node_modules/*
-node_modules/**/*
-
 spec/secrets.coffee
+inspiration.md
+favicon.png

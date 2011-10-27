@@ -68,7 +68,7 @@ class Class
       @::[key] = value
     
     included = obj.included
-    included.apply(this) if included
+    included.apply(obj.prototype) if included
     @
   
   @extend: (obj) ->
@@ -77,7 +77,7 @@ class Class
       @[key] = value
     
     extended = obj.extended
-    extended.apply(this) if extended
+    extended.apply(obj) if extended
     @
   
   @new: ->
@@ -106,11 +106,8 @@ class Class
       @methodMissing(arguments...) if @methodMissing
   
   methodMissing: (method) ->
-    
   
-# add it to the function prototype!
+module.exports = Class
+
 for key, value of Class
-  Function.prototype[key] = value  
-  
-exports = module.exports = Class
-global.Class = Class
+  Function.prototype[key] = value

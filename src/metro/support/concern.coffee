@@ -1,5 +1,5 @@
 class Concern  
-  @included ->
+  @included: ->
     @_dependencies ?= []
     @extend   @ClassMethods if @hasOwnProperty("ClassMethods")
     @include  @InstanceMethods if @hasOwnProperty("InstanceMethods")

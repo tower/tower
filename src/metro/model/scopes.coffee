@@ -34,7 +34,7 @@ class Scopes
     new Metro.Model.Cursor(@name)
     
   @all: (callback) ->
-    @store.all(callback)
+    @store().all(callback)
   
   @first: (callback) ->
     @store().first(callback)
@@ -43,12 +43,12 @@ class Scopes
     @store().last(callback)
   
   @find: (id, callback) ->
-    @store.find(id, callback)
+    @store().find(id, callback)
     
   @each: (callback) ->
-    @store.each(callback)
+    @store().each(callback)
     
   @count: (callback) ->
-    @store.count(callback)
+    @store().count(callback)
   
 module.exports = Scopes

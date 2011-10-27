@@ -100,7 +100,10 @@ class Lookup
   entries: (path) ->
     unless @_entries[path]
       result  = []
-      entries = Metro.Support.Path.entries(path)
+      if Metro.Support.Path.exists(path)
+        entries = Metro.Support.Path.entries(path)
+      else
+        entries = []
       
       for entry in entries
         result.push(entry) unless entry.match(/^\.|~$|^\#.*\#$/)

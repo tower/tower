@@ -1,5 +1,5 @@
 class Assets
-  @middleware: (request, response, next) -> (new Assets).call(request, response, next)
+  @middleware: (request, response, next) -> (new Metro.Middleware.Assets).call(request, response, next)
   
   call: (request, response, next) ->
     assets      = Metro.Application.instance().assets()

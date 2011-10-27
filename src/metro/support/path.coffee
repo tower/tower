@@ -47,7 +47,10 @@ class File
     _path.extname(path)
     
   @exists: (path) ->
-    _path.exists(path)
+    _path.existsSync(path)
+  
+  @exists_async: (path, callback) ->
+    _path.exists(path, callback)
     
   @extensions: (path) ->
     @basename(path).match(/(\.\w+)/g)
@@ -65,7 +68,8 @@ class File
     paths   = Metro.Support.Array.extract_args(arguments)
     result  = []
     for path in paths
-      result = result.concat require('findit').sync(path)
+      if @exists(path)
+        result = result.concat require('findit').sync(path)
     result
     
   @files: ->

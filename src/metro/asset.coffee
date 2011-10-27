@@ -1,135 +1,76 @@
-_     = require('underscore')
-async = require('async')
-
 class Asset
   @Compiler:      require './asset/compiler'
-  @Configuration: require './asset/configuration'
   @Digest:        require './asset/digest'
   @Lookup:        require './asset/lookup'
-  @Parser:        require './asset/parser'
   
   @include Metro.Support.Path
   @include @Digest
+  @include @Lookup
+  @include @Compiler
+  
+  @initialize: ->
+    @config =
+      public_path:             "#{Metro.root}/public"
+      load_paths:              [
+        "#{Metro.root}/app/assets",
+        "#{Metro.root}/lib/assets",
+        "#{Metro.root}/vendor/assets"
+      ]
+      
+      stylesheet_directory:   "stylesheets"
+      stylesheet_extensions:  ["css", "styl", "scss", "less"]
+      stylesheet_aliases:
+        css:                  ["styl", "less", "scss", "sass"]
+      
+      javascript_directory:   "javascripts"
+      javascript_extensions:  ["js", "coffee", "ejs"]
+      javascript_aliases:
+        js:                   ["coffee", "coffeescript"]
+        coffee:               ["coffeescript"]
+      
+      image_directory:        "images"
+      image_extensions:       ["png", "jpg", "gif"]
+      image_aliases:
+        jpg:                  ["jpeg"]
+      
+      font_directory:         "fonts"
+      font_extensions:        ["eot", "svg", "tff", "woff"]
+      font_aliases:           {}
+      
+      host:                   null
+      relative_root_url:      null
+    
+      precompile:             []
+    
+      js_compressor:          null
+      css_compressor:         null
+  
+  @teardown: ->
+    delete @_javascript_lookup
+    delete @_stylesheet_lookup
+    delete @_image_lookup
+    delete @_font_lookup
+    delete @_path_pattern
+    delete @_css_compressor
+    delete @_js_compressor
+    delete @_parser
+    delete @_compiler
+    delete @_digests
+    
+  @configure: (options) ->
+    @config[key] = value for key, value in options
+  
+  @css_compressor: ->
+    @_css_compressor ?= new (require('shift').YuiCompressor)
+  
+  @js_compressor: ->
+    @_js_compressor ?= new (require('shift').UglifyJS)
   
   constructor: (path, extension) ->
-    @path        = Metro.Support.Path.expand_path(path)
+    @path        = @constructor.expand_path(path)
     @extension   = extension || @extensions()[0]
   
-  write: (to, options) ->
-    # Gzip contents if filename has '.gz'
-    options.compress ?= Metro.Support.Path.extname(to) == '.gz'
-    
-    if options.compress
-      # Open file and run it through `Zlib`
-      fs.readFile @path, (data) ->
-        fs.writeFile "#{to}+", data
-    else
-      # If no compression needs to be done, we can just copy it into place.
-      Metro.Support.Path.copy(@path, "#{to}+")
-    
-    # Atomic write
-    FileUtils.mv("#{filename}+", filename)
-    
-    # Set mtime correctly
-    Metro.Support.Path.utime(mtime, mtime, filename)
-
-    nil
-  
-  paths: (options, callback) ->
-    self = @
-    @parts options, (parts) ->
-      paths = []
-      paths.push(part.path) for part in parts
-      callback.call self, paths
-    
-  parts: (options, callback) ->
-    if typeof(options) == "function"
-      callback  = options
-      options   = {}
-    options    ?= {}
-    
-    self        = @
-    extension   = @extension
-    
-    require_directives = if options.hasOwnProperty("require") then options.require else true
-    
-    data = @read()
-    
-    if require_directives
-      callback.call self, Metro.Assets.processor_for(extension[1..-1]).parse(data, self.path)
-    else
-      callback.call self, [content: data, path: self.path]
-    
-  parse: (options, callback) ->
-    if typeof(options) == "function"
-      callback  = options
-      options   = {}
-    options    ?= {}
-    
-    Metro.raise("errors.missing_callback", "Asset#render") unless callback
-    
-    self        = @
-    extension   = @extension
-    result      = []
-    terminator  = "\n"
-    
-    @parts (options, parts) ->
-      iterate = (part, next) ->
-        if part.hasOwnProperty("content")
-          self.compile part.content, _.extend({}, options), (data) ->
-            part.content = data
-            result.push(part)
-            next()
-        else
-          child = Metro.Application.instance().assets().find(part.path, extension: extension)
-          if child
-            child.render _.extend({}, options), (data) ->
-              part.content = data
-              result.push(part)
-              next()
-          else
-            console.log "Dependency '#{part.path}' not found in #{self.path}"
-            next()
-    
-      async.forEachSeries parts, iterate, ->
-        callback.call(self, result)
-        
-  render: (options, callback) ->
-    if typeof(options) == "function"
-      callback  = options
-      options   = {}
-    options    ?= {}
-    result      = ""
-    terminator  = "\n"
-    self        = @
-    @parse options, (parts) ->
-      for part in parts
-        result += part.content
-      result += terminator
-      callback.call(self, result)
-    
-  compile: (data, options, callback) ->
-    options ?= {}
-    self    = @
-    iterate = (compiler, next) ->
-      compiler.compile data, _.extend({}, options), (error, result) ->
-        data = result
-        next()
-    
-    async.forEachSeries @compilers(), iterate, ->
-      callback.call(self, data)
-    
-  compilers: ->
-    unless @_compilers
-      extensions  = @extensions()
-      result      = []
-      
-      for extension in extensions
-        compiler = Metro.Compilers.find(extension[1..-1])
-        result.push(compiler) if compiler
-        
-      @_compilers = result
-      
-    @_compilers
+  compiler: ->
+    @constructor.compiler()
   
 module.exports = Asset

@@ -1,63 +1,60 @@
-_ = require('underscore')
-
 class Lookup
-  public_path: "./public"
-  load_paths: ["./app/assets"]
+  @digests: ->
+    @_digests ?= {}
   
-  # This is appended to the load paths and public paths
-  asset_directory:     "assets"
+  @stylesheet_lookup: ->
+    @_stylesheet_lookup ?= @_create_lookup(
+      @config.stylesheet_directory
+      @config.stylesheet_extensions
+      @config.stylesheet_aliases
+    )
   
-  stylesheet_directory: "stylesheets"
-  stylesheet_extensions: ["css", "styl", "scss", "less"]
+  @javascript_lookup: ->
+    @_javascript_lookup ?= @_create_lookup(
+      @config.javascript_directory
+      @config.javascript_extensions
+      @config.javascript_aliases
+    )
   
-  javascript_directory: "javascripts"
-  javascript_extensions: ["js", "coffee", "ejs"]
+  @image_lookup: ->
+    @_image_lookup ?= @_create_lookup(
+      @config.image_directory
+      @config.image_extensions
+      @config.image_aliases
+    )
   
-  asset_host:           null
-  relative_root_url:    null
+  @font_lookup: ->
+    @_font_lookup ?= @_create_lookup(
+      @config.font_directory
+      @config.font_extensions
+      @config.font_aliases
+    )
   
-  stylesheet_lookup: ->
-    directory   = @stylesheet_directory
-    extensions  = @stylesheet_extensions
-    paths       = []
-    for path in @load_paths
-      path = Metro.Support.Path.join(path, directory)
-      paths.push(path)
-      paths = paths.concat Metro.Support.Path.directories(path)
+  @_create_lookup: (directory, extensions, aliases) ->
+    paths = []
     
-    @_stylesheet_lookup ?= new Metro.Support.Lookup
+    for path in @config.load_paths
+      path = @join(path, directory)
+      paths.push(path)
+      paths = paths.concat @directories(path)
+    
+    new Metro.Support.Lookup
       root:       Metro.root
       paths:      paths
       extensions: extensions
-      aliases:
-        css:      ["styl", "less", "scss", "sass"]
+      aliases:    aliases
+  
+  # All extensions must start with a "."
+  @paths_for: (extension) ->
+    @lookup_for(extension).paths
+  
+  @lookup_for: (extension) ->
+    switch extension
+      when ".css" then @stylesheet_lookup()
+      when ".js" then @javascript_lookup()
+      else []
       
-  javascript_lookup: ->
-    directory   = @javascript_directory
-    extensions  = @javascript_extensions
-    paths       = []
-    for path in @load_paths
-      path = Metro.Support.Path.join(path, directory)
-      paths.push(path)
-      paths = paths.concat Metro.Support.Path.directories(path)
-    
-    @_javascript_lookup ?= new Metro.Support.Lookup
-      root:       Metro.root
-      paths:      paths
-      extensions: extensions
-      aliases:
-        js:     ["coffee", "coffeescript"]
-        coffee: ["coffeescript"]
-        
-  paths_for: (extension) ->
-    if extension == ".css"
-      @stylesheet_lookup().paths
-    else if extension == ".js"
-      @javascript_lookup().paths
-    else
-      []
-      
-  digest: (source) ->
+  @digest_for: (source) ->
     @digests[source] || source
     
   # Add the extension +ext+ if not present. Return full or scheme-relative URLs otherwise untouched.
@@ -68,8 +65,8 @@ class Lookup
   # When :relative (default), the protocol will be determined by the client using current protocol
   # When :request, the protocol will be the request protocol
   # Otherwise, the protocol is used (E.g. :http, :https, etc)
-  compute_public_path: (source, options = {}) ->
-    return source if Metro.Support.Path.is_url(source)
+  @compute_public_path: (source, options = {}) ->
+    return source if @is_url(source)
     extension = options.extension
     source = @normalize_extension(source, extension) if extension
     source = @normalize_asset_path(source, options)
@@ -77,28 +74,28 @@ class Lookup
     source = @normalize_host_and_protocol(source, options.protocol)
     source
     
-  compute_asset_host: ->
-    if typeof(@asset_host) == "function" then @asset_host.call(@) else @asset_host
+  @compute_asset_host: ->
+    if typeof(@config.host) == "function" then @config.host.call(@) else @config.host
     
-  normalize_extension: (source, extension) ->
-    Metro.Support.Path.basename(source, extension) + extension
+  @normalize_extension: (source, extension) ->
+    @basename(source, extension) + extension
   
-  normalize_asset_path: (source, options = {}) ->
-    if Metro.Support.Path.is_absolute(source)
+  @normalize_asset_path: (source, options = {}) ->
+    if @is_absolute(source)
       source
     else
-      source = Metro.Support.Path.join(options.directory, source)
-      source = @digest(source) unless options.digest == false
+      source = @join(options.directory, source)
+      source = @digest_for(source) unless options.digest == false
       source = "/#{source}" unless !!source.match(/^\//)
       source
       
-  normalize_relative_url_root: (source, relative_url_root) ->
+  @normalize_relative_url_root: (source, relative_url_root) ->
     if relative_url_root && !source.match(new RegExp("^#{relative_url_root}/"))
       "#{relative_url_root}#{source}"
     else
       source
   
-  normalize_host_and_protocol: (source, protocol) ->
+  @normalize_host_and_protocol: (source, protocol) ->
     host = @compute_asset_host(source)
     #if host && !@is_uri(host)
       #if (protocol || @default_protocol) == :request && !has_request?
@@ -107,37 +104,28 @@ class Lookup
       #  host = "#{compute_protocol(protocol)}#{host}"
     if host then "#{host}#{source}" else source
   
-  read: (source, options = {}) ->
-    
-    
   # find path from source and extension
   # this method must be given a real file path!
-  find: (source, options = {}) ->
-    paths = @lookup(source, options)
+  @find: (source, options = {}) ->
+    source = source.replace(@path_pattern(), "")
+    
+    options.extension ?= @extname(source)
+    
+    Metro.raise("errors.missing_option", "extension", "Asset#find") if options.extension == ""
+    
+    pattern = "(?:" + Metro.Support.Lookup.prototype.escape(options.extension) + ")?$"
+    source  = source.replace(new RegExp(pattern), options.extension)
+    lookup  = @lookup_for(options.extension)
+    paths   = lookup.find(source) if lookup
     
     return null unless paths && paths.length > 0
     
-    new Metro.Assets.Asset(paths[0], options.extension)
+    new Metro.Asset(paths[0], options.extension)
     
-  lookup: (source, options = {}) ->
-    source = source.replace(@path_pattern(), "")
-    
-    options.extension ?= Metro.Support.Path.extname(source)
-    
-    pattern = "(?:" + Metro.Support.Lookup.prototype.escape(options.extension) + ")?$"
-    source = source.replace(new RegExp(pattern), options.extension)
-    
-    if options.extension == ".css"
-      @stylesheet_lookup().find(source)
-    else if options.extension == ".js"
-      @javascript_lookup().find(source)
-    else
-      []
-      
-  match: (path) ->
+  @match: (path) ->
     !!path.match(@path_pattern())
     
-  path_pattern: ->
-    @_path_pattern ?= new RegExp("^/(#{@asset_directory}|#{@stylesheet_directory}|#{@javascript_directory})/")
+  @path_pattern: ->
+    @_path_pattern ?= new RegExp("^/(assets|#{@config.stylesheet_directory}|#{@config.javascript_directory}|#{@config.image_directory}|#{@config.font_directory})/")
     
-module.exports = Environment
+module.exports = Lookup

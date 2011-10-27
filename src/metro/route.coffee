@@ -1,8 +1,25 @@
 class Route
   @DSL: require './route/dsl'
   
+  @include Metro.Model.Scopes
+  
+  @store: ->
+    @_store ?= new Metro.Store.Memory
+  
+  @create: (route) ->
+    @store().create(route)
+  
   @normalize_path: (path) ->
     "/" + path.replace(/^\/|\/$/, "")
+    
+  @initialize: ->
+    require "#{Metro.root}/config/routes"
+  
+  @teardown: ->
+    @store().clear()
+    
+    delete require.cache["#{Metro.root}/config/routes"]
+    delete @_store
   
   name:     null
   path:     null
@@ -12,10 +29,10 @@ class Route
   pattern:  null
   keys:     null
   
-  draw: (callback) ->
-    mapper              = new Metro.Routes.Mapper(@).instance_eval(callback)
+  @draw: (callback) ->
+    callback.apply(new Metro.Route.DSL(@))
     @
-    
+  
   add: (route) ->
     @set.push route
     @named[route.name] = route if route.name?
@@ -37,6 +54,9 @@ class Route
     @controller = options.controller
     @keys       = []
     @pattern    = @extract_pattern(@path)
+    @id         = @path
+    if @controller
+      @id += @controller.name + @controller.action
     
   match: (path) ->
     @pattern.exec(path)
@@ -45,7 +65,7 @@ class Route
     return path if path instanceof RegExp
     self = @
     return new RegExp('^' + path + '$') if path == "/"
-    # console.log(path)
+    
     path = path.replace(/(\(?)(\/)?(\.)?([:\*])(\w+)(\))?(\?)?/g, (_, open, slash, format, symbol, key, close, optional) ->
       optional = (!!optional) || (open + close == "()")
       splat    = symbol == "*"
@@ -71,23 +91,7 @@ class Route
       
       result
     )
-    # console.log(path)
+    
     new RegExp('^' + path + '$', !!case_sensitive ? '' : 'i')
-
   
-exports = module.exports = Route
-
-Routes =
-  Route:        require('./routes/route')
-  Collection:   require('./routes/collection')
-  Mapper:       require('./routes/mapper')
-  
-  bootstrap: ->
-    require("#{Metro.root}/config/routes")
-    
-  reload: ->
-    delete require.cache["#{Metro.root}/config/routes"]
-    Metro.Application._routes = null
-    @bootstrap()
-    
-module.exports = Routes
+module.exports = Route

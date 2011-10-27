@@ -1,4 +1,4 @@
-require('./helper')
+require './helper'
 
 class UserModule
   name:           "Lance"
@@ -7,7 +7,7 @@ class UserModule
 class UserExtendingFunction
   @include UserModule
 
-class UserExtendingClass extends Class
+class UserExtendingClass extends Metro.Support.Class
   @include UserModule
   
 describe "support", ->

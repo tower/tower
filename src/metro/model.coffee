@@ -2,16 +2,18 @@ class Model
   @Association:   require './model/association'
   @Associations:  require './model/associations'
   @Attributes:    require './model/attributes'
-  @Callbacks:     require './model/callbacks'
-  @Errors:        require './model/errors'
   @Observing:     require './model/observing'
+  @Persistence:   require './model/persistence'
   @Scope:         require './model/scope'
   @Scopes:        require './model/scopes'
   @Validation:    require './model/validation'
   @Validations:   require './model/validations'
   
-  @bootstrap: ->
+  @initialize: ->
     Metro.Support.Dependencies.load("#{Metro.root}/app/models")
+    
+  @teardown: ->
+    delete @_store
   
   @toString: -> 
     "#{@className}(#{@attributes.join(", ")})"

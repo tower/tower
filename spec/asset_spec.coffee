@@ -1,17 +1,14 @@
-require('./helper')
-
-yui      = new Metro.Compilers.Yui
-uglifier = new Metro.Compilers.Uglifier
+require './helper'
 
 describe "assets", ->
   describe "asset", ->
     beforeEach ->
-      @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application.js")
+      @file = new Metro.Asset("./spec/fixtures/javascripts/application.js")
     
     it "should have the path fingerprint", ->
       expect(@file.path_fingerprint()).toEqual null
-    
-      @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
+      
+      @file = new Metro.Asset("./spec/fixtures/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
       expect(@file.path_fingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
     
     it "should add fingerprint to path", ->
@@ -20,30 +17,14 @@ describe "assets", ->
     
     it "should extract extensions", ->
       expect(@file.extensions()).toEqual [".js"]
-    
-      @file = new Metro.Assets.Asset("./spec/fixtures/javascripts/application.js.coffee")
+      
+      @file = new Metro.Asset("./spec/fixtures/javascripts/application.js.coffee")
       expect(@file.extensions()).toEqual [".js", ".coffee"]
       
   describe "configuration", ->
-    it "should configure", ->
-      expect(Metro.Assets.config.js_compressor).toEqual("uglifier")
-      expect(Metro.Assets.config.css_compressor).toEqual("yui")
-      
-      Metro.configure ->
-        @assets.precompile     = ["application.js", "vendor.js", "application.css", "theme.css"]
-        @assets.version        = 1.0
-        @assets.enabled        = true
-        @assets.js_compressor  = "random"
-        @assets.css_compressor = "scss"
-        @assets.css_paths      = ["./spec/fixtures/stylesheets"]
-        @assets.js_paths       = ["./spec/fixtures/javascripts"]
-      
-      expect(Metro.Assets.config.js_compressor).toEqual("random")
-      expect(Metro.Assets.config.css_compressor).toEqual("scss")
-    
     it "should use the YUI compressor", ->
       expected  = "body{background:red}"
-      result    = yui.compress("body { background: red; }")
+      result    = Metro.Asset.css_compressor().render("body { background: red; }")
       
       expect(result).toEqual(expected)
     
@@ -54,12 +35,12 @@ describe "assets", ->
       });
       '''
       expected  = '$(document).ready(function(){alert("ready!")})'
-      result    = uglifier.compress(string)
+      result    = Metro.Asset.js_compressor().render(string)
       
       expect(result).toEqual(expected)
     
     # it "should process javascript directives", ->
-    #   processor = new Metro.Assets.Processor(new Metro.Compilers.Uglifier, extension: ".js", terminator: ";")
+    #   processor = new Metro.Asset.Processor(new Metro.Compilers.Uglifier, extension: ".js", terminator: ";")
     #   result = processor.process
     #     paths: ["./spec/fixtures/javascripts"]
     #     files: ["directives.js"]
@@ -68,37 +49,36 @@ describe "assets", ->
       
   describe "compressor", ->
     beforeEach ->
-      Metro.configure ->
-        @assets.path            = "./spec/tmp/assets"
-        @assets.css_compressor  = "yui"
-        @assets.js_compressor   = "uglifier"
-        @assets.js              = ["application.js"]
-        @assets.css             = ["application.css"]
-        @assets.css_paths       = ["./spec/fixtures/stylesheets"]
-        @assets.js_paths        = ["./spec/fixtures/javascripts"]
-        @assets.host            = "http://cloud.example.com"
-        @assets.host            = (source) -> 
+      Metro.Asset.configure
+        path            : "./spec/tmp/assets"
+        js              : ["application.js"]
+        css             : ["application.css"]
+        css_paths       : ["./spec/fixtures/stylesheets"]
+        js_paths        : ["./spec/fixtures/javascripts"]
+        host            : "http://cloud.example.com"
+        host            : (source) -> 
           if source.match(/images/)
             "http://img.example.com"
           else
             "http://assets.example.com"
         
-    it "should process through the api", ->
-      result = Metro.Assets.process()
-      
-      expect(result.css).toEqual
-        'application': 'body{background:red}'
-        
-      expect(result.js).toEqual
-        'application': '$(document).ready(function(){alert("ready!")})'
+    it "should write digested files", ->
+      #result = Metro.Asset.process()
+      #
+      #expect(result.css).toEqual
+      #  'application': 'body{background:red}'
+      #  
+      #expect(result.js).toEqual
+      #  'application': '$(document).ready(function(){alert("ready!")})'
       
     it "should create a digest for a file", ->
     
   describe "render", ->
     it "should render async", ->
-      environment = Metro.Application.instance().assets()
-      environment.load_paths = ["./spec/fixtures"]
-      asset = new Metro.Assets.Asset("./spec/fixtures/javascripts/directives.js", ".js")
+      Metro.Application.teardown()
+      Metro.Application.initialize()
+      Metro.Asset.config.load_paths = ["./spec/fixtures"]
+      asset = new Metro.Asset("./spec/fixtures/javascripts/directives.js", ".js")
       asset.render (result) ->
         expect(result).toEqual '''
 alert("child a");
@@ -113,38 +93,29 @@ alert("directives");
   
   describe "environment", ->
     beforeEach ->
-      @environment                      = new Metro.Assets.Environment
-      @environment.public_path          = "./spec/spec-app/public"
-      @environment.load_paths           = ["./spec/fixtures"]
-      @environment.javascript_directory = "javascripts"
-      Metro.Application.instance()._assets  = @environment
+      Metro.Application.teardown()
+      Metro.Application.initialize()
+      Metro.Asset.config.load_paths = ["./spec/fixtures"]
     
     it "should normalize the extension", ->
-      expect(@environment.normalize_extension("application", ".js")).toEqual "application.js"
-      expect(@environment.normalize_extension("application.js", ".js")).toEqual "application.js"
+      expect(Metro.Asset.normalize_extension("application", ".js")).toEqual "application.js"
+      expect(Metro.Asset.normalize_extension("application.js", ".js")).toEqual "application.js"
     
     it "should normalize the asset directory", ->
-      expect(@environment.normalize_asset_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
+      expect(Metro.Asset.normalize_asset_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
       
     it "should compute the asset path", ->
-      expect(@environment.compute_public_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
-
-    it "should lookup the asset paths", ->
-      result = @environment.lookup("application.js")
-      expect(result).toEqual [
-        'spec/fixtures/javascripts/application.js',
-        'spec/fixtures/javascripts/application.js.coffee' 
-      ]
+      expect(Metro.Asset.compute_public_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
       
     it "should find and build assets", ->
-      result = @environment.find("application.js")
+      result = Metro.Asset.find("application", extension: ".js")
       expect(result.read()).toEqual '''
 $(document).ready(function() {
   alert("ready!");
 });
 
       '''
-      expect(Metro.Application.instance().assets().find("application.js").read()).toEqual '''
+      expect(Metro.Asset.find("application.js").read()).toEqual '''
 $(document).ready(function() {
   alert("ready!");
 });

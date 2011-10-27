@@ -1,13 +1,12 @@
-require('./helper')
+require './helper'
 
 describe "middleware", ->
   describe "assets", ->
     beforeEach ->
-      @environment                      = new Metro.Assets.Environment
-      @environment.public_path          = "./spec/spec-app/public"
-      @environment.load_paths           = ["./spec/fixtures"]
-      @environment.javascript_directory = "javascripts"
-      Metro.Application.instance()._assets  = @environment
+      Metro.Asset.configure
+       public_path          : "./spec/spec-app/public"
+       load_paths           : ["./spec/fixtures"]
+       javascript_directory : "javascripts"
       
       @middleware = Metro.Middleware.Assets.middleware
       

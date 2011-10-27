@@ -42,4 +42,4 @@ class Attributes
       
     beforeValue
   
-module.exports = Metro.Model.Attributes = Attributes
+module.exports = Attributes

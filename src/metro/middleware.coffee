@@ -1,4 +1,4 @@
-Metro.Middleware =
+Middleware =
   Dependencies: require './middleware/dependencies'
   Router:       require './middleware/router'
   Cookies:      require './middleware/cookies'
@@ -6,3 +6,4 @@ Metro.Middleware =
   Query:        require './middleware/query'
   Assets:       require './middleware/assets'
   
+module.exports = Middleware

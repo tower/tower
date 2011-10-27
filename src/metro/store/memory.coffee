@@ -1,30 +1,6 @@
 class Memory
-  @operators:
-    ">=":       "gte"
-    "gte":      "gte"
-    ">":        "gt"
-    "gt":       "gt"
-    "<=":       "lte"
-    "lte":      "lte"
-    "<":        "lt"
-    "lt":       "lt"
-    "in":       "in"
-    "nin":      "nin"
-    "any":      "any"
-    "all":      "all"
-    "=~":       "m"
-    "m":        "m"
-    "!~":       "nm"
-    "nm":       "nm"
-    "=":        "eq"
-    "eq":       "eq"
-    "!=":       "neq"
-    "neq":      "neq"
-    "..":       "bi"
-    "...":      "be"
-   
   constructor: ->
-    @array    = [] # used to keep order
+    @records  = {}
     @index    = 
       id:       {} # used for quick indexing by id
   
@@ -65,251 +41,155 @@ class Memory
   # 
   #     store.find _all: tags: ["tomato", "cucumber"]
   # 
-  find: (query, options, callback) ->
-    # attributes  = _extract_attributes(query)
-    array       = @array
-    result      = []
+  find: (query, callback) ->  
+    result  = []
+    records = @records
     
-    for item in array
-      result.push(item) if @matches(item, query)
+    if query
+      sort    = query._sort
+      limit   = query._limit || Metro.Store.defaultLimit
       
-    callback.call(@, result)
+      for key, record of records
+        result.push(record) if @matches(record, query)
+        # break if result.length >= limit
+      
+      result = @sort(result, query._sort) if sort
+      
+      result = result[0..limit - 1] if limit
+    else
+      for key, record of records
+        result.push(record)
     
-    @
+    callback(result) if callback
+
+    result
     
-  first: ->
-    
-  last: ->
-    
-  create: ->
-    
-  destroy: ->
-    
-  set: ->
-    
-    
-  remove: ->
-    items       = Array.prototype.slice.call(arguments, 0, arguments.length)
-    collection  = @collection
-    for item in items
-      index = collection.indexOf(item)
-      colection.splice(index, 1) if index >= 0
-      item.clear() if item.hasOwnProperty("clear")
-    
-  clear: ->  
-    collection  = @collection
-    while item = collection.pop()
-      item.clear() if item.hasOwnProperty("clear")
-    collection
-    
-  length: ->
-    @collection.length
+  @alias "select", "find"
   
+  first: (query, callback) ->
+    @find(query, (records) -> callback(records[0]) if callback)
+  
+  last: (query, callback) ->
+    @find(query, (records) -> callback(records[records.length - 1]) if callback)
+  
+  all: (query, callback) ->
+    @find(query, callback)
+
+  length: (query, callback) ->
+    @find(query, (records) -> callback(records.length) if callback).length
+    
+  @alias "count", "length"
+    
+  remove: (query, callback) ->
+    _records = @records
+    
+    @select query, (records) ->
+      for record in records
+        _records.splice(_records.indexOf(record), 1)
+      callback(records) if callback
+    
+  clear: ->
+    @records = []
+    
   toArray: ->
-    @collection
+    @records
     
-  find: (id) ->
-    record = @records[id]
-    throw('Unknown record') unless record
-    record.clone()
-
-  exists: (id) ->
-    try
-      return @find(id)
-    catch e
-      return false
-
-  refresh: (values, options = {}) ->
-    @records = {} if options.clear
-    records = @fromJSON(values)
+  create: (record) ->
+    Metro.raise("errors.store.missing_attribute", "id", "Store#create", record) unless record.id
+    @records[record.id] = record
     
-    records = [records] unless isArray(records)
-
-    for record in records
-      record.newRecord    = false
-      record.id           or= guid()
-      @records[record.id] = record
-
-    @trigger('refresh', not options.clear and records)
-    @
-
-  select: (callback) ->
-    result = (record for id, record of @records when callback(record))
-    @cloneArray(result)
-
-  findByAttribute: (name, value) ->
-    for id, record of @records
-      if record[name] is value
-        return record.clone()
-    null
-
-  findAllByAttribute: (name, value) ->
-    @select (item) ->
-      item[name] is value
-
-  each: (callback) ->
-    for key, value of @records
-      callback(value.clone())
-
-  all: ->
-    @cloneArray(@recordsValues())
-
-  first: ->
-    record = @recordsValues()[0]
-    record?.clone()
-
-  last: ->
-    values = @recordsValues()
-    record = values[values.length - 1]
-    record?.clone()
-
-  count: ->
-    @recordsValues().length
+  update: (record) ->
+    Metro.raise("errors.store.missing_attribute", "id", "Store#update", record) unless record.id
+    @records[record.id] = record
   
-  deleteAll: ->
-    for key, value of @records
-      delete @records[key]
-
-  destroyAll: ->
-    for key, value of @records
-      @records[key].destroy()
-
-  update: (id, atts) ->
-    @find(id).updateAttributes(atts)
-
-  create: (atts) ->
-    record = new @(atts)
-    record.save()
-
-  destroy: (id) ->
+  destroy: (record) ->
     @find(id).destroy()
   
-  change: (callbackOrParams) ->
-    if typeof callbackOrParams is 'function'
-      @bind('change', callbackOrParams)
-    else
-      @trigger('change', callbackOrParams)
-  
-  fetch: (callbackOrParams) ->
-    if typeof callbackOrParams is 'function'
-      @bind('fetch', callbackOrParams)
-    else
-      @trigger('fetch', callbackOrParams)
-  
-  toJSON: ->
-    @recordsValues()
-
-  fromJSON: (objects) ->
-    return unless objects
-    if typeof objects is 'string'
-      objects = JSON.parse(objects)
-    if isArray(objects)
-      (new @(value) for value in objects)
-    else
-      new @(objects)
-      
-  _operator: (key) ->
-    @constructor.operators[key]
-  
-  _matches: (item, query) ->
+  # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
+  sort: ->
+    Metro.Support.Array.sortBy(arguments...)
+    
+  matches: (record, query) ->
     self    = @
     success = true
     
     for key, value of query
-      if operator = self._operator(key)
-        switch operator
-          when "gt"
-            success = self._isGreaterThan(item, value)
-          when "gte"
-            success = self._isGreaterThanOrEqualTo(item, value)
-          when "lt"
-            success = self._isLessThan(item, value)
-          when "lte"
-            success = self._isLessThanOrEqualTo(item, value)
-          when "eq"
-            success = self._isEqualTo(item, value)
-          when "neq"
-            success = self._isNotEqualTo(item, value)
-          when "bi"
-            success = self._isBetweenIncluding(item, value)
-          when "be"
-            success = self._isBetweenExcluding(item, value)
-          when "m"
-            success = self._isMatchOf(item, value)
-          when "nm"
-            success = self._isNotMatchOf(item, value)
-          when "any"
-            success = self._anyIn(item, value)
-          when "all"
-            success = self._allIn(item, value)
+      continue if !!Metro.Store.reservedOperators[key]
+      
+      if typeof(value) == 'object'
+        success = self._matchesOperators(record[key], value)
       else
-        success = item[key] == value
+        success = record[key] == value
+      
       return false unless success
     
     true
-  
-  _isGreaterThan: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] > value
-    true
     
-  _isGreaterThanOrEqualTo: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] >= value
-    true
+  _matchesOperators: (record_value, operators) ->
+    success = true
+    self    = @
     
-  _isLessThan: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] < value
-    true
+    for key, value of operators
+      if operator = Metro.Store.queryOperators[key]
+        switch operator
+          when "gt"
+            success = self._isGreaterThan(record_value, value)
+          when "gte"
+            success = self._isGreaterThanOrEqualTo(record_value, value)
+          when "lt"
+            success = self._isLessThan(record_value, value)
+          when "lte"
+            success = self._isLessThanOrEqualTo(record_value, value)
+          when "eq"
+            success = self._isEqualTo(record_value, value)
+          when "neq"
+            success = self._isNotEqualTo(record_value, value)
+          when "m"
+            success = self._isMatchOf(record_value, value)
+          when "nm"
+            success = self._isNotMatchOf(record_value, value)
+          when "any"
+            success = self._anyIn(record_value, value)
+          when "all"
+            success = self._allIn(record_value, value)
+        return false unless success
+      else
+        return record_value == operators
     
-  _isLessThanOrEqualTo: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] <= value
-    true
-    
-  _isEqualTo: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] == value
-    true
-    
-  _isNotEqualTo: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] != value
-    true
-    
-  _isBetweenIncluding: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] >= value[0] && item[attribute] <= value[1]
-    true
-    
-  _isBetweenExcluding: (item, query) ->
-    for attribute, value of query
-      return false unless item[attribute] >= value[0] && item[attribute] < value[1]
     true
   
-  _isMatchOf: (item, query) ->
-    for attribute, value of query
-      return false unless !!item[attribute].match(value)
-    true
+  _isGreaterThan: (record_value, value) ->
+    record_value > value
     
-  _isNotMatchOf: (item, query) ->
-    for attribute, value of query
-      return false if !!item[attribute].match(value)
-    true
+  _isGreaterThanOrEqualTo: (record_value, value) ->
+    record_value >= value
     
-  _anyIn: (item, query) ->
-    for attribute, array of query
-      item_array = item[attribute]
-      for value in array
-        return true if item_array.indexOf(value) > -1
+  _isLessThan: (record_value, value) ->
+    record_value < value
+    
+  _isLessThanOrEqualTo: (record_value, value) ->
+    record_value <= value
+    
+  _isEqualTo: (record_value, value) ->
+    record_value == value
+    
+  _isNotEqualTo: (record_value, value) ->
+    record_value != value
+  
+  _isMatchOf: (record_value, value) ->
+    !!(if typeof(record_value) == "string" then record_value.match(value) else record_value.exec(value))
+    
+  _isNotMatchOf: (record_value, value) ->
+    !!!(if typeof(record_value) == "string" then record_value.match(value) else record_value.exec(value))
+    
+  _anyIn: (record_value, array) ->
+    for value in array
+      return true if record_value.indexOf(value) > -1
     false
     
-  _allIn: (item, query) ->
-    for attribute, array of query
-      item_array = item[attribute]
-      for value in array
-        return false if item_array.indexOf(value) == -1
+  _allIn: (record_value, value) ->
+    for value in array
+      return false if record_value.indexOf(value) == -1
     true
   
 module.exports = Memory

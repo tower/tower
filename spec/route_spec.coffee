@@ -1,16 +1,16 @@
-require('./helper')
+require './helper'
 
 describe "route", ->
   describe "route", ->
     it "should match routes with keys", ->
-      route = new Metro.Routes.Route(path: "/users/:id/:tag")
+      route = new Metro.Route(path: "/users/:id/:tag")
       match = route.match("/users/10/symbols")
       
       expect(match[1]).toEqual("10")
       expect(match[2]).toEqual("symbols")
       
     it "should match routes with splats", ->
-      route = new Metro.Routes.Route(path: "/users/:id/*categories")
+      route = new Metro.Route(path: "/users/:id/*categories")
       match = route.match("/users/10/one/two/three")
       
       expect(match[1]).toEqual("10")
@@ -20,7 +20,7 @@ describe "route", ->
       expect(route.keys[1]).toEqual { name: 'categories', optional: false, splat: true }
       
     it "should match routes with optional splats", ->
-      route = new Metro.Routes.Route(path: "/users/:id(/*categories)")
+      route = new Metro.Route(path: "/users/:id(/*categories)")
       match = route.match("/users/10/one/two/three")
       
       expect(match[1]).toEqual("10")
@@ -30,7 +30,7 @@ describe "route", ->
       expect(route.keys[1]).toEqual { name: 'categories', optional: true, splat: true }
       
     it "should match routes with optional formats", ->
-      route = new Metro.Routes.Route(path: "/users/:id.:format?")
+      route = new Metro.Route(path: "/users/:id.:format?")
       match = route.match("/users/10.json")
       
       expect(match[1]).toEqual("10")
@@ -41,9 +41,9 @@ describe "route", ->
   
   describe "mapper", ->
     beforeEach ->
-      Metro.Application.routes().clear()
+      Metro.Route.teardown()
       
-      Metro.Application.routes().draw ->
+      Metro.Route.draw ->
         @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}
         
         @match "/users",          to: "users#index", via: "get"
@@ -54,7 +54,7 @@ describe "route", ->
         @match "/users/:id",      to: "users#destroy", via: "delete"
     
     it "should map", ->
-      routes  = Metro.Application.routes().set
+      routes  = Metro.Route.all()
       
       expect(routes.length).toEqual(7)
       
@@ -69,7 +69,8 @@ describe "route", ->
       expect(route.defaults).toEqual {flow: "signup"}
     
     it "should be found in the router", ->
-      Metro.Application.bootstrap()
+      Metro.Application.initialize()
+      
       router      = new Metro.Middleware.Router
       request     = {method: "get", url: "/login"}
       controller  = router.process(request)

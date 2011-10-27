@@ -1,2 +1,2 @@
 module.exports = Metro.Generator =
-  Application:  require('./generator/application')
+  Application:  require './generator/application'

@@ -1,1 +1,1 @@
-require('./helper')
+require './helper'

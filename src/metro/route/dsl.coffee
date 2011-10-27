@@ -2,12 +2,9 @@ _ = require("underscore")
 _.mixin(require("underscore.string"))
 
 class DSL
-  constructor: (collection) ->
-    @collection = collection
-  
   match: ->
     @scope ?= {}
-    @collection.add(new Metro.Route(@_extract_options(arguments...)))
+    Metro.Route.create(new Metro.Route(@_extract_options(arguments...)))
     
   get: ->
     @match_method("get", arguments...)
@@ -259,7 +256,7 @@ class DSL
     @match '/', _.extend(as: "root", options)
     
   _extract_options: ->
-    path            = Metro.Routes.Route.normalize_path(arguments[0])
+    path            = Metro.Route.normalize_path(arguments[0])
     options         = arguments[arguments.length - 1] || {}
     options.path    = path
     format          = @_extract_format(options)
@@ -319,4 +316,4 @@ class DSL
     
     name: controller, action: action, class_name: _.camelize("_#{controller}")
 
-exports = module.exports = Mapper
+module.exports = DSL

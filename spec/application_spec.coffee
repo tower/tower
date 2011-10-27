@@ -1,14 +1,11 @@
-require('./helper')
+require './helper'
 
 describe "application", ->
   beforeEach ->
-    @application = Metro.Application.bootstrap()
-    
-  it "should be configured", ->
-    expect(Metro.Assets.config.path).toEqual "#{Metro.root}/public/assets"
+    @application = Metro.Application.initialize()
     
   it "should load routes", ->
-    expect(Metro.Application.routes().set.length).toEqual 1
+    expect(Metro.Route.all().length).toEqual 1
     
   it "should load models", ->
     expect(Post).toBeTruthy()

@@ -10,20 +10,20 @@ class Rendering
       options = arguments[1]
       options.template = template
     
-    options  ?= {}  
+    options  ?= {}
     locals    = @context(options)
-    type      = options.type || Metro.Views.engine
-    engine    = Metro.Compilers.find(type)
+    type      = options.type || Metro.View.engine
+    engine    = Metro.engine(type)
     if options.text
       body    = options.text
     else if options.json
       body    = if typeof(options.json) == "string" then options.json else JSON.stringify(options.json)
     else
       unless options.inline
-        template = Metro.Views.lookup(options.template)
+        template = Metro.View.lookup(options.template)
         template = Metro.Support.Path.read(template)
       
-      body      = engine.compile(template, locals)
+      body      = engine.render(template, locals)
       
     if options.hasOwnProperty("layout") && options.layout == false
       layout = false
@@ -31,10 +31,10 @@ class Rendering
       layout  = options.layout || @controller.layout()
       
     if layout
-      layout  = Metro.Views.lookup("layouts/#{layout}")
+      layout  = Metro.View.lookup("layouts/#{layout}")
       layout  = Metro.Support.Path.read(layout)
       locals.yield = body
-      body    = engine.compile(layout, locals)
+      body    = engine.render(layout, locals)
     body
   
   context: (options) ->
@@ -44,7 +44,7 @@ class Rendering
       locals[key] = controller[key] unless key == "constructor"
     locals  = require("underscore").extend(locals, @locals || {}, options.locals)
     
-    locals.pretty = true if Metro.Views.pretty_print
+    locals.pretty = true if Metro.View.pretty_print
     
     locals
   

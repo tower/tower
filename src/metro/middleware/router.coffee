@@ -3,19 +3,16 @@ _   = require('underscore')
 
 # http://nodejs.org/docs/v0.4.7/api/url.html
 class Router
-  @middleware: (request, result, next) -> (new Router).call(request, result, next)
+  @middleware: (request, result, next) -> (new Metro.Middleware.Router).call(request, result, next)
   
   call: (request, response, next) ->
     unless !!@process(request, response)
       @error(request, response)
       #next() if next?
     response
-    
-  routes: ->
-    Metro.Application.routes().set
-    
+  
   process: (request, response) ->
-    routes = @routes()
+    routes = Metro.Route.all()
     for route in routes
       if controller = @process_route(route, request, response)
         return controller
