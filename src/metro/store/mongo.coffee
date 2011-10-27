@@ -1,3 +1,4 @@
+# https://github.com/christkv/node-mongodb-native
 class Mongo
   find: (query, callback) ->  
     
