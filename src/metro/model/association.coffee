@@ -1,15 +1,18 @@
 class Association
   constructor: (sourceClassName, name, options = {}) ->
-    @sourceClassName = sourceClassName
-    @targetClassName = options.className || name
+    @sourceClassName  = sourceClassName
+    @targetClassName  = options.className || name
+    @foreignKey       = options.foreignKey
   
   targetClass: ->
     global[@targetClassName]
     
-  scoped: ->
-    (new Metro.Model.Scope()).where(conditions())
+  scoped: (id) ->
+    (new Metro.Model.Scope(@targetClassName)).where(@conditions(id))
   
-  conditions: ->
-    @_conditions ?= {}
+  conditions: (id) ->
+    result = {}
+    result[@foreignKey] = id if id && @foreignKey
+    result
 
 module.exports = Association

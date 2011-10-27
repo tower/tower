@@ -13,6 +13,7 @@ class Model
   
   @include @Persistence
   @include @Scopes
+  @include @Associations
   @include @Attributes
   
   @initialize: ->

@@ -1,6 +1,3 @@
-# https://github.com/Wolfy87/EventEmitter/blob/master/src/EventEmitter.js
-# https://github.com/jeromeetienne/microevent.js/blob/master/microevent.js#L12-31
-
 class Attributes
   @key: (key, options) ->
     @keys()[key] = options
@@ -41,10 +38,7 @@ class Attributes
     beforeValue
   
   constructor: (attrs = {}) ->
-    #console.log "HERE!!!"
     @attributes = attrs
-    #console.log @attributes
     @changes    = {}
-    #super
   
 module.exports = Attributes

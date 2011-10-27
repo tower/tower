@@ -122,7 +122,6 @@ class Memory
         success = self._matchesOperators(record[key], value)
       else
         success = record[key] == value
-      
       return false unless success
     
     true

@@ -157,7 +157,7 @@ Metro.Application.routes().draw ->
 
 ``` coffeescript
 class Post
-  @include Metro.Models.Base
+  @include Metro.Model
   
   @key "title"
   @key "body"
@@ -166,7 +166,7 @@ class Post
   
   @validates "title", presence: true
   
-  @before_save "parameterize"
+  @beforeSave "parameterize"
   
   parameterize: ->
     @slug = _.parameterize(@title)
@@ -180,7 +180,7 @@ User.where(first_name: "=~": "a").order(["first_name", "desc"]).all()
 
 ``` coffeescript
 class PostsController
-  @include Metro.Controllers.Base
+  @include Metro.Controller
   
   index: ->
     @posts = Post.all()

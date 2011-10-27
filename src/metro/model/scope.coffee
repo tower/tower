@@ -5,14 +5,6 @@ class Scope
     @store = global[@sourceClassName].store()
     @conditions = []
   
-  anyIn: ->
-    @conditions.push ["anyIn", arguments]
-    @
-    
-  allIn: ->
-    @conditions.push ["allIn", arguments]
-    @
-  
   where: ->
     @conditions.push ["where", arguments]
     @

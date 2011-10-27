@@ -10,5 +10,7 @@ class Persistence
     
   update: (options) ->
     
+  @deleteAll: ->
+    @store().clear()
   
 module.exports = Persistence
