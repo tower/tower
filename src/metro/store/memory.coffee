@@ -67,10 +67,12 @@ class Memory
   @alias "select", "find"
   
   first: (query, callback) ->
-    @find(query, (records) -> callback(records[0]) if callback)
+    result = @find(query, (records) -> callback(records[0]) if callback)
+    result[0]
   
   last: (query, callback) ->
-    @find(query, (records) -> callback(records[records.length - 1]) if callback)
+    result = @find(query, (records) -> callback(records[records.length - 1]) if callback)
+    result[result.length - 1]
   
   all: (query, callback) ->
     @find(query, callback)

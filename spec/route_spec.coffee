@@ -56,6 +56,8 @@ describe "route", ->
     it "should map", ->
       routes  = Metro.Route.all()
       
+      # console.log Metro.Route.first(pattern: "=~": "/users/10/edit")
+      
       expect(routes.length).toEqual(7)
       
       route   = routes[0]
