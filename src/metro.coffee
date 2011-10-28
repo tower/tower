@@ -47,6 +47,9 @@ Metro.raise = ->
     #object = args[i++]
     #if typeof(object) == "string" then object else require('util').inspect(object)
   throw new Error(message)
+  
+Metro.initialize  = Metro.Application.initialize
+Metro.teardown    = Metro.Application.teardown
 
 Metro.locale =
   en:
@@ -56,6 +59,8 @@ Metro.locale =
       not_found: "%s not found."
       store:
         missing_attribute: "Missing %s in %s for '%s'"
+      asset:
+        notFound: "Asset not found: '%s'\n  Lookup paths: [\n%s\n  ]"
 
 Metro.engine = (extension) ->
   @_engine ?= {}

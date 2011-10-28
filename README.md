@@ -80,22 +80,56 @@ Can also create CSS sprites [description coming soon]
 ``` coffeescript
 Metro = require("metro")
 
-Metro.configure ->
-  @assets.path            = "./public/assets"
-  @assets.css_compressor  = "yui"
-  @assets.js_compressor   = "uglifier"
-  @assets.js              = ["application.js"]
-  @assets.css             = ["application.css", "theme.css"]
-  @assets.css_paths       = ["./app/assets/stylesheets"]
-  @assets.js_paths        = ["./app/assets/javascripts"]
+# below are all of the configuration defaults
+Metro.Asset.configure
+  public_path:             "#{Metro.root}/public"
+  load_paths:              [
+    "#{Metro.root}/app/assets",
+    "#{Metro.root}/lib/assets",
+    "#{Metro.root}/vendor/assets"
+  ]
+  
+  stylesheet_directory:   "stylesheets"
+  stylesheet_extensions:  ["css", "styl", "scss", "less"]
+  stylesheet_aliases:
+    css:                  ["styl", "less", "scss", "sass"]
+  
+  javascript_directory:   "javascripts"
+  javascript_extensions:  ["js", "coffee", "ejs"]
+  javascript_aliases:
+    js:                   ["coffee", "coffeescript"]
+    coffee:               ["coffeescript"]
+  
+  image_directory:        "images"
+  image_extensions:       ["png", "jpg", "gif"]
+  image_aliases:
+    jpg:                  ["jpeg"]
+  
+  font_directory:         "fonts"
+  font_extensions:        ["eot", "svg", "tff", "woff"]
+  font_aliases:           {}
+  
+  host:                   null
+  relative_root_url:      null
 
-Metro.Assets.compile()
+  precompile:             []
+  
+  js_compressor:          null
+  css_compressor:         null
+  
+  enabled:                true
+  
+  manifest:               "/public/assets"
+  # live compilation
+  compile:                true
+  prefix:                 "assets"
+
 ```
 
 ## Routes
 
 ``` coffeescript
-Metro.Application.routes().draw ->
+Metro.Route.draw ->
   @match "/login",          to: "sessions#new", via: "get", as: "login"
   
   @match "/posts",          to: "posts#index", via: "get"

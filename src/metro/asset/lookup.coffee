@@ -38,8 +38,10 @@ class Lookup
       paths.push(path)
       paths = paths.concat @directories(path)
     
+    root = Metro.root
+    
     new Metro.Support.Lookup
-      root:       Metro.root
+      root:       root
       paths:      paths
       extensions: extensions
       aliases:    aliases
@@ -107,23 +109,30 @@ class Lookup
   # find path from source and extension
   # this method must be given a real file path!
   @find: (source, options = {}) ->
-    source = source.replace(@path_pattern(), "")
+    paths = @lookup(source, options)
     
-    options.extension ?= @extname(source)
-    
-    Metro.raise("errors.missing_option", "extension", "Asset#find") if options.extension == ""
-    
-    pattern = "(?:" + Metro.Support.Lookup.prototype.escape(options.extension) + ")?$"
-    source  = source.replace(new RegExp(pattern), options.extension)
-    lookup  = @lookup_for(options.extension)
-    paths   = lookup.find(source) if lookup
-    
-    return null unless paths && paths.length > 0
+    unless paths && paths.length > 0
+      Metro.raise "errors.asset.notFound", source, paths#(lookup.paths.map (path) -> "    #{path}").join(",\n")
     
     new Metro.Asset(paths[0], options.extension)
     
+  @lookup: (source, options = {}) ->
+    source = @normalizeSource(source)
+
+    options.extension ?= @extname(source)
+    
+    Metro.raise("errors.missing_option", "extension", "Asset#find") if options.extension == ""
+
+    pattern = "(?:" + Metro.Support.RegExp.escape(options.extension) + ")?$"
+    source  = source.replace(new RegExp(pattern), options.extension)
+    lookup  = @lookup_for(options.extension)
+    if lookup then lookup.find(source) else []
+    
   @match: (path) ->
     !!path.match(@path_pattern())
+    
+  @normalizeSource: (source) ->
+    source.replace(@path_pattern(), "")
     
   @path_pattern: ->
     @_path_pattern ?= new RegExp("^/(assets|#{@config.stylesheet_directory}|#{@config.javascript_directory}|#{@config.image_directory}|#{@config.font_directory})/")

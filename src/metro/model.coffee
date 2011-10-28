@@ -5,6 +5,7 @@ class Model
   @Associations:  require './model/associations'
   @Attribute:     require './model/attribute'
   @Attributes:    require './model/attributes'
+  @Dirty:         require './model/dirty'
   @Observing:     require './model/observing'
   @Persistence:   require './model/persistence'
   @Scope:         require './model/scope'
@@ -18,6 +19,7 @@ class Model
   @include @Serialization
   @include @Associations
   @include @Validations
+  @include @Dirty
   @include @Attributes
   
   @initialize: ->

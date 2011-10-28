@@ -1,8 +1,7 @@
 class Memory
   constructor: ->
     @records  = {}
-    @index    = 
-      id:       {} # used for quick indexing by id
+    @lastId   = 0
   
   # Add index, passing in an array of attribute names
   # 
@@ -96,8 +95,9 @@ class Memory
   toArray: ->
     @records
     
-  create: (record) ->
+  create: (record) ->  
     Metro.raise("errors.store.missing_attribute", "id", "Store#create", record) unless record.id
+    record.id ?= @generateId()
     @records[record.id] = record
     
   update: (record) ->
@@ -125,6 +125,9 @@ class Memory
       return false unless success
     
     true
+  
+  generateId: ->
+    @lastId++
     
   _matchesOperators: (record_value, operators) ->
     success = true

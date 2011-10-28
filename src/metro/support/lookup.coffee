@@ -1,11 +1,5 @@
 # https://github.com/sstephenson/hike/blob/master/lib/hike/index.rb
 class Lookup
-  root:       null
-  extensions: null
-  # extension aliases
-  aliases:    null
-  paths:      null
-  patterns:   null
   
   # new Metro.Support.Lookup paths: ["./app/assets/stylesheets"], extensions: [".js", ".coffee"], aliases: ".coffee": [".coffeescript"]
   constructor: (options = {}) ->
@@ -20,13 +14,15 @@ class Lookup
   # 
   # use this method to find the string for a helper method, not to find the actual file
   find: (source) ->
-    source = @_normalize_source(source)
-    result = []
+    source  = source.replace(/(?:\/\.{2}\/|^\/)/g, "")
+    result  = []
+    root    = @root
     
-    for path in @paths
-      full_path = Metro.Support.Path.join(path, source)
-      directory = Metro.Support.Path.dirname full_path
-      basename  = Metro.Support.Path.basename full_path
+    paths   = if source[0] == "." then [Metro.Support.Path.absolute_path(source, root)] else @paths.map (path) -> Metro.Support.Path.join(path, source)
+    
+    for path in paths
+      directory = Metro.Support.Path.dirname path
+      basename  = Metro.Support.Path.basename path
       
       # in case they try to use "../../.." to get to a directory that's not supposed to be accessed.
       if @paths_include(directory)
@@ -60,12 +56,10 @@ class Lookup
     
   _normalize_paths: (paths) ->
     result = []
-    for path in paths
-      result.push Metro.Support.Path.expand_path path
-    result
     
-  _normalize_source: (source) ->
-    source.replace(/^\/?/, "")
+    for path in paths
+      result.push Metro.Support.Path.absolute_path path, @root
+    result
     
   _normalize_extension: (extension) ->
     extension.replace(/^\.?/, ".")

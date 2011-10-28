@@ -27,9 +27,9 @@ describe "support", ->
       expect(UserExtendingFunction.default_name).toEqual("User")
       expect(UserExtendingClass.default_name).toEqual("User")
   
-  describe "file", ->
+  describe "path", ->
     beforeEach ->
-      @path        = "./spec/fixtures/javascripts/application.js"
+      @path        = "spec/spec-app/app/assets/javascripts/application.js"
       @file        = new Metro.Support.Path(@path)#.Assets.Asset(@environment, @path)
   
     it "should stat file", ->
@@ -48,13 +48,21 @@ describe "support", ->
       expect(@file.size()).toEqual 54
       
     it "should find entries in a directory", ->
-      expect(Metro.Support.Path.entries("./spec/fixtures/javascripts")[0]).toEqual 'application.js' 
+      expect(Metro.Support.Path.entries("spec/spec-app/app/assets/javascripts")[1]).toEqual 'application.coffee'
+      
+    it "should generate absolute path", ->
+      expected = "#{process.cwd()}/spec/spec-app/app/assets/javascripts"
+      expect(Metro.Support.Path.absolute_path("spec/spec-app/app/assets/javascripts")).toEqual expected
+      
+    it "should generate relative path", ->
+      expected = "spec/spec-app/app/assets/javascripts"
+      expect(Metro.Support.Path.relative_path("spec/spec-app/app/assets/javascripts")).toEqual expected
   
   describe "lookup", ->
     beforeEach ->
-      # Metro.Support.Path.glob("./spec/fixtures/javascripts")
+      # Metro.Support.Path.glob("spec/spec-app/app/assets/javascripts")
       @lookup = new Metro.Support.Lookup
-        paths:      ["./spec/fixtures/javascripts"]
+        paths:      ["spec/spec-app/app/assets/javascripts"]
         extensions: ["js", "coffee"]
         aliases:
           js: ["coffee", "coffeescript"]
@@ -78,10 +86,10 @@ describe "support", ->
       
     it "should find", ->
       result = @lookup.find("application.js")
-      expect(result).toEqual ['spec/fixtures/javascripts/application.js', 'spec/fixtures/javascripts/application.js.coffee']
+      expect(result.length).toEqual 3
       
       result = @lookup.find("application.coffee")
-      expect(result).toEqual []
+      expect(result.length).toEqual 1
 ###  
   describe "mixins", ->
     it "should have string methods", ->

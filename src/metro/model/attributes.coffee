@@ -12,6 +12,8 @@ class Attributes
     
   @keys: ->
     @_keys ?= {}
+    
+  @typeCast: (name, value) ->
   
   getAttribute: (name) ->
     @attributes[name]
@@ -24,18 +26,6 @@ class Attributes
     #@emit("fieldChanged", beforeValue: beforeValue, value: value)
     
   @alias "set", "setField" unless @hasOwnProperty("set")
-  
-  _trackChangedAttribute: (attribute, value) ->
-    array = @changes[attribute] ?= []
-    beforeValue = array[0] ?= @attributes[attribute]
-    array[1] = value
-    array = null if array[0] == array[1]
-    if array
-      @changes[attribute] = array
-    else
-      delete @changes[attribute]
-      
-    beforeValue
   
   constructor: (attrs = {}) ->
     @attributes = attrs

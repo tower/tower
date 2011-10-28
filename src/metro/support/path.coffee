@@ -39,6 +39,17 @@ class File
     
   @expand_path: (path) ->
     _path.normalize(path)
+    
+  @absolute_path: (path, root = @pwd()) ->
+    path = root + "/" + path unless path.charAt(0) == "/"
+    _path.normalize(path)
+    
+  @relative_path: (path, root = @pwd()) ->
+    path = @join(root, path) if path[0] == "."
+    _path.normalize(path.replace(new RegExp("^" + Metro.Support.RegExp.escape(root + "/")), ""))
+    
+  @pwd: ->
+    process.cwd()
   
   @basename: ->
     _path.basename(arguments...)
@@ -161,5 +172,11 @@ class File
     
   read_async: (callback) ->
     @constructor.read_async(@path, callback)
+    
+  absolute_path: ->
+    @constructor.absolute_path(@path)
+    
+  relative_path: ->
+    @constructor.relative_path(@path)
 
 module.exports = File

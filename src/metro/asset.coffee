@@ -41,9 +41,16 @@ class Asset
       relative_root_url:      null
     
       precompile:             []
-    
+      
       js_compressor:          null
       css_compressor:         null
+      
+      enabled:                true
+      
+      manifest:               "/public/assets"
+      # live compilation
+      compile:                true
+      prefix:                 "assets"
   
   @teardown: ->
     delete @_javascript_lookup

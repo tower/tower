@@ -13,7 +13,6 @@ class View
     Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")
     
   @teardown: ->
-    
   
   @resolve_load_paths: ->
     file = Metro.Support.Path

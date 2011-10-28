@@ -5,6 +5,12 @@ class Serialization
   toJSON: ->
     JSON.stringify(@attributes)
     
+  inspect: ->
+    
+  toObject: ->
+    
+  clone: ->
+    
   @fromJSON: (data) ->
     records = JSON.parse(data)
     records = [records] unless records instanceof Array

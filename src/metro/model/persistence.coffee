@@ -6,11 +6,19 @@ class Persistence
     @store().create(record)
     record
     
+  @update: ->
+  
+  @deleteAll: ->
+    @store().clear()
+    
+  isNew: ->
+    
   save: (options) ->
     
   update: (options) ->
     
-  @deleteAll: ->
-    @store().clear()
+  reset: ->
+    
+  @alias "reload", "reset"
   
 module.exports = Persistence
