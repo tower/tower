@@ -2,7 +2,7 @@ class MetroRegExp
   @escape: (string) ->
     string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
     
-  @escape_each: ->
+  @escapeEach: ->
     result = []
     args   = arguments[0]
     for item, i in args

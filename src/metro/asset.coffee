@@ -10,40 +10,40 @@ class Asset
   
   @initialize: ->
     @config =
-      public_path:             "#{Metro.root}/public"
-      load_paths:              [
+      publicPath:             "#{Metro.root}/public"
+      loadPaths:              [
         "#{Metro.root}/app/assets",
         "#{Metro.root}/lib/assets",
         "#{Metro.root}/vendor/assets"
       ]
       
-      stylesheet_directory:   "stylesheets"
-      stylesheet_extensions:  ["css", "styl", "scss", "less"]
-      stylesheet_aliases:
+      stylesheetDirectory:   "stylesheets"
+      stylesheetExtensions:  ["css", "styl", "scss", "less"]
+      stylesheetAliases:
         css:                  ["styl", "less", "scss", "sass"]
       
-      javascript_directory:   "javascripts"
-      javascript_extensions:  ["js", "coffee", "ejs"]
-      javascript_aliases:
+      javascriptDirectory:   "javascripts"
+      javascriptExtensions:  ["js", "coffee", "ejs"]
+      javascriptAliases:
         js:                   ["coffee", "coffeescript"]
         coffee:               ["coffeescript"]
       
-      image_directory:        "images"
-      image_extensions:       ["png", "jpg", "gif"]
-      image_aliases:
+      imageDirectory:        "images"
+      imageExtensions:       ["png", "jpg", "gif"]
+      imageAliases:
         jpg:                  ["jpeg"]
       
-      font_directory:         "fonts"
-      font_extensions:        ["eot", "svg", "tff", "woff"]
-      font_aliases:           {}
+      fontDirectory:         "fonts"
+      fontExtensions:        ["eot", "svg", "tff", "woff"]
+      fontAliases:           {}
       
       host:                   null
-      relative_root_url:      null
+      relativeRootUrl:      null
     
       precompile:             []
       
-      js_compressor:          null
-      css_compressor:         null
+      jsCompressor:          null
+      cssCompressor:         null
       
       enabled:                true
       
@@ -53,13 +53,13 @@ class Asset
       prefix:                 "assets"
   
   @teardown: ->
-    delete @_javascript_lookup
-    delete @_stylesheet_lookup
-    delete @_image_lookup
-    delete @_font_lookup
-    delete @_path_pattern
-    delete @_css_compressor
-    delete @_js_compressor
+    delete @_javascriptLookup
+    delete @_stylesheetLookup
+    delete @_imageLookup
+    delete @_fontLookup
+    delete @_pathPattern
+    delete @_cssCompressor
+    delete @_jsCompressor
     delete @_parser
     delete @_compiler
     delete @_digests
@@ -67,14 +67,14 @@ class Asset
   @configure: (options) ->
     @config[key] = value for key, value in options
   
-  @css_compressor: ->
-    @_css_compressor ?= new (require('shift').YuiCompressor)
+  @cssCompressor: ->
+    @_cssCompressor ?= new (require('shift').YuiCompressor)
   
-  @js_compressor: ->
-    @_js_compressor ?= new (require('shift').UglifyJS)
+  @jsCompressor: ->
+    @_jsCompressor ?= new (require('shift').UglifyJS)
   
   constructor: (path, extension) ->
-    @path        = @constructor.expand_path(path)
+    @path        = @constructor.expandPath(path)
     @extension   = extension || @extensions()[0]
   
   compiler: ->

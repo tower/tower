@@ -6,13 +6,13 @@ describe "assets", ->
       @file = new Metro.Asset("spec/spec-app/app/assets/javascripts/application.js")
     
     it "should have the path fingerprint", ->
-      expect(@file.path_fingerprint()).toEqual null
+      expect(@file.pathFingerprint()).toEqual null
       
       @file = new Metro.Asset("spec/spec-app/app/assets/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js")
-      expect(@file.path_fingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
+      expect(@file.pathFingerprint()).toEqual "49fdaad23a42d2ce96e4190c34457b5a"
     
     it "should add fingerprint to path", ->
-      path = @file.path_with_fingerprint("49fdaad23a42d2ce96e4190c34457b5a")
+      path = @file.pathWithFingerprint("49fdaad23a42d2ce96e4190c34457b5a")
       expect(path).toEqual "spec/spec-app/app/assets/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
     
     it "should extract extensions", ->
@@ -31,26 +31,26 @@ describe "assets", ->
       
     it 'should search for assets by priority', ->
       asset = Metro.Asset.find("/stylesheets/application.css", extension: '.css')
-      expect(asset.relative_path()).toEqual 'spec/spec-app/app/assets/stylesheets/application.css'
+      expect(asset.relativePath()).toEqual 'spec/spec-app/app/assets/stylesheets/application.css'
     
     it 'should allow absolute paths to assets from inside a directive', ->
       directivePath = "./lib/assets/stylesheets/theme"
       asset         = Metro.Asset.find(directivePath, extension: '.css')
-      expect(asset.relative_path()).toEqual "spec/spec-app/lib/assets/stylesheets/theme.less"
+      expect(asset.relativePath()).toEqual "spec/spec-app/lib/assets/stylesheets/theme.less"
       
       directivePath = "theme"
       asset         = Metro.Asset.find(directivePath, extension: '.css')
-      expect(asset.relative_path()).toEqual "spec/spec-app/app/assets/stylesheets/theme.less"
+      expect(asset.relativePath()).toEqual "spec/spec-app/app/assets/stylesheets/theme.less"
     
     it 'should allow nested assets', ->
     
     it 'should find file if file is named same as folder in a different load path', ->
-      expect(Metro.Asset.find("history", extension: '.js').relative_path()).toEqual "spec/spec-app/app/assets/javascripts/history.coffee"
-      expect(Metro.Asset.find("./vendor/assets/javascripts/history", extension: '.js').relative_path()).toEqual "spec/spec-app/vendor/assets/javascripts/history.js"
-      expect(Metro.Asset.find("./vendor/assets/javascripts/history/history", extension: '.js').relative_path()).toEqual "spec/spec-app/vendor/assets/javascripts/history/history.js"
+      expect(Metro.Asset.find("history", extension: '.js').relativePath()).toEqual "spec/spec-app/app/assets/javascripts/history.coffee"
+      expect(Metro.Asset.find("./vendor/assets/javascripts/history", extension: '.js').relativePath()).toEqual "spec/spec-app/vendor/assets/javascripts/history.js"
+      expect(Metro.Asset.find("./vendor/assets/javascripts/history/history", extension: '.js').relativePath()).toEqual "spec/spec-app/vendor/assets/javascripts/history/history.js"
     
     it 'should find files with . dots in their name', ->
-      expect(Metro.Asset.find("jquery.markedit", extension: '.js').relative_path()).toEqual "spec/spec-app/vendor/assets/javascripts/jmd/jquery.markedit.js"
+      expect(Metro.Asset.find("jquery.markedit", extension: '.js').relativePath()).toEqual "spec/spec-app/vendor/assets/javascripts/jmd/jquery.markedit.js"
     
     it 'should ignore files starting with a ~ tilde', ->
       expect(Metro.Asset.lookup("search", extension: '.js')[0]).toBeFalsy()
@@ -59,7 +59,7 @@ describe "assets", ->
   describe "render", ->
     it "should use the YUI compressor", ->
       expected  = "body{background:red}"
-      result    = Metro.Asset.css_compressor().render("body { background: red; }")
+      result    = Metro.Asset.cssCompressor().render("body { background: red; }")
       
       expect(result).toEqual(expected)
     
@@ -70,12 +70,11 @@ describe "assets", ->
       });
       '''
       expected  = '$(document).ready(function(){alert("ready!")})'
-      result    = Metro.Asset.js_compressor().render(string)
+      result    = Metro.Asset.jsCompressor().render(string)
       
       expect(result).toEqual(expected)
       
     it "should create a manifest", ->
-
     
     it "should render async", ->
       asset = new Metro.Asset("spec/spec-app/app/assets/javascripts/directives.js", ".js")
@@ -83,8 +82,11 @@ describe "assets", ->
         expect(result).toEqual '''
 alert("child a");
 alert("child b");
+alert("history!!!");
+
 //= require directive_child_a
 //= require directive_child_b
+//= require ./vendor/assets/javascripts/history/history
 
 alert("directives");
 
@@ -93,14 +95,14 @@ alert("directives");
   
   describe "environment", ->
     it "should normalize the extension", ->
-      expect(Metro.Asset.normalize_extension("application", ".js")).toEqual "application.js"
-      expect(Metro.Asset.normalize_extension("application.js", ".js")).toEqual "application.js"
+      expect(Metro.Asset.normalizeExtension("application", ".js")).toEqual "application.js"
+      expect(Metro.Asset.normalizeExtension("application.js", ".js")).toEqual "application.js"
     
     it "should normalize the asset directory", ->
-      expect(Metro.Asset.normalize_asset_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
+      expect(Metro.Asset.normalizeAssetPath("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
       
     it "should compute the asset path", ->
-      expect(Metro.Asset.compute_public_path("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
+      expect(Metro.Asset.computePublicPath("application.js", directory: "javascripts", digest: false)).toEqual "/javascripts/application.js"
       
     it "should find and build assets", ->
       result = Metro.Asset.find("application", extension: ".js")
@@ -118,10 +120,10 @@ $(document).ready(function() {
     it "should compute the public path given a key", ->
       dir = "#{process.cwd()}/spec/spec-app/app/assets/javascripts"
     
-      expect(@environment.rewrite_extension("application", "js")).toEqual "application.js"
-      expect(@environment.rewrite_asset_path("application.js", dir, ext: "js", digest: false)).toEqual "#{process.cwd()}/spec/spec-app/app/assets/javascripts/application.js"
-      expect(@environment.rewrite_asset_path("application.js", dir, ext: "js", digest: true)).toEqual "#{process.cwd()}/spec/spec-app/app/assets/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
+      expect(@environment.rewriteExtension("application", "js")).toEqual "application.js"
+      expect(@environment.rewriteAssetPath("application.js", dir, ext: "js", digest: false)).toEqual "#{process.cwd()}/spec/spec-app/app/assets/javascripts/application.js"
+      expect(@environment.rewriteAssetPath("application.js", dir, ext: "js", digest: true)).toEqual "#{process.cwd()}/spec/spec-app/app/assets/javascripts/application-49fdaad23a42d2ce96e4190c34457b5a.js"
       
-      expect(@environment.compute_public_path("application", dir, ext: "js")).toEqual "./spec/spec-app/public/javascripts/application.js"
+      expect(@environment.computePublicPath("application", dir, ext: "js")).toEqual "./spec/spec-app/public/javascripts/application.js"
       
 ###

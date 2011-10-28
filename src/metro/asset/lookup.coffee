@@ -2,38 +2,38 @@ class Lookup
   @digests: ->
     @_digests ?= {}
   
-  @stylesheet_lookup: ->
-    @_stylesheet_lookup ?= @_create_lookup(
-      @config.stylesheet_directory
-      @config.stylesheet_extensions
-      @config.stylesheet_aliases
+  @stylesheetLookup: ->
+    @_stylesheetLookup ?= @_createLookup(
+      @config.stylesheetDirectory
+      @config.stylesheetExtensions
+      @config.stylesheetAliases
     )
   
-  @javascript_lookup: ->
-    @_javascript_lookup ?= @_create_lookup(
-      @config.javascript_directory
-      @config.javascript_extensions
-      @config.javascript_aliases
+  @javascriptLookup: ->
+    @_javascriptLookup ?= @_createLookup(
+      @config.javascriptDirectory
+      @config.javascriptExtensions
+      @config.javascriptAliases
     )
   
-  @image_lookup: ->
-    @_image_lookup ?= @_create_lookup(
-      @config.image_directory
-      @config.image_extensions
-      @config.image_aliases
+  @imageLookup: ->
+    @_imageLookup ?= @_createLookup(
+      @config.imageDirectory
+      @config.imageExtensions
+      @config.imageAliases
     )
   
-  @font_lookup: ->
-    @_font_lookup ?= @_create_lookup(
-      @config.font_directory
-      @config.font_extensions
-      @config.font_aliases
+  @fontLookup: ->
+    @_fontLookup ?= @_createLookup(
+      @config.fontDirectory
+      @config.fontExtensions
+      @config.fontAliases
     )
   
-  @_create_lookup: (directory, extensions, aliases) ->
+  @_createLookup: (directory, extensions, aliases) ->
     paths = []
     
-    for path in @config.load_paths
+    for path in @config.loadPaths
       path = @join(path, directory)
       paths.push(path)
       paths = paths.concat @directories(path)
@@ -47,16 +47,16 @@ class Lookup
       aliases:    aliases
   
   # All extensions must start with a "."
-  @paths_for: (extension) ->
-    @lookup_for(extension).paths
+  @pathsFor: (extension) ->
+    @lookupFor(extension).paths
   
-  @lookup_for: (extension) ->
+  @lookupFor: (extension) ->
     switch extension
-      when ".css" then @stylesheet_lookup()
-      when ".js" then @javascript_lookup()
+      when ".css" then @stylesheetLookup()
+      when ".js" then @javascriptLookup()
       else []
       
-  @digest_for: (source) ->
+  @digestFor: (source) ->
     @digests[source] || source
     
   # Add the extension +ext+ if not present. Return full or scheme-relative URLs otherwise untouched.
@@ -67,43 +67,43 @@ class Lookup
   # When :relative (default), the protocol will be determined by the client using current protocol
   # When :request, the protocol will be the request protocol
   # Otherwise, the protocol is used (E.g. :http, :https, etc)
-  @compute_public_path: (source, options = {}) ->
-    return source if @is_url(source)
+  @computePublicPath: (source, options = {}) ->
+    return source if @isUrl(source)
     extension = options.extension
-    source = @normalize_extension(source, extension) if extension
-    source = @normalize_asset_path(source, options)
-    source = @normalize_relative_url_root(source, @relative_url_root)
-    source = @normalize_host_and_protocol(source, options.protocol)
+    source = @normalizeExtension(source, extension) if extension
+    source = @normalizeAssetPath(source, options)
+    source = @normalizeRelativeUrlRoot(source, @relativeUrlRoot)
+    source = @normalizeHostAndProtocol(source, options.protocol)
     source
     
-  @compute_asset_host: ->
+  @computeAssetHost: ->
     if typeof(@config.host) == "function" then @config.host.call(@) else @config.host
     
-  @normalize_extension: (source, extension) ->
+  @normalizeExtension: (source, extension) ->
     @basename(source, extension) + extension
   
-  @normalize_asset_path: (source, options = {}) ->
-    if @is_absolute(source)
+  @normalizeAssetPath: (source, options = {}) ->
+    if @isAbsolute(source)
       source
     else
       source = @join(options.directory, source)
-      source = @digest_for(source) unless options.digest == false
+      source = @digestFor(source) unless options.digest == false
       source = "/#{source}" unless !!source.match(/^\//)
       source
       
-  @normalize_relative_url_root: (source, relative_url_root) ->
-    if relative_url_root && !source.match(new RegExp("^#{relative_url_root}/"))
-      "#{relative_url_root}#{source}"
+  @normalizeRelativeUrlRoot: (source, relativeUrlRoot) ->
+    if relativeUrlRoot && !source.match(new RegExp("^#{relativeUrlRoot}/"))
+      "#{relativeUrlRoot}#{source}"
     else
       source
   
-  @normalize_host_and_protocol: (source, protocol) ->
-    host = @compute_asset_host(source)
-    #if host && !@is_uri(host)
-      #if (protocol || @default_protocol) == :request && !has_request?
+  @normalizeHostAndProtocol: (source, protocol) ->
+    host = @computeAssetHost(source)
+    #if host && !@isUri(host)
+      #if (protocol || @defaultProtocol) == :request && !hasRequest?
       #  host = nil
       #else
-      #  host = "#{compute_protocol(protocol)}#{host}"
+      #  host = "#{computeProtocol(protocol)}#{host}"
     if host then "#{host}#{source}" else source
   
   # find path from source and extension
@@ -121,20 +121,20 @@ class Lookup
 
     options.extension ?= @extname(source)
     
-    Metro.raise("errors.missing_option", "extension", "Asset#find") if options.extension == ""
+    Metro.raise("errors.missingOption", "extension", "Asset#find") if options.extension == ""
 
     pattern = "(?:" + Metro.Support.RegExp.escape(options.extension) + ")?$"
     source  = source.replace(new RegExp(pattern), options.extension)
-    lookup  = @lookup_for(options.extension)
+    lookup  = @lookupFor(options.extension)
     if lookup then lookup.find(source) else []
     
   @match: (path) ->
-    !!path.match(@path_pattern())
+    !!path.match(@pathPattern())
     
   @normalizeSource: (source) ->
-    source.replace(@path_pattern(), "")
+    source.replace(@pathPattern(), "")
     
-  @path_pattern: ->
-    @_path_pattern ?= new RegExp("^/(assets|#{@config.stylesheet_directory}|#{@config.javascript_directory}|#{@config.image_directory}|#{@config.font_directory})/")
+  @pathPattern: ->
+    @_pathPattern ?= new RegExp("^/(assets|#{@config.stylesheetDirectory}|#{@config.javascriptDirectory}|#{@config.imageDirectory}|#{@config.fontDirectory})/")
     
 module.exports = Lookup

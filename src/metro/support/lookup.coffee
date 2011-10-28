@@ -4,9 +4,9 @@ class Lookup
   # new Metro.Support.Lookup paths: ["./app/assets/stylesheets"], extensions: [".js", ".coffee"], aliases: ".coffee": [".coffeescript"]
   constructor: (options = {}) ->
     @root       = options.root
-    @extensions = @_normalize_extensions(options.extensions)
-    @aliases    = @_normalize_aliases(options.aliases || {})
-    @paths      = @_normalize_paths(options.paths)
+    @extensions = @_normalizeExtensions(options.extensions)
+    @aliases    = @_normalizeAliases(options.aliases || {})
+    @paths      = @_normalizePaths(options.paths)
     @patterns   = {}
     @_entries   = {}
   
@@ -18,19 +18,19 @@ class Lookup
     result  = []
     root    = @root
     
-    paths   = if source[0] == "." then [Metro.Support.Path.absolute_path(source, root)] else @paths.map (path) -> Metro.Support.Path.join(path, source)
+    paths   = if source[0] == "." then [Metro.Support.Path.absolutePath(source, root)] else @paths.map (path) -> Metro.Support.Path.join(path, source)
     
     for path in paths
       directory = Metro.Support.Path.dirname path
       basename  = Metro.Support.Path.basename path
       
       # in case they try to use "../../.." to get to a directory that's not supposed to be accessed.
-      if @paths_include(directory)
+      if @pathsInclude(directory)
         result = result.concat @match(directory, basename)
     
     result
     
-  paths_include: (directory) ->
+  pathsInclude: (directory) ->
     for path in @paths
       if path.substr(0, directory.length) == directory
         return true
@@ -42,7 +42,7 @@ class Lookup
     matches = []
     
     for entry in entries
-      if Metro.Support.Path.is_file(Metro.Support.Path.join(directory, entry)) && !!entry.match(pattern)
+      if Metro.Support.Path.isFile(Metro.Support.Path.join(directory, entry)) && !!entry.match(pattern)
         matches.push(entry)
       
     matches = @sort(matches, basename)
@@ -54,34 +54,34 @@ class Lookup
   sort: (matches, basename) ->
     matches
     
-  _normalize_paths: (paths) ->
+  _normalizePaths: (paths) ->
     result = []
     
     for path in paths
-      result.push Metro.Support.Path.absolute_path path, @root
+      result.push Metro.Support.Path.absolutePath path, @root
     result
     
-  _normalize_extension: (extension) ->
+  _normalizeExtension: (extension) ->
     extension.replace(/^\.?/, ".")
     
-  _normalize_extensions: (extensions) ->
+  _normalizeExtensions: (extensions) ->
     result = []
     for extension in extensions
-      result.push @_normalize_extension(extension)
+      result.push @_normalizeExtension(extension)
     result
     
-  _normalize_aliases: (aliases) ->
+  _normalizeAliases: (aliases) ->
     return null unless aliases
     result = {}
     for key, value of aliases
-      result[@_normalize_extension(key)] = @_normalize_extensions(value)
+      result[@_normalizeExtension(key)] = @_normalizeExtensions(value)
     result
   
   # RegExp.escape
   escape: (string) ->
     string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
     
-  escape_each: ->
+  escapeEach: ->
     result = []
     args   = arguments[0]
     for item, i in args
@@ -107,18 +107,18 @@ class Lookup
     @_entries[path]
     
   pattern: (source) ->
-    @patterns[source] ?= @build_pattern(source)
+    @patterns[source] ?= @buildPattern(source)
   
   # Returns a `Regexp` that matches the allowed extensions.
   #
-  #     build_pattern("index.html") #=> /^index(.html|.htm)(.builder|.erb)*$/  
-  build_pattern: (source) ->
+  #     buildPattern("index.html") #=> /^index(.html|.htm)(.builder|.erb)*$/  
+  buildPattern: (source) ->
     extension   = Metro.Support.Path.extname(source)
     
     slug        = Metro.Support.Path.basename(source, extension)
     extensions  = [extension]
     extensions  = extensions.concat @aliases[extension] if @aliases[extension]
     
-    new RegExp "^" + @escape(slug) + "(?:" + @escape_each(extensions).join("|") + ").*"
+    new RegExp "^" + @escape(slug) + "(?:" + @escapeEach(extensions).join("|") + ").*"
     
 module.exports = Lookup

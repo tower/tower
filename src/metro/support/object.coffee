@@ -1,9 +1,9 @@
 _ = require('underscore')
 
 class Object
-  @is_a: (object, isa) ->
+  @isA: (object, isa) ->
     
-  @is_hash: ->
+  @isHash: ->
     object = arguments[0] || @
     _.isObject(object) && !(_.isFunction(object) || _.isArray(object))
   

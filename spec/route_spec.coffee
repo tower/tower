@@ -63,8 +63,8 @@ describe "route", ->
       route   = routes[0]
       
       expect(route.path).toEqual("/login.:format?")
-      expect(route.controller.name).toEqual("sessions_controller")
-      expect(route.controller.class_name).toEqual("SessionsController")
+      expect(route.controller.name).toEqual("sessionsController")
+      expect(route.controller.className).toEqual("SessionsController")
       expect(route.controller.action).toEqual("new")
       expect(route.method).toEqual("get")
       expect(route.name).toEqual("login")

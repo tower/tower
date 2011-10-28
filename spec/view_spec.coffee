@@ -9,10 +9,10 @@ describe "views", ->
       Metro.View.engine = "jade"
     
     it "should lookup templates", ->
-      expect(Metro.View.paths_by_name["posts/edit"]).toEqual null
+      expect(Metro.View.pathsByName["posts/edit"]).toEqual null
       template = Metro.View.lookup("posts/edit")
       expect(template).toEqual "spec/spec-app/app/views/posts/edit.jade"
-      expect(Metro.View.paths_by_name["posts/edit"]).toEqual template
+      expect(Metro.View.pathsByName["posts/edit"]).toEqual template
     
     it "should render", ->
       view    = new Metro.View

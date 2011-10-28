@@ -4,9 +4,9 @@ describe "middleware", ->
   describe "assets", ->
     beforeEach ->
       Metro.Asset.configure
-       public_path          : "./spec/spec-app/public"
-       load_paths           : ["./spec/fixtures"]
-       javascript_directory : "javascripts"
+       publicPath          : "./spec/spec-app/public"
+       loadPaths           : ["./spec/fixtures"]
+       javascriptDirectory : "javascripts"
       
       @middleware = Metro.Middleware.Assets.middleware
       

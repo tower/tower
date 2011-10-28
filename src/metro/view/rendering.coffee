@@ -44,7 +44,7 @@ class Rendering
       locals[key] = controller[key] unless key == "constructor"
     locals  = require("underscore").extend(locals, @locals || {}, options.locals)
     
-    locals.pretty = true if Metro.View.pretty_print
+    locals.pretty = true if Metro.View.prettyPrint
     
     locals
   

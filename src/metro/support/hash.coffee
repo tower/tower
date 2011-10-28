@@ -1,6 +1,6 @@
 class Hash
-  @extract_options: (args) ->
-    if args && Metro.Support.Object.is_hash(args[args.length - 1])
+  @extractOptions: (args) ->
+    if args && Metro.Support.Object.isHash(args[args.length - 1])
       Array.prototype.pop.call(args)
     else
       {}

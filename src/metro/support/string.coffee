@@ -14,7 +14,4 @@ class String
   @titleize: ->
     _.titleize(arguments[0] || @)
     
-  @to_s: ->
-    (arguments[0] || @).toString()
-    
 module.exports = String

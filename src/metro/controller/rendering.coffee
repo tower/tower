@@ -5,7 +5,7 @@ class Rendering
     view = new Metro.Views.Base(@)
     body = view.render(arguments...)
     if @response
-      @headers["Content-Type"] ?= @content_type
+      @headers["Content-Type"] ?= @contentType
       @response.writeHead(200, @headers)
       @response.write(body)
       @response.end()
@@ -13,17 +13,17 @@ class Rendering
       @request  = null
     body
     
-  render_to_body: (options) ->
-    @_process_options(options)
-    @_render_template(options)
+  renderToBody: (options) ->
+    @_processOptions(options)
+    @_renderTemplate(options)
     
-  render_to_string: ->
-    options = @_normalize_render(arguments...)
-    @render_to_body(options)
+  renderToString: ->
+    options = @_normalizeRender(arguments...)
+    @renderToBody(options)
     
   # private
-  _render_template: (options) ->
-    @template.render(view_context, options)
+  _renderTemplate: (options) ->
+    @template.render(viewContext, options)
 
 module.exports = Rendering
     

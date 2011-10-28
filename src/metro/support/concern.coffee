@@ -6,7 +6,7 @@ class Concern
     @extend   @ClassMethods if @hasOwnProperty("ClassMethods")
     @include  @InstanceMethods if @hasOwnProperty("InstanceMethods")
   
-  # Module.append_features in ruby
+  # Module.appendFeatures in ruby
   @_appendFeatures: ->
   
 module.exports = Concern

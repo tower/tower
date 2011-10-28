@@ -4,14 +4,14 @@ fs = require('fs')
 # http://requirejs.org/
 # _require = global.require
 # global.require = (path) ->
-#   Metro.Support.Dependencies.load_path(path)
+#   Metro.Support.Dependencies.loadPath(path)
 
 class Dependencies
   @load: (directory) ->
     paths = require('findit').sync directory
-    @load_path(path) for path in paths
+    @loadPath(path) for path in paths
   
-  @load_path: (path) ->
+  @loadPath: (path) ->
     self  = @
     keys  = @keys
     klass = Metro.Support.Path.basename(path).split(".")[0]
@@ -21,9 +21,9 @@ class Dependencies
       global[klass] = require(path)
       
   @clear: ->
-    @clear_dependency(key) for key, file of @keys
+    @clearDependency(key) for key, file of @keys
   
-  @clear_dependency: (key) ->
+  @clearDependency: (key) ->
     file = @keys[key]
     delete require.cache[file.path]
     global[key] = null
@@ -31,12 +31,12 @@ class Dependencies
     @keys[key] = null
     delete @keys[key]
     
-  @reload_modified: ->
+  @reloadModified: ->
     self = @
     keys = @keys
     for key, file of keys
       if file.stale()
-        self.clear_dependency(key)
+        self.clearDependency(key)
         keys[key]   = file
         global[key] = require(file.path)
     

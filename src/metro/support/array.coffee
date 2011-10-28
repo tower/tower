@@ -1,8 +1,8 @@
 class ArrayExtension
-  @extract_args: (args) ->
+  @extractArgs: (args) ->
     Array.prototype.slice.call(args, 0, args.length)
     
-  @args_options_and_callback: ->
+  @argsOptionsAndCallback: ->
     args = Array.prototype.slice.call(arguments)
     last = args.length - 1
     if typeof args[last] == "function"
