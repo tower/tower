@@ -13,10 +13,10 @@ class Factory
   @build: (name, overrides) ->
     attributes = @store()[name][1]()
     
-    for key, value, of overrides
+    for key, value of overrides
       attributes[key] = value
     
-    new global[name](attributes)
+    new (global[name](attributes))
     
   @create: (name, overrides) ->
     record = @build(name, overrides)

@@ -3,11 +3,11 @@ class Responding
   
   #@include Metro.Support.Concern
     
-  @respond_to: ->
-    @_respond_to ?= []
-    @_respond_to = @_respond_to.concat(arguments)
+  @respondTo: ->
+    @_respondTo ?= []
+    @_respondTo = @_respondTo.concat(arguments)
     
-  respond_with: ->
+  respondWith: ->
     data  = arguments[0]
     if arguments.length > 1 && typeof(arguments[arguments.length - 1]) == "function"
       callback = arguments[arguments.length - 1]
@@ -30,24 +30,24 @@ class Responding
     @format   = @params.format
     @headers  = {}
     if @format && @format != "undefined"
-      @content_type = Metro.Support.Path.content_type(@format)
+      @contentType = Metro.Support.Path.contentType(@format)
     else 
-      @content_type = "text/html"
+      @contentType = "text/html"
     @process()
     
   process: ->  
-    @process_query()
+    @processQuery()
     
     @[@params.action]()
     
-  process_query: ->
+  processQuery: ->
   
   constructor: ->
     @headers      = {}
     @status       = 200
     @request      = null
     @response     = null
-    @content_type = "text/html"
+    @contentType = "text/html"
     @params       = {}
     @query        = {}
     

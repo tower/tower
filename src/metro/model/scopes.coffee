@@ -32,6 +32,10 @@ class Scopes
   @includes: ->
     @scoped().includes(arguments...)
   
+  # GEO!  
+  @within: ->
+    @scoped().within(arguments...)
+  
   @scoped: ->
     new Metro.Model.Scope(@name)
     

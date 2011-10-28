@@ -1,4 +1,4 @@
 class Redirecting
-  redirect_to: ->
+  redirectTo: ->
     
 module.exports = Redirecting

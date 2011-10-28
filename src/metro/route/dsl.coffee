@@ -4,21 +4,21 @@ _.mixin(require("underscore.string"))
 class DSL
   match: ->
     @scope ?= {}
-    Metro.Route.create(new Metro.Route(@_extract_options(arguments...)))
+    Metro.Route.create(new Metro.Route(@_extractOptions(arguments...)))
     
   get: ->
-    @match_method("get", arguments...)
+    @matchMethod("get", arguments...)
     
   post: ->
-    @match_method("post", arguments...)
+    @matchMethod("post", arguments...)
     
   put: ->
-    @match_method("put", arguments...)
+    @matchMethod("put", arguments...)
     
   delete: ->
-    @match_method("delete", arguments...)
+    @matchMethod("delete", arguments...)
     
-  match_method: (method) ->
+  matchMethod: (method) ->
     options = arguments.pop()
     options.via = method
     arguments.push(options)
@@ -38,20 +38,20 @@ class DSL
   #
   # This generates the following routes:
   #
-  #       admin_posts GET    /admin/posts(.:format)          admin/posts#index
-  #       admin_posts POST   /admin/posts(.:format)          admin/posts#create
-  #    new_admin_post GET    /admin/posts/new(.:format)      admin/posts#new
-  #   edit_admin_post GET    /admin/posts/:id/edit(.:format) admin/posts#edit
-  #        admin_post GET    /admin/posts/:id(.:format)      admin/posts#show
-  #        admin_post PUT    /admin/posts/:id(.:format)      admin/posts#update
-  #        admin_post DELETE /admin/posts/:id(.:format)      admin/posts#destroy
+  #       adminPosts GET    /admin/posts(.:format)          admin/posts#index
+  #       adminPosts POST   /admin/posts(.:format)          admin/posts#create
+  #    newAdminPost GET    /admin/posts/new(.:format)      admin/posts#new
+  #   editAdminPost GET    /admin/posts/:id/edit(.:format) admin/posts#edit
+  #        adminPost GET    /admin/posts/:id(.:format)      admin/posts#show
+  #        adminPost PUT    /admin/posts/:id(.:format)      admin/posts#update
+  #        adminPost DELETE /admin/posts/:id(.:format)      admin/posts#destroy
   #
   # === Options
   #
-  # The +:path+, +:as+, +:module+, +:shallow_path+ and +:shallow_prefix+
+  # The +:path+, +:as+, +:module+, +:shallowPath+ and +:shallowPrefix+
   # options all default to the name of the namespace.
   #
-  # For options, see <tt>Base#match</tt>. For +:shallow_path+ option, see
+  # For options, see <tt>Base#match</tt>. For +:shallowPath+ option, see
   # <tt>Resources#resources</tt>.
   #
   # === Examples
@@ -64,11 +64,11 @@ class DSL
   #   namespace "admin", module: "sekret", ->
   #     resources "posts"
   #
-  #   # generates +sekret_posts_path+ rather than +admin_posts_path+
+  #   # generates +sekretPostsPath+ rather than +adminPostsPath+
   #   namespace "admin", as: "sekret", ->
   #     resources "posts"
   namespace: (path, options, block) ->
-    options = _.extend(path: path, as: path, module: path, shallow_path: path, shallow_prefix: path, options)
+    options = _.extend(path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
     @scope(options, block)
     
   # === Parameter Restriction
@@ -84,7 +84,7 @@ class DSL
   # You may use this to also restrict other parameters:
   #
   #   resources "posts", ->
-  #     constraints post_id: /\d+\.\d+, ->
+  #     constraints postId: /\d+\.\d+, ->
   #       resources "comments"
   #
   # === Restricting based on IP
@@ -102,7 +102,7 @@ class DSL
   # Allows you to set default parameters for a route, such as this:
   # 
   #   defaults id: 'home', ->
-  #     match 'scoped_pages/(:id)', to: 'pages#show'
+  #     match 'scopedPages/(:id)', to: 'pages#show'
   # 
   # Using this, the `:id` parameter here will default to 'home'.
   defaults: (options, block) ->
@@ -155,23 +155,23 @@ class DSL
   #
   # This generates the following comments routes:
   #
-  #   GET     /photos/:photo_id/comments/new
-  #   POST    /photos/:photo_id/comments
-  #   GET     /photos/:photo_id/comments/:id
-  #   GET     /photos/:photo_id/comments/:id/edit
-  #   PUT     /photos/:photo_id/comments/:id
-  #   DELETE  /photos/:photo_id/comments/:id
+  #   GET     /photos/:photoId/comments/new
+  #   POST    /photos/:photoId/comments
+  #   GET     /photos/:photoId/comments/:id
+  #   GET     /photos/:photoId/comments/:id/edit
+  #   PUT     /photos/:photoId/comments/:id
+  #   DELETE  /photos/:photoId/comments/:id
   #
   # === Options
   # Takes same options as <tt>Base#match</tt> as well as:
   #
-  # [:path_names]
+  # [:pathNames]
   #   Allows you to change the paths of the seven default actions.
   #   Paths not specified are not changed.
   #
-  #     resources "posts", path_names: {new: "brand_new"}
+  #     resources "posts", pathNames: {new: "brandNew"}
   #
-  #   The above example will now change /posts/new to /posts/brand_new
+  #   The above example will now change /posts/new to /posts/brandNew
   #
   # [:only]
   #   Only generate routes for the given actions.
@@ -203,19 +203,19 @@ class DSL
   #   as a comment on a blog post like <tt>/posts/a-long-permalink/comments/1234</tt>
   #   to be shortened to just <tt>/comments/1234</tt>.
   #
-  # [:shallow_path]
+  # [:shallowPath]
   #   Prefixes nested shallow routes with the specified path.
   #
-  #     scope shallow_path: "sekret", ->
+  #     scope shallowPath: "sekret", ->
   #       resources "posts", ->
   #         resources "comments", shallow: true
   #
   #   The +comments+ resource here will have the following routes generated for it:
   #
-  #     post_comments    GET    /posts/:post_id/comments(.:format)
-  #     post_comments    POST   /posts/:post_id/comments(.:format)
-  #     new_post_comment GET    /posts/:post_id/comments/new(.:format)
-  #     edit_comment     GET    /sekret/comments/:id/edit(.:format)
+  #     postComments    GET    /posts/:postId/comments(.:format)
+  #     postComments    POST   /posts/:postId/comments(.:format)
+  #     newPostComment GET    /posts/:postId/comments/new(.:format)
+  #     editComment     GET    /sekret/comments/:id/edit(.:format)
   #     comment          GET    /sekret/comments/:id(.:format)
   #     comment          PUT    /sekret/comments/:id(.:format)
   #     comment          DELETE /sekret/comments/:id(.:format)
@@ -237,7 +237,7 @@ class DSL
   #
   # This will enable Rails to recognize paths such as <tt>/photos/search</tt>
   # with GET, and route to the search action of +PhotosController+. It will also
-  # create the <tt>search_photos_url</tt> and <tt>search_photos_path</tt>
+  # create the <tt>searchPhotosUrl</tt> and <tt>searchPhotosPath</tt>
   # route helpers.
   collection: ->
   
@@ -249,24 +249,24 @@ class DSL
   #
   # This will recognize <tt>/photos/1/preview</tt> with GET, and route to the
   # preview action of +PhotosController+. It will also create the
-  # <tt>preview_photo_url</tt> and <tt>preview_photo_path</tt> helpers.
+  # <tt>previewPhotoUrl</tt> and <tt>previewPhotoPath</tt> helpers.
   member: ->
     
   root: (options) ->
     @match '/', _.extend(as: "root", options)
     
-  _extract_options: ->
-    path            = Metro.Route.normalize_path(arguments[0])
+  _extractOptions: ->
+    path            = Metro.Route.normalizePath(arguments[0])
     options         = arguments[arguments.length - 1] || {}
     options.path    = path
-    format          = @_extract_format(options)
-    options.path    = @_extract_path(options)
-    method          = @_extract_request_method(options)
-    constraints     = @_extract_constraints(options)
-    defaults        = @_extract_defaults(options)
-    controller      = @_extract_controller(options)
-    anchor          = @_extract_anchor(options)
-    name            = @_extract_name(options)
+    format          = @_extractFormat(options)
+    options.path    = @_extractPath(options)
+    method          = @_extractRequestMethod(options)
+    constraints     = @_extractConstraints(options)
+    defaults        = @_extractDefaults(options)
+    controller      = @_extractController(options)
+    anchor          = @_extractAnchor(options)
+    name            = @_extractName(options)
     
     options         = _.extend options,
       method:         method
@@ -280,27 +280,27 @@ class DSL
     
     options
     
-  _extract_format: (options) ->
+  _extractFormat: (options) ->
     
-  _extract_name: (options) ->
+  _extractName: (options) ->
     options.as
     
-  _extract_constraints: (options) ->
+  _extractConstraints: (options) ->
     options.constraints || {}
     
-  _extract_defaults: (options) ->
+  _extractDefaults: (options) ->
     options.defaults || {}
     
-  _extract_path: (options) ->
+  _extractPath: (options) ->
     "#{options.path}.:format?"
     
-  _extract_request_method: (options) ->
-    options.via || options.request_method
+  _extractRequestMethod: (options) ->
+    options.via || options.requestMethod
   
-  _extract_anchor: (options) ->
+  _extractAnchor: (options) ->
     options.anchor
     
-  _extract_controller: (options) ->
+  _extractController: (options) ->
     to = options.to.split('#')
     if to.length == 1
       action = to[0]
@@ -311,9 +311,9 @@ class DSL
     controller   ?= (options.controller || @scope.controller)
     action       ?= (options.action || @scope.action)
     
-    controller  = controller.toLowerCase().replace(/(?:_controller)?$/, "_controller")
+    controller  = controller.toLowerCase().replace(/(?:Controller)?$/, "Controller")
     action      = action.toLowerCase()
     
-    name: controller, action: action, class_name: _.camelize("_#{controller}")
+    name: controller, action: action, className: _.camelize("_#{controller}")
 
 module.exports = DSL

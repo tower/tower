@@ -9,7 +9,7 @@ class Route
   @create: (route) ->
     @store().create(route)
   
-  @normalize_path: (path) ->
+  @normalizePath: (path) ->
     "/" + path.replace(/^\/|\/$/, "")
     
   @initialize: ->
@@ -53,7 +53,7 @@ class Route
     @options    = options
     @controller = options.controller
     @keys       = []
-    @pattern    = @extract_pattern(@path)
+    @pattern    = @extractPattern(@path)
     @id         = @path
     if @controller
       @id += @controller.name + @controller.action
@@ -61,7 +61,7 @@ class Route
   match: (path) ->
     @pattern.exec(path)
     
-  extract_pattern: (path, case_sensitive, strict) ->
+  extractPattern: (path, caseSensitive, strict) ->
     return path if path instanceof RegExp
     self = @
     return new RegExp('^' + path + '$') if path == "/"
@@ -92,6 +92,6 @@ class Route
       result
     )
     
-    new RegExp('^' + path + '$', !!case_sensitive ? '' : 'i')
+    new RegExp('^' + path + '$', !!caseSensitive ? '' : 'i')
   
 module.exports = Route

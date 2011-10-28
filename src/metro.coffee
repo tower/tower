@@ -18,7 +18,7 @@ Metro.Spec            = require './metro/spec'
 Metro.configuration   = null
 Metro.logger          = new (require("common-logger"))(colorized: true)
 Metro.root            = process.cwd()
-Metro.public_path     = process.cwd() + "/public"
+Metro.publicPath     = process.cwd() + "/public"
 Metro.env             = "test"
 Metro.port            = 1597
 Metro.cache           = null
@@ -47,15 +47,20 @@ Metro.raise = ->
     #object = args[i++]
     #if typeof(object) == "string" then object else require('util').inspect(object)
   throw new Error(message)
+  
+Metro.initialize  = Metro.Application.initialize
+Metro.teardown    = Metro.Application.teardown
 
 Metro.locale =
   en:
     errors:
-      missing_callback: "You must pass a callback to %s."
-      missing_option: "You must pass in the '%s' option to %s."
-      not_found: "%s not found."
+      missingCallback: "You must pass a callback to %s."
+      missingOption: "You must pass in the '%s' option to %s."
+      notFound: "%s not found."
       store:
-        missing_attribute: "Missing %s in %s for '%s'"
+        missingAttribute: "Missing %s in %s for '%s'"
+      asset:
+        notFound: "Asset not found: '%s'\n  Lookup paths: [\n%s\n  ]"
 
 Metro.engine = (extension) ->
   @_engine ?= {}

@@ -14,31 +14,31 @@ class Assets
       response.end()
     
     if !asset
-      @not_found_response respond
-    #else if @not_modified(asset)
-    #  @not_modified_response(asset)
+      @notFoundResponse respond
+    #else if @notModified(asset)
+    #  @notModifiedResponse(asset)
     else
-      @ok_response asset, respond
+      @okResponse asset, respond
   
-  forbidden_request: (request) ->
+  forbiddenRequest: (request) ->
     !!request.url.match(/\.{2}/)
     
-  not_modified: (asset) ->
+  notModified: (asset) ->
     env["HTTP_IF_MODIFIED_SINCE"] == asset.mtime.httpdate
     
   # Returns a 304 Not Modified response tuple
-  not_modified_response: (asset, callback) ->
+  notModifiedResponse: (asset, callback) ->
     callback 304, {}, []
     
-  forbidden_response: (callback) ->
+  forbiddenResponse: (callback) ->
     callback 403, {"Content-Type": "text/plain", "Content-Length": "9"}, "Forbidden"
     
-  not_found_response: (callback) ->
+  notFoundResponse: (callback) ->
     callback 404, {"Content-Type": "text/plain", "Content-Length": "9", "X-Cascade": "pass"}, "Not found"
     
   # Returns a 200 OK response tuple
-  ok_response: (asset, callback) ->
-    paths = Metro.Application.instance().assets().paths_for(asset.extension)
+  okResponse: (asset, callback) ->
+    paths = Metro.Application.instance().assets().pathsFor(asset.extension)
     self  = @
     asset.render paths: paths, require: Metro.env != "production", (body) ->
       callback 200, self.headers(asset, asset.size()), body
@@ -46,7 +46,7 @@ class Assets
   headers: (asset, length) ->
     headers = {}
     # Set content type and length headers
-    headers["Content-Type"]   = Metro.Support.Path.content_type("text/#{asset.extension[1..-1]}")
+    headers["Content-Type"]   = Metro.Support.Path.contentType("text/#{asset.extension[1..-1]}")
     # headers["Content-Length"] = length
     
     # Set caching headers
@@ -56,7 +56,7 @@ class Assets
     
     # If the request url contains a fingerprint, set a long
     # expires on the response
-    if asset.path_fingerprint
+    if asset.pathFingerprint
       headers["Cache-Control"] += ", max-age=31536000"
     # Otherwise set `must-revalidate` since the asset could be modified.
     else

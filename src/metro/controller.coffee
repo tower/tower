@@ -33,7 +33,7 @@ class Controller
     layout = @constructor._layout
     if typeof(layout) == "function" then layout.apply(@) else layout
   
-  @getter "controller_name", @,   -> Metro.Support.String.underscore(@name)
-  @getter "controller_name", @::, -> @constructor.controller_name
+  @getter "controllerName", @,   -> Metro.Support.String.camelize(@name)
+  @getter "controllerName", @::, -> @constructor.controllerName
   
 module.exports = Controller

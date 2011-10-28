@@ -39,7 +39,7 @@ class Compiler
       callback.call(self, result)
   
   parse: (options, callback) ->
-    Metro.raise("errors.missing_callback", "Asset#parse") unless callback and typeof(callback) == "function"
+    Metro.raise("errors.missingCallback", "Asset#parse") unless callback and typeof(callback) == "function"
     
     self        = @
     extension   = @extension
@@ -68,33 +68,33 @@ class Compiler
         callback.call(self, result)
   
   parts: (options, callback) ->
-    Metro.raise("errors.missing_option", "path", "Asset#parse") unless @path
+    Metro.raise("errors.missingOption", "path", "Asset#parse") unless @path
     
     self        = @
     extension   = @extension
     
-    require_directives = if options.hasOwnProperty("require") then options.require else true
+    requireDirectives = if options.hasOwnProperty("require") then options.require else true
     
     data = @read()
     
-    if require_directives
-      callback.call self, self.parse_directives(data, self.path)
+    if requireDirectives
+      callback.call self, self.parseDirectives(data, self.path)
     else
       callback.call self, [content: data, path: self.path]
   
-  parse_directives: (string, path) ->
+  parseDirectives: (string, path) ->
     self                    = @
-    directive_pattern       = @constructor.DIRECTIVE_PATTERN
+    directivePattern       = @constructor.DIRECTIVE_PATTERN
     
     lines                   = string.match(@constructor.HEADER_PATTERN)
-    directives_string       = ''
+    directivesString       = ''
     parts                   = []
     
     if lines && lines.length > 0
       last                  = lines[lines.length - 1]
       # string                = string.substr(string.indexOf(last) + last.length)
       for line in lines
-        directive           = line.match(directive_pattern)
+        directive           = line.match(directivePattern)
         if directive
           parts.push(path: directive[2])
           

@@ -9,7 +9,7 @@ class File
     fs.statSync(path)
   
   # see http://nodejs.org/docs/v0.3.1/api/crypto.html#crypto
-  @digest_hash: ->
+  @digestHash: ->
     crypto.createHash('md5')
     
   @digest: (path, data) ->
@@ -17,18 +17,18 @@ class File
     return unless stat?
     data ?= @read(path)
     return unless data?
-    @digest_hash().update(data).digest("hex")
+    @digestHash().update(data).digest("hex")
     
   @read: (path) ->
     fs.readFileSync(path, "utf-8")
     
-  @read_async: (path, callback) ->
+  @readAsync: (path, callback) ->
     fs.readFile(path, "utf-8", callback)
     
   @slug: (path) ->
     @basename(path).replace(new RegExp(@extname(path) + "$"), "")
     
-  @content_type: (path) ->
+  @contentType: (path) ->
     mime.lookup(path)
     
   @mtime: (path) ->
@@ -37,8 +37,19 @@ class File
   @size: (path) ->
     @stat(path).size
     
-  @expand_path: (path) ->
+  @expandPath: (path) ->
     _path.normalize(path)
+    
+  @absolutePath: (path, root = @pwd()) ->
+    path = root + "/" + path unless path.charAt(0) == "/"
+    _path.normalize(path)
+    
+  @relativePath: (path, root = @pwd()) ->
+    path = @join(root, path) if path[0] == "."
+    _path.normalize(path.replace(new RegExp("^" + Metro.Support.RegExp.escape(root + "/")), ""))
+    
+  @pwd: ->
+    process.cwd()
   
   @basename: ->
     _path.basename(arguments...)
@@ -49,7 +60,7 @@ class File
   @exists: (path) ->
     _path.existsSync(path)
   
-  @exists_async: (path, callback) ->
+  @existsAsync: (path, callback) ->
     _path.exists(path, callback)
     
   @extensions: (path) ->
@@ -58,14 +69,14 @@ class File
   @join: ->
     Array.prototype.slice.call(arguments, 0, arguments.length).join("/").replace(/\/+/, "/")
     
-  @is_url: (path) ->
+  @isUrl: (path) ->
     !!path.match(/^[-a-z]+:\/\/|^cid:|^\/\//)
     
-  @is_absolute: (path) ->
+  @isAbsolute: (path) ->
     path.charAt(0) == "/"
     
   @glob: ->
-    paths   = Metro.Support.Array.extract_args(arguments)
+    paths   = Metro.Support.Array.extractArgs(arguments)
     result  = []
     for path in paths
       if @exists(path)
@@ -77,7 +88,7 @@ class File
     result  = []
     self    = @
     for path in paths
-      result.push(path) if self.is_file(path)
+      result.push(path) if self.isFile(path)
     result
     
   @directories: ->
@@ -85,7 +96,7 @@ class File
     result  = []
     self    = @
     for path in paths
-      result.push(path) if self.is_directory(path)
+      result.push(path) if self.isDirectory(path)
     result
     
   @entries: (path) ->
@@ -94,35 +105,35 @@ class File
   @dirname: (path) ->
     _path.dirname(path)
     
-  @is_directory: (path) ->
+  @isDirectory: (path) ->
     @stat(path).isDirectory()
     
-  @is_file: (path) ->
-    !@is_directory(path)
+  @isFile: (path) ->
+    !@isDirectory(path)
   
   # http://stackoverflow.com/questions/4568689/how-do-i-move-file-a-to-a-different-partition-in-node-js  
   # https://gist.github.com/992478
   @copy: (from, to) ->
-    old_file = fs.createReadStream(from)
-    new_file = fs.createWriteStream(to)
-    new_file.once 'open', (data) ->
-      util.pump(old_file, new_file)
+    oldFile = fs.createReadStream(from)
+    newFile = fs.createWriteStream(to)
+    newFile.once 'open', (data) ->
+      util.pump(oldFile, newFile)
       
   @watch: ->
   
   constructor: (path) ->
     @path           = path
-    @previous_mtime  = @mtime()
+    @previousMtime  = @mtime()
     
   stale: ->
-    old_mtime   = @previous_mtime
-    new_mtime   = @mtime()
-    result      = old_mtime.getTime() != new_mtime.getTime()
+    oldMtime   = @previousMtime
+    newMtime   = @mtime()
+    result      = oldMtime.getTime() != newMtime.getTime()
     
-    # console.log "stale? #{result.toString()}, old_mtime: #{old_mtime}, new_mtime: #{new_mtime}"
+    # console.log "stale? #{result.toString()}, oldMtime: #{oldMtime}, newMtime: #{newMtime}"
     
     # update
-    @previous_mtime = new_mtime
+    @previousMtime = newMtime
     
     result
     
@@ -130,8 +141,8 @@ class File
     @constructor.stat(@path)
 
   # Returns `Content-Type` from path.
-  content_type: ->
-    @constructor.content_type(@path)
+  contentType: ->
+    @constructor.contentType(@path)
 
   # Get mtime at the time the `Asset` is built.
   mtime: ->
@@ -159,7 +170,13 @@ class File
   read: ->
     @constructor.read(@path)
     
-  read_async: (callback) ->
-    @constructor.read_async(@path, callback)
+  readAsync: (callback) ->
+    @constructor.readAsync(@path, callback)
+    
+  absolutePath: ->
+    @constructor.absolutePath(@path)
+    
+  relativePath: ->
+    @constructor.relativePath(@path)
 
 module.exports = File

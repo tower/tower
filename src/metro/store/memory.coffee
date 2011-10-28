@@ -1,8 +1,7 @@
 class Memory
   constructor: ->
     @records  = {}
-    @index    = 
-      id:       {} # used for quick indexing by id
+    @lastId   = 0
   
   # Add index, passing in an array of attribute names
   # 
@@ -96,12 +95,13 @@ class Memory
   toArray: ->
     @records
     
-  create: (record) ->
-    Metro.raise("errors.store.missing_attribute", "id", "Store#create", record) unless record.id
+  create: (record) ->  
+    Metro.raise("errors.store.missingAttribute", "id", "Store#create", record) unless record.id
+    record.id ?= @generateId()
     @records[record.id] = record
     
   update: (record) ->
-    Metro.raise("errors.store.missing_attribute", "id", "Store#update", record) unless record.id
+    Metro.raise("errors.store.missingAttribute", "id", "Store#update", record) unless record.id
     @records[record.id] = record
   
   destroy: (record) ->
@@ -125,8 +125,11 @@ class Memory
       return false unless success
     
     true
+  
+  generateId: ->
+    @lastId++
     
-  _matchesOperators: (record_value, operators) ->
+  _matchesOperators: (recordValue, operators) ->
     success = true
     self    = @
     
@@ -134,63 +137,63 @@ class Memory
       if operator = Metro.Store.queryOperators[key]
         switch operator
           when "gt"
-            success = self._isGreaterThan(record_value, value)
+            success = self._isGreaterThan(recordValue, value)
           when "gte"
-            success = self._isGreaterThanOrEqualTo(record_value, value)
+            success = self._isGreaterThanOrEqualTo(recordValue, value)
           when "lt"
-            success = self._isLessThan(record_value, value)
+            success = self._isLessThan(recordValue, value)
           when "lte"
-            success = self._isLessThanOrEqualTo(record_value, value)
+            success = self._isLessThanOrEqualTo(recordValue, value)
           when "eq"
-            success = self._isEqualTo(record_value, value)
+            success = self._isEqualTo(recordValue, value)
           when "neq"
-            success = self._isNotEqualTo(record_value, value)
+            success = self._isNotEqualTo(recordValue, value)
           when "m"
-            success = self._isMatchOf(record_value, value)
+            success = self._isMatchOf(recordValue, value)
           when "nm"
-            success = self._isNotMatchOf(record_value, value)
+            success = self._isNotMatchOf(recordValue, value)
           when "any"
-            success = self._anyIn(record_value, value)
+            success = self._anyIn(recordValue, value)
           when "all"
-            success = self._allIn(record_value, value)
+            success = self._allIn(recordValue, value)
         return false unless success
       else
-        return record_value == operators
+        return recordValue == operators
     
     true
   
-  _isGreaterThan: (record_value, value) ->
-    record_value > value
+  _isGreaterThan: (recordValue, value) ->
+    recordValue > value
     
-  _isGreaterThanOrEqualTo: (record_value, value) ->
-    record_value >= value
+  _isGreaterThanOrEqualTo: (recordValue, value) ->
+    recordValue >= value
     
-  _isLessThan: (record_value, value) ->
-    record_value < value
+  _isLessThan: (recordValue, value) ->
+    recordValue < value
     
-  _isLessThanOrEqualTo: (record_value, value) ->
-    record_value <= value
+  _isLessThanOrEqualTo: (recordValue, value) ->
+    recordValue <= value
     
-  _isEqualTo: (record_value, value) ->
-    record_value == value
+  _isEqualTo: (recordValue, value) ->
+    recordValue == value
     
-  _isNotEqualTo: (record_value, value) ->
-    record_value != value
+  _isNotEqualTo: (recordValue, value) ->
+    recordValue != value
   
-  _isMatchOf: (record_value, value) ->
-    !!(if typeof(record_value) == "string" then record_value.match(value) else record_value.exec(value))
+  _isMatchOf: (recordValue, value) ->
+    !!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
     
-  _isNotMatchOf: (record_value, value) ->
-    !!!(if typeof(record_value) == "string" then record_value.match(value) else record_value.exec(value))
+  _isNotMatchOf: (recordValue, value) ->
+    !!!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
     
-  _anyIn: (record_value, array) ->
+  _anyIn: (recordValue, array) ->
     for value in array
-      return true if record_value.indexOf(value) > -1
+      return true if recordValue.indexOf(value) > -1
     false
     
-  _allIn: (record_value, value) ->
+  _allIn: (recordValue, value) ->
     for value in array
-      return false if record_value.indexOf(value) == -1
+      return false if recordValue.indexOf(value) == -1
     true
   
 module.exports = Memory

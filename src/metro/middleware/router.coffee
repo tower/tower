@@ -14,11 +14,11 @@ class Router
   process: (request, response) ->
     routes = Metro.Route.all()
     for route in routes
-      if controller = @process_route(route, request, response)
+      if controller = @processRoute(route, request, response)
         return controller
     null
     
-  process_route: (route, request, response) ->
+  processRoute: (route, request, response) ->
     url                    = _url.parse(request.url)
     path                   = url.pathname
     match                  = route.match(path)
@@ -39,9 +39,9 @@ class Router
     
     if controller
       try
-        controller         = new global[route.controller.class_name]
+        controller         = new global[route.controller.className]
       catch error
-        throw(new Error("#{route.controller.class_name} wasn't found"))
+        throw(new Error("#{route.controller.className} wasn't found"))
       controller.call(request, response)
     
     controller

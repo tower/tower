@@ -1,4 +1,11 @@
+# https://github.com/mranney/node_redis
 class Redis
+  @lib: ->
+    require("redis")
+  
+  @client: ->
+    @_client ?= @lib().createClient()
+  
   find: (query, callback) ->  
     
   @alias "select", "find"

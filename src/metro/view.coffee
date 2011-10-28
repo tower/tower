@@ -8,48 +8,47 @@ class View
   @include @Rendering
   
   @initialize: ->
-    @resolve_load_paths()
-    @resolve_template_paths()
+    @resolveLoadPaths()
+    @resolveTemplatePaths()
     Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")
     
   @teardown: ->
-    
   
-  @resolve_load_paths: ->
+  @resolveLoadPaths: ->
     file = Metro.Support.Path
-    @load_paths = _.map @load_paths, (path) -> file.expand_path(path)
+    @loadPaths = _.map @loadPaths, (path) -> file.expandPath(path)
     
   @lookup: (view) ->  
-    paths_by_name = Metro.View.paths_by_name
-    result    = paths_by_name[view]
+    pathsByName = Metro.View.pathsByName
+    result    = pathsByName[view]
     return result if result
     templates = Metro.View.paths
     pattern   = new RegExp(view + "$", "i")
     
     for template in templates
       if template.split(".")[0].match(pattern)
-        paths_by_name[view] = template
+        pathsByName[view] = template
         return template
         
     return null
   
-  @resolve_template_paths: ->
+  @resolveTemplatePaths: ->
     file           = require("file")
-    template_paths = @paths
+    templatePaths = @paths
     
-    for path in Metro.View.load_paths
+    for path in Metro.View.loadPaths
       file.walkSync path, (_path, _directories, _files) ->
         for _file in _files
           template = [_path, _file].join("/")
-          template_paths.push template if template_paths.indexOf(template) == -1      
+          templatePaths.push template if templatePaths.indexOf(template) == -1      
     
-    template_paths
+    templatePaths
   
-  @load_paths:               ["./spec/spec-app/app/views"]
+  @loadPaths:               ["./spec/spec-app/app/views"]
   @paths:         []
-  @paths_by_name: {}
+  @pathsByName: {}
   @engine: "jade"
-  @pretty_print:   false
+  @prettyPrint:   false
   
   constructor: (controller) ->
     @controller = controller || (new Metro.Controller)

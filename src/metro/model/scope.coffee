@@ -28,6 +28,10 @@ class Scope
     @conditions.push ["includes", arguments]
     @
     
+  within: ->
+    @conditions.push ["within", arguments]
+    @
+    
   all: (callback) ->
     @store().all(@query(), callback)
     

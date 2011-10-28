@@ -3,25 +3,25 @@ class Helpers
   #  klass = "Metro.Components.#{this.toUpperCase()}"
   #  @::["#{this}_for"] = -> global[klass].new(arguments...).render()
     
-  stylesheet_link_tag: (source) ->
-    "<link href=\"#{@asset_path(source, directory: Metro.Assets.stylesheet_directory, ext: "css")}\"></link>"
+  stylesheetLinkTag: (source) ->
+    "<link href=\"#{@assetPath(source, directory: Metro.Assets.stylesheetDirectory, ext: "css")}\"></link>"
     
-  asset_path: (source, options = {}) ->
+  assetPath: (source, options = {}) ->
     if options.digest == undefined
       options.digest = !!Metro.env.match(/(development|test)/) 
-    Metro.Application.assets().compute_public_path(source, options)
+    Metro.Application.assets().computePublicPath(source, options)
     
-  javascript_include_tag: (path) ->
+  javascriptIncludeTag: (path) ->
     
-  title_tag: (title) ->
+  titleTag: (title) ->
     "<title>#{title}</title>"
     
-  meta_tag: (name, content) ->
+  metaTag: (name, content) ->
     
   tag: (name, options) ->
   
-  link_tag: (title, path, options) ->
+  linkTag: (title, path, options) ->
     
-  image_tag: (path, options) ->
+  imageTag: (path, options) ->
     
 module.exports = Helpers  

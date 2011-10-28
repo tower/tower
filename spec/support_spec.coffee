@@ -2,7 +2,7 @@ require './helper'
 
 class UserModule
   name:           "Lance"
-  @default_name:  "User"
+  @defaultName:  "User"
 
 class UserExtendingFunction
   @include UserModule
@@ -24,12 +24,12 @@ describe "support", ->
       expect(user.name).toEqual("Lance")
 
     it "should allow extend", ->
-      expect(UserExtendingFunction.default_name).toEqual("User")
-      expect(UserExtendingClass.default_name).toEqual("User")
+      expect(UserExtendingFunction.defaultName).toEqual("User")
+      expect(UserExtendingClass.defaultName).toEqual("User")
   
-  describe "file", ->
+  describe "path", ->
     beforeEach ->
-      @path        = "./spec/fixtures/javascripts/application.js"
+      @path        = "spec/spec-app/app/assets/javascripts/application.js"
       @file        = new Metro.Support.Path(@path)#.Assets.Asset(@environment, @path)
   
     it "should stat file", ->
@@ -39,7 +39,7 @@ describe "support", ->
       expect(typeof(@file.digest())).toEqual("string")
     
     it "should get the content type", ->
-      expect(@file.content_type()).toEqual("application/javascript")
+      expect(@file.contentType()).toEqual("application/javascript")
     
     it "should get the mtime", ->
       expect(@file.mtime()).toBeTruthy()
@@ -48,13 +48,21 @@ describe "support", ->
       expect(@file.size()).toEqual 54
       
     it "should find entries in a directory", ->
-      expect(Metro.Support.Path.entries("./spec/fixtures/javascripts")[0]).toEqual 'application.js' 
+      expect(Metro.Support.Path.entries("spec/spec-app/app/assets/javascripts")[1]).toEqual 'application.coffee'
+      
+    it "should generate absolute path", ->
+      expected = "#{process.cwd()}/spec/spec-app/app/assets/javascripts"
+      expect(Metro.Support.Path.absolutePath("spec/spec-app/app/assets/javascripts")).toEqual expected
+      
+    it "should generate relative path", ->
+      expected = "spec/spec-app/app/assets/javascripts"
+      expect(Metro.Support.Path.relativePath("spec/spec-app/app/assets/javascripts")).toEqual expected
   
   describe "lookup", ->
     beforeEach ->
-      # Metro.Support.Path.glob("./spec/fixtures/javascripts")
+      # Metro.Support.Path.glob("spec/spec-app/app/assets/javascripts")
       @lookup = new Metro.Support.Lookup
-        paths:      ["./spec/fixtures/javascripts"]
+        paths:      ["spec/spec-app/app/assets/javascripts"]
         extensions: ["js", "coffee"]
         aliases:
           js: ["coffee", "coffeescript"]
@@ -67,32 +75,32 @@ describe "support", ->
         ".coffee":  [".coffeescript"]
     
     it "should build a pattern for a basename", ->
-      pattern = @lookup.build_pattern("application.js")
+      pattern = @lookup.buildPattern("application.js")
       expect(pattern.toString()).toEqual /^application(?:\.js|\.coffee|\.coffeescript).*/.toString()
       
-      pattern = @lookup.build_pattern("application.coffee")
+      pattern = @lookup.buildPattern("application.coffee")
       expect(pattern.toString()).toEqual /^application(?:\.coffee|\.coffeescript).*/.toString()
       
-      pattern = @lookup.build_pattern("application.js.coffee")
+      pattern = @lookup.buildPattern("application.js.coffee")
       expect(pattern.toString()).toEqual /^application\.js(?:\.coffee|\.coffeescript).*/.toString()
       
     it "should find", ->
       result = @lookup.find("application.js")
-      expect(result).toEqual ['spec/fixtures/javascripts/application.js', 'spec/fixtures/javascripts/application.js.coffee']
+      expect(result.length).toEqual 3
       
       result = @lookup.find("application.coffee")
-      expect(result).toEqual []
+      expect(result.length).toEqual 1
 ###  
   describe "mixins", ->
     it "should have string methods", ->
-      Metro.Support.to_ruby()
+      Metro.Support.toRuby()
       string = "UserModel"
-      expect(string.underscore()).toEqual "user_model"
+      expect(string.underscore()).toEqual "userModel"
       expect(string.underscore().camelize()).toEqual "UserModel"
       
     it "should convert to underscore", ->
       _ = require('underscore')
-      _.mixin Metro.Support.to_underscore()
+      _.mixin Metro.Support.toUnderscore()
       
-      expect(_.extract_options([1, 2, 3, {one: "two"}])).toEqual({one:"two"})
+      expect(_.extractOptions([1, 2, 3, {one: "two"}])).toEqual({one:"two"})
 ###      
