@@ -1,6 +1,6 @@
 # Metro.js
 
-> Metro.js &reg; is an open source web framework for the Rails-prone Node.js hackers.
+> Web Framework for the Rails-prone Node.js hackers.
 
 ## Features
 
