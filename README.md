@@ -20,7 +20,7 @@
 - `Spec` layer for setting up tests for your app just like Rails.
 - `Generator` [todo]
 - `Component` layer, for building complex forms, tables, widgets, etc. [todo]
-- `Template` layer, so you can swap out any template engines.
+- `Template` layer, so you can swap out any template engines. In the [Node.js Shift Module](https://github.com/viatropos/shift.js)
 - Can also use on the client:
   - Model
   - Route
