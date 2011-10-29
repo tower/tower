@@ -1,5 +1,5 @@
 class Model
-  constructor: -> super
+  # constructor: -> super
   
   @Association:   require './model/association'
   @Associations:  require './model/associations'
@@ -8,6 +8,7 @@ class Model
   @Dirty:         require './model/dirty'
   @Observing:     require './model/observing'
   @Persistence:   require './model/persistence'
+  @Reflection:    require './model/reflection'
   @Scope:         require './model/scope'
   @Scopes:        require './model/scopes'
   @Serialization: require './model/serialization'
@@ -36,8 +37,18 @@ class Model
   #     @store: new Metro.Store.Memory
   @store: ->
     @_store ?= new Metro.Store.Memory
+  
+  constructor: (attrs = {}) ->
+    attributes  = {}
+    definitions = @constructor.keys()
     
-  valueOf: ->
-    @attributes
+    for key, value of attrs
+      attributes[key] = value
+      
+    for name, definition of definitions
+      attributes[name] ||= definition.defaultValue(@) unless attrs.hasOwnProperty(name)
+    
+    @attributes = @typeCastAttributes(attributes)
+    @changes    = {}
 
 module.exports = Model

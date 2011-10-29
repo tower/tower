@@ -19,4 +19,22 @@ Support =
 
   agent: if typeof(window) != 'undefined' then navigator.userAgent else 'node'
   
+  isInt: (n) -> 
+    # typeof(n) == 'number' && n % 1 == 0
+    n == +n && n == (n|0)
+  
+  isFloat: (n) ->
+    # typeof(n) == 'number' && n % 1 != 0
+    n == +n && n != (n|0)
+    
+  isPresent: (object) ->
+    for key, value of object
+      return true
+    return false
+  
+  isBlank: (object) ->
+    for key, value of object
+      return false
+    return true
+  
 module.exports = Support

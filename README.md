@@ -75,7 +75,7 @@ alert("directives");
 
 ### Asset Compression
 
-Can also create CSS sprites [description coming soon]
+Can also create CSS sprites.
 
 ``` coffeescript
 Metro = require("metro")
@@ -150,11 +150,11 @@ class User
   @key "firstName"
   @key "createdAt", type: "time"
   
-  @scope "bySanta", @where firstName: "=~": "Santa"
-  @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.zone().now().beginningOfWeek().toDate()
+  @scope "byMrBaldwin", @where firstName: "=~": "Baldwin"
+  @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.now().beginningOfWeek().toDate()
   
   @hasMany "posts", className: "Page"
-    
+  
   @validates "firstName", presence: true
 ```
 

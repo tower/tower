@@ -5,8 +5,6 @@ class Serialization
   toJSON: ->
     JSON.stringify(@attributes)
     
-  inspect: ->
-    
   toObject: ->
     
   clone: ->

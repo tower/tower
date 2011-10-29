@@ -71,13 +71,10 @@ describe "route", ->
       expect(route.defaults).toEqual {flow: "signup"}
     
     it "should be found in the router", ->
-      Metro.Application.initialize()
-      
       router      = new Metro.Middleware.Router
       request     = {method: "get", url: "/login"}
       
       controller  = router.find request, {}, (controller) ->
-        expect(controller.body).toEqual controller.body
         expect(request.params).toEqual { flow : 'signup', format : null, action : 'new' }
         expect(controller.params).toEqual { flow : 'signup', format : null, action : 'new' }
       

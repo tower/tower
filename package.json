@@ -47,6 +47,7 @@
     "qs":                 ">= 0.3.1",
     "imagemagick":        ">= 0.1.2",
     "async":              ">= 0.1.12",
-    "common-logger":      ">= 0.2.0"
+    "common-logger":      ">= 0.2.0",
+    "lingo":              ">= 0.0.4"
   }
 }

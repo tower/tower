@@ -11,7 +11,7 @@ class Scopes
   #       @scope "developers",  @where(tags: _anyIn: ["ruby", "javascript"])
   # 
   @scope: (name, scope) ->
-    @[name] = scope
+    @[name] = if scope instanceof Metro.Model.Scope then scope else @where(scope)
   
   @where: ->
     @scoped().where(arguments...)

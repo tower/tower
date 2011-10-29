@@ -10,7 +10,7 @@ class Validations
     validators = @validators()
     
     for key, value of options
-      validators.push new Metro.Model.Validation(key, attributes...)
+      validators.push new Metro.Model.Validation(key, value, attributes...)
     
   @validators: ->
     @_validators ?= []
@@ -29,5 +29,5 @@ class Validations
   
   errors: ->
     @_errors ?= []
-
+  
 module.exports = Validations

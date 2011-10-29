@@ -1,5 +1,9 @@
 class Dirty
   isDirty: ->
+    changes = @changes()
+    for change of changes
+      return true
+    return false
     
   changes: ->
     @_changes ?= {}

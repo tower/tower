@@ -40,11 +40,11 @@ class Memory
   # 
   #     store.find _all: tags: ["tomato", "cucumber"]
   # 
-  find: (query, callback) ->  
+  find: (query, callback) ->
     result  = []
     records = @records
     
-    if query
+    if Metro.Support.isPresent(query)
       sort    = query._sort
       limit   = query._limit || Metro.Store.defaultLimit
       
@@ -197,5 +197,8 @@ class Memory
     for value in array
       return false if recordValue.indexOf(value) == -1
     true
+    
+  toString: ->
+    @constructor.name
   
 module.exports = Memory

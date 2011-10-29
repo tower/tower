@@ -51,13 +51,22 @@ class Class
     
   @classEval: (block) ->
     block.call(@)
-    
-  @delegate: ->
-    options = arguments.pop()
-    to      = options.to
-    self    = @
-    for key in arguments
-      self::[key] = to[key]
+  
+  @delegate: (key, options = {}) ->
+    to = options.to
+    if typeof(@::[to]) == "function"
+      @::[key] = -> 
+        delegate = @[to]()
+        delegate[key](arguments...)
+    else
+      Object.defineProperty @::, key, enumerable: true, configurable: true, get: -> @[to]()[key]
+  
+  @delegates: ->
+    args    = Array.prototype.slice.call(arguments, 0, arguments.length)
+    options = args.pop()
+        
+    for key in args
+      @delegate(key, options)
   
   @include: (obj) ->
     throw new Error('include(obj) requires obj') unless obj

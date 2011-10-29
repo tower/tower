@@ -10,20 +10,23 @@ class global.User# extends Function
   
   @key "id"
   @key "firstName"
-  @key "createdAt", type: "time"
+  @key "createdAt", type: "time", default: -> new Date()
   
-  @scope "bySanta", @where firstName: "=~": "Santa"
+  @scope "byBaldwin", firstName: "=~": "Baldwin"
   @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.zone().now().beginningOfWeek().toDate()
   
   @hasMany "posts", className: "Page"
-    
+  
   @validates "firstName", presence: true
   
 class global.Page extends Metro.Model
   @key "id"
   @key "title"
-
-  @belongsTo "user", className: "User"
+  @key "rating"#, min: 0, max: 1
+  
+  @validates "rating", min: 0, max: 10
+  
+  @belongsTo "user"
 
 describe 'Metro.Model', ->
   describe 'scopes', ->
@@ -55,9 +58,9 @@ describe 'Metro.Model', ->
       expect(users[0].firstName).toEqual "Lance"
     
     it 'should have named scopes', ->  
-      User.create(id: 3, firstName: "Santa")
+      User.create(id: 3, firstName: "Baldwin")
       
-      expect(User.bySanta.first().firstName).toEqual "Santa"
+      expect(User.byBaldwin.first().firstName).toEqual "Baldwin"
       
   describe 'associations', ->
     beforeEach ->
@@ -96,13 +99,31 @@ describe 'Metro.Model', ->
       expect(@user.errors()).toEqual [
         { attribute : 'firstName', message : "firstName can't be blank" }
       ]
+    
+    it 'should validate from attribute definition', ->
+      page = new Page(title: "A Page")
+      
+      expect(page.validate()).toEqual false
+      expect(page.errors()).toEqual [
+        { attribute : 'rating', message : 'rating must be a minimum of 0' }, 
+        { attribute : 'rating', message : 'rating must be a maximum of 10' }
+      ]
+      
+      page.rating = 10
+      
+      expect(page.validate()).toEqual true
+      expect(page.errors()).toEqual []
   
   describe 'serialization', ->
     beforeEach ->
+      User.deleteAll()
       @user = new User(firstName: 'Terminator', id: 1)
       
     it 'should serialize to JSON', ->
-      expect(@user.toJSON()).toEqual '{"firstName":"Terminator","id":1}'
+      expected = '{"firstName":"Terminator","id":1,"createdAt":'
+      expected += JSON.stringify(new Date)
+      expected += '}'
+      expect(@user.toJSON()).toEqual expected
       
     it 'should unmarshall from JSON', ->
       user = User.fromJSON('{"firstName":"Terminator","id":1}')[0]
@@ -110,6 +131,7 @@ describe 'Metro.Model', ->
   
   describe 'attributes', ->
     beforeEach ->
+      User.deleteAll()
       @user = new User(firstName: 'Terminator', id: 1)
       
     it 'should track attribute changes', ->
@@ -131,5 +153,7 @@ describe 'Metro.Model', ->
       User.create(firstName: 'Terminator 3', id: 3, createdAt: new Date())
     
     it 'should have scoped by type', ->
-      users = User.thisWeek.all()
-      expect(users.length).toEqual 2
+      expect(User.thisWeek.all().length).toEqual 2
+      
+    it 'should have a default', ->
+      expect((new User).createdAt).toEqual new Date
