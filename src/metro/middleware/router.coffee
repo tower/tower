@@ -1,27 +1,41 @@
 _url = require('url')
 _   = require('underscore')
 
-# http://nodejs.org/docs/v0.4.7/api/url.html
 class Router
   @middleware: (request, result, next) -> (new Metro.Middleware.Router).call(request, result, next)
   
   call: (request, response, next) ->
-    unless !!@process(request, response)
-      @error(request, response)
-      #next() if next?
+    @find request, response, (controller) ->
+      if controller
+        response.writeHead(200, controller.headers)
+        response.write(controller.body)
+        response.end()
+        controller.clear()
+      else
+        @error(request, response)
+    
     response
   
-  process: (request, response) ->
-    routes = Metro.Route.all()
+  find: (request, response, callback) ->
+    routes      = Metro.Route.all()
+    
     for route in routes
-      if controller = @processRoute(route, request, response)
-        return controller
-    null
+      controller = @processRoute route, request, response
+      break if controller
+    
+    if controller
+      controller.call request, response, ->
+        callback(controller)
+    else
+      callback(null)
+    
+    controller
     
   processRoute: (route, request, response) ->
     url                    = _url.parse(request.url)
     path                   = url.pathname
     match                  = route.match(path)
+    
     return null unless match
     method                 = request.method.toLowerCase()
     keys                   = route.keys
@@ -42,7 +56,6 @@ class Router
         controller         = new global[route.controller.className]
       catch error
         throw(new Error("#{route.controller.className} wasn't found"))
-      controller.call(request, response)
     
     controller
     

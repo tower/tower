@@ -29,6 +29,8 @@ class Responding
     @session  = @request.session || {}
     @format   = @params.format
     @headers  = {}
+    @callback = next
+    
     if @format && @format != "undefined"
       @contentType = Metro.Support.Path.contentType(@format)
     else 

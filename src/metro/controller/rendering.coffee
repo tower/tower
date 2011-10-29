@@ -2,16 +2,22 @@ class Rendering
   constructor: -> super
   
   render: ->
-    view = new Metro.Views.Base(@)
-    body = view.render(arguments...)
-    if @response
-      @headers["Content-Type"] ?= @contentType
-      @response.writeHead(200, @headers)
-      @response.write(body)
-      @response.end()
-      @response = null
-      @request  = null
-    body
+    args = Array.prototype.slice.call(arguments, 0, arguments.length)
+    
+    if args.length >= 2 && typeof(args[args.length - 1]) == "function"
+      callback = args.pop()
+    
+    view    = new Metro.View(@)
+    @headers["Content-Type"] ?= @contentType
+    
+    self = @
+    
+    args.push finish = (error, body) ->
+      self.body = body
+      callback(error, body) if callback
+      self.callback()
+    
+    view.render.apply(view, args)
     
   renderToBody: (options) ->
     @_processOptions(options)

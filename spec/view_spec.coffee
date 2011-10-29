@@ -16,8 +16,8 @@ describe "views", ->
     
     it "should render", ->
       view    = new Metro.View
-      result  = view.render "posts/edit", locals: title: "First Commit"
-      expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
+      view.render "posts/edit", locals: title: "First Commit", (error, result) ->
+        expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
 ###      
   describe "helpers", ->
     it "should have stylesheet helpers", ->

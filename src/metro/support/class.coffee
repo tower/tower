@@ -5,13 +5,13 @@ class Class
   # 
   # ``` coffeescript
   # class User
-  #   @alias "methods", "instanceMethods"
+  #   @alias "methods", "instance_methods"
   #   
   # ```
   @alias: (to, from) ->
     @::[to] = @::[from]
   
-  @aliasMethod: (to, from) ->
+  @alias_method: (to, from) ->
     @::[to] = @::[from]
   
   @accessor: (key, self, callback) ->
@@ -71,3 +71,69 @@ class Class
     child = @
     parent = obj
     
+    #sn = if child.__super__ then child.__super__.constructor.name else "null"
+    #console.log "#{@name}.__super__ (WAS) #{sn} and WILL BE #{parent.name}"
+    
+    clone = (fct)->
+      clone_ = ->
+        fct.apply this, arguments
+        
+      clone_:: = fct::
+      for property of fct
+        clone_[property] = fct[property] if fct.hasOwnProperty(property) and property isnt "prototype"
+      clone_
+      
+    oldproto = child.__super__ if child.__super__
+    cloned = clone(parent)
+    newproto = cloned.prototype
+    
+    for key, value of cloned.prototype when key not in moduleKeywords
+      @::[key] = value
+    
+    cloned.prototype = oldproto if oldproto
+    child.__super__ = newproto
+    
+    included = obj.included
+    included.apply(obj.prototype) if included
+    @
+  
+  @extend: (obj) ->
+    throw new Error('extend(obj) requires obj') unless obj
+    for key, value of obj when key not in moduleKeywords
+      @[key] = value
+    
+    extended = obj.extended
+    extended.apply(obj) if extended
+    @
+  
+  @new: ->
+    new @(arguments...)
+    
+  @instanceMethods: ->
+    result = []
+    result.push(key) for key of @prototype
+    result
+    
+  @classMethods: ->
+    result = []
+    result.push(key) for key of @
+    result
+  
+  instanceExec: ->
+    arguments[0].apply(@, arguments[1..-1]...)
+  
+  instance_eval: (block) ->
+    block.apply(@)
+    
+  send: (method) ->
+    if @[method]
+      @[method].apply(arguments...)
+    else
+      @methodMissing(arguments...) if @methodMissing
+  
+  methodMissing: (method) ->
+  
+module.exports = Class
+
+for key, value of Class
+  Function.prototype[key] = value

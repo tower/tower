@@ -1,41 +1,56 @@
 class Rendering    
-  render: (options) ->  
-    if arguments.length == 1
-      if typeof(arguments[0]) == "string"
-        options = template: arguments[0]
+  render: ->  
+    args = Array.prototype.slice.call(arguments, 0, arguments.length)
+    
+    unless args.length >= 2 && typeof(args[args.length - 1]) == "function"
+      throw new Error("You must pass a callback to the render method")
+    
+    callback = args.pop()
+    
+    if args.length == 1
+      if typeof(args[0]) == "string"
+        options = template: args[0]
       else
-        options = arguments[0]
+        options = args[0]
     else
-      template = arguments[0]
-      options = arguments[1]
+      template  = args[0]
+      options   = args[1]
       options.template = template
     
     options  ?= {}
-    locals    = @context(options)
-    type      = options.type || Metro.View.engine
-    engine    = Metro.engine(type)
+    options.locals = @context(options)
+    options.type ?= Metro.View.engine
+    options.engine = Metro.engine(options.type)
+    if options.hasOwnProperty("layout") && options.layout == false
+      options.layout = false
+    else
+      options.layout = options.layout || @controller.layout()
+      
+    self = @
+    
+    @_renderBody options, (error, body) ->
+      self._renderLayout(body, options, callback)
+    
+  _renderBody: (options, callback) ->
     if options.text
-      body    = options.text
+      callback(null, options.text)
     else if options.json
-      body    = if typeof(options.json) == "string" then options.json else JSON.stringify(options.json)
+      callback(null, if typeof(options.json) == "string" then options.json else JSON.stringify(options.json))
     else
       unless options.inline
         template = Metro.View.lookup(options.template)
         template = Metro.Support.Path.read(template)
-      
-      body      = engine.render(template, locals)
-      
-    if options.hasOwnProperty("layout") && options.layout == false
-      layout = false
-    else
-      layout  = options.layout || @controller.layout()
-      
-    if layout
-      layout  = Metro.View.lookup("layouts/#{layout}")
+      options.engine.render(template, options.locals, callback)
+  
+  _renderLayout: (body, options, callback) ->
+    if options.layout
+      layout  = Metro.View.lookup("layouts/#{options.layout}")
       layout  = Metro.Support.Path.read(layout)
-      locals.yield = body
-      body    = engine.render(layout, locals)
-    body
+      options.locals.yield = body
+      
+      options.engine.render(layout, options.locals, callback)
+    else
+      callback(null, body)
   
   context: (options) ->
     controller = @controller

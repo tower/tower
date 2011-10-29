@@ -36,4 +36,9 @@ class Controller
   @getter "controllerName", @,   -> Metro.Support.String.camelize(@name)
   @getter "controllerName", @::, -> @constructor.controllerName
   
+  clear: ->
+    @request  = null
+    @response = null
+    @headers  = null
+  
 module.exports = Controller

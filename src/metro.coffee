@@ -29,8 +29,7 @@ Metro.configure = (callback) ->
 Metro.env = -> 
   process.env()
 
-Metro.application = ->
-  Metro.Application.instance()
+Metro.application = Metro.Application.instance
 
 Metro.globalize = ->
   # add it to the function prototype!
@@ -50,6 +49,10 @@ Metro.raise = ->
   
 Metro.initialize  = Metro.Application.initialize
 Metro.teardown    = Metro.Application.teardown
+
+# http://nodejs.org/docs/v0.3.1/api/http.html#response.headers
+Metro.get = ->
+  Metro.application().client().get
 
 Metro.locale =
   en:

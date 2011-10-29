@@ -197,6 +197,24 @@ class PostsController
     @post = Post.find(@params.id)
 ```
 
+### Client-side Requesting
+
+Since all of the controller/routing code is available on the client, you can go directly through that system just like you would the server.
+
+``` coffeescript
+# Just request the url, and let it do it's thing
+Metro.get '/posts'
+
+# Same thing, this time passing parameters
+Metro.get '/posts', createdAt: "2011-10-26..2011-10-31"
+
+# Dynamic
+Metro.urlFor(Post.first()) #=> "/posts/the-id"
+Metro.navigate Metro.urlFor(post)
+```
+
+Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
+
 ## Development and Tests
 
 ``` bash

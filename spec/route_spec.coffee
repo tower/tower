@@ -75,8 +75,11 @@ describe "route", ->
       
       router      = new Metro.Middleware.Router
       request     = {method: "get", url: "/login"}
-      controller  = router.process(request)
       
-      expect(request.params).toEqual { flow : 'signup', format : null, action : 'new' }
+      controller  = router.find request, {}, (controller) ->
+        expect(controller.body).toEqual controller.body
+        expect(request.params).toEqual { flow : 'signup', format : null, action : 'new' }
+        expect(controller.params).toEqual { flow : 'signup', format : null, action : 'new' }
       
-      expect(controller.params).toEqual { flow : 'signup', format : null, action : 'new' }
+      #controller.callback()
+      
