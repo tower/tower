@@ -58,7 +58,8 @@ class Lookup
     result = []
     
     for path in paths
-      result.push Metro.Support.Path.absolutePath path, @root
+      if path != ".." and path != "."
+        result.push Metro.Support.Path.absolutePath path, @root
     result
     
   _normalizeExtension: (extension) ->

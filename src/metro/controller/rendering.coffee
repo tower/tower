@@ -14,6 +14,7 @@ class Rendering
     
     args.push finish = (error, body) ->
       self.body = body
+      self.body ?= error.toString()
       callback(error, body) if callback
       self.callback()
     

@@ -36,5 +36,8 @@ class Model
   #     @store: new Metro.Store.Memory
   @store: ->
     @_store ?= new Metro.Store.Memory
+    
+  valueOf: ->
+    @attributes
 
 module.exports = Model

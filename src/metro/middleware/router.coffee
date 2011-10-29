@@ -5,6 +5,8 @@ class Router
   @middleware: (request, result, next) -> (new Metro.Middleware.Router).call(request, result, next)
   
   call: (request, response, next) ->
+    self = @
+    
     @find request, response, (controller) ->
       if controller
         response.writeHead(200, controller.headers)
@@ -12,7 +14,7 @@ class Router
         response.end()
         controller.clear()
       else
-        @error(request, response)
+        self.error(request, response)
     
     response
   

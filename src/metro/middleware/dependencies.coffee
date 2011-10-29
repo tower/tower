@@ -3,7 +3,7 @@ class Dependencies
   
   call: (request, result, next) ->
     Metro.Support.Dependencies.reloadModified()
-    Metro.Routes.reload()
+    Metro.Route.reload()
     next() if next?
     
 module.exports = Dependencies

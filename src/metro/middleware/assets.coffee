@@ -2,11 +2,9 @@ class Assets
   @middleware: (request, response, next) -> (new Metro.Middleware.Assets).call(request, response, next)
   
   call: (request, response, next) ->
-    assets      = Metro.Application.instance().assets()
+    return next() unless Metro.Asset.match(request.uri.pathname)
     
-    return next() unless assets.match(request.uri.pathname)
-    
-    asset       = assets.find(request.uri.pathname)
+    asset       = Metro.Asset.find(request.uri.pathname)
     
     respond = (status, headers, body) ->
       response.writeHead status, headers
@@ -38,7 +36,7 @@ class Assets
     
   # Returns a 200 OK response tuple
   okResponse: (asset, callback) ->
-    paths = Metro.Application.instance().assets().pathsFor(asset.extension)
+    paths = Metro.Asset.pathsFor(asset.extension)
     self  = @
     asset.render paths: paths, require: Metro.env != "production", (body) ->
       callback 200, self.headers(asset, asset.size()), body

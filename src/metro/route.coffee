@@ -17,9 +17,12 @@ class Route
   
   @teardown: ->
     @store().clear()
-    
-    delete require.cache["#{Metro.root}/config/routes"]
+    delete require.cache[require.resolve("#{Metro.root}/config/routes")]
     delete @_store
+    
+  @reload: ->
+    @teardown()
+    @initialize()
   
   name:     null
   path:     null

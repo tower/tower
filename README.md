@@ -82,40 +82,40 @@ Metro = require("metro")
 
 # below are all of the configuration defaults
 Metro.Asset.configure
-  public_path:             "#{Metro.root}/public"
-  load_paths:              [
+  publicPath:             "#{Metro.root}/public"
+  loadPaths:              [
     "#{Metro.root}/app/assets",
     "#{Metro.root}/lib/assets",
     "#{Metro.root}/vendor/assets"
   ]
   
-  stylesheet_directory:   "stylesheets"
-  stylesheet_extensions:  ["css", "styl", "scss", "less"]
-  stylesheet_aliases:
+  stylesheetDirectory:   "stylesheets"
+  stylesheetExtensions:  ["css", "styl", "scss", "less"]
+  stylesheetAliases:
     css:                  ["styl", "less", "scss", "sass"]
   
-  javascript_directory:   "javascripts"
-  javascript_extensions:  ["js", "coffee", "ejs"]
-  javascript_aliases:
+  javascriptDirectory:   "javascripts"
+  javascriptExtensions:  ["js", "coffee", "ejs"]
+  javascriptAliases:
     js:                   ["coffee", "coffeescript"]
     coffee:               ["coffeescript"]
   
-  image_directory:        "images"
-  image_extensions:       ["png", "jpg", "gif"]
-  image_aliases:
+  imageDirectory:        "images"
+  imageExtensions:       ["png", "jpg", "gif"]
+  imageAliases:
     jpg:                  ["jpeg"]
   
-  font_directory:         "fonts"
-  font_extensions:        ["eot", "svg", "tff", "woff"]
-  font_aliases:           {}
+  fontDirectory:         "fonts"
+  fontExtensions:        ["eot", "svg", "tff", "woff"]
+  fontAliases:           {}
   
   host:                   null
-  relative_root_url:      null
+  relativeRootUrl:      null
 
   precompile:             []
   
-  js_compressor:          null
-  css_compressor:         null
+  jsCompressor:          null
+  cssCompressor:         null
   
   enabled:                true
   
@@ -143,20 +143,19 @@ Metro.Route.draw ->
 ## Models
 
 ``` coffeescript
-class Post
+class User
   @include Metro.Model
   
-  @key "title"
-  @key "body"
-  @key "slug"
-  @key "created_at", type: Date
+  @key "id"
+  @key "firstName"
+  @key "createdAt", type: "time"
   
-  @validates "title", presence: true
+  @scope "bySanta", @where firstName: "=~": "Santa"
+  @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.zone().now().beginningOfWeek().toDate()
   
-  @beforeSave "parameterize"
-  
-  parameterize: ->
-    @slug = _.parameterize(@title)
+  @hasMany "posts", className: "Page"
+    
+  @validates "firstName", presence: true
 ```
 
 ``` coffeescript

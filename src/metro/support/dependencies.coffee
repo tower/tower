@@ -25,7 +25,7 @@ class Dependencies
   
   @clearDependency: (key) ->
     file = @keys[key]
-    delete require.cache[file.path]
+    delete require.cache[require.resolve(file.path)]
     global[key] = null
     delete global[key]
     @keys[key] = null

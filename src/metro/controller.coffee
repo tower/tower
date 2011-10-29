@@ -18,6 +18,10 @@ class Controller
     delete @_helpers
     delete @_layout
     delete @_theme
+    
+  @reload: ->
+    @teardown()
+    @initialize()
   
   @helper: (object) ->
     @_helpers ?= []

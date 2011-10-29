@@ -65,7 +65,7 @@ class Asset
     delete @_digests
     
   @configure: (options) ->
-    @config[key] = value for key, value in options
+    @config[key] = value for key, value of options
   
   @cssCompressor: ->
     @_cssCompressor ?= new (require('shift').YuiCompressor)

@@ -15,6 +15,7 @@ Support =
   String:         require './support/string'
   System:         require './support/system'
   RegExp:         require './support/regexp'
+  Time:           require './support/time'
 
   agent: if typeof(window) != 'undefined' then navigator.userAgent else 'node'
   

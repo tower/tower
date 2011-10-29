@@ -1,11 +1,8 @@
 connect = require('connect')
 
 class Server
-  constructor: ->
-    @server ?= connect()#.createServer()
-    
   stack: ->
-    @server.use connect.favicon(Metro.public_path + "/favicon.ico")
+    @server.use connect.favicon(Metro.publicPath + "/favicon.ico")
     @server.use Metro.Middleware.Static.middleware
     @server.use Metro.Middleware.Query.middleware 
     @server.use Metro.Middleware.Assets.middleware

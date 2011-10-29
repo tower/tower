@@ -10,8 +10,10 @@ class global.User# extends Function
   
   @key "id"
   @key "firstName"
+  @key "createdAt", type: "time"
   
-  @scope "bySanta", @where(firstName: "=~": "Santa")
+  @scope "bySanta", @where firstName: "=~": "Santa"
+  @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.zone().now().beginningOfWeek().toDate()
   
   @hasMany "posts", className: "Page"
     
@@ -106,7 +108,7 @@ describe 'Metro.Model', ->
       user = User.fromJSON('{"firstName":"Terminator","id":1}')[0]
       expect(user).toEqual(@user)
   
-  describe 'attributes', ->    
+  describe 'attributes', ->
     beforeEach ->
       @user = new User(firstName: 'Terminator', id: 1)
       
@@ -120,3 +122,14 @@ describe 'Metro.Model', ->
       @user.firstName = "Smith"
       
       expect(@user.changes).toEqual firstName: ["Terminator", "Smith"]
+      
+  describe 'type', ->
+    beforeEach ->
+      User.deleteAll()
+      User.create(firstName: 'Terminator', id: 1, createdAt: new Date())
+      User.create(firstName: 'Terminator 2', id: 2, createdAt: require('moment')().subtract('days', 20))
+      User.create(firstName: 'Terminator 3', id: 3, createdAt: new Date())
+    
+    it 'should have scoped by type', ->
+      users = User.thisWeek.all()
+      expect(users.length).toEqual 2

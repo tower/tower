@@ -3,16 +3,19 @@ class Application
   
   @include @Server
   
+  constructor: ->
+    @server ?= require('connect')()
+
   @instance: -> 
     @_instance ?= new Metro.Application
   
-  @initialize: ->
-    require "#{Metro.root}/config/application"
+  @initialize: ->  
+    Metro.Asset.initialize() if Metro.Asset
     Metro.Route.initialize()
     Metro.Model.initialize()
     Metro.View.initialize()
     Metro.Controller.initialize()
-    Metro.Asset.initialize() if Metro.Asset
+    require "#{Metro.root}/config/application"
     @instance()
     
   @teardown: ->
@@ -20,7 +23,7 @@ class Application
     Metro.Model.teardown()
     Metro.View.teardown()
     Metro.Controller.teardown()
-    Metro.Asset.teardown() if Metro.Asset
+    #Metro.Asset.teardown() if Metro.Asset
     
     delete @_instance
   

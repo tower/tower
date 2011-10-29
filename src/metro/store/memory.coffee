@@ -117,11 +117,12 @@ class Memory
     
     for key, value of query
       continue if !!Metro.Store.reservedOperators[key]
-      
+      recordValue = record[key]
       if typeof(value) == 'object'
-        success = self._matchesOperators(record[key], value)
+        success = self._matchesOperators(record, recordValue, value)
       else
-        success = record[key] == value
+        value = value.call(record) if typeof(value) == "function"
+        success = recordValue == value
       return false unless success
     
     true
@@ -129,12 +130,13 @@ class Memory
   generateId: ->
     @lastId++
     
-  _matchesOperators: (recordValue, operators) ->
+  _matchesOperators: (record, recordValue, operators) ->
     success = true
     self    = @
     
     for key, value of operators
       if operator = Metro.Store.queryOperators[key]
+        value = value.call(record) if typeof(value) == "function"
         switch operator
           when "gt"
             success = self._isGreaterThan(recordValue, value)
@@ -163,16 +165,16 @@ class Memory
     true
   
   _isGreaterThan: (recordValue, value) ->
-    recordValue > value
+    recordValue && recordValue > value
     
   _isGreaterThanOrEqualTo: (recordValue, value) ->
-    recordValue >= value
+    recordValue && recordValue >= value
     
   _isLessThan: (recordValue, value) ->
-    recordValue < value
+    recordValue && recordValue < value
     
   _isLessThanOrEqualTo: (recordValue, value) ->
-    recordValue <= value
+    recordValue && recordValue <= value
     
   _isEqualTo: (recordValue, value) ->
     recordValue == value
