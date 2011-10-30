@@ -90,6 +90,52 @@ describe "support", ->
       
       result = @lookup.find("application.coffee")
       expect(result.length).toEqual 1
+  
+  describe 'i18n', ->
+    beforeEach ->
+      global.I18n = Metro.Support.I18n
+      I18n.store = 
+        en:
+          hello: "world"
+          forms:
+            titles:
+              signup: "Signup"
+          pages:
+            titles:
+              home: "Welcome to {{site}}"
+          posts:
+            comments:
+              none: "No comments"
+              one: "1 comment"
+              other: "{{count}} comments"
+          messages:
+            past:
+              none: "You never had any messages"
+              one: "You had 1 message"
+              other: "You had {{count}} messages"
+            present:
+              one: "You have 1 message"
+            future:
+              one: "You might have 1 message"
+          
+    it 'should lookup a key', ->
+      expect(I18n.lookup("hello")).toEqual "world"
+      
+    it 'should interpolate a key', ->
+      expect(I18n.translate("pages.titles.home", site: 'Metro.js')).toEqual "Welcome to Metro.js"
+  
+    it 'should count', ->
+      expect(I18n.t("posts.comments", count: 0)).toEqual "No comments"
+      expect(I18n.t("posts.comments", count: 1)).toEqual "1 comment"
+      expect(I18n.t("posts.comments", count: 10)).toEqual "10 comments"
+      
+    it 'should have tense', ->
+      expect(I18n.t("messages", count: 0, tense: 'past')).toEqual "You never had any messages"
+      expect(I18n.t("messages", count: 1, tense: 'past')).toEqual "You had 1 message"
+      expect(I18n.t("messages", count: 10, tense: 'past')).toEqual "You had 10 messages"
+      
+    it 'should have fallbacks', ->
+    
 ###  
   describe "mixins", ->
     it "should have string methods", ->

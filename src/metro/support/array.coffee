@@ -2,6 +2,12 @@ class ArrayExtension
   @extractArgs: (args) ->
     Array.prototype.slice.call(args, 0, args.length)
     
+  @extractArgsAndOptions: (args) ->
+    args = Array.prototype.slice.call(args, 0, args.length)
+    unless typeof(args[args.length - 1]) == 'object'
+      args.push({})
+    args
+    
   @argsOptionsAndCallback: ->
     args = Array.prototype.slice.call(arguments)
     last = args.length - 1

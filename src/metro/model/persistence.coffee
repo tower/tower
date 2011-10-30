@@ -12,13 +12,37 @@ class Persistence
     @store().clear()
     
   isNew: ->
+    !!!attributes.id
     
   save: (options) ->
+    runCallbacks ->
+      
     
   update: (options) ->
     
   reset: ->
     
   @alias "reload", "reset"
+  
+  updateAttribute: (name, value) ->
+    
+  updateAttributes: (attributes) ->
+    
+  increment: (attribute, by = 1) ->
+    
+  decrement: (attribute, by = 1) ->
+    
+  reload: ->
+    
+  delete: ->
+    
+  destroy: ->
+  
+  createOrUpdate: ->
+  
+  isDestroyed: ->
+    
+  isPersisted: ->
+  
   
 module.exports = Persistence
