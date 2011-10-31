@@ -1,4 +1,4 @@
-class Scopes
+class Metro.Model.Scopes
   #constructor: -> super
   
   # Create named scope class method finders for a model.
@@ -51,10 +51,10 @@ class Scopes
   @find: (id, callback) ->
     @store().find(id, callback)
     
-  @each: (callback) ->
-    @store().each(callback)
-    
   @count: (callback) ->
     @store().count(callback)
+    
+  @exists: (callback) ->
+    @store().exists(callback)
   
-module.exports = Scopes
+module.exports = Metro.Model.Scopes

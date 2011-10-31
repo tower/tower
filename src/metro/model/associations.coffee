@@ -1,4 +1,4 @@
-class Associations
+class Metro.Model.Associations
   @hasOne: (name, options = {}) ->
   
   # Adds hasMany reflection to model.
@@ -65,4 +65,4 @@ class Associations
     return null unless id
     global[@reflections()[name].targetClassName].where(id: @id).first()
   
-module.exports = Associations
+module.exports = Metro.Model.Associations

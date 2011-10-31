@@ -1,5 +1,4 @@
-# All finder methods return a Cursor, which optimizes traversal and query construction.
-class Scope
+class Metro.Model.Scope
   constructor: (sourceClassName) ->
     @sourceClassName = sourceClassName
     @conditions = []
@@ -62,4 +61,4 @@ class Scope
     
     result
 
-module.exports = Scope
+module.exports = Metro.Model.Scope

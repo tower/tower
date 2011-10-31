@@ -1,4 +1,4 @@
-class Persistence
+class Metro.Model.Persistence
   #constructor: -> super
   
   @create: (attrs) ->
@@ -45,4 +45,4 @@ class Persistence
   isPersisted: ->
   
   
-module.exports = Persistence
+module.exports = Metro.Model.Persistence

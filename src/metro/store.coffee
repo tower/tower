@@ -1,14 +1,7 @@
 # Stores are the interface models use to find their data.
-module.exports = Metro.Store =
-  Cassandra:  require './store/cassandra'
-  Local:      require './store/local'
-  Memory:     require './store/memory'
-  Mongo:      require './store/mongo'
-  PostgreSQL: require './store/postgresql'
-  Redis:      require './store/redis'
-
+Metro.Store =
   defaultLimit: 100
-  
+
   reservedOperators:
     "_sort":  "_sort"
     "_limit": "_limit"
@@ -34,3 +27,14 @@ module.exports = Metro.Store =
     "eq":       "eq"
     "!=":       "neq"
     "neq":      "neq"
+    "null":     "null"
+    "notNull":  "notNull"
+
+require './store/cassandra'
+require './store/local'
+require './store/memory'
+require './store/mongo'
+require './store/postgresql'
+require './store/redis'
+
+module.exports = Metro.Store

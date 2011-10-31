@@ -1,4 +1,4 @@
-class Validation
+class Metro.Model.Validation
   constructor: (name, value) ->
     @name       = name
     @value      = value
@@ -58,4 +58,4 @@ class Validation
       return false
     true
 
-module.exports = Validation
+module.exports = Metro.Model.Validation

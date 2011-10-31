@@ -1,6 +1,4 @@
-class Route
-  @DSL: require './route/dsl'
-  
+class Metro.Route
   @include Metro.Model.Scopes
   
   @store: ->
@@ -24,26 +22,9 @@ class Route
     @teardown()
     @initialize()
   
-  name:     null
-  path:     null
-  ip:       null
-  method:   null
-  options:  null
-  pattern:  null
-  keys:     null
-  
   @draw: (callback) ->
     callback.apply(new Metro.Route.DSL(@))
     @
-  
-  add: (route) ->
-    @set.push route
-    @named[route.name] = route if route.name?
-    route
-    
-  clear: ->
-    @set    = []
-    @named  = {}
   
   constructor: (options) ->
     options    ?= options
@@ -96,5 +77,7 @@ class Route
     )
     
     new RegExp('^' + path + '$', !!caseSensitive ? '' : 'i')
-  
-module.exports = Route
+
+require './route/dsl'
+
+module.exports = Metro.Route

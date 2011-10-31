@@ -1,4 +1,4 @@
-class Dirty
+class Metro.Model.Dirty
   isDirty: ->
     changes = @changes()
     for change of changes
@@ -20,4 +20,4 @@ class Dirty
 
     beforeValue
     
-module.exports = Dirty
+module.exports = Metro.Model.Dirty

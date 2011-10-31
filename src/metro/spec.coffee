@@ -1,4 +1,5 @@
-Spec =
-  Http: require('./spec/http')
+Metro.Spec = {}
+
+require './spec/http'
   
-module.exports = Spec
+module.exports = Metro.Spec

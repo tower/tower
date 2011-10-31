@@ -1,4 +1,4 @@
-class Memory
+class Metro.Store.Memory
   constructor: ->
     @records  = {}
     @lastId   = 0
@@ -201,4 +201,4 @@ class Memory
   toString: ->
     @constructor.name
   
-module.exports = Memory
+module.exports = Metro.Store.Memory

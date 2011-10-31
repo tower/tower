@@ -8,13 +8,13 @@ en =
       short: "%b %d"
       long: "%B %"d", %Y"
 
-    day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    abbrDayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     # Don't forget the nil at the beginning; there's no such thing as a 0th month
-    month_names: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    abbr_month_names: [~, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    # Used in date_select and datetime_select.
+    monthNames: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    abbrMonthNames: [~, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    # Used in dateSelect and datetimeSelect.
     order: ["year", "month", "day"]
 
   time:
@@ -25,9 +25,9 @@ en =
     am: "am"
     pm: "pm"
 
-# Used in array.to_sentence.
+# Used in array.toSentence.
   support:
     array:
-      words_connector: ", "
-      two_words_connector: " and "
-      last_word_connector: ", and "
+      wordsConnector: ", "
+      twoWordsConnector: " and "
+      lastWordConnector: ", and "

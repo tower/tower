@@ -1,4 +1,4 @@
-class Attributes
+class Metro.Model.Attributes
   @key: (key, options = {}) ->
     @keys()[key] = new Metro.Model.Attribute(key, options)
     
@@ -38,4 +38,4 @@ class Attributes
     
   @alias "set", "setAttribute" unless @hasOwnProperty("set")
   
-module.exports = Attributes
+module.exports = Metro.Model.Attributes

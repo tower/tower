@@ -1,6 +1,6 @@
 moduleKeywords = ['included', 'extended', 'prototype']
 
-class Class
+class Metro.Support.Class
   # Rename an instance method
   #
   # ``` coffeescript
@@ -130,7 +130,7 @@ class Class
   instanceExec: ->
     arguments[0].apply(@, arguments[1..-1]...)
 
-  instance_eval: (block) ->
+  instanceEval: (block) ->
     block.apply(@)
 
   send: (method) ->
@@ -141,7 +141,7 @@ class Class
 
   methodMissing: (method) ->
 
-module.exports = Class
+module.exports = Metro.Support.Class
 
-for key, value of Class
+for key, value of Metro.Support.Class
   Function.prototype[key] = value

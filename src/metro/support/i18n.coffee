@@ -1,4 +1,4 @@
-class I18n
+class Metro.Support.I18n
   @defaultLanguage: "en"
   
   @translate: (key, options = {}) ->
@@ -33,4 +33,4 @@ class I18n
   @interpolator: ->
     @_interpolator ?= new (require('shift').Mustache)
     
-module.exports = I18n
+module.exports = Metro.Support.I18n

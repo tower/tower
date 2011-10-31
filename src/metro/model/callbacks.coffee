@@ -1,4 +1,4 @@
-class Callbacks
+class Metro.Model.Callbacks
   @CALLBACKS = [
     "afterInitialize", "afterFind", "afterTouch", "beforeValidation", "afterValidation",
     "beforeSave", "aroundSave", "afterSave", "beforeCreate", "aroundCreate",
@@ -42,4 +42,4 @@ class Callbacks
   destroy: ->
     @runCallbacks "destroy", -> @super
     
-module.exports = Callbacks
+module.exports = Metro.Model.Callbacks

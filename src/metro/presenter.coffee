@@ -1,3 +1,3 @@
-class Presenter
+class Metro.Presenter
   
-module.exports = Presenter
+module.exports = Metro.Presenter

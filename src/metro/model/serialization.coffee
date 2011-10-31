@@ -1,4 +1,4 @@
-class Serialization
+class Metro.Model.Serialization
   # https://github.com/oozcitak/xmlbuilder-js
   toXML: ->
     
@@ -18,4 +18,4 @@ class Serialization
     
     records
     
-module.exports = Serialization
+module.exports = Metro.Model.Serialization

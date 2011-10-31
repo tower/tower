@@ -1,5 +1,6 @@
 # http://docs.sproutcore20.com/symbols/SC.Observable.html
-class Observer
-  @Binding = require './observer/binding'
-  
-  # function(sender, key, value, context, rev);
+class Metro.Observer
+
+require './observer/binding'
+
+module.exports = Metro.Observer

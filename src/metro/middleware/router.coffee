@@ -1,7 +1,7 @@
 _url = require('url')
 _   = require('underscore')
 
-class Router
+class Metro.Middleware.Router
   @middleware: (request, result, next) -> (new Metro.Middleware.Router).call(request, result, next)
   
   call: (request, response, next) ->
@@ -67,4 +67,4 @@ class Router
       response.setHeader('Content-Type', 'text/plain')
       response.end("No path matches #{request.url}")
       
-module.exports = Router
+module.exports = Metro.Middleware.Router

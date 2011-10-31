@@ -1,7 +1,4 @@
-_ = require("underscore")
-_.mixin(require("underscore.string"))
-
-class DSL
+class Metro.Route.DSL
   match: ->
     @scope ?= {}
     Metro.Route.create(new Metro.Route(@_extractOptions(arguments...)))
@@ -316,4 +313,4 @@ class DSL
     
     name: controller, action: action, className: _.camelize("_#{controller}")
 
-module.exports = DSL
+module.exports = Metro.Route.DSL

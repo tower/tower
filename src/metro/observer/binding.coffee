@@ -1,3 +1,3 @@
-class Binding
+class Metro.Observer.Binding
   
-module.exports = Binding
+module.exports = Metro.Observer.Binding

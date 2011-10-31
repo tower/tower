@@ -1,6 +1,6 @@
 # https://github.com/timrwood/moment
 # http://momentjs.com/docs/
-class Time
+class Metro.Support.Time
   @_lib: ->
     require 'moment'
   
@@ -61,7 +61,7 @@ class Time
   toDate: ->
     @moment._d
 
-class Time.TimeWithZone extends Time
+class Metro.Support.Time.TimeWithZone extends Metro.Support.Time
   
   
-module.exports = Time
+module.exports = Metro.Support.Time

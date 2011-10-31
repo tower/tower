@@ -1,14 +1,14 @@
-class ArrayExtension
-  @extractArgs: (args) ->
+Metro.Support.Array =
+  extractArgs: (args) ->
     Array.prototype.slice.call(args, 0, args.length)
     
-  @extractArgsAndOptions: (args) ->
+  extractArgsAndOptions: (args) ->
     args = Array.prototype.slice.call(args, 0, args.length)
     unless typeof(args[args.length - 1]) == 'object'
       args.push({})
     args
     
-  @argsOptionsAndCallback: ->
+  argsOptionsAndCallback: ->
     args = Array.prototype.slice.call(arguments)
     last = args.length - 1
     if typeof args[last] == "function"
@@ -38,7 +38,7 @@ class ArrayExtension
   #       string.toLowerCase()
   #     sortObjects deals, ["city", ["price", "desc"]], city: cityPrimer
   # 
-  @sortBy: (objects) ->
+  sortBy: (objects) ->
     sortings  = Array.prototype.slice.call(arguments, 1, arguments.length)
     callbacks = if sortings[sortings.length - 1] instanceof Array then {} else sortings.pop()
     
@@ -76,4 +76,4 @@ class ArrayExtension
     objects.sort (a, b) ->
       arrayComparator a, b
   
-module.exports = ArrayExtension
+module.exports = Metro.Support.Array

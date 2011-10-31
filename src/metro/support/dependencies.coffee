@@ -6,7 +6,7 @@ fs = require('fs')
 # global.require = (path) ->
 #   Metro.Support.Dependencies.loadPath(path)
 
-class Dependencies
+class Metro.Support.Dependencies
   @load: (directory) ->
     paths = require('findit').sync directory
     @loadPath(path) for path in paths
@@ -42,4 +42,4 @@ class Dependencies
     
   @keys: {}
     
-module.exports = Dependencies
+module.exports = Metro.Support.Dependencies
