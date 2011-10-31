@@ -1,4 +1,4 @@
-class Validations
+class Metro.Model.Validations
   constructor: -> super
   
   @validates: ->
@@ -30,4 +30,4 @@ class Validations
   errors: ->
     @_errors ?= []
   
-module.exports = Validations
+module.exports = Metro.Model.Validations

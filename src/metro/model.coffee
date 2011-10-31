@@ -1,36 +1,9 @@
-class Model
-  # constructor: -> super
-  
-  @Association:   require './model/association'
-  @Associations:  require './model/associations'
-  @Attribute:     require './model/attribute'
-  @Attributes:    require './model/attributes'
-  @Dirty:         require './model/dirty'
-  @Observing:     require './model/observing'
-  @Persistence:   require './model/persistence'
-  @Reflection:    require './model/reflection'
-  @Scope:         require './model/scope'
-  @Scopes:        require './model/scopes'
-  @Serialization: require './model/serialization'
-  @Validation:    require './model/validation'
-  @Validations:   require './model/validations'
-  
-  @include @Persistence
-  @include @Scopes
-  @include @Serialization
-  @include @Associations
-  @include @Validations
-  @include @Dirty
-  @include @Attributes
-  
+class Metro.Model
   @initialize: ->
     Metro.Support.Dependencies.load("#{Metro.root}/app/models")
     
   @teardown: ->
     delete @_store
-  
-  #@toString: -> 
-  #  "#{@className}(#{@attributes.join(", ")})"
   
   # Add the global store to your model.
   # 
@@ -50,5 +23,27 @@ class Model
     
     @attributes = @typeCastAttributes(attributes)
     @changes    = {}
+
+require './model/scope'
+require './model/association'
+require './model/associations'
+require './model/attribute'
+require './model/attributes'
+require './model/dirty'
+require './model/observing'
+require './model/persistence'
+require './model/reflection'
+require './model/scopes'
+require './model/serialization'
+require './model/validation'
+require './model/validations'
+
+Metro.Model.include Metro.Model.Persistence
+Metro.Model.include Metro.Model.Scopes
+Metro.Model.include Metro.Model.Serialization
+Metro.Model.include Metro.Model.Associations
+Metro.Model.include Metro.Model.Validations
+Metro.Model.include Metro.Model.Dirty
+Metro.Model.include Metro.Model.Attributes
 
 module.exports = Model

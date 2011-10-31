@@ -1,4 +1,4 @@
-class Reflection
+class Metro.Model.Reflection
   constructor: (type, sourceClassName, name, options = {}) ->
     @type             = type
     @sourceClassName  = sourceClassName
@@ -11,4 +11,4 @@ class Reflection
   association: (owner) ->
     new Metro.Model.Association(owner, @)
 
-module.exports = Reflection
+module.exports = Metro.Model.Reflection

@@ -1,12 +1,12 @@
 class DSL
-  inject_into_file: (file, options, callback) ->
+  injectIntoFile: (file, options, callback) ->
     
-  read_file: (file) ->
+  readFile: (file) ->
   
-  create_file: (file, data) ->
+  createFile: (file, data) ->
     
-  remove_file: (file) ->
+  removeFile: (file) ->
     
-  create_directory: (name) ->
+  createDirectory: (name) ->
     
-  remove_directory: (name) ->
+  removeDirectory: (name) ->

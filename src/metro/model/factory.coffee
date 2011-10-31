@@ -1,4 +1,4 @@
-class Factory
+class Metro.Model.Factory
   @store: ->
     @_store ?= new Metro.Store.Memory
   

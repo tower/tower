@@ -1,4 +1,4 @@
-class Attribute
+class Metro.Model.Attribute
   constructor: (name, options = {}) ->
     @name = name
     @type = options.type || "string"
@@ -9,7 +9,7 @@ class Attribute
       when Date, "date", "time" then @_typecastDate
       when Number, "number", "integer" then @_typecastInteger
       when "float" then @_typecastFloat
-      else @_typecastString  
+      else @_typecastString
     
   typecast: (value) ->
     @typecastMethod.call(@, value)
@@ -40,4 +40,4 @@ class Attribute
       else
         _default
     
-module.exports = Attribute
+module.exports = Metro.Model.Attribute

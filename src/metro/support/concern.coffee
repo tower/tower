@@ -1,4 +1,4 @@
-class Concern  
+class Metro.Support.Concern  
   constructor: -> super
   
   @included: ->
@@ -9,4 +9,4 @@ class Concern
   # Module.appendFeatures in ruby
   @_appendFeatures: ->
   
-module.exports = Concern
+module.exports = Metro.Support.Concern

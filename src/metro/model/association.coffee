@@ -1,4 +1,6 @@
-class Association
+class Metro.Model.Association
+  @include Metro.Model.Scope
+  
   constructor: (owner, reflection) ->
     @owner      = owner
     @reflection = reflection
@@ -16,4 +18,4 @@ class Association
     
   @delegates "where", "find", "all", "first", "last", "store", to: "scoped"
   
-module.exports = Association
+module.exports = Metro.Model.Association

@@ -1,9 +1,10 @@
-Middleware =
-  Dependencies: require './middleware/dependencies'
-  Router:       require './middleware/router'
-  Cookies:      require './middleware/cookies'
-  Static:       require './middleware/static'
-  Query:        require './middleware/query'
-  Assets:       require './middleware/assets'
+Metro.Middleware = {}
+
+require './middleware/dependencies'
+require './middleware/router'
+require './middleware/cookies'
+require './middleware/static'
+require './middleware/query'
+require './middleware/assets'
   
-module.exports = Middleware
+module.exports = Metro.Middleware

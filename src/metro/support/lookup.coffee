@@ -1,5 +1,5 @@
 # https://github.com/sstephenson/hike/blob/master/lib/hike/index.rb
-class Lookup
+class Metro.Support.Lookup
   
   # new Metro.Support.Lookup paths: ["./app/assets/stylesheets"], extensions: [".js", ".coffee"], aliases: ".coffee": [".coffeescript"]
   constructor: (options = {}) ->
@@ -122,4 +122,4 @@ class Lookup
     
     new RegExp "^" + @escape(slug) + "(?:" + @escapeEach(extensions).join("|") + ").*"
     
-module.exports = Lookup
+module.exports = Metro.Support.Lookup

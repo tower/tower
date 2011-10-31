@@ -1,4 +1,4 @@
-class Validation
+class Metro.Model.Validation
   constructor: (name, value) ->
     @name       = name
     @value      = value
@@ -22,31 +22,35 @@ class Validation
     
   validatePresence: (record, attribute) ->
     unless !!record[attribute]
-      record.errors().push attribute: attribute, message: "#{attribute} can't be blank"
+      record.errors().push
+        attribute: attribute
+        message: Metro.Support.I18n.t("metro.model.errors.validation.presence", attribute: attribute)
       return false
     true
   
   validateMinimum: (record, attribute) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value >= @value
-      record.errors().push attribute: attribute, message: "#{attribute} must be a minimum of #{@value}"
+      record.errors().push 
+        attribute: attribute
+        message: Metro.Support.I18n.t("metro.model.errors.validation.minimum", attribute: attribute, value: value)
       return false
     true
-    
+  
   validateMaximum: (record, attribute) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value <= @value
       record.errors().push attribute: attribute, message: "#{attribute} must be a maximum of #{@value}"
       return false
     true
-    
+  
   validateLength: (record, attribute) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value == @value
       record.errors().push attribute: attribute, message: "#{attribute} must be equal to #{@value}"
       return false
     true
-    
+  
   validateFormat: (record, attribute) ->
     value = record[attribute]
     unless !!@value.exec(value)
@@ -54,4 +58,4 @@ class Validation
       return false
     true
 
-module.exports = Validation
+module.exports = Metro.Model.Validation

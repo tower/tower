@@ -1,4 +1,4 @@
-class Persistence
+class Metro.Model.Persistence
   #constructor: -> super
   
   @create: (attrs) ->
@@ -12,8 +12,11 @@ class Persistence
     @store().clear()
     
   isNew: ->
+    !!!attributes.id
     
   save: (options) ->
+    runCallbacks ->
+      
     
   update: (options) ->
     
@@ -21,4 +24,25 @@ class Persistence
     
   @alias "reload", "reset"
   
-module.exports = Persistence
+  updateAttribute: (name, value) ->
+    
+  updateAttributes: (attributes) ->
+    
+  increment: (attribute, by = 1) ->
+    
+  decrement: (attribute, by = 1) ->
+    
+  reload: ->
+    
+  delete: ->
+    
+  destroy: ->
+  
+  createOrUpdate: ->
+  
+  isDestroyed: ->
+    
+  isPersisted: ->
+  
+  
+module.exports = Metro.Model.Persistence

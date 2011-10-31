@@ -4,7 +4,7 @@ mime    = require('mime')
 _path   = require('path')
 util    = require('util')
 
-class File
+class Metro.Support.Path
   @stat: (path) ->
     fs.statSync(path)
   
@@ -179,4 +179,4 @@ class File
   relativePath: ->
     @constructor.relativePath(@path)
 
-module.exports = File
+module.exports = Metro.Support.Path

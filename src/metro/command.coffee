@@ -1,2 +1,5 @@
-module.exports = Metro.Command =
-  Server: require('./command/server')
+Metro.Command = {}
+
+require './command/server'
+
+module.exports = Metro.Command

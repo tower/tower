@@ -1,6 +1,6 @@
 # Metro.js
 
-> Metro.js &reg; is an open source web framework for the Rails-prone Node.js hackers.
+> Web Framework for the Rails-prone Node.js hackers.
 
 ## Features
 
@@ -36,101 +36,68 @@
 npm install metro
 ```
 
-## Application
+## Structure
 
-``` coffeescript
-class MyApp.Application extends Metro.Application
-  @config.encoding = "utf-8"
-  @config.filter_parameters += [:password, :password_confirmation]
-  @config.autoload_paths += []
-  config.i18n.load_path += Dir[File.join(Rails.root, 'config', 'locales', '**', '*.{rb,yml}')]
-  
-MyApp.Application.initialize!
+``` bash
+.
+|-- app
+|   |-- controllers
+|   |   |-- admin
+|   |   |   |-- posts_controller.coffee
+|   |   |   `-- users_controller.coffee
+|   |   |-- posts_controller.coffee
+|   |   |-- sessions_controller.coffee
+|   |   `-- users_controller.coffee
+|   |-- models
+|   |   |-- post.coffee
+|   |   `-- user.coffee
+|   |-- views
+|   |   |-- admin
+|   |   |   `-- posts
+|   |   |       |-- edit.jade
+|   |   |       |-- index.jade
+|   |   |       |-- new.jade
+|   |   |-- layouts
+|   |   |   `-- application.jade
+|   |   |-- shared
+|   |   `-- posts
+|   |       |-- index.jade
+|   |       `-- show.jade
+|   |-- observers
+|   |   |-- posts_observer.coffee
+|   |   |-- sessions_observer.coffee
+|   |   `-- users_observer.coffee
+|   `-- helpers
+|       |-- admin
+|       |   |-- posts_helper.coffee
+|       |   `-- tags_helper.coffee
+|       `-- posts_helper.coffee
+`-- config
+|    |-- application.coffee
+|    |-- locale
+|        `-- en.coffee
+|    |-- routes.coffee
+`-- spec
+|    |-- helper.coffee
+|    |-- models
+|    |   |-- post_spec.coffee
+|    |   |-- user_spec.coffee
+|    `-- acceptance
+|        |-- login.coffee
+|        |-- signup.coffee
+|        `-- posts.coffee
 ```
 
-## Generate an App
-
-(or just setup the files manually, I like that better)
+## Generator
 
 ``` bash
 metro new my-app
 ```
 
-## Assets
-
-This
-
-``` javascript
-//= require ./spec/fixtures/javascripts/directive_child_a.js
-//= require ./spec/fixtures/javascripts/directive_child_b.js
-
-alert("directives");
-```
-
-...becomes
-
-``` javascript
-alert("directive a");
-alert("directive b");
-alert("directives");
-```
-
-### Asset Compression
-
-Can also create CSS sprites.
-
-``` coffeescript
-Metro = require("metro")
-
-# below are all of the configuration defaults
-Metro.Asset.configure
-  publicPath:             "#{Metro.root}/public"
-  loadPaths:              [
-    "#{Metro.root}/app/assets",
-    "#{Metro.root}/lib/assets",
-    "#{Metro.root}/vendor/assets"
-  ]
-  
-  stylesheetDirectory:   "stylesheets"
-  stylesheetExtensions:  ["css", "styl", "scss", "less"]
-  stylesheetAliases:
-    css:                  ["styl", "less", "scss", "sass"]
-  
-  javascriptDirectory:   "javascripts"
-  javascriptExtensions:  ["js", "coffee", "ejs"]
-  javascriptAliases:
-    js:                   ["coffee", "coffeescript"]
-    coffee:               ["coffeescript"]
-  
-  imageDirectory:        "images"
-  imageExtensions:       ["png", "jpg", "gif"]
-  imageAliases:
-    jpg:                  ["jpeg"]
-  
-  fontDirectory:         "fonts"
-  fontExtensions:        ["eot", "svg", "tff", "woff"]
-  fontAliases:           {}
-  
-  host:                   null
-  relativeRootUrl:      null
-
-  precompile:             []
-  
-  jsCompressor:          null
-  cssCompressor:         null
-  
-  enabled:                true
-  
-  manifest:               "/public/assets"
-  # live compilation
-  compile:                true
-  prefix:                 "assets"
-
-```
-
 ## Routes
 
 ``` coffeescript
+# config/routes.coffee
 Metro.Route.draw ->
   @match "/login",          to: "sessions#new", via: "get", as: "login"
   
@@ -174,10 +141,10 @@ class PostsController
     @posts = Post.all()
     
   new: ->
-    @post = Post.new
+    @post = new Post
     
   create: ->
-    @post = Post.new(@params.post)
+    @post = new Post(@params.post)
     
     super (success, failure) ->
       @success.html -> @render "posts/edit"
@@ -198,7 +165,29 @@ class PostsController
     @post = Post.find(@params.id)
 ```
 
-### Client-side Requesting
+## Store
+
+There's a unified interface to the different types of stores, so you can use the model and have it transparently manage data.  For example, for the browser, you can use the memory store, and for the server, you can use the mongodb store.  Redis, PostgreSQL, and Neo4j are in the pipeline.
+
+``` coffeescript
+class PageView
+  @include Metro.Model
+  
+  @store: ->
+    @_store ?= new Metro.Store.Redis
+```
+
+## Views
+
+Use any template framework for your views.  Includes [shift.js](http://github.com/viatropos/shift.js) which is a normalized interface on most of the Node.js templating languages.
+
+Soon will add form and table builders.
+
+## Middleware
+
+It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
+
+## History
 
 Since all of the controller/routing code is available on the client, you can go directly through that system just like you would the server.
 
@@ -215,6 +204,66 @@ Metro.navigate Metro.urlFor(post)
 ```
 
 Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
+
+## Application
+
+``` coffeescript
+# config/application.coffee
+class MyApp.Application extends Metro.Application
+  @config.encoding = "utf-8"
+  @config.filterParameters += ["password", "password_confirmation"]
+  @config.loadPaths += ["./themes"]
+  
+MyApp.Application.initialize()
+```
+
+## Assets
+
+``` coffeescript
+# below are all of the configuration defaults
+Metro.Asset.configure
+  publicPath:             "#{Metro.root}/public"
+  loadPaths:              [
+    "#{Metro.root}/app/assets",
+    "#{Metro.root}/lib/assets",
+    "#{Metro.root}/vendor/assets"
+  ]
+  
+  stylesheetDirectory:   "stylesheets"
+  stylesheetExtensions:  ["css", "styl", "scss", "less"]
+  stylesheetAliases:
+    css:                  ["styl", "less", "scss", "sass"]
+  
+  javascriptDirectory:   "javascripts"
+  javascriptExtensions:  ["js", "coffee", "ejs"]
+  javascriptAliases:
+    js:                   ["coffee", "coffeescript"]
+    coffee:               ["coffeescript"]
+  
+  imageDirectory:        "images"
+  imageExtensions:       ["png", "jpg", "gif"]
+  imageAliases:
+    jpg:                  ["jpeg"]
+  
+  fontDirectory:         "fonts"
+  fontExtensions:        ["eot", "svg", "tff", "woff"]
+  fontAliases:           {}
+  
+  host:                   null
+  relativeRootUrl:      null
+
+  precompile:             []
+  
+  jsCompressor:          null
+  cssCompressor:         null
+  
+  enabled:                true
+  
+  manifest:               "/public/assets"
+  # live compilation
+  compile:                true
+  prefix:                 "assets"
+```
 
 ## Development and Tests
 

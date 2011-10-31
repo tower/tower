@@ -1,3 +1,3 @@
-class Callbacks
+class Metro.Support.Callbacks
   
-module.exports = Callbacks
+module.exports = Metro.Support.Callbacks

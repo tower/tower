@@ -1,4 +1,4 @@
-class Assets
+class Metro.Middleware.Assets
   @middleware: (request, response, next) -> (new Metro.Middleware.Assets).call(request, response, next)
   
   call: (request, response, next) ->
@@ -65,4 +65,4 @@ class Assets
   etag: (asset) ->
     "#{asset.digest()}"
     
-module.exports = Assets
+module.exports = Metro.Middleware.Assets

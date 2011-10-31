@@ -1,4 +1,4 @@
-class Dependencies
+class Metro.Middleware.Dependencies
   @middleware: (request, result, next) -> (new Dependencies).call(request, result, next)
   
   call: (request, result, next) ->
@@ -6,4 +6,4 @@ class Dependencies
     Metro.Route.reload()
     next() if next?
     
-module.exports = Dependencies
+module.exports = Metro.Middleware.Dependencies
