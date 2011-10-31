@@ -1,4 +1,4 @@
-class Rendering    
+class Metro.View.Rendering    
   render: ->  
     args = Array.prototype.slice.call(arguments, 0, arguments.length)
     
@@ -63,4 +63,4 @@ class Rendering
     
     locals
   
-module.exports = Rendering
+module.exports = Metro.View.Rendering

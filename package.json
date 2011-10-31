@@ -27,6 +27,7 @@
   "directories": {
     "test": "spec"
   },
+  "bin": { "metro": "./bin/metro" },
   "dependencies": {
     "coffee-script":      ">= 1.1.0",
     "uglify-js":          ">= 1.1.1",

@@ -1,4 +1,4 @@
-class Application
+class Metro.Application
   @Server:        require './application/server'
   
   @include @Server
@@ -27,4 +27,4 @@ class Application
     
     delete @_instance
   
-module.exports = Application
+module.exports = Metro.Application

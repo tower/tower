@@ -1,4 +1,4 @@
-class Helpers
+class Metro.View.Helpers
   #["form", "table"].each ->
   #  klass = "Metro.Components.#{this.toUpperCase()}"
   #  @::["#{this}_for"] = -> global[klass].new(arguments...).render()
@@ -24,4 +24,4 @@ class Helpers
     
   imageTag: (path, options) ->
     
-module.exports = Helpers  
+module.exports = Metro.View.Helpers
