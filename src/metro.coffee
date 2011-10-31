@@ -68,8 +68,8 @@ Metro.locale =
         notFound: "Asset not found: '%s'\n  Lookup paths: [\n%s\n  ]"
 
 Metro.engine = (extension) ->
-  @_engine ?= {}
-  @_engine[extension] ?= switch extension
+  @_engine ||= {}
+  @_engine[extension] ||= switch extension
     when "less" then new (require("shift").Less)
     when "styl", "stylus" then new (require("shift").Stylus)
     when "coffee", "coffee-script" then new (require("shift").CoffeeScript)

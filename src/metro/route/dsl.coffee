@@ -3,7 +3,7 @@
 ###
 class Metro.Route.DSL
   match: ->
-    @scope ?= {}
+    @scope ||= {}
     Metro.Route.create(new Metro.Route(@_extractOptions(arguments...)))
     
   get: ->
@@ -316,8 +316,8 @@ class Metro.Route.DSL
       controller  = to[0]
       action      = to[1]
     
-    controller   ?= (options.controller || @scope.controller)
-    action       ?= (options.action || @scope.action)
+    controller   ||= (options.controller || @scope.controller)
+    action       ||= (options.action || @scope.action)
     
     controller  = controller.toLowerCase().replace(/(?:Controller)?$/, "Controller")
     action      = action.toLowerCase()

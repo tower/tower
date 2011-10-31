@@ -1,30 +1,30 @@
 class Lookup
   @digests: ->
-    @_digests ?= {}
+    @_digests ||= {}
   
   @stylesheetLookup: ->
-    @_stylesheetLookup ?= @_createLookup(
+    @_stylesheetLookup ||= @_createLookup(
       @config.stylesheetDirectory
       @config.stylesheetExtensions
       @config.stylesheetAliases
     )
   
   @javascriptLookup: ->
-    @_javascriptLookup ?= @_createLookup(
+    @_javascriptLookup ||= @_createLookup(
       @config.javascriptDirectory
       @config.javascriptExtensions
       @config.javascriptAliases
     )
   
   @imageLookup: ->
-    @_imageLookup ?= @_createLookup(
+    @_imageLookup ||= @_createLookup(
       @config.imageDirectory
       @config.imageExtensions
       @config.imageAliases
     )
   
   @fontLookup: ->
-    @_fontLookup ?= @_createLookup(
+    @_fontLookup ||= @_createLookup(
       @config.fontDirectory
       @config.fontExtensions
       @config.fontAliases
@@ -119,7 +119,7 @@ class Lookup
   @lookup: (source, options = {}) ->
     source = @normalizeSource(source)
 
-    options.extension ?= @extname(source)
+    options.extension ||= @extname(source)
     
     Metro.raise("errors.missingOption", "extension", "Asset#find") if options.extension == ""
 
@@ -135,6 +135,6 @@ class Lookup
     source.replace(@pathPattern(), "")
     
   @pathPattern: ->
-    @_pathPattern ?= new RegExp("^/(assets|#{@config.stylesheetDirectory}|#{@config.javascriptDirectory}|#{@config.imageDirectory}|#{@config.fontDirectory})/")
+    @_pathPattern ||= new RegExp("^/(assets|#{@config.stylesheetDirectory}|#{@config.javascriptDirectory}|#{@config.imageDirectory}|#{@config.fontDirectory})/")
     
 module.exports = Lookup

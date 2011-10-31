@@ -9,7 +9,7 @@ class Metro.Model
   # 
   #     @store: new Metro.Store.Memory
   @store: ->
-    @_store ?= new Metro.Store.Memory
+    @_store ||= new Metro.Store.Memory
   
   constructor: (attrs = {}) ->
     attributes  = {}

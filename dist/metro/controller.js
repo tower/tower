@@ -16,10 +16,7 @@
       return this.initialize();
     };
     Controller.helper = function(object) {
-      var _ref;
-      if ((_ref = this._helpers) == null) {
-        this._helpers = [];
-      }
+      this._helpers || (this._helpers = []);
       return this._helpers.push(object);
     };
     Controller.layout = function(layout) {
@@ -66,22 +63,17 @@
       Rendering.__super__.constructor.apply(this, arguments);
     }
     Rendering.prototype.render = function() {
-      var args, callback, finish, self, view, _base, _ref;
+      var args, callback, finish, self, view, _base;
       args = Array.prototype.slice.call(arguments, 0, arguments.length);
       if (args.length >= 2 && typeof args[args.length - 1] === "function") {
         callback = args.pop();
       }
       view = new Metro.View(this);
-      if ((_ref = (_base = this.headers)["Content-Type"]) == null) {
-        _base["Content-Type"] = this.contentType;
-      }
+      (_base = this.headers)["Content-Type"] || (_base["Content-Type"] = this.contentType);
       self = this;
       args.push(finish = function(error, body) {
-        var _ref2;
         self.body = body;
-        if ((_ref2 = self.body) == null) {
-          self.body = error.toString();
-        }
+        self.body || (self.body = error.toString());
         if (callback) {
           callback(error, body);
         }
@@ -105,10 +97,7 @@
   })();
   Metro.Controller.Responding = (function() {
     Responding.respondTo = function() {
-      var _ref;
-      if ((_ref = this._respondTo) == null) {
-        this._respondTo = [];
-      }
+      this._respondTo || (this._respondTo = []);
       return this._respondTo = this._respondTo.concat(arguments);
     };
     Responding.prototype.respondWith = function() {

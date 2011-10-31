@@ -1,9 +1,9 @@
 class Metro.Application
   constructor: ->
-    @server ?= require('connect')()
+    @server ||= require('connect')()
 
   @instance: -> 
-    @_instance ?= new Metro.Application
+    @_instance ||= new Metro.Application
   
   @initialize: ->  
     Metro.Asset.initialize() if Metro.Asset

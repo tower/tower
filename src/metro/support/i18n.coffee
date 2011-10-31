@@ -31,6 +31,6 @@ class Metro.Support.I18n
   @store: {}
     
   @interpolator: ->
-    @_interpolator ?= new (require('shift').Mustache)
+    @_interpolator ||= new (require('shift').Mustache)
     
 module.exports = Metro.Support.I18n

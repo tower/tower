@@ -15,7 +15,7 @@ class Metro.Support.Path
   @digest: (path, data) ->
     stat = @stat(path)
     return unless stat?
-    data ?= @read(path)
+    data ||= @read(path)
     return unless data?
     @digestHash().update(data).digest("hex")
     

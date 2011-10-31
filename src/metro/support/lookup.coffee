@@ -108,7 +108,7 @@ class Metro.Support.Lookup
     @_entries[path]
     
   pattern: (source) ->
-    @patterns[source] ?= @buildPattern(source)
+    @patterns[source] ||= @buildPattern(source)
   
   # Returns a `Regexp` that matches the allowed extensions.
   #

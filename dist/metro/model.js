@@ -8,8 +8,7 @@
       return delete this._store;
     };
     Model.store = function() {
-      var _ref;
-      return (_ref = this._store) != null ? _ref : this._store = new Metro.Store.Memory;
+      return this._store || (this._store = new Metro.Store.Memory);
     };
     function Model(attrs) {
       var attributes, definition, definitions, key, name, value;
@@ -184,8 +183,7 @@
       return reflection;
     };
     Associations.reflections = function() {
-      var _ref;
-      return (_ref = this._reflections) != null ? _ref : this._reflections = {};
+      return this._reflections || (this._reflections = {});
     };
     Associations.prototype._getHasManyAssociation = function(name) {
       return this.constructor.reflections()[name].association(this.id);
@@ -305,8 +303,7 @@
       return this;
     };
     Attributes.keys = function() {
-      var _ref;
-      return (_ref = this._keys) != null ? _ref : this._keys = {};
+      return this._keys || (this._keys = {});
     };
     Attributes.attributeDefinition = function(name) {
       var definition;
@@ -328,8 +325,8 @@
       return attributes;
     };
     Attributes.prototype.getAttribute = function(name) {
-      var _base, _ref;
-      return (_ref = (_base = this.attributes)[name]) != null ? _ref : _base[name] = this.constructor.keys()[name].defaultValue(this);
+      var _base;
+      return (_base = this.attributes)[name] || (_base[name] = this.constructor.keys()[name].defaultValue(this));
     };
     if (!Attributes.hasOwnProperty("get")) {
       Attributes.alias("get", "getAttribute");
@@ -355,13 +352,12 @@
       return false;
     };
     Dirty.prototype.changes = function() {
-      var _ref;
-      return (_ref = this._changes) != null ? _ref : this._changes = {};
+      return this._changes || (this._changes = {});
     };
     Dirty.prototype._trackChangedAttribute = function(attribute, value) {
-      var array, beforeValue, _base, _ref, _ref2;
-      array = (_ref = (_base = this.changes)[attribute]) != null ? _ref : _base[attribute] = [];
-      beforeValue = (_ref2 = array[0]) != null ? _ref2 : array[0] = this.attributes[attribute];
+      var array, beforeValue, _base;
+      array = (_base = this.changes)[attribute] || (_base[attribute] = []);
+      beforeValue = array[0] || (array[0] = this.attributes[attribute]);
       array[1] = value;
       if (array[0] === array[1]) {
         array = null;
@@ -637,8 +633,7 @@
       return _results;
     };
     Validations.validators = function() {
-      var _ref;
-      return (_ref = this._validators) != null ? _ref : this._validators = [];
+      return this._validators || (this._validators = []);
     };
     Validations.prototype.validate = function() {
       var self, success, validator, validators, _i, _len;
@@ -655,8 +650,7 @@
       return success;
     };
     Validations.prototype.errors = function() {
-      var _ref;
-      return (_ref = this._errors) != null ? _ref : this._errors = [];
+      return this._errors || (this._errors = []);
     };
     return Validations;
   })();

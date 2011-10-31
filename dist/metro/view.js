@@ -95,7 +95,7 @@
   Metro.View.Rendering = (function() {
     function Rendering() {}
     Rendering.prototype.render = function() {
-      var args, callback, options, self, template, _ref;
+      var args, callback, options, self, template;
       args = Array.prototype.slice.call(arguments, 0, arguments.length);
       if (!(args.length >= 2 && typeof args[args.length - 1] === "function")) {
         throw new Error("You must pass a callback to the render method");
@@ -114,13 +114,9 @@
         options = args[1];
         options.template = template;
       }
-      if (options == null) {
-        options = {};
-      }
+      options || (options = {});
       options.locals = this.context(options);
-      if ((_ref = options.type) == null) {
-        options.type = Metro.View.engine;
-      }
+      options.type || (options.type = Metro.View.engine);
       options.engine = Metro.engine(options.type);
       if (options.hasOwnProperty("layout") && options.layout === false) {
         options.layout = false;

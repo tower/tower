@@ -17,9 +17,9 @@ class Metro.View.Rendering
       options   = args[1]
       options.template = template
     
-    options  ?= {}
+    options  ||= {}
     options.locals = @context(options)
-    options.type ?= Metro.View.engine
+    options.type ||= Metro.View.engine
     options.engine = Metro.engine(options.type)
     if options.hasOwnProperty("layout") && options.layout == false
       options.layout = false

@@ -9,9 +9,9 @@ class Metro.Model.Callbacks
   @defineCallbacks: ->
     callbacks = Metro.Support.Array.extractArgsAndOptions(arguments)
     options   = callbacks.pop()
-    options.terminator ?= "result == false"
-    options.scope ?= ["kind", "name"]
-    options.only ?= ["before", "around", "after"]
+    options.terminator ||= "result == false"
+    options.scope ||= ["kind", "name"]
+    options.only ||= ["before", "around", "after"]
     types = options.only.map (type) -> Metro.Support.String.camelize("_#{type}")
     
     for callback in callbacks

@@ -68,10 +68,10 @@ class Metro.Asset
     @config[key] = value for key, value of options
   
   @cssCompressor: ->
-    @_cssCompressor ?= new (require('shift').YuiCompressor)
+    @_cssCompressor ||= new (require('shift').YuiCompressor)
   
   @jsCompressor: ->
-    @_jsCompressor ?= new (require('shift').UglifyJS)
+    @_jsCompressor ||= new (require('shift').UglifyJS)
   
   constructor: (path, extension) ->
     @path        = @constructor.expandPath(path)

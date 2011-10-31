@@ -26,7 +26,7 @@ class Compiler
     if typeof(options) == "function"
       callback  = options
       options   = {}
-    options ?= {}
+    options ||= {}
     
     result      = ""
     terminator  = "\n"
@@ -103,7 +103,7 @@ class Compiler
     parts
     
   compile: (data, options, callback) ->
-    options ?= {}
+    options ||= {}
     self    = @
     iterate = (engine, next) ->
       engine.render data, _.extend({}, options), (error, result) ->

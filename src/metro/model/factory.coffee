@@ -1,12 +1,12 @@
 class Metro.Model.Factory
   @store: ->
-    @_store ?= new Metro.Store.Memory
+    @_store ||= new Metro.Store.Memory
   
   @define: (name, options, callback) ->
     if typeof options == "function"
       callback = options
       options  = {}
-    options ?= {}
+    options ||= {}
     
     @store()[name] = [options, callback]
     

@@ -8,13 +8,13 @@ class Metro.Controller.Rendering
       callback = args.pop()
     
     view    = new Metro.View(@)
-    @headers["Content-Type"] ?= @contentType
+    @headers["Content-Type"] ||= @contentType
     
     self = @
     
     args.push finish = (error, body) ->
       self.body = body
-      self.body ?= error.toString()
+      self.body ||= error.toString()
       callback(error, body) if callback
       self.callback()
     

@@ -2,7 +2,7 @@ class Metro.Route
   @include Metro.Model.Scopes
   
   @store: ->
-    @_store ?= new Metro.Store.Memory
+    @_store ||= new Metro.Store.Memory
   
   @create: (route) ->
     @store().create(route)
@@ -27,7 +27,7 @@ class Metro.Route
     @
   
   constructor: (options) ->
-    options    ?= options
+    options    ||= options
     @path       = options.path
     @name       = options.name
     @method     = options.method
@@ -59,7 +59,7 @@ class Metro.Route
         optional: !!optional
         splat:    splat
       
-      slash   ?= ""
+      slash   ||= ""
       result = ""
       if !optional || !splat
         result += slash

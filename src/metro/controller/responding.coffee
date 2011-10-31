@@ -4,7 +4,7 @@ class Metro.Controller.Responding
   #@include Metro.Support.Concern
     
   @respondTo: ->
-    @_respondTo ?= []
+    @_respondTo ||= []
     @_respondTo = @_respondTo.concat(arguments)
     
   respondWith: ->
