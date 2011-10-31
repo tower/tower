@@ -1,4 +1,4 @@
-class Responding
+class Metro.Controller.Responding
   #constructor: -> super
   
   #@include Metro.Support.Concern
@@ -53,4 +53,4 @@ class Responding
     @params       = {}
     @query        = {}
     
-module.exports = Responding
+module.exports = Metro.Controller.Responding

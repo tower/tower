@@ -1,16 +1,6 @@
 class Metro.Controller
   constructor: -> super
   
-  @Flash:         require './controller/flash'
-  @Redirecting:   require './controller/redirecting'
-  @Rendering:     require './controller/rendering'
-  @Responding:    require './controller/responding'
-  
-  @include @Flash
-  @include @Redirecting
-  @include @Rendering
-  @include @Responding
-  
   @initialize: ->
     Metro.Support.Dependencies.load("#{Metro.root}/app/controllers")
     
@@ -44,5 +34,15 @@ class Metro.Controller
     @request  = null
     @response = null
     @headers  = null
-  
+
+require './controller/flash'
+require './controller/redirecting'
+require './controller/rendering'
+require './controller/responding'
+
+Metro.Controller.include Metro.Controller.Flash
+Metro.Controller.include Metro.Controller.Redirecting
+Metro.Controller.include Metro.Controller.Rendering
+Metro.Controller.include Metro.Controller.Responding
+    
 module.exports = Metro.Controller

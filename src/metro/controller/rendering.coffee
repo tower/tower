@@ -1,4 +1,4 @@
-class Rendering
+class Metro.Controller.Rendering
   constructor: -> super
   
   render: ->
@@ -32,5 +32,4 @@ class Rendering
   _renderTemplate: (options) ->
     @template.render(viewContext, options)
 
-module.exports = Rendering
-    
+module.exports = Metro.Controller.Rendering

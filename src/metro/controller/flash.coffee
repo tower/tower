@@ -1,4 +1,4 @@
-class Flash
+class Metro.Controller.Flash
   constructor: -> super
   
-module.exports = Flash
+module.exports = Metro.Controller.Flash

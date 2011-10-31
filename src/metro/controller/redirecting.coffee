@@ -1,4 +1,4 @@
-class Redirecting
+class Metro.Controller.Redirecting
   redirectTo: ->
     
-module.exports = Redirecting
+module.exports = Metro.Controller.Redirecting
