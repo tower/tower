@@ -265,6 +265,35 @@ Metro.Asset.configure
   prefix:                 "assets"
 ```
 
+## Internationalization
+
+The default interpolator is mustache.  You can swap that out with any template engine you want.
+
+``` coffeescript
+en:
+  hello: "world"
+  forms:
+    titles:
+      signup: "Signup"
+  pages:
+    titles:
+      home: "Welcome to {{site}}"
+  posts:
+    comments:
+      none: "No comments"
+      one: "1 comment"
+      other: "{{count}} comments"
+  messages:
+    past:
+      none: "You never had any messages"
+      one: "You had 1 message"
+      other: "You had {{count}} messages"
+    present:
+      one: "You have 1 message"
+    future:
+      one: "You might have 1 message"
+```
+
 ## Development and Tests
 
 ``` bash
