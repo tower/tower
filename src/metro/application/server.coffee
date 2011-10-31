@@ -8,7 +8,6 @@ class Metro.Application.Server
     @server.use Metro.Middleware.Assets.middleware
     @server.use connect.bodyParser()
     @server.use Metro.Middleware.Dependencies.middleware
-    @server.use Metro.Middleware.Cookies.middleware
     @server.use Metro.Middleware.Router.middleware
     @server
     
