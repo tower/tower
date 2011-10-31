@@ -1,3 +1,6 @@
+###
+* Metro.Route.DSL
+###
 class Metro.Route.DSL
   match: ->
     @scope ?= {}
@@ -28,42 +31,50 @@ class Metro.Route.DSL
     options.controller = controller
     @scope(options, block)
   
-  # Scopes routes to a specific namespace. For example:
-  #
-  #   namespace "admin", ->
-  #     resources "posts"
-  #
-  # This generates the following routes:
-  #
-  #       adminPosts GET    /admin/posts(.:format)          admin/posts#index
-  #       adminPosts POST   /admin/posts(.:format)          admin/posts#create
-  #    newAdminPost GET    /admin/posts/new(.:format)      admin/posts#new
-  #   editAdminPost GET    /admin/posts/:id/edit(.:format) admin/posts#edit
-  #        adminPost GET    /admin/posts/:id(.:format)      admin/posts#show
-  #        adminPost PUT    /admin/posts/:id(.:format)      admin/posts#update
-  #        adminPost DELETE /admin/posts/:id(.:format)      admin/posts#destroy
-  #
-  # === Options
-  #
-  # The +:path+, +:as+, +:module+, +:shallowPath+ and +:shallowPrefix+
-  # options all default to the name of the namespace.
-  #
-  # For options, see <tt>Base#match</tt>. For +:shallowPath+ option, see
-  # <tt>Resources#resources</tt>.
-  #
-  # === Examples
-  #
-  #   # accessible through /sekret/posts rather than /admin/posts
-  #   namespace "admin", path: "sekret", ->
-  #     resources "posts"
-  #
-  #   # maps to <tt>Sekret::PostsController</tt> rather than <tt>Admin::PostsController</tt>
-  #   namespace "admin", module: "sekret", ->
-  #     resources "posts"
-  #
-  #   # generates +sekretPostsPath+ rather than +adminPostsPath+
-  #   namespace "admin", as: "sekret", ->
-  #     resources "posts"
+  ###
+  * Scopes routes to a specific namespace. For example:
+  * 
+  * ```coffeescript
+  * namespace "admin", ->
+  *   resources "posts"
+  * ```
+  * 
+  * This generates the following routes:
+  * 
+  *       adminPosts GET    /admin/posts(.:format)          admin/posts#index
+  *       adminPosts POST   /admin/posts(.:format)          admin/posts#create
+  *    newAdminPost GET    /admin/posts/new(.:format)      admin/posts#new
+  *   editAdminPost GET    /admin/posts/:id/edit(.:format) admin/posts#edit
+  *        adminPost GET    /admin/posts/:id(.:format)      admin/posts#show
+  *        adminPost PUT    /admin/posts/:id(.:format)      admin/posts#update
+  *        adminPost DELETE /admin/posts/:id(.:format)      admin/posts#destroy
+  * 
+  * ## Options
+  * 
+  * The +:path+, +:as+, +:module+, +:shallowPath+ and +:shallowPrefix+
+  * options all default to the name of the namespace.
+  * 
+  * For options, see <tt>Base#match</tt>. For +:shallowPath+ option, see
+  * <tt>Resources#resources</tt>.
+  * 
+  * ## Examples
+  * 
+  * ``` coffeescript
+  * # accessible through /sekret/posts rather than /admin/posts
+  * namespace "admin", path: "sekret", ->
+  *   resources "posts"
+  * 
+  * # maps to <tt>Sekret::PostsController</tt> rather than <tt>Admin::PostsController</tt>
+  * namespace "admin", module: "sekret", ->
+  *   resources "posts"
+  * 
+  * # generates +sekretPostsPath+ rather than +adminPostsPath+
+  * namespace "admin", as: "sekret", ->
+  *   resources "posts"
+  * ```
+  * 
+  * @param {String} path
+  ###
   namespace: (path, options, block) ->
     options = _.extend(path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
     @scope(options, block)

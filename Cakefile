@@ -45,7 +45,10 @@ task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
     throw err if err
     console.log stdout + stderr
   
-task 'docs', 'Build the docs'
+task 'docs', 'Build the docs', ->
+  exec './node_modules/dox/bin/dox < ./lib/metro/route/dsl.js', (err, stdout, stderr) ->
+    throw err if err
+    console.log stdout + stderr
 
 task 'site', 'Build site'
 
