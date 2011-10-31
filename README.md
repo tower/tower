@@ -197,6 +197,22 @@ Use any template framework for your views.  Includes [shift.js](http://github.co
 
 Soon will add form and table builders.
 
+## Web Sockets
+
+Web Sockets work just like actions in controllers, using socket.io.
+
+``` coffeescript
+class ConnectionsController
+  new: ->
+    @emit text: "Welcome!"
+  
+  create: ->
+    @broadcast user: params.id, text: params.text
+    
+  destroy: ->
+    @emit text: "Adios"
+```
+
 ## Middleware
 
 It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
