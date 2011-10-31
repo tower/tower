@@ -44,7 +44,7 @@ class Metro.Store.Memory
     result  = []
     records = @records
     
-    if Metro.Support.isPresent(query)
+    if Metro.Support.Object.isPresent(query)
       sort    = query._sort
       limit   = query._limit || Metro.Store.defaultLimit
       

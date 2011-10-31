@@ -1,4 +1,4 @@
-class Asset
+class Metro.Asset
   @Compiler:      require './asset/compiler'
   @Digest:        require './asset/digest'
   @Lookup:        require './asset/lookup'
@@ -80,4 +80,4 @@ class Asset
   compiler: ->
     @constructor.compiler()
   
-module.exports = Asset
+module.exports = Metro.Asset

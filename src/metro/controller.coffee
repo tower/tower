@@ -1,4 +1,4 @@
-class Controller
+class Metro.Controller
   constructor: -> super
   
   @Flash:         require './controller/flash'
@@ -45,4 +45,4 @@ class Controller
     @response = null
     @headers  = null
   
-module.exports = Controller
+module.exports = Metro.Controller

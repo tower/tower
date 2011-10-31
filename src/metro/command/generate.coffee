@@ -10,4 +10,4 @@ class Metro.Command.Generate
   
   run: ->
   
-module.exports = Generate
+module.exports = Metro.Command.Generate

@@ -6,5 +6,5 @@ require './middleware/cookies'
 require './middleware/static'
 require './middleware/query'
 require './middleware/assets'
-  
+
 module.exports = Metro.Middleware

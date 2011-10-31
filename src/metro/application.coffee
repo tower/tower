@@ -1,8 +1,4 @@
 class Metro.Application
-  @Server:        require './application/server'
-  
-  @include @Server
-  
   constructor: ->
     @server ?= require('connect')()
 
@@ -26,5 +22,9 @@ class Metro.Application
     #Metro.Asset.teardown() if Metro.Asset
     
     delete @_instance
+
+require './application/server'
+
+Metro.Application.include Metro.Application.Server
   
 module.exports = Metro.Application

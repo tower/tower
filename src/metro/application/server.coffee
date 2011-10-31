@@ -1,6 +1,6 @@
 connect = require('connect')
 
-class Server
+class Metro.Application.Server
   stack: ->
     @server.use connect.favicon(Metro.publicPath + "/favicon.ico")
     @server.use Metro.Middleware.Static.middleware
@@ -21,4 +21,4 @@ class Server
     Metro.Application.instance().stack()
     Metro.Application.instance().listen()
   
-module.exports = Server
+module.exports = Metro.Application.Server
