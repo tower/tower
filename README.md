@@ -109,6 +109,12 @@ Metro.Route.draw ->
   @match "/posts/:id",      to: "posts#destroy", via: "delete"
 ```
 
+Routes are really just models, `Metro.Route`.  You can add and remove and search them however you like:
+
+``` coffeescript
+Metro.Route.where(pattern: "=~": "/posts").first()
+```
+
 ## Models
 
 ``` coffeescript
@@ -126,6 +132,14 @@ class User
   
   @validates "firstName", presence: true
 ```
+
+Models have:
+
+- validations
+- named (and chainable) scopes
+- attributes
+- associations
+- callbacks
 
 ``` coffeescript
 User.where(firstName: "=~": "a").order(["firstName", "desc"]).all()
