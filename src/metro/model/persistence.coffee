@@ -16,7 +16,6 @@ class Metro.Model.Persistence
     
   save: (options) ->
     runCallbacks ->
-      
     
   update: (options) ->
     
@@ -28,9 +27,9 @@ class Metro.Model.Persistence
     
   updateAttributes: (attributes) ->
     
-  increment: (attribute, by = 1) ->
+  increment: (attribute, amount = 1) ->
     
-  decrement: (attribute, by = 1) ->
+  decrement: (attribute, amount = 1) ->
     
   reload: ->
     

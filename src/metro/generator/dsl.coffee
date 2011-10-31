@@ -1,4 +1,4 @@
-class DSL
+class Metro.Generator.DSL
   injectIntoFile: (file, options, callback) ->
     
   readFile: (file) ->
@@ -10,3 +10,5 @@ class DSL
   createDirectory: (name) ->
     
   removeDirectory: (name) ->
+
+module.exports = Metro.Generator.DSL

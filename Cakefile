@@ -1,36 +1,40 @@
-fs     = require('fs')
-watch  = require('./node_modules/watch')
-Metro  = require('./lib/metro')
-_      = require('./node_modules/underscore')
+fs      = require('fs')
+#Metro  = require('./lib/metro')
+_       = require('./node_modules/underscore')
+findit  = require('./node_modules/findit')
+_path   = require 'path'
+async   = require './node_modules/async'
+Shift   = require './node_modules/shift'
+engine  = new Shift.CoffeeScript
 
-Metro.configure ->
-  @assets.path            = "./spec/tmp/assets"
-  @assets.css_compressor  = "yui"
-  @assets.js_compressor   = "uglifier"
-  @assets.js              = ["application.js"]
-  @assets.js_paths        = ["./spec/fixtures"]
+task 'compile-client', ->
+  paths   = findit.sync('./src')
+  result  = ''
   
-task 'watch', ->
-  watch.watchTree './spec/fixtures', (f, curr, prev) ->
-    if typeof f == "object" && prev == null && curr == null
-      #Finished walking the tree
-      console.log "walked"
-      @
-    else if prev == null
-      # f is a new file
-      console.log "new"
-      @
-    else if curr.nlink == 0
-      # f was removed
-      console.log "removed"
-      @
+  iterate = (path, next) ->
+    if path.match(/\.coffee$/)
+      fs.readFile path, 'utf-8', (error, data) ->
+        if !data || data.match(/Bud1/)
+          console.log path
+        else
+          result += data + "\n\n\n"
+        next()
     else
-      # f was changed
-      console.log "changed"
-      Metro.Asset.compile()
-      @
-    # console.log curr
-    
+      next()
+
+  async.forEachSeries paths, iterate, ->
+    fs.writeFile './dist/metro.coffee', result
+    engine.render result, (error, result) ->
+      console.log error
+      fs.writeFile './dist/metro.js', result
+      unless error
+        compressor = new Shift.UglifyJS
+        fs.writeFile './dist/metro.min.js', compressor.render(result)
+        #compressor.render result, (error, result) ->
+        #  console.log error
+        #  fs.writeFile './dist/metro.min.js', result
+
+###
 task 'compile', 'Builds Metro for the browser, removing the server-side specific code, and injecting required code into one file!', ->
   burrito = require('burrito')
   find    = (path, callback) ->
@@ -81,3 +85,4 @@ task 'compile_test', ->
     if (node.name === 'call') node.wrap('LANCE')
   
   require('sys').puts(output)
+###

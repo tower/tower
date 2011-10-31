@@ -1,2 +1,5 @@
-module.exports = Metro.Generator =
-  Application:  require './generator/application'
+Metro.Generator = {}
+
+require './generator/application'
+  
+module.exports = Metro.Generator
