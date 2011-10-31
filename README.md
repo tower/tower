@@ -324,9 +324,10 @@ en:
       one: "You might have 1 message"
 ```
 
-## Development and Tests
+## Test, Development, Minify
 
 ``` bash
-./node_modules/coffee-script/bin/coffee -o lib -w src
-./node_modules/jasmine-node/bin/jasmine-node --coffee ./spec
+cake coffee
+cake spec
+cake minify
 ```

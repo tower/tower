@@ -1,4 +1,4 @@
-var Application, Asset, Cassandra, Client, Compiler, Controller, Cookies, Digest, Field, Flash, Form, Helpers, History, Http, IE, Input, Link, Local, Lookup, Metro, Neo4j, PostgreSQL, Redirecting, Redis, Rendering, Responding, Server, Session, async, connect, crypto, en, fs, key, lingo, mime, moduleKeywords, qs, url, util, value, _, _path, _ref, _url;
+var Controller, Field, Flash, Form, Helpers, IE, Input, Link, Redirecting, Rendering, Responding, en, fs, key, lingo, moduleKeywords, value, _, _ref;
 var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
   for (var i = 0, l = this.length; i < l; i++) {
     if (this[i] === item) return i;
@@ -12,540 +12,17 @@ var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || func
   child.__super__ = parent.prototype;
   return child;
 };
-Client = (function() {
-  function Client() {}
-  Client.prototype.request = function(method, url, options) {
-    if (options == null) {
-      options = {};
-    }
-  };
-  return Client;
-})();
-History = (function() {
-  function History() {}
-  return History;
-})();
-module.exports = History;
-connect = require('connect');
-Server = (function() {
-  function Server() {}
-  Server.prototype.stack = function() {
-    this.server.use(connect.favicon(Metro.publicPath + "/favicon.ico"));
-    this.server.use(Metro.Middleware.Static.middleware);
-    this.server.use(Metro.Middleware.Query.middleware);
-    this.server.use(Metro.Middleware.Assets.middleware);
-    this.server.use(connect.bodyParser());
-    this.server.use(Metro.Middleware.Dependencies.middleware);
-    this.server.use(Metro.Middleware.Cookies.middleware);
-    this.server.use(Metro.Middleware.Router.middleware);
-    return this.server;
-  };
-  Server.prototype.listen = function() {
-    if (Metro.env !== "test") {
-      this.server.listen(Metro.port);
-      return console.log("Metro server listening on port " + Metro.port);
-    }
-  };
-  Server.run = function() {
-    Metro.Application.instance().stack();
-    return Metro.Application.instance().listen();
-  };
-  return Server;
-})();
-module.exports = Server;
-Application = (function() {
-  Application.Server = require('./application/server');
-  Application.include(Application.Server);
-  function Application() {
-    var _ref;
-    if ((_ref = this.server) == null) {
-      this.server = require('connect')();
-    }
-  }
-  Application.instance = function() {
-    var _ref;
-    return (_ref = this._instance) != null ? _ref : this._instance = new Metro.Application;
-  };
-  Application.initialize = function() {
-    if (Metro.Asset) {
-      Metro.Asset.initialize();
-    }
-    Metro.Route.initialize();
-    Metro.Model.initialize();
-    Metro.View.initialize();
-    Metro.Controller.initialize();
-    require("" + Metro.root + "/config/application");
-    return this.instance();
-  };
-  Application.teardown = function() {
-    Metro.Route.teardown();
-    Metro.Model.teardown();
-    Metro.View.teardown();
-    Metro.Controller.teardown();
-    return delete this._instance;
-  };
-  return Application;
-})();
-module.exports = Application;
-async = require('async');
-_ = require('underscore');
-Compiler = (function() {
-  function Compiler() {}
-  Compiler.HEADER_PATTERN = /^(\/\*\s*(?:(?!\*\/).|\n)*\*\/)|(?:\#\#\#\s*(?:(?!\#\#\#).|\n)*\#\#\#)|(?:\/\/\s*.*\s*?)+|(?:#\s*.*\s*?)/g;
-  Compiler.DIRECTIVE_PATTERN = /(?:\/\/|#| *)\s*=\s*(require)\s*['"]?([^'"]+)['"]?[\s]*?\n?/;
-  Compiler.prototype.render = function(options, callback) {
-    var result, self, terminator;
-    if (typeof options === "function") {
-      callback = options;
-      options = {};
-    }
-    if (options == null) {
-      options = {};
-    }
-    result = "";
-    terminator = "\n";
-    self = this;
-    return this.parse(options, function(parts) {
-      var part, _i, _len;
-      for (_i = 0, _len = parts.length; _i < _len; _i++) {
-        part = parts[_i];
-        result += part.content;
-      }
-      result += terminator;
-      return callback.call(self, result);
-    });
-  };
-  Compiler.prototype.parse = function(options, callback) {
-    var extension, result, self, terminator;
-    if (!(callback && typeof callback === "function")) {
-      Metro.raise("errors.missingCallback", "Asset#parse");
-    }
-    self = this;
-    extension = this.extension;
-    result = [];
-    terminator = "\n";
-    return this.parts(options, function(parts) {
-      var iterate;
-      iterate = function(part, next) {
-        var child;
-        if (part.hasOwnProperty("content")) {
-          return self.compile(part.content, _.extend({}, options), function(data) {
-            part.content = data;
-            result.push(part);
-            return next();
-          });
-        } else {
-          child = Metro.Asset.find(part.path, {
-            extension: extension
-          });
-          if (child) {
-            return child.render(_.extend({}, options), function(data) {
-              part.content = data;
-              result.push(part);
-              return next();
-            });
-          } else {
-            console.log("Dependency '" + part.path + "' not found in " + self.path);
-            return next();
-          }
-        }
-      };
-      return async.forEachSeries(parts, iterate, function() {
-        return callback.call(self, result);
-      });
-    });
-  };
-  Compiler.prototype.parts = function(options, callback) {
-    var data, extension, requireDirectives, self;
-    if (!this.path) {
-      Metro.raise("errors.missingOption", "path", "Asset#parse");
-    }
-    self = this;
-    extension = this.extension;
-    requireDirectives = options.hasOwnProperty("require") ? options.require : true;
-    data = this.read();
-    if (requireDirectives) {
-      return callback.call(self, self.parseDirectives(data, self.path));
-    } else {
-      return callback.call(self, [
-        {
-          content: data,
-          path: self.path
-        }
-      ]);
-    }
-  };
-  Compiler.prototype.parseDirectives = function(string, path) {
-    var directive, directivePattern, directivesString, last, line, lines, parts, self, _i, _len;
-    self = this;
-    directivePattern = this.constructor.DIRECTIVE_PATTERN;
-    lines = string.match(this.constructor.HEADER_PATTERN);
-    directivesString = '';
-    parts = [];
-    if (lines && lines.length > 0) {
-      last = lines[lines.length - 1];
-      for (_i = 0, _len = lines.length; _i < _len; _i++) {
-        line = lines[_i];
-        directive = line.match(directivePattern);
-        if (directive) {
-          parts.push({
-            path: directive[2]
-          });
-        }
-      }
-    }
-    parts.push({
-      path: path,
-      content: string
-    });
-    return parts;
-  };
-  Compiler.prototype.compile = function(data, options, callback) {
-    var iterate, self;
-    if (options == null) {
-      options = {};
-    }
-    self = this;
-    iterate = function(engine, next) {
-      return engine.render(data, _.extend({}, options), function(error, result) {
-        data = result;
-        return next();
-      });
-    };
-    return async.forEachSeries(this.engines(), iterate, function() {
-      return callback.call(self, data);
-    });
-  };
-  Compiler.prototype.paths = function(options, callback) {
-    var self;
-    self = this;
-    return this.parts(options, function(parts) {
-      var part, paths, _i, _len;
-      paths = [];
-      for (_i = 0, _len = parts.length; _i < _len; _i++) {
-        part = parts[_i];
-        paths.push(part.path);
-      }
-      return callback.call(self, paths);
-    });
-  };
-  Compiler.prototype.engines = function() {
-    var engine, extension, extensions, result, _i, _len;
-    if (!this._engines) {
-      extensions = this.extensions();
-      result = [];
-      for (_i = 0, _len = extensions.length; _i < _len; _i++) {
-        extension = extensions[_i];
-        engine = Metro.engine(extension.slice(1));
-        if (engine) {
-          result.push(engine);
-        }
-      }
-      this._engines = result;
-    }
-    return this._engines;
-  };
-  return Compiler;
-})();
-module.exports = Compiler;
-Digest = (function() {
-  function Digest() {}
-  Digest.include(Metro.Support.Concern);
-  Digest.digestPath = function(path) {
-    return this.pathWithFingerprint(path, this.digest(path));
-  };
-  Digest.pathFingerprint = function(path) {
-    var result;
-    result = Metro.Support.Path.basename(path).match(/-([0-9a-f]{32})\.?/);
-    if (result != null) {
-      return result[1];
-    } else {
-      return null;
-    }
-  };
-  Digest.pathWithFingerprint = function(path, digest) {
-    var oldDigest;
-    if (oldDigest = this.pathFingerprint(path)) {
-      return path.replace(oldDigest, digest);
-    } else {
-      return path.replace(/\.(\w+)$/, "-" + digest + ".\$1");
-    }
-  };
-  Digest.prototype.digestPath = function() {
-    return this.constructor.digestPath(this.path);
-  };
-  Digest.prototype.pathFingerprint = function() {
-    return this.constructor.pathFingerprint(this.path);
-  };
-  Digest.prototype.pathWithFingerprint = function(digest) {
-    return this.constructor.pathWithFingerprint(this.path, digest);
-  };
-  return Digest;
-})();
-module.exports = Digest;
-Lookup = (function() {
-  function Lookup() {}
-  Lookup.digests = function() {
-    var _ref;
-    return (_ref = this._digests) != null ? _ref : this._digests = {};
-  };
-  Lookup.stylesheetLookup = function() {
-    var _ref;
-    return (_ref = this._stylesheetLookup) != null ? _ref : this._stylesheetLookup = this._createLookup(this.config.stylesheetDirectory, this.config.stylesheetExtensions, this.config.stylesheetAliases);
-  };
-  Lookup.javascriptLookup = function() {
-    var _ref;
-    return (_ref = this._javascriptLookup) != null ? _ref : this._javascriptLookup = this._createLookup(this.config.javascriptDirectory, this.config.javascriptExtensions, this.config.javascriptAliases);
-  };
-  Lookup.imageLookup = function() {
-    var _ref;
-    return (_ref = this._imageLookup) != null ? _ref : this._imageLookup = this._createLookup(this.config.imageDirectory, this.config.imageExtensions, this.config.imageAliases);
-  };
-  Lookup.fontLookup = function() {
-    var _ref;
-    return (_ref = this._fontLookup) != null ? _ref : this._fontLookup = this._createLookup(this.config.fontDirectory, this.config.fontExtensions, this.config.fontAliases);
-  };
-  Lookup._createLookup = function(directory, extensions, aliases) {
-    var path, paths, root, _i, _len, _ref;
-    paths = [];
-    _ref = this.config.loadPaths;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      path = _ref[_i];
-      path = this.join(path, directory);
-      paths.push(path);
-      paths = paths.concat(this.directories(path));
-    }
-    root = Metro.root;
-    return new Metro.Support.Lookup({
-      root: root,
-      paths: paths,
-      extensions: extensions,
-      aliases: aliases
-    });
-  };
-  Lookup.pathsFor = function(extension) {
-    return this.lookupFor(extension).paths;
-  };
-  Lookup.lookupFor = function(extension) {
-    switch (extension) {
-      case ".css":
-        return this.stylesheetLookup();
-      case ".js":
-        return this.javascriptLookup();
-      default:
-        return [];
-    }
-  };
-  Lookup.digestFor = function(source) {
-    return this.digests[source] || source;
-  };
-  Lookup.computePublicPath = function(source, options) {
-    var extension;
-    if (options == null) {
-      options = {};
-    }
-    if (this.isUrl(source)) {
-      return source;
-    }
-    extension = options.extension;
-    if (extension) {
-      source = this.normalizeExtension(source, extension);
-    }
-    source = this.normalizeAssetPath(source, options);
-    source = this.normalizeRelativeUrlRoot(source, this.relativeUrlRoot);
-    source = this.normalizeHostAndProtocol(source, options.protocol);
-    return source;
-  };
-  Lookup.computeAssetHost = function() {
-    if (typeof this.config.host === "function") {
-      return this.config.host.call(this);
-    } else {
-      return this.config.host;
-    }
-  };
-  Lookup.normalizeExtension = function(source, extension) {
-    return this.basename(source, extension) + extension;
-  };
-  Lookup.normalizeAssetPath = function(source, options) {
-    if (options == null) {
-      options = {};
-    }
-    if (this.isAbsolute(source)) {
-      return source;
-    } else {
-      source = this.join(options.directory, source);
-      if (options.digest !== false) {
-        source = this.digestFor(source);
-      }
-      if (!source.match(/^\//)) {
-        source = "/" + source;
-      }
-      return source;
-    }
-  };
-  Lookup.normalizeRelativeUrlRoot = function(source, relativeUrlRoot) {
-    if (relativeUrlRoot && !source.match(new RegExp("^" + relativeUrlRoot + "/"))) {
-      return "" + relativeUrlRoot + source;
-    } else {
-      return source;
-    }
-  };
-  Lookup.normalizeHostAndProtocol = function(source, protocol) {
-    var host;
-    host = this.computeAssetHost(source);
-    if (host) {
-      return "" + host + source;
-    } else {
-      return source;
-    }
-  };
-  Lookup.find = function(source, options) {
-    var paths;
-    if (options == null) {
-      options = {};
-    }
-    paths = this.lookup(source, options);
-    if (!(paths && paths.length > 0)) {
-      Metro.raise("errors.asset.notFound", source, paths);
-    }
-    return new Metro.Asset(paths[0], options.extension);
-  };
-  Lookup.lookup = function(source, options) {
-    var lookup, pattern, _ref;
-    if (options == null) {
-      options = {};
-    }
-    source = this.normalizeSource(source);
-    if ((_ref = options.extension) == null) {
-      options.extension = this.extname(source);
-    }
-    if (options.extension === "") {
-      Metro.raise("errors.missingOption", "extension", "Asset#find");
-    }
-    pattern = "(?:" + Metro.Support.RegExp.escape(options.extension) + ")?$";
-    source = source.replace(new RegExp(pattern), options.extension);
-    lookup = this.lookupFor(options.extension);
-    if (lookup) {
-      return lookup.find(source);
-    } else {
-      return [];
-    }
-  };
-  Lookup.match = function(path) {
-    return !!path.match(this.pathPattern());
-  };
-  Lookup.normalizeSource = function(source) {
-    return source.replace(this.pathPattern(), "");
-  };
-  Lookup.pathPattern = function() {
-    var _ref;
-    return (_ref = this._pathPattern) != null ? _ref : this._pathPattern = new RegExp("^/(assets|" + this.config.stylesheetDirectory + "|" + this.config.javascriptDirectory + "|" + this.config.imageDirectory + "|" + this.config.fontDirectory + ")/");
-  };
-  return Lookup;
-})();
-module.exports = Lookup;
-Asset = (function() {
-  Asset.Compiler = require('./asset/compiler');
-  Asset.Digest = require('./asset/digest');
-  Asset.Lookup = require('./asset/lookup');
-  Asset.include(Metro.Support.Path);
-  Asset.include(Asset.Digest);
-  Asset.include(Asset.Lookup);
-  Asset.include(Asset.Compiler);
-  Asset.initialize = function() {
-    return this.config = {
-      publicPath: "" + Metro.root + "/public",
-      loadPaths: ["" + Metro.root + "/app/assets", "" + Metro.root + "/lib/assets", "" + Metro.root + "/vendor/assets"],
-      stylesheetDirectory: "stylesheets",
-      stylesheetExtensions: ["css", "styl", "scss", "less"],
-      stylesheetAliases: {
-        css: ["styl", "less", "scss", "sass"]
-      },
-      javascriptDirectory: "javascripts",
-      javascriptExtensions: ["js", "coffee", "ejs"],
-      javascriptAliases: {
-        js: ["coffee", "coffeescript"],
-        coffee: ["coffeescript"]
-      },
-      imageDirectory: "images",
-      imageExtensions: ["png", "jpg", "gif"],
-      imageAliases: {
-        jpg: ["jpeg"]
-      },
-      fontDirectory: "fonts",
-      fontExtensions: ["eot", "svg", "tff", "woff"],
-      fontAliases: {},
-      host: null,
-      relativeRootUrl: null,
-      precompile: [],
-      jsCompressor: null,
-      cssCompressor: null,
-      enabled: true,
-      manifest: "/public/assets",
-      compile: true,
-      prefix: "assets"
-    };
-  };
-  Asset.teardown = function() {
-    delete this._javascriptLookup;
-    delete this._stylesheetLookup;
-    delete this._imageLookup;
-    delete this._fontLookup;
-    delete this._pathPattern;
-    delete this._cssCompressor;
-    delete this._jsCompressor;
-    delete this._parser;
-    delete this._compiler;
-    return delete this._digests;
-  };
-  Asset.configure = function(options) {
-    var key, value, _results;
-    _results = [];
-    for (key in options) {
-      value = options[key];
-      _results.push(this.config[key] = value);
-    }
-    return _results;
-  };
-  Asset.cssCompressor = function() {
-    var _ref;
-    return (_ref = this._cssCompressor) != null ? _ref : this._cssCompressor = new (require('shift').YuiCompressor);
-  };
-  Asset.jsCompressor = function() {
-    var _ref;
-    return (_ref = this._jsCompressor) != null ? _ref : this._jsCompressor = new (require('shift').UglifyJS);
-  };
-  function Asset(path, extension) {
-    this.path = this.constructor.expandPath(path);
-    this.extension = extension || this.extensions()[0];
-  }
-  Asset.prototype.compiler = function() {
-    return this.constructor.compiler();
-  };
-  return Asset;
-})();
-module.exports = Asset;
-Server = (function() {
-  function Server() {}
-  return Server;
-})();
-module.exports = Server;
-Metro.Command = {};
-require('./command/server');
-module.exports = Metro.Command;
 Flash = (function() {
   function Flash() {
     Flash.__super__.constructor.apply(this, arguments);
   }
   return Flash;
 })();
-module.exports = Flash;
 Redirecting = (function() {
   function Redirecting() {}
   Redirecting.prototype.redirectTo = function() {};
   return Redirecting;
 })();
-module.exports = Redirecting;
 Rendering = (function() {
   function Rendering() {
     Rendering.__super__.constructor.apply(this, arguments);
@@ -588,7 +65,6 @@ Rendering = (function() {
   };
   return Rendering;
 })();
-module.exports = Rendering;
 Responding = (function() {
   Responding.respondTo = function() {
     var _ref;
@@ -651,7 +127,6 @@ Responding = (function() {
   }
   return Responding;
 })();
-module.exports = Responding;
 Controller = (function() {
   function Controller() {
     Controller.__super__.constructor.apply(this, arguments);
@@ -711,257 +186,6 @@ Controller = (function() {
   };
   return Controller;
 })();
-module.exports = Controller;
-Application = (function() {
-  function Application() {}
-  return Application;
-})();
-module.exports = Application;
-Metro.Generator.DSL = (function() {
-  function DSL() {}
-  DSL.prototype.injectIntoFile = function(file, options, callback) {};
-  DSL.prototype.readFile = function(file) {};
-  DSL.prototype.createFile = function(file, data) {};
-  DSL.prototype.removeFile = function(file) {};
-  DSL.prototype.createDirectory = function(name) {};
-  DSL.prototype.removeDirectory = function(name) {};
-  return DSL;
-})();
-module.exports = Metro.Generator.DSL;
-Metro.Generator = {};
-require('./generator/application');
-module.exports = Metro.Generator;
-Metro.Middleware.Assets = (function() {
-  function Assets() {}
-  Assets.middleware = function(request, response, next) {
-    return (new Metro.Middleware.Assets).call(request, response, next);
-  };
-  Assets.prototype.call = function(request, response, next) {
-    var asset, respond;
-    if (!Metro.Asset.match(request.uri.pathname)) {
-      return next();
-    }
-    asset = Metro.Asset.find(request.uri.pathname);
-    respond = function(status, headers, body) {
-      response.writeHead(status, headers);
-      response.write(body);
-      return response.end();
-    };
-    if (!asset) {
-      return this.notFoundResponse(respond);
-    } else {
-      return this.okResponse(asset, respond);
-    }
-  };
-  Assets.prototype.forbiddenRequest = function(request) {
-    return !!request.url.match(/\.{2}/);
-  };
-  Assets.prototype.notModified = function(asset) {
-    return env["HTTP_IF_MODIFIED_SINCE"] === asset.mtime.httpdate;
-  };
-  Assets.prototype.notModifiedResponse = function(asset, callback) {
-    return callback(304, {}, []);
-  };
-  Assets.prototype.forbiddenResponse = function(callback) {
-    return callback(403, {
-      "Content-Type": "text/plain",
-      "Content-Length": "9"
-    }, "Forbidden");
-  };
-  Assets.prototype.notFoundResponse = function(callback) {
-    return callback(404, {
-      "Content-Type": "text/plain",
-      "Content-Length": "9",
-      "X-Cascade": "pass"
-    }, "Not found");
-  };
-  Assets.prototype.okResponse = function(asset, callback) {
-    var paths, self;
-    paths = Metro.Asset.pathsFor(asset.extension);
-    self = this;
-    return asset.render({
-      paths: paths,
-      require: Metro.env !== "production"
-    }, function(body) {
-      return callback(200, self.headers(asset, asset.size()), body);
-    });
-  };
-  Assets.prototype.headers = function(asset, length) {
-    var headers;
-    headers = {};
-    headers["Content-Type"] = Metro.Support.Path.contentType("text/" + asset.extension.slice(1));
-    headers["Cache-Control"] = "public";
-    headers["Last-Modified"] = asset.mtime();
-    headers["ETag"] = this.etag(asset);
-    if (asset.pathFingerprint) {
-      headers["Cache-Control"] += ", max-age=31536000";
-    } else {
-      headers["Cache-Control"] += ", must-revalidate";
-    }
-    return headers;
-  };
-  Assets.prototype.etag = function(asset) {
-    return "" + (asset.digest());
-  };
-  return Assets;
-})();
-module.exports = Metro.Middleware.Assets;
-Cookies = (function() {
-  function Cookies() {}
-  Cookies.middleware = require("connect").cookieParser('keyboard cat');
-  return Cookies;
-})();
-module.exports = Cookies;
-Metro.Middleware.Dependencies = (function() {
-  function Dependencies() {}
-  Dependencies.middleware = function(request, result, next) {
-    return (new Dependencies).call(request, result, next);
-  };
-  Dependencies.prototype.call = function(request, result, next) {
-    Metro.Support.Dependencies.reloadModified();
-    Metro.Route.reload();
-    if (next != null) {
-      return next();
-    }
-  };
-  return Dependencies;
-})();
-module.exports = Metro.Middleware.Dependencies;
-Metro.Middleware.Headers = (function() {
-  function Headers() {}
-  return Headers;
-})();
-module.exports = Metro.Middleware.Headers;
-url = require('url');
-qs = require('qs');
-Metro.Middleware.Query = (function() {
-  function Query() {}
-  Query.middleware = function(request, result, next) {
-    return (new Metro.Middleware.Query).call(request, result, next);
-  };
-  Query.prototype.call = function(request, response, next) {
-    request.uri = url.parse(request.url);
-    request.query = ~request.url.indexOf('?') ? qs.parse(request.uri.query) : {};
-    if (next != null) {
-      return next();
-    }
-  };
-  return Query;
-})();
-module.exports = Metro.Middleware.Query;
-_url = require('url');
-_ = require('underscore');
-Metro.Middleware.Router = (function() {
-  function Router() {}
-  Router.middleware = function(request, result, next) {
-    return (new Metro.Middleware.Router).call(request, result, next);
-  };
-  Router.prototype.call = function(request, response, next) {
-    var self;
-    self = this;
-    this.find(request, response, function(controller) {
-      if (controller) {
-        response.writeHead(200, controller.headers);
-        response.write(controller.body);
-        response.end();
-        return controller.clear();
-      } else {
-        return self.error(request, response);
-      }
-    });
-    return response;
-  };
-  Router.prototype.find = function(request, response, callback) {
-    var controller, route, routes, _i, _len;
-    routes = Metro.Route.all();
-    for (_i = 0, _len = routes.length; _i < _len; _i++) {
-      route = routes[_i];
-      controller = this.processRoute(route, request, response);
-      if (controller) {
-        break;
-      }
-    }
-    if (controller) {
-      controller.call(request, response, function() {
-        return callback(controller);
-      });
-    } else {
-      callback(null);
-    }
-    return controller;
-  };
-  Router.prototype.processRoute = function(route, request, response) {
-    var capture, controller, i, keys, match, method, params, path, _len;
-    url = _url.parse(request.url);
-    path = url.pathname;
-    match = route.match(path);
-    if (!match) {
-      return null;
-    }
-    method = request.method.toLowerCase();
-    keys = route.keys;
-    params = _.extend({}, route.defaults, request.query || {}, request.body || {});
-    match = match.slice(1);
-    for (i = 0, _len = match.length; i < _len; i++) {
-      capture = match[i];
-      params[keys[i].name] = capture ? decodeURIComponent(capture) : null;
-    }
-    controller = route.controller;
-    if (controller) {
-      params.action = controller.action;
-    }
-    request.params = params;
-    if (controller) {
-      try {
-        controller = new global[route.controller.className];
-      } catch (error) {
-        throw new Error("" + route.controller.className + " wasn't found");
-      }
-    }
-    return controller;
-  };
-  Router.prototype.error = function(request, response) {
-    if (response) {
-      response.statusCode = 404;
-      response.setHeader('Content-Type', 'text/plain');
-      return response.end("No path matches " + request.url);
-    }
-  };
-  return Router;
-})();
-module.exports = Metro.Middleware.Router;
-Session = (function() {
-  function Session() {}
-  Session.middleware = require("connect").session({
-    cookie: {
-      maxAge: 60000
-    }
-  });
-  return Session;
-})();
-module.exports = Session;
-Metro.Middleware.Static = (function() {
-  function Static() {}
-  Static.middleware = function(request, result, next) {
-    var _ref;
-    if ((_ref = this._middleware) == null) {
-      this._middleware = require("connect").static(Metro.publicPath, {
-        maxAge: 0
-      });
-    }
-    return this._middleware(request, result, next);
-  };
-  return Static;
-})();
-module.exports = Metro.Middleware.Static;
-Metro.Middleware = {};
-require('./middleware/dependencies');
-require('./middleware/router');
-require('./middleware/cookies');
-require('./middleware/static');
-require('./middleware/query');
-require('./middleware/assets');
-module.exports = Metro.Middleware;
 Metro.Model.Association = (function() {
   Association.include(Metro.Model.Scope);
   function Association(owner, reflection) {
@@ -987,7 +211,6 @@ Metro.Model.Association = (function() {
   });
   return Association;
 })();
-module.exports = Metro.Model.Association;
 Metro.Model.Associations = (function() {
   function Associations() {}
   Associations.hasOne = function(name, options) {
@@ -1081,7 +304,6 @@ Metro.Model.Associations = (function() {
   };
   return Associations;
 })();
-module.exports = Metro.Model.Associations;
 Metro.Model.Attribute = (function() {
   function Attribute(name, options) {
     if (options == null) {
@@ -1146,7 +368,6 @@ Metro.Model.Attribute = (function() {
   };
   return Attribute;
 })();
-module.exports = Metro.Model.Attribute;
 Metro.Model.Attributes = (function() {
   function Attributes() {}
   Attributes.key = function(key, options) {
@@ -1206,7 +427,6 @@ Metro.Model.Attributes = (function() {
   }
   return Attributes;
 })();
-module.exports = Metro.Model.Attributes;
 Metro.Model.Callbacks = (function() {
   function Callbacks() {}
   Callbacks.CALLBACKS = ["afterInitialize", "afterFind", "afterTouch", "beforeValidation", "afterValidation", "beforeSave", "aroundSave", "afterSave", "beforeCreate", "aroundCreate", "afterCreate", "beforeUpdate", "aroundUpdate", "afterUpdate", "beforeDestroy", "aroundDestroy", "afterDestroy", "afterCommit", "afterRollback"];
@@ -1278,7 +498,6 @@ Metro.Model.Callbacks = (function() {
   };
   return Callbacks;
 })();
-module.exports = Metro.Model.Callbacks;
 Metro.Model.Dirty = (function() {
   function Dirty() {}
   Dirty.prototype.isDirty = function() {
@@ -1310,7 +529,6 @@ Metro.Model.Dirty = (function() {
   };
   return Dirty;
 })();
-module.exports = Metro.Model.Dirty;
 Metro.Model.Factory = (function() {
   function Factory() {}
   Factory.store = function() {
@@ -1399,7 +617,6 @@ Metro.Model.Persistence = (function() {
   Persistence.prototype.isPersisted = function() {};
   return Persistence;
 })();
-module.exports = Metro.Model.Persistence;
 Metro.Model.Reflection = (function() {
   function Reflection(type, sourceClassName, name, options) {
     if (options == null) {
@@ -1418,7 +635,6 @@ Metro.Model.Reflection = (function() {
   };
   return Reflection;
 })();
-module.exports = Metro.Model.Reflection;
 Metro.Model.Scope = (function() {
   function Scope(sourceClassName) {
     this.sourceClassName = sourceClassName;
@@ -1489,7 +705,6 @@ Metro.Model.Scope = (function() {
   };
   return Scope;
 })();
-module.exports = Metro.Model.Scope;
 Metro.Model.Scopes = (function() {
   function Scopes() {}
   Scopes.scope = function(name, scope) {
@@ -1546,7 +761,6 @@ Metro.Model.Scopes = (function() {
   };
   return Scopes;
 })();
-module.exports = Metro.Model.Scopes;
 Metro.Model.Serialization = (function() {
   function Serialization() {}
   Serialization.prototype.toXML = function() {};
@@ -1569,7 +783,6 @@ Metro.Model.Serialization = (function() {
   };
   return Serialization;
 })();
-module.exports = Metro.Model.Serialization;
 Metro.Model.Validation = (function() {
   function Validation(name, value) {
     this.name = name;
@@ -1671,7 +884,6 @@ Metro.Model.Validation = (function() {
   };
   return Validation;
 })();
-module.exports = Metro.Model.Validation;
 Metro.Model.Validations = (function() {
   function Validations() {
     Validations.__super__.constructor.apply(this, arguments);
@@ -1719,7 +931,6 @@ Metro.Model.Validations = (function() {
   };
   return Validations;
 })();
-module.exports = Metro.Model.Validations;
 Metro.Model = (function() {
   Model.initialize = function() {
     return Metro.Support.Dependencies.load("" + Metro.root + "/app/models");
@@ -1773,23 +984,19 @@ Metro.Model.include(Metro.Model.Associations);
 Metro.Model.include(Metro.Model.Validations);
 Metro.Model.include(Metro.Model.Dirty);
 Metro.Model.include(Metro.Model.Attributes);
-module.exports = Model;
 Metro.Observer.Binding = (function() {
   function Binding() {}
   return Binding;
 })();
-module.exports = Metro.Observer.Binding;
 Metro.Observer = (function() {
   function Observer() {}
   return Observer;
 })();
 require('./observer/binding');
-module.exports = Metro.Observer;
 Metro.Presenter = (function() {
   function Presenter() {}
   return Presenter;
 })();
-module.exports = Metro.Presenter;
 Metro.Route.DSL = (function() {
   function DSL() {}
   DSL.prototype.match = function() {
@@ -1922,7 +1129,6 @@ Metro.Route.DSL = (function() {
   };
   return DSL;
 })();
-module.exports = Metro.Route.DSL;
 Metro.Route = (function() {
   Route.include(Metro.Model.Scopes);
   Route.store = function() {
@@ -2017,541 +1223,6 @@ Metro.Route = (function() {
   return Route;
 })();
 require('./route/dsl');
-module.exports = Metro.Route;
-Http = (function() {
-  function Http() {}
-  Http.prototype.response = function(server, req, res, msg) {
-    var callback, check, issue, test, token;
-    check = function() {
-      try {
-        server.__port = server.address().port;
-        server.__listening = true;
-      } catch (err) {
-        process.nextTick(check);
-        return;
-      }
-      if (server.__deferred) {
-        server.__deferred.forEach(function(fn) {
-          return fn();
-        });
-        return server.__deferred = null;
-      }
-    };
-    issue = function() {
-      var data, encoding, method, request, requestTimeout, status, timer;
-      timer = void 0;
-      method = req.method || "GET";
-      status = res.status || res.statusCode;
-      data = req.data || req.body;
-      requestTimeout = req.timeout || 0;
-      encoding = req.encoding || "utf8";
-      request = http.request({
-        host: "127.0.0.1",
-        port: server.__port,
-        path: req.url,
-        method: method,
-        headers: req.headers
-      });
-      check = function() {
-        if (--server.__pending === 0) {
-          server.close();
-          return server.__listening = false;
-        }
-      };
-      if (requestTimeout) {
-        timer = setTimeout(function() {
-          check();
-          delete req.timeout;
-          return test.failure(new Error(msg + "Request timed out after " + requestTimeout + "ms."));
-        }, requestTimeout);
-      }
-      if (data) {
-        request.write(data);
-      }
-      request.on("response", function(response) {
-        response.body = "";
-        response.setEncoding(encoding);
-        response.on("data", function(chunk) {
-          return response.body += chunk;
-        });
-        return response.on("end", function() {
-          var actual, eql, expected, i, idx, keys, len, name;
-          if (timer) {
-            clearTimeout(timer);
-          }
-          try {
-            if (res.body !== undefined) {
-              eql = (res.body instanceof RegExp ? res.body.test(response.body) : res.body === response.body);
-              assert.ok(eql, msg + "Invalid response body.\n" + "    Expected: " + util.inspect(res.body) + "\n" + "    Got: " + util.inspect(response.body));
-            }
-            if (typeof status === "number") {
-              assert.equal(response.statusCode, status, msg + colorize("Invalid response status code.\n" + "    Expected: [green]{" + status + "}\n" + "    Got: [red]{" + response.statusCode + "}"));
-            }
-            if (res.headers) {
-              keys = Object.keys(res.headers);
-              i = 0;
-              len = keys.length;
-              while (i < len) {
-                name = keys[i];
-                actual = response.headers[name.toLowerCase()];
-                expected = res.headers[name];
-                eql = (expected instanceof RegExp ? expected.test(actual) : expected === actual);
-                assert.ok(eql, msg + colorize("Invalid response header [bold]{" + name + "}.\n" + "    Expected: [green]{" + expected + "}\n" + "    Got: [red]{" + actual + "}"));
-                ++i;
-              }
-            }
-            callback(response);
-            return test.success(msg);
-          } catch (err) {
-            test.failure(err);
-            return test.callback();
-          } finally {
-            idx = test._pending.indexOf(token);
-            if (idx >= 0) {
-              test._pending.splice(idx, 1);
-            } else {
-              test.failure(new Error("Request succeeded, but token vanished: " + msg));
-            }
-            check();
-          }
-        });
-      });
-      return request.end();
-    };
-    test = assert._test;
-    callback = (typeof res === "function" ? res : (typeof msg === "function" ? msg : function() {}));
-    if (typeof msg === "function") {
-      msg = null;
-    }
-    msg = msg || test.title;
-    msg += ". ";
-    token = new Error("Response not completed: " + msg);
-    test._pending.push(token);
-    server.__pending = server.__pending || 0;
-    server.__pending++;
-    if (!server.fd) {
-      server.__deferred = server.__deferred || [];
-      server.listen(server.__port = port++, "127.0.0.1", check);
-    } else if (!server.__port) {
-      server.__deferred = server.__deferred || [];
-      process.nextTick(check);
-    }
-    if (!server.__listening) {
-      server.__deferred.push(issue);
-    } else {
-      return issue();
-    }
-  };
-  return Http;
-})();
-module.exports = Http;
-Metro.Spec = {};
-require('./spec/http');
-module.exports = Metro.Spec;
-Cassandra = (function() {
-  function Cassandra() {}
-  return Cassandra;
-})();
-module.exports = Cassandra;
-Local = (function() {
-  function Local() {}
-  return Local;
-})();
-module.exports = Local;
-Metro.Store.Memory = (function() {
-  function Memory() {
-    this.records = {};
-    this.lastId = 0;
-  }
-  Memory.prototype.addIndex = function() {
-    var attributes;
-    attributes = Array.prototype.slice.call(arguments, 0, arguments.length);
-    this.index[attributes] = key;
-    return this;
-  };
-  Memory.prototype.removeIndex = function() {
-    var attributes;
-    attributes = Array.prototype.slice.call(arguments, 0, arguments.length);
-    delete this.index[attributes];
-    return this;
-  };
-  Memory.prototype.find = function(query, callback) {
-    var key, limit, record, records, result, sort;
-    result = [];
-    records = this.records;
-    if (Metro.Support.isPresent(query)) {
-      sort = query._sort;
-      limit = query._limit || Metro.Store.defaultLimit;
-      for (key in records) {
-        record = records[key];
-        if (this.matches(record, query)) {
-          result.push(record);
-        }
-      }
-      if (sort) {
-        result = this.sort(result, query._sort);
-      }
-      if (limit) {
-        result = result.slice(0, (limit - 1 + 1) || 9e9);
-      }
-    } else {
-      for (key in records) {
-        record = records[key];
-        result.push(record);
-      }
-    }
-    if (callback) {
-      callback(result);
-    }
-    return result;
-  };
-  Memory.alias("select", "find");
-  Memory.prototype.first = function(query, callback) {
-    var result;
-    result = this.find(query, function(records) {
-      if (callback) {
-        return callback(records[0]);
-      }
-    });
-    return result[0];
-  };
-  Memory.prototype.last = function(query, callback) {
-    var result;
-    result = this.find(query, function(records) {
-      if (callback) {
-        return callback(records[records.length - 1]);
-      }
-    });
-    return result[result.length - 1];
-  };
-  Memory.prototype.all = function(query, callback) {
-    return this.find(query, callback);
-  };
-  Memory.prototype.length = function(query, callback) {
-    return this.find(query, function(records) {
-      if (callback) {
-        return callback(records.length);
-      }
-    }).length;
-  };
-  Memory.alias("count", "length");
-  Memory.prototype.remove = function(query, callback) {
-    var _records;
-    _records = this.records;
-    return this.select(query, function(records) {
-      var record, _i, _len;
-      for (_i = 0, _len = records.length; _i < _len; _i++) {
-        record = records[_i];
-        _records.splice(_records.indexOf(record), 1);
-      }
-      if (callback) {
-        return callback(records);
-      }
-    });
-  };
-  Memory.prototype.clear = function() {
-    return this.records = [];
-  };
-  Memory.prototype.toArray = function() {
-    return this.records;
-  };
-  Memory.prototype.create = function(record) {
-    var _ref;
-    if (!record.id) {
-      Metro.raise("errors.store.missingAttribute", "id", "Store#create", record);
-    }
-    if ((_ref = record.id) == null) {
-      record.id = this.generateId();
-    }
-    return this.records[record.id] = record;
-  };
-  Memory.prototype.update = function(record) {
-    if (!record.id) {
-      Metro.raise("errors.store.missingAttribute", "id", "Store#update", record);
-    }
-    return this.records[record.id] = record;
-  };
-  Memory.prototype.destroy = function(record) {
-    return this.find(id).destroy();
-  };
-  Memory.prototype.sort = function() {
-    var _ref;
-    return (_ref = Metro.Support.Array).sortBy.apply(_ref, arguments);
-  };
-  Memory.prototype.matches = function(record, query) {
-    var key, recordValue, self, success, value;
-    self = this;
-    success = true;
-    for (key in query) {
-      value = query[key];
-      if (!!Metro.Store.reservedOperators[key]) {
-        continue;
-      }
-      recordValue = record[key];
-      if (typeof value === 'object') {
-        success = self._matchesOperators(record, recordValue, value);
-      } else {
-        if (typeof value === "function") {
-          value = value.call(record);
-        }
-        success = recordValue === value;
-      }
-      if (!success) {
-        return false;
-      }
-    }
-    return true;
-  };
-  Memory.prototype.generateId = function() {
-    return this.lastId++;
-  };
-  Memory.prototype._matchesOperators = function(record, recordValue, operators) {
-    var key, operator, self, success, value;
-    success = true;
-    self = this;
-    for (key in operators) {
-      value = operators[key];
-      if (operator = Metro.Store.queryOperators[key]) {
-        if (typeof value === "function") {
-          value = value.call(record);
-        }
-        switch (operator) {
-          case "gt":
-            success = self._isGreaterThan(recordValue, value);
-            break;
-          case "gte":
-            success = self._isGreaterThanOrEqualTo(recordValue, value);
-            break;
-          case "lt":
-            success = self._isLessThan(recordValue, value);
-            break;
-          case "lte":
-            success = self._isLessThanOrEqualTo(recordValue, value);
-            break;
-          case "eq":
-            success = self._isEqualTo(recordValue, value);
-            break;
-          case "neq":
-            success = self._isNotEqualTo(recordValue, value);
-            break;
-          case "m":
-            success = self._isMatchOf(recordValue, value);
-            break;
-          case "nm":
-            success = self._isNotMatchOf(recordValue, value);
-            break;
-          case "any":
-            success = self._anyIn(recordValue, value);
-            break;
-          case "all":
-            success = self._allIn(recordValue, value);
-        }
-        if (!success) {
-          return false;
-        }
-      } else {
-        return recordValue === operators;
-      }
-    }
-    return true;
-  };
-  Memory.prototype._isGreaterThan = function(recordValue, value) {
-    return recordValue && recordValue > value;
-  };
-  Memory.prototype._isGreaterThanOrEqualTo = function(recordValue, value) {
-    return recordValue && recordValue >= value;
-  };
-  Memory.prototype._isLessThan = function(recordValue, value) {
-    return recordValue && recordValue < value;
-  };
-  Memory.prototype._isLessThanOrEqualTo = function(recordValue, value) {
-    return recordValue && recordValue <= value;
-  };
-  Memory.prototype._isEqualTo = function(recordValue, value) {
-    return recordValue === value;
-  };
-  Memory.prototype._isNotEqualTo = function(recordValue, value) {
-    return recordValue !== value;
-  };
-  Memory.prototype._isMatchOf = function(recordValue, value) {
-    return !!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
-  };
-  Memory.prototype._isNotMatchOf = function(recordValue, value) {
-    return !!!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
-  };
-  Memory.prototype._anyIn = function(recordValue, array) {
-    var value, _i, _len;
-    for (_i = 0, _len = array.length; _i < _len; _i++) {
-      value = array[_i];
-      if (recordValue.indexOf(value) > -1) {
-        return true;
-      }
-    }
-    return false;
-  };
-  Memory.prototype._allIn = function(recordValue, value) {
-    var _i, _len;
-    for (_i = 0, _len = array.length; _i < _len; _i++) {
-      value = array[_i];
-      if (recordValue.indexOf(value) === -1) {
-        return false;
-      }
-    }
-    return true;
-  };
-  Memory.prototype.toString = function() {
-    return this.constructor.name;
-  };
-  return Memory;
-})();
-module.exports = Metro.Store.Memory;
-Metro.Store.Mongo = (function() {
-  Mongo.config = {
-    development: {
-      name: "metro-development",
-      port: 27017,
-      host: "127.0.0.1"
-    },
-    test: {
-      name: "metro-test",
-      port: 27017,
-      host: "127.0.0.1"
-    },
-    staging: {
-      name: "metro-staging",
-      port: 27017,
-      host: "127.0.0.1"
-    },
-    production: {
-      name: "metro-production",
-      port: 27017,
-      host: "127.0.0.1"
-    }
-  };
-  Mongo.configure = function(options) {
-    return _.extend(this.config, options);
-  };
-  Mongo.env = function() {
-    return this.config[Metro.env];
-  };
-  Mongo.lib = function() {
-    return require('mongodb');
-  };
-  Mongo.initialize = function(callback) {
-    var env, mongo, self;
-    self = this;
-    if (!this.database) {
-      env = this.env();
-      mongo = this.lib();
-      new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open(function(error, client) {
-        return self.database = client;
-      });
-    }
-    return this.database;
-  };
-  function Mongo(collectionName, options) {
-    if (options == null) {
-      options = {};
-    }
-    this.collectionName = collectionName;
-  }
-  Mongo.prototype.collection = function() {
-    var _ref;
-    return (_ref = this._collection) != null ? _ref : this._collection = new this.lib().Collection(this.database, this.collectionName);
-  };
-  Mongo.prototype.find = function(query, callback) {};
-  Mongo.alias("select", "find");
-  Mongo.prototype.first = function(query, callback) {};
-  Mongo.prototype.last = function(query, callback) {};
-  Mongo.prototype.all = function(query, callback) {};
-  Mongo.prototype.length = function(query, callback) {};
-  Mongo.alias("count", "length");
-  Mongo.prototype.remove = function(query, callback) {};
-  Mongo.prototype.clear = function() {};
-  Mongo.prototype.toArray = function() {};
-  Mongo.prototype.create = function(record, callback) {
-    return this.collection().insert(record, callback);
-  };
-  Mongo.prototype.update = function(record) {};
-  Mongo.prototype.destroy = function(record) {};
-  Mongo.prototype.sort = function() {};
-  return Mongo;
-})();
-module.exports = Metro.Store.Mongo;
-Neo4j = (function() {
-  function Neo4j() {}
-  return Neo4j;
-})();
-module.exports = Neo4j;
-PostgreSQL = (function() {
-  function PostgreSQL() {}
-  return PostgreSQL;
-})();
-module.exports = PostgreSQL;
-Redis = (function() {
-  function Redis() {}
-  Redis.lib = function() {
-    return require("redis");
-  };
-  Redis.client = function() {
-    var _ref;
-    return (_ref = this._client) != null ? _ref : this._client = this.lib().createClient();
-  };
-  Redis.prototype.find = function(query, callback) {};
-  Redis.alias("select", "find");
-  Redis.prototype.first = function(query, callback) {};
-  Redis.prototype.last = function(query, callback) {};
-  Redis.prototype.all = function(query, callback) {};
-  Redis.prototype.length = function(query, callback) {};
-  Redis.alias("count", "length");
-  Redis.prototype.remove = function(query, callback) {};
-  Redis.prototype.clear = function() {};
-  Redis.prototype.toArray = function() {};
-  Redis.prototype.create = function(record) {};
-  Redis.prototype.update = function(record) {};
-  Redis.prototype.destroy = function(record) {};
-  Redis.prototype.sort = function() {};
-  return Redis;
-})();
-module.exports = Redis;
-Metro.Store = {
-  defaultLimit: 100,
-  reservedOperators: {
-    "_sort": "_sort",
-    "_limit": "_limit"
-  },
-  queryOperators: {
-    ">=": "gte",
-    "gte": "gte",
-    ">": "gt",
-    "gt": "gt",
-    "<=": "lte",
-    "lte": "lte",
-    "<": "lt",
-    "lt": "lt",
-    "in": "in",
-    "nin": "nin",
-    "any": "any",
-    "all": "all",
-    "=~": "m",
-    "m": "m",
-    "!~": "nm",
-    "nm": "nm",
-    "=": "eq",
-    "eq": "eq",
-    "!=": "neq",
-    "neq": "neq",
-    "null": "null",
-    "notNull": "notNull"
-  }
-};
-require('./store/cassandra');
-require('./store/local');
-require('./store/memory');
-require('./store/mongo');
-require('./store/postgresql');
-require('./store/redis');
-module.exports = Metro.Store;
 Metro.Support.Array = {
   extractArgs: function(args) {
     return Array.prototype.slice.call(args, 0, args.length);
@@ -2644,12 +1315,10 @@ Metro.Support.Array = {
     });
   }
 };
-module.exports = Metro.Support.Array;
 Metro.Support.Callbacks = (function() {
   function Callbacks() {}
   return Callbacks;
 })();
-module.exports = Metro.Support.Callbacks;
 moduleKeywords = ['included', 'extended', 'prototype'];
 Metro.Support.Class = (function() {
   function Class() {}
@@ -2871,7 +1540,6 @@ Metro.Support.Class = (function() {
   Class.prototype.methodMissing = function(method) {};
   return Class;
 })();
-module.exports = Metro.Support.Class;
 _ref = Metro.Support.Class;
 for (key in _ref) {
   value = _ref[key];
@@ -2896,7 +1564,6 @@ Metro.Support.Concern = (function() {
   Concern._appendFeatures = function() {};
   return Concern;
 })();
-module.exports = Metro.Support.Concern;
 fs = require('fs');
 Metro.Support.Dependencies = (function() {
   function Dependencies() {}
@@ -2954,7 +1621,6 @@ Metro.Support.Dependencies = (function() {
   Dependencies.keys = {};
   return Dependencies;
 })();
-module.exports = Metro.Support.Dependencies;
 Metro.Support.I18n = (function() {
   function I18n() {}
   I18n.defaultLanguage = "en";
@@ -3009,12 +1675,10 @@ Metro.Support.I18n = (function() {
   };
   return I18n;
 })();
-module.exports = Metro.Support.I18n;
 IE = (function() {
   function IE() {}
   return IE;
 })();
-module.exports = IE;
 en = {
   date: {
     formats: {
@@ -3190,12 +1854,10 @@ Metro.Support.Lookup = (function() {
   };
   return Lookup;
 })();
-module.exports = Metro.Support.Lookup;
 Metro.Support.Naming = (function() {
   function Naming() {}
   return Naming;
 })();
-module.exports = Metro.Support.Naming;
 Metro.Support.Number = {
   isInt: function(n) {
     return n === +n && n === (n | 0);
@@ -3204,7 +1866,6 @@ Metro.Support.Number = {
     return n === +n && n !== (n | 0);
   }
 };
-module.exports = Metro.Support.Number;
 _ = require('underscore');
 Metro.Support.Object = {
   isA: function(object, isa) {},
@@ -3230,206 +1891,6 @@ Metro.Support.Object = {
     return true;
   }
 };
-module.exports = Metro.Support.Object;
-fs = require('fs');
-crypto = require('crypto');
-mime = require('mime');
-_path = require('path');
-util = require('util');
-Metro.Support.Path = (function() {
-  Path.stat = function(path) {
-    return fs.statSync(path);
-  };
-  Path.digestHash = function() {
-    return crypto.createHash('md5');
-  };
-  Path.digest = function(path, data) {
-    var stat;
-    stat = this.stat(path);
-    if (stat == null) {
-      return;
-    }
-    if (data == null) {
-      data = this.read(path);
-    }
-    if (data == null) {
-      return;
-    }
-    return this.digestHash().update(data).digest("hex");
-  };
-  Path.read = function(path) {
-    return fs.readFileSync(path, "utf-8");
-  };
-  Path.readAsync = function(path, callback) {
-    return fs.readFile(path, "utf-8", callback);
-  };
-  Path.slug = function(path) {
-    return this.basename(path).replace(new RegExp(this.extname(path) + "$"), "");
-  };
-  Path.contentType = function(path) {
-    return mime.lookup(path);
-  };
-  Path.mtime = function(path) {
-    return this.stat(path).mtime;
-  };
-  Path.size = function(path) {
-    return this.stat(path).size;
-  };
-  Path.expandPath = function(path) {
-    return _path.normalize(path);
-  };
-  Path.absolutePath = function(path, root) {
-    if (root == null) {
-      root = this.pwd();
-    }
-    if (path.charAt(0) !== "/") {
-      path = root + "/" + path;
-    }
-    return _path.normalize(path);
-  };
-  Path.relativePath = function(path, root) {
-    if (root == null) {
-      root = this.pwd();
-    }
-    if (path[0] === ".") {
-      path = this.join(root, path);
-    }
-    return _path.normalize(path.replace(new RegExp("^" + Metro.Support.RegExp.escape(root + "/")), ""));
-  };
-  Path.pwd = function() {
-    return process.cwd();
-  };
-  Path.basename = function() {
-    return _path.basename.apply(_path, arguments);
-  };
-  Path.extname = function(path) {
-    return _path.extname(path);
-  };
-  Path.exists = function(path) {
-    return _path.existsSync(path);
-  };
-  Path.existsAsync = function(path, callback) {
-    return _path.exists(path, callback);
-  };
-  Path.extensions = function(path) {
-    return this.basename(path).match(/(\.\w+)/g);
-  };
-  Path.join = function() {
-    return Array.prototype.slice.call(arguments, 0, arguments.length).join("/").replace(/\/+/, "/");
-  };
-  Path.isUrl = function(path) {
-    return !!path.match(/^[-a-z]+:\/\/|^cid:|^\/\//);
-  };
-  Path.isAbsolute = function(path) {
-    return path.charAt(0) === "/";
-  };
-  Path.glob = function() {
-    var path, paths, result, _i, _len;
-    paths = Metro.Support.Array.extractArgs(arguments);
-    result = [];
-    for (_i = 0, _len = paths.length; _i < _len; _i++) {
-      path = paths[_i];
-      if (this.exists(path)) {
-        result = result.concat(require('findit').sync(path));
-      }
-    }
-    return result;
-  };
-  Path.files = function() {
-    var path, paths, result, self, _i, _len;
-    paths = this.glob.apply(this, arguments);
-    result = [];
-    self = this;
-    for (_i = 0, _len = paths.length; _i < _len; _i++) {
-      path = paths[_i];
-      if (self.isFile(path)) {
-        result.push(path);
-      }
-    }
-    return result;
-  };
-  Path.directories = function() {
-    var path, paths, result, self, _i, _len;
-    paths = this.glob.apply(this, arguments);
-    result = [];
-    self = this;
-    for (_i = 0, _len = paths.length; _i < _len; _i++) {
-      path = paths[_i];
-      if (self.isDirectory(path)) {
-        result.push(path);
-      }
-    }
-    return result;
-  };
-  Path.entries = function(path) {
-    return fs.readdirSync(path);
-  };
-  Path.dirname = function(path) {
-    return _path.dirname(path);
-  };
-  Path.isDirectory = function(path) {
-    return this.stat(path).isDirectory();
-  };
-  Path.isFile = function(path) {
-    return !this.isDirectory(path);
-  };
-  Path.copy = function(from, to) {
-    var newFile, oldFile;
-    oldFile = fs.createReadStream(from);
-    newFile = fs.createWriteStream(to);
-    return newFile.once('open', function(data) {
-      return util.pump(oldFile, newFile);
-    });
-  };
-  Path.watch = function() {};
-  function Path(path) {
-    this.path = path;
-    this.previousMtime = this.mtime();
-  }
-  Path.prototype.stale = function() {
-    var newMtime, oldMtime, result;
-    oldMtime = this.previousMtime;
-    newMtime = this.mtime();
-    result = oldMtime.getTime() !== newMtime.getTime();
-    this.previousMtime = newMtime;
-    return result;
-  };
-  Path.prototype.stat = function() {
-    return this.constructor.stat(this.path);
-  };
-  Path.prototype.contentType = function() {
-    return this.constructor.contentType(this.path);
-  };
-  Path.prototype.mtime = function() {
-    return this.constructor.mtime(this.path);
-  };
-  Path.prototype.size = function() {
-    return this.constructor.size(this.path);
-  };
-  Path.prototype.digest = function() {
-    return this.constructor.digest(this.path);
-  };
-  Path.prototype.extensions = function() {
-    return this.constructor.extensions(this.path);
-  };
-  Path.prototype.extension = function() {
-    return this.constructor.extname(this.path);
-  };
-  Path.prototype.read = function() {
-    return this.constructor.read(this.path);
-  };
-  Path.prototype.readAsync = function(callback) {
-    return this.constructor.readAsync(this.path, callback);
-  };
-  Path.prototype.absolutePath = function() {
-    return this.constructor.absolutePath(this.path);
-  };
-  Path.prototype.relativePath = function() {
-    return this.constructor.relativePath(this.path);
-  };
-  return Path;
-})();
-module.exports = Metro.Support.Path;
 Metro.Support.RegExp = {
   escape: function(string) {
     return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -3445,7 +1906,6 @@ Metro.Support.RegExp = {
     return result;
   }
 };
-module.exports = Metro.Support.RegExp;
 _ = require("underscore");
 _.mixin(require("underscore.string"));
 lingo = require("lingo").en;
@@ -3463,7 +1923,6 @@ Metro.Support.String = {
     return _.titleize(arguments[0] || this);
   }
 };
-module.exports = String;
 Metro.Support.Time = (function() {
   Time._lib = function() {
     return require('moment');
@@ -3532,7 +1991,6 @@ Metro.Support.Time.TimeWithZone = (function() {
   }
   return TimeWithZone;
 })();
-module.exports = Metro.Support.Time;
 Metro.Support = {};
 require('./support/array');
 require('./support/class');
@@ -3548,7 +2006,6 @@ require('./support/path');
 require('./support/string');
 require('./support/regexp');
 require('./support/time');
-module.exports = Metro.Support;
 Field = (function() {
   function Field() {}
   return Field;
@@ -3596,7 +2053,6 @@ Helpers = (function() {
   Helpers.prototype.imageTag = function(path, options) {};
   return Helpers;
 })();
-module.exports = Helpers;
 Metro.View.Lookup = (function() {
   function Lookup() {}
   Lookup.initialize = function() {
@@ -3657,7 +2113,6 @@ Metro.View.Lookup = (function() {
   Lookup.prettyPrint = false;
   return Lookup;
 })();
-module.exports = Metro.View.Lookup;
 Rendering = (function() {
   function Rendering() {}
   Rendering.prototype.render = function() {
@@ -3740,7 +2195,6 @@ Rendering = (function() {
   };
   return Rendering;
 })();
-module.exports = Rendering;
 Metro.View = (function() {
   function View(controller) {
     this.controller = controller || (new Metro.Controller);
@@ -3752,10 +2206,8 @@ require('./view/lookup');
 require('./view/rendering');
 Metro.View.include(Metro.View.Lookup);
 Metro.View.include(Metro.View.Rendering);
-module.exports = View;
 global._ = require('underscore');
 _.mixin(require("underscore.string"));
-module.exports = global.Metro = Metro = {};
 require('./metro/support');
 require('./metro/asset');
 require('./metro/application');

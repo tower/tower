@@ -1,23 +1,22 @@
 fs      = require('fs')
-#Metro  = require('./lib/metro')
-_       = require('./node_modules/underscore')
 findit  = require('./node_modules/findit')
-_path   = require 'path'
 async   = require './node_modules/async'
 Shift   = require './node_modules/shift'
 engine  = new Shift.CoffeeScript
+{exec} = require 'child_process'
 
-task 'compile-client', ->
+task 'build', ->
   paths   = findit.sync('./src')
   result  = ''
   
   iterate = (path, next) ->
-    if path.match(/\.coffee$/)
+    if path.match(/\.coffee$/) && !path.match(/(middleware|application|generator|asset|command|spec|store|path)/)
       fs.readFile path, 'utf-8', (error, data) ->
         if !data || data.match(/Bud1/)
           console.log path
         else
-          result += data + "\n\n\n"
+          data = data.replace(/module\.exports\s*=.*\s*/g, "")
+          result += data + "\n"
         next()
     else
       next()
@@ -34,55 +33,20 @@ task 'compile-client', ->
         #  console.log error
         #  fs.writeFile './dist/metro.min.js', result
 
-###
-task 'compile', 'Builds Metro for the browser, removing the server-side specific code, and injecting required code into one file!', ->
-  burrito = require('burrito')
-  find    = (path, callback) ->
-    burrito fs.readFileSync(path), (node) ->
-      isRequire = node.name is "call" and node.value[0][0] is "name" and node.value[0][1] is "require"
-      
-      if isRequire
-        expr = node.value[1][0]
-        if expr[0].name is "string"
-          modules.strings.push expr[1]
-        else
-          modules.expressions.push burrito.deparse(expr)
-          
-      isDotRequire = (node.name is "dot" or node.name is "call") and node.value[0][0] is "call" and node.value[0][1][0] is "name" and node.value[0][1][1] is "require"
-      
-      if isDotRequire
-        expr = node.value[0][2][0]
-        if expr[0].name is "string"
-          modules.strings.push expr[1]
-        else
-          modules.expressions.push burrito.deparse(expr)
-          
-      isDotCallRequire = node.name is "call" and node.value[0][0] is "dot" and node.value[0][1][0] is "call" and node.value[0][1][1][0] is "name" and node.value[0][1][1][1] is "require"
-      
-      if isDotCallRequire
-        expr = node.value[0][1][2][0]
-        if expr[0].name is "string"
-          modules.strings.push expr[1]
-        else
-          modules.expressions.push burrito.deparse(expr)
-  
-  # https://github.com/substack/node-detective/blob/master/index.js
-  output  = find "./lib/metro.js", (path, className) ->
-    if className in ["Controller", "Model", "Route", "Store", "View"]
-      find path, (subPath, subClassName) ->
-        if className == "Controller" and subClassName in ["Configuration", "Flash", "Rendering"]
-          find subPath
-        else if className == "Model" and subClassName in ["Association", "Associations", "Attributes"]
-          find subPath
+task 'clean', 'Remove built files in ./dist', ->
 
-task 'compile_test', ->
-  burrito = require('burrito')
+task 'spec', 'Run jasmine specs', ->
+  exec './node_modules/jasmine-node/bin/jasmine-node --coffee ./spec', (err, stdout, stderr) ->
+    throw err if err
+    console.log stdout + stderr
   
-  # https://github.com/substack/node-detective/blob/master/index.js
-  input = 'Metro.Console = require("foo"); var require = function() {alert("!")}'
-  output = burrito input, (node) ->
-    console.log node.label() + " " + node.name
-    if (node.name === 'call') node.wrap('LANCE')
+task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
+  exec './node_modules/coffee-script/bin/coffee -o lib -w src', (err, stdout, stderr) ->
+    throw err if err
+    console.log stdout + stderr
   
-  require('sys').puts(output)
-###
+task 'docs', 'Build the docs'
+
+task 'site', 'Build site'
+
+task 'stats', 'Build files and report on their sizes'

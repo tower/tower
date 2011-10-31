@@ -1,512 +1,10 @@
-class Client
-  request: (method, url, options = {}) ->
-
-
-class History
-  
-module.exports = History
-
-
-
-connect = require('connect')
-
-class Server
-  stack: ->
-    @server.use connect.favicon(Metro.publicPath + "/favicon.ico")
-    @server.use Metro.Middleware.Static.middleware
-    @server.use Metro.Middleware.Query.middleware 
-    @server.use Metro.Middleware.Assets.middleware
-    @server.use connect.bodyParser()
-    @server.use Metro.Middleware.Dependencies.middleware
-    @server.use Metro.Middleware.Cookies.middleware
-    @server.use Metro.Middleware.Router.middleware
-    @server
-    
-  listen: ->
-    unless Metro.env == "test"
-      @server.listen(Metro.port)
-      console.log("Metro server listening on port #{Metro.port}")
-  
-  @run: ->
-    Metro.Application.instance().stack()
-    Metro.Application.instance().listen()
-  
-module.exports = Server
-
-
-
-class Application
-  @Server:        require './application/server'
-  
-  @include @Server
-  
-  constructor: ->
-    @server ?= require('connect')()
-
-  @instance: -> 
-    @_instance ?= new Metro.Application
-  
-  @initialize: ->  
-    Metro.Asset.initialize() if Metro.Asset
-    Metro.Route.initialize()
-    Metro.Model.initialize()
-    Metro.View.initialize()
-    Metro.Controller.initialize()
-    require "#{Metro.root}/config/application"
-    @instance()
-    
-  @teardown: ->
-    Metro.Route.teardown()
-    Metro.Model.teardown()
-    Metro.View.teardown()
-    Metro.Controller.teardown()
-    #Metro.Asset.teardown() if Metro.Asset
-    
-    delete @_instance
-  
-module.exports = Application
-
-
-
-async = require 'async'
-_     = require 'underscore'
-
-class Compiler
-  # Directives will only be picked up if they are in the header
-  # of the source file. C style (/* */), JavaScript (//), and
-  # Ruby/Coffeescript (#) comments are supported.
-  #
-  # Directives in comments after the first non-whitespace line
-  # of code will not be processed.
-  #
-  @HEADER_PATTERN: /^(\/\*\s*(?:(?!\*\/).|\n)*\*\/)|(?:\#\#\#\s*(?:(?!\#\#\#).|\n)*\#\#\#)|(?:\/\/\s*.*\s*?)+|(?:#\s*.*\s*?)/g
-  
-  # Directives are denoted by a `=` followed by the name, then
-  # argument list.
-  #
-  # A few different styles are allowed:
-  #
-  #     // =require foo
-  #     //= require foo
-  #     //= require "foo"
-  #
-  @DIRECTIVE_PATTERN: /(?:\/\/|#| *)\s*=\s*(require)\s*['"]?([^'"]+)['"]?[\s]*?\n?/
-  
-  render: (options, callback) ->
-    if typeof(options) == "function"
-      callback  = options
-      options   = {}
-    options ?= {}
-    
-    result      = ""
-    terminator  = "\n"
-    self        = @
-    
-    @parse options, (parts) ->
-      for part in parts
-        result += part.content
-      result += terminator
-      callback.call(self, result)
-  
-  parse: (options, callback) ->
-    Metro.raise("errors.missingCallback", "Asset#parse") unless callback and typeof(callback) == "function"
-    
-    self        = @
-    extension   = @extension
-    result      = []
-    terminator  = "\n"
-    
-    @parts options, (parts) ->
-      iterate = (part, next) ->
-        if part.hasOwnProperty("content")
-          self.compile part.content, _.extend({}, options), (data) ->
-            part.content = data
-            result.push(part)
-            next()
-        else
-          child = Metro.Asset.find(part.path, extension: extension)
-          if child
-            child.render _.extend({}, options), (data) ->
-              part.content = data
-              result.push(part)
-              next()
-          else
-            console.log "Dependency '#{part.path}' not found in #{self.path}"
-            next()
-    
-      async.forEachSeries parts, iterate, ->
-        callback.call(self, result)
-  
-  parts: (options, callback) ->
-    Metro.raise("errors.missingOption", "path", "Asset#parse") unless @path
-    
-    self        = @
-    extension   = @extension
-    
-    requireDirectives = if options.hasOwnProperty("require") then options.require else true
-    
-    data = @read()
-    
-    if requireDirectives
-      callback.call self, self.parseDirectives(data, self.path)
-    else
-      callback.call self, [content: data, path: self.path]
-  
-  parseDirectives: (string, path) ->
-    self                    = @
-    directivePattern       = @constructor.DIRECTIVE_PATTERN
-    
-    lines                   = string.match(@constructor.HEADER_PATTERN)
-    directivesString       = ''
-    parts                   = []
-    
-    if lines && lines.length > 0
-      last                  = lines[lines.length - 1]
-      # string                = string.substr(string.indexOf(last) + last.length)
-      for line in lines
-        directive           = line.match(directivePattern)
-        if directive
-          parts.push(path: directive[2])
-          
-    parts.push(path: path, content: string)
-
-    parts
-    
-  compile: (data, options, callback) ->
-    options ?= {}
-    self    = @
-    iterate = (engine, next) ->
-      engine.render data, _.extend({}, options), (error, result) ->
-        data = result
-        next()
-
-    async.forEachSeries @engines(), iterate, ->
-      callback.call(self, data)
-  
-  paths: (options, callback) ->
-    self = @
-    @parts options, (parts) ->
-      paths = []
-      paths.push(part.path) for part in parts
-      callback.call self, paths
-    
-  engines: ->
-    unless @_engines
-      extensions  = @extensions()
-      result      = []
-      
-      for extension in extensions
-        engine = Metro.engine(extension[1..-1])
-        result.push(engine) if engine
-        
-      @_engines = result
-      
-    @_engines
-
-module.exports = Compiler
-
-
-
-class Digest
-  @include Metro.Support.Concern
-  
-  @digestPath: (path) ->
-    @pathWithFingerprint(path, @digest(path))
-    
-  @pathFingerprint: (path) ->
-    result = Metro.Support.Path.basename(path).match(/-([0-9a-f]{32})\.?/)
-    if result? then result[1] else null
-    
-  @pathWithFingerprint: (path, digest) ->
-    if oldDigest = @pathFingerprint(path)
-      path.replace(oldDigest, digest)
-    else
-      path.replace(/\.(\w+)$/, "-#{digest}.\$1")
-  
-  # Return logical path with digest spliced in.
-  # 
-  #   "foo/bar-37b51d194a7513e45b56f6524f2d51f2.js"
-  # 
-  digestPath: ->
-    @constructor.digestPath(@path)
-  
-  # Gets digest fingerprint.
-  # 
-  #     "foo-0aa2105d29558f3eb790d411d7d8fb66.js"
-  #     # => "0aa2105d29558f3eb790d411d7d8fb66"
-  # 
-  pathFingerprint: ->
-    @constructor.pathFingerprint(@path)
-  
-  # Injects digest fingerprint into path.
-  # 
-  # ``` coffeescript
-  # "foo.js" #=> "foo-0aa2105d29558f3eb790d411d7d8fb66.js"
-  # ```
-  # 
-  pathWithFingerprint: (digest) ->
-    @constructor.pathWithFingerprint(@path, digest)
-  
-module.exports = Digest
-
-
-
-class Lookup
-  @digests: ->
-    @_digests ?= {}
-  
-  @stylesheetLookup: ->
-    @_stylesheetLookup ?= @_createLookup(
-      @config.stylesheetDirectory
-      @config.stylesheetExtensions
-      @config.stylesheetAliases
-    )
-  
-  @javascriptLookup: ->
-    @_javascriptLookup ?= @_createLookup(
-      @config.javascriptDirectory
-      @config.javascriptExtensions
-      @config.javascriptAliases
-    )
-  
-  @imageLookup: ->
-    @_imageLookup ?= @_createLookup(
-      @config.imageDirectory
-      @config.imageExtensions
-      @config.imageAliases
-    )
-  
-  @fontLookup: ->
-    @_fontLookup ?= @_createLookup(
-      @config.fontDirectory
-      @config.fontExtensions
-      @config.fontAliases
-    )
-  
-  @_createLookup: (directory, extensions, aliases) ->
-    paths = []
-    
-    for path in @config.loadPaths
-      path = @join(path, directory)
-      paths.push(path)
-      paths = paths.concat @directories(path)
-    
-    root = Metro.root
-    
-    new Metro.Support.Lookup
-      root:       root
-      paths:      paths
-      extensions: extensions
-      aliases:    aliases
-  
-  # All extensions must start with a "."
-  @pathsFor: (extension) ->
-    @lookupFor(extension).paths
-  
-  @lookupFor: (extension) ->
-    switch extension
-      when ".css" then @stylesheetLookup()
-      when ".js" then @javascriptLookup()
-      else []
-      
-  @digestFor: (source) ->
-    @digests[source] || source
-    
-  # Add the extension +ext+ if not present. Return full or scheme-relative URLs otherwise untouched.
-  # Prefix with <tt>/dir/</tt> if lacking a leading +/+. Account for relative URL
-  # roots. Rewrite the asset path for cache-busting asset ids. Include
-  # asset host, if configured, with the correct request protocol.
-  #
-  # When :relative (default), the protocol will be determined by the client using current protocol
-  # When :request, the protocol will be the request protocol
-  # Otherwise, the protocol is used (E.g. :http, :https, etc)
-  @computePublicPath: (source, options = {}) ->
-    return source if @isUrl(source)
-    extension = options.extension
-    source = @normalizeExtension(source, extension) if extension
-    source = @normalizeAssetPath(source, options)
-    source = @normalizeRelativeUrlRoot(source, @relativeUrlRoot)
-    source = @normalizeHostAndProtocol(source, options.protocol)
-    source
-    
-  @computeAssetHost: ->
-    if typeof(@config.host) == "function" then @config.host.call(@) else @config.host
-    
-  @normalizeExtension: (source, extension) ->
-    @basename(source, extension) + extension
-  
-  @normalizeAssetPath: (source, options = {}) ->
-    if @isAbsolute(source)
-      source
-    else
-      source = @join(options.directory, source)
-      source = @digestFor(source) unless options.digest == false
-      source = "/#{source}" unless !!source.match(/^\//)
-      source
-      
-  @normalizeRelativeUrlRoot: (source, relativeUrlRoot) ->
-    if relativeUrlRoot && !source.match(new RegExp("^#{relativeUrlRoot}/"))
-      "#{relativeUrlRoot}#{source}"
-    else
-      source
-  
-  @normalizeHostAndProtocol: (source, protocol) ->
-    host = @computeAssetHost(source)
-    #if host && !@isUri(host)
-      #if (protocol || @defaultProtocol) == :request && !hasRequest?
-      #  host = nil
-      #else
-      #  host = "#{computeProtocol(protocol)}#{host}"
-    if host then "#{host}#{source}" else source
-  
-  # find path from source and extension
-  # this method must be given a real file path!
-  @find: (source, options = {}) ->
-    paths = @lookup(source, options)
-    
-    unless paths && paths.length > 0
-      Metro.raise "errors.asset.notFound", source, paths#(lookup.paths.map (path) -> "    #{path}").join(",\n")
-    
-    new Metro.Asset(paths[0], options.extension)
-    
-  @lookup: (source, options = {}) ->
-    source = @normalizeSource(source)
-
-    options.extension ?= @extname(source)
-    
-    Metro.raise("errors.missingOption", "extension", "Asset#find") if options.extension == ""
-
-    pattern = "(?:" + Metro.Support.RegExp.escape(options.extension) + ")?$"
-    source  = source.replace(new RegExp(pattern), options.extension)
-    lookup  = @lookupFor(options.extension)
-    if lookup then lookup.find(source) else []
-    
-  @match: (path) ->
-    !!path.match(@pathPattern())
-    
-  @normalizeSource: (source) ->
-    source.replace(@pathPattern(), "")
-    
-  @pathPattern: ->
-    @_pathPattern ?= new RegExp("^/(assets|#{@config.stylesheetDirectory}|#{@config.javascriptDirectory}|#{@config.imageDirectory}|#{@config.fontDirectory})/")
-    
-module.exports = Lookup
-
-
-
-class Asset
-  @Compiler:      require './asset/compiler'
-  @Digest:        require './asset/digest'
-  @Lookup:        require './asset/lookup'
-  
-  @include Metro.Support.Path
-  @include @Digest
-  @include @Lookup
-  @include @Compiler
-  
-  @initialize: ->
-    @config =
-      publicPath:             "#{Metro.root}/public"
-      loadPaths:              [
-        "#{Metro.root}/app/assets",
-        "#{Metro.root}/lib/assets",
-        "#{Metro.root}/vendor/assets"
-      ]
-      
-      stylesheetDirectory:   "stylesheets"
-      stylesheetExtensions:  ["css", "styl", "scss", "less"]
-      stylesheetAliases:
-        css:                  ["styl", "less", "scss", "sass"]
-      
-      javascriptDirectory:   "javascripts"
-      javascriptExtensions:  ["js", "coffee", "ejs"]
-      javascriptAliases:
-        js:                   ["coffee", "coffeescript"]
-        coffee:               ["coffeescript"]
-      
-      imageDirectory:        "images"
-      imageExtensions:       ["png", "jpg", "gif"]
-      imageAliases:
-        jpg:                  ["jpeg"]
-      
-      fontDirectory:         "fonts"
-      fontExtensions:        ["eot", "svg", "tff", "woff"]
-      fontAliases:           {}
-      
-      host:                   null
-      relativeRootUrl:      null
-    
-      precompile:             []
-      
-      jsCompressor:          null
-      cssCompressor:         null
-      
-      enabled:                true
-      
-      manifest:               "/public/assets"
-      # live compilation
-      compile:                true
-      prefix:                 "assets"
-  
-  @teardown: ->
-    delete @_javascriptLookup
-    delete @_stylesheetLookup
-    delete @_imageLookup
-    delete @_fontLookup
-    delete @_pathPattern
-    delete @_cssCompressor
-    delete @_jsCompressor
-    delete @_parser
-    delete @_compiler
-    delete @_digests
-    
-  @configure: (options) ->
-    @config[key] = value for key, value of options
-  
-  @cssCompressor: ->
-    @_cssCompressor ?= new (require('shift').YuiCompressor)
-  
-  @jsCompressor: ->
-    @_jsCompressor ?= new (require('shift').UglifyJS)
-  
-  constructor: (path, extension) ->
-    @path        = @constructor.expandPath(path)
-    @extension   = extension || @extensions()[0]
-  
-  compiler: ->
-    @constructor.compiler()
-  
-module.exports = Asset
-
-
-
-class Server
-  
-module.exports = Server
-
-
-
-Metro.Command = {}
-
-require './command/server'
-
-module.exports = Metro.Command
-
-
-
 class Flash
   constructor: -> super
   
-module.exports = Flash
-
-
 
 class Redirecting
   redirectTo: ->
     
-module.exports = Redirecting
-
-
 
 class Rendering
   constructor: -> super
@@ -541,10 +39,6 @@ class Rendering
   # private
   _renderTemplate: (options) ->
     @template.render(viewContext, options)
-
-module.exports = Rendering
-    
-
 
 
 class Responding
@@ -602,9 +96,6 @@ class Responding
     @params       = {}
     @query        = {}
     
-module.exports = Responding
-
-
 
 class Controller
   constructor: -> super
@@ -653,252 +144,6 @@ class Controller
     @response = null
     @headers  = null
   
-module.exports = Controller
-
-
-
-class Application
-  #@include Metro.Generators.DSL  
-  
-module.exports = Application
-
-
-
-class Metro.Generator.DSL
-  injectIntoFile: (file, options, callback) ->
-    
-  readFile: (file) ->
-  
-  createFile: (file, data) ->
-    
-  removeFile: (file) ->
-    
-  createDirectory: (name) ->
-    
-  removeDirectory: (name) ->
-
-module.exports = Metro.Generator.DSL
-
-
-Metro.Generator = {}
-
-require './generator/application'
-  
-module.exports = Metro.Generator
-
-
-class Metro.Middleware.Assets
-  @middleware: (request, response, next) -> (new Metro.Middleware.Assets).call(request, response, next)
-  
-  call: (request, response, next) ->
-    return next() unless Metro.Asset.match(request.uri.pathname)
-    
-    asset       = Metro.Asset.find(request.uri.pathname)
-    
-    respond = (status, headers, body) ->
-      response.writeHead status, headers
-      response.write body
-      response.end()
-    
-    if !asset
-      @notFoundResponse respond
-    #else if @notModified(asset)
-    #  @notModifiedResponse(asset)
-    else
-      @okResponse asset, respond
-  
-  forbiddenRequest: (request) ->
-    !!request.url.match(/\.{2}/)
-    
-  notModified: (asset) ->
-    env["HTTP_IF_MODIFIED_SINCE"] == asset.mtime.httpdate
-    
-  # Returns a 304 Not Modified response tuple
-  notModifiedResponse: (asset, callback) ->
-    callback 304, {}, []
-    
-  forbiddenResponse: (callback) ->
-    callback 403, {"Content-Type": "text/plain", "Content-Length": "9"}, "Forbidden"
-    
-  notFoundResponse: (callback) ->
-    callback 404, {"Content-Type": "text/plain", "Content-Length": "9", "X-Cascade": "pass"}, "Not found"
-    
-  # Returns a 200 OK response tuple
-  okResponse: (asset, callback) ->
-    paths = Metro.Asset.pathsFor(asset.extension)
-    self  = @
-    asset.render paths: paths, require: Metro.env != "production", (body) ->
-      callback 200, self.headers(asset, asset.size()), body
-  
-  headers: (asset, length) ->
-    headers = {}
-    # Set content type and length headers
-    headers["Content-Type"]   = Metro.Support.Path.contentType("text/#{asset.extension[1..-1]}")
-    # headers["Content-Length"] = length
-    
-    # Set caching headers
-    headers["Cache-Control"]  = "public"
-    headers["Last-Modified"]  = asset.mtime()#.httpdate
-    headers["ETag"]           = @etag(asset)
-    
-    # If the request url contains a fingerprint, set a long
-    # expires on the response
-    if asset.pathFingerprint
-      headers["Cache-Control"] += ", max-age=31536000"
-    # Otherwise set `must-revalidate` since the asset could be modified.
-    else
-      headers["Cache-Control"] += ", must-revalidate"
-    
-    headers
-  
-  etag: (asset) ->
-    "#{asset.digest()}"
-    
-module.exports = Metro.Middleware.Assets
-
-
-
-class Cookies
-  @middleware: require("connect").cookieParser('keyboard cat')
-
-module.exports = Cookies
-
-
-
-class Metro.Middleware.Dependencies
-  @middleware: (request, result, next) -> (new Dependencies).call(request, result, next)
-  
-  call: (request, result, next) ->
-    Metro.Support.Dependencies.reloadModified()
-    Metro.Route.reload()
-    next() if next?
-    
-module.exports = Metro.Middleware.Dependencies
-
-
-
-class Metro.Middleware.Headers
-  
-module.exports = Metro.Middleware.Headers
-
-
-
-url = require('url')
-qs  = require('qs')
-
-class Metro.Middleware.Query
-  @middleware: (request, result, next) -> (new Metro.Middleware.Query).call(request, result, next)
-  
-  call: (request, response, next) ->
-    request.uri   = url.parse(request.url)
-    request.query = if ~request.url.indexOf('?') then qs.parse(request.uri.query) else {}
-    next() if next?
-    
-module.exports = Metro.Middleware.Query
-
-
-
-_url = require('url')
-_   = require('underscore')
-
-class Metro.Middleware.Router
-  @middleware: (request, result, next) -> (new Metro.Middleware.Router).call(request, result, next)
-  
-  call: (request, response, next) ->
-    self = @
-    
-    @find request, response, (controller) ->
-      if controller
-        response.writeHead(200, controller.headers)
-        response.write(controller.body)
-        response.end()
-        controller.clear()
-      else
-        self.error(request, response)
-    
-    response
-  
-  find: (request, response, callback) ->
-    routes      = Metro.Route.all()
-    
-    for route in routes
-      controller = @processRoute route, request, response
-      break if controller
-    
-    if controller
-      controller.call request, response, ->
-        callback(controller)
-    else
-      callback(null)
-    
-    controller
-    
-  processRoute: (route, request, response) ->
-    url                    = _url.parse(request.url)
-    path                   = url.pathname
-    match                  = route.match(path)
-    
-    return null unless match
-    method                 = request.method.toLowerCase()
-    keys                   = route.keys
-    params                 = _.extend({}, route.defaults, request.query || {}, request.body || {})
-    match                  = match[1..-1]
-    
-    for capture, i in match
-      params[keys[i].name] = if capture then decodeURIComponent(capture) else null
-    
-    controller             = route.controller
-    
-    params.action          = controller.action if controller
-    
-    request.params         = params
-    
-    if controller
-      try
-        controller         = new global[route.controller.className]
-      catch error
-        throw(new Error("#{route.controller.className} wasn't found"))
-    
-    controller
-    
-  error: (request, response) ->
-    if response
-      response.statusCode = 404
-      response.setHeader('Content-Type', 'text/plain')
-      response.end("No path matches #{request.url}")
-      
-module.exports = Metro.Middleware.Router
-
-
-
-class Session
-  @middleware: require("connect").session({ cookie: { maxAge: 60000 }})
-
-module.exports = Session
-
-
-
-class Metro.Middleware.Static
-  @middleware: (request, result, next) -> 
-    @_middleware ?= require("connect").static(Metro.publicPath, { maxAge: 0 })
-    @_middleware(request, result, next)
-
-module.exports = Metro.Middleware.Static
-
-
-
-Metro.Middleware = {}
-
-require './middleware/dependencies'
-require './middleware/router'
-require './middleware/cookies'
-require './middleware/static'
-require './middleware/query'
-require './middleware/assets'
-  
-module.exports = Metro.Middleware
-
-
 
 class Metro.Model.Association
   @include Metro.Model.Scope
@@ -920,9 +165,6 @@ class Metro.Model.Association
     
   @delegates "where", "find", "all", "first", "last", "store", to: "scoped"
   
-module.exports = Metro.Model.Association
-
-
 
 class Metro.Model.Associations
   @hasOne: (name, options = {}) ->
@@ -991,9 +233,6 @@ class Metro.Model.Associations
     return null unless id
     global[@reflections()[name].targetClassName].where(id: @id).first()
   
-module.exports = Metro.Model.Associations
-
-
 
 class Metro.Model.Attribute
   constructor: (name, options = {}) ->
@@ -1037,9 +276,6 @@ class Metro.Model.Attribute
       else
         _default
     
-module.exports = Metro.Model.Attribute
-
-
 
 class Metro.Model.Attributes
   @key: (key, options = {}) ->
@@ -1081,9 +317,6 @@ class Metro.Model.Attributes
     
   @alias "set", "setAttribute" unless @hasOwnProperty("set")
   
-module.exports = Metro.Model.Attributes
-
-
 
 class Metro.Model.Callbacks
   @CALLBACKS = [
@@ -1129,9 +362,6 @@ class Metro.Model.Callbacks
   destroy: ->
     @runCallbacks "destroy", -> @super
     
-module.exports = Metro.Model.Callbacks
-
-
 
 class Metro.Model.Dirty
   isDirty: ->
@@ -1155,9 +385,6 @@ class Metro.Model.Dirty
 
     beforeValue
     
-module.exports = Metro.Model.Dirty
-
-
 
 class Metro.Model.Factory
   @store: ->
@@ -1184,8 +411,6 @@ class Metro.Model.Factory
     record.save()
     record
 
-
-
 en:
   metro:
     model:
@@ -1193,8 +418,6 @@ en:
         validation:
           presence: "{{attribute}} can't be blank"
           minimum: "{{attribute}} must be a minimum of {{value}}"
-
-
 class Metro.Model.Persistence
   #constructor: -> super
   
@@ -1241,9 +464,6 @@ class Metro.Model.Persistence
   isPersisted: ->
   
   
-module.exports = Metro.Model.Persistence
-
-
 
 class Metro.Model.Reflection
   constructor: (type, sourceClassName, name, options = {}) ->
@@ -1257,9 +477,6 @@ class Metro.Model.Reflection
     
   association: (owner) ->
     new Metro.Model.Association(owner, @)
-
-module.exports = Metro.Model.Reflection
-
 
 
 class Metro.Model.Scope
@@ -1325,9 +542,6 @@ class Metro.Model.Scope
     
     result
 
-module.exports = Metro.Model.Scope
-
-
 
 class Metro.Model.Scopes
   #constructor: -> super
@@ -1388,9 +602,6 @@ class Metro.Model.Scopes
   @exists: (callback) ->
     @store().exists(callback)
   
-module.exports = Metro.Model.Scopes
-
-
 
 class Metro.Model.Serialization
   # https://github.com/oozcitak/xmlbuilder-js
@@ -1412,9 +623,6 @@ class Metro.Model.Serialization
     
     records
     
-module.exports = Metro.Model.Serialization
-
-
 
 class Metro.Model.Validation
   constructor: (name, value) ->
@@ -1476,9 +684,6 @@ class Metro.Model.Validation
       return false
     true
 
-module.exports = Metro.Model.Validation
-
-
 
 class Metro.Model.Validations
   constructor: -> super
@@ -1512,9 +717,6 @@ class Metro.Model.Validations
   errors: ->
     @_errors ?= []
   
-module.exports = Metro.Model.Validations
-
-
 
 class Metro.Model
   @initialize: ->
@@ -1564,30 +766,18 @@ Metro.Model.include Metro.Model.Validations
 Metro.Model.include Metro.Model.Dirty
 Metro.Model.include Metro.Model.Attributes
 
-module.exports = Model
-
-
 
 class Metro.Observer.Binding
   
-module.exports = Metro.Observer.Binding
-
-
 
 # http://docs.sproutcore20.com/symbols/SC.Observable.html
 class Metro.Observer
 
 require './observer/binding'
 
-module.exports = Metro.Observer
-
-
 
 class Metro.Presenter
   
-module.exports = Metro.Presenter
-
-
 
 class Metro.Route.DSL
   match: ->
@@ -1904,9 +1094,6 @@ class Metro.Route.DSL
     
     name: controller, action: action, className: _.camelize("_#{controller}")
 
-module.exports = Metro.Route.DSL
-
-
 
 class Metro.Route
   @include Metro.Model.Scopes
@@ -1990,523 +1177,6 @@ class Metro.Route
 
 require './route/dsl'
 
-module.exports = Metro.Route
-
-
-
-# Mock Request/Response
-class Http
-  # https://github.com/visionmedia/expresso/blob/c6454b4ffbbfba6b6b803017fecbccbf3f768ad5/bin/expresso#L383
-  # https://github.com/senchalabs/connect/blob/master/test/connect.test.js
-  response: (server, req, res, msg) ->
-    check = ->
-      try
-        server.__port = server.address().port
-        server.__listening = true
-      catch err
-        process.nextTick check
-        return
-      if server.__deferred
-        server.__deferred.forEach (fn) ->
-          fn()
-
-        server.__deferred = null
-    issue = ->
-      timer   = undefined
-      method  = req.method or "GET"
-      status  = res.status or res.statusCode
-      data    = req.data or req.body
-      requestTimeout = req.timeout or 0
-      encoding = req.encoding or "utf8"
-      request = http.request(
-        host: "127.0.0.1"
-        port: server.__port
-        path: req.url
-        method: method
-        headers: req.headers
-      )
-      check = ->
-        if --server.__pending is 0
-          server.close()
-          server.__listening = false
-
-      if requestTimeout
-        timer = setTimeout(->
-          check()
-          delete req.timeout
-
-          test.failure new Error(msg + "Request timed out after " + requestTimeout + "ms.")
-        , requestTimeout)
-      
-      request.write data if data
-      
-      request.on "response", (response) ->
-        response.body = ""
-        response.setEncoding encoding
-        response.on "data", (chunk) ->
-          response.body += chunk
-
-        response.on "end", ->
-          clearTimeout timer  if timer
-          try
-            if res.body isnt `undefined`
-              eql = (if res.body instanceof RegExp then res.body.test(response.body) else res.body is response.body)
-              assert.ok eql, msg + "Invalid response body.\n" + "    Expected: " + util.inspect(res.body) + "\n" + "    Got: " + util.inspect(response.body)
-            assert.equal response.statusCode, status, msg + colorize("Invalid response status code.\n" + "    Expected: [green]{" + status + "}\n" + "    Got: [red]{" + response.statusCode + "}")  if typeof status is "number"
-            if res.headers
-              keys = Object.keys(res.headers)
-              i = 0
-              len = keys.length
-
-              while i < len
-                name = keys[i]
-                actual = response.headers[name.toLowerCase()]
-                expected = res.headers[name]
-                eql = (if expected instanceof RegExp then expected.test(actual) else expected is actual)
-                assert.ok eql, msg + colorize("Invalid response header [bold]{" + name + "}.\n" + "    Expected: [green]{" + expected + "}\n" + "    Got: [red]{" + actual + "}")
-                ++i
-            callback response
-            test.success msg
-          catch err
-            test.failure err
-            test.callback()
-          finally
-            idx = test._pending.indexOf(token)
-            if idx >= 0
-              test._pending.splice idx, 1
-            else
-              test.failure new Error("Request succeeded, but token vanished: " + msg)
-            check()
-
-      request.end()
-    test = assert._test
-    callback = (if typeof res is "function" then res else (if typeof msg is "function" then msg else ->
-    ))
-    msg = null  if typeof msg is "function"
-    msg = msg or test.title
-    msg += ". "
-    token = new Error("Response not completed: " + msg)
-    test._pending.push token
-    server.__pending = server.__pending or 0
-    server.__pending++
-    unless server.fd
-      server.__deferred = server.__deferred or []
-      server.listen server.__port = port++, "127.0.0.1", check
-    else unless server.__port
-      server.__deferred = server.__deferred or []
-      process.nextTick check
-    unless server.__listening
-      server.__deferred.push issue
-      return
-    else
-      issue()
-module.exports = Http
-
-
-
-Metro.Spec = {}
-
-require './spec/http'
-  
-module.exports = Metro.Spec
-
-
-
-# https://github.com/wadey/node-thrift
-class Cassandra
-  
-module.exports = Cassandra
-
-
-
-class Local
-  
-module.exports = Local
-
-
-
-class Metro.Store.Memory
-  constructor: ->
-    @records  = {}
-    @lastId   = 0
-  
-  # Add index, passing in an array of attribute names
-  # 
-  #   store.addIndex("email", "active")
-  addIndex: ->
-    attributes  = Array.prototype.slice.call(arguments, 0, arguments.length)
-    @index[attributes] = key
-    @
-  
-  # Remove index, passing in an array of attribute names  
-  removeIndex: ->
-    attributes  = Array.prototype.slice.call(arguments, 0, arguments.length)
-    delete @index[attributes]
-    @
-  
-  # Find all matches, given an options hash.
-  # 
-  # This options hash is the result of chained criteria for a Model,
-  # or you can manually write it.
-  #
-  # @example Find where `createdAt` is greater than or equal to 2 days ago
-  # 
-  #     store.find ">=": "createdAt": 2.days().ago()
-  # 
-  # @example Find where `email` matches "gmail.com".
-  # 
-  #     store.find "=~": "email": /gmail\.com/
-  #     store.find "=~": "email": "gmail.com"
-  #     store.find "email": /gmail\.com/
-  # 
-  # @example Find where `tags` at least has one of the following...
-  # 
-  #     store.find _any: tags: ["tomato", "cucumber"]
-  # 
-  # @example Find where `tags` must have all of the following...
-  # 
-  #     store.find _all: tags: ["tomato", "cucumber"]
-  # 
-  find: (query, callback) ->
-    result  = []
-    records = @records
-    
-    if Metro.Support.isPresent(query)
-      sort    = query._sort
-      limit   = query._limit || Metro.Store.defaultLimit
-      
-      for key, record of records
-        result.push(record) if @matches(record, query)
-        # break if result.length >= limit
-      
-      result = @sort(result, query._sort) if sort
-      
-      result = result[0..limit - 1] if limit
-    else
-      for key, record of records
-        result.push(record)
-    
-    callback(result) if callback
-
-    result
-    
-  @alias "select", "find"
-  
-  first: (query, callback) ->
-    result = @find(query, (records) -> callback(records[0]) if callback)
-    result[0]
-  
-  last: (query, callback) ->
-    result = @find(query, (records) -> callback(records[records.length - 1]) if callback)
-    result[result.length - 1]
-  
-  all: (query, callback) ->
-    @find(query, callback)
-
-  length: (query, callback) ->
-    @find(query, (records) -> callback(records.length) if callback).length
-    
-  @alias "count", "length"
-    
-  remove: (query, callback) ->
-    _records = @records
-    
-    @select query, (records) ->
-      for record in records
-        _records.splice(_records.indexOf(record), 1)
-      callback(records) if callback
-    
-  clear: ->
-    @records = []
-    
-  toArray: ->
-    @records
-    
-  create: (record) ->  
-    Metro.raise("errors.store.missingAttribute", "id", "Store#create", record) unless record.id
-    record.id ?= @generateId()
-    @records[record.id] = record
-    
-  update: (record) ->
-    Metro.raise("errors.store.missingAttribute", "id", "Store#update", record) unless record.id
-    @records[record.id] = record
-  
-  destroy: (record) ->
-    @find(id).destroy()
-  
-  # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
-  sort: ->
-    Metro.Support.Array.sortBy(arguments...)
-    
-  matches: (record, query) ->
-    self    = @
-    success = true
-    
-    for key, value of query
-      continue if !!Metro.Store.reservedOperators[key]
-      recordValue = record[key]
-      if typeof(value) == 'object'
-        success = self._matchesOperators(record, recordValue, value)
-      else
-        value = value.call(record) if typeof(value) == "function"
-        success = recordValue == value
-      return false unless success
-    
-    true
-  
-  generateId: ->
-    @lastId++
-    
-  _matchesOperators: (record, recordValue, operators) ->
-    success = true
-    self    = @
-    
-    for key, value of operators
-      if operator = Metro.Store.queryOperators[key]
-        value = value.call(record) if typeof(value) == "function"
-        switch operator
-          when "gt"
-            success = self._isGreaterThan(recordValue, value)
-          when "gte"
-            success = self._isGreaterThanOrEqualTo(recordValue, value)
-          when "lt"
-            success = self._isLessThan(recordValue, value)
-          when "lte"
-            success = self._isLessThanOrEqualTo(recordValue, value)
-          when "eq"
-            success = self._isEqualTo(recordValue, value)
-          when "neq"
-            success = self._isNotEqualTo(recordValue, value)
-          when "m"
-            success = self._isMatchOf(recordValue, value)
-          when "nm"
-            success = self._isNotMatchOf(recordValue, value)
-          when "any"
-            success = self._anyIn(recordValue, value)
-          when "all"
-            success = self._allIn(recordValue, value)
-        return false unless success
-      else
-        return recordValue == operators
-    
-    true
-  
-  _isGreaterThan: (recordValue, value) ->
-    recordValue && recordValue > value
-    
-  _isGreaterThanOrEqualTo: (recordValue, value) ->
-    recordValue && recordValue >= value
-    
-  _isLessThan: (recordValue, value) ->
-    recordValue && recordValue < value
-    
-  _isLessThanOrEqualTo: (recordValue, value) ->
-    recordValue && recordValue <= value
-    
-  _isEqualTo: (recordValue, value) ->
-    recordValue == value
-    
-  _isNotEqualTo: (recordValue, value) ->
-    recordValue != value
-  
-  _isMatchOf: (recordValue, value) ->
-    !!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
-    
-  _isNotMatchOf: (recordValue, value) ->
-    !!!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
-    
-  _anyIn: (recordValue, array) ->
-    for value in array
-      return true if recordValue.indexOf(value) > -1
-    false
-    
-  _allIn: (recordValue, value) ->
-    for value in array
-      return false if recordValue.indexOf(value) == -1
-    true
-    
-  toString: ->
-    @constructor.name
-  
-module.exports = Metro.Store.Memory
-
-
-
-# https://github.com/christkv/node-mongodb-native
-# http://mongoosejs.com/docs/embedded-documents.html
-# https://github.com/1602/jugglingdb/blob/master/lib/adapters/mongoose.js
-class Metro.Store.Mongo
-  @config:
-    development:
-      name: "metro-development"
-      port: 27017
-      host: "127.0.0.1"
-    test:
-      name: "metro-test"
-      port: 27017
-      host: "127.0.0.1"
-    staging:
-      name: "metro-staging"
-      port: 27017
-      host: "127.0.0.1"
-    production:
-      name: "metro-production"
-      port: 27017
-      host: "127.0.0.1"
-    
-  @configure: (options) ->
-    _.extend(@config, options)
-    
-  @env: ->
-    @config[Metro.env]
-    
-  @lib: ->
-    require('mongodb')
-    
-  @initialize: (callback) ->  
-    #@collections
-    self  = @
-    
-    unless @database
-      env   = @env()
-      mongo = @lib()
-      new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) ->
-        self.database = client
-        
-    @database
-    
-  constructor: (collectionName, options = {}) ->
-    @collectionName = collectionName
-    
-  collection: ->
-    @_collection ?= new @lib().Collection(@database, @collectionName)
-  
-  find: (query, callback) ->
-    
-  @alias "select", "find"
-  
-  first: (query, callback) ->
-  
-  last: (query, callback) ->
-  
-  all: (query, callback) ->
-  
-  length: (query, callback) ->
-    
-  @alias "count", "length"
-    
-  remove: (query, callback) ->
-    
-  clear: ->
-    
-  toArray: ->
-    
-  create: (record, callback) ->
-    @collection().insert(record, callback)
-    
-  update: (record) ->
-    
-  destroy: (record) ->
-    
-  sort: ->
-    
-module.exports = Metro.Store.Mongo
-
-
-
-class Neo4j
-  
-module.exports = Neo4j
-
-
-
-class PostgreSQL
-  
-module.exports = PostgreSQL
-
-
-
-# https://github.com/mranney/node_redis
-class Redis
-  @lib: ->
-    require("redis")
-  
-  @client: ->
-    @_client ?= @lib().createClient()
-  
-  find: (query, callback) ->  
-    
-  @alias "select", "find"
-  
-  first: (query, callback) ->
-  
-  last: (query, callback) ->
-  
-  all: (query, callback) ->
-
-  length: (query, callback) ->
-    
-  @alias "count", "length"
-    
-  remove: (query, callback) ->
-    
-  clear: ->
-    
-  toArray: ->
-    
-  create: (record) ->
-    
-  update: (record) ->
-    
-  destroy: (record) ->
-    
-  sort: ->
-    
-module.exports = Redis
-
-
-
-# Stores are the interface models use to find their data.
-Metro.Store =
-  defaultLimit: 100
-
-  reservedOperators:
-    "_sort":  "_sort"
-    "_limit": "_limit"
-  
-  queryOperators:
-    ">=":       "gte"
-    "gte":      "gte"
-    ">":        "gt"
-    "gt":       "gt"
-    "<=":       "lte"
-    "lte":      "lte"
-    "<":        "lt"
-    "lt":       "lt"
-    "in":       "in"
-    "nin":      "nin"
-    "any":      "any"
-    "all":      "all"
-    "=~":       "m"
-    "m":        "m"
-    "!~":       "nm"
-    "nm":       "nm"
-    "=":        "eq"
-    "eq":       "eq"
-    "!=":       "neq"
-    "neq":      "neq"
-    "null":     "null"
-    "notNull":  "notNull"
-
-require './store/cassandra'
-require './store/local'
-require './store/memory'
-require './store/mongo'
-require './store/postgresql'
-require './store/redis'
-
-module.exports = Metro.Store
-
 
 Metro.Support.Array =
   extractArgs: (args) ->
@@ -2586,15 +1256,9 @@ Metro.Support.Array =
     objects.sort (a, b) ->
       arrayComparator a, b
   
-module.exports = Metro.Support.Array
-
-
 
 class Metro.Support.Callbacks
   
-module.exports = Metro.Support.Callbacks
-
-
 
 moduleKeywords = ['included', 'extended', 'prototype']
 
@@ -2739,12 +1403,8 @@ class Metro.Support.Class
 
   methodMissing: (method) ->
 
-module.exports = Metro.Support.Class
-
 for key, value of Metro.Support.Class
   Function.prototype[key] = value
-
-
 class Metro.Support.Concern  
   constructor: -> super
   
@@ -2756,9 +1416,6 @@ class Metro.Support.Concern
   # Module.appendFeatures in ruby
   @_appendFeatures: ->
   
-module.exports = Metro.Support.Concern
-
-
 
 fs = require('fs')
 # https://github.com/fairfieldt/coffeescript-concat/blob/master/coffeescript-concat.coffee
@@ -2804,9 +1461,6 @@ class Metro.Support.Dependencies
     
   @keys: {}
     
-module.exports = Metro.Support.Dependencies
-
-
 
 class Metro.Support.I18n
   @defaultLanguage: "en"
@@ -2843,17 +1497,11 @@ class Metro.Support.I18n
   @interpolator: ->
     @_interpolator ?= new (require('shift').Mustache)
     
-module.exports = Metro.Support.I18n
-
-
 
 # Internet Explorer hacks
 # https://gist.github.com/1307821
 class IE
   
-module.exports = IE
-
-
 
 en =
   date:
@@ -2888,8 +1536,6 @@ en =
       wordsConnector: ", "
       twoWordsConnector: " and "
       lastWordConnector: ", and "
-
-
 
 # https://github.com/sstephenson/hike/blob/master/lib/hike/index.rb
 class Metro.Support.Lookup
@@ -3015,15 +1661,9 @@ class Metro.Support.Lookup
     
     new RegExp "^" + @escape(slug) + "(?:" + @escapeEach(extensions).join("|") + ").*"
     
-module.exports = Metro.Support.Lookup
-
-
 
 class Metro.Support.Naming
   
-module.exports = Metro.Support.Naming
-
-
 
 Metro.Support.Number = 
   isInt: (n) -> 
@@ -3033,9 +1673,6 @@ Metro.Support.Number =
   isFloat: (n) ->
     # typeof(n) == 'number' && n % 1 != 0
     n == +n && n != (n|0)
-
-module.exports = Metro.Support.Number
-
 
 
 _ = require('underscore')
@@ -3057,194 +1694,6 @@ Metro.Support.Object =
       return false
     return true
   
-module.exports = Metro.Support.Object
-
-
-
-fs      = require('fs')
-crypto  = require('crypto')
-mime    = require('mime')
-_path   = require('path')
-util    = require('util')
-
-class Metro.Support.Path
-  @stat: (path) ->
-    fs.statSync(path)
-  
-  # see http://nodejs.org/docs/v0.3.1/api/crypto.html#crypto
-  @digestHash: ->
-    crypto.createHash('md5')
-    
-  @digest: (path, data) ->
-    stat = @stat(path)
-    return unless stat?
-    data ?= @read(path)
-    return unless data?
-    @digestHash().update(data).digest("hex")
-    
-  @read: (path) ->
-    fs.readFileSync(path, "utf-8")
-    
-  @readAsync: (path, callback) ->
-    fs.readFile(path, "utf-8", callback)
-    
-  @slug: (path) ->
-    @basename(path).replace(new RegExp(@extname(path) + "$"), "")
-    
-  @contentType: (path) ->
-    mime.lookup(path)
-    
-  @mtime: (path) ->
-    @stat(path).mtime
-  
-  @size: (path) ->
-    @stat(path).size
-    
-  @expandPath: (path) ->
-    _path.normalize(path)
-    
-  @absolutePath: (path, root = @pwd()) ->
-    path = root + "/" + path unless path.charAt(0) == "/"
-    _path.normalize(path)
-    
-  @relativePath: (path, root = @pwd()) ->
-    path = @join(root, path) if path[0] == "."
-    _path.normalize(path.replace(new RegExp("^" + Metro.Support.RegExp.escape(root + "/")), ""))
-    
-  @pwd: ->
-    process.cwd()
-  
-  @basename: ->
-    _path.basename(arguments...)
-    
-  @extname: (path) ->
-    _path.extname(path)
-    
-  @exists: (path) ->
-    _path.existsSync(path)
-  
-  @existsAsync: (path, callback) ->
-    _path.exists(path, callback)
-    
-  @extensions: (path) ->
-    @basename(path).match(/(\.\w+)/g)
-    
-  @join: ->
-    Array.prototype.slice.call(arguments, 0, arguments.length).join("/").replace(/\/+/, "/")
-    
-  @isUrl: (path) ->
-    !!path.match(/^[-a-z]+:\/\/|^cid:|^\/\//)
-    
-  @isAbsolute: (path) ->
-    path.charAt(0) == "/"
-    
-  @glob: ->
-    paths   = Metro.Support.Array.extractArgs(arguments)
-    result  = []
-    for path in paths
-      if @exists(path)
-        result = result.concat require('findit').sync(path)
-    result
-    
-  @files: ->
-    paths   = @glob(arguments...)
-    result  = []
-    self    = @
-    for path in paths
-      result.push(path) if self.isFile(path)
-    result
-    
-  @directories: ->
-    paths   = @glob(arguments...)
-    result  = []
-    self    = @
-    for path in paths
-      result.push(path) if self.isDirectory(path)
-    result
-    
-  @entries: (path) ->
-    fs.readdirSync(path)
-    
-  @dirname: (path) ->
-    _path.dirname(path)
-    
-  @isDirectory: (path) ->
-    @stat(path).isDirectory()
-    
-  @isFile: (path) ->
-    !@isDirectory(path)
-  
-  # http://stackoverflow.com/questions/4568689/how-do-i-move-file-a-to-a-different-partition-in-node-js  
-  # https://gist.github.com/992478
-  @copy: (from, to) ->
-    oldFile = fs.createReadStream(from)
-    newFile = fs.createWriteStream(to)
-    newFile.once 'open', (data) ->
-      util.pump(oldFile, newFile)
-      
-  @watch: ->
-  
-  constructor: (path) ->
-    @path           = path
-    @previousMtime  = @mtime()
-    
-  stale: ->
-    oldMtime   = @previousMtime
-    newMtime   = @mtime()
-    result      = oldMtime.getTime() != newMtime.getTime()
-    
-    # console.log "stale? #{result.toString()}, oldMtime: #{oldMtime}, newMtime: #{newMtime}"
-    
-    # update
-    @previousMtime = newMtime
-    
-    result
-    
-  stat: ->
-    @constructor.stat(@path)
-
-  # Returns `Content-Type` from path.
-  contentType: ->
-    @constructor.contentType(@path)
-
-  # Get mtime at the time the `Asset` is built.
-  mtime: ->
-    @constructor.mtime(@path)
-
-  # Get size at the time the `Asset` is built.
-  size: ->
-    @constructor.size(@path)
-
-  # Get content digest at the time the `Asset` is built.
-  digest: ->
-    @constructor.digest(@path)
-  
-  # Returns `Array` of extension `String`s.
-  # 
-  #     "foo.js.coffee"
-  #     # => [".js", ".coffee"]
-  # 
-  extensions: ->
-    @constructor.extensions(@path)
-    
-  extension: ->
-    @constructor.extname(@path)
-    
-  read: ->
-    @constructor.read(@path)
-    
-  readAsync: (callback) ->
-    @constructor.readAsync(@path, callback)
-    
-  absolutePath: ->
-    @constructor.absolutePath(@path)
-    
-  relativePath: ->
-    @constructor.relativePath(@path)
-
-module.exports = Metro.Support.Path
-
-
 
 Metro.Support.RegExp =
   escape: (string) ->
@@ -3257,9 +1706,6 @@ Metro.Support.RegExp =
       result[i] = @escape(item)
     result
     
-module.exports = Metro.Support.RegExp
-
-
 
 _ = require("underscore")
 _.mixin(require("underscore.string"))
@@ -3278,9 +1724,6 @@ Metro.Support.String =
   titleize: ->
     _.titleize(arguments[0] || @)
   
-module.exports = String
-
-
 
 # https://github.com/timrwood/moment
 # http://momentjs.com/docs/
@@ -3348,9 +1791,6 @@ class Metro.Support.Time
 class Metro.Support.Time.TimeWithZone extends Metro.Support.Time
   
   
-module.exports = Metro.Support.Time
-
-
 
 Metro.Support = {}
 
@@ -3369,28 +1809,17 @@ require './support/string'
 require './support/regexp'
 require './support/time'
 
-module.exports = Metro.Support
-
-
 
 class Field
-
-
 
 class Form
   
 
-
-
 class Input
   
-
-
 class Link extends Metro.Components.Base
   render: ->
     
-
-
 class Helpers
   #["form", "table"].each ->
   #  klass = "Metro.Components.#{this.toUpperCase()}"
@@ -3417,9 +1846,6 @@ class Helpers
     
   imageTag: (path, options) ->
     
-module.exports = Helpers  
-
-
 
 class Metro.View.Lookup
   @initialize: ->
@@ -3464,9 +1890,6 @@ class Metro.View.Lookup
   @pathsByName:     {}
   @engine:          "jade"
   @prettyPrint:     false
-
-module.exports = Metro.View.Lookup
-
 
 
 class Rendering    
@@ -3534,9 +1957,6 @@ class Rendering
     
     locals
   
-module.exports = Rendering
-
-
 
 class Metro.View  
   constructor: (controller) ->
@@ -3549,14 +1969,9 @@ require './view/rendering'
 Metro.View.include Metro.View.Lookup
 Metro.View.include Metro.View.Rendering
 
-module.exports = View
-
-
 
 global._ = require 'underscore'
 _.mixin(require("underscore.string"))
-
-module.exports = global.Metro = Metro = {}
 
 require './metro/support'
 require './metro/asset'
@@ -3630,6 +2045,4 @@ Metro.engine = (extension) ->
     when "coffee", "coffee-script" then new (require("shift").CoffeeScript)
     when "jade" then new (require("shift").Jade)
     when "mustache" then new (require("shift").Mustache)
-
-
 
