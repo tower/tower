@@ -49,11 +49,13 @@ task 'build', ->
           result += code
           compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
             result += code
+            compileEach 'support', ((path) -> !!path.match(/(path|lookup|dependencies)/)), (code) ->
+              result += code
             
-            engine.render result, bare: false, (error, result) ->
-              fs.writeFile "./dist/metro.js", result
-              unless error
-                fs.writeFile "./dist/metro.min.js", compressor.render(result)
+              engine.render result, bare: false, (error, result) ->
+                fs.writeFile "./dist/metro.js", result
+                unless error
+                  fs.writeFile "./dist/metro.min.js", compressor.render(result)
             
 
 task 'build-generic', ->
@@ -119,7 +121,8 @@ task 'stats', 'Build files and report on their sizes', ->
         percent = (size / prev) * 100.0
         percent = percent.toFixed(1)
         table.push [path, size, "#{percent} %"]
-      table.push [path, size, "-"]
+      else
+        table.push [path, size, "-"]
       prev = size
       
   console.log table.toString()
