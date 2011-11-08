@@ -3,7 +3,7 @@ findit  = require('./node_modules/findit')
 async   = require './node_modules/async'
 Shift   = require './node_modules/shift'
 engine  = new Shift.CoffeeScript
-{exec}  = require 'child_process'
+{exec, spawn}  = require 'child_process'
 
 Metro   = require './lib/metro'
 compressor = new Shift.UglifyJS
@@ -49,7 +49,7 @@ task 'build', ->
           result += code
           compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
             result += code
-            compileEach 'support', ((path) -> !!path.match(/(path|lookup|dependencies)/)), (code) ->
+            compileEach 'support', ((path) -> !!!path.match(/(path|lookup|dependencies)/)), (code) ->
               result += code
             
               engine.render result, bare: false, (error, result) ->
@@ -89,14 +89,12 @@ task 'build-generic', ->
 task 'clean', 'Remove built files in ./dist', ->
 
 task 'spec', 'Run jasmine specs', ->
-  exec './node_modules/jasmine-node/bin/jasmine-node --coffee ./spec', (err, stdout, stderr) ->
-    throw err if err
-    console.log stdout + stderr
+  spec = spawn './node_modules/jasmine-node/bin/jasmine-node', ['--coffee', './spec']
+  spec.stdout.on 'data', (data) -> console.log data.toString().trim()
   
 task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
-  exec './node_modules/coffee-script/bin/coffee -o lib -w src', (err, stdout, stderr) ->
-    throw err if err
-    console.log stdout + stderr
+  coffee = spawn './node_modules/coffee-script/bin/coffee', ['-o', 'lib', '-w', 'src']
+  coffee.stdout.on 'data', (data) -> console.log data.toString().trim()
   
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/metro/route/dsl.js', (err, stdout, stderr) ->

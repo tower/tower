@@ -34,7 +34,7 @@ class Lookup
     paths = []
     
     for path in @config.loadPaths
-      path = @join(path, directory)
+      #path = @join(path, directory) if directory
       paths.push(path)
       paths = paths.concat @directories(path)
     

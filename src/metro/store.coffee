@@ -31,9 +31,10 @@ Metro.Store =
     "notNull":  "notNull"
 
 require './store/cassandra'
+require './store/couchdb'
 require './store/local'
 require './store/memory'
-require './store/mongo'
+require './store/mongodb'
 require './store/postgresql'
 require './store/redis'
 

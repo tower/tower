@@ -1,6 +1,4 @@
-_ = require("underscore")
-_.mixin(require("underscore.string"))
-lingo = require("lingo").en
+# lingo = require("lingo").en
 
 Metro.Support.String =
   camelize: -> 

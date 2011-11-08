@@ -1,6 +1,6 @@
 {
   "name": "metro",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "Rails-esque Framework for Node.js",
   "homepage": "http://viatropos.github.com/metro.js",
   "main": "lib/metro.js",
@@ -25,7 +25,7 @@
   },
   "engines": { "node": ">= 0.4.0" },
   "directories": {
-    "test": "spec"
+    "lib" : "./lib"
   },
   "bin": { "metro": "./bin/metro" },
   "dependencies": {
@@ -49,6 +49,7 @@
     "imagemagick":        ">= 0.1.2",
     "async":              ">= 0.1.12",
     "common-logger":      ">= 0.2.0",
-    "lingo":              ">= 0.0.4"
+    "lingo":              ">= 0.0.4",
+    "shift":              ">= 0.1.3"
   }
 }

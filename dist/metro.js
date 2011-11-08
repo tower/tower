@@ -1,6 +1,18 @@
 (function() {
-  var crypto, fs, mime, util, _path;
-  var __slice = Array.prototype.slice;
+  var IE, key, lingo, moduleKeywords, value, _, _ref;
+  var __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  };
   Metro.Model = (function() {
     Model.initialize = function() {
       return Metro.Support.Dependencies.load("" + Metro.root + "/app/models");
@@ -670,22 +682,76 @@
   })();
   Metro.View.Helpers = (function() {
     function Helpers() {}
-    Helpers.prototype.stylesheetLinkTag = function(source) {
-      return "<link href=\"" + (this.assetPath(source, {
-        directory: Metro.Assets.stylesheetDirectory,
-        ext: "css"
-      })) + "\"></link>";
+    Helpers.prototype.contentTypeTag = function(type) {
+      if (type == null) {
+        type = "UTF-8";
+      }
+      return "\n    <meta charset=\"" + type + "\" />";
     };
-    Helpers.prototype.assetPath = function(source, options) {
+    Helpers.prototype.t = function(string) {
+      var _ref;
+      if ((_ref = this._t) == null) {
+        this._t = require("" + Metro.root + "/config/locales/en");
+      }
+      return this._t[string];
+    };
+    Helpers.prototype.stylesheetTag = function(source) {
+      var path, paths, result, _i, _len;
+      paths = this.assetPaths(source, {
+        directory: Metro.Asset.config.stylesheetDirectory,
+        extension: ".css"
+      });
+      result = [];
+      for (_i = 0, _len = paths.length; _i < _len; _i++) {
+        path = paths[_i];
+        result.push("\n    <link href=\"" + path + "\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>");
+      }
+      return result.join("");
+    };
+    Helpers.prototype.javascriptTag = function(source) {
+      var path, paths, result, _i, _len;
+      paths = this.assetPaths(source, {
+        directory: Metro.Asset.config.javascriptDirectory,
+        extension: ".js"
+      });
+      result = [];
+      for (_i = 0, _len = paths.length; _i < _len; _i++) {
+        path = paths[_i];
+        result.push("\n    <script type=\"text/javascript\" src=\"" + path + "\" ></script>");
+      }
+      return result.join("");
+    };
+    Helpers.prototype.assetPaths = function(source, options) {
+      var asset, env, publicPath, result, self;
       if (options == null) {
         options = {};
       }
-      if (options.digest === void 0) {
-        options.digest = !!Metro.env.match(/(development|test)/);
+      options.digest = false;
+      env = Metro.Asset;
+      publicPath = env.computePublicPath(source, options);
+      if (Metro.env === "production" || Metro.Support.Path.isUrl(publicPath)) {
+        return [publicPath];
       }
-      return Metro.Application.assets().computePublicPath(source, options);
+      self = this;
+      asset = env.find(publicPath);
+      result = [];
+      asset.paths({
+        paths: env.pathsFor(asset.extension),
+        require: Metro.env !== "production"
+      }, function(paths) {
+        var i, path, _len, _results;
+        _results = [];
+        for (i = 0, _len = paths.length; i < _len; i++) {
+          path = paths[i];
+          if (i === paths.length - 1) {
+            path = source;
+          }
+          _results.push(result.push(env.computePublicPath(path, options)));
+        }
+        return _results;
+      });
+      return result;
     };
-    Helpers.prototype.javascriptIncludeTag = function(path) {};
     Helpers.prototype.titleTag = function(title) {
       return "<title>" + title + "</title>";
     };
@@ -1532,164 +1598,439 @@
     return Memory;
   })();
   Metro.Support = {};
-  fs = require('fs');
-  Metro.Support.Dependencies = (function() {
-    function Dependencies() {}
-    Dependencies.load = function(directory) {
-      var path, paths, _i, _len, _results;
-      paths = require('findit').sync(directory);
-      _results = [];
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        _results.push(this.loadPath(path));
+  Metro.Support.Array = {
+    extractArgs: function(args) {
+      return Array.prototype.slice.call(args, 0, args.length);
+    },
+    extractArgsAndOptions: function(args) {
+      args = Array.prototype.slice.call(args, 0, args.length);
+      if (typeof args[args.length - 1] !== 'object') {
+        args.push({});
       }
-      return _results;
-    };
-    Dependencies.loadPath = function(path) {
-      var keys, klass, self;
-      self = this;
-      keys = this.keys;
-      klass = Metro.Support.Path.basename(path).split(".")[0];
-      klass = Metro.Support.String.camelize("_" + klass);
-      if (!keys[klass]) {
-        keys[klass] = new Metro.Support.Path(path);
-        return global[klass] = require(path);
+      return args;
+    },
+    argsOptionsAndCallback: function() {
+      var args, callback, last, options;
+      args = Array.prototype.slice.call(arguments);
+      last = args.length - 1;
+      if (typeof args[last] === "function") {
+        callback = args[last];
+        if (args.length >= 3) {
+          if (typeof args[last - 1] === "object") {
+            options = args[last - 1];
+            args = args.slice(0, (last - 2 + 1) || 9e9);
+          } else {
+            options = {};
+            args = args.slice(0, (last - 1 + 1) || 9e9);
+          }
+        } else {
+          options = {};
+        }
+      } else if (args.length >= 2 && typeof args[last] === "object") {
+        args = args.slice(0, (last - 1 + 1) || 9e9);
+        options = args[last];
+        callback = null;
+      } else {
+        options = {};
+        callback = null;
       }
+      return [args, options, callback];
+    },
+    sortBy: function(objects) {
+      var arrayComparator, callbacks, sortings, valueComparator;
+      sortings = Array.prototype.slice.call(arguments, 1, arguments.length);
+      callbacks = sortings[sortings.length - 1] instanceof Array ? {} : sortings.pop();
+      valueComparator = function(x, y) {
+        if (x > y) {
+          return 1;
+        } else {
+          if (x < y) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      };
+      arrayComparator = function(a, b) {
+        var x, y;
+        x = [];
+        y = [];
+        sortings.forEach(function(sorting) {
+          var aValue, attribute, bValue, direction;
+          attribute = sorting[0];
+          direction = sorting[1];
+          aValue = a[attribute];
+          bValue = b[attribute];
+          if (typeof callbacks[attribute] !== "undefined") {
+            aValue = callbacks[attribute](aValue);
+            bValue = callbacks[attribute](bValue);
+          }
+          x.push(direction * valueComparator(aValue, bValue));
+          return y.push(direction * valueComparator(bValue, aValue));
+        });
+        if (x < y) {
+          return -1;
+        } else {
+          return 1;
+        }
+      };
+      sortings = sortings.map(function(sorting) {
+        if (!(sorting instanceof Array)) {
+          sorting = [sorting, "asc"];
+        }
+        if (sorting[1] === "desc") {
+          sorting[1] = -1;
+        } else {
+          sorting[1] = 1;
+        }
+        return sorting;
+      });
+      return objects.sort(function(a, b) {
+        return arrayComparator(a, b);
+      });
+    }
+  };
+  moduleKeywords = ['included', 'extended', 'prototype'];
+  Metro.Support.Class = (function() {
+    function Class() {}
+    Class.alias = function(to, from) {
+      return this.prototype[to] = this.prototype[from];
     };
-    Dependencies.clear = function() {
-      var file, key, _ref, _results;
-      _ref = this.keys;
-      _results = [];
-      for (key in _ref) {
-        file = _ref[key];
-        _results.push(this.clearDependency(key));
+    Class.alias_method = function(to, from) {
+      return this.prototype[to] = this.prototype[from];
+    };
+    Class.accessor = function(key, self, callback) {
+      this._accessors || (this._accessors = []);
+      this._accessors.push(key);
+      this.getter(key, self, callback);
+      this.setter(key, self);
+      return this;
+    };
+    Class.getter = function(key, self, callback) {
+      self || (self = this.prototype);
+      if (!self.hasOwnProperty("_getAttribute")) {
+        Object.defineProperty(self, "_getAttribute", {
+          enumerable: false,
+          configurable: true,
+          value: function(key) {
+            return this["_" + key];
+          }
+        });
       }
-      return _results;
+      this._getters || (this._getters = []);
+      this._getters.push(key);
+      Object.defineProperty(self, "_" + key, {
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(self, key, {
+        enumerable: true,
+        configurable: true
+      }, {
+        get: function() {
+          return this["_getAttribute"](key) || (callback ? this["_" + key] = callback.apply(this) : void 0);
+        }
+      });
+      return this;
     };
-    Dependencies.clearDependency = function(key) {
-      var file;
-      file = this.keys[key];
-      delete require.cache[require.resolve(file.path)];
-      global[key] = null;
-      delete global[key];
-      this.keys[key] = null;
-      return delete this.keys[key];
-    };
-    Dependencies.reloadModified = function() {
-      var file, key, keys, self, _results;
-      self = this;
-      keys = this.keys;
-      _results = [];
-      for (key in keys) {
-        file = keys[key];
-        _results.push(file.stale() ? (self.clearDependency(key), keys[key] = file, global[key] = require(file.path)) : void 0);
+    Class.setter = function(key, self) {
+      self || (self = this.prototype);
+      if (!self.hasOwnProperty("_setAttribute")) {
+        Object.defineProperty(self, method, {
+          enumerable: false,
+          configurable: true,
+          value: function(key, value) {
+            return this["_" + key] = value;
+          }
+        });
       }
-      return _results;
+      this._setters || (this._setters = []);
+      this._setters.push(key);
+      Object.defineProperty(self, "_" + key, {
+        enumerable: false,
+        configurable: true
+      });
+      Object.defineProperty(self, key, {
+        enumerable: true,
+        configurable: true,
+        set: function(value) {
+          return this["_setAttribute"](key, value);
+        }
+      });
+      return this;
     };
-    Dependencies.keys = {};
-    return Dependencies;
-  })();
-  Metro.Support.Lookup = (function() {
-    function Lookup(options) {
+    Class.classEval = function(block) {
+      return block.call(this);
+    };
+    Class.delegate = function(key, options) {
+      var to;
       if (options == null) {
         options = {};
       }
-      this.root = options.root;
-      this.extensions = this._normalizeExtensions(options.extensions);
-      this.aliases = this._normalizeAliases(options.aliases || {});
-      this.paths = this._normalizePaths(options.paths);
-      this.patterns = {};
-      this._entries = {};
-    }
-    Lookup.prototype.find = function(source) {
-      var basename, directory, path, paths, result, root, _i, _len;
-      source = source.replace(/(?:\/\.{2}\/|^\/)/g, "");
-      result = [];
-      root = this.root;
-      paths = source[0] === "." ? [Metro.Support.Path.absolutePath(source, root)] : this.paths.map(function(path) {
-        return Metro.Support.Path.join(path, source);
-      });
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        directory = Metro.Support.Path.dirname(path);
-        basename = Metro.Support.Path.basename(path);
-        if (this.pathsInclude(directory)) {
-          result = result.concat(this.match(directory, basename));
+      to = options.to;
+      if (typeof this.prototype[to] === "function") {
+        return this.prototype[key] = function() {
+          var _ref;
+          return (_ref = this[to]())[key].apply(_ref, arguments);
+        };
+      } else {
+        return Object.defineProperty(this.prototype, key, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this[to]()[key];
+          }
+        });
+      }
+    };
+    Class.delegates = function() {
+      var args, key, options, _i, _len, _results;
+      args = Array.prototype.slice.call(arguments, 0, arguments.length);
+      options = args.pop();
+      _results = [];
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        key = args[_i];
+        _results.push(this.delegate(key, options));
+      }
+      return _results;
+    };
+    Class.include = function(obj) {
+      var c, child, clone, cloned, included, key, newproto, oldproto, parent, value, _ref;
+      if (!obj) {
+        throw new Error('include(obj) requires obj');
+      }
+      this.extend(obj);
+      c = this;
+      child = this;
+      parent = obj;
+      clone = function(fct) {
+        var clone_, property;
+        clone_ = function() {
+          return fct.apply(this, arguments);
+        };
+        clone_.prototype = fct.prototype;
+        for (property in fct) {
+          if (fct.hasOwnProperty(property) && property !== "prototype") {
+            clone_[property] = fct[property];
+          }
         }
+        return clone_;
+      };
+      if (child.__super__) {
+        oldproto = child.__super__;
+      }
+      cloned = clone(parent);
+      newproto = cloned.prototype;
+      _ref = cloned.prototype;
+      for (key in _ref) {
+        value = _ref[key];
+        if (__indexOf.call(moduleKeywords, key) < 0) {
+          this.prototype[key] = value;
+        }
+      }
+      if (oldproto) {
+        cloned.prototype = oldproto;
+      }
+      child.__super__ = newproto;
+      included = obj.included;
+      if (included) {
+        included.apply(obj.prototype);
+      }
+      return this;
+    };
+    Class.extend = function(obj) {
+      var extended, key, value;
+      if (!obj) {
+        throw new Error('extend(obj) requires obj');
+      }
+      for (key in obj) {
+        value = obj[key];
+        if (__indexOf.call(moduleKeywords, key) < 0) {
+          this[key] = value;
+        }
+      }
+      extended = obj.extended;
+      if (extended) {
+        extended.apply(obj);
+      }
+      return this;
+    };
+    Class["new"] = function() {
+      return (function(func, args, ctor) {
+        ctor.prototype = func.prototype;
+        var child = new ctor, result = func.apply(child, args);
+        return typeof result === "object" ? result : child;
+      })(this, arguments, function() {});
+    };
+    Class.instanceMethods = function() {
+      var key, result;
+      result = [];
+      for (key in this.prototype) {
+        result.push(key);
       }
       return result;
     };
-    Lookup.prototype.pathsInclude = function(directory) {
-      var path, _i, _len, _ref;
-      _ref = this.paths;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        path = _ref[_i];
-        if (path.substr(0, directory.length) === directory) {
-          return true;
+    Class.classMethods = function() {
+      var key, result;
+      result = [];
+      for (key in this) {
+        result.push(key);
+      }
+      return result;
+    };
+    Class.prototype.instanceExec = function() {
+      var _ref;
+      return (_ref = arguments[0]).apply.apply(_ref, [this].concat(__slice.call(arguments.slice(1))));
+    };
+    Class.prototype.instanceEval = function(block) {
+      return block.apply(this);
+    };
+    Class.prototype.send = function(method) {
+      var _ref;
+      if (this[method]) {
+        return (_ref = this[method]).apply.apply(_ref, arguments);
+      } else {
+        if (this.methodMissing) {
+          return this.methodMissing.apply(this, arguments);
         }
+      }
+    };
+    Class.prototype.methodMissing = function(method) {};
+    return Class;
+  })();
+  _ref = Metro.Support.Class;
+  for (key in _ref) {
+    value = _ref[key];
+    Function.prototype[key] = valueclass(Metro.Support.Callbacks);
+  }
+  Metro.Support.Concern = (function() {
+    function Concern() {
+      Concern.__super__.constructor.apply(this, arguments);
+    }
+    Concern.included = function() {
+      this._dependencies || (this._dependencies = []);
+      if (this.hasOwnProperty("ClassMethods")) {
+        this.extend(this.ClassMethods);
+      }
+      if (this.hasOwnProperty("InstanceMethods")) {
+        return this.include(this.InstanceMethods);
+      }
+    };
+    Concern._appendFeatures = function() {};
+    return Concern;
+  })();
+  IE = (function() {
+    function IE() {}
+    return IE;
+  })();
+  Metro.Support.I18n = (function() {
+    function I18n() {}
+    I18n.defaultLanguage = "en";
+    I18n.translate = function(key, options) {
+      if (options == null) {
+        options = {};
+      }
+      if (options.hasOwnProperty("tense")) {
+        key += "." + options.tense;
+      }
+      if (options.hasOwnProperty("count")) {
+        switch (options.count) {
+          case 0:
+            key += ".none";
+            break;
+          case 1:
+            key += ".one";
+            break;
+          default:
+            key += ".other";
+        }
+      }
+      return this.interpolator().render(this.lookup(key, options.language), {
+        locals: options
+      });
+    };
+    I18n.t = I18n.translate;
+    I18n.lookup = function(key, language) {
+      var part, parts, result, _i, _len;
+      if (language == null) {
+        language = this.defaultLanguage;
+      }
+      parts = key.split(".");
+      result = this.store[language];
+      try {
+        for (_i = 0, _len = parts.length; _i < _len; _i++) {
+          part = parts[_i];
+          result = result[part];
+        }
+      } catch (error) {
+        result = null;
+      }
+      if (result == null) {
+        throw new Error("Translation doesn't exist for '" + key + "'");
+      }
+      return result;
+    };
+    I18n.store = {};
+    I18n.interpolator = function() {
+      return this._interpolator || (this._interpolator = new (require('shift').Mustache));
+    };
+    return I18n;
+  })();
+  Metro.Support.Number = {
+    isInt: function(n) {
+      return n === +n && n === (n | 0);
+    },
+    isFloat: function(n) {
+      return n === +n && n !== (n | 0);
+    }
+  };
+  _ = require('underscore');
+  Metro.Support.Object = {
+    isA: function(object, isa) {},
+    isHash: function() {
+      var object;
+      object = arguments[0] || this;
+      return _.isObject(object) && !(_.isFunction(object) || _.isArray(object));
+    },
+    isPresent: function(object) {
+      var key, value;
+      for (key in object) {
+        value = object[key];
+        return true;
       }
       return false;
-    };
-    Lookup.prototype.match = function(directory, basename) {
-      var entries, entry, i, match, matches, pattern, _i, _len, _len2;
-      entries = this.entries(directory);
-      pattern = this.pattern(basename);
-      matches = [];
-      for (_i = 0, _len = entries.length; _i < _len; _i++) {
-        entry = entries[_i];
-        if (Metro.Support.Path.isFile(Metro.Support.Path.join(directory, entry)) && !!entry.match(pattern)) {
-          matches.push(entry);
-        }
+    },
+    isBlank: function(object) {
+      var key, value;
+      for (key in object) {
+        value = object[key];
+        return false;
       }
-      matches = this.sort(matches, basename);
-      for (i = 0, _len2 = matches.length; i < _len2; i++) {
-        match = matches[i];
-        matches[i] = Metro.Support.Path.join(directory, match);
-      }
-      return matches;
-    };
-    Lookup.prototype.sort = function(matches, basename) {
-      return matches;
-    };
-    Lookup.prototype._normalizePaths = function(paths) {
-      var path, result, _i, _len;
-      result = [];
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        if (path !== ".." && path !== ".") {
-          result.push(Metro.Support.Path.absolutePath(path, this.root));
-        }
-      }
-      return result;
-    };
-    Lookup.prototype._normalizeExtension = function(extension) {
-      return extension.replace(/^\.?/, ".");
-    };
-    Lookup.prototype._normalizeExtensions = function(extensions) {
-      var extension, result, _i, _len;
-      result = [];
-      for (_i = 0, _len = extensions.length; _i < _len; _i++) {
-        extension = extensions[_i];
-        result.push(this._normalizeExtension(extension));
-      }
-      return result;
-    };
-    Lookup.prototype._normalizeAliases = function(aliases) {
-      var key, result, value;
-      if (!aliases) {
-        return null;
-      }
-      result = {};
-      for (key in aliases) {
-        value = aliases[key];
-        result[this._normalizeExtension(key)] = this._normalizeExtensions(value);
-      }
-      return result;
-    };
-    Lookup.prototype.escape = function(string) {
+      return true;
+    }
+  };
+  _ = require("underscore");
+  _.mixin(require("underscore.string"));
+  lingo = require("lingo").en;
+  Metro.Support.String = {
+    camelize: function() {
+      return _.camelize("_" + (arguments[0] || this));
+    },
+    constantize: function() {
+      return global[this.camelize.apply(this, arguments)];
+    },
+    underscore: function() {
+      return _.underscored(arguments[0] || this);
+    },
+    titleize: function() {
+      return _.titleize(arguments[0] || this);
+    }
+  };
+  Metro.Support.RegExp = {
+    escape: function(string) {
       return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    };
-    Lookup.prototype.escapeEach = function() {
+    },
+    escapeEach: function() {
       var args, i, item, result, _len;
       result = [];
       args = arguments[0];
@@ -1698,236 +2039,74 @@
         result[i] = this.escape(item);
       }
       return result;
-    };
-    Lookup.prototype.entries = function(path) {
-      var entries, entry, result, _i, _len;
-      if (!this._entries[path]) {
-        result = [];
-        if (Metro.Support.Path.exists(path)) {
-          entries = Metro.Support.Path.entries(path);
-        } else {
-          entries = [];
-        }
-        for (_i = 0, _len = entries.length; _i < _len; _i++) {
-          entry = entries[_i];
-          if (!entry.match(/^\.|~$|^\#.*\#$/)) {
-            result.push(entry);
-          }
-        }
-        this._entries[path] = result.sort();
-      }
-      return this._entries[path];
-    };
-    Lookup.prototype.pattern = function(source) {
-      var _base;
-      return (_base = this.patterns)[source] || (_base[source] = this.buildPattern(source));
-    };
-    Lookup.prototype.buildPattern = function(source) {
-      var extension, extensions, slug;
-      extension = Metro.Support.Path.extname(source);
-      slug = Metro.Support.Path.basename(source, extension);
-      extensions = [extension];
-      if (this.aliases[extension]) {
-        extensions = extensions.concat(this.aliases[extension]);
-      }
-      return new RegExp("^" + this.escape(slug) + "(?:" + this.escapeEach(extensions).join("|") + ").*");
-    };
-    return Lookup;
-  })();
-  fs = require('fs');
-  crypto = require('crypto');
-  mime = require('mime');
-  _path = require('path');
-  util = require('util');
-  Metro.Support.Path = (function() {
-    Path.stat = function(path) {
-      return fs.statSync(path);
-    };
-    Path.digestHash = function() {
-      return crypto.createHash('md5');
-    };
-    Path.digest = function(path, data) {
-      var stat;
-      stat = this.stat(path);
-      if (stat == null) {
-        return;
-      }
-      data || (data = this.read(path));
-      if (data == null) {
-        return;
-      }
-      return this.digestHash().update(data).digest("hex");
-    };
-    Path.read = function(path) {
-      return fs.readFileSync(path, "utf-8");
-    };
-    Path.readAsync = function(path, callback) {
-      return fs.readFile(path, "utf-8", callback);
-    };
-    Path.slug = function(path) {
-      return this.basename(path).replace(new RegExp(this.extname(path) + "$"), "");
-    };
-    Path.contentType = function(path) {
-      return mime.lookup(path);
-    };
-    Path.mtime = function(path) {
-      return this.stat(path).mtime;
-    };
-    Path.size = function(path) {
-      return this.stat(path).size;
-    };
-    Path.expandPath = function(path) {
-      return _path.normalize(path);
-    };
-    Path.absolutePath = function(path, root) {
-      if (root == null) {
-        root = this.pwd();
-      }
-      if (path.charAt(0) !== "/") {
-        path = root + "/" + path;
-      }
-      return _path.normalize(path);
-    };
-    Path.relativePath = function(path, root) {
-      if (root == null) {
-        root = this.pwd();
-      }
-      if (path[0] === ".") {
-        path = this.join(root, path);
-      }
-      return _path.normalize(path.replace(new RegExp("^" + Metro.Support.RegExp.escape(root + "/")), ""));
-    };
-    Path.pwd = function() {
-      return process.cwd();
-    };
-    Path.basename = function() {
-      return _path.basename.apply(_path, arguments);
-    };
-    Path.extname = function(path) {
-      return _path.extname(path);
-    };
-    Path.exists = function(path) {
-      return _path.existsSync(path);
-    };
-    Path.existsAsync = function(path, callback) {
-      return _path.exists(path, callback);
-    };
-    Path.extensions = function(path) {
-      return this.basename(path).match(/(\.\w+)/g);
-    };
-    Path.join = function() {
-      return Array.prototype.slice.call(arguments, 0, arguments.length).join("/").replace(/\/+/, "/");
-    };
-    Path.isUrl = function(path) {
-      return !!path.match(/^[-a-z]+:\/\/|^cid:|^\/\//);
-    };
-    Path.isAbsolute = function(path) {
-      return path.charAt(0) === "/";
-    };
-    Path.glob = function() {
-      var path, paths, result, _i, _len;
-      paths = Metro.Support.Array.extractArgs(arguments);
-      result = [];
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        if (this.exists(path)) {
-          result = result.concat(require('findit').sync(path));
-        }
-      }
-      return result;
-    };
-    Path.files = function() {
-      var path, paths, result, self, _i, _len;
-      paths = this.glob.apply(this, arguments);
-      result = [];
-      self = this;
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        if (self.isFile(path)) {
-          result.push(path);
-        }
-      }
-      return result;
-    };
-    Path.directories = function() {
-      var path, paths, result, self, _i, _len;
-      paths = this.glob.apply(this, arguments);
-      result = [];
-      self = this;
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        if (self.isDirectory(path)) {
-          result.push(path);
-        }
-      }
-      return result;
-    };
-    Path.entries = function(path) {
-      return fs.readdirSync(path);
-    };
-    Path.dirname = function(path) {
-      return _path.dirname(path);
-    };
-    Path.isDirectory = function(path) {
-      return this.stat(path).isDirectory();
-    };
-    Path.isFile = function(path) {
-      return !this.isDirectory(path);
-    };
-    Path.copy = function(from, to) {
-      var newFile, oldFile;
-      oldFile = fs.createReadStream(from);
-      newFile = fs.createWriteStream(to);
-      return newFile.once('open', function(data) {
-        return util.pump(oldFile, newFile);
-      });
-    };
-    Path.watch = function() {};
-    function Path(path) {
-      this.path = path;
-      this.previousMtime = this.mtime();
     }
-    Path.prototype.stale = function() {
-      var newMtime, oldMtime, result;
-      oldMtime = this.previousMtime;
-      newMtime = this.mtime();
-      result = oldMtime.getTime() !== newMtime.getTime();
-      this.previousMtime = newMtime;
-      return result;
+  };
+  Metro.Support.Time = (function() {
+    Time._lib = function() {
+      return require('moment');
     };
-    Path.prototype.stat = function() {
-      return this.constructor.stat(this.path);
+    Time.zone = function() {
+      return this;
     };
-    Path.prototype.contentType = function() {
-      return this.constructor.contentType(this.path);
+    Time.now = function() {
+      return new this();
     };
-    Path.prototype.mtime = function() {
-      return this.constructor.mtime(this.path);
+    function Time() {
+      this.moment = this.constructor._lib()();
+    }
+    Time.prototype.toString = function() {
+      return this._date.toString();
     };
-    Path.prototype.size = function() {
-      return this.constructor.size(this.path);
+    Time.prototype.beginningOfWeek = function() {};
+    Time.prototype.week = function() {
+      return parseInt(this.moment.format("w"));
     };
-    Path.prototype.digest = function() {
-      return this.constructor.digest(this.path);
+    Time.prototype.dayOfWeek = function() {
+      return this.moment.day();
     };
-    Path.prototype.extensions = function() {
-      return this.constructor.extensions(this.path);
+    Time.prototype.dayOfMonth = function() {
+      return parseInt(this.moment.format("D"));
     };
-    Path.prototype.extension = function() {
-      return this.constructor.extname(this.path);
+    Time.prototype.dayOfYear = function() {
+      return parseInt(this.moment.format("DDD"));
     };
-    Path.prototype.read = function() {
-      return this.constructor.read(this.path);
+    Time.prototype.meridiem = function() {
+      return this.moment.format("a");
     };
-    Path.prototype.readAsync = function(callback) {
-      return this.constructor.readAsync(this.path, callback);
+    Time.prototype.zoneName = function() {
+      return this.moment.format("z");
     };
-    Path.prototype.absolutePath = function() {
-      return this.constructor.absolutePath(this.path);
+    Time.prototype.strftime = function(format) {
+      return this.moment.format(format);
     };
-    Path.prototype.relativePath = function() {
-      return this.constructor.relativePath(this.path);
+    Time.prototype.beginningOfDay = function() {
+      this.moment.seconds(0);
+      return this;
     };
-    return Path;
+    Time.prototype.beginningOfWeek = function() {
+      this.moment.seconds(0);
+      this.moment.subtract('days', 6 - this.dayOfWeek());
+      return this;
+    };
+    Time.prototype.beginningOfMonth = function() {
+      this.moment.seconds(0);
+      this.moment.subtract('days', 6 - this.dayOfMonth());
+      return this;
+    };
+    Time.prototype.beginningOfYear = function() {
+      this.moment.seconds(0);
+      return this.moment.subtract('days', 6 - this.dayOfMonth());
+    };
+    Time.prototype.toDate = function() {
+      return this.moment._d;
+    };
+    return Time;
+  })();
+  Metro.Support.Time.TimeWithZone = (function() {
+    __extends(TimeWithZone, Metro.Support.Time);
+    function TimeWithZone() {
+      TimeWithZone.__super__.constructor.apply(this, arguments);
+    }
+    return TimeWithZone;
   })();
 }).call(this);

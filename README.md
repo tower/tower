@@ -1,6 +1,6 @@
 # Metro.js
 
-> Web Framework for the Rails-prone Node.js hackers.
+> Attention All Passengers:  Client and server are merging...  You may now begin coding.
 
 ## Features
 

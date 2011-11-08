@@ -20,7 +20,7 @@ require './metro/spec'
 Metro.configuration   = null
 Metro.logger          = new (require("common-logger"))(colorized: true)
 Metro.root            = process.cwd()
-Metro.publicPath     = process.cwd() + "/public"
+Metro.publicPath      = process.cwd() + "/public"
 Metro.env             = "test"
 Metro.port            = 1597
 Metro.cache           = null

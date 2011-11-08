@@ -7,6 +7,16 @@ Metro.Support.Array =
     unless typeof(args[args.length - 1]) == 'object'
       args.push({})
     args
+  
+  # {args, options} = _.args(arguments)  
+  args: (args) ->
+    args = Array.prototype.slice.call(args, 0, args.length)
+    unless typeof(args[args.length - 1]) == 'object'
+      options = {}
+    else
+      options = args.pop()
+    
+    args: args, options: options
     
   argsOptionsAndCallback: ->
     args = Array.prototype.slice.call(arguments)
