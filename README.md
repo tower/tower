@@ -36,6 +36,12 @@
 npm install metro
 ```
 
+To install Metro with development dependencies, use:
+
+``` bash
+npm install metro --dev
+```
+
 ## Structure
 
 ``` bash
@@ -299,6 +305,8 @@ Metro.Asset.configure
 
 The default interpolator is mustache.  You can swap that out with any template engine you want.
 
+Should use https://github.com/olado/doT, which seems to be the fastest: http://jsperf.com/dom-vs-innerhtml-based-templating/253.
+
 ``` coffeescript
 en:
   hello: "world"
@@ -331,3 +339,6 @@ cake coffee
 cake spec
 cake minify
 ```
+
+
+https://github.com/rstacruz/js2coffee

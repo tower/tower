@@ -4,14 +4,12 @@ _.mixin(require("underscore.string"))
 module.exports = global.Metro = Metro = {}
 
 require './metro/support'
-require './metro/asset'
 require './metro/application'
 require './metro/store'
 require './metro/model'
 require './metro/view'
 require './metro/controller'
 require './metro/route'
-require './metro/presenter'
 require './metro/middleware'
 require './metro/command'
 require './metro/generator'
@@ -27,9 +25,6 @@ Metro.cache           = null
 Metro.version         = "0.2.0"
 Metro.configure = (callback) ->
   callback.apply(@)
-
-Metro.env = -> 
-  process.env()
 
 Metro.application = Metro.Application.instance
 
@@ -66,12 +61,3 @@ Metro.locale =
         missingAttribute: "Missing %s in %s for '%s'"
       asset:
         notFound: "Asset not found: '%s'\n  Lookup paths: [\n%s\n  ]"
-
-Metro.engine = (extension) ->
-  @_engine ||= {}
-  @_engine[extension] ||= switch extension
-    when "less" then new (require("shift").Less)
-    when "styl", "stylus" then new (require("shift").Stylus)
-    when "coffee", "coffee-script" then new (require("shift").CoffeeScript)
-    when "jade" then new (require("shift").Jade)
-    when "mustache" then new (require("shift").Mustache)

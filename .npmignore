@@ -1,0 +1,11 @@
+*.coffee
+*.html
+.DS_Store
+.git*
+Cakefile
+wiki/
+examples/
+src/
+spec/
+favicon.ico
+Watchfile

@@ -1,4 +1,5 @@
 fs = require('fs')
+File  = require('pathfinder').File
 # https://github.com/fairfieldt/coffeescript-concat/blob/master/coffeescript-concat.coffee
 # https://github.com/serpentem/coffee-toaster
 # http://requirejs.org/
@@ -14,10 +15,10 @@ class Metro.Support.Dependencies
   @loadPath: (path) ->
     self  = @
     keys  = @keys
-    klass = Metro.Support.Path.basename(path).split(".")[0]
+    klass = File.basename(path).split(".")[0]
     klass = Metro.Support.String.camelize("_#{klass}")
     unless keys[klass]
-      keys[klass]   = new Metro.Support.Path(path)
+      keys[klass]   = new File(path)
       global[klass] = require(path)
       
   @clear: ->

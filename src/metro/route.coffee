@@ -14,7 +14,7 @@ class Metro.Route
     require "#{Metro.root}/config/routes"
   
   @teardown: ->
-    @store().clear()
+    @_store = []
     delete require.cache[require.resolve("#{Metro.root}/config/routes")]
     delete @_store
     
@@ -76,7 +76,7 @@ class Metro.Route
       result
     )
     
-    new RegExp('^' + path + '$', !!caseSensitive ? '' : 'i')
+    new RegExp('^' + path + '$', if !!caseSensitive then '' else 'i')
 
 require './route/dsl'
 

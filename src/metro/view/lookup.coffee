@@ -1,3 +1,5 @@
+Path = require('pathfinder').File
+
 class Metro.View.Lookup
   @initialize: ->
     @resolveLoadPaths()
@@ -7,8 +9,8 @@ class Metro.View.Lookup
   @teardown: ->
   
   @resolveLoadPaths: ->
-    file = Metro.Support.Path
-    @loadPaths = _.map @loadPaths, (path) -> file.expandPath(path)
+    file = Path
+    @loadPaths = _.map @loadPaths, (path) -> Path.absolutePath(path)
     
   @lookup: (view) ->  
     pathsByName = Metro.View.pathsByName

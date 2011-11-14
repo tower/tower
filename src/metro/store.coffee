@@ -1,4 +1,6 @@
 # Stores are the interface models use to find their data.
+# http://www.w3.org/TR/IndexedDB/
+# https://github.com/kriszyp/perstore
 Metro.Store =
   defaultLimit: 100
 
