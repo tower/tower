@@ -1,3 +1,6 @@
+Shift = require 'shift'
+File  = require('pathfinder').File
+
 class Metro.View.Rendering    
   render: ->  
     args = Array.prototype.slice.call(arguments, 0, arguments.length)
@@ -17,10 +20,10 @@ class Metro.View.Rendering
       options   = args[1]
       options.template = template
     
-    options  ?= {}
+    options  ||= {}
     options.locals = @context(options)
-    options.type ?= Metro.View.engine
-    options.engine = Metro.engine(options.type)
+    options.type ||= Metro.View.engine
+    options.engine = Shift.engine(options.type)
     if options.hasOwnProperty("layout") && options.layout == false
       options.layout = false
     else
@@ -39,13 +42,13 @@ class Metro.View.Rendering
     else
       unless options.inline
         template = Metro.View.lookup(options.template)
-        template = Metro.Support.Path.read(template)
+        template = File.read(template)
       options.engine.render(template, options.locals, callback)
   
   _renderLayout: (body, options, callback) ->
     if options.layout
       layout  = Metro.View.lookup("layouts/#{options.layout}")
-      layout  = Metro.Support.Path.read(layout)
+      layout  = File.read(layout)
       options.locals.yield = body
       
       options.engine.render(layout, options.locals, callback)

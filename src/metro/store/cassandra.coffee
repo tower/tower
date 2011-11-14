@@ -1,4 +1,4 @@
 # https://github.com/wadey/node-thrift
-class Cassandra
+class Metro.Store.Cassandra
   
-module.exports = Cassandra
+module.exports = Metro.Store.Cassandra

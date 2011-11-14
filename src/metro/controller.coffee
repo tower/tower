@@ -14,7 +14,7 @@ class Metro.Controller
     @initialize()
   
   @helper: (object) ->
-    @_helpers ?= []
+    @_helpers ||= []
     @_helpers.push(object)
   
   @layout: (layout) ->

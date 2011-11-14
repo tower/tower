@@ -1,0 +1,2 @@
+class Metro.Middleware.Rewrite
+  

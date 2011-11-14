@@ -1,5 +1,3 @@
-_ = require('underscore')
-
 Metro.Support.Object =
   isA: (object, isa) ->
     

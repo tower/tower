@@ -1,3 +1,3 @@
-class Local
+class Metro.Store.Local
   
-module.exports = Local
+module.exports = Metro.Store.Local

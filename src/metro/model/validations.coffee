@@ -13,7 +13,7 @@ class Metro.Model.Validations
       validators.push new Metro.Model.Validation(key, value, attributes...)
     
   @validators: ->
-    @_validators ?= []
+    @_validators ||= []
     
   validate: ->
     self        = @
@@ -28,6 +28,6 @@ class Metro.Model.Validations
     success
   
   errors: ->
-    @_errors ?= []
+    @_errors ||= []
   
 module.exports = Metro.Model.Validations

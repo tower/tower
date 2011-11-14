@@ -1,7 +1,7 @@
 # https://github.com/christkv/node-mongodb-native
 # http://mongoosejs.com/docs/embedded-documents.html
 # https://github.com/1602/jugglingdb/blob/master/lib/adapters/mongoose.js
-class Metro.Store.Mongo
+class Metro.Store.MongoDB
   @config:
     development:
       name: "metro-development"
@@ -76,4 +76,4 @@ class Metro.Store.Mongo
     
   sort: ->
     
-module.exports = Metro.Store.Mongo
+module.exports = Metro.Store.MongoDB

@@ -2,7 +2,7 @@ class Metro.Support.Concern
   constructor: -> super
   
   @included: ->
-    @_dependencies ?= []
+    @_dependencies ||= []
     @extend   @ClassMethods if @hasOwnProperty("ClassMethods")
     @include  @InstanceMethods if @hasOwnProperty("InstanceMethods")
   

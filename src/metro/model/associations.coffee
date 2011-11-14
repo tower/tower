@@ -41,7 +41,7 @@ class Metro.Model.Associations
     reflection
   
   @reflections: ->
-    @_reflections ?= {}
+    @_reflections ||= {}
     
   _getHasManyAssociation: (name) ->
     @constructor.reflections()[name].association(@id)

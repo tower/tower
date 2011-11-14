@@ -3,8 +3,7 @@
   Metro.Route = (function() {
     Route.include(Metro.Model.Scopes);
     Route.store = function() {
-      var _ref;
-      return (_ref = this._store) != null ? _ref : this._store = new Metro.Store.Memory;
+      return this._store || (this._store = new Metro.Store.Memory);
     };
     Route.create = function(route) {
       return this.store().create(route);
@@ -29,9 +28,7 @@
       return this;
     };
     function Route(options) {
-      if (options == null) {
-        options = options;
-      }
+      options || (options = options);
       this.path = options.path;
       this.name = options.name;
       this.method = options.method;
@@ -68,9 +65,7 @@
           optional: !!optional,
           splat: splat
         });
-        if (slash == null) {
-          slash = "";
-        }
+        slash || (slash = "");
         result = "";
         if (!optional || !splat) {
           result += slash;
@@ -99,10 +94,7 @@
   Metro.Route.DSL = (function() {
     function DSL() {}
     DSL.prototype.match = function() {
-      var _ref;
-      if ((_ref = this.scope) == null) {
-        this.scope = {};
-      }
+      this.scope || (this.scope = {});
       return Metro.Route.create(new Metro.Route(this._extractOptions.apply(this, arguments)));
     };
     DSL.prototype.get = function() {
@@ -256,12 +248,8 @@
         controller = to[0];
         action = to[1];
       }
-      if (controller == null) {
-        controller = options.controller || this.scope.controller;
-      }
-      if (action == null) {
-        action = options.action || this.scope.action;
-      }
+      controller || (controller = options.controller || this.scope.controller);
+      action || (action = options.action || this.scope.action);
       controller = controller.toLowerCase().replace(/(?:Controller)?$/, "Controller");
       action = action.toLowerCase();
       return {

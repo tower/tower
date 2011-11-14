@@ -11,7 +11,7 @@ class Metro.Model.Attributes
     @
     
   @keys: ->
-    @_keys ?= {}
+    @_keys ||= {}
     
   @attributeDefinition: (name) ->
     definition = @keys()[name]
@@ -27,7 +27,7 @@ class Metro.Model.Attributes
     attributes
   
   getAttribute: (name) ->
-    @attributes[name] ?= @constructor.keys()[name].defaultValue(@)
+    @attributes[name] ||= @constructor.keys()[name].defaultValue(@)
     
   @alias "get", "getAttribute" unless @hasOwnProperty("get")
   

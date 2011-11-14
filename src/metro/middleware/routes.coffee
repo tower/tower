@@ -1,5 +1,5 @@
-_url = require('url')
-_   = require('underscore')
+_url  = require('url')
+_     = require('underscore')
 
 class Metro.Middleware.Router
   @middleware: (request, result, next) -> (new Metro.Middleware.Router).call(request, result, next)

@@ -2,7 +2,7 @@ class Metro.Route
   @include Metro.Model.Scopes
   
   @store: ->
-    @_store ?= new Metro.Store.Memory
+    @_store ||= new Metro.Store.Memory
   
   @create: (route) ->
     @store().create(route)
@@ -14,7 +14,7 @@ class Metro.Route
     require "#{Metro.root}/config/routes"
   
   @teardown: ->
-    @store().clear()
+    @_store = []
     delete require.cache[require.resolve("#{Metro.root}/config/routes")]
     delete @_store
     
@@ -27,7 +27,7 @@ class Metro.Route
     @
   
   constructor: (options) ->
-    options    ?= options
+    options    ||= options
     @path       = options.path
     @name       = options.name
     @method     = options.method
@@ -59,7 +59,7 @@ class Metro.Route
         optional: !!optional
         splat:    splat
       
-      slash   ?= ""
+      slash   ||= ""
       result = ""
       if !optional || !splat
         result += slash
@@ -76,7 +76,7 @@ class Metro.Route
       result
     )
     
-    new RegExp('^' + path + '$', !!caseSensitive ? '' : 'i')
+    new RegExp('^' + path + '$', if !!caseSensitive then '' else 'i')
 
 require './route/dsl'
 

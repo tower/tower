@@ -1,3 +1,3 @@
-class PostgreSQL
+class Metro.Store.PostgreSQL
   
-module.exports = PostgreSQL
+module.exports = Metro.Store.PostgreSQL

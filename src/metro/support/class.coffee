@@ -15,19 +15,19 @@ class Metro.Support.Class
     @::[to] = @::[from]
 
   @accessor: (key, self, callback) ->
-    @_accessors ?= []
+    @_accessors ||= []
     @_accessors.push(key)
     @getter(key, self, callback)
     @setter(key, self)
     @
 
   @getter: (key, self, callback) ->
-    self    ?= @prototype
+    self    ||= @prototype
 
     unless self.hasOwnProperty("_getAttribute")
       Object.defineProperty self, "_getAttribute", enumerable: false, configurable: true, value: (key) -> @["_#{key}"]
 
-    @_getters ?= []
+    @_getters ||= []
     @_getters.push(key)
     Object.defineProperty self, "_#{key}", enumerable: false, configurable: true
     Object.defineProperty self, key, enumerable: true, configurable: true,
@@ -37,12 +37,12 @@ class Metro.Support.Class
     @
 
   @setter: (key, self) ->
-    self    ?= @prototype
+    self    ||= @prototype
 
     unless self.hasOwnProperty("_setAttribute")
       Object.defineProperty self, method, enumerable: false, configurable: true, value: (key, value) -> @["_#{key}"] = value
 
-    @_setters ?= []
+    @_setters ||= []
     @_setters.push(key)
     Object.defineProperty self, "_#{key}", enumerable: false, configurable: true
     Object.defineProperty self, key, enumerable: true, configurable: true, set: (value) -> @["_setAttribute"](key, value)

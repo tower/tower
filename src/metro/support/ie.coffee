@@ -1,5 +1,5 @@
 # Internet Explorer hacks
 # https://gist.github.com/1307821
-class IE
+class Metro.Support.IE
   
-module.exports = IE
+module.exports = Metro.Support.IE
