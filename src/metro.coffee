@@ -26,7 +26,10 @@ Metro.version         = "0.2.0"
 Metro.configure = (callback) ->
   callback.apply(@)
 
-Metro.application = Metro.Application.instance
+Metro.application = -> Metro.Application.instance
+
+Metro.run = (argv) ->
+  (new Metro.Command.Server(argv)).run()
 
 Metro.globalize = ->
   # add it to the function prototype!
@@ -44,8 +47,8 @@ Metro.raise = ->
     #if typeof(object) == "string" then object else require('util').inspect(object)
   throw new Error(message)
   
-Metro.initialize  = Metro.Application.initialize
-Metro.teardown    = Metro.Application.teardown
+Metro.initialize  = -> Metro.Application.initialize()
+Metro.teardown    = -> Metro.Application.teardown()
 
 # http://nodejs.org/docs/v0.3.1/api/http.html#response.headers
 Metro.get = ->

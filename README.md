@@ -340,5 +340,6 @@ cake spec
 cake minify
 ```
 
-
-https://github.com/rstacruz/js2coffee
+- https://github.com/rstacruz/js2coffee
+- http://momentjs.com/
+- http://sugarjs.com/

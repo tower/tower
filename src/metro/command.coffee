@@ -7,5 +7,6 @@ Metro.Command =
 
 require './command/generate'
 require './command/new'
+require './command/server'
 
 module.exports = Metro.Command

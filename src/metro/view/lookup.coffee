@@ -10,7 +10,7 @@ class Metro.View.Lookup
   
   @resolveLoadPaths: ->
     file = Path
-    @loadPaths = _.map @loadPaths, (path) -> Path.absolutePath(path)
+    @loadPaths = _.map @loadPaths, (path) -> Path.relativePath(path)
     
   @lookup: (view) ->  
     pathsByName = Metro.View.pathsByName
@@ -20,15 +20,18 @@ class Metro.View.Lookup
     pattern   = new RegExp(view + "$", "i")
     
     for template in templates
-      if template.split(".")[0].match(pattern)
+      dirname   = Path.dirname(template)
+      basename  = Path.basename(template).split(".")[0]
+      key       = "#{dirname}/#{basename}"
+      if key.match(pattern)
         pathsByName[view] = template
         return template
         
     return null
   
   @resolveTemplatePaths: ->
-    file           = require("file")
-    templatePaths = @paths
+    file            = require("file")
+    templatePaths   = @paths
     
     for path in Metro.View.loadPaths
       file.walkSync path, (_path, _directories, _files) ->
@@ -38,7 +41,7 @@ class Metro.View.Lookup
     
     templatePaths
   
-  @loadPaths:       ["./spec/spec-app/app/views"]
+  @loadPaths:       ["./app/views"]
   @paths:           []
   @pathsByName:     {}
   @engine:          "jade"
