@@ -42,7 +42,7 @@ class Metro.Application
   listen: ->
     unless Metro.env == "test"
       @server.listen(Metro.port)
-      console.log("Metro server listening on port #{Metro.port}")
+      console.log("Metro #{Metro.env} server listening on port #{Metro.port}")
   
   @run: ->
     Metro.Application.instance().stack()
