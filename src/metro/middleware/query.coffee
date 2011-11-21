@@ -2,9 +2,10 @@ url = require('url')
 qs  = require('qs')
 
 class Metro.Middleware.Query
-  @middleware: (request, result, next) -> (new Metro.Middleware.Query).call(request, result, next)
-  
-  call: (request, response, next) ->
+  constructor: (request, response, next) ->
+    unless @constructor == Metro.Middleware.Query
+      return new Metro.Middleware.Query(request, response, next)
+    
     request.uri   = url.parse(request.url)
     request.query = if ~request.url.indexOf('?') then qs.parse(request.uri.query) else {}
     next() if next?

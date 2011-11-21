@@ -1,29 +1,36 @@
 (function() {
-  var IE, key, lingo, moduleKeywords, value, _, _ref;
-  var __indexOf = Array.prototype.indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i] === item) return i;
-    }
-    return -1;
-  }, __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
-    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
-    function ctor() { this.constructor = child; }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor;
-    child.__super__ = parent.prototype;
-    return child;
-  };
-  Metro.Support = {};
+  var Namespace, key, moduleKeywords, value, _ref;
+  var __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Metro.Support = new (Namespace = (function() {
+
+    function Namespace() {}
+
+    return Namespace;
+
+  })());
+
   Metro.Support.Array = {
     extractArgs: function(args) {
       return Array.prototype.slice.call(args, 0, args.length);
     },
     extractArgsAndOptions: function(args) {
       args = Array.prototype.slice.call(args, 0, args.length);
-      if (typeof args[args.length - 1] !== 'object') {
-        args.push({});
-      }
+      if (typeof args[args.length - 1] !== 'object') args.push({});
       return args;
+    },
+    args: function(args) {
+      var options;
+      args = Array.prototype.slice.call(args, 0, args.length);
+      if (typeof args[args.length - 1] !== 'object') {
+        options = {};
+      } else {
+        options = args.pop();
+      }
+      return {
+        args: args,
+        options: options
+      };
     },
     argsOptionsAndCallback: function() {
       var args, callback, last, options;
@@ -34,16 +41,16 @@
         if (args.length >= 3) {
           if (typeof args[last - 1] === "object") {
             options = args[last - 1];
-            args = args.slice(0, (last - 2 + 1) || 9e9);
+            args = args.slice(0, (last - 2) + 1 || 9e9);
           } else {
             options = {};
-            args = args.slice(0, (last - 1 + 1) || 9e9);
+            args = args.slice(0, (last - 1) + 1 || 9e9);
           }
         } else {
           options = {};
         }
       } else if (args.length >= 2 && typeof args[last] === "object") {
-        args = args.slice(0, (last - 1 + 1) || 9e9);
+        args = args.slice(0, (last - 1) + 1 || 9e9);
         options = args[last];
         callback = null;
       } else {
@@ -91,9 +98,7 @@
         }
       };
       sortings = sortings.map(function(sorting) {
-        if (!(sorting instanceof Array)) {
-          sorting = [sorting, "asc"];
-        }
+        if (!(sorting instanceof Array)) sorting = [sorting, "asc"];
         if (sorting[1] === "desc") {
           sorting[1] = -1;
         } else {
@@ -106,15 +111,21 @@
       });
     }
   };
+
   moduleKeywords = ['included', 'extended', 'prototype'];
+
   Metro.Support.Class = (function() {
+
     function Class() {}
+
     Class.alias = function(to, from) {
       return this.prototype[to] = this.prototype[from];
     };
+
     Class.alias_method = function(to, from) {
       return this.prototype[to] = this.prototype[from];
     };
+
     Class.accessor = function(key, self, callback) {
       this._accessors || (this._accessors = []);
       this._accessors.push(key);
@@ -122,6 +133,7 @@
       this.setter(key, self);
       return this;
     };
+
     Class.getter = function(key, self, callback) {
       self || (self = this.prototype);
       if (!self.hasOwnProperty("_getAttribute")) {
@@ -149,6 +161,7 @@
       });
       return this;
     };
+
     Class.setter = function(key, self) {
       self || (self = this.prototype);
       if (!self.hasOwnProperty("_setAttribute")) {
@@ -175,14 +188,14 @@
       });
       return this;
     };
+
     Class.classEval = function(block) {
       return block.call(this);
     };
+
     Class.delegate = function(key, options) {
       var to;
-      if (options == null) {
-        options = {};
-      }
+      if (options == null) options = {};
       to = options.to;
       if (typeof this.prototype[to] === "function") {
         return this.prototype[key] = function() {
@@ -199,6 +212,7 @@
         });
       }
     };
+
     Class.delegates = function() {
       var args, key, options, _i, _len, _results;
       args = Array.prototype.slice.call(arguments, 0, arguments.length);
@@ -210,11 +224,10 @@
       }
       return _results;
     };
+
     Class.include = function(obj) {
       var c, child, clone, cloned, included, key, newproto, oldproto, parent, value, _ref;
-      if (!obj) {
-        throw new Error('include(obj) requires obj');
-      }
+      if (!obj) throw new Error('include(obj) requires obj');
       this.extend(obj);
       c = this;
       child = this;
@@ -232,45 +245,33 @@
         }
         return clone_;
       };
-      if (child.__super__) {
-        oldproto = child.__super__;
-      }
+      if (child.__super__) oldproto = child.__super__;
       cloned = clone(parent);
       newproto = cloned.prototype;
       _ref = cloned.prototype;
       for (key in _ref) {
         value = _ref[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) {
-          this.prototype[key] = value;
-        }
+        if (__indexOf.call(moduleKeywords, key) < 0) this.prototype[key] = value;
       }
-      if (oldproto) {
-        cloned.prototype = oldproto;
-      }
+      if (oldproto) cloned.prototype = oldproto;
       child.__super__ = newproto;
       included = obj.included;
-      if (included) {
-        included.apply(obj.prototype);
-      }
+      if (included) included.apply(obj.prototype);
       return this;
     };
+
     Class.extend = function(obj) {
       var extended, key, value;
-      if (!obj) {
-        throw new Error('extend(obj) requires obj');
-      }
+      if (!obj) throw new Error('extend(obj) requires obj');
       for (key in obj) {
         value = obj[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) {
-          this[key] = value;
-        }
+        if (__indexOf.call(moduleKeywords, key) < 0) this[key] = value;
       }
       extended = obj.extended;
-      if (extended) {
-        extended.apply(obj);
-      }
+      if (extended) extended.apply(obj);
       return this;
     };
+
     Class["new"] = function() {
       return (function(func, args, ctor) {
         ctor.prototype = func.prototype;
@@ -278,6 +279,7 @@
         return typeof result === "object" ? result : child;
       })(this, arguments, function() {});
     };
+
     Class.instanceMethods = function() {
       var key, result;
       result = [];
@@ -286,6 +288,7 @@
       }
       return result;
     };
+
     Class.classMethods = function() {
       var key, result;
       result = [];
@@ -294,61 +297,82 @@
       }
       return result;
     };
+
     Class.prototype.instanceExec = function() {
       var _ref;
       return (_ref = arguments[0]).apply.apply(_ref, [this].concat(__slice.call(arguments.slice(1))));
     };
+
     Class.prototype.instanceEval = function(block) {
       return block.apply(this);
     };
+
     Class.prototype.send = function(method) {
       var _ref;
       if (this[method]) {
         return (_ref = this[method]).apply.apply(_ref, arguments);
       } else {
-        if (this.methodMissing) {
-          return this.methodMissing.apply(this, arguments);
-        }
+        if (this.methodMissing) return this.methodMissing.apply(this, arguments);
       }
     };
+
     Class.prototype.methodMissing = function(method) {};
+
     return Class;
+
   })();
+
   _ref = Metro.Support.Class;
   for (key in _ref) {
     value = _ref[key];
     Function.prototype[key] = value;
   }
+
+  Metro.Support.Callbacks = (function() {
+
+    function Callbacks() {}
+
+    return Callbacks;
+
+  })();
+
   Metro.Support.Concern = (function() {
+
     function Concern() {
       Concern.__super__.constructor.apply(this, arguments);
     }
+
     Concern.included = function() {
       this._dependencies || (this._dependencies = []);
-      if (this.hasOwnProperty("ClassMethods")) {
-        this.extend(this.ClassMethods);
-      }
+      if (this.hasOwnProperty("ClassMethods")) this.extend(this.ClassMethods);
       if (this.hasOwnProperty("InstanceMethods")) {
         return this.include(this.InstanceMethods);
       }
     };
+
     Concern._appendFeatures = function() {};
+
     return Concern;
+
   })();
-  IE = (function() {
+
+  Metro.Support.IE = (function() {
+
     function IE() {}
+
     return IE;
+
   })();
+
   Metro.Support.I18n = (function() {
+
     function I18n() {}
+
     I18n.defaultLanguage = "en";
+
     I18n.translate = function(key, options) {
-      if (options == null) {
-        options = {};
-      }
-      if (options.hasOwnProperty("tense")) {
-        key += "." + options.tense;
-      }
+      if (options == null) options = {};
+      if (options.hasOwnProperty("tense")) key += "." + options.tense;
       if (options.hasOwnProperty("count")) {
         switch (options.count) {
           case 0:
@@ -365,12 +389,12 @@
         locals: options
       });
     };
+
     I18n.t = I18n.translate;
+
     I18n.lookup = function(key, language) {
       var part, parts, result, _i, _len;
-      if (language == null) {
-        language = this.defaultLanguage;
-      }
+      if (language == null) language = this.defaultLanguage;
       parts = key.split(".");
       result = this.store[language];
       try {
@@ -386,12 +410,17 @@
       }
       return result;
     };
+
     I18n.store = {};
+
     I18n.interpolator = function() {
       return this._interpolator || (this._interpolator = new (require('shift').Mustache));
     };
+
     return I18n;
+
   })();
+
   Metro.Support.Number = {
     isInt: function(n) {
       return n === +n && n === (n | 0);
@@ -400,7 +429,7 @@
       return n === +n && n !== (n | 0);
     }
   };
-  _ = require('underscore');
+
   Metro.Support.Object = {
     isA: function(object, isa) {},
     isHash: function() {
@@ -425,9 +454,7 @@
       return true;
     }
   };
-  _ = require("underscore");
-  _.mixin(require("underscore.string"));
-  lingo = require("lingo").en;
+
   Metro.Support.String = {
     camelize: function() {
       return _.camelize("_" + (arguments[0] || this));
@@ -442,6 +469,7 @@
       return _.titleize(arguments[0] || this);
     }
   };
+
   Metro.Support.RegExp = {
     escape: function(string) {
       return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -457,72 +485,99 @@
       return result;
     }
   };
+
   Metro.Support.Time = (function() {
+
     Time._lib = function() {
       return require('moment');
     };
+
     Time.zone = function() {
       return this;
     };
+
     Time.now = function() {
       return new this();
     };
+
     function Time() {
       this.moment = this.constructor._lib()();
     }
+
     Time.prototype.toString = function() {
       return this._date.toString();
     };
+
     Time.prototype.beginningOfWeek = function() {};
+
     Time.prototype.week = function() {
       return parseInt(this.moment.format("w"));
     };
+
     Time.prototype.dayOfWeek = function() {
       return this.moment.day();
     };
+
     Time.prototype.dayOfMonth = function() {
       return parseInt(this.moment.format("D"));
     };
+
     Time.prototype.dayOfYear = function() {
       return parseInt(this.moment.format("DDD"));
     };
+
     Time.prototype.meridiem = function() {
       return this.moment.format("a");
     };
+
     Time.prototype.zoneName = function() {
       return this.moment.format("z");
     };
+
     Time.prototype.strftime = function(format) {
       return this.moment.format(format);
     };
+
     Time.prototype.beginningOfDay = function() {
       this.moment.seconds(0);
       return this;
     };
+
     Time.prototype.beginningOfWeek = function() {
       this.moment.seconds(0);
       this.moment.subtract('days', 6 - this.dayOfWeek());
       return this;
     };
+
     Time.prototype.beginningOfMonth = function() {
       this.moment.seconds(0);
       this.moment.subtract('days', 6 - this.dayOfMonth());
       return this;
     };
+
     Time.prototype.beginningOfYear = function() {
       this.moment.seconds(0);
       return this.moment.subtract('days', 6 - this.dayOfMonth());
     };
+
     Time.prototype.toDate = function() {
       return this.moment._d;
     };
+
     return Time;
+
   })();
+
   Metro.Support.Time.TimeWithZone = (function() {
+
     __extends(TimeWithZone, Metro.Support.Time);
+
     function TimeWithZone() {
       TimeWithZone.__super__.constructor.apply(this, arguments);
     }
+
     return TimeWithZone;
+
   })();
+
 }).call(this);

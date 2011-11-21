@@ -1,44 +1,29 @@
 class Metro.Route
-  @include Metro.Model.Scopes
-  
-  @store: ->
-    @_store ||= new Metro.Store.Memory
+  @store: []
   
   @create: (route) ->
-    @store().create(route)
+    @store.push(route)
   
   @normalizePath: (path) ->
     "/" + path.replace(/^\/|\/$/, "")
-    
-  @initialize: ->
-    require "#{Metro.root}/config/routes"
-  
-  @teardown: ->
-    @_store = []
-    delete require.cache[require.resolve("#{Metro.root}/config/routes")]
-    delete @_store
-    
-  @reload: ->
-    @teardown()
-    @initialize()
   
   @draw: (callback) ->
     callback.apply(new Metro.Route.DSL(@))
     @
   
   constructor: (options) ->
-    options    ||= options
-    @path       = options.path
-    @name       = options.name
-    @method     = options.method
-    @ip         = options.ip
-    @defaults   = options.defaults || {}
+    options     ||= options
+    @path         = options.path
+    @name         = options.name
+    @method       = options.method
+    @ip           = options.ip
+    @defaults     = options.defaults || {}
     @constraints  = options.constraints
-    @options    = options
-    @controller = options.controller
-    @keys       = []
-    @pattern    = @extractPattern(@path)
-    @id         = @path
+    @options      = options
+    @controller   = options.controller
+    @keys         = []
+    @pattern      = @extractPattern(@path)
+    @id           = @path
     if @controller
       @id += @controller.name + @controller.action
     
@@ -61,9 +46,7 @@ class Metro.Route
       
       slash   ||= ""
       result = ""
-      if !optional || !splat
-        result += slash
-      
+      result += slash if !optional || !splat
       result += "(?:"
       # result += slash if optional
       if format?

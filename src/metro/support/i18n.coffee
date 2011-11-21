@@ -1,7 +1,7 @@
-class Metro.Support.I18n
-  @defaultLanguage: "en"
+Metro.Support.I18n =
+  defaultLanguage: "en"
   
-  @translate: (key, options = {}) ->
+  translate: (key, options = {}) ->
     if options.hasOwnProperty("tense")
       key += ".#{options.tense}"
     if options.hasOwnProperty("count")
@@ -12,9 +12,9 @@ class Metro.Support.I18n
     
     @interpolator().render(@lookup(key, options.language), locals: options)
     
-  @t: @translate
-    
-  @lookup: (key, language = @defaultLanguage) ->
+  t: @::translate
+  
+  lookup: (key, language = @defaultLanguage) ->
     parts   = key.split(".")
     result  = @store[language]
     
@@ -28,9 +28,9 @@ class Metro.Support.I18n
     
     result
     
-  @store: {}
-    
-  @interpolator: ->
+  store: {}
+  
+  interpolator: ->
     @_interpolator ||= new (require('shift').Mustache)
-    
+  
 module.exports = Metro.Support.I18n

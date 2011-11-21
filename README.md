@@ -94,25 +94,66 @@ npm install metro --dev
 |        `-- posts.coffee
 ```
 
+## Tips
+
+#### Create a namespace for your app.
+
+This makes it so you don't have to use `require` everywhere on the client, setting the same variable over and over again.
+
+``` coffeescript
+class MyApp.User
+  @include Metro.Model
+```
+
+or
+
+``` coffeescript
+class User
+  @include Metro.Model
+
+MyApp.User = User
+```
+
+Instead of
+
+``` coffeescript
+# user.coffee
+class User
+  @include Metro.Model
+
+module.exports = User
+
+# somewhere else
+User = require('../app/models/user')
+```
+
+Because of the naming/folder conventions, you can get away with this without any worries.  It also decreases the final output code :)
+
 ## Generator
 
 ``` bash
 metro new my-app
 ```
 
+## App
+
+``` coffeescript
+# index.coffee
+class Movement extends Metro.Application
+```
+
 ## Routes
 
 ``` coffeescript
 # config/routes.coffee
-Metro.Route.draw ->
-  @match "/login",          to: "sessions#new", via: "get", as: "login"
-  
-  @match "/posts",          to: "posts#index", via: "get"
-  @match "/posts/:id/edit", to: "posts#edit", via: "get"
-  @match "/posts/:id",      to: "posts#show", via: "get"
-  @match "/posts",          to: "posts#create", via: "post"
-  @match "/posts/:id",      to: "posts#update", via: "put"
-  @match "/posts/:id",      to: "posts#destroy", via: "delete"
+route "/login",         "sessions#new", via: "get", as: "login"
+                        
+route "/posts",         "posts#index", via: "get"
+route "/posts/:id/edit","posts#edit", via: "get"
+route "/posts/:id",     "posts#show", via: "get"
+route "/posts",         "posts#create", via: "post"
+route "/posts/:id",     "posts#update", via: "put"
+route "/posts/:id",     "posts#destroy", via: "delete"
 ```
 
 Routes are really just models, `Metro.Route`.  You can add and remove and search them however you like:
@@ -154,9 +195,7 @@ User.where(firstName: "=~": "a").order(["firstName", "desc"]).all()
 ## Controllers
 
 ``` coffeescript
-class PostsController
-  @include Metro.Controller
-  
+class PostsController extends Metro.Controller
   index: ->
     @posts = Post.all()
     
@@ -190,11 +229,8 @@ class PostsController
 There's a unified interface to the different types of stores, so you can use the model and have it transparently manage data.  For example, for the browser, you can use the memory store, and for the server, you can use the mongodb store.  Redis, PostgreSQL, and Neo4j are in the pipeline.
 
 ``` coffeescript
-class PageView
-  @include Metro.Model
-  
-  @store: ->
-    @_store ?= new Metro.Store.Redis
+class PageView extents Metro.Model
+  @store "redis"
 ```
 
 ## Views
@@ -245,7 +281,7 @@ Those methods pass through the router and client-side middleware so you have acc
 
 ``` coffeescript
 # config/application.coffee
-class MyApp.Application extends Metro.Application
+class MyApp extends Metro.Application
   @config.encoding = "utf-8"
   @config.filterParameters += ["password", "password_confirmation"]
   @config.loadPaths += ["./themes"]
@@ -253,53 +289,7 @@ class MyApp.Application extends Metro.Application
 MyApp.Application.initialize()
 ```
 
-## Assets
-
-``` coffeescript
-# below are all of the configuration defaults
-Metro.Asset.configure
-  publicPath:             "#{Metro.root}/public"
-  loadPaths:              [
-    "#{Metro.root}/app/assets",
-    "#{Metro.root}/lib/assets",
-    "#{Metro.root}/vendor/assets"
-  ]
-  
-  stylesheetDirectory:   "stylesheets"
-  stylesheetExtensions:  ["css", "styl", "scss", "less"]
-  stylesheetAliases:
-    css:                  ["styl", "less", "scss", "sass"]
-  
-  javascriptDirectory:   "javascripts"
-  javascriptExtensions:  ["js", "coffee", "ejs"]
-  javascriptAliases:
-    js:                   ["coffee", "coffeescript"]
-    coffee:               ["coffeescript"]
-  
-  imageDirectory:        "images"
-  imageExtensions:       ["png", "jpg", "gif"]
-  imageAliases:
-    jpg:                  ["jpeg"]
-  
-  fontDirectory:         "fonts"
-  fontExtensions:        ["eot", "svg", "tff", "woff"]
-  fontAliases:           {}
-  
-  host:                   null
-  relativeRootUrl:      null
-
-  precompile:             []
-  
-  jsCompressor:          null
-  cssCompressor:         null
-  
-  enabled:                true
-  
-  manifest:               "/public/assets"
-  # live compilation
-  compile:                true
-  prefix:                 "assets"
-```
+## Watchfile
 
 ## Internationalization
 
@@ -343,3 +333,11 @@ cake minify
 - https://github.com/rstacruz/js2coffee
 - http://momentjs.com/
 - http://sugarjs.com/
+- http://rickharrison.github.com/validate.js/
+- https://github.com/javve/list
+- http://debuggable.com/posts/testing-node-js-modules-with-travis-ci:4ec62298-aec4-4ee3-8b5a-2c96cbdd56cb
+- http://dtrace.org/resources/bmc/QCon.pdf
+- http://derbyjs.com/
+- http://www.html5rocks.com/en/tutorials/file/filesystem/
+- https://github.com/gregdingle/genetify
+- https://github.com/jquery/qunit

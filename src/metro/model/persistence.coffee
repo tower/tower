@@ -1,47 +1,57 @@
-class Metro.Model.Persistence
-  #constructor: -> super
+Metro.Model.Persistence =
+  ClassMethods:
+    create: (attrs) ->
+      @store().create(new @(attrs))
+    
+    update: ->
+    
+    deleteAll: ->
+      @store().clear()
   
-  @create: (attrs) ->
-    record = new @(attrs)
-    @store().create(record)
-    record
+  InstanceMethods:
+    isNew: ->
+      !!!attributes.id
     
-  @update: ->
+    save: (options) ->
+    
+    update: (options) ->
+    
+    reset: ->
   
-  @deleteAll: ->
-    @store().clear()
+    updateAttribute: (name, value) ->
     
-  isNew: ->
-    !!!attributes.id
+    updateAttributes: (attributes) ->
     
-  save: (options) ->
-    runCallbacks ->
+    increment: (attribute, amount = 1) ->
     
-  update: (options) ->
+    decrement: (attribute, amount = 1) ->
     
-  reset: ->
+    reload: ->
     
-  @alias "reload", "reset"
+    delete: ->
+    
+    destroy: ->
   
-  updateAttribute: (name, value) ->
-    
-  updateAttributes: (attributes) ->
-    
-  increment: (attribute, amount = 1) ->
-    
-  decrement: (attribute, amount = 1) ->
-    
-  reload: ->
-    
-  delete: ->
-    
-  destroy: ->
+    createOrUpdate: ->
   
-  createOrUpdate: ->
-  
-  isDestroyed: ->
+    isDestroyed: ->
     
-  isPersisted: ->
-  
-  
+    isPersisted: ->
+    
+    isDirty: ->
+      Metro.Support.Object.isPresent(@changes())
+
+    _trackChangedAttribute: (attribute, value) ->
+      array       = @changes[attribute] ||= []
+      beforeValue = array[0] ||= @attributes[attribute]
+      array[1]    = value
+      array       = null if array[0] == array[1]
+
+      if array
+        @changes[attribute] = array
+      else
+        delete @changes[attribute]
+
+      beforeValue
+
 module.exports = Metro.Model.Persistence

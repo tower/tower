@@ -1,7 +1,8 @@
-fs      = require('fs')
-findit  = require('./node_modules/findit')
+fs      = require 'fs'
+findit  = require './node_modules/findit'
 async   = require './node_modules/async'
 Shift   = require './node_modules/shift'
+gzip    = require 'gzip'
 engine  = new Shift.CoffeeScript
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
@@ -35,30 +36,88 @@ compileEach = (root, check, callback) ->
     fs.writeFile "./dist/metro/#{root}.js", result
     unless error
       fs.writeFile "./dist/metro/#{root}.min.js", compressor.render(result)
-
-task 'build', ->  
-  # models
-  result = ''
+      
+obscurify = (content) ->
+  replacements = {}
+  replacements[process.env.NS || "Metro"] = "Metro" # use "M" for ultimate compression
+  replacements["_C"]  = "ClassMethods"
+  replacements["_I"]  = "InstanceMethods"
+  replacements["_"]   = /Metro\.Support\.(String|Object|Number|Array|RegExp)/
   
-  compileEach 'model', null, (code) ->
+  for replacement, lookup of replacements
+    content = content.replace(lookup, replacement)
+    
+  content
+    
+task 'to-underscore', ->
+  _modules  = ["string", "object", "number", "array", "regexp"]
+  result    = "_.mixin\n"
+  
+  for _module in _modules
+    content = fs.readFileSync("./src/metro/support/#{_module}.coffee", "utf-8") + "\n"
+    content = content.replace(/Metro\.Support\.\w+\ *=\ */g, "")
+    result += content
+    
+  path  = "dist/metro.support.underscore.js"  
+  sizes = []
+  
+  result = obscurify(result)
+  
+  engine.render result, (error, result) ->
+    return console.log(error) if error
+    
+    fs.writeFileSync(path, result)
+    
+    sizes.push "Normal: #{fs.statSync(path).size}"
+    exec "mate #{path}"
+    #compressor = new Shift.UglifyJS
+    #
+    #compressor.render result, (error, result) ->
+    #  fs.writeFileSync(path, result)
+    #  
+    #  sizes.push "Minfied: #{fs.statSync(path).size}"
+      
+      #gzip result, (error, result) ->
+      #  
+      #  fs.writeFileSync(path, result)
+      #  
+      #  sizes.push "Minified & Gzipped: #{fs.statSync(path).size}"
+      #  
+      #  console.log sizes.join("\n")
+
+task 'build', ->
+  result = """
+window.global ||= window
+window.Metro    = new (class Namespace)
+require = -> {}
+
+"""
+  result += fs.readFileSync("./src/metro/application/configuration.coffee", "utf-8") + "\n"
+  result += fs.readFileSync("./src/metro/application.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
+  result += fs.readFileSync("./src/metro/application/client.coffee", "utf-8") + "\n"
+  
+  compileEach 'support', ((path) -> !!!path.match(/(path|lookup|dependencies)/)), (code) ->
     result += code
-    compileEach 'view', null, (code) ->
+    compileEach 'model', null, (code) ->
       result += code
-      compileEach 'controller', null, (code) ->
+      compileEach 'view', null, (code) ->
         result += code
-        compileEach 'route', null, (code) ->
+        compileEach 'controller', null, (code) ->
           result += code
-          compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
+          compileEach 'route', null, (code) ->
             result += code
-            compileEach 'support', ((path) -> !!!path.match(/(path|lookup|dependencies)/)), (code) ->
+            compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
               result += code
-            
+              
+              result += "\nMetro.Middleware = new (class Namespace)\n"
+              result += fs.readFileSync("./src/metro/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
+              
               engine.render result, bare: false, (error, result) ->
+                console.log error.stack if error
                 fs.writeFile "./dist/metro.js", result
                 unless error
                   fs.writeFile "./dist/metro.min.js", compressor.render(result)
             
-
 task 'build-generic', ->
   paths   = findit.sync('./src')
   result  = ''

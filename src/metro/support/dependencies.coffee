@@ -7,12 +7,13 @@ File  = require('pathfinder').File
 # global.require = (path) ->
 #   Metro.Support.Dependencies.loadPath(path)
 
-class Metro.Support.Dependencies
-  @load: (directory) ->
-    paths = require('findit').sync directory
-    @loadPath(path) for path in paths
+Metro.Support.Dependencies =
+  load: (directory) ->
+    paths = File.files(directory)
+    for path in paths
+      @loadPath(path) if !!path.match(/\.(coffee|js)/)
   
-  @loadPath: (path) ->
+  loadPath: (path) ->
     self  = @
     keys  = @keys
     klass = File.basename(path).split(".")[0]
@@ -21,10 +22,10 @@ class Metro.Support.Dependencies
       keys[klass]   = new File(path)
       global[klass] = require(path)
       
-  @clear: ->
+  clear: ->
     @clearDependency(key) for key, file of @keys
   
-  @clearDependency: (key) ->
+  clearDependency: (key) ->
     file = @keys[key]
     delete require.cache[require.resolve(file.path)]
     global[key] = null
@@ -32,7 +33,7 @@ class Metro.Support.Dependencies
     @keys[key] = null
     delete @keys[key]
     
-  @reloadModified: ->
+  reloadModified: ->
     self = @
     keys = @keys
     for key, file of keys
@@ -41,6 +42,6 @@ class Metro.Support.Dependencies
         keys[key]   = file
         global[key] = require(file.path)
     
-  @keys: {}
+  keys: {}
     
 module.exports = Metro.Support.Dependencies

@@ -1,12 +1,20 @@
-class Metro.View  
+class Metro.View extends Metro.Object
+  @extend
+    loadPaths:       ["./app/views"]
+    paths:           []
+    pathsByName:     {}
+    engine:          "jade"
+    prettyPrint:     false
+    store: (store) ->
+      @_store = store if store
+      @_store ||= new Metro.Store.FileSystem
+    
   constructor: (controller) ->
     @controller = controller || (new Metro.Controller)
+  
+  store: ->
+    @constructor.store()
 
 require './view/helpers'
-require './view/lookup'
-require './view/rendering'
-
-Metro.View.include Metro.View.Lookup
-Metro.View.include Metro.View.Rendering
 
 module.exports = Metro.View

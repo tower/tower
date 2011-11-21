@@ -1,46 +1,11 @@
 Metro.Support.Array =
-  extractArgs: (args) ->
-    Array.prototype.slice.call(args, 0, args.length)
+  args: (args, index = 0, withCallback = false, withOptions = false) ->
+    args = Array.prototype.slice.call(args, index, args.length)
     
-  extractArgsAndOptions: (args) ->
-    args = Array.prototype.slice.call(args, 0, args.length)
-    unless typeof(args[args.length - 1]) == 'object'
-      args.push({})
+    if withCallback && !(args.length >= 2 && typeof(args[args.length - 1]) == "function")
+      throw new Error("You must pass a callback to the render method")
+      
     args
-  
-  # {args, options} = _.args(arguments)  
-  args: (args) ->
-    args = Array.prototype.slice.call(args, 0, args.length)
-    unless typeof(args[args.length - 1]) == 'object'
-      options = {}
-    else
-      options = args.pop()
-    
-    args: args, options: options
-    
-  argsOptionsAndCallback: ->
-    args = Array.prototype.slice.call(arguments)
-    last = args.length - 1
-    if typeof args[last] == "function"
-      callback = args[last]
-      if args.length >= 3
-        if typeof args[last - 1] == "object"
-          options = args[last - 1]
-          args = args[0..last - 2]
-        else
-          options = {}
-          args = args[0..last - 1]
-      else
-        options = {}
-    else if args.length >= 2 && typeof(args[last]) == "object"
-      args      = args[0..last - 1]
-      options   = args[last]
-      callback  = null
-    else
-      options   = {}
-      callback  = null
-    
-    [args, options, callback]
   
   # Sort objects by one or more attributes.
   # 
@@ -49,7 +14,7 @@ Metro.Support.Array =
   #     sortObjects deals, ["city", ["price", "desc"]], city: cityPrimer
   # 
   sortBy: (objects) ->
-    sortings  = Array.prototype.slice.call(arguments, 1, arguments.length)
+    sortings  = @args(arguments, 1)
     callbacks = if sortings[sortings.length - 1] instanceof Array then {} else sortings.pop()
     
     valueComparator = (x, y) ->
@@ -85,5 +50,3 @@ Metro.Support.Array =
     
     objects.sort (a, b) ->
       arrayComparator a, b
-  
-module.exports = Metro.Support.Array

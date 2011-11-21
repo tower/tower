@@ -1,8 +1,6 @@
-class Metro.Controller.Rendering
-  constructor: -> super
-  
+Metro.Controller.Rendering =
   render: ->
-    args = Array.prototype.slice.call(arguments, 0, arguments.length)
+    args = Metro.Support.Array.args(arguments)
     
     if args.length >= 2 && typeof(args[args.length - 1]) == "function"
       callback = args.pop()
@@ -13,8 +11,10 @@ class Metro.Controller.Rendering
     self = @
     
     args.push finish = (error, body) ->
-      self.body = body
-      self.body ||= error.toString()
+      if error
+        self.body = error.stack
+      else
+        self.body = body
       callback(error, body) if callback
       self.callback()
     

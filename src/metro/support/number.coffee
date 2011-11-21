@@ -1,4 +1,4 @@
-Metro.Support.Number = 
+Metro.Support.Number =    
   isInt: (n) -> 
     # typeof(n) == 'number' && n % 1 == 0
     n == +n && n == (n|0)

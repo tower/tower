@@ -319,9 +319,9 @@ class Metro.Route.DSL
     controller   ||= (options.controller || @scope.controller)
     action       ||= (options.action || @scope.action)
     
-    controller  = controller.toLowerCase().replace(/(?:Controller)?$/, "Controller")
+    controller  = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller")
     action      = action.toLowerCase()
     
-    name: controller, action: action, className: _.camelize("_#{controller}")
+    name: controller, action: action, className: Metro.Support.String.camelize("_#{controller}")
 
 module.exports = Metro.Route.DSL

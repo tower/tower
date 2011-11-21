@@ -1,35 +1,36 @@
-class Metro.Model
-  @initialize: ->
-    Metro.Support.Dependencies.load("#{Metro.root}/app/models")
-    
-  @teardown: ->
-    delete @_store
-  
-  # Add the global store to your model.
-  # 
-  #     @store: new Metro.Store.Memory
-  @store: ->
-    @_store ||= new Metro.Store.Memory
-  
+class Metro.Model extends Metro.Object
   constructor: (attrs = {}) ->
-    attributes  = {}
     definitions = @constructor.keys()
+    attributes  = {}
     
     for key, value of attrs
-      attributes[key] = value
-      
-    for name, definition of definitions
-      attributes[name] ||= definition.defaultValue(@) unless attrs.hasOwnProperty(name)
+      attributes[key] = @typecast(value)
     
-    @attributes = @typeCastAttributes(attributes)
-    @changes    = {}
+    for name, definition of definitions
+      attributes[name] ||= @typecast(definition.defaultValue(@)) unless attrs.hasOwnProperty(name)
+    
+    @attributes   = attributes
+    @changes      = {}
+    @associations = {}
+    @errors       = []
+  
+  toLabel: ->
+    @className()
+    
+  toPath: ->
+    @constructor.toParam() + "/" + @toParam()
+    
+  toParam: ->
+    @get("id").toString()
+    
+  @toParam: ->
+    Metro.Support.String.parameterize(@className())
 
 require './model/scope'
 require './model/association'
 require './model/associations'
 require './model/attribute'
 require './model/attributes'
-require './model/dirty'
 require './model/persistence'
 require './model/reflection'
 require './model/scopes'
@@ -42,7 +43,6 @@ Metro.Model.include Metro.Model.Scopes
 Metro.Model.include Metro.Model.Serialization
 Metro.Model.include Metro.Model.Associations
 Metro.Model.include Metro.Model.Validations
-Metro.Model.include Metro.Model.Dirty
 Metro.Model.include Metro.Model.Attributes
 
 module.exports = Metro.Model

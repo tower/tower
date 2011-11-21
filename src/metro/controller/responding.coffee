@@ -1,11 +1,8 @@
-class Metro.Controller.Responding
-  #constructor: -> super
-  
-  #@include Metro.Support.Concern
-    
-  @respondTo: ->
-    @_respondTo ||= []
-    @_respondTo = @_respondTo.concat(arguments)
+Metro.Controller.Responding =
+  ClassMethods:
+    respondTo: ->
+      @_respondTo ||= []
+      @_respondTo = @_respondTo.concat(Metro.Support.Array.args(arguments))
     
   respondWith: ->
     data  = arguments[0]
@@ -33,24 +30,20 @@ class Metro.Controller.Responding
     
     if @format && @format != "undefined"
       @contentType = Metro.Support.Path.contentType(@format)
-    else 
+    else
       @contentType = "text/html"
     @process()
     
-  process: ->  
+  process: ->
     @processQuery()
     
     @[@params.action]()
     
   processQuery: ->
   
-  constructor: ->
-    @headers      = {}
-    @status       = 200
-    @request      = null
-    @response     = null
-    @contentType = "text/html"
-    @params       = {}
-    @query        = {}
+  clear: ->
+    @request  = null
+    @response = null
+    @headers  = null
     
 module.exports = Metro.Controller.Responding

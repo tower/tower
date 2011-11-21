@@ -1,39 +1,13 @@
-Shift = require 'shift'
-File  = require('pathfinder').File
-
-class Metro.View.Rendering    
-  render: ->  
-    args = Array.prototype.slice.call(arguments, 0, arguments.length)
+Metro.View.Rendering =
+  render: (options, callback) ->
+    options.locals      = @_renderingContext(options)
+    options.layout      = @controller.layout() unless options.hasOwnProperty("layout")
     
-    unless args.length >= 2 && typeof(args[args.length - 1]) == "function"
-      throw new Error("You must pass a callback to the render method")
-    
-    callback = args.pop()
-    
-    if args.length == 1
-      if typeof(args[0]) == "string"
-        options = template: args[0]
-      else
-        options = args[0]
-    else
-      template  = args[0]
-      options   = args[1]
-      options.template = template
-    
-    options  ||= {}
-    options.locals = @context(options)
-    options.type ||= Metro.View.engine
-    options.engine = Shift.engine(options.type)
-    if options.hasOwnProperty("layout") && options.layout == false
-      options.layout = false
-    else
-      options.layout = options.layout || @controller.layout()
-      
     self = @
     
     @_renderBody options, (error, body) ->
       self._renderLayout(body, options, callback)
-    
+      
   _renderBody: (options, callback) ->
     if options.text
       callback(null, options.text)
@@ -41,29 +15,35 @@ class Metro.View.Rendering
       callback(null, if typeof(options.json) == "string" then options.json else JSON.stringify(options.json))
     else
       unless options.inline
-        template = Metro.View.lookup(options.template)
-        template = File.read(template)
-      options.engine.render(template, options.locals, callback)
+        options.template = @store().find(path: options.template)
+      @_renderString(options.template, options, callback)
   
   _renderLayout: (body, options, callback) ->
     if options.layout
-      layout  = Metro.View.lookup("layouts/#{options.layout}")
-      layout  = File.read(layout)
+      layout  = @store().find(path: layout)
       options.locals.yield = body
       
       options.engine.render(layout, options.locals, callback)
     else
       callback(null, body)
+      
+  _renderString: (string, options = {}, callback) ->
+    if options.type
+      engine = require("shift").engine(type)
+    else
+      engine = require("shift")
+      
+    engine.render(string, options.locals, callback)
   
-  context: (options) ->
-    controller = @controller
-    locals = {}
-    for key of controller
-      locals[key] = controller[key] unless key == "constructor"
-    locals  = require("underscore").extend(locals, @locals || {}, options.locals)
+  _renderingContext: (options) ->
+    controller    = @controller
+    locals        = {}
     
-    locals.pretty = true if Metro.View.prettyPrint
+    for key, value of controller
+      locals[key] = value unless key == "constructor"
     
+    locals        = Metro.Support.Object.extend(locals, @locals || {}, options.locals)
+    locals.pretty = true if @constructor.prettyPrint
     locals
   
 module.exports = Metro.View.Rendering
