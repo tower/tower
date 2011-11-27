@@ -1,14 +1,15 @@
 require '../lib/metro'
 # require './secrets'
 
-Metro.root        = process.cwd() + "/spec/spec-app"
-Metro.publicPath  = Metro.root + "/public"
-Metro.View.loadPaths = ["./spec/spec-app/app/views"]
+Metro.root            = process.cwd() + "/spec/spec-app"
+Metro.publicPath      = Metro.root + "/public"
+Metro.env             = "test"
+Metro.View.loadPaths  = ["./spec/spec-app/app/views"]
 
-Metro.Model.initialize()
+Metro.Application.instance().initialize()
 
 beforeEach ->
-  Metro.Application.teardown()
-  Metro.Application.initialize()
-  Metro.root        = process.cwd() + "/spec/spec-app"
-  Metro.publicPath = Metro.root + "/public"
+  Metro.Application.instance().teardown()
+  Metro.Application.instance().initialize()
+  Metro.root          = process.cwd() + "/spec/spec-app"
+  Metro.publicPath    = Metro.root + "/public"

@@ -17,10 +17,11 @@ Metro.Support.Dependencies =
     self  = @
     keys  = @keys
     klass = File.basename(path).split(".")[0]
-    klass = Metro.Support.String.camelize("_#{klass}")
+    klass = Metro.Support.String.camelize("#{klass}")
+    
     unless keys[klass]
       keys[klass]   = new File(path)
-      global[klass] = require(path)
+      global[klass] ||= require(path)
       
   clear: ->
     @clearDependency(key) for key, file of @keys

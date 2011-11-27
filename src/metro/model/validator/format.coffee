@@ -4,10 +4,12 @@ class Metro.Model.Validator.Format
     
     @value = if typeof(value) == 'string' then new RegExp(value) else value
   
-  validate: (record, attribute) ->
+  validate: (record, attribute, errors) ->
     value = record[attribute]
     unless !!@value.exec(value)
-      errors.push attribute: attribute, message: "#{attribute} must be match the format #{@value.toString()}"
+      errors.push
+        attribute: attribute
+        message: Metro.t("model.errors.format", attribute: attribute, value: @value.toString())
       return false
     true
     

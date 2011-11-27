@@ -25,3 +25,4 @@ node_modules
 spec/secrets.coffee
 inspiration.md
 favicon.png
+dist/*.gz

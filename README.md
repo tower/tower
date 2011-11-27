@@ -355,6 +355,26 @@ cake minify
 ``` coffeescript
 PostsPresenter =
   index: ->
-  
-  
 ```
+
+## Research
+
+These are projects that should either be integrated into Metro, or rewritten to decrease file size.
+
+### Database
+
+- https://github.com/zefhemel/persistencejs
+
+### Routes & History
+
+- https://github.com/balupton/history.js
+- https://github.com/millermedeiros/crossroads.js
+
+### Models
+
+- https://github.com/maccman/spine
+- https://github.com/biggie/biggie-orm
+
+### Events
+
+- http://millermedeiros.github.com/js-signals

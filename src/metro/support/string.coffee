@@ -8,12 +8,12 @@ Metro.Support.String =
     scope[@camelize(string)]
   
   camelize: (string, firstLetterLower) ->
-    string = string.replace camelize_rx, (str, p1) -> p1.toUpperCase()
+    string = string.replace @camelize_rx, (str, p1) -> p1.toUpperCase()
     if firstLetterLower then string.substr(0,1).toLowerCase() + string.substr(1) else string
 
   underscore: (string) ->
-    string.replace(underscore_rx1, '$1_$2')
-          .replace(underscore_rx2, '$1_$2')
+    string.replace(@underscore_rx1, '$1_$2')
+          .replace(@underscore_rx2, '$1_$2')
           .replace('-', '_').toLowerCase()
 
   singularize: (string) ->
@@ -40,7 +40,7 @@ Metro.Support.String =
     else
       "#{string}s"
 
-  capitalize: (string) -> string.replace capitalize_rx, (m,p1,p2) -> p1 + p2.toUpperCase()
+  capitalize: (string) -> string.replace @capitalize_rx, (m,p1,p2) -> p1 + p2.toUpperCase()
   
   trim: (string) -> if string then string.trim() else ""
   

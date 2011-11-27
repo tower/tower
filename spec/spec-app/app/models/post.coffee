@@ -1,4 +1,3 @@
-class Post
-  @include Metro.Model
+class MetroSpecApp.Post extends Metro.Model
   
-module.exports = Post
+module.exports = MetroSpecApp.Post

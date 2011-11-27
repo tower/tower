@@ -1,5 +1,5 @@
 # https://github.com/mranney/node_redis
-class Redis
+class Metro.Store.Redis extends Metro.Object
   @lib: ->
     require("redis")
   
@@ -34,4 +34,4 @@ class Redis
     
   sort: ->
     
-module.exports = Redis
+module.exports = Metro.Store.Redis

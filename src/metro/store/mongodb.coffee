@@ -1,7 +1,7 @@
 # https://github.com/christkv/node-mongodb-native
 # http://mongoosejs.com/docs/embedded-documents.html
 # https://github.com/1602/jugglingdb/blob/master/lib/adapters/mongoose.js
-class Metro.Store.MongoDB
+class Metro.Store.MongoDB extends Metro.Object
   @config:
     development:
       name: "metro-development"
@@ -21,7 +21,7 @@ class Metro.Store.MongoDB
       host: "127.0.0.1"
     
   @configure: (options) ->
-    _.extend(@config, options)
+    Metro.Support.Object.mixin(@config, options)
     
   @env: ->
     @config[Metro.env]

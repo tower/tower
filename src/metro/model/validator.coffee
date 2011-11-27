@@ -2,21 +2,28 @@ class Metro.Model.Validator
   @create: (name, value, attributes) ->
     switch name
       when "presence"
-        new @Presence
+        new @Presence(name, value, attributes)
       when "count", "length", "min", "max"
-        new @Length
+        new @Length(name, value, attributes)
       when "format"
-        new @Format(value, attributes)
+        new @Format(name, value, attributes)
   
-  constructor: (value, attributes) ->
+  constructor: (name, value, attributes) ->
+    @name       = name
     @value      = value
     @attributes = attributes
   
-  validateEach: (record, errors = []) ->
+  validateEach: (record, errors) ->
     success = true
+    
     for attribute in @attributes
       unless @validate(record, attribute, errors)
         success = false
     success
+    
+require './validator/format'
+require './validator/length'
+require './validator/presence'
+require './validator/uniqueness'
 
 module.exports = Metro.Model.Validation

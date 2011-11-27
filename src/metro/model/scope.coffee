@@ -1,7 +1,7 @@
 class Metro.Model.Scope
   constructor: (sourceClassName) ->
-    @sourceClassName = sourceClassName
-    @conditions = []
+    @sourceClassName  = sourceClassName
+    @conditions       = []
   
   where: ->
     @conditions.push ["where", arguments]
@@ -39,12 +39,9 @@ class Metro.Model.Scope
     
   last: (callback) ->
     @store().last(@query(), callback)
-  
-  sourceClass: ->
-    global[@sourceClassName]
     
   store: ->
-    global[@sourceClassName].store()
+    Metro.constant(@sourceClassName).store()
     
   query: ->
     conditions = @conditions

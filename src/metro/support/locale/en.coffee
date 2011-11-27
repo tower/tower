@@ -1,4 +1,4 @@
-en =
+module.exports = en =
   date:
     formats:
       # Use the strftime parameters for formats.

@@ -9,41 +9,41 @@ class Metro.Class
   #
   # ```
   @alias: (to, from) ->
-    Metro.Support.alias(@::, to, from)
+    Metro.Support.Object.alias(@::, to, from)
   
   @accessor: (key, callback) ->
-    Metro.Support.accessor(@::, key, callback)
+    Metro.Support.Object.accessor(@::, key, callback)
     @
   
   @getter: (key, callback) ->
-    Metro.Support.getter(@::, key, callback)
+    Metro.Support.Object.getter(@::, key, callback)
     @
   
   @setter: (key) ->
-    Metro.Support.setter(@::, key)
+    Metro.Support.Object.setter(@::, key)
     @
     
   @classAlias: (to, from) ->
-    Metro.Support.alias(@, to, from)
+    Metro.Support.Object.alias(@, to, from)
     @
     
   @classAccessor: (key, callback) ->
-    Metro.Support.accessor(@, key, callback)
+    Metro.Support.Object.accessor(@, key, callback)
     @
     
   @classGetter: (key, callback) ->
-    Metro.Support.getter(@, key, callback)
+    Metro.Support.Object.getter(@, key, callback)
     @
   
   @classSetter: (key) ->
-    Metro.Support.setter(@, key)
+    Metro.Support.Object.setter(@, key)
     @
 
   @classEval: (block) ->
     block.call(@)
 
   @delegate: (key, options = {}) ->
-    Metro.Support.delegate(@::, key, options)
+    Metro.Support.Object.delegate(@::, key, options)
     @
   
   @mixin: (self, object) ->
@@ -72,13 +72,13 @@ class Metro.Class
     object
 
   @instanceMethods: ->
-    Metro.Support.methods(@::)
+    Metro.Support.Object.methods(@::)
   
   @classMethods: ->
-    Metro.Support.methods(@)
+    Metro.Support.Object.methods(@)
     
   @className: ->
-    Metro.Support.functionName(@)
+    Metro.Support.Object.functionName(@)
   
   className: ->
     @constructor.className()

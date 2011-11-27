@@ -1,19 +1,28 @@
-class Metro.Model.Association
-  constructor: (owner, reflection) ->
-    @owner      = owner
-    @reflection = reflection
+class Metro.Model.Association extends Metro.Object
+  constructor: (owner, name, options = {}) ->
+    if Metro.accessors
+      Metro.Support.Object.defineProperty owner.prototype, name, 
+        enumerable: true, 
+        configurable: true, 
+        get: -> @association(name)
+        set: (value) -> @association(name).set(value)
+    
+    @owner            = owner
+    @name             = name
+    @targetClassName  = Metro.namespaced(options.className || Metro.Support.String.camelize(name))
   
-  targetClass: ->
-    global[@reflection.targetClassName]
+  scoped: (record) ->
+    (new Metro.Model.Scope(@targetClassName)).where(@conditions(record))
     
-  scoped: ->
-    (new Metro.Model.Scope(@reflection.targetClassName)).where(@conditions())
-    
-  conditions: ->
+  conditions: (record) ->
     result = {}
-    result[@reflection.foreignKey] = @owner.id if @owner.id && @reflection.foreignKey
+    result[@foreignKey] = record.id if @foreignKey && record.id
     result
     
-  @delegates "where", "find", "all", "first", "last", "store", to: "scoped"
+  @delegate "where", "find", "all", "first", "last", "store", to: "scoped"
+  
+require './association/belongsTo'
+require './association/hasMany'
+require './association/hasOne'
 
 module.exports = Metro.Model.Association

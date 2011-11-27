@@ -36,7 +36,7 @@ Metro.Model.Scopes =
       @scoped().within(arguments...)
   
     scoped: ->
-      new Metro.Model.Scope(@name)
+      new Metro.Model.Scope(Metro.namespaced(@name))
     
     all: (callback) ->
       @store().all(callback)

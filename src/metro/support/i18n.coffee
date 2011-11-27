@@ -1,4 +1,12 @@
 Metro.Support.I18n =
+  load: (path, language = @defaultLanguage) ->
+    store     = @store()
+    language  = store[language] ||= {}
+    
+    Metro.Support.Object.deepMerge(language, require(path))
+    
+    @
+  
   defaultLanguage: "en"
   
   translate: (key, options = {}) ->
@@ -11,12 +19,10 @@ Metro.Support.I18n =
         else key += ".other"
     
     @interpolator().render(@lookup(key, options.language), locals: options)
-    
-  t: @::translate
   
   lookup: (key, language = @defaultLanguage) ->
     parts   = key.split(".")
-    result  = @store[language]
+    result  = @store()[language]
     
     try
       for part in parts
@@ -28,9 +34,12 @@ Metro.Support.I18n =
     
     result
     
-  store: {}
+  store: ->
+    @_store ||= {}
   
   interpolator: ->
     @_interpolator ||= new (require('shift').Mustache)
+    
+Metro.Support.I18n.t = Metro.Support.I18n.translate
   
 module.exports = Metro.Support.I18n

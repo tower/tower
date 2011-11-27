@@ -4,10 +4,10 @@ class Metro.Model extends Metro.Object
     attributes  = {}
     
     for key, value of attrs
-      attributes[key] = @typecast(value)
+      attributes[key] = @typecast(key, value)
     
     for name, definition of definitions
-      attributes[name] ||= @typecast(definition.defaultValue(@)) unless attrs.hasOwnProperty(name)
+      attributes[name] ||= @typecast(name, definition.defaultValue(@)) unless attrs.hasOwnProperty(name)
     
     @attributes   = attributes
     @changes      = {}
@@ -32,7 +32,6 @@ require './model/associations'
 require './model/attribute'
 require './model/attributes'
 require './model/persistence'
-require './model/reflection'
 require './model/scopes'
 require './model/serialization'
 require './model/validator'

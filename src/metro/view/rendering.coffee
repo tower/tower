@@ -23,7 +23,7 @@ Metro.View.Rendering =
       layout  = @store().find(path: layout)
       options.locals.yield = body
       
-      options.engine.render(layout, options.locals, callback)
+      @_renderString(layout, options.locals, callback)
     else
       callback(null, body)
       

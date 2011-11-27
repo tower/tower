@@ -1,14 +1,19 @@
 Metro.Model.Associations =
   #included: ->
-  #  @reflections = {}
+  #  @associations = {}
   
   ClassMethods:
-    reflections: ->
-      @_reflections ||= {}
+    associations: ->
+      @_associations ||= {}
+      
+    association: (name) ->
+      association = @associations()[name]
+      throw new Error("Reflection for '#{name}' does not exist on '#{@name}'") unless association
+      association
       
     hasOne: (name, options = {}) ->
     
-    # Adds hasMany reflection to model.
+    # Adds hasMany association to model.
     # 
     # @example Post with many categories
     # 
@@ -16,40 +21,16 @@ Metro.Model.Associations =
     #       @hasMany "categories", className: "Category"
     # 
     hasMany: (name, options = {}) ->
-      options.foreignKey = "#{Metro.Support.String.underscore(@name)}Id"
-      @reflections()[name] = reflection = new Metro.Model.Reflection("hasMany", @name, name, options)
-      
-      Metro.Support.Object.defineProperty @::, name, 
-        enumerable: true, 
-        configurable: true, 
-        get: -> @association(name)
-        set: (value) -> @association(name).set(value)
-      
-      reflection
+      @associations()[name]  = new Metro.Model.Association.HasMany(@, name, options)
     
     belongsTo: (name, options = {}) ->      
-      @reflections()[name] = reflection = new Metro.Model.Association("belongsTo", @name, name, options)
+      @associations()[name] = association = new Metro.Model.Association.BelongsTo(@, name, options)
+      @key "#{name}Id"
       
-      Metro.Support.Object.defineProperty @::, name, 
-        enumerable: true, 
-        configurable: true, 
-        get: -> @_getBelongsToAssocation(name)
-        set: (value) -> @_setBelongsToAssocation(name, value)
-        
-      nameId = "#{name}Id"
-      
-      @keys[nameId] = new Metro.Model.Attribute(nameId, options)
-      
-      Metro.Support.Object.defineProperty @::, nameId, 
-        enumerable: true, 
-        configurable: true, 
-        get: -> @association(name).getId()
-        set: (value) -> @association(name).setId(value)
-      
-      reflection
+      association
   
   InstanceMethods:
     association: (name) ->
-      @associations[name] ||= @constructor.reflections()[name].association(@)
+      @associations[name] ||= @constructor.association(name).scoped(@)
     
 module.exports = Metro.Model.Associations

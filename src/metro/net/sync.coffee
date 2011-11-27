@@ -3,4 +3,4 @@ Metro.Net.Sync =
     
   webSockets: ->
     
-  
+module.exports = Metro.Net.Sync

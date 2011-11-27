@@ -1,4 +1,4 @@
-Metro.Controller.Layouts
+Metro.Controller.Layouts =
   ClassMethods:
     layout: (layout) ->
       @_layout = layout

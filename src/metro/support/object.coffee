@@ -1,4 +1,27 @@
+specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
+
 Metro.Support.Object =
+  extend: (object) ->
+    args = Metro.Support.Array.args(arguments, 1)
+    
+    for node in args
+      for key, value of node when key not in specialProperties
+        object[key] = value
+    
+    object
+    
+  deepMerge: (object) ->
+    args = Metro.Support.Array.args(arguments, 1)
+    
+    for node in args
+      for key, value of node when key not in specialProperties
+        if typeof value == 'object' && object[key]
+          object[key] = Metro.Support.Object.deepMerge(object[key], value)
+        else
+          object[key] = value
+
+    object
+
   defineProperty: (object, key, options = {}) ->
     Object.defineProperty object, key, options
   
@@ -80,7 +103,7 @@ Metro.Support.Object =
           configurable: true, 
           get: -> @[to]()[key]
     
-    from
+    object
     
   isFunction: (object) ->
     !!(object && object.constructor && object.call && object.apply)

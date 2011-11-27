@@ -1,37 +1,38 @@
 Metro.Model.Attributes =
-  included: ->
-    @keys = {}
-    
-    @key "id"
+  #included: ->
+  #  @key "id"
     
   ClassMethods:
     key: (key, options = {}) ->
-      @keys[key] = new Metro.Model.Attribute(key, options)
+      @keys()[key] = new Metro.Model.Attribute(key, options)
       
-      Object.defineProperty @prototype, key, 
-        enumerable: true
-        configurable: true
-        get: -> @get(key)
-        set: (value) -> @set(key, value)
+      if Metro.accessors
+        Object.defineProperty @prototype, key, 
+          enumerable: true
+          configurable: true
+          get: -> @get(key)
+          set: (value) -> @set(key, value)
       
       @
-    
-    attributeDefinition: (name) ->
-      definition = @keys[name]
-      throw new Error("Attribute '#{name}' does not exist on '#{@name}'") unless definition
-      definition
+      
+    keys: ->
+      @_keys ||= {}
+      
+    attribute: (name) ->
+      attribute = @keys()[name]
+      throw new Error("Attribute '#{name}' does not exist on '#{@name}'") unless attribute
+      attribute
       
   InstanceMethods:
-    typeCast: (name, value) ->
-      @constructor.attributeDefinition(name).typecast(value)
+    typecast: (name, value) ->
+      @constructor.attribute(name).typecast(value)
     
     get: (name) ->
-      @attributes[name] ||= @constructor.keys[name].defaultValue(@)
+      @attributes[name] ||= @constructor.attribute(name).defaultValue(@)
     
     set: (name, value) ->
-      beforeValue       = @attributes[name]
+      @_attributeChange(name, value)
       @attributes[name] = value
-      @_attributeChange(beforeValue, value)
       value
       #@emit("fieldChanged", beforeValue: beforeValue, value: value)
   

@@ -3,7 +3,7 @@ File    = require('pathfinder').File
 
 class Metro.Application
   @instance: ->
-    @_instance ||= new Metro.Application
+    @_instance ||= new (require "#{Metro.root}/config/application")
   
   constructor: ->
     @server ||= require('connect')()
@@ -13,8 +13,13 @@ class Metro.Application
     
   initialize: ->
     #Metro.Route.initialize()
-    require "#{Metro.root}/config/locales/en"
+    require "#{Metro.root}/config/application"
+    Metro.Support.I18n.load "../application/locale/en"
+    Metro.Support.I18n.load "../model/locale/en"
+    Metro.Support.I18n.load "#{Metro.root}/config/locales/en"
     require "#{Metro.root}/config/routes"
+    
+    Metro.Support.Dependencies.load "#{Metro.root}/app/models"
     #Metro.Model.initialize()
     #Metro.View.initialize()
     Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")
@@ -32,14 +37,13 @@ class Metro.Application
     #Metro.Model.teardown()
     # Metro.Support.Dependencies.load("#{Metro.root}/app/models")
     # delete @_store
-    Metro.View.teardown()
+    #Metro.View.teardown()
     #Metro.Controller.teardown()
     delete Metro.Controller._helpers
     delete Metro.Controller._layout
     delete Metro.Controller._theme
   
   loadInitializers: ->
-    require "#{Metro.root}/config/application"
     require "#{Metro.root}/config/environments/#{Metro.env}"
     paths = File.files("#{Metro.root}/config/initializers")
     require(path) for path in paths

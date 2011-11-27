@@ -1,4 +1,4 @@
-class Metro.Store.Memory
+class Metro.Store.Memory extends Metro.Object
   constructor: ->
     @records  = {}
     @lastId   = 0

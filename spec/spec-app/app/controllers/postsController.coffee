@@ -1,0 +1,1 @@
+class MetroSpecApp.PostsController extends MetroSpecApp.ApplicationController

@@ -41,7 +41,7 @@ describe "route", ->
   
   describe "mapper", ->
     beforeEach ->
-      Metro.Route.teardown()
+      Metro.Application.instance().teardown()
       
       Metro.Route.draw ->
         @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}
@@ -72,7 +72,7 @@ describe "route", ->
     
     it "should be found in the router", ->
       router      = new Metro.Middleware.Router
-      request     = {method: "get", url: "/login"}
+      request     = method: "get", url: "/login"
       
       controller  = router.find request, {}, (controller) ->
         expect(request.params).toEqual { flow : 'signup', format : null, action : 'new' }

@@ -3,28 +3,24 @@ require './helper'
 # You must either "extends X" or create a constructor: -> super
 # so that coffeescript generates a callback to the parent class!
 
-class global.User# extends Function
-  constructor: -> super
-  
-  @include Metro.Model
-  
+User = class MetroSpecApp.User extends Metro.Model
   @key "id"
   @key "firstName"
   @key "createdAt", type: "time", default: -> new Date()
   
   @scope "byBaldwin", firstName: "=~": "Baldwin"
-  @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.zone().now().beginningOfWeek().toDate()
+  @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
   
   @hasMany "posts", className: "Page"
   
-  @validates "firstName", presence: true
-  
-class global.Page extends Metro.Model
+  @validate "firstName", presence: true
+
+Page = class MetroSpecApp.Page extends Metro.Model
   @key "id"
   @key "title"
   @key "rating"#, min: 0, max: 1
   
-  @validates "rating", min: 0, max: 10
+  @validate "rating", min: 0, max: 10
   
   @belongsTo "user"
 
@@ -36,7 +32,7 @@ describe 'Metro.Model', ->
     beforeEach ->
       @user = User.create(id: 1, firstName: "Lance")
       User.create(id: 2, firstName: "Dane")
-      
+
     it 'should have a getter', ->
       expect(@user.firstName).toEqual "Lance"
       
@@ -61,7 +57,7 @@ describe 'Metro.Model', ->
       User.create(id: 3, firstName: "Baldwin")
       
       expect(User.byBaldwin.first().firstName).toEqual "Baldwin"
-      
+
   describe 'associations', ->
     beforeEach ->
       @user = User.create(id: 1, firstName: "Lance")
@@ -77,26 +73,27 @@ describe 'Metro.Model', ->
       
       posts = @user.posts.where(title: "=~": "first").all()
       expect(posts.length).toEqual 0
-    
+      
   describe 'validations', ->
     beforeEach ->
       @user = new User(id: 1)
     
     it 'should be invalid', ->
       expect(@user.validate()).toEqual false
-      expect(@user.errors()).toEqual [
+      
+      expect(@user.errors).toEqual [
         { attribute : 'firstName', message : "firstName can't be blank" }
       ]
       
       @user.firstName = "Joe"
       
       expect(@user.validate()).toEqual true
-      expect(@user.errors()).toEqual []
+      expect(@user.errors).toEqual []
       
       @user.firstName = null
       
       expect(@user.validate()).toEqual false
-      expect(@user.errors()).toEqual [
+      expect(@user.errors).toEqual [
         { attribute : 'firstName', message : "firstName can't be blank" }
       ]
     
@@ -104,7 +101,7 @@ describe 'Metro.Model', ->
       page = new Page(title: "A Page")
       
       expect(page.validate()).toEqual false
-      expect(page.errors()).toEqual [
+      expect(page.errors).toEqual [
         { attribute : 'rating', message : 'rating must be a minimum of 0' }, 
         { attribute : 'rating', message : 'rating must be a maximum of 10' }
       ]
@@ -112,8 +109,8 @@ describe 'Metro.Model', ->
       page.rating = 10
       
       expect(page.validate()).toEqual true
-      expect(page.errors()).toEqual []
-  
+      expect(page.errors).toEqual []
+
   describe 'serialization', ->
     beforeEach ->
       User.deleteAll()
@@ -128,7 +125,7 @@ describe 'Metro.Model', ->
     it 'should unmarshall from JSON', ->
       user = User.fromJSON('{"firstName":"Terminator","id":1}')[0]
       expect(user).toEqual(@user)
-  
+
   describe 'attributes', ->
     beforeEach ->
       User.deleteAll()
@@ -144,7 +141,7 @@ describe 'Metro.Model', ->
       @user.firstName = "Smith"
       
       expect(@user.changes).toEqual firstName: ["Terminator", "Smith"]
-      
+
   describe 'type', ->
     beforeEach ->
       User.deleteAll()

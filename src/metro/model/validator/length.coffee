@@ -1,24 +1,37 @@
-class Metro.Model.Validator.Length extends Metro.Model.Validator  
-  validateMinimum: (record, attribute) ->
+class Metro.Model.Validator.Length extends Metro.Model.Validator
+  constructor: (name, value, attributes) ->
+    super
+    
+    @validate = switch name
+      when "min" then @validateMinimum
+      when "max" then @validateMaximum
+      else
+        @validateLength
+  
+  validateMinimum: (record, attribute, errors) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value >= @value
-      record.errors().push 
+      errors.push
         attribute: attribute
-        message: Metro.Support.I18n.t("metro.model.errors.validation.minimum", attribute: attribute, value: value)
+        message: Metro.t("model.errors.minimum", attribute: attribute, value: @value)
       return false
     true
   
-  validateMaximum: (record, attribute) ->
+  validateMaximum: (record, attribute, errors) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value <= @value
-      record.errors().push attribute: attribute, message: "#{attribute} must be a maximum of #{@value}"
+      errors.push
+        attribute: attribute
+        message: Metro.t("model.errors.maximum", attribute: attribute, value: @value)
       return false
     true
   
-  validateLength: (record, attribute) ->
+  validateLength: (record, attribute, errors) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value == @value
-      record.errors().push attribute: attribute, message: "#{attribute} must be equal to #{@value}"
+      errors.push
+        attribute: attribute
+        message: Metro.t("model.errors.length", attribute: attribute, value: @value)
       return false
     true
 

@@ -1,8 +1,6 @@
 class Metro.View extends Metro.Object
   @extend
     loadPaths:       ["./app/views"]
-    paths:           []
-    pathsByName:     {}
     engine:          "jade"
     prettyPrint:     false
     store: (store) ->

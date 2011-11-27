@@ -1,11 +1,12 @@
 require './helper'
 
+###
+
 describe "views", ->
   describe "configuration", ->
     
   describe "templates", ->
     beforeEach ->
-      Metro.View.initialize()
       Metro.View.engine = "jade"
     
     it "should lookup templates", ->
@@ -18,7 +19,7 @@ describe "views", ->
       view    = new Metro.View
       view.render "posts/edit", locals: title: "First Commit", (error, result) ->
         expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
-###      
+
   describe "helpers", ->
     it "should have stylesheet helpers", ->
       view    = new Metro.View.Base

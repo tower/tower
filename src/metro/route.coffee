@@ -1,8 +1,12 @@
 class Metro.Route
-  @store: []
+  @store: ->
+    @_store ||= []
   
   @create: (route) ->
-    @store.push(route)
+    @store().push(route)
+    
+  @all: ->
+    @store()
   
   @draw: (callback) ->
     callback.apply(new Metro.Route.DSL(@))

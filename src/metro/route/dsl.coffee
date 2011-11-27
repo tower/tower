@@ -76,7 +76,7 @@ class Metro.Route.DSL
   * @param {String} path
   ###
   namespace: (path, options, block) ->
-    options = _.extend(path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
+    options = Metro.Support.Object.extend(path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
     @scope(options, block)
     
   # === Parameter Restriction
@@ -261,7 +261,7 @@ class Metro.Route.DSL
   member: ->
     
   root: (options) ->
-    @match '/', _.extend(as: "root", options)
+    @match '/', Metro.Support.Object.extend(as: "root", options)
     
   _extractOptions: ->
     path            = "/" + arguments[0].replace(/^\/|\/$/, "")
@@ -276,7 +276,7 @@ class Metro.Route.DSL
     anchor          = @_extractAnchor(options)
     name            = @_extractName(options)
     
-    options         = _.extend options,
+    options         = Metro.Support.Object.extend options,
       method:         method
       constraints:    constraints
       defaults:       defaults
@@ -322,6 +322,6 @@ class Metro.Route.DSL
     controller  = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller")
     action      = action.toLowerCase()
     
-    name: controller, action: action, className: Metro.Support.String.camelize("_#{controller}")
+    name: controller, action: action, className: Metro.Support.String.camelize("#{controller}")
 
 module.exports = Metro.Route.DSL
