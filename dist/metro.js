@@ -1,14 +1,14 @@
 (function() {
-  var File, Namespace, Shift, key, moduleKeywords, require, value, _ref;
+  var Metro, Namespace, require;
   var __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   window.global || (window.global = window);
 
-  window.Metro = new (Namespace = (function() {
+  window.Metro = new (Metro = (function() {
 
-    function Namespace() {}
+    function Metro() {}
 
-    return Namespace;
+    return Metro;
 
   })());
 
@@ -16,89 +16,40 @@
     return {};
   };
 
-  Metro.configuration = null;
-
-  Metro.env = "development";
-
-  Metro.port = 1597;
-
-  Metro.cache = null;
-
-  Metro.version = "0.2.0";
-
-  Metro.client = typeof window !== "undefined";
-
-  Metro.configure = function(callback) {
-    return callback.apply(this);
-  };
-
-  Metro.root = "/";
-
-  Metro.publicPath = "/";
-
-  Metro.raise = function() {
-    var args, i, message, node, path, _i, _len;
-    args = Array.prototype.slice.call(arguments);
-    path = args.shift().split(".");
-    message = Metro.locale.en;
-    for (_i = 0, _len = path.length; _i < _len; _i++) {
-      node = path[_i];
-      message = message[node];
+  Metro.Support.Object.mixin(Metro, {
+    env: "development",
+    port: 1597,
+    version: "0.2.6",
+    client: typeof window !== "undefined",
+    root: "/",
+    publicPath: "/",
+    namespace: null,
+    logger: typeof _console !== 'undefined' ? _console : console,
+    raise: function() {
+      throw new Error(Metro.translate.apply(Metro, arguments));
+    },
+    configure: function() {},
+    initialize: function() {
+      return Metro.Application.initialize();
+    },
+    translate: function() {
+      var _ref;
+      return (_ref = Metro.Support.I18n).t.apply(_ref, arguments);
     }
-    i = 0;
-    message = message.replace(/%s/g, function() {
-      return args[i++];
-    });
-    throw new Error(message);
-  };
-
-  Metro.initialize = function() {
-    return Metro.Application.initialize();
-  };
-
-  Metro.teardown = function() {
-    return Metro.Application.teardown();
-  };
-
-  Metro.locale = {
-    en: {
-      errors: {
-        missingCallback: "You must pass a callback to %s.",
-        missingOption: "You must pass in the '%s' option to %s.",
-        notFound: "%s not found.",
-        store: {
-          missingAttribute: "Missing %s in %s for '%s'"
-        },
-        asset: {
-          notFound: "Asset not found: '%s'\n  Lookup paths: [\n%s\n  ]"
-        }
-      }
-    }
-  };
-
-  Metro.application = function() {
-    return Metro.Application.instance();
-  };
+  });
 
   Metro.Application = (function() {
 
     function Application() {}
 
-    Application.instance = function() {
-      return this._instance || (this._instance = Metro.client ? new Metro.Application.Client : Metro.Application.Server);
+    Application.namespace = function() {
+      return this.className();
     };
 
-    Application.initialize = function() {
-      return this.instance().initialize();
-    };
+    Application.use = function(middleware) {};
 
-    Application.teardown = function() {
-      this.instance().teardown();
-      return delete this._instance;
-    };
-
-    Application.run = function() {
-      return this.instance().run();
+    Application.prototype.namespace = function() {
+      return this.constructor.namespace();
     };
 
     return Application;
@@ -106,7 +57,6 @@
   })();
 
   Metro.Application.Client = (function() {
-    var Request, Response;
 
     function Client(middleware) {
       var _i, _len, _middleware;
@@ -120,12 +70,18 @@
     }
 
     Client.prototype.initialize = function() {
+      this.extractAgent();
       this.use(Metro.Middleware.Router);
       return this;
     };
 
-    Client.prototype.teardown = function() {
-      return this;
+    Client.prototype.extractAgent = function() {
+      return Metro.agent = new Metro.Net.Agent({
+        os: navigator,
+        ip: navigator,
+        browser: navigator,
+        language: navigator
+      });
     };
 
     Client.prototype.use = function(route, handle) {
@@ -236,129 +192,26 @@
       return next();
     };
 
-    Request = (function() {
-
-      function Request(data) {
-        if (data == null) data = {};
-        this.url = data.url;
-        this.parsedUrl = data.parsedUrl;
-        this.pathname = this.parsedUrl.attr("path");
-        this.query = this.parsedUrl.data.query;
-        this.title = data.title || document.title;
-        this.body = data.body || {};
-        this.headers = data.headers || {};
-        this.method = data.method || "GET";
-      }
-
-      return Request;
-
-    })();
-
-    Response = (function() {
-
-      function Response(data) {
-        if (data == null) data = {};
-        this.url = data.url;
-        this.parsedUrl = data.parsedUrl;
-        this.pathname = this.parsedUrl.attr("path");
-        this.query = this.parsedUrl.data.query;
-        this.title = data.title || document.title;
-        this.headers = data.headers || {};
-        this.headerSent = false;
-        this.statusCode = 200;
-        this.body = "";
-      }
-
-      Response.prototype.writeHead = function(statusCode, headers) {
-        this.statusCode = statusCode;
-        return this.headers = headers;
-      };
-
-      Response.prototype.setHeader = function(key, value) {
-        if (this.headerSent) throw new Error("Headers already sent");
-        return this.headers[key] = value;
-      };
-
-      Response.prototype.write = function(body) {
-        if (body == null) body = '';
-        return this.body += body;
-      };
-
-      Response.prototype.end = function(body) {
-        if (body == null) body = '';
-        this.body += body;
-        this.sent = true;
-        return this.headerSent = true;
-      };
-
-      return Response;
-
-    })();
-
     return Client;
 
   })();
 
-  Metro.Support = new (Namespace = (function() {
-
-    function Namespace() {}
-
-    return Namespace;
-
-  })());
+  Metro.Support = {};
 
   Metro.Support.Array = {
-    extractArgs: function(args) {
-      return Array.prototype.slice.call(args, 0, args.length);
-    },
-    extractArgsAndOptions: function(args) {
-      args = Array.prototype.slice.call(args, 0, args.length);
-      if (typeof args[args.length - 1] !== 'object') args.push({});
+    args: function(args, index, withCallback, withOptions) {
+      if (index == null) index = 0;
+      if (withCallback == null) withCallback = false;
+      if (withOptions == null) withOptions = false;
+      args = Array.prototype.slice.call(args, index, args.length);
+      if (withCallback && !(args.length >= 2 && typeof args[args.length - 1] === "function")) {
+        throw new Error("You must pass a callback to the render method");
+      }
       return args;
-    },
-    args: function(args) {
-      var options;
-      args = Array.prototype.slice.call(args, 0, args.length);
-      if (typeof args[args.length - 1] !== 'object') {
-        options = {};
-      } else {
-        options = args.pop();
-      }
-      return {
-        args: args,
-        options: options
-      };
-    },
-    argsOptionsAndCallback: function() {
-      var args, callback, last, options;
-      args = Array.prototype.slice.call(arguments);
-      last = args.length - 1;
-      if (typeof args[last] === "function") {
-        callback = args[last];
-        if (args.length >= 3) {
-          if (typeof args[last - 1] === "object") {
-            options = args[last - 1];
-            args = args.slice(0, (last - 2) + 1 || 9e9);
-          } else {
-            options = {};
-            args = args.slice(0, (last - 1) + 1 || 9e9);
-          }
-        } else {
-          options = {};
-        }
-      } else if (args.length >= 2 && typeof args[last] === "object") {
-        args = args.slice(0, (last - 1) + 1 || 9e9);
-        options = args[last];
-        callback = null;
-      } else {
-        options = {};
-        callback = null;
-      }
-      return [args, options, callback];
     },
     sortBy: function(objects) {
       var arrayComparator, callbacks, sortings, valueComparator;
-      sortings = Array.prototype.slice.call(arguments, 1, arguments.length);
+      sortings = this.args(arguments, 1);
       callbacks = sortings[sortings.length - 1] instanceof Array ? {} : sortings.pop();
       valueComparator = function(x, y) {
         if (x > y) {
@@ -404,85 +257,52 @@
         return sorting;
       });
       return objects.sort(function(a, b) {
-        return arrayComparator(a, b);
+        var bspecialProperties;
+        return arrayComparator(a, bspecialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']);
       });
     }
   };
 
-  moduleKeywords = ['included', 'extended', 'prototype'];
-
-  Metro.Support.Class = (function() {
+  Metro.Class = (function() {
 
     function Class() {}
 
     Class.alias = function(to, from) {
-      return this.prototype[to] = this.prototype[from];
+      return Metro.Support.alias(this.prototype, to, from);
     };
 
-    Class.alias_method = function(to, from) {
-      return this.prototype[to] = this.prototype[from];
-    };
-
-    Class.accessor = function(key, self, callback) {
-      this._accessors || (this._accessors = []);
-      this._accessors.push(key);
-      this.getter(key, self, callback);
-      this.setter(key, self);
+    Class.accessor = function(key, callback) {
+      Metro.Support.accessor(this.prototype, key, callback);
       return this;
     };
 
-    Class.getter = function(key, self, callback) {
-      self || (self = this.prototype);
-      if (!self.hasOwnProperty("_getAttribute")) {
-        Object.defineProperty(self, "_getAttribute", {
-          enumerable: false,
-          configurable: true,
-          value: function(key) {
-            return this["_" + key];
-          }
-        });
-      }
-      this._getters || (this._getters = []);
-      this._getters.push(key);
-      Object.defineProperty(self, "_" + key, {
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(self, key, {
-        enumerable: true,
-        configurable: true
-      }, {
-        get: function() {
-          return this["_getAttribute"](key) || (callback ? this["_" + key] = callback.apply(this) : void 0);
-        }
-      });
+    Class.getter = function(key, callback) {
+      Metro.Support.getter(this.prototype, key, callback);
       return this;
     };
 
-    Class.setter = function(key, self) {
-      self || (self = this.prototype);
-      if (!self.hasOwnProperty("_setAttribute")) {
-        Object.defineProperty(self, method, {
-          enumerable: false,
-          configurable: true,
-          value: function(key, value) {
-            return this["_" + key] = value;
-          }
-        });
-      }
-      this._setters || (this._setters = []);
-      this._setters.push(key);
-      Object.defineProperty(self, "_" + key, {
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(self, key, {
-        enumerable: true,
-        configurable: true,
-        set: function(value) {
-          return this["_setAttribute"](key, value);
-        }
-      });
+    Class.setter = function(key) {
+      Metro.Support.setter(this.prototype, key);
+      return this;
+    };
+
+    Class.classAlias = function(to, from) {
+      Metro.Support.alias(this, to, from);
+      return this;
+    };
+
+    Class.classAccessor = function(key, callback) {
+      Metro.Support.accessor(this, key, callback);
+      return this;
+    };
+
+    Class.classGetter = function(key, callback) {
+      Metro.Support.getter(this, key, callback);
+      return this;
+    };
+
+    Class.classSetter = function(key) {
+      Metro.Support.setter(this, key);
       return this;
     };
 
@@ -491,183 +311,63 @@
     };
 
     Class.delegate = function(key, options) {
-      var to;
       if (options == null) options = {};
-      to = options.to;
-      if (typeof this.prototype[to] === "function") {
-        return this.prototype[key] = function() {
-          var _ref;
-          return (_ref = this[to]())[key].apply(_ref, arguments);
-        };
-      } else {
-        return Object.defineProperty(this.prototype, key, {
-          enumerable: true,
-          configurable: true,
-          get: function() {
-            return this[to]()[key];
-          }
-        });
-      }
-    };
-
-    Class.delegates = function() {
-      var args, key, options, _i, _len, _results;
-      args = Array.prototype.slice.call(arguments, 0, arguments.length);
-      options = args.pop();
-      _results = [];
-      for (_i = 0, _len = args.length; _i < _len; _i++) {
-        key = args[_i];
-        _results.push(this.delegate(key, options));
-      }
-      return _results;
-    };
-
-    Class.include = function(obj) {
-      var c, child, clone, cloned, included, key, newproto, oldproto, parent, value, _ref;
-      if (!obj) throw new Error('include(obj) requires obj');
-      this.extend(obj);
-      c = this;
-      child = this;
-      parent = obj;
-      clone = function(fct) {
-        var clone_, property;
-        clone_ = function() {
-          return fct.apply(this, arguments);
-        };
-        clone_.prototype = fct.prototype;
-        for (property in fct) {
-          if (fct.hasOwnProperty(property) && property !== "prototype") {
-            clone_[property] = fct[property];
-          }
-        }
-        return clone_;
-      };
-      if (child.__super__) oldproto = child.__super__;
-      cloned = clone(parent);
-      newproto = cloned.prototype;
-      _ref = cloned.prototype;
-      for (key in _ref) {
-        value = _ref[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) this.prototype[key] = value;
-      }
-      if (oldproto) cloned.prototype = oldproto;
-      child.__super__ = newproto;
-      included = obj.included;
-      if (included) included.apply(obj.prototype);
+      Metro.Support.delegate(this.prototype, key, options);
       return this;
     };
 
-    Class.extend = function(obj) {
-      var extended, key, value;
-      if (!obj) throw new Error('extend(obj) requires obj');
-      for (key in obj) {
-        value = obj[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) this[key] = value;
+    Class.mixin = function(self, object) {
+      var key, value;
+      for (key in object) {
+        value = object[key];
+        if (__indexOf.call(specialProperties, key) < 0) self[key] = value;
       }
-      extended = obj.extended;
-      if (extended) extended.apply(obj);
-      return this;
+      return object;
     };
 
-    Class["new"] = function() {
-      return (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return typeof result === "object" ? result : child;
-      })(this, arguments, function() {});
+    Class.extend = function(object) {
+      var extended;
+      this.mixin(this, object);
+      extended = object.extended;
+      if (extended) extended.apply(object);
+      return object;
+    };
+
+    Class.include = function(object) {
+      var included;
+      if (object.hasOwnProperty("ClassMethods")) this.extend(object.ClassMethods);
+      if (object.hasOwnProperty("InstanceMethods")) {
+        this.include(object.InstanceMethods);
+      }
+      this.mixin(this.prototype, object);
+      included = object.included;
+      if (included) included.apply(object);
+      return object;
     };
 
     Class.instanceMethods = function() {
-      var key, result;
-      result = [];
-      for (key in this.prototype) {
-        result.push(key);
-      }
-      return result;
+      return Metro.Support.methods(this.prototype);
     };
 
     Class.classMethods = function() {
-      var key, result;
-      result = [];
-      for (key in this) {
-        result.push(key);
-      }
-      return result;
+      return Metro.Support.methods(this);
     };
 
-    Class.prototype.instanceExec = function() {
-      var _ref;
-      return (_ref = arguments[0]).apply.apply(_ref, [this].concat(__slice.call(arguments.slice(1))));
+    Class.className = function() {
+      return Metro.Support.functionName(this);
     };
 
-    Class.prototype.instanceEval = function(block) {
-      return block.apply(this);
+    Class.prototype.className = function() {
+      return this.constructor.className();
     };
-
-    Class.prototype.send = function(method) {
-      var _ref;
-      if (this[method]) {
-        return (_ref = this[method]).apply.apply(_ref, arguments);
-      } else {
-        if (this.methodMissing) return this.methodMissing.apply(this, arguments);
-      }
-    };
-
-    Class.prototype.methodMissing = function(method) {};
 
     return Class;
 
   })();
 
-  _ref = Metro.Support.Class;
-  for (key in _ref) {
-    value = _ref[key];
-    Function.prototype[key] = value;
-  }
-
-  Metro.Support.Callbacks = (function() {
-
-    function Callbacks() {}
-
-    return Callbacks;
-
-  })();
-
-  Metro.Support.Concern = (function() {
-
-    function Concern() {
-      Concern.__super__.constructor.apply(this, arguments);
-    }
-
-    Concern.included = function() {
-      this._dependencies || (this._dependencies = []);
-      if (this.hasOwnProperty("ClassMethods")) this.extend(this.ClassMethods);
-      if (this.hasOwnProperty("InstanceMethods")) {
-        return this.include(this.InstanceMethods);
-      }
-    };
-
-    Concern._appendFeatures = function() {};
-
-    return Concern;
-
-  })();
-
-  Metro.Support.IE = (function() {
-
-    function IE() {}
-
-    return IE;
-
-  })();
-
-  Metro.Support.I18n = (function() {
-
-    function I18n() {}
-
-    I18n.defaultLanguage = "en";
-
-    I18n.translate = function(key, options) {
+  Metro.Support.I18n = {
+    defaultLanguage: "en",
+    translate: function(key, options) {
       if (options == null) options = {};
       if (options.hasOwnProperty("tense")) key += "." + options.tense;
       if (options.hasOwnProperty("count")) {
@@ -685,11 +385,9 @@
       return this.interpolator().render(this.lookup(key, options.language), {
         locals: options
       });
-    };
-
-    I18n.t = I18n.translate;
-
-    I18n.lookup = function(key, language) {
+    },
+    t: this.prototype.translate,
+    lookup: function(key, language) {
       var part, parts, result, _i, _len;
       if (language == null) language = this.defaultLanguage;
       parts = key.split(".");
@@ -706,17 +404,12 @@
         throw new Error("Translation doesn't exist for '" + key + "'");
       }
       return result;
-    };
-
-    I18n.store = {};
-
-    I18n.interpolator = function() {
+    },
+    store: {},
+    interpolator: function() {
       return this._interpolator || (this._interpolator = new (require('shift').Mustache));
-    };
-
-    return I18n;
-
-  })();
+    }
+  };
 
   Metro.Support.Number = {
     isInt: function(n) {
@@ -728,6 +421,107 @@
   };
 
   Metro.Support.Object = {
+    defineProperty: function(object, key, options) {
+      if (options == null) options = {};
+      return Object.defineProperty(object, key, options);
+    },
+    functionName: function(fn) {
+      var _ref;
+      if (fn.__name__) return fn.__name__;
+      if (fn.name) return fn.name;
+      return (_ref = fn.toString().match(/\W*function\s+([\w\$]+)\(/)) != null ? _ref[1] : void 0;
+    },
+    alias: function(object, to, from) {
+      return object[to] = object[from];
+    },
+    accessor: function(object, key, callback) {
+      object._accessors || (object._accessors = []);
+      object._accessors.push(key);
+      this.getter(key, object, callback);
+      this.setter(key, object);
+      return this;
+    },
+    setter: function(object, key) {
+      if (!object.hasOwnProperty("_setAttribute")) {
+        this.defineProperty(object, "_setAttribute", {
+          enumerable: false,
+          configurable: true,
+          value: function(key, value) {
+            return this["_" + key] = value;
+          }
+        });
+      }
+      object._setters || (object._setters = []);
+      object._setters.push(key);
+      this.defineProperty(object, key, {
+        enumerable: true,
+        configurable: true,
+        set: function(value) {
+          return this["_setAttribute"](key, value);
+        }
+      });
+      return this;
+    },
+    getter: function(object, key, callback) {
+      if (!object.hasOwnProperty("_getAttribute")) {
+        this.defineProperty(object, "_getAttribute", {
+          enumerable: false,
+          configurable: true,
+          value: function(key) {
+            return this["_" + key];
+          }
+        });
+      }
+      object._getters || (object._getters = []);
+      object._getters.push(key);
+      this.defineProperty(object, key, {
+        enumerable: true,
+        configurable: true,
+        get: function() {
+          return this["_getAttribute"](key) || (callback ? this["_" + key] = callback.apply(this) : void 0);
+        }
+      });
+      return this;
+    },
+    variables: function(object) {},
+    accessors: function(object) {},
+    methods: function(object) {
+      var key, result, value;
+      result = [];
+      for (key in object) {
+        value = object[key];
+        if (this.isFunction(value)) result.push(key);
+      }
+      return result;
+    },
+    delegate: function() {
+      var isFunction, key, keys, object, options, to, _i, _j, _len;
+      object = arguments[0], keys = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), options = arguments[_i++];
+      if (options == null) options = {};
+      to = options.to;
+      isFunction = this.isFunction(object);
+      for (_j = 0, _len = keys.length; _j < _len; _j++) {
+        key = keys[_j];
+        if (isFunction) {
+          object[key] = function() {
+            var _ref;
+            return (_ref = this[to]())[key].apply(_ref, arguments);
+          };
+        } else {
+          this.defineProperty(object, key, {
+            enumerable: true,
+            configurable: true,
+            get: function() {
+              return this[to]()[key];
+            }
+          });
+        }
+      }
+      return from;
+    },
+    isFunction: function(object) {
+      return !!(object && object.constructor && object.call && object.apply);
+    },
     isA: function(object, isa) {},
     isHash: function() {
       var object;
@@ -735,12 +529,7 @@
       return _.isObject(object) && !(_.isFunction(object) || _.isArray(object));
     },
     isPresent: function(object) {
-      var key, value;
-      for (key in object) {
-        value = object[key];
-        return true;
-      }
-      return false;
+      return !this.isBlank(object);
     },
     isBlank: function(object) {
       var key, value;
@@ -749,166 +538,136 @@
         return false;
       }
       return true;
-    }
-  };
-
-  Metro.Support.String = {
-    camelize: function() {
-      return _.camelize("_" + (arguments[0] || this));
     },
-    constantize: function() {
-      return global[this.camelize.apply(this, arguments)];
-    },
-    underscore: function() {
-      return _.underscored(arguments[0] || this);
-    },
-    titleize: function() {
-      return _.titleize(arguments[0] || this);
+    has: function(object, key) {
+      return object.hasOwnProperty(key);
     }
   };
 
   Metro.Support.RegExp = {
-    escape: function(string) {
+    regexpEscape: function(string) {
       return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    },
-    escapeEach: function() {
-      var args, i, item, result, _len;
-      result = [];
-      args = arguments[0];
-      for (i = 0, _len = args.length; i < _len; i++) {
-        item = args[i];
-        result[i] = this.escape(item);
-      }
-      return result;
     }
   };
 
-  Metro.Support.Time = (function() {
-
-    Time._lib = function() {
-      return require('moment');
-    };
-
-    Time.zone = function() {
-      return this;
-    };
-
-    Time.now = function() {
-      return new this();
-    };
-
-    function Time() {
-      this.moment = this.constructor._lib()();
+  Metro.Support.String = {
+    camelize_rx: /(?:^|_|\-)(.)/g,
+    capitalize_rx: /(^|\s)([a-z])/g,
+    underscore_rx1: /([A-Z]+)([A-Z][a-z])/g,
+    underscore_rx2: /([a-z\d])([A-Z])/g,
+    constantize: function(string, scope) {
+      if (scope == null) scope = global;
+      return scope[this.camelize(string)];
+    },
+    camelize: function(string, firstLetterLower) {
+      string = string.replace(camelize_rx, function(str, p1) {
+        return p1.toUpperCase();
+      });
+      if (firstLetterLower) {
+        return string.substr(0, 1).toLowerCase() + string.substr(1);
+      } else {
+        return string;
+      }
+    },
+    underscore: function(string) {
+      return string.replace(underscore_rx1, '$1_$2').replace(underscore_rx2, '$1_$2').replace('-', '_').toLowerCase();
+    },
+    singularize: function(string) {
+      var len;
+      len = string.length;
+      if (string.substr(len - 3) === 'ies') {
+        return string.substr(0, len - 3) + 'y';
+      } else if (string.substr(len - 1) === 's') {
+        return string.substr(0, len - 1);
+      } else {
+        return string;
+      }
+    },
+    pluralize: function(count, string) {
+      var lastLetter, len;
+      if (string) {
+        if (count === 1) return string;
+      } else {
+        string = count;
+      }
+      len = string.length;
+      lastLetter = string.substr(len - 1);
+      if (lastLetter === 'y') {
+        return "" + (string.substr(0, len - 1)) + "ies";
+      } else if (lastLetter === 's') {
+        return string;
+      } else {
+        return "" + string + "s";
+      }
+    },
+    capitalize: function(string) {
+      return string.replace(capitalize_rx, function(m, p1, p2) {
+        return p1 + p2.toUpperCase();
+      });
+    },
+    trim: function(string) {
+      if (string) {
+        return string.trim();
+      } else {
+        return "";
+      }
+    },
+    interpolate: function(stringOrObject, keys) {
+      var key, string, value;
+      if (typeof stringOrObject === 'object') {
+        string = stringOrObject[keys.count];
+        if (!string) string = stringOrObject['other'];
+      } else {
+        string = stringOrObject;
+      }
+      for (key in keys) {
+        value = keys[key];
+        string = string.replace(new RegExp("%\\{" + key + "\\}", "g"), value);
+      }
+      return string;
     }
-
-    Time.prototype.toString = function() {
-      return this._date.toString();
-    };
-
-    Time.prototype.beginningOfWeek = function() {};
-
-    Time.prototype.week = function() {
-      return parseInt(this.moment.format("w"));
-    };
-
-    Time.prototype.dayOfWeek = function() {
-      return this.moment.day();
-    };
-
-    Time.prototype.dayOfMonth = function() {
-      return parseInt(this.moment.format("D"));
-    };
-
-    Time.prototype.dayOfYear = function() {
-      return parseInt(this.moment.format("DDD"));
-    };
-
-    Time.prototype.meridiem = function() {
-      return this.moment.format("a");
-    };
-
-    Time.prototype.zoneName = function() {
-      return this.moment.format("z");
-    };
-
-    Time.prototype.strftime = function(format) {
-      return this.moment.format(format);
-    };
-
-    Time.prototype.beginningOfDay = function() {
-      this.moment.seconds(0);
-      return this;
-    };
-
-    Time.prototype.beginningOfWeek = function() {
-      this.moment.seconds(0);
-      this.moment.subtract('days', 6 - this.dayOfWeek());
-      return this;
-    };
-
-    Time.prototype.beginningOfMonth = function() {
-      this.moment.seconds(0);
-      this.moment.subtract('days', 6 - this.dayOfMonth());
-      return this;
-    };
-
-    Time.prototype.beginningOfYear = function() {
-      this.moment.seconds(0);
-      return this.moment.subtract('days', 6 - this.dayOfMonth());
-    };
-
-    Time.prototype.toDate = function() {
-      return this.moment._d;
-    };
-
-    return Time;
-
-  })();
-
-  Metro.Support.Time.TimeWithZone = (function() {
-
-    __extends(TimeWithZone, Metro.Support.Time);
-
-    function TimeWithZone() {
-      TimeWithZone.__super__.constructor.apply(this, arguments);
-    }
-
-    return TimeWithZone;
-
-  })();
+  };
 
   Metro.Model = (function() {
 
-    Model.initialize = function() {
-      return Metro.Support.Dependencies.load("" + Metro.root + "/app/models");
-    };
-
-    Model.teardown = function() {
-      return delete this._store;
-    };
-
-    Model.store = function() {
-      return this._store || (this._store = new Metro.Store.Memory);
-    };
+    __extends(Model, Metro.Object);
 
     function Model(attrs) {
       var attributes, definition, definitions, key, name, value;
       if (attrs == null) attrs = {};
-      attributes = {};
       definitions = this.constructor.keys();
+      attributes = {};
       for (key in attrs) {
         value = attrs[key];
-        attributes[key] = value;
+        attributes[key] = this.typecast(value);
       }
       for (name in definitions) {
         definition = definitions[name];
         if (!attrs.hasOwnProperty(name)) {
-          attributes[name] || (attributes[name] = definition.defaultValue(this));
+          attributes[name] || (attributes[name] = this.typecast(definition.defaultValue(this)));
         }
       }
-      this.attributes = this.typeCastAttributes(attributes);
+      this.attributes = attributes;
       this.changes = {};
+      this.associations = {};
+      this.errors = [];
     }
+
+    Model.prototype.toLabel = function() {
+      return this.className();
+    };
+
+    Model.prototype.toPath = function() {
+      return this.constructor.toParam() + "/" + this.toParam();
+    };
+
+    Model.prototype.toParam = function() {
+      return this.get("id").toString();
+    };
+
+    Model.toParam = function() {
+      return Metro.Support.String.parameterize(this.className());
+    };
 
     return Model;
 
@@ -1003,8 +762,6 @@
 
   Metro.Model.Association = (function() {
 
-    Association.include(Metro.Model.Scope);
-
     function Association(owner, reflection) {
       this.owner = owner;
       this.reflection = reflection;
@@ -1035,101 +792,67 @@
 
   })();
 
-  Metro.Model.Associations = (function() {
-
-    function Associations() {}
-
-    Associations.hasOne = function(name, options) {
-      if (options == null) options = {};
-    };
-
-    Associations.hasMany = function(name, options) {
-      var reflection;
-      if (options == null) options = {};
-      options.foreignKey = "" + (Metro.Support.String.underscore(this.name)) + "Id";
-      this.reflections()[name] = reflection = new Metro.Model.Reflection("hasMany", this.name, name, options);
-      Object.defineProperty(this.prototype, name, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._getHasManyAssociation(name);
-        },
-        set: function(value) {
-          return this._setHasManyAssociation(name, value);
-        }
-      });
-      return reflection;
-    };
-
-    Associations.belongsTo = function(name, options) {
-      var reflection;
-      if (options == null) options = {};
-      this.reflections()[name] = reflection = new Metro.Model.Association("belongsTo", this.name, name, options);
-      Object.defineProperty(this.prototype, name, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._getBelongsToAssocation(name);
-        },
-        set: function(value) {
-          return this._setBelongsToAssocation(name, value);
-        }
-      });
-      this.keys()["" + name + "Id"] = new Metro.Model.Attribute("" + name + "Id", options);
-      Object.defineProperty(this.prototype, "" + name + "Id", {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._getBelongsToAssocationId("" + name + "Id");
-        },
-        set: function(value) {
-          return this._setBelongsToAssocationId("" + name + "Id", value);
-        }
-      });
-      return reflection;
-    };
-
-    Associations.reflections = function() {
-      return this._reflections || (this._reflections = {});
-    };
-
-    Associations.prototype._getHasManyAssociation = function(name) {
-      return this.constructor.reflections()[name].association(this.id);
-    };
-
-    Associations.prototype._setHasManyAssociation = function(name, value) {
-      return this.constructor.reflections()[name].association(this.id).destroyAll();
-    };
-
-    Associations.prototype._getBelongsToAssocationId = function(name) {
-      return this.attributes[name];
-    };
-
-    Associations.prototype._setBelongsToAssocationId = function(name, value) {
-      return this.attributes[name] = value;
-    };
-
-    Associations.prototype._getBelongsToAssocation = function(name) {
-      var id;
-      id = this._getBelongsToAssocationId(name);
-      if (!id) return null;
-      return global[this.reflections()[name].targetClassName].where({
-        id: this.id
-      }).first();
-    };
-
-    Associations.prototype._setBelongsToAssocation = function(name, value) {
-      var id;
-      id = this._getBelongsToAssocationId(name);
-      if (!id) return null;
-      return global[this.reflections()[name].targetClassName].where({
-        id: this.id
-      }).first();
-    };
-
-    return Associations;
-
-  })();
+  Metro.Model.Associations = {
+    ClassMethods: {
+      reflections: function() {
+        return this._reflections || (this._reflections = {});
+      },
+      hasOne: function(name, options) {
+        if (options == null) options = {};
+      },
+      hasMany: function(name, options) {
+        var reflection;
+        if (options == null) options = {};
+        options.foreignKey = "" + (Metro.Support.String.underscore(this.name)) + "Id";
+        this.reflections()[name] = reflection = new Metro.Model.Reflection("hasMany", this.name, name, options);
+        Metro.Support.Object.defineProperty(this.prototype, name, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.association(name);
+          },
+          set: function(value) {
+            return this.association(name).set(value);
+          }
+        });
+        return reflection;
+      },
+      belongsTo: function(name, options) {
+        var nameId, reflection;
+        if (options == null) options = {};
+        this.reflections()[name] = reflection = new Metro.Model.Association("belongsTo", this.name, name, options);
+        Metro.Support.Object.defineProperty(this.prototype, name, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this._getBelongsToAssocation(name);
+          },
+          set: function(value) {
+            return this._setBelongsToAssocation(name, value);
+          }
+        });
+        nameId = "" + name + "Id";
+        this.keys[nameId] = new Metro.Model.Attribute(nameId, options);
+        Metro.Support.Object.defineProperty(this.prototype, nameId, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.association(name).getId();
+          },
+          set: function(value) {
+            return this.association(name).setId(value);
+          }
+        });
+        return reflection;
+      }
+    },
+    InstanceMethods: {
+      association: function(name) {
+        var _base;
+        return (_base = this.associations)[name] || (_base[name] = this.constructor.reflections()[name].association(this));
+      }
+    }
+  };
 
   Metro.Model.Attribute = (function() {
 
@@ -1200,164 +923,103 @@
 
   })();
 
-  Metro.Model.Attributes = (function() {
-
-    function Attributes() {}
-
-    Attributes.key = function(key, options) {
-      if (options == null) options = {};
-      this.keys()[key] = new Metro.Model.Attribute(key, options);
-      Object.defineProperty(this.prototype, key, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this.getAttribute(key);
-        },
-        set: function(value) {
-          return this.setAttribute(key, value);
+  Metro.Model.Attributes = {
+    included: function() {
+      this.keys = {};
+      return this.key("id");
+    },
+    ClassMethods: {
+      key: function(key, options) {
+        if (options == null) options = {};
+        this.keys[key] = new Metro.Model.Attribute(key, options);
+        Object.defineProperty(this.prototype, key, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.get(key);
+          },
+          set: function(value) {
+            return this.set(key, value);
+          }
+        });
+        return this;
+      },
+      attributeDefinition: function(name) {
+        var definition;
+        definition = this.keys[name];
+        if (!definition) {
+          throw new Error("Attribute '" + name + "' does not exist on '" + this.name + "'");
         }
-      });
-      return this;
-    };
-
-    Attributes.keys = function() {
-      return this._keys || (this._keys = {});
-    };
-
-    Attributes.attributeDefinition = function(name) {
-      var definition;
-      definition = this.keys()[name];
-      if (!definition) {
-        throw new Error("Attribute '" + name + "' does not exist on '" + this.name + "'");
+        return definition;
       }
-      return definition;
-    };
-
-    Attributes.prototype.typeCast = function(name, value) {
-      return this.constructor.attributeDefinition(name).typecast(value);
-    };
-
-    Attributes.prototype.typeCastAttributes = function(attributes) {
-      var key, value;
-      for (key in attributes) {
-        value = attributes[key];
-        attributes[key] = this.typeCast(key, value);
+    },
+    InstanceMethods: {
+      typeCast: function(name, value) {
+        return this.constructor.attributeDefinition(name).typecast(value);
+      },
+      get: function(name) {
+        var _base;
+        return (_base = this.attributes)[name] || (_base[name] = this.constructor.keys[name].defaultValue(this));
+      },
+      set: function(name, value) {
+        var beforeValue;
+        beforeValue = this.attributes[name];
+        this.attributes[name] = value;
+        this._attributeChange(beforeValue, value);
+        return value;
       }
-      return attributes;
-    };
+    }
+  };
 
-    Attributes.prototype.getAttribute = function(name) {
-      var _base;
-      return (_base = this.attributes)[name] || (_base[name] = this.constructor.keys()[name].defaultValue(this));
-    };
-
-    if (!Attributes.hasOwnProperty("get")) Attributes.alias("get", "getAttribute");
-
-    Attributes.prototype.setAttribute = function(name, value) {
-      var beforeValue;
-      beforeValue = this._trackChangedAttribute(name, value);
-      return this.attributes[name] = value;
-    };
-
-    if (!Attributes.hasOwnProperty("set")) Attributes.alias("set", "setAttribute");
-
-    return Attributes;
-
-  })();
-
-  Metro.Model.Dirty = (function() {
-
-    function Dirty() {}
-
-    Dirty.prototype.isDirty = function() {
-      var change, changes;
-      changes = this.changes();
-      for (change in changes) {
-        return true;
+  Metro.Model.Persistence = {
+    ClassMethods: {
+      create: function(attrs) {
+        return this.store().create(new this(attrs));
+      },
+      update: function() {},
+      deleteAll: function() {
+        return this.store().clear();
       }
-      return false;
-    };
-
-    Dirty.prototype.changes = function() {
-      return this._changes || (this._changes = {});
-    };
-
-    Dirty.prototype._trackChangedAttribute = function(attribute, value) {
-      var array, beforeValue, _base;
-      array = (_base = this.changes)[attribute] || (_base[attribute] = []);
-      beforeValue = array[0] || (array[0] = this.attributes[attribute]);
-      array[1] = value;
-      if (array[0] === array[1]) array = null;
-      if (array) {
-        this.changes[attribute] = array;
-      } else {
-        delete this.changes[attribute];
+    },
+    InstanceMethods: {
+      isNew: function() {
+        return !!!attributes.id;
+      },
+      save: function(options) {},
+      update: function(options) {},
+      reset: function() {},
+      updateAttribute: function(name, value) {},
+      updateAttributes: function(attributes) {},
+      increment: function(attribute, amount) {
+        if (amount == null) amount = 1;
+      },
+      decrement: function(attribute, amount) {
+        if (amount == null) amount = 1;
+      },
+      reload: function() {},
+      "delete": function() {},
+      destroy: function() {},
+      createOrUpdate: function() {},
+      isDestroyed: function() {},
+      isPersisted: function() {},
+      isDirty: function() {
+        return Metro.Support.Object.isPresent(this.changes());
+      },
+      _trackChangedAttribute: function(attribute, value) {
+        var array, beforeValue, _base;
+        array = (_base = this.changes)[attribute] || (_base[attribute] = []);
+        beforeValue = array[0] || (array[0] = this.attributes[attribute]);
+        array[1] = value;
+        if (array[0] === array[1]) array = null;
+        if (array) {
+          this.changes[attribute] = array;
+        } else {
+          delete this.changes[attribute];
+        }
+        return beforeValue;
       }
-      return beforeValue;
-    };
-
-    return Dirty;
-
-  })();
-
-  Metro.Model.Persistence = (function() {
-
-    function Persistence() {}
-
-    Persistence.create = function(attrs) {
-      var record;
-      record = new this(attrs);
-      this.store().create(record);
-      return record;
-    };
-
-    Persistence.update = function() {};
-
-    Persistence.deleteAll = function() {
-      return this.store().clear();
-    };
-
-    Persistence.prototype.isNew = function() {
-      return !!!attributes.id;
-    };
-
-    Persistence.prototype.save = function(options) {
-      return runCallbacks(function() {});
-    };
-
-    Persistence.prototype.update = function(options) {};
-
-    Persistence.prototype.reset = function() {};
-
-    Persistence.alias("reload", "reset");
-
-    Persistence.prototype.updateAttribute = function(name, value) {};
-
-    Persistence.prototype.updateAttributes = function(attributes) {};
-
-    Persistence.prototype.increment = function(attribute, amount) {
-      if (amount == null) amount = 1;
-    };
-
-    Persistence.prototype.decrement = function(attribute, amount) {
-      if (amount == null) amount = 1;
-    };
-
-    Persistence.prototype.reload = function() {};
-
-    Persistence.prototype["delete"] = function() {};
-
-    Persistence.prototype.destroy = function() {};
-
-    Persistence.prototype.createOrUpdate = function() {};
-
-    Persistence.prototype.isDestroyed = function() {};
-
-    Persistence.prototype.isPersisted = function() {};
-
-    return Persistence;
-
-  })();
+    }
+  };
 
   Metro.Model.Reflection = (function() {
 
@@ -1381,265 +1043,160 @@
 
   })();
 
-  Metro.Model.Scopes = (function() {
-
-    function Scopes() {}
-
-    Scopes.scope = function(name, scope) {
-      return this[name] = scope instanceof Metro.Model.Scope ? scope : this.where(scope);
-    };
-
-    Scopes.where = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).where.apply(_ref2, arguments);
-    };
-
-    Scopes.order = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).order.apply(_ref2, arguments);
-    };
-
-    Scopes.limit = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).limit.apply(_ref2, arguments);
-    };
-
-    Scopes.select = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).select.apply(_ref2, arguments);
-    };
-
-    Scopes.joins = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).joins.apply(_ref2, arguments);
-    };
-
-    Scopes.includes = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).includes.apply(_ref2, arguments);
-    };
-
-    Scopes.within = function() {
-      var _ref2;
-      return (_ref2 = this.scoped()).within.apply(_ref2, arguments);
-    };
-
-    Scopes.scoped = function() {
-      return new Metro.Model.Scope(this.name);
-    };
-
-    Scopes.all = function(callback) {
-      return this.store().all(callback);
-    };
-
-    Scopes.first = function(callback) {
-      return this.store().first(callback);
-    };
-
-    Scopes.last = function(callback) {
-      return this.store().last(callback);
-    };
-
-    Scopes.find = function(id, callback) {
-      return this.store().find(id, callback);
-    };
-
-    Scopes.count = function(callback) {
-      return this.store().count(callback);
-    };
-
-    Scopes.exists = function(callback) {
-      return this.store().exists(callback);
-    };
-
-    return Scopes;
-
-  })();
-
-  Metro.Model.Serialization = (function() {
-
-    function Serialization() {}
-
-    Serialization.prototype.toXML = function() {};
-
-    Serialization.prototype.toJSON = function() {
-      return JSON.stringify(this.attributes);
-    };
-
-    Serialization.prototype.toObject = function() {};
-
-    Serialization.prototype.clone = function() {};
-
-    Serialization.fromJSON = function(data) {
-      var i, record, records, _len;
-      records = JSON.parse(data);
-      if (!(records instanceof Array)) records = [records];
-      for (i = 0, _len = records.length; i < _len; i++) {
-        record = records[i];
-        records[i] = new this(record);
+  Metro.Model.Scopes = {
+    ClassMethods: {
+      scope: function(name, scope) {
+        return this[name] = scope instanceof Metro.Model.Scope ? scope : this.where(scope);
+      },
+      where: function() {
+        var _ref;
+        return (_ref = this.scoped()).where.apply(_ref, arguments);
+      },
+      order: function() {
+        var _ref;
+        return (_ref = this.scoped()).order.apply(_ref, arguments);
+      },
+      limit: function() {
+        var _ref;
+        return (_ref = this.scoped()).limit.apply(_ref, arguments);
+      },
+      select: function() {
+        var _ref;
+        return (_ref = this.scoped()).select.apply(_ref, arguments);
+      },
+      joins: function() {
+        var _ref;
+        return (_ref = this.scoped()).joins.apply(_ref, arguments);
+      },
+      includes: function() {
+        var _ref;
+        return (_ref = this.scoped()).includes.apply(_ref, arguments);
+      },
+      within: function() {
+        var _ref;
+        return (_ref = this.scoped()).within.apply(_ref, arguments);
+      },
+      scoped: function() {
+        return new Metro.Model.Scope(this.name);
+      },
+      all: function(callback) {
+        return this.store().all(callback);
+      },
+      first: function(callback) {
+        return this.store().first(callback);
+      },
+      last: function(callback) {
+        return this.store().last(callback);
+      },
+      find: function(id, callback) {
+        return this.store().find(id, callback);
+      },
+      count: function(callback) {
+        return this.store().count(callback);
+      },
+      exists: function(callback) {
+        return this.store().exists(callback);
       }
-      return records;
+    }
+  };
+
+  Metro.Model.Serialization = {
+    ClassMethods: {
+      fromJSON: function(data) {
+        var i, record, records, _len;
+        records = JSON.parse(data);
+        if (!(records instanceof Array)) records = [records];
+        for (i = 0, _len = records.length; i < _len; i++) {
+          record = records[i];
+          records[i] = new this(record);
+        }
+        return records;
+      },
+      fromForm: function(data) {}
+    },
+    toXML: function() {},
+    toJSON: function() {
+      return JSON.stringify(this.attributes);
+    },
+    toForm: function() {},
+    toObject: function() {
+      return this.attributes;
+    },
+    clone: function() {
+      return new this.constructor(Metro.Support.Object.clone(this.attributes));
+    }
+  };
+
+  Metro.Model.Validator = (function() {
+
+    Validator.create = function(name, value, attributes) {
+      switch (name) {
+        case "presence":
+          return new this.Presence;
+        case "count":
+        case "length":
+        case "min":
+        case "max":
+          return new this.Length;
+        case "format":
+          return new this.Format(value, attributes);
+      }
     };
 
-    return Serialization;
-
-  })();
-
-  Metro.Model.Validation = (function() {
-
-    function Validation(name, value) {
-      this.name = name;
+    function Validator(value, attributes) {
       this.value = value;
-      this.attributes = Array.prototype.slice.call(arguments, 2, arguments.length);
-      this.validationMethod = (function() {
-        switch (name) {
-          case "presence":
-            return this.validatePresence;
-          case "min":
-            return this.validateMinimum;
-          case "max":
-            return this.validateMaximum;
-          case "count":
-          case "length":
-            return this.validateLength;
-          case "format":
-            if (typeof this.value === 'string') {
-              this.value = new RegExp(this.value);
-            }
-            return this.validateFormat;
-        }
-      }).call(this);
+      this.attributes = attributes;
     }
 
-    Validation.prototype.validate = function(record) {
-      var attribute, success, _i, _len, _ref2;
+    Validator.prototype.validateEach = function(record, errors) {
+      var attribute, success, _i, _len, _ref;
+      if (errors == null) errors = [];
       success = true;
-      _ref2 = this.attributes;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        attribute = _ref2[_i];
-        if (!this.validationMethod(record, attribute)) success = false;
+      _ref = this.attributes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        attribute = _ref[_i];
+        if (!this.validate(record, attribute, errors)) success = false;
       }
       return success;
     };
 
-    Validation.prototype.validatePresence = function(record, attribute) {
-      if (!record[attribute]) {
-        record.errors().push({
-          attribute: attribute,
-          message: Metro.Support.I18n.t("metro.model.errors.validation.presence", {
-            attribute: attribute
-          })
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateMinimum = function(record, attribute) {
-      value = record[attribute];
-      if (!(typeof value === 'number' && value >= this.value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: Metro.Support.I18n.t("metro.model.errors.validation.minimum", {
-            attribute: attribute,
-            value: value
-          })
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateMaximum = function(record, attribute) {
-      value = record[attribute];
-      if (!(typeof value === 'number' && value <= this.value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: "" + attribute + " must be a maximum of " + this.value
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateLength = function(record, attribute) {
-      value = record[attribute];
-      if (!(typeof value === 'number' && value === this.value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: "" + attribute + " must be equal to " + this.value
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateFormat = function(record, attribute) {
-      value = record[attribute];
-      if (!this.value.exec(value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: "" + attribute + " must be match the format " + (this.value.toString())
-        });
-        return false;
-      }
-      return true;
-    };
-
-    return Validation;
+    return Validator;
 
   })();
 
-  Metro.Model.Validations = (function() {
-
-    function Validations() {
-      Validations.__super__.constructor.apply(this, arguments);
-    }
-
-    Validations.validates = function() {
-      var attributes, key, options, validators, value, _results;
-      attributes = Array.prototype.slice.call(arguments, 0, arguments.length);
-      options = attributes.pop();
-      if (typeof options !== "object") {
-        Metro.throw_error("missing_options", "" + this.name + ".validates");
+  Metro.Model.Validations = {
+    ClassMethods: {
+      validate: function() {
+        var attributes, key, options, validators, value, _results;
+        attributes = Metro.Support.Array.args(arguments);
+        options = attributes.pop();
+        if (typeof options !== "object") {
+          Metro.raise("missing_options", "" + this.name + ".validates");
+        }
+        validators = this.validators();
+        _results = [];
+        for (key in options) {
+          value = options[key];
+          _results.push(validators.push(Metro.Model.Validation.create(key, value, attributes)));
+        }
+        return _results;
+      },
+      validators: function() {
+        return this._validators || (this._validators = []);
       }
-      validators = this.validators();
-      _results = [];
-      for (key in options) {
-        value = options[key];
-        _results.push(validators.push((function(func, args, ctor) {
-          ctor.prototype = func.prototype;
-          var child = new ctor, result = func.apply(child, args);
-          return typeof result === "object" ? result : child;
-        })(Metro.Model.Validation, [key, value].concat(__slice.call(attributes)), function() {})));
-      }
-      return _results;
-    };
-
-    Validations.validators = function() {
-      return this._validators || (this._validators = []);
-    };
-
-    Validations.prototype.validate = function() {
-      var self, success, validator, validators, _i, _len;
-      self = this;
-      validators = this.constructor.validators();
+    },
+    validate: function() {
+      var success, validator, validators, _i, _len;
+      validators = this.constructor.validators;
       success = true;
-      this.errors().length = 0;
+      this.errors.length = 0;
       for (_i = 0, _len = validators.length; _i < _len; _i++) {
         validator = validators[_i];
-        if (!validator.validate(self)) success = false;
+        if (!validator.validate(this)) success = false;
       }
       return success;
-    };
-
-    Validations.prototype.errors = function() {
-      return this._errors || (this._errors = []);
-    };
-
-    return Validations;
-
-  })();
+    }
+  };
 
   Metro.Model.include(Metro.Model.Persistence);
 
@@ -1651,313 +1208,139 @@
 
   Metro.Model.include(Metro.Model.Validations);
 
-  Metro.Model.include(Metro.Model.Dirty);
-
   Metro.Model.include(Metro.Model.Attributes);
 
   Metro.View = (function() {
+
+    __extends(View, Metro.Object);
+
+    View.extend({
+      loadPaths: ["./app/views"],
+      paths: [],
+      pathsByName: {},
+      engine: "jade",
+      prettyPrint: false,
+      store: function(store) {
+        if (store) this._store = store;
+        return this._store || (this._store = new Metro.Store.FileSystem);
+      }
+    });
 
     function View(controller) {
       this.controller = controller || (new Metro.Controller);
     }
 
+    View.prototype.store = function() {
+      return this.constructor.store();
+    };
+
     return View;
 
   })();
 
-  Metro.View.Helpers = (function() {
-
-    function Helpers() {}
-
-    Helpers.prototype.contentTypeTag = function(type) {
+  Metro.View.Helpers = {
+    contentTypeTag: function(type) {
       if (type == null) type = "UTF-8";
       return "\n    <meta charset=\"" + type + "\" />";
-    };
-
-    Helpers.prototype.t = function(string) {
-      var _ref2;
-      if ((_ref2 = this._t) == null) {
-        this._t = require("" + Metro.root + "/config/locales/en");
-      }
-      return this._t[string];
-    };
-
-    Helpers.prototype.stylesheetTag = function(source) {
-      var path, paths, result, _i, _len;
-      paths = this.assetPaths(source, {
-        directory: Metro.Asset.config.stylesheetDirectory,
-        extension: ".css"
-      });
-      result = [];
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        result.push("\n    <link href=\"" + path + "\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>");
-      }
-      return result.join("");
-    };
-
-    Helpers.prototype.javascriptTag = function(source) {
-      var path, paths, result, _i, _len;
-      paths = this.assetPaths(source, {
-        directory: Metro.Asset.config.javascriptDirectory,
-        extension: ".js"
-      });
-      result = [];
-      for (_i = 0, _len = paths.length; _i < _len; _i++) {
-        path = paths[_i];
-        result.push("\n    <script type=\"text/javascript\" src=\"" + path + "\" ></script>");
-      }
-      return result.join("");
-    };
-
-    Helpers.prototype.assetPaths = function(source, options) {
-      var asset, env, publicPath, result, self;
-      if (options == null) options = {};
-      options.digest = false;
-      env = Metro.Asset;
-      publicPath = env.computePublicPath(source, options);
-      if (Metro.env === "production" || Metro.Support.Path.isUrl(publicPath)) {
-        return [publicPath];
-      }
-      self = this;
-      asset = env.find(publicPath);
-      result = [];
-      asset.paths({
-        paths: env.pathsFor(asset.extension),
-        require: Metro.env !== "production"
-      }, function(paths) {
-        var i, path, _len, _results;
-        _results = [];
-        for (i = 0, _len = paths.length; i < _len; i++) {
-          path = paths[i];
-          if (i === paths.length - 1) path = source;
-          _results.push(result.push(env.computePublicPath(path, options)));
+    },
+    t: function(string) {
+      return Metro.translate(string);
+    },
+    javascriptTag: function(path) {
+      return "\n    <script type=\"text/javascript\" src=\"" + path + "\" ></script>";
+    },
+    stylesheetTag: function(path) {
+      return "\n    <link href=\"" + path + "\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>";
+    },
+    javascripts: function(source) {
+      var manifest, path, paths, result, _i, _len;
+      if (Metro.env === "production") {
+        manifest = Metro.assetManifest;
+        source = "" + source + ".js";
+        if (manifest[source]) source = manifest[source];
+        path = "/javascripts/" + source;
+        if (Metro.assetHost) path = "" + Metro.assetHost + path;
+        return this.javascriptTag(path);
+      } else {
+        paths = Metro.assets.javascripts[source];
+        result = [];
+        for (_i = 0, _len = paths.length; _i < _len; _i++) {
+          path = paths[_i];
+          result.push(this.javascriptTag("/javascripts" + path + ".js"));
         }
-        return _results;
-      });
-      return result;
-    };
-
-    Helpers.prototype.titleTag = function(title) {
+        return result.join("");
+      }
+    },
+    stylesheets: function(source) {
+      var manifest, path, paths, result, _i, _len;
+      if (Metro.env === "production") {
+        manifest = Metro.assetManifest;
+        source = "" + source + ".css";
+        if (manifest[source]) source = manifest[source];
+        path = "/stylesheets/" + source;
+        if (Metro.assetHost) path = "" + Metro.assetHost + path;
+        return this.stylesheetTag(path);
+      } else {
+        paths = Metro.assets.stylesheets[source];
+        result = [];
+        for (_i = 0, _len = paths.length; _i < _len; _i++) {
+          path = paths[_i];
+          result.push(this.stylesheetTag("/stylesheets" + path + ".css"));
+        }
+        return result.join("");
+      }
+    },
+    titleTag: function(title) {
       return "<title>" + title + "</title>";
-    };
-
-    Helpers.prototype.metaTag = function(name, content) {};
-
-    Helpers.prototype.tag = function(name, options) {};
-
-    Helpers.prototype.linkTag = function(title, path, options) {};
-
-    Helpers.prototype.imageTag = function(path, options) {};
-
-    return Helpers;
-
-  })();
-
-  Metro.View.Lookup = (function() {
-
-    function Lookup() {}
-
-    Lookup.initialize = function() {
-      this.resolveLoadPaths();
-      this.resolveTemplatePaths();
-      return Metro.Support.Dependencies.load("" + Metro.root + "/app/helpers");
-    };
-
-    Lookup.teardown = function() {};
-
-    Lookup.resolveLoadPaths = function() {
-      var file;
-      file = Path;
-      return this.loadPaths = _.map(this.loadPaths, function(path) {
-        return Path.relativePath(path);
-      });
-    };
-
-    Lookup.lookup = function(view) {
-      var basename, dirname, pathsByName, pattern, result, template, templates, _i, _len;
-      pathsByName = Metro.View.pathsByName;
-      result = pathsByName[view];
-      if (result) return result;
-      templates = Metro.View.paths;
-      pattern = new RegExp(view + "$", "i");
-      for (_i = 0, _len = templates.length; _i < _len; _i++) {
-        template = templates[_i];
-        dirname = Path.dirname(template);
-        basename = Path.basename(template).split(".")[0];
-        key = "" + dirname + "/" + basename;
-        if (key.match(pattern)) {
-          pathsByName[view] = template;
-          return template;
-        }
-      }
-      return null;
-    };
-
-    Lookup.resolveTemplatePaths = function() {
-      var file, path, templatePaths, _i, _len, _ref2;
-      file = require("file");
-      templatePaths = this.paths;
-      _ref2 = Metro.View.loadPaths;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        path = _ref2[_i];
-        file.walkSync(path, function(_path, _directories, _files) {
-          var template, _file, _j, _len2, _results;
-          _results = [];
-          for (_j = 0, _len2 = _files.length; _j < _len2; _j++) {
-            _file = _files[_j];
-            template = [_path, _file].join("/");
-            if (templatePaths.indexOf(template) === -1) {
-              _results.push(templatePaths.push(template));
-            } else {
-              _results.push(void 0);
-            }
-          }
-          return _results;
-        });
-      }
-      return templatePaths;
-    };
-
-    Lookup.loadPaths = ["./app/views"];
-
-    Lookup.paths = [];
-
-    Lookup.pathsByName = {};
-
-    Lookup.engine = "jade";
-
-    Lookup.prettyPrint = false;
-
-    return Lookup;
-
-  })();
-
-  Shift = require('shift');
-
-  File = require('pathfinder').File;
-
-  Metro.View.Rendering = (function() {
-
-    function Rendering() {}
-
-    Rendering.prototype.render = function() {
-      var args, callback, options, self, template;
-      args = Array.prototype.slice.call(arguments, 0, arguments.length);
-      if (!(args.length >= 2 && typeof args[args.length - 1] === "function")) {
-        throw new Error("You must pass a callback to the render method");
-      }
-      callback = args.pop();
-      if (args.length === 1) {
-        if (typeof args[0] === "string") {
-          options = {
-            template: args[0]
-          };
-        } else {
-          options = args[0];
-        }
-      } else {
-        template = args[0];
-        options = args[1];
-        options.template = template;
-      }
-      options || (options = {});
-      options.locals = this.context(options);
-      options.type || (options.type = Metro.View.engine);
-      options.engine = Shift.engine(options.type);
-      if (options.hasOwnProperty("layout") && options.layout === false) {
-        options.layout = false;
-      } else {
-        options.layout = options.layout || this.controller.layout();
-      }
-      self = this;
-      return this._renderBody(options, function(error, body) {
-        return self._renderLayout(body, options, callback);
-      });
-    };
-
-    Rendering.prototype._renderBody = function(options, callback) {
-      var template;
-      if (options.text) {
-        return callback(null, options.text);
-      } else if (options.json) {
-        return callback(null, typeof options.json === "string" ? options.json : JSON.stringify(options.json));
-      } else {
-        if (!options.inline) {
-          template = Metro.View.lookup(options.template);
-          template = File.read(template);
-        }
-        return options.engine.render(template, options.locals, callback);
-      }
-    };
-
-    Rendering.prototype._renderLayout = function(body, options, callback) {
-      var layout;
-      if (options.layout) {
-        layout = Metro.View.lookup("layouts/" + options.layout);
-        layout = File.read(layout);
-        options.locals.yield = body;
-        return options.engine.render(layout, options.locals, callback);
-      } else {
-        return callback(null, body);
-      }
-    };
-
-    Rendering.prototype.context = function(options) {
-      var controller, key, locals;
-      controller = this.controller;
-      locals = {};
-      for (key in controller) {
-        if (key !== "constructor") locals[key] = controller[key];
-      }
-      locals = require("underscore").extend(locals, this.locals || {}, options.locals);
-      if (Metro.View.prettyPrint) locals.pretty = true;
-      return locals;
-    };
-
-    return Rendering;
-
-  })();
-
-  Metro.View.include(Metro.View.Lookup);
-
-  Metro.View.include(Metro.View.Rendering);
+    },
+    metaTag: function(name, content) {},
+    tag: function(name, options) {},
+    linkTag: function(title, path, options) {},
+    imageTag: function(path, options) {}
+  };
 
   Metro.Controller = (function() {
 
+    __extends(Controller, Metro.Object);
+
     function Controller() {
-      Controller.__super__.constructor.apply(this, arguments);
+      this.headers = {};
+      this.status = 200;
+      this.request = null;
+      this.response = null;
+      this.contentType = "text/html";
+      this.params = {};
+      this.query = {};
     }
 
-    Controller.initialize = function() {
-      return Metro.Support.Dependencies.load("" + Metro.root + "/app/controllers");
-    };
+    return Controller;
 
-    Controller.teardown = function() {
-      delete this._helpers;
-      delete this._layout;
-      return delete this._theme;
-    };
+  })();
 
-    Controller.reload = function() {
-      this.teardown();
-      return this.initialize();
-    };
+  Metro.Controller.Caching = {};
 
-    Controller.helper = function(object) {
-      this._helpers || (this._helpers = []);
-      return this._helpers.push(object);
-    };
+  Metro.Controller.Helpers = {
+    ClassMethods: {
+      helper: function(object) {
+        this._helpers || (this._helpers = []);
+        return this._helpers.push(object);
+      }
+    },
+    urlFor: function() {}
+  };
 
-    Controller.layout = function(layout) {
-      return this._layout = layout;
-    };
+  Metro.Controller.HTTP = {};
 
-    Controller.theme = function(theme) {
-      return this._theme = theme;
-    };
-
-    Controller.prototype.layout = function() {
+  Metro.Controller.Layouts({
+    ClassMethods: {
+      layout: function(layout) {
+        return this._layout = layout;
+      },
+      theme: function(theme) {
+        return this._theme = theme;
+      }
+    },
+    layout: function() {
       var layout;
       layout = this.constructor._layout;
       if (typeof layout === "function") {
@@ -1965,55 +1348,17 @@
       } else {
         return layout;
       }
-    };
-
-    Controller.getter("controllerName", Controller, function() {
-      return Metro.Support.String.camelize(this.name);
-    });
-
-    Controller.getter("controllerName", Controller.prototype, function() {
-      return this.constructor.controllerName;
-    });
-
-    Controller.prototype.clear = function() {
-      this.request = null;
-      this.response = null;
-      return this.headers = null;
-    };
-
-    return Controller;
-
-  })();
-
-  Metro.Controller.Flash = (function() {
-
-    function Flash() {
-      Flash.__super__.constructor.apply(this, arguments);
     }
+  });
 
-    return Flash;
+  Metro.Controller.Redirecting = {
+    redirectTo: function() {}
+  };
 
-  })();
-
-  Metro.Controller.Redirecting = (function() {
-
-    function Redirecting() {}
-
-    Redirecting.prototype.redirectTo = function() {};
-
-    return Redirecting;
-
-  })();
-
-  Metro.Controller.Rendering = (function() {
-
-    function Rendering() {
-      Rendering.__super__.constructor.apply(this, arguments);
-    }
-
-    Rendering.prototype.render = function() {
+  Metro.Controller.Rendering = {
+    render: function() {
       var args, callback, finish, self, view, _base;
-      args = Array.prototype.slice.call(arguments, 0, arguments.length);
+      args = Metro.Support.Array.args(arguments);
       if (args.length >= 2 && typeof args[args.length - 1] === "function") {
         callback = args.pop();
       }
@@ -2030,35 +1375,29 @@
         return self.callback();
       });
       return view.render.apply(view, args);
-    };
-
-    Rendering.prototype.renderToBody = function(options) {
+    },
+    renderToBody: function(options) {
       this._processOptions(options);
       return this._renderTemplate(options);
-    };
-
-    Rendering.prototype.renderToString = function() {
+    },
+    renderToString: function() {
       var options;
       options = this._normalizeRender.apply(this, arguments);
       return this.renderToBody(options);
-    };
-
-    Rendering.prototype._renderTemplate = function(options) {
+    },
+    _renderTemplate: function(options) {
       return this.template.render(viewContext, options);
-    };
+    }
+  };
 
-    return Rendering;
-
-  })();
-
-  Metro.Controller.Responding = (function() {
-
-    Responding.respondTo = function() {
-      this._respondTo || (this._respondTo = []);
-      return this._respondTo = this._respondTo.concat(arguments);
-    };
-
-    Responding.prototype.respondWith = function() {
+  Metro.Controller.Responding = {
+    ClassMethods: {
+      respondTo: function() {
+        this._respondTo || (this._respondTo = []);
+        return this._respondTo = this._respondTo.concat(Metro.Support.Array.args(arguments));
+      }
+    },
+    respondWith: function() {
       var callback, data;
       data = arguments[0];
       if (arguments.length > 1 && typeof arguments[arguments.length - 1] === "function") {
@@ -2078,9 +1417,8 @@
             action: this.action
           });
       }
-    };
-
-    Responding.prototype.call = function(request, response, next) {
+    },
+    call: function(request, response, next) {
       this.request = request;
       this.response = response;
       this.params = this.request.params || {};
@@ -2096,30 +1434,26 @@
         this.contentType = "text/html";
       }
       return this.process();
-    };
-
-    Responding.prototype.process = function() {
+    },
+    process: function() {
       this.processQuery();
       return this[this.params.action]();
-    };
-
-    Responding.prototype.processQuery = function() {};
-
-    function Responding() {
-      this.headers = {};
-      this.status = 200;
+    },
+    processQuery: function() {},
+    clear: function() {
       this.request = null;
       this.response = null;
-      this.contentType = "text/html";
-      this.params = {};
-      this.query = {};
+      return this.headers = null;
     }
+  };
 
-    return Responding;
+  Metro.Controller.include(Metro.Controller.Caching);
 
-  })();
+  Metro.Controller.include(Metro.Controller.Helpers);
 
-  Metro.Controller.include(Metro.Controller.Flash);
+  Metro.Controller.include(Metro.Controller.HTTP);
+
+  Metro.Controller.include(Metro.Controller.Layouts);
 
   Metro.Controller.include(Metro.Controller.Redirecting);
 
@@ -2129,33 +1463,14 @@
 
   Metro.Route = (function() {
 
-    Route.include(Metro.Model.Scopes);
-
-    Route.store = function() {
-      return this._store || (this._store = new Metro.Store.Memory);
-    };
+    Route.store = [];
 
     Route.create = function(route) {
-      return this.store().create(route);
+      return this.store.push(route);
     };
 
     Route.normalizePath = function(path) {
       return "/" + path.replace(/^\/|\/$/, "");
-    };
-
-    Route.initialize = function() {
-      return require("" + Metro.root + "/config/routes");
-    };
-
-    Route.teardown = function() {
-      this._store = [];
-      delete require.cache[require.resolve("" + Metro.root + "/config/routes")];
-      return delete this._store;
-    };
-
-    Route.reload = function() {
-      this.teardown();
-      return this.initialize();
     };
 
     Route.draw = function(callback) {
@@ -2414,7 +1729,7 @@
       return {
         name: controller,
         action: action,
-        className: _.camelize("_" + controller)
+        className: Metro.Support.String.camelize("_" + controller)
       };
     };
 
@@ -2422,131 +1737,13 @@
 
   })();
 
-  Metro.Route.Url = (function() {
-
-    Url.key = ["source", "protocol", "authority", "userInfo", "user", "password", "host", "port", "relative", "path", "directory", "file", "query", "fragment"];
-
-    Url.aliases = {
-      anchor: "fragment"
-    };
-
-    Url.parser = {
-      strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-      loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-    };
-
-    Url.querystring_parser = /(?:^|&|;)([^&=;]*)=?([^&;]*)/g;
-
-    Url.fragment_parser = /(?:^|&|;)([^&=;]*)=?([^&;]*)/g;
-
-    Url.type_parser = /(youtube|vimeo|eventbrite)/;
-
-    Url.parse = function(string, strictMode) {
-      var i, res, type, url;
-      key = Url.key;
-      string = decodeURI(string);
-      res = Url.parser[(strictMode || false ? "strict" : "loose")].exec(string);
-      url = {
-        attr: {},
-        param: {},
-        seg: {}
-      };
-      i = 14;
-      while (i--) {
-        url.attr[key[i]] = res[i] || "";
-      }
-      url.param["query"] = {};
-      url.param["fragment"] = {};
-      url.attr["query"].replace(Url.querystring_parser, function($0, $1, $2) {
-        if ($1) return url.param["query"][$1] = $2;
-      });
-      url.attr["fragment"].replace(Url.fragment_parser, function($0, $1, $2) {
-        if ($1) return url.param["fragment"][$1] = $2;
-      });
-      url.seg["path"] = url.attr.path.replace(/^\/+|\/+$/g, "").split("/");
-      url.seg["fragment"] = url.attr.fragment.replace(/^\/+|\/+$/g, "").split("/");
-      url.attr["base"] = (url.attr.host ? url.attr.protocol + "://" + url.attr.host + (url.attr.port ? ":" + url.attr.port : "") : "");
-      type = Url.type_parser.exec(url.attr.host);
-      if (type) url.attr["type"] = type[0];
-      return url;
-    };
-
-    function Url(url, strictMode) {
-      if (typeof url === "object") {
-        this.data = url;
-      } else {
-        if (arguments.length === 1 && url === true) {
-          strictMode = true;
-          url = void 0;
-        }
-        this.strictMode = strictMode || false;
-        url = url;
-        if (typeof window !== "undefined" && window !== null) {
-          if (url == null) url = window.location.toString();
-        }
-        this.data = Url.parse(url, strictMode);
-      }
-    }
-
-    Url.prototype.attr = function(attr) {
-      attr = Url.aliases[attr] || attr;
-      if (attr !== void 0) {
-        return this.data.attr[attr];
-      } else {
-        return this.data.attr;
-      }
-    };
-
-    Url.prototype.param = function(param) {
-      if (param !== void 0) {
-        return this.data.param.query[param];
-      } else {
-        return this.data.param.query;
-      }
-    };
-
-    Url.prototype.fparam = function(param) {
-      if (param !== void 0) {
-        return this.data.param.fragment[param];
-      } else {
-        return this.data.param.fragment;
-      }
-    };
-
-    Url.prototype.segment = function(seg) {
-      if (seg === void 0) {
-        return this.data.seg.path;
-      } else {
-        seg = (seg < 0 ? this.data.seg.path.length + seg : seg - 1);
-        return this.data.seg.path[seg];
-      }
-    };
-
-    Url.prototype.fsegment = function(seg) {
-      if (seg === void 0) {
-        return this.data.seg.fragment;
-      } else {
-        seg = (seg < 0 ? this.data.seg.fragment.length + seg : seg - 1);
-        return this.data.seg.fragment[seg];
-      }
-    };
-
-    return Url;
-
-  })();
-
-  Namespace = (function() {
-
-    function Namespace() {}
-
-    Namespace.prototype.defaultLimit = 100;
-
-    Namespace.prototype.reservedOperators = {
+  Metro.Store = {
+    defaultLimit: 100,
+    reservedOperators: {
       "_sort": "_sort",
       "_limit": "_limit"
-    };
-
-    Namespace.prototype.queryOperators = {
+    },
+    queryOperators: {
       ">=": "gte",
       "gte": "gte",
       ">": "gt",
@@ -2569,13 +1766,8 @@
       "neq": "neq",
       "null": "null",
       "notNull": "notNull"
-    };
-
-    return Namespace;
-
-  })();
-
-  Metro.Store = new Namespace;
+    }
+  };
 
   Metro.Store.Memory = (function() {
 
@@ -2673,11 +1865,11 @@
     };
 
     Memory.prototype.create = function(record) {
-      var _ref2;
+      var _ref;
       if (!record.id) {
         Metro.raise("errors.store.missingAttribute", "id", "Store#create", record);
       }
-      if ((_ref2 = record.id) == null) record.id = this.generateId();
+      if ((_ref = record.id) == null) record.id = this.generateId();
       return this.records[record.id] = record;
     };
 
@@ -2693,8 +1885,8 @@
     };
 
     Memory.prototype.sort = function() {
-      var _ref2;
-      return (_ref2 = Metro.Support.Array).sortBy.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = Metro.Support.Array).sortBy.apply(_ref, arguments);
     };
 
     Memory.prototype.matches = function(record, query) {

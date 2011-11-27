@@ -2,6 +2,14 @@
 
 > Attention All Passengers:  Client and server are merging...  You may now begin coding.
 
+## Parts
+
+- Core: Core extensions, base files, I18n
+- Model + Store
+- View + Controller + Middleware + Route
+- Event
+- Date, String, etc.
+
 ## Features
 
 - `Store` layer to all popular databases, which just normalizes the data for the `Model` layer.
@@ -341,3 +349,12 @@ cake minify
 - http://www.html5rocks.com/en/tutorials/file/filesystem/
 - https://github.com/gregdingle/genetify
 - https://github.com/jquery/qunit
+
+## Presenter
+
+``` coffeescript
+PostsPresenter =
+  index: ->
+  
+  
+```

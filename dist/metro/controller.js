@@ -1,39 +1,48 @@
+(function() {
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Metro.Controller = (function() {
 
+    __extends(Controller, Metro.Object);
+
     function Controller() {
-      Controller.__super__.constructor.apply(this, arguments);
+      this.headers = {};
+      this.status = 200;
+      this.request = null;
+      this.response = null;
+      this.contentType = "text/html";
+      this.params = {};
+      this.query = {};
     }
 
-    Controller.initialize = function() {
-      return Metro.Support.Dependencies.load("" + Metro.root + "/app/controllers");
-    };
+    return Controller;
 
-    Controller.teardown = function() {
-      delete this._helpers;
-      delete this._layout;
-      return delete this._theme;
-    };
+  })();
 
-    Controller.reload = function() {
-      this.teardown();
-      return this.initialize();
-    };
+  Metro.Controller.Caching = {};
 
-    Controller.helper = function(object) {
-      this._helpers || (this._helpers = []);
-      return this._helpers.push(object);
-    };
+  Metro.Controller.Helpers = {
+    ClassMethods: {
+      helper: function(object) {
+        this._helpers || (this._helpers = []);
+        return this._helpers.push(object);
+      }
+    },
+    urlFor: function() {}
+  };
 
-    Controller.layout = function(layout) {
-      return this._layout = layout;
-    };
+  Metro.Controller.HTTP = {};
 
-    Controller.theme = function(theme) {
-      return this._theme = theme;
-    };
-
-    Controller.prototype.layout = function() {
+  Metro.Controller.Layouts({
+    ClassMethods: {
+      layout: function(layout) {
+        return this._layout = layout;
+      },
+      theme: function(theme) {
+        return this._theme = theme;
+      }
+    },
+    layout: function() {
       var layout;
       layout = this.constructor._layout;
       if (typeof layout === "function") {
@@ -41,55 +50,17 @@
       } else {
         return layout;
       }
-    };
-
-    Controller.getter("controllerName", Controller, function() {
-      return Metro.Support.String.camelize(this.name);
-    });
-
-    Controller.getter("controllerName", Controller.prototype, function() {
-      return this.constructor.controllerName;
-    });
-
-    Controller.prototype.clear = function() {
-      this.request = null;
-      this.response = null;
-      return this.headers = null;
-    };
-
-    return Controller;
-
-  })();
-
-  Metro.Controller.Flash = (function() {
-
-    function Flash() {
-      Flash.__super__.constructor.apply(this, arguments);
     }
+  });
 
-    return Flash;
+  Metro.Controller.Redirecting = {
+    redirectTo: function() {}
+  };
 
-  })();
-
-  Metro.Controller.Redirecting = (function() {
-
-    function Redirecting() {}
-
-    Redirecting.prototype.redirectTo = function() {};
-
-    return Redirecting;
-
-  })();
-
-  Metro.Controller.Rendering = (function() {
-
-    function Rendering() {
-      Rendering.__super__.constructor.apply(this, arguments);
-    }
-
-    Rendering.prototype.render = function() {
+  Metro.Controller.Rendering = {
+    render: function() {
       var args, callback, finish, self, view, _base;
-      args = Array.prototype.slice.call(arguments, 0, arguments.length);
+      args = Metro.Support.Array.args(arguments);
       if (args.length >= 2 && typeof args[args.length - 1] === "function") {
         callback = args.pop();
       }
@@ -106,35 +77,29 @@
         return self.callback();
       });
       return view.render.apply(view, args);
-    };
-
-    Rendering.prototype.renderToBody = function(options) {
+    },
+    renderToBody: function(options) {
       this._processOptions(options);
       return this._renderTemplate(options);
-    };
-
-    Rendering.prototype.renderToString = function() {
+    },
+    renderToString: function() {
       var options;
       options = this._normalizeRender.apply(this, arguments);
       return this.renderToBody(options);
-    };
-
-    Rendering.prototype._renderTemplate = function(options) {
+    },
+    _renderTemplate: function(options) {
       return this.template.render(viewContext, options);
-    };
+    }
+  };
 
-    return Rendering;
-
-  })();
-
-  Metro.Controller.Responding = (function() {
-
-    Responding.respondTo = function() {
-      this._respondTo || (this._respondTo = []);
-      return this._respondTo = this._respondTo.concat(arguments);
-    };
-
-    Responding.prototype.respondWith = function() {
+  Metro.Controller.Responding = {
+    ClassMethods: {
+      respondTo: function() {
+        this._respondTo || (this._respondTo = []);
+        return this._respondTo = this._respondTo.concat(Metro.Support.Array.args(arguments));
+      }
+    },
+    respondWith: function() {
       var callback, data;
       data = arguments[0];
       if (arguments.length > 1 && typeof arguments[arguments.length - 1] === "function") {
@@ -154,9 +119,8 @@
             action: this.action
           });
       }
-    };
-
-    Responding.prototype.call = function(request, response, next) {
+    },
+    call: function(request, response, next) {
       this.request = request;
       this.response = response;
       this.params = this.request.params || {};
@@ -172,33 +136,31 @@
         this.contentType = "text/html";
       }
       return this.process();
-    };
-
-    Responding.prototype.process = function() {
+    },
+    process: function() {
       this.processQuery();
       return this[this.params.action]();
-    };
-
-    Responding.prototype.processQuery = function() {};
-
-    function Responding() {
-      this.headers = {};
-      this.status = 200;
+    },
+    processQuery: function() {},
+    clear: function() {
       this.request = null;
       this.response = null;
-      this.contentType = "text/html";
-      this.params = {};
-      this.query = {};
+      return this.headers = null;
     }
+  };
 
-    return Responding;
+  Metro.Controller.include(Metro.Controller.Caching);
 
-  })();
+  Metro.Controller.include(Metro.Controller.Helpers);
 
-  Metro.Controller.include(Metro.Controller.Flash);
+  Metro.Controller.include(Metro.Controller.HTTP);
+
+  Metro.Controller.include(Metro.Controller.Layouts);
 
   Metro.Controller.include(Metro.Controller.Redirecting);
 
   Metro.Controller.include(Metro.Controller.Rendering);
 
   Metro.Controller.include(Metro.Controller.Responding);
+
+}).call(this);

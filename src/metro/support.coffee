@@ -2,7 +2,6 @@ Metro.Support = {}
 
 require './support/array'
 require './support/class'
-require './support/date'
 require './support/dependencies'
 require './support/i18n'
 require './support/number'

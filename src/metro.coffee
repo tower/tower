@@ -5,6 +5,7 @@ module.exports  = global.Metro = Metro = new (class Metro)
 Metro.logger    = _console
 
 require './metro/support'
+require './metro/event'
 require './metro/application'
 require './metro/application/server'
 require './metro/configuration'

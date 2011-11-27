@@ -23,7 +23,7 @@ class Metro.Class
     Metro.Support.setter(@::, key)
     @
     
-  @classAlias: (to, from)
+  @classAlias: (to, from) ->
     Metro.Support.alias(@, to, from)
     @
     

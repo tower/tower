@@ -35,7 +35,7 @@ require './model/persistence'
 require './model/reflection'
 require './model/scopes'
 require './model/serialization'
-require './model/validation'
+require './model/validator'
 require './model/validations'
 
 Metro.Model.include Metro.Model.Persistence

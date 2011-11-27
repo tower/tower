@@ -1,38 +1,46 @@
 (function() {
-  var __slice = Array.prototype.slice;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   Metro.Model = (function() {
 
-    Model.initialize = function() {
-      return Metro.Support.Dependencies.load("" + Metro.root + "/app/models");
-    };
-
-    Model.teardown = function() {
-      return delete this._store;
-    };
-
-    Model.store = function() {
-      return this._store || (this._store = new Metro.Store.Memory);
-    };
+    __extends(Model, Metro.Object);
 
     function Model(attrs) {
       var attributes, definition, definitions, key, name, value;
       if (attrs == null) attrs = {};
-      attributes = {};
       definitions = this.constructor.keys();
+      attributes = {};
       for (key in attrs) {
         value = attrs[key];
-        attributes[key] = value;
+        attributes[key] = this.typecast(value);
       }
       for (name in definitions) {
         definition = definitions[name];
         if (!attrs.hasOwnProperty(name)) {
-          attributes[name] || (attributes[name] = definition.defaultValue(this));
+          attributes[name] || (attributes[name] = this.typecast(definition.defaultValue(this)));
         }
       }
-      this.attributes = this.typeCastAttributes(attributes);
+      this.attributes = attributes;
       this.changes = {};
+      this.associations = {};
+      this.errors = [];
     }
+
+    Model.prototype.toLabel = function() {
+      return this.className();
+    };
+
+    Model.prototype.toPath = function() {
+      return this.constructor.toParam() + "/" + this.toParam();
+    };
+
+    Model.prototype.toParam = function() {
+      return this.get("id").toString();
+    };
+
+    Model.toParam = function() {
+      return Metro.Support.String.parameterize(this.className());
+    };
 
     return Model;
 
@@ -127,8 +135,6 @@
 
   Metro.Model.Association = (function() {
 
-    Association.include(Metro.Model.Scope);
-
     function Association(owner, reflection) {
       this.owner = owner;
       this.reflection = reflection;
@@ -159,101 +165,67 @@
 
   })();
 
-  Metro.Model.Associations = (function() {
-
-    function Associations() {}
-
-    Associations.hasOne = function(name, options) {
-      if (options == null) options = {};
-    };
-
-    Associations.hasMany = function(name, options) {
-      var reflection;
-      if (options == null) options = {};
-      options.foreignKey = "" + (Metro.Support.String.underscore(this.name)) + "Id";
-      this.reflections()[name] = reflection = new Metro.Model.Reflection("hasMany", this.name, name, options);
-      Object.defineProperty(this.prototype, name, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._getHasManyAssociation(name);
-        },
-        set: function(value) {
-          return this._setHasManyAssociation(name, value);
-        }
-      });
-      return reflection;
-    };
-
-    Associations.belongsTo = function(name, options) {
-      var reflection;
-      if (options == null) options = {};
-      this.reflections()[name] = reflection = new Metro.Model.Association("belongsTo", this.name, name, options);
-      Object.defineProperty(this.prototype, name, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._getBelongsToAssocation(name);
-        },
-        set: function(value) {
-          return this._setBelongsToAssocation(name, value);
-        }
-      });
-      this.keys()["" + name + "Id"] = new Metro.Model.Attribute("" + name + "Id", options);
-      Object.defineProperty(this.prototype, "" + name + "Id", {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._getBelongsToAssocationId("" + name + "Id");
-        },
-        set: function(value) {
-          return this._setBelongsToAssocationId("" + name + "Id", value);
-        }
-      });
-      return reflection;
-    };
-
-    Associations.reflections = function() {
-      return this._reflections || (this._reflections = {});
-    };
-
-    Associations.prototype._getHasManyAssociation = function(name) {
-      return this.constructor.reflections()[name].association(this.id);
-    };
-
-    Associations.prototype._setHasManyAssociation = function(name, value) {
-      return this.constructor.reflections()[name].association(this.id).destroyAll();
-    };
-
-    Associations.prototype._getBelongsToAssocationId = function(name) {
-      return this.attributes[name];
-    };
-
-    Associations.prototype._setBelongsToAssocationId = function(name, value) {
-      return this.attributes[name] = value;
-    };
-
-    Associations.prototype._getBelongsToAssocation = function(name) {
-      var id;
-      id = this._getBelongsToAssocationId(name);
-      if (!id) return null;
-      return global[this.reflections()[name].targetClassName].where({
-        id: this.id
-      }).first();
-    };
-
-    Associations.prototype._setBelongsToAssocation = function(name, value) {
-      var id;
-      id = this._getBelongsToAssocationId(name);
-      if (!id) return null;
-      return global[this.reflections()[name].targetClassName].where({
-        id: this.id
-      }).first();
-    };
-
-    return Associations;
-
-  })();
+  Metro.Model.Associations = {
+    ClassMethods: {
+      reflections: function() {
+        return this._reflections || (this._reflections = {});
+      },
+      hasOne: function(name, options) {
+        if (options == null) options = {};
+      },
+      hasMany: function(name, options) {
+        var reflection;
+        if (options == null) options = {};
+        options.foreignKey = "" + (Metro.Support.String.underscore(this.name)) + "Id";
+        this.reflections()[name] = reflection = new Metro.Model.Reflection("hasMany", this.name, name, options);
+        Metro.Support.Object.defineProperty(this.prototype, name, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.association(name);
+          },
+          set: function(value) {
+            return this.association(name).set(value);
+          }
+        });
+        return reflection;
+      },
+      belongsTo: function(name, options) {
+        var nameId, reflection;
+        if (options == null) options = {};
+        this.reflections()[name] = reflection = new Metro.Model.Association("belongsTo", this.name, name, options);
+        Metro.Support.Object.defineProperty(this.prototype, name, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this._getBelongsToAssocation(name);
+          },
+          set: function(value) {
+            return this._setBelongsToAssocation(name, value);
+          }
+        });
+        nameId = "" + name + "Id";
+        this.keys[nameId] = new Metro.Model.Attribute(nameId, options);
+        Metro.Support.Object.defineProperty(this.prototype, nameId, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.association(name).getId();
+          },
+          set: function(value) {
+            return this.association(name).setId(value);
+          }
+        });
+        return reflection;
+      }
+    },
+    InstanceMethods: {
+      association: function(name) {
+        var _base;
+        return (_base = this.associations)[name] || (_base[name] = this.constructor.reflections()[name].association(this));
+      }
+    }
+  };
 
   Metro.Model.Attribute = (function() {
 
@@ -324,164 +296,103 @@
 
   })();
 
-  Metro.Model.Attributes = (function() {
-
-    function Attributes() {}
-
-    Attributes.key = function(key, options) {
-      if (options == null) options = {};
-      this.keys()[key] = new Metro.Model.Attribute(key, options);
-      Object.defineProperty(this.prototype, key, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this.getAttribute(key);
-        },
-        set: function(value) {
-          return this.setAttribute(key, value);
+  Metro.Model.Attributes = {
+    included: function() {
+      this.keys = {};
+      return this.key("id");
+    },
+    ClassMethods: {
+      key: function(key, options) {
+        if (options == null) options = {};
+        this.keys[key] = new Metro.Model.Attribute(key, options);
+        Object.defineProperty(this.prototype, key, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.get(key);
+          },
+          set: function(value) {
+            return this.set(key, value);
+          }
+        });
+        return this;
+      },
+      attributeDefinition: function(name) {
+        var definition;
+        definition = this.keys[name];
+        if (!definition) {
+          throw new Error("Attribute '" + name + "' does not exist on '" + this.name + "'");
         }
-      });
-      return this;
-    };
-
-    Attributes.keys = function() {
-      return this._keys || (this._keys = {});
-    };
-
-    Attributes.attributeDefinition = function(name) {
-      var definition;
-      definition = this.keys()[name];
-      if (!definition) {
-        throw new Error("Attribute '" + name + "' does not exist on '" + this.name + "'");
+        return definition;
       }
-      return definition;
-    };
-
-    Attributes.prototype.typeCast = function(name, value) {
-      return this.constructor.attributeDefinition(name).typecast(value);
-    };
-
-    Attributes.prototype.typeCastAttributes = function(attributes) {
-      var key, value;
-      for (key in attributes) {
-        value = attributes[key];
-        attributes[key] = this.typeCast(key, value);
+    },
+    InstanceMethods: {
+      typeCast: function(name, value) {
+        return this.constructor.attributeDefinition(name).typecast(value);
+      },
+      get: function(name) {
+        var _base;
+        return (_base = this.attributes)[name] || (_base[name] = this.constructor.keys[name].defaultValue(this));
+      },
+      set: function(name, value) {
+        var beforeValue;
+        beforeValue = this.attributes[name];
+        this.attributes[name] = value;
+        this._attributeChange(beforeValue, value);
+        return value;
       }
-      return attributes;
-    };
+    }
+  };
 
-    Attributes.prototype.getAttribute = function(name) {
-      var _base;
-      return (_base = this.attributes)[name] || (_base[name] = this.constructor.keys()[name].defaultValue(this));
-    };
-
-    if (!Attributes.hasOwnProperty("get")) Attributes.alias("get", "getAttribute");
-
-    Attributes.prototype.setAttribute = function(name, value) {
-      var beforeValue;
-      beforeValue = this._trackChangedAttribute(name, value);
-      return this.attributes[name] = value;
-    };
-
-    if (!Attributes.hasOwnProperty("set")) Attributes.alias("set", "setAttribute");
-
-    return Attributes;
-
-  })();
-
-  Metro.Model.Dirty = (function() {
-
-    function Dirty() {}
-
-    Dirty.prototype.isDirty = function() {
-      var change, changes;
-      changes = this.changes();
-      for (change in changes) {
-        return true;
+  Metro.Model.Persistence = {
+    ClassMethods: {
+      create: function(attrs) {
+        return this.store().create(new this(attrs));
+      },
+      update: function() {},
+      deleteAll: function() {
+        return this.store().clear();
       }
-      return false;
-    };
-
-    Dirty.prototype.changes = function() {
-      return this._changes || (this._changes = {});
-    };
-
-    Dirty.prototype._trackChangedAttribute = function(attribute, value) {
-      var array, beforeValue, _base;
-      array = (_base = this.changes)[attribute] || (_base[attribute] = []);
-      beforeValue = array[0] || (array[0] = this.attributes[attribute]);
-      array[1] = value;
-      if (array[0] === array[1]) array = null;
-      if (array) {
-        this.changes[attribute] = array;
-      } else {
-        delete this.changes[attribute];
+    },
+    InstanceMethods: {
+      isNew: function() {
+        return !!!attributes.id;
+      },
+      save: function(options) {},
+      update: function(options) {},
+      reset: function() {},
+      updateAttribute: function(name, value) {},
+      updateAttributes: function(attributes) {},
+      increment: function(attribute, amount) {
+        if (amount == null) amount = 1;
+      },
+      decrement: function(attribute, amount) {
+        if (amount == null) amount = 1;
+      },
+      reload: function() {},
+      "delete": function() {},
+      destroy: function() {},
+      createOrUpdate: function() {},
+      isDestroyed: function() {},
+      isPersisted: function() {},
+      isDirty: function() {
+        return Metro.Support.Object.isPresent(this.changes());
+      },
+      _trackChangedAttribute: function(attribute, value) {
+        var array, beforeValue, _base;
+        array = (_base = this.changes)[attribute] || (_base[attribute] = []);
+        beforeValue = array[0] || (array[0] = this.attributes[attribute]);
+        array[1] = value;
+        if (array[0] === array[1]) array = null;
+        if (array) {
+          this.changes[attribute] = array;
+        } else {
+          delete this.changes[attribute];
+        }
+        return beforeValue;
       }
-      return beforeValue;
-    };
-
-    return Dirty;
-
-  })();
-
-  Metro.Model.Persistence = (function() {
-
-    function Persistence() {}
-
-    Persistence.create = function(attrs) {
-      var record;
-      record = new this(attrs);
-      this.store().create(record);
-      return record;
-    };
-
-    Persistence.update = function() {};
-
-    Persistence.deleteAll = function() {
-      return this.store().clear();
-    };
-
-    Persistence.prototype.isNew = function() {
-      return !!!attributes.id;
-    };
-
-    Persistence.prototype.save = function(options) {
-      return runCallbacks(function() {});
-    };
-
-    Persistence.prototype.update = function(options) {};
-
-    Persistence.prototype.reset = function() {};
-
-    Persistence.alias("reload", "reset");
-
-    Persistence.prototype.updateAttribute = function(name, value) {};
-
-    Persistence.prototype.updateAttributes = function(attributes) {};
-
-    Persistence.prototype.increment = function(attribute, amount) {
-      if (amount == null) amount = 1;
-    };
-
-    Persistence.prototype.decrement = function(attribute, amount) {
-      if (amount == null) amount = 1;
-    };
-
-    Persistence.prototype.reload = function() {};
-
-    Persistence.prototype["delete"] = function() {};
-
-    Persistence.prototype.destroy = function() {};
-
-    Persistence.prototype.createOrUpdate = function() {};
-
-    Persistence.prototype.isDestroyed = function() {};
-
-    Persistence.prototype.isPersisted = function() {};
-
-    return Persistence;
-
-  })();
+    }
+  };
 
   Metro.Model.Reflection = (function() {
 
@@ -505,269 +416,160 @@
 
   })();
 
-  Metro.Model.Scopes = (function() {
-
-    function Scopes() {}
-
-    Scopes.scope = function(name, scope) {
-      return this[name] = scope instanceof Metro.Model.Scope ? scope : this.where(scope);
-    };
-
-    Scopes.where = function() {
-      var _ref;
-      return (_ref = this.scoped()).where.apply(_ref, arguments);
-    };
-
-    Scopes.order = function() {
-      var _ref;
-      return (_ref = this.scoped()).order.apply(_ref, arguments);
-    };
-
-    Scopes.limit = function() {
-      var _ref;
-      return (_ref = this.scoped()).limit.apply(_ref, arguments);
-    };
-
-    Scopes.select = function() {
-      var _ref;
-      return (_ref = this.scoped()).select.apply(_ref, arguments);
-    };
-
-    Scopes.joins = function() {
-      var _ref;
-      return (_ref = this.scoped()).joins.apply(_ref, arguments);
-    };
-
-    Scopes.includes = function() {
-      var _ref;
-      return (_ref = this.scoped()).includes.apply(_ref, arguments);
-    };
-
-    Scopes.within = function() {
-      var _ref;
-      return (_ref = this.scoped()).within.apply(_ref, arguments);
-    };
-
-    Scopes.scoped = function() {
-      return new Metro.Model.Scope(this.name);
-    };
-
-    Scopes.all = function(callback) {
-      return this.store().all(callback);
-    };
-
-    Scopes.first = function(callback) {
-      return this.store().first(callback);
-    };
-
-    Scopes.last = function(callback) {
-      return this.store().last(callback);
-    };
-
-    Scopes.find = function(id, callback) {
-      return this.store().find(id, callback);
-    };
-
-    Scopes.count = function(callback) {
-      return this.store().count(callback);
-    };
-
-    Scopes.exists = function(callback) {
-      return this.store().exists(callback);
-    };
-
-    return Scopes;
-
-  })();
-
-  Metro.Model.Serialization = (function() {
-
-    function Serialization() {}
-
-    Serialization.prototype.toXML = function() {};
-
-    Serialization.prototype.toJSON = function() {
-      return JSON.stringify(this.attributes);
-    };
-
-    Serialization.prototype.toObject = function() {};
-
-    Serialization.prototype.clone = function() {};
-
-    Serialization.fromJSON = function(data) {
-      var i, record, records, _len;
-      records = JSON.parse(data);
-      if (!(records instanceof Array)) records = [records];
-      for (i = 0, _len = records.length; i < _len; i++) {
-        record = records[i];
-        records[i] = new this(record);
+  Metro.Model.Scopes = {
+    ClassMethods: {
+      scope: function(name, scope) {
+        return this[name] = scope instanceof Metro.Model.Scope ? scope : this.where(scope);
+      },
+      where: function() {
+        var _ref;
+        return (_ref = this.scoped()).where.apply(_ref, arguments);
+      },
+      order: function() {
+        var _ref;
+        return (_ref = this.scoped()).order.apply(_ref, arguments);
+      },
+      limit: function() {
+        var _ref;
+        return (_ref = this.scoped()).limit.apply(_ref, arguments);
+      },
+      select: function() {
+        var _ref;
+        return (_ref = this.scoped()).select.apply(_ref, arguments);
+      },
+      joins: function() {
+        var _ref;
+        return (_ref = this.scoped()).joins.apply(_ref, arguments);
+      },
+      includes: function() {
+        var _ref;
+        return (_ref = this.scoped()).includes.apply(_ref, arguments);
+      },
+      within: function() {
+        var _ref;
+        return (_ref = this.scoped()).within.apply(_ref, arguments);
+      },
+      scoped: function() {
+        return new Metro.Model.Scope(this.name);
+      },
+      all: function(callback) {
+        return this.store().all(callback);
+      },
+      first: function(callback) {
+        return this.store().first(callback);
+      },
+      last: function(callback) {
+        return this.store().last(callback);
+      },
+      find: function(id, callback) {
+        return this.store().find(id, callback);
+      },
+      count: function(callback) {
+        return this.store().count(callback);
+      },
+      exists: function(callback) {
+        return this.store().exists(callback);
       }
-      return records;
+    }
+  };
+
+  Metro.Model.Serialization = {
+    ClassMethods: {
+      fromJSON: function(data) {
+        var i, record, records, _len;
+        records = JSON.parse(data);
+        if (!(records instanceof Array)) records = [records];
+        for (i = 0, _len = records.length; i < _len; i++) {
+          record = records[i];
+          records[i] = new this(record);
+        }
+        return records;
+      },
+      fromForm: function(data) {}
+    },
+    toXML: function() {},
+    toJSON: function() {
+      return JSON.stringify(this.attributes);
+    },
+    toForm: function() {},
+    toObject: function() {
+      return this.attributes;
+    },
+    clone: function() {
+      return new this.constructor(Metro.Support.Object.clone(this.attributes));
+    }
+  };
+
+  Metro.Model.Validator = (function() {
+
+    Validator.create = function(name, value, attributes) {
+      switch (name) {
+        case "presence":
+          return new this.Presence;
+        case "count":
+        case "length":
+        case "min":
+        case "max":
+          return new this.Length;
+        case "format":
+          return new this.Format(value, attributes);
+      }
     };
 
-    return Serialization;
-
-  })();
-
-  Metro.Model.Validation = (function() {
-
-    function Validation(name, value) {
-      this.name = name;
+    function Validator(value, attributes) {
       this.value = value;
-      this.attributes = Array.prototype.slice.call(arguments, 2, arguments.length);
-      this.validationMethod = (function() {
-        switch (name) {
-          case "presence":
-            return this.validatePresence;
-          case "min":
-            return this.validateMinimum;
-          case "max":
-            return this.validateMaximum;
-          case "count":
-          case "length":
-            return this.validateLength;
-          case "format":
-            if (typeof this.value === 'string') {
-              this.value = new RegExp(this.value);
-            }
-            return this.validateFormat;
-        }
-      }).call(this);
+      this.attributes = attributes;
     }
 
-    Validation.prototype.validate = function(record) {
+    Validator.prototype.validateEach = function(record, errors) {
       var attribute, success, _i, _len, _ref;
+      if (errors == null) errors = [];
       success = true;
       _ref = this.attributes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         attribute = _ref[_i];
-        if (!this.validationMethod(record, attribute)) success = false;
+        if (!this.validate(record, attribute, errors)) success = false;
       }
       return success;
     };
 
-    Validation.prototype.validatePresence = function(record, attribute) {
-      if (!record[attribute]) {
-        record.errors().push({
-          attribute: attribute,
-          message: Metro.Support.I18n.t("metro.model.errors.validation.presence", {
-            attribute: attribute
-          })
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateMinimum = function(record, attribute) {
-      var value;
-      value = record[attribute];
-      if (!(typeof value === 'number' && value >= this.value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: Metro.Support.I18n.t("metro.model.errors.validation.minimum", {
-            attribute: attribute,
-            value: value
-          })
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateMaximum = function(record, attribute) {
-      var value;
-      value = record[attribute];
-      if (!(typeof value === 'number' && value <= this.value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: "" + attribute + " must be a maximum of " + this.value
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateLength = function(record, attribute) {
-      var value;
-      value = record[attribute];
-      if (!(typeof value === 'number' && value === this.value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: "" + attribute + " must be equal to " + this.value
-        });
-        return false;
-      }
-      return true;
-    };
-
-    Validation.prototype.validateFormat = function(record, attribute) {
-      var value;
-      value = record[attribute];
-      if (!this.value.exec(value)) {
-        record.errors().push({
-          attribute: attribute,
-          message: "" + attribute + " must be match the format " + (this.value.toString())
-        });
-        return false;
-      }
-      return true;
-    };
-
-    return Validation;
+    return Validator;
 
   })();
 
-  Metro.Model.Validations = (function() {
-
-    function Validations() {
-      Validations.__super__.constructor.apply(this, arguments);
-    }
-
-    Validations.validates = function() {
-      var attributes, key, options, validators, value, _results;
-      attributes = Array.prototype.slice.call(arguments, 0, arguments.length);
-      options = attributes.pop();
-      if (typeof options !== "object") {
-        Metro.throw_error("missing_options", "" + this.name + ".validates");
+  Metro.Model.Validations = {
+    ClassMethods: {
+      validate: function() {
+        var attributes, key, options, validators, value, _results;
+        attributes = Metro.Support.Array.args(arguments);
+        options = attributes.pop();
+        if (typeof options !== "object") {
+          Metro.raise("missing_options", "" + this.name + ".validates");
+        }
+        validators = this.validators();
+        _results = [];
+        for (key in options) {
+          value = options[key];
+          _results.push(validators.push(Metro.Model.Validation.create(key, value, attributes)));
+        }
+        return _results;
+      },
+      validators: function() {
+        return this._validators || (this._validators = []);
       }
-      validators = this.validators();
-      _results = [];
-      for (key in options) {
-        value = options[key];
-        _results.push(validators.push((function(func, args, ctor) {
-          ctor.prototype = func.prototype;
-          var child = new ctor, result = func.apply(child, args);
-          return typeof result === "object" ? result : child;
-        })(Metro.Model.Validation, [key, value].concat(__slice.call(attributes)), function() {})));
-      }
-      return _results;
-    };
-
-    Validations.validators = function() {
-      return this._validators || (this._validators = []);
-    };
-
-    Validations.prototype.validate = function() {
-      var self, success, validator, validators, _i, _len;
-      self = this;
-      validators = this.constructor.validators();
+    },
+    validate: function() {
+      var success, validator, validators, _i, _len;
+      validators = this.constructor.validators;
       success = true;
-      this.errors().length = 0;
+      this.errors.length = 0;
       for (_i = 0, _len = validators.length; _i < _len; _i++) {
         validator = validators[_i];
-        if (!validator.validate(self)) success = false;
+        if (!validator.validate(this)) success = false;
       }
       return success;
-    };
-
-    Validations.prototype.errors = function() {
-      return this._errors || (this._errors = []);
-    };
-
-    return Validations;
-
-  })();
+    }
+  };
 
   Metro.Model.include(Metro.Model.Persistence);
 
@@ -778,8 +580,6 @@
   Metro.Model.include(Metro.Model.Associations);
 
   Metro.Model.include(Metro.Model.Validations);
-
-  Metro.Model.include(Metro.Model.Dirty);
 
   Metro.Model.include(Metro.Model.Attributes);
 

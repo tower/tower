@@ -10,7 +10,7 @@ class Metro.View extends Metro.Object
       @_store ||= new Metro.Store.FileSystem
     
   constructor: (controller) ->
-    @controller = controller || (new Metro.Controller)
+    @controller = controller
   
   store: ->
     @constructor.store()

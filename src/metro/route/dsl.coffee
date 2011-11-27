@@ -264,7 +264,7 @@ class Metro.Route.DSL
     @match '/', _.extend(as: "root", options)
     
   _extractOptions: ->
-    path            = Metro.Route.normalizePath(arguments[0])
+    path            = "/" + arguments[0].replace(/^\/|\/$/, "")
     options         = arguments[arguments.length - 1] || {}
     options.path    = path
     format          = @_extractFormat(options)

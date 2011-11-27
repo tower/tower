@@ -4,12 +4,8 @@ class Metro.Route
   @create: (route) ->
     @store.push(route)
   
-  @normalizePath: (path) ->
-    "/" + path.replace(/^\/|\/$/, "")
-  
   @draw: (callback) ->
     callback.apply(new Metro.Route.DSL(@))
-    @
   
   constructor: (options) ->
     options     ||= options

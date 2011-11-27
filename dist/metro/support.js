@@ -1,67 +1,22 @@
 (function() {
-  var Namespace, key, moduleKeywords, value, _ref;
-  var __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+  var __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice;
 
-  Metro.Support = new (Namespace = (function() {
-
-    function Namespace() {}
-
-    return Namespace;
-
-  })());
+  Metro.Support = {};
 
   Metro.Support.Array = {
-    extractArgs: function(args) {
-      return Array.prototype.slice.call(args, 0, args.length);
-    },
-    extractArgsAndOptions: function(args) {
-      args = Array.prototype.slice.call(args, 0, args.length);
-      if (typeof args[args.length - 1] !== 'object') args.push({});
+    args: function(args, index, withCallback, withOptions) {
+      if (index == null) index = 0;
+      if (withCallback == null) withCallback = false;
+      if (withOptions == null) withOptions = false;
+      args = Array.prototype.slice.call(args, index, args.length);
+      if (withCallback && !(args.length >= 2 && typeof args[args.length - 1] === "function")) {
+        throw new Error("You must pass a callback to the render method");
+      }
       return args;
-    },
-    args: function(args) {
-      var options;
-      args = Array.prototype.slice.call(args, 0, args.length);
-      if (typeof args[args.length - 1] !== 'object') {
-        options = {};
-      } else {
-        options = args.pop();
-      }
-      return {
-        args: args,
-        options: options
-      };
-    },
-    argsOptionsAndCallback: function() {
-      var args, callback, last, options;
-      args = Array.prototype.slice.call(arguments);
-      last = args.length - 1;
-      if (typeof args[last] === "function") {
-        callback = args[last];
-        if (args.length >= 3) {
-          if (typeof args[last - 1] === "object") {
-            options = args[last - 1];
-            args = args.slice(0, (last - 2) + 1 || 9e9);
-          } else {
-            options = {};
-            args = args.slice(0, (last - 1) + 1 || 9e9);
-          }
-        } else {
-          options = {};
-        }
-      } else if (args.length >= 2 && typeof args[last] === "object") {
-        args = args.slice(0, (last - 1) + 1 || 9e9);
-        options = args[last];
-        callback = null;
-      } else {
-        options = {};
-        callback = null;
-      }
-      return [args, options, callback];
     },
     sortBy: function(objects) {
       var arrayComparator, callbacks, sortings, valueComparator;
-      sortings = Array.prototype.slice.call(arguments, 1, arguments.length);
+      sortings = this.args(arguments, 1);
       callbacks = sortings[sortings.length - 1] instanceof Array ? {} : sortings.pop();
       valueComparator = function(x, y) {
         if (x > y) {
@@ -107,85 +62,52 @@
         return sorting;
       });
       return objects.sort(function(a, b) {
-        return arrayComparator(a, b);
+        var bspecialProperties;
+        return arrayComparator(a, bspecialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']);
       });
     }
   };
 
-  moduleKeywords = ['included', 'extended', 'prototype'];
-
-  Metro.Support.Class = (function() {
+  Metro.Class = (function() {
 
     function Class() {}
 
     Class.alias = function(to, from) {
-      return this.prototype[to] = this.prototype[from];
+      return Metro.Support.alias(this.prototype, to, from);
     };
 
-    Class.alias_method = function(to, from) {
-      return this.prototype[to] = this.prototype[from];
-    };
-
-    Class.accessor = function(key, self, callback) {
-      this._accessors || (this._accessors = []);
-      this._accessors.push(key);
-      this.getter(key, self, callback);
-      this.setter(key, self);
+    Class.accessor = function(key, callback) {
+      Metro.Support.accessor(this.prototype, key, callback);
       return this;
     };
 
-    Class.getter = function(key, self, callback) {
-      self || (self = this.prototype);
-      if (!self.hasOwnProperty("_getAttribute")) {
-        Object.defineProperty(self, "_getAttribute", {
-          enumerable: false,
-          configurable: true,
-          value: function(key) {
-            return this["_" + key];
-          }
-        });
-      }
-      this._getters || (this._getters = []);
-      this._getters.push(key);
-      Object.defineProperty(self, "_" + key, {
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(self, key, {
-        enumerable: true,
-        configurable: true
-      }, {
-        get: function() {
-          return this["_getAttribute"](key) || (callback ? this["_" + key] = callback.apply(this) : void 0);
-        }
-      });
+    Class.getter = function(key, callback) {
+      Metro.Support.getter(this.prototype, key, callback);
       return this;
     };
 
-    Class.setter = function(key, self) {
-      self || (self = this.prototype);
-      if (!self.hasOwnProperty("_setAttribute")) {
-        Object.defineProperty(self, method, {
-          enumerable: false,
-          configurable: true,
-          value: function(key, value) {
-            return this["_" + key] = value;
-          }
-        });
-      }
-      this._setters || (this._setters = []);
-      this._setters.push(key);
-      Object.defineProperty(self, "_" + key, {
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(self, key, {
-        enumerable: true,
-        configurable: true,
-        set: function(value) {
-          return this["_setAttribute"](key, value);
-        }
-      });
+    Class.setter = function(key) {
+      Metro.Support.setter(this.prototype, key);
+      return this;
+    };
+
+    Class.classAlias = function(to, from) {
+      Metro.Support.alias(this, to, from);
+      return this;
+    };
+
+    Class.classAccessor = function(key, callback) {
+      Metro.Support.accessor(this, key, callback);
+      return this;
+    };
+
+    Class.classGetter = function(key, callback) {
+      Metro.Support.getter(this, key, callback);
+      return this;
+    };
+
+    Class.classSetter = function(key) {
+      Metro.Support.setter(this, key);
       return this;
     };
 
@@ -194,183 +116,63 @@
     };
 
     Class.delegate = function(key, options) {
-      var to;
       if (options == null) options = {};
-      to = options.to;
-      if (typeof this.prototype[to] === "function") {
-        return this.prototype[key] = function() {
-          var _ref;
-          return (_ref = this[to]())[key].apply(_ref, arguments);
-        };
-      } else {
-        return Object.defineProperty(this.prototype, key, {
-          enumerable: true,
-          configurable: true,
-          get: function() {
-            return this[to]()[key];
-          }
-        });
-      }
-    };
-
-    Class.delegates = function() {
-      var args, key, options, _i, _len, _results;
-      args = Array.prototype.slice.call(arguments, 0, arguments.length);
-      options = args.pop();
-      _results = [];
-      for (_i = 0, _len = args.length; _i < _len; _i++) {
-        key = args[_i];
-        _results.push(this.delegate(key, options));
-      }
-      return _results;
-    };
-
-    Class.include = function(obj) {
-      var c, child, clone, cloned, included, key, newproto, oldproto, parent, value, _ref;
-      if (!obj) throw new Error('include(obj) requires obj');
-      this.extend(obj);
-      c = this;
-      child = this;
-      parent = obj;
-      clone = function(fct) {
-        var clone_, property;
-        clone_ = function() {
-          return fct.apply(this, arguments);
-        };
-        clone_.prototype = fct.prototype;
-        for (property in fct) {
-          if (fct.hasOwnProperty(property) && property !== "prototype") {
-            clone_[property] = fct[property];
-          }
-        }
-        return clone_;
-      };
-      if (child.__super__) oldproto = child.__super__;
-      cloned = clone(parent);
-      newproto = cloned.prototype;
-      _ref = cloned.prototype;
-      for (key in _ref) {
-        value = _ref[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) this.prototype[key] = value;
-      }
-      if (oldproto) cloned.prototype = oldproto;
-      child.__super__ = newproto;
-      included = obj.included;
-      if (included) included.apply(obj.prototype);
+      Metro.Support.delegate(this.prototype, key, options);
       return this;
     };
 
-    Class.extend = function(obj) {
-      var extended, key, value;
-      if (!obj) throw new Error('extend(obj) requires obj');
-      for (key in obj) {
-        value = obj[key];
-        if (__indexOf.call(moduleKeywords, key) < 0) this[key] = value;
+    Class.mixin = function(self, object) {
+      var key, value;
+      for (key in object) {
+        value = object[key];
+        if (__indexOf.call(specialProperties, key) < 0) self[key] = value;
       }
-      extended = obj.extended;
-      if (extended) extended.apply(obj);
-      return this;
+      return object;
     };
 
-    Class["new"] = function() {
-      return (function(func, args, ctor) {
-        ctor.prototype = func.prototype;
-        var child = new ctor, result = func.apply(child, args);
-        return typeof result === "object" ? result : child;
-      })(this, arguments, function() {});
+    Class.extend = function(object) {
+      var extended;
+      this.mixin(this, object);
+      extended = object.extended;
+      if (extended) extended.apply(object);
+      return object;
+    };
+
+    Class.include = function(object) {
+      var included;
+      if (object.hasOwnProperty("ClassMethods")) this.extend(object.ClassMethods);
+      if (object.hasOwnProperty("InstanceMethods")) {
+        this.include(object.InstanceMethods);
+      }
+      this.mixin(this.prototype, object);
+      included = object.included;
+      if (included) included.apply(object);
+      return object;
     };
 
     Class.instanceMethods = function() {
-      var key, result;
-      result = [];
-      for (key in this.prototype) {
-        result.push(key);
-      }
-      return result;
+      return Metro.Support.methods(this.prototype);
     };
 
     Class.classMethods = function() {
-      var key, result;
-      result = [];
-      for (key in this) {
-        result.push(key);
-      }
-      return result;
+      return Metro.Support.methods(this);
     };
 
-    Class.prototype.instanceExec = function() {
-      var _ref;
-      return (_ref = arguments[0]).apply.apply(_ref, [this].concat(__slice.call(arguments.slice(1))));
+    Class.className = function() {
+      return Metro.Support.functionName(this);
     };
 
-    Class.prototype.instanceEval = function(block) {
-      return block.apply(this);
+    Class.prototype.className = function() {
+      return this.constructor.className();
     };
-
-    Class.prototype.send = function(method) {
-      var _ref;
-      if (this[method]) {
-        return (_ref = this[method]).apply.apply(_ref, arguments);
-      } else {
-        if (this.methodMissing) return this.methodMissing.apply(this, arguments);
-      }
-    };
-
-    Class.prototype.methodMissing = function(method) {};
 
     return Class;
 
   })();
 
-  _ref = Metro.Support.Class;
-  for (key in _ref) {
-    value = _ref[key];
-    Function.prototype[key] = value;
-  }
-
-  Metro.Support.Callbacks = (function() {
-
-    function Callbacks() {}
-
-    return Callbacks;
-
-  })();
-
-  Metro.Support.Concern = (function() {
-
-    function Concern() {
-      Concern.__super__.constructor.apply(this, arguments);
-    }
-
-    Concern.included = function() {
-      this._dependencies || (this._dependencies = []);
-      if (this.hasOwnProperty("ClassMethods")) this.extend(this.ClassMethods);
-      if (this.hasOwnProperty("InstanceMethods")) {
-        return this.include(this.InstanceMethods);
-      }
-    };
-
-    Concern._appendFeatures = function() {};
-
-    return Concern;
-
-  })();
-
-  Metro.Support.IE = (function() {
-
-    function IE() {}
-
-    return IE;
-
-  })();
-
-  Metro.Support.I18n = (function() {
-
-    function I18n() {}
-
-    I18n.defaultLanguage = "en";
-
-    I18n.translate = function(key, options) {
+  Metro.Support.I18n = {
+    defaultLanguage: "en",
+    translate: function(key, options) {
       if (options == null) options = {};
       if (options.hasOwnProperty("tense")) key += "." + options.tense;
       if (options.hasOwnProperty("count")) {
@@ -388,11 +190,9 @@
       return this.interpolator().render(this.lookup(key, options.language), {
         locals: options
       });
-    };
-
-    I18n.t = I18n.translate;
-
-    I18n.lookup = function(key, language) {
+    },
+    t: this.prototype.translate,
+    lookup: function(key, language) {
       var part, parts, result, _i, _len;
       if (language == null) language = this.defaultLanguage;
       parts = key.split(".");
@@ -409,17 +209,12 @@
         throw new Error("Translation doesn't exist for '" + key + "'");
       }
       return result;
-    };
-
-    I18n.store = {};
-
-    I18n.interpolator = function() {
+    },
+    store: {},
+    interpolator: function() {
       return this._interpolator || (this._interpolator = new (require('shift').Mustache));
-    };
-
-    return I18n;
-
-  })();
+    }
+  };
 
   Metro.Support.Number = {
     isInt: function(n) {
@@ -431,6 +226,107 @@
   };
 
   Metro.Support.Object = {
+    defineProperty: function(object, key, options) {
+      if (options == null) options = {};
+      return Object.defineProperty(object, key, options);
+    },
+    functionName: function(fn) {
+      var _ref;
+      if (fn.__name__) return fn.__name__;
+      if (fn.name) return fn.name;
+      return (_ref = fn.toString().match(/\W*function\s+([\w\$]+)\(/)) != null ? _ref[1] : void 0;
+    },
+    alias: function(object, to, from) {
+      return object[to] = object[from];
+    },
+    accessor: function(object, key, callback) {
+      object._accessors || (object._accessors = []);
+      object._accessors.push(key);
+      this.getter(key, object, callback);
+      this.setter(key, object);
+      return this;
+    },
+    setter: function(object, key) {
+      if (!object.hasOwnProperty("_setAttribute")) {
+        this.defineProperty(object, "_setAttribute", {
+          enumerable: false,
+          configurable: true,
+          value: function(key, value) {
+            return this["_" + key] = value;
+          }
+        });
+      }
+      object._setters || (object._setters = []);
+      object._setters.push(key);
+      this.defineProperty(object, key, {
+        enumerable: true,
+        configurable: true,
+        set: function(value) {
+          return this["_setAttribute"](key, value);
+        }
+      });
+      return this;
+    },
+    getter: function(object, key, callback) {
+      if (!object.hasOwnProperty("_getAttribute")) {
+        this.defineProperty(object, "_getAttribute", {
+          enumerable: false,
+          configurable: true,
+          value: function(key) {
+            return this["_" + key];
+          }
+        });
+      }
+      object._getters || (object._getters = []);
+      object._getters.push(key);
+      this.defineProperty(object, key, {
+        enumerable: true,
+        configurable: true,
+        get: function() {
+          return this["_getAttribute"](key) || (callback ? this["_" + key] = callback.apply(this) : void 0);
+        }
+      });
+      return this;
+    },
+    variables: function(object) {},
+    accessors: function(object) {},
+    methods: function(object) {
+      var key, result, value;
+      result = [];
+      for (key in object) {
+        value = object[key];
+        if (this.isFunction(value)) result.push(key);
+      }
+      return result;
+    },
+    delegate: function() {
+      var isFunction, key, keys, object, options, to, _i, _j, _len;
+      object = arguments[0], keys = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), options = arguments[_i++];
+      if (options == null) options = {};
+      to = options.to;
+      isFunction = this.isFunction(object);
+      for (_j = 0, _len = keys.length; _j < _len; _j++) {
+        key = keys[_j];
+        if (isFunction) {
+          object[key] = function() {
+            var _ref;
+            return (_ref = this[to]())[key].apply(_ref, arguments);
+          };
+        } else {
+          this.defineProperty(object, key, {
+            enumerable: true,
+            configurable: true,
+            get: function() {
+              return this[to]()[key];
+            }
+          });
+        }
+      }
+      return from;
+    },
+    isFunction: function(object) {
+      return !!(object && object.constructor && object.call && object.apply);
+    },
     isA: function(object, isa) {},
     isHash: function() {
       var object;
@@ -438,12 +334,7 @@
       return _.isObject(object) && !(_.isFunction(object) || _.isArray(object));
     },
     isPresent: function(object) {
-      var key, value;
-      for (key in object) {
-        value = object[key];
-        return true;
-      }
-      return false;
+      return !this.isBlank(object);
     },
     isBlank: function(object) {
       var key, value;
@@ -452,132 +343,94 @@
         return false;
       }
       return true;
-    }
-  };
-
-  Metro.Support.String = {
-    camelize: function() {
-      return _.camelize("_" + (arguments[0] || this));
     },
-    constantize: function() {
-      return global[this.camelize.apply(this, arguments)];
-    },
-    underscore: function() {
-      return _.underscored(arguments[0] || this);
-    },
-    titleize: function() {
-      return _.titleize(arguments[0] || this);
+    has: function(object, key) {
+      return object.hasOwnProperty(key);
     }
   };
 
   Metro.Support.RegExp = {
-    escape: function(string) {
+    regexpEscape: function(string) {
       return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    },
-    escapeEach: function() {
-      var args, i, item, result, _len;
-      result = [];
-      args = arguments[0];
-      for (i = 0, _len = args.length; i < _len; i++) {
-        item = args[i];
-        result[i] = this.escape(item);
-      }
-      return result;
     }
   };
 
-  Metro.Support.Time = (function() {
-
-    Time._lib = function() {
-      return require('moment');
-    };
-
-    Time.zone = function() {
-      return this;
-    };
-
-    Time.now = function() {
-      return new this();
-    };
-
-    function Time() {
-      this.moment = this.constructor._lib()();
+  Metro.Support.String = {
+    camelize_rx: /(?:^|_|\-)(.)/g,
+    capitalize_rx: /(^|\s)([a-z])/g,
+    underscore_rx1: /([A-Z]+)([A-Z][a-z])/g,
+    underscore_rx2: /([a-z\d])([A-Z])/g,
+    constantize: function(string, scope) {
+      if (scope == null) scope = global;
+      return scope[this.camelize(string)];
+    },
+    camelize: function(string, firstLetterLower) {
+      string = string.replace(camelize_rx, function(str, p1) {
+        return p1.toUpperCase();
+      });
+      if (firstLetterLower) {
+        return string.substr(0, 1).toLowerCase() + string.substr(1);
+      } else {
+        return string;
+      }
+    },
+    underscore: function(string) {
+      return string.replace(underscore_rx1, '$1_$2').replace(underscore_rx2, '$1_$2').replace('-', '_').toLowerCase();
+    },
+    singularize: function(string) {
+      var len;
+      len = string.length;
+      if (string.substr(len - 3) === 'ies') {
+        return string.substr(0, len - 3) + 'y';
+      } else if (string.substr(len - 1) === 's') {
+        return string.substr(0, len - 1);
+      } else {
+        return string;
+      }
+    },
+    pluralize: function(count, string) {
+      var lastLetter, len;
+      if (string) {
+        if (count === 1) return string;
+      } else {
+        string = count;
+      }
+      len = string.length;
+      lastLetter = string.substr(len - 1);
+      if (lastLetter === 'y') {
+        return "" + (string.substr(0, len - 1)) + "ies";
+      } else if (lastLetter === 's') {
+        return string;
+      } else {
+        return "" + string + "s";
+      }
+    },
+    capitalize: function(string) {
+      return string.replace(capitalize_rx, function(m, p1, p2) {
+        return p1 + p2.toUpperCase();
+      });
+    },
+    trim: function(string) {
+      if (string) {
+        return string.trim();
+      } else {
+        return "";
+      }
+    },
+    interpolate: function(stringOrObject, keys) {
+      var key, string, value;
+      if (typeof stringOrObject === 'object') {
+        string = stringOrObject[keys.count];
+        if (!string) string = stringOrObject['other'];
+      } else {
+        string = stringOrObject;
+      }
+      for (key in keys) {
+        value = keys[key];
+        string = string.replace(new RegExp("%\\{" + key + "\\}", "g"), value);
+      }
+      return string;
     }
-
-    Time.prototype.toString = function() {
-      return this._date.toString();
-    };
-
-    Time.prototype.beginningOfWeek = function() {};
-
-    Time.prototype.week = function() {
-      return parseInt(this.moment.format("w"));
-    };
-
-    Time.prototype.dayOfWeek = function() {
-      return this.moment.day();
-    };
-
-    Time.prototype.dayOfMonth = function() {
-      return parseInt(this.moment.format("D"));
-    };
-
-    Time.prototype.dayOfYear = function() {
-      return parseInt(this.moment.format("DDD"));
-    };
-
-    Time.prototype.meridiem = function() {
-      return this.moment.format("a");
-    };
-
-    Time.prototype.zoneName = function() {
-      return this.moment.format("z");
-    };
-
-    Time.prototype.strftime = function(format) {
-      return this.moment.format(format);
-    };
-
-    Time.prototype.beginningOfDay = function() {
-      this.moment.seconds(0);
-      return this;
-    };
-
-    Time.prototype.beginningOfWeek = function() {
-      this.moment.seconds(0);
-      this.moment.subtract('days', 6 - this.dayOfWeek());
-      return this;
-    };
-
-    Time.prototype.beginningOfMonth = function() {
-      this.moment.seconds(0);
-      this.moment.subtract('days', 6 - this.dayOfMonth());
-      return this;
-    };
-
-    Time.prototype.beginningOfYear = function() {
-      this.moment.seconds(0);
-      return this.moment.subtract('days', 6 - this.dayOfMonth());
-    };
-
-    Time.prototype.toDate = function() {
-      return this.moment._d;
-    };
-
-    return Time;
-
-  })();
-
-  Metro.Support.Time.TimeWithZone = (function() {
-
-    __extends(TimeWithZone, Metro.Support.Time);
-
-    function TimeWithZone() {
-      TimeWithZone.__super__.constructor.apply(this, arguments);
-    }
-
-    return TimeWithZone;
-
-  })();
+  };
 
 }).call(this);

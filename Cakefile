@@ -88,7 +88,7 @@ task 'to-underscore', ->
 task 'build', ->
   result = """
 window.global ||= window
-window.Metro    = new (class Namespace)
+window.Metro    = new (class Metro)
 require = -> {}
 
 """
@@ -116,7 +116,19 @@ require = -> {}
                 console.log error.stack if error
                 fs.writeFile "./dist/metro.js", result
                 unless error
-                  fs.writeFile "./dist/metro.min.js", compressor.render(result)
+                  compressor = new Shift.UglifyJS
+                  #result = obscurify(result)
+                  
+                  compressor.render result, (error, result) ->
+                    fs.writeFileSync("./dist/metro.min.js", result)
+                    
+                    gzip result, (error, result) ->
+                      
+                      fs.writeFileSync("./dist/metro.min.js.gz", result)
+                      
+                      console.log "Minified & Gzipped: #{fs.statSync("./dist/metro.min.js.gz").size}"
+                      
+                      fs.writeFile "./dist/metro.min.js.gz", compressor.render(result)
             
 task 'build-generic', ->
   paths   = findit.sync('./src')

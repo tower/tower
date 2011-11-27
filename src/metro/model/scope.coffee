@@ -22,7 +22,7 @@ class Metro.Model.Scope
   joins: ->
     @conditions.push ["joins", arguments]
     @
-      
+    
   includes: ->
     @conditions.push ["includes", arguments]
     @

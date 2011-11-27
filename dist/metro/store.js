@@ -1,18 +1,11 @@
-(function() {
-  var Namespace;
 
-  Namespace = (function() {
-
-    function Namespace() {}
-
-    Namespace.prototype.defaultLimit = 100;
-
-    Namespace.prototype.reservedOperators = {
+  Metro.Store = {
+    defaultLimit: 100,
+    reservedOperators: {
       "_sort": "_sort",
       "_limit": "_limit"
-    };
-
-    Namespace.prototype.queryOperators = {
+    },
+    queryOperators: {
       ">=": "gte",
       "gte": "gte",
       ">": "gt",
@@ -35,13 +28,8 @@
       "neq": "neq",
       "null": "null",
       "notNull": "notNull"
-    };
-
-    return Namespace;
-
-  })();
-
-  Metro.Store = new Namespace;
+    }
+  };
 
   Metro.Store.Memory = (function() {
 
@@ -290,5 +278,3 @@
     return Memory;
 
   })();
-
-}).call(this);

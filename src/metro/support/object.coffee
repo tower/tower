@@ -100,3 +100,5 @@ Metro.Support.Object =
     
   has: (object, key) ->
     object.hasOwnProperty(key)
+    
+module.exports = Metro.Support.Object
