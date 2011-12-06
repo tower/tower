@@ -89,15 +89,15 @@ task 'build', ->
   result = """
 window.global ||= window
 window.Metro    = new (class Metro)
-require = -> {}
 
 """
   result += fs.readFileSync("./src/metro/application/configuration.coffee", "utf-8") + "\n"
-  result += fs.readFileSync("./src/metro/application.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
   result += fs.readFileSync("./src/metro/application/client.coffee", "utf-8") + "\n"
   
   compileEach 'support', ((path) -> !!!path.match(/(path|lookup|dependencies)/)), (code) ->
     result += code
+    result += fs.readFileSync("./src/metro/object.coffee", "utf-8") + "\n"
+    
     compileEach 'model', null, (code) ->
       result += code
       compileEach 'view', null, (code) ->

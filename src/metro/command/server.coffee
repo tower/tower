@@ -12,7 +12,6 @@ class Metro.Command.Server
     Metro.env   = program.environment || "development"
     Metro.port  = program.port      = if program.port then parseInt(program.port) else (process.env.PORT || 1597)
     
-    Metro.Application.initialize()
-    Metro.Application.run()
+    Metro.Application.instance().run()
   
 module.exports = Metro.Command.Server

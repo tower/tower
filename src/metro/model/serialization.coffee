@@ -17,8 +17,6 @@ Metro.Model.Serialization =
   toJSON: ->
     JSON.stringify(@attributes)
   
-  toForm: ->
-  
   toObject: ->
     @attributes
   

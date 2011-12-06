@@ -1,5 +1,5 @@
 class Metro.Object extends Metro.Class
-  #@extend   Metro.Event.Emitter
-  #@include  Metro.Event.Emitter
+  @extend   Metro.Support.EventEmitter
+  @include  Metro.Support.EventEmitter
   
 module.exports = Metro.Object

@@ -1,4 +1,4 @@
-Metro.Event.Emitter =
+Metro.Support.EventEmitter =
   #included: ->
   #  @events = {}
   
@@ -39,4 +39,4 @@ Metro.Event.Emitter =
   allowAndFire: (key) ->
     @event(key).allowAndFire(Metro.Support.Array.args(arguments, 1))
 
-module.exports = Metro.Event.Emitter
+module.exports = Metro.Support.EventEmitter

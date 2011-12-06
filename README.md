@@ -47,7 +47,7 @@ npm install metro
 To install Metro with development dependencies, use:
 
 ``` bash
-npm install metro --dev
+npm install metro --dev # npm install metro -d
 ```
 
 ## Structure
@@ -378,3 +378,12 @@ These are projects that should either be integrated into Metro, or rewritten to 
 ### Events
 
 - http://millermedeiros.github.com/js-signals
+
+### Payment Gateways
+
+- https://github.com/jamescarr/paynode
+- https://github.com/braintree/braintree_node
+
+### Mailers
+
+- https://github.com/marak/node_mailer

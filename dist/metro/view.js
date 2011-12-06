@@ -7,8 +7,6 @@
 
     View.extend({
       loadPaths: ["./app/views"],
-      paths: [],
-      pathsByName: {},
       engine: "jade",
       prettyPrint: false,
       store: function(store) {
@@ -18,7 +16,7 @@
     });
 
     function View(controller) {
-      this.controller = controller || (new Metro.Controller);
+      this.controller = controller;
     }
 
     View.prototype.store = function() {

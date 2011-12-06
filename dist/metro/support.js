@@ -1,4 +1,5 @@
 (function() {
+  var specialProperties;
   var __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice;
 
   Metro.Support = {};
@@ -73,41 +74,41 @@
     function Class() {}
 
     Class.alias = function(to, from) {
-      return Metro.Support.alias(this.prototype, to, from);
+      return Metro.Support.Object.alias(this.prototype, to, from);
     };
 
     Class.accessor = function(key, callback) {
-      Metro.Support.accessor(this.prototype, key, callback);
+      Metro.Support.Object.accessor(this.prototype, key, callback);
       return this;
     };
 
     Class.getter = function(key, callback) {
-      Metro.Support.getter(this.prototype, key, callback);
+      Metro.Support.Object.getter(this.prototype, key, callback);
       return this;
     };
 
     Class.setter = function(key) {
-      Metro.Support.setter(this.prototype, key);
+      Metro.Support.Object.setter(this.prototype, key);
       return this;
     };
 
     Class.classAlias = function(to, from) {
-      Metro.Support.alias(this, to, from);
+      Metro.Support.Object.alias(this, to, from);
       return this;
     };
 
     Class.classAccessor = function(key, callback) {
-      Metro.Support.accessor(this, key, callback);
+      Metro.Support.Object.accessor(this, key, callback);
       return this;
     };
 
     Class.classGetter = function(key, callback) {
-      Metro.Support.getter(this, key, callback);
+      Metro.Support.Object.getter(this, key, callback);
       return this;
     };
 
     Class.classSetter = function(key) {
-      Metro.Support.setter(this, key);
+      Metro.Support.Object.setter(this, key);
       return this;
     };
 
@@ -117,7 +118,7 @@
 
     Class.delegate = function(key, options) {
       if (options == null) options = {};
-      Metro.Support.delegate(this.prototype, key, options);
+      Metro.Support.Object.delegate(this.prototype, key, options);
       return this;
     };
 
@@ -151,15 +152,15 @@
     };
 
     Class.instanceMethods = function() {
-      return Metro.Support.methods(this.prototype);
+      return Metro.Support.Object.methods(this.prototype);
     };
 
     Class.classMethods = function() {
-      return Metro.Support.methods(this);
+      return Metro.Support.Object.methods(this);
     };
 
     Class.className = function() {
-      return Metro.Support.functionName(this);
+      return Metro.Support.Object.functionName(this);
     };
 
     Class.prototype.className = function() {
@@ -170,7 +171,57 @@
 
   })();
 
+  Metro.Support.EventEmitter = {
+    isEventEmitter: true,
+    events: function() {
+      return this._events || (this._events = {});
+    },
+    hasEvent: function(key) {
+      return Metro.Support.Object.isPresent(this.events(), key);
+    },
+    event: function(key) {
+      var _base;
+      return (_base = events())[key] || (_base[key] = new Metro.Event(this, key));
+    },
+    on: function(key, handler) {
+      return this.event(key).addHandler(handler);
+    },
+    mutation: function(wrappedFunction) {
+      return function() {
+        var result;
+        result = wrappedFunction.apply(this, arguments);
+        this.event('change').fire(this, this);
+        return result;
+      };
+    },
+    prevent: function(key) {
+      this.event(key).prevent();
+      return this;
+    },
+    allow: function(key) {
+      this.event(key).allow();
+      return this;
+    },
+    isPrevented: function(key) {
+      return this.event(key).isPrevented();
+    },
+    fire: function(key) {
+      return this.event(key).fire(Metro.Support.Array.args(arguments, 1));
+    },
+    allowAndFire: function(key) {
+      return this.event(key).allowAndFire(Metro.Support.Array.args(arguments, 1));
+    }
+  };
+
   Metro.Support.I18n = {
+    load: function(pathOrObject, language) {
+      var store;
+      if (language == null) language = this.defaultLanguage;
+      store = this.store();
+      language = store[language] || (store[language] = {});
+      Metro.Support.Object.deepMerge(language, typeof pathOrObject === "string" ? require(pathOrObject) : pathOrObject);
+      return this;
+    },
     defaultLanguage: "en",
     translate: function(key, options) {
       if (options == null) options = {};
@@ -191,12 +242,11 @@
         locals: options
       });
     },
-    t: this.prototype.translate,
     lookup: function(key, language) {
       var part, parts, result, _i, _len;
       if (language == null) language = this.defaultLanguage;
       parts = key.split(".");
-      result = this.store[language];
+      result = this.store()[language];
       try {
         for (_i = 0, _len = parts.length; _i < _len; _i++) {
           part = parts[_i];
@@ -210,11 +260,15 @@
       }
       return result;
     },
-    store: {},
+    store: function() {
+      return this._store || (this._store = {});
+    },
     interpolator: function() {
       return this._interpolator || (this._interpolator = new (require('shift').Mustache));
     }
   };
+
+  Metro.Support.I18n.t = Metro.Support.I18n.translate;
 
   Metro.Support.Number = {
     isInt: function(n) {
@@ -225,7 +279,39 @@
     }
   };
 
+  specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods'];
+
   Metro.Support.Object = {
+    extend: function(object) {
+      var args, key, node, value, _i, _len;
+      args = Metro.Support.Array.args(arguments, 1);
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        node = args[_i];
+        for (key in node) {
+          value = node[key];
+          if (__indexOf.call(specialProperties, key) < 0) object[key] = value;
+        }
+      }
+      return object;
+    },
+    deepMerge: function(object) {
+      var args, key, node, value, _i, _len;
+      args = Metro.Support.Array.args(arguments, 1);
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        node = args[_i];
+        for (key in node) {
+          value = node[key];
+          if (__indexOf.call(specialProperties, key) < 0) {
+            if (typeof value === 'object' && object[key]) {
+              object[key] = Metro.Support.Object.deepMerge(object[key], value);
+            } else {
+              object[key] = value;
+            }
+          }
+        }
+      }
+      return object;
+    },
     defineProperty: function(object, key, options) {
       if (options == null) options = {};
       return Object.defineProperty(object, key, options);
@@ -322,7 +408,7 @@
           });
         }
       }
-      return from;
+      return object;
     },
     isFunction: function(object) {
       return !!(object && object.constructor && object.call && object.apply);
@@ -365,7 +451,7 @@
       return scope[this.camelize(string)];
     },
     camelize: function(string, firstLetterLower) {
-      string = string.replace(camelize_rx, function(str, p1) {
+      string = string.replace(this.camelize_rx, function(str, p1) {
         return p1.toUpperCase();
       });
       if (firstLetterLower) {
@@ -375,7 +461,7 @@
       }
     },
     underscore: function(string) {
-      return string.replace(underscore_rx1, '$1_$2').replace(underscore_rx2, '$1_$2').replace('-', '_').toLowerCase();
+      return string.replace(this.underscore_rx1, '$1_$2').replace(this.underscore_rx2, '$1_$2').replace('-', '_').toLowerCase();
     },
     singularize: function(string) {
       var len;
@@ -406,7 +492,7 @@
       }
     },
     capitalize: function(string) {
-      return string.replace(capitalize_rx, function(m, p1, p2) {
+      return string.replace(this.capitalize_rx, function(m, p1, p2) {
         return p1 + p2.toUpperCase();
       });
     },

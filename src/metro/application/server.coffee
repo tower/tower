@@ -3,7 +3,7 @@ File    = require('pathfinder').File
 
 class Metro.Application
   @instance: ->
-    @_instance ||= new (require "#{Metro.root}/config/application")
+    @_instance ||= require "#{Metro.root}/config/application"
   
   constructor: ->
     @server ||= require('connect')()
@@ -19,7 +19,7 @@ class Metro.Application
     Metro.Support.I18n.load "#{Metro.root}/config/locales/en"
     require "#{Metro.root}/config/routes"
     
-    Metro.Support.Dependencies.load "#{Metro.root}/app/models"
+    #Metro.Support.Dependencies.load "#{Metro.root}/app/models"
     #Metro.Model.initialize()
     #Metro.View.initialize()
     Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")
@@ -51,19 +51,24 @@ class Metro.Application
   stack: ->
     server = @server
     server.use connect.favicon(Metro.publicPath + "/favicon.ico")
-    server.use Metro.Middleware.Static.middleware
-    server.use Metro.Middleware.Query.middleware
+    server.use connect.static(Metro.publicPath, maxAge: Metro.publicCacheDuration)
+    server.use connect.profiler() if Metro.env != "production"
+    server.use connect.logger()
+    server.use connect.query()
+    server.use connect.cookieParser(Metro.cookieSecret)
+    server.use connect.session secret: Metro.sessionSecret
     server.use connect.bodyParser()
-    server.use Metro.Middleware.Dependencies
+    server.use connect.csrf()
     server.use Metro.Middleware.Router
     server
     
   listen: ->
     unless Metro.env == "test"
       @server.listen(Metro.port)
-      console.log("Metro #{Metro.env} server listening on port #{Metro.port}")
+      _console.info("Metro #{Metro.env} server listening on port #{Metro.port}")
   
   run: ->
+    @initialize()
     @stack()
     @listen()
 

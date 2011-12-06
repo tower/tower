@@ -1,7 +1,9 @@
 Metro.View.Rendering =
   render: (options, callback) ->
+    throw new Error("Missing `template` option for view") unless options.hasOwnProperty("template")
     options.locals      = @_renderingContext(options)
-    options.layout      = @controller.layout() unless options.hasOwnProperty("layout")
+    options.type        ||= @constructor.engine
+    options.layout      = @context.layout() if !options.hasOwnProperty("layout") && @context.layout
     
     self = @
     
@@ -15,35 +17,41 @@ Metro.View.Rendering =
       callback(null, if typeof(options.json) == "string" then options.json else JSON.stringify(options.json))
     else
       unless options.inline
-        options.template = @store().find(path: options.template)
+        options.template = @_readTemplate(options.template, options.type)
       @_renderString(options.template, options, callback)
   
   _renderLayout: (body, options, callback) ->
     if options.layout
-      layout  = @store().find(path: layout)
+      layout  = @_readTemplate(options.layout, options.type)
       options.locals.yield = body
       
-      @_renderString(layout, options.locals, callback)
+      @_renderString(layout, options, callback)
     else
       callback(null, body)
       
   _renderString: (string, options = {}, callback) ->
     if options.type
-      engine = require("shift").engine(type)
+      engine = require("shift").engine(options.type)
+      engine.render(string, options.locals, callback)
     else
       engine = require("shift")
-      
-    engine.render(string, options.locals, callback)
+      options.locals.string = string
+      engine.render(options.locals, callback)
   
   _renderingContext: (options) ->
-    controller    = @controller
+    context    = @context
     locals        = {}
     
-    for key, value of controller
+    for key, value of context
       locals[key] = value unless key == "constructor"
     
     locals        = Metro.Support.Object.extend(locals, @locals || {}, options.locals)
     locals.pretty = true if @constructor.prettyPrint
     locals
+    
+  _readTemplate: (path, ext) ->
+    template = @constructor.store().find(path: path, ext: ext)
+    throw new Error("Template '#{path}' was not found.") unless template
+    template
   
 module.exports = Metro.View.Rendering

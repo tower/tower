@@ -9,7 +9,8 @@ File  = require('pathfinder').File
 
 Metro.Support.Dependencies =
   load: (directory) ->
-    paths = File.files(directory)
+    paths = File.files(directory) if File.exists(directory)
+    paths ||= []
     for path in paths
       @loadPath(path) if !!path.match(/\.(coffee|js)/)
   

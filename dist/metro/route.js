@@ -3,19 +3,20 @@
 
   Metro.Route = (function() {
 
-    Route.store = [];
-
-    Route.create = function(route) {
-      return this.store.push(route);
+    Route.store = function() {
+      return this._store || (this._store = []);
     };
 
-    Route.normalizePath = function(path) {
-      return "/" + path.replace(/^\/|\/$/, "");
+    Route.create = function(route) {
+      return this.store().push(route);
+    };
+
+    Route.all = function() {
+      return this.store();
     };
 
     Route.draw = function(callback) {
-      callback.apply(new Metro.Route.DSL(this));
-      return this;
+      return callback.apply(new Metro.Route.DSL(this));
     };
 
     function Route(options) {
@@ -165,7 +166,7 @@
     */
 
     DSL.prototype.namespace = function(path, options, block) {
-      options = _.extend({
+      options = Metro.Support.Object.extend({
         path: path,
         as: path,
         module: path,
@@ -196,14 +197,14 @@
     DSL.prototype.member = function() {};
 
     DSL.prototype.root = function(options) {
-      return this.match('/', _.extend({
+      return this.match('/', Metro.Support.Object.extend({
         as: "root"
       }, options));
     };
 
     DSL.prototype._extractOptions = function() {
       var anchor, constraints, controller, defaults, format, method, name, options, path;
-      path = Metro.Route.normalizePath(arguments[0]);
+      path = "/" + arguments[0].replace(/^\/|\/$/, "");
       options = arguments[arguments.length - 1] || {};
       options.path = path;
       format = this._extractFormat(options);
@@ -214,7 +215,7 @@
       controller = this._extractController(options);
       anchor = this._extractAnchor(options);
       name = this._extractName(options);
-      options = _.extend(options, {
+      options = Metro.Support.Object.extend(options, {
         method: method,
         constraints: constraints,
         defaults: defaults,
@@ -269,7 +270,7 @@
       return {
         name: controller,
         action: action,
-        className: Metro.Support.String.camelize("_" + controller)
+        className: Metro.Support.String.camelize("" + controller)
       };
     };
 

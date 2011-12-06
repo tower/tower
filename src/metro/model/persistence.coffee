@@ -1,29 +1,45 @@
 Metro.Model.Persistence =
   ClassMethods:
-    create: (attrs) ->
-      @store().create(new @(attrs))
+    create: (attributes, callback) ->
+      @store().create(new @(attributes), callback)
     
-    update: ->
+    update: (query, attributes, callback) ->
+      @store().update(query, attributes, callback)
+      
+    destroy: (query, callback) ->
+      @store().destroy(query, callback)
+      
+    updateAll: ->
     
     deleteAll: ->
       @store().clear()
       
-    store: ->
+    store: (value) ->
+      @_store = value if value
       @_store ||= new Metro.Store.Memory
   
   InstanceMethods:
     isNew: ->
       !!!attributes.id
     
-    save: (options) ->
+    save: (callback) ->
+      if @isNew()
+        @_create(callback)
+      else
+        @_update(callback)
     
-    update: (options) ->
+    _update: (callback) ->
+      @constructor.update(@toUpdates(), callback)
+      
+    _create: (callback) ->
+      @constructor.create(@toUpdates(), callback)
     
     reset: ->
-  
-    updateAttribute: (name, value) ->
+      
+    updateAttribute: (key, value) ->
     
     updateAttributes: (attributes) ->
+      @constructor.update(attributes, callback)
     
     increment: (attribute, amount = 1) ->
     
@@ -32,17 +48,20 @@ Metro.Model.Persistence =
     reload: ->
     
     delete: ->
+      
     
     destroy: ->
-  
-    createOrUpdate: ->
   
     isDestroyed: ->
     
     isPersisted: ->
+      !!@isNew()
+      
+    toObject: ->
+      @attributes
     
     isDirty: ->
-      Metro.Support.Object.isPresent(@changes())
+      Metro.Support.Object.isPresent(@changes)
 
     _attributeChange: (attribute, value) ->
       array       = @changes[attribute] ||= []

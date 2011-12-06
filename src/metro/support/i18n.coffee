@@ -1,9 +1,9 @@
 Metro.Support.I18n =
-  load: (path, language = @defaultLanguage) ->
+  load: (pathOrObject, language = @defaultLanguage) ->
     store     = @store()
     language  = store[language] ||= {}
     
-    Metro.Support.Object.deepMerge(language, require(path))
+    Metro.Support.Object.deepMerge(language, if typeof(pathOrObject) == "string" then require(pathOrObject) else pathOrObject)
     
     @
   

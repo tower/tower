@@ -35,5 +35,14 @@ Metro.Model.Attributes =
       @attributes[name] = value
       value
       #@emit("fieldChanged", beforeValue: beforeValue, value: value)
+      
+    toUpdates: ->
+      result      = {}
+      attributes  = @attributes
+      
+      for key, array of @changes
+        result[key] = attributes[key]
+      
+      result
   
 module.exports = Metro.Model.Attributes

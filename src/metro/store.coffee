@@ -34,6 +34,7 @@ Metro.Store =
 
 require './store/cassandra'
 require './store/couchdb'
+require './store/fileSystem'
 require './store/local'
 require './store/memory'
 require './store/mongodb'

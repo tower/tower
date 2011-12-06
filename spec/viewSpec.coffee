@@ -1,25 +1,27 @@
 require './helper'
 
-###
-
 describe "views", ->
   describe "configuration", ->
     
   describe "templates", ->
     beforeEach ->
       Metro.View.engine = "jade"
+      Metro.View.store().loadPaths = ["spec/spec-app/app/views"]
     
     it "should lookup templates", ->
-      expect(Metro.View.pathsByName["posts/edit"]).toEqual null
-      template = Metro.View.lookup("posts/edit")
+      template = Metro.View.store().findPath(path: "posts/edit")
       expect(template).toEqual "spec/spec-app/app/views/posts/edit.jade"
-      expect(Metro.View.pathsByName["posts/edit"]).toEqual template
-    
+      expect(Metro.View.store().records["posts/edit"]).toEqual template
+      
     it "should render", ->
       view    = new Metro.View
-      view.render "posts/edit", locals: title: "First Commit", (error, result) ->
+      view.render template: "posts/edit", locals: title: "First Commit", (error, result) ->
         expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
-
+       
+      controller = new Metro.Controller
+      controller.render "posts/edit", locals: title: "First Commit", (error, result) ->
+        expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
+###
   describe "helpers", ->
     it "should have stylesheet helpers", ->
       view    = new Metro.View.Base

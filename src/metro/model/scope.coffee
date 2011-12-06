@@ -43,6 +43,14 @@ class Metro.Model.Scope
   store: ->
     Metro.constant(@sourceClassName).store()
     
+  deleteAll: ->
+    
+  destroyAll: ->
+    
+  updateAll: ->
+    
+  find: ->
+    
   query: ->
     conditions = @conditions
     result = {}

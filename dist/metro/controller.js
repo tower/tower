@@ -33,7 +33,7 @@
 
   Metro.Controller.HTTP = {};
 
-  Metro.Controller.Layouts({
+  Metro.Controller.Layouts = {
     ClassMethods: {
       layout: function(layout) {
         return this._layout = layout;
@@ -51,7 +51,7 @@
         return layout;
       }
     }
-  });
+  };
 
   Metro.Controller.Redirecting = {
     redirectTo: function() {}

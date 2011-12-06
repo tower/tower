@@ -1,7 +1,7 @@
 class Metro.Middleware.Router
   constructor: (request, response, next) ->
     unless @constructor == Metro.Middleware.Router
-      return (new Metro.Middleware.Router(request, response, next)).call(request, response, callback)
+      return (new Metro.Middleware.Router(request, response, next)).call(request, response, next)
       
   call: (request, response, callback) ->
     self = @
@@ -14,7 +14,7 @@ class Metro.Middleware.Router
         controller.clear()
       else
         self.error(request, response)
-  
+    
     response
   
   find: (request, response, callback) ->
@@ -33,27 +33,26 @@ class Metro.Middleware.Router
     controller
     
   processRoute: (route, request, response) ->
-    url                    = request.parsedUrl ||= new Metro.Net.Url(request.url)
-    path                   = url.attr("path")
-    match                  = route.match(path)
+    url   = request.parsedUrl ||= new Metro.Net.Url(request.url)
+    path  = url.attr("path")
+    match = route.match(path)
     
     return null unless match
-    method                 = request.method.toLowerCase()
-    keys                   = route.keys
-    params                 = Metro.Support.Object.extend({}, route.defaults, request.query || {}, request.body || {})
-    match                  = match[1..-1]
+    method  = request.method.toLowerCase()
+    keys    = route.keys
+    params  = Metro.Support.Object.extend({}, route.defaults, request.query || {}, request.body || {})
+    match   = match[1..-1]
     
     for capture, i in match
       params[keys[i].name] = if capture then decodeURIComponent(capture) else null
     
-    controller             = route.controller
+    controller      = route.controller
     
-    params.action          = controller.action if controller
+    params.action   = controller.action if controller
     
-    request.params         = params
+    request.params  = params
     
-    if controller
-      controller           = new Metro.constant(Metro.namespaced(route.controller.className))
+    controller      = new (Metro.constant(Metro.namespaced(route.controller.className))) if controller
     controller
     
   error: (request, response) ->

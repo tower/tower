@@ -4,21 +4,28 @@ Metro.Controller.Rendering =
     
     if args.length >= 2 && typeof(args[args.length - 1]) == "function"
       callback = args.pop()
+    else
+      callback = null
+      
+    if args.length > 1 && typeof(args[args.length - 1]) == "object"
+      options = args.pop()
+    else
+      options = {}
+      
+    options.template ||= args.shift()
     
     view    = new Metro.View(@)
     @headers["Content-Type"] ||= @contentType
     
     self = @
     
-    args.push finish = (error, body) ->
+    view.render options, (error, body) ->
       if error
         self.body = error.stack
       else
         self.body = body
       callback(error, body) if callback
-      self.callback()
-    
-    view.render.apply(view, args)
+      self.callback() if self.callback
     
   renderToBody: (options) ->
     @_processOptions(options)

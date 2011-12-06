@@ -1,6 +1,6 @@
 # Mostly like connect/http.js server
 
-class Metro.Application.Client
+class Metro.Application.Client extends Metro.Object
   constructor: (middleware = []) ->
     @stack    = []
     

@@ -68,14 +68,8 @@ class Metro.Class
     
     included = object.included
     included.apply(object) if included
-
+    
     object
-
-  @instanceMethods: ->
-    Metro.Support.Object.methods(@::)
-  
-  @classMethods: ->
-    Metro.Support.Object.methods(@)
     
   @className: ->
     Metro.Support.Object.functionName(@)
