@@ -1,6 +1,5 @@
 Metro.View.Rendering =
   render: (options, callback) ->
-    throw new Error("Missing `template` option for view") unless options.hasOwnProperty("template")
     options.locals      = @_renderingContext(options)
     options.type        ||= @constructor.engine
     options.layout      = @context.layout() if !options.hasOwnProperty("layout") && @context.layout

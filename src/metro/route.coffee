@@ -7,6 +7,9 @@ class Metro.Route
     
   @all: ->
     @store()
+    
+  @clear: ->
+    @_store = []
   
   @draw: (callback) ->
     callback.apply(new Metro.Route.DSL(@))
@@ -29,6 +32,12 @@ class Metro.Route
     
   match: (path) ->
     @pattern.exec(path)
+    
+  urlFor: (options = {}) ->
+    result = @path
+    result = result.replace(new RegExp(":#{key}\\??", "g"), value) for key, value of options
+    result = result.replace(new RegExp("\\.?:\\w+\\??", "g"), "")
+    result
     
   extractPattern: (path, caseSensitive, strict) ->
     return path if path instanceof RegExp

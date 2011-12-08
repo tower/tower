@@ -1,5 +1,7 @@
-class Metro.Store.Memory extends Metro.Object
-  constructor: ->
+class Metro.Store.Memory extends Metro.Store
+  constructor: (options) ->
+    super(options)
+    
     @records  = {}
     @lastId   = 0
   
@@ -43,6 +45,7 @@ class Metro.Store.Memory extends Metro.Object
   find: (query, callback) ->
     result  = []
     records = @records
+    self    = @
     
     if Metro.Support.Object.isPresent(query)
       sort    = query._sort
@@ -59,35 +62,36 @@ class Metro.Store.Memory extends Metro.Object
       for key, record of records
         result.push(record)
     
-    callback(result) if callback
+    callback.call(self, null, result) if callback
 
     result
     
   @alias "select", "find"
   
   first: (query, callback) ->
-    result = @find(query, (records) -> callback(records[0]) if callback)
+    result = @find(query, (error, records) -> callback.call(@, error, records[0]) if callback)
     result[0]
   
   last: (query, callback) ->
-    result = @find(query, (records) -> callback(records[records.length - 1]) if callback)
+    result = @find(query, (error, records) -> callback.call(@, error, records[records.length - 1]) if callback)
     result[result.length - 1]
   
   all: (query, callback) ->
     @find(query, callback)
 
   length: (query, callback) ->
-    @find(query, (records) -> callback(records.length) if callback).length
+    @find(query, (error, records) -> callback.call(@, error, records.length) if callback).length
     
   @alias "count", "length"
     
   remove: (query, callback) ->
     _records = @records
     
-    @select query, (records) ->
-      for record in records
-        _records.splice(_records.indexOf(record), 1)
-      callback(records) if callback
+    @find query, (error, records) ->
+      unless error
+        for record in records
+          _records.splice(_records.indexOf(record), 1)
+      callback.call(@, error, records) if callback
     
   clear: ->
     @records = []
@@ -95,14 +99,18 @@ class Metro.Store.Memory extends Metro.Object
   toArray: ->
     @records
     
-  create: (record) ->  
-    Metro.raise("errors.store.missingAttribute", "id", "Store#create", record) unless record.id
-    record.id ?= @generateId()
-    @records[record.id] = record
+  create: (attributes, callback) ->
+    attributes.id ?= @generateId()
+    @records[attributes.id] = @serializeAttributes(attributes)
     
-  update: (record) ->
-    Metro.raise("errors.store.missingAttribute", "id", "Store#update", record) unless record.id
-    @records[record.id] = record
+  update: (query, attributes, callback) ->
+    @find query, (error, records) ->
+      unless error
+        for record, i in records
+          for key, value of attributes
+            record.attributes[key] = value
+            
+      callback.call(@, error, records) if callback
   
   destroy: (record) ->
     @find(id).destroy()

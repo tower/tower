@@ -2,30 +2,50 @@
 * Metro.Route.DSL
 ###
 class Metro.Route.DSL
+  constructor: ->
+    @_scope = {}
+  
   match: ->
     @scope ||= {}
     Metro.Route.create(new Metro.Route(@_extractOptions(arguments...)))
     
   get: ->
-    @matchMethod("get", arguments...)
+    @matchMethod("get", Metro.Support.Array.args(arguments))
     
   post: ->
-    @matchMethod("post", arguments...)
+    @matchMethod("post", Metro.Support.Array.args(arguments))
     
   put: ->
-    @matchMethod("put", arguments...)
+    @matchMethod("put", Metro.Support.Array.args(arguments))
     
   delete: ->
-    @matchMethod("delete", arguments...)
+    @matchMethod("delete", Metro.Support.Array.args(arguments))
     
-  matchMethod: (method) ->
-    options = arguments.pop()
-    options.via = method
-    arguments.push(options)
-    @match(options)
+  matchMethod: (method, args) ->
+    if typeof args[args.length - 1] == "object"
+      options       = args.pop()
+    else
+      options       = {}
+      
+    name            = args.shift()
+    options.method  = method
+    options.action  = name
+    options.name    = name
+    if @_scope.name
+      options.name = @_scope.name + Metro.Support.String.camelize(options.name)
+    
+    path = "/#{name}"
+    path = @_scope.path + path if @_scope.path
+    
+    @match(path, options)
     @
     
-  scope: ->
+  scope: (options = {}, block) ->
+    originalScope = @_scope ||= {}
+    @_scope = Metro.Support.Object.extend {}, originalScope, options
+    block.call(@)
+    @_scope = originalScope
+    @
     
   controller: (controller, options, block) ->
     options.controller = controller
@@ -76,7 +96,17 @@ class Metro.Route.DSL
   * @param {String} path
   ###
   namespace: (path, options, block) ->
-    options = Metro.Support.Object.extend(path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
+    if typeof options == 'function'
+      block     = options
+      options   = {}
+    else
+      options   = {}
+    
+    options = Metro.Support.Object.extend(name: path, path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
+      
+    if options.name && @_scope.name
+      options.name = @_scope.name + Metro.Support.String.camelize(options.name)
+    
     @scope(options, block)
     
   # === Parameter Restriction
@@ -137,8 +167,15 @@ class Metro.Route.DSL
   #
   # === Options
   # Takes same options as +resources+.
-  resource: ->
-  
+  resource: (name, options = {}) ->
+    options.controller = name
+    @match "#{name}/new", Metro.Support.Object.extend({action: "new"}, options)
+    @match "#{name}", Metro.Support.Object.extend({action: "create", method: "POST"}, options)
+    @match "#{name}/", Metro.Support.Object.extend({action: "show"}, options)
+    @match "#{name}/edit", Metro.Support.Object.extend({action: "edit"}, options)
+    @match "#{name}", Metro.Support.Object.extend({action: "update", method: "PUT"}, options)
+    @match "#{name}", Metro.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
+    
   # In Rails, a resourceful route provides a mapping between HTTP verbs
   # and URLs and controller actions. By convention, each action also maps
   # to particular CRUD operations in a database. A single entry in the
@@ -235,7 +272,35 @@ class Metro.Route.DSL
   #
   #   # resource actions are at /admin/posts.
   #   resources "posts", path: "admin/posts"
-  resources: ->
+  resources: (name, options, callback) ->
+    if typeof options == 'function'
+      callback = options
+      options  = {}
+    else
+      options  = {}
+    options.controller ||= name
+    
+    path = "/#{name}"
+    path = @_scope.path + path if @_scope.path
+    
+    if @_scope.name
+      many = @_scope.name + Metro.Support.String.camelize(name)
+    else
+      many = name
+    
+    one   = Metro.Support.String.singularize(many)
+    
+    @match "#{path}", Metro.Support.Object.extend({name: "#{many}", action: "index"}, options)
+    @match "#{path}/new", Metro.Support.Object.extend({name: "new#{Metro.Support.String.camelize(one)}", action: "new"}, options)
+    @match "#{path}", Metro.Support.Object.extend({action: "create", method: "POST"}, options)
+    @match "#{path}/:id", Metro.Support.Object.extend({name: "#{one}", action: "show"}, options)
+    @match "#{path}/:id/edit", Metro.Support.Object.extend({name: "edit#{Metro.Support.String.camelize(one)}", action: "edit"}, options)
+    @match "#{path}/:id", Metro.Support.Object.extend({action: "update", method: "PUT"}, options)
+    @match "#{path}/:id", Metro.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
+    
+    if callback
+      @scope Metro.Support.Object.extend({path: "#{path}/:#{Metro.Support.String.singularize(name)}Id", name: one}, options), callback
+    @
   
   # To add a route to the collection:
   #
@@ -264,8 +329,15 @@ class Metro.Route.DSL
     @match '/', Metro.Support.Object.extend(as: "root", options)
     
   _extractOptions: ->
-    path            = "/" + arguments[0].replace(/^\/|\/$/, "")
-    options         = arguments[arguments.length - 1] || {}
+    args            = Metro.Support.Array.args(arguments)
+    path            = "/" + args.shift().replace(/^\/|\/$/, "")
+    
+    if typeof args[args.length - 1] == "object"
+      options       = args.pop()
+    else
+      options       = {}
+    
+    options.to      ||= args.shift() if args.length > 0
     options.path    = path
     format          = @_extractFormat(options)
     options.path    = @_extractPath(options)
@@ -291,7 +363,7 @@ class Metro.Route.DSL
   _extractFormat: (options) ->
     
   _extractName: (options) ->
-    options.as
+    options.as || options.name
     
   _extractConstraints: (options) ->
     options.constraints || {}
@@ -303,21 +375,25 @@ class Metro.Route.DSL
     "#{options.path}.:format?"
     
   _extractRequestMethod: (options) ->
-    options.via || options.requestMethod
+    (options.method || options.via || "GET").toUpperCase()
   
   _extractAnchor: (options) ->
     options.anchor
     
-  _extractController: (options) ->
-    to = options.to.split('#')
-    if to.length == 1
-      action = to[0]
-    else
-      controller  = to[0]
-      action      = to[1]
+  _extractController: (options = {}) ->
+    to = options.to
+    if to
+      to = to.split('#')
+      if to.length == 1
+        action = to[0]
+      else
+        controller  = to[0]
+        action      = to[1]
     
-    controller   ||= (options.controller || @scope.controller)
-    action       ||= (options.action || @scope.action)
+    controller   ||= options.controller || @_scope.controller
+    action       ||= options.action
+    
+    throw new Error("No controller was specified for the route #{options.path}") unless controller
     
     controller  = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller")
     action      = action.toLowerCase()

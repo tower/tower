@@ -1,7 +1,9 @@
 # https://github.com/christkv/node-mongodb-native
 # http://mongoosejs.com/docs/embedded-documents.html
 # https://github.com/1602/jugglingdb/blob/master/lib/adapters/mongoose.js
-class Metro.Store.MongoDB extends Metro.Object
+class Metro.Store.MongoDB extends Metro.Store
+  class @Serializer
+    
   @config:
     development:
       name: "metro-development"
@@ -47,57 +49,96 @@ class Metro.Store.MongoDB extends Metro.Object
         
     @database
     
-  constructor: (collectionName, options = {}) ->
-    @collectionName = collectionName
-    
   collection: ->
     unless @_collection
       lib = @constructor.lib()
-      @_collection = new lib.Collection(@constructor.database, @collectionName)
+      @_collection = new lib.Collection(@constructor.database, @name)
     
     @_collection
   
   find: (query, callback) ->
+    self = @
+    
+    @collection().find().toArray (error, docs) ->
+      unless error
+        for doc in docs
+          doc.id = doc["_id"]
+          delete doc["_id"]
+        docs = self.serialize(docs)
+      
+      callback.call(@, error, docs)
+    
+    @
     
   @alias "select", "find"
   
   first: (query, callback) ->
+    
   
   last: (query, callback) ->
   
-  all: (query, callback) ->
+  all: (callback) ->
+    @find({}, callback)
   
   length: (query, callback) ->
+    @collection().count (error, result) ->
+      callback.call @, error, result
+    @
     
   @alias "count", "length"
     
   remove: (query, callback) ->
     
-  clear: ->
+  removeAll: (callback) ->
+    @collection().remove (error) ->
+      callback.call(@, error) if callback
     
-  toArray: ->
+  @alias "clear", "removeAll"
     
-  create: (record, callback) ->
-    self = @
+  create: (attributes, callback) ->
+    self    = @
+    record  = @serializeAttributes(attributes)
     
-    @collection().insert record.attributes, (error, docs) ->
-      throw error if error
-      record["_id"] = docs[0]["_id"]
-      callback.call(self, error, docs) if callback
+    @collection().insert attributes, (error, docs) ->
+      doc                   = docs[0]
+      record.attributes.id  = doc["_id"]
+      callback.call(@, error, record) if callback
+      
+    attributes.id = attributes["_id"]
+    delete attributes["_id"]
     
     record
     
-  update: (record) ->
+  update: (query, attributes, options, callback) ->
+    if typeof options == 'function'
+      callback = options
+      options = {}
+    else if !options
+      options = {}
+      
+    options.safe    = false
+    options.upsert  = false
     
-  destroy: (record) ->
+    @collection().update @_translateQuery(query), attributes, options, (error, docs) ->
+      throw error if error
+      callback.call(@, error, docs) if callback
+      
+    @
+    
+  destroy: (query, callback) ->
+    @collection().remove @_translateQuery(query), (error) ->
+      callback.call(@, error) if callback
+      
+    @
     
   sort: ->
     
   _translateQuery: (query) ->
-    result = {}
+    result        = {}
     result["_id"] = query.id if query.id
-    for key, value of query
-      @
+    delete query.id
+    result[key]   = value for key, value of query
+    result
   
   matches: (record, query) ->
     self    = @

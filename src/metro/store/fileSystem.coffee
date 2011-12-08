@@ -9,8 +9,9 @@ class Metro.Store.FileSystem extends Metro.Object
     
   findPath: (query, callback) ->
     path          = query.path
+    ext           = query.ext || ""
     return @records[path] if @records[path]
-    pattern       = if typeof(path) == "string" then new RegExp(path + "\\.", "i") else path
+    pattern       = if typeof(path) == "string" then new RegExp("#{path}\\.#{ext}", "i") else path
     
     templatePaths = File.files.apply(File, @loadPaths)
     

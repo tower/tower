@@ -1,6 +1,9 @@
 require './helper'
 
 describe 'Metro.Model', ->
+  beforeEach ->
+    User.store(new Metro.Store.Memory(name: "users", className: "User"))
+  
   describe 'scopes', ->
     afterEach ->
       User.deleteAll()

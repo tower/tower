@@ -1,26 +1,30 @@
 Metro.Model.Persistence =
   ClassMethods:
     create: (attributes, callback) ->
-      @store().create(new @(attributes), callback)
+      @store().create(attributes, callback)
     
     update: (query, attributes, callback) ->
       @store().update(query, attributes, callback)
       
     destroy: (query, callback) ->
       @store().destroy(query, callback)
-      
-    updateAll: ->
     
     deleteAll: ->
       @store().clear()
       
     store: (value) ->
       @_store = value if value
-      @_store ||= new Metro.Store.Memory
+      @_store ||= new Metro.Store.Memory(name: @collectionName(), className: @name)
+      
+    collectionName: ->
+      Metro.Support.String.camelize(Metro.Support.String.pluralize(@name), true)
+      
+    resourceName: ->
+      Metro.Support.String.camelize(@name, true)
   
   InstanceMethods:
     isNew: ->
-      !!!attributes.id
+      !!!@attributes.id
     
     save: (callback) ->
       if @isNew()
@@ -29,30 +33,51 @@ Metro.Model.Persistence =
         @_update(callback)
     
     _update: (callback) ->
-      @constructor.update(@toUpdates(), callback)
+      @constructor.update {id: @id}, @toUpdates(), (error, docs) =>
+        throw error if error
+        @changes = {}
+        callback.call(@, error) if callback
+      
+      @
       
     _create: (callback) ->
-      @constructor.create(@toUpdates(), callback)
+      @constructor.create @attributes, (error, docs) =>
+        throw error if error
+        @changes = {}
+        callback.call(@, error) if callback
+      
+      @
     
     reset: ->
       
     updateAttribute: (key, value) ->
     
-    updateAttributes: (attributes) ->
-      @constructor.update(attributes, callback)
-    
+    updateAttributes: (attributes, callback) ->
+      for key, value of attributes
+        @[key] = value
+      
+      @save(callback)
+      
     increment: (attribute, amount = 1) ->
     
     decrement: (attribute, amount = 1) ->
     
     reload: ->
     
-    delete: ->
+    delete: (callback) ->
+      if @isNew()
+        callback.apply(null, @) if callback
+      else
+        @constructor.destroy id: @id, (error) =>
+          delete @attributes.id unless error
+          callback.apply(@, error) if callback
       
+      @
     
-    destroy: ->
-  
-    isDestroyed: ->
+    destroy: (callback) ->
+      @delete (error) ->
+        throw error if error
+        callback.apply(error, @) if callback
     
     isPersisted: ->
       !!@isNew()

@@ -19,7 +19,7 @@ class Metro.Application
     Metro.Support.I18n.load "#{Metro.root}/config/locales/en"
     require "#{Metro.root}/config/routes"
     
-    #Metro.Support.Dependencies.load "#{Metro.root}/app/models"
+    Metro.Support.Dependencies.load "#{Metro.root}/app/models"
     #Metro.Model.initialize()
     #Metro.View.initialize()
     Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")
@@ -30,7 +30,7 @@ class Metro.Application
     
   teardown: ->
     #Metro.Route.teardown()
-    Metro.Route._store = []
+    Metro.Route.clear()
     delete require.cache[require.resolve("#{Metro.root}/config/locales/en")]
     delete require.cache[require.resolve("#{Metro.root}/config/routes")]
     delete Metro.Route._store

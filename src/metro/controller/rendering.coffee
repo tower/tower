@@ -9,11 +9,13 @@ Metro.Controller.Rendering =
       
     if args.length > 1 && typeof(args[args.length - 1]) == "object"
       options = args.pop()
-    else
-      options = {}
-      
-    options.template ||= args.shift()
     
+    if typeof args[0] == "object"
+      options = args[0]
+    else
+      options ||= {}
+      options.template = args[0]
+      
     view    = new Metro.View(@)
     @headers["Content-Type"] ||= @contentType
     

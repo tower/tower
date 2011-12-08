@@ -4,7 +4,7 @@ Metro.View.Helpers =
   
   t: (string) ->
     Metro.translate(string)
-    
+  
   javascriptTag: (path) ->
     "\n    <script type=\"text/javascript\" src=\"#{path}\" ></script>"
   

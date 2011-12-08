@@ -34,7 +34,7 @@ Metro.Model.Scopes =
     # GEO!  
     within: ->
       @scoped().within(arguments...)
-  
+    
     scoped: ->
       new Metro.Model.Scope(Metro.namespaced(@name))
     
@@ -46,12 +46,12 @@ Metro.Model.Scopes =
   
     last: (callback) ->
       @store().last(callback)
-  
+    
     find: (id, callback) ->
       @store().find(id, callback)
     
-    count: (callback) ->
-      @store().count(callback)
+    count: (query, callback) ->
+      @store().count(query, callback)
     
     exists: (callback) ->
       @store().exists(callback)

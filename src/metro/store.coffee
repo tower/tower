@@ -1,14 +1,14 @@
 # Stores are the interface models use to find their data.
 # http://www.w3.org/TR/IndexedDB/
 # https://github.com/kriszyp/perstore
-Metro.Store =
-  defaultLimit: 100
+class Metro.Store extends Metro.Object
+  @defaultLimit: 100
 
-  reservedOperators:
+  @reservedOperators:
     "_sort":  "_sort"
     "_limit": "_limit"
   
-  queryOperators:
+  @queryOperators:
     ">=":       "gte"
     "gte":      "gte"
     ">":        "gt"
@@ -31,6 +31,27 @@ Metro.Store =
     "neq":      "neq"
     "null":     "null"
     "notNull":  "notNull"
+  
+  serialize: (data) ->
+    return data unless @serializeAttributes
+    data[i] = @serializeAttributes(item) for item, i in data
+    data
+  
+  deserialize: (models) ->
+    return models unless @deserializeAttributes
+    models[i] = @deserializeAttributes(model) for model, i in models
+    models
+    
+  serializeAttributes: (attributes) ->
+    new @klass(attributes)
+    
+  deserializeAttributes: (model) ->
+    model.attributes
+    
+  constructor: (options = {}) ->
+    @name       = options.name
+    @className  = options.className || Metro.namespaced(Metro.Support.String.camelize(Metro.Support.String.singularize(@name)))
+    @klass      = Metro.constant(@className)
 
 require './store/cassandra'
 require './store/couchdb'
