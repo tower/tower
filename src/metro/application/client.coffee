@@ -10,7 +10,8 @@ class Metro.Application.Client extends Metro.Object
     
   initialize: ->
     @extractAgent()
-    @use Metro.Middleware.Router
+    @use Metro.Middleware.Location
+    @use Metro.Middleware.Routes
     @
     
   extractAgent: ->
@@ -41,9 +42,9 @@ class Metro.Application.Client extends Metro.Object
     if @History && @History.enabled
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
-        parsedUrl = new Metro.Route.Url(state.url)
-        request   = new Request(url: state.url, parsedUrl: parsedUrl, params: _.extend(title: state.title, (state.data || {})))
-        response  = new Response(url: state.url, parsedUrl: parsedUrl)
+        location  = new Metro.Route.Url(state.url)
+        request   = new Request(url: state.url, location: location, params: Metro.Support.Object.extend(title: state.title, (state.data || {})))
+        response  = new Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response
     else
@@ -60,13 +61,13 @@ class Metro.Application.Client extends Metro.Object
     env   = Metro.env
     
     next  = (err) ->
-      layer   = undefined
-      path    = undefined
-      c       = undefined
-      request.url = removed + request.url
+      layer               = undefined
+      path                = undefined
+      c                   = undefined
+      request.url         = removed + request.url
       request.originalUrl = request.originalUrl or request.url
-      removed = ""
-      layer   = stack[index++]
+      removed             = ""
+      layer               = stack[index++]
       if not layer or response.headerSent
         return out(err) if out
         if err
@@ -82,7 +83,7 @@ class Metro.Application.Client extends Metro.Object
           response.end "Cannot " + request.method + " " + request.url
         return
       try
-        path = request.pathname
+        path = request.location.path
         path = "/"  if `undefined` is path
         return next(err) unless 0 is path.indexOf(layer.route)
         c = path[layer.route.length]

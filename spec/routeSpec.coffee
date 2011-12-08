@@ -44,7 +44,7 @@ describe "route", ->
       Metro.Application.instance().teardown()
       
       Metro.Route.draw ->
-        @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}
+        @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}, constraints: {subdomain: /www/}
         
         @match "/users",          to: "users#index", via: "get"
         @match "/users/:id/edit", to: "users#edit", via: "get"
@@ -71,8 +71,8 @@ describe "route", ->
       expect(route.defaults).toEqual {flow: "signup"}
     
     it "should be found in the router", ->
-      router      = new Metro.Middleware.Router
-      request     = method: "get", url: "/login"
+      router      = Metro.Middleware.Routes
+      request     = method: "get", url: "http://www.local.host:3000/login"
       
       controller  = router.find request, {}, (controller) ->
         expect(request.params).toEqual { flow : 'signup', format : null, action : 'new' }
@@ -85,7 +85,7 @@ describe "route", ->
       Metro.Application.instance().teardown()
       
       Metro.Route.draw ->
-        @resource "user", ->
+        @resource "user"
         
         @resources "posts", ->
           @resources "comments"
@@ -209,3 +209,21 @@ describe "route", ->
     #  
     #  expect(route.name).toEqual "/admin/posts/:postId/dashboard.:format?"
     #  expect(route.path).toEqual "adminPostDashboard"
+    
+  describe 'params', ->
+    it 'should parse string', ->
+      param   = new Metro.Net.Param.String("title", modelName: "User")
+      
+      result  = param.parse("-Hello+World")
+      result  = result[0]
+      
+      expect(result[0].value).toEqual "Hello"
+      expect(result[0].operators).toEqual ["!~"]
+      
+      expect(result[1].key).toEqual "title"
+      expect(result[1].value).toEqual "World"
+      expect(result[1].operators).toEqual ["=~"]
+      
+    it 'should parse time', ->
+      Metro.Controller.params limit: 20, ->
+        @param "title"

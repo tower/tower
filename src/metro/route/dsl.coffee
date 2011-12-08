@@ -1,5 +1,37 @@
 ###
 * Metro.Route.DSL
+* match "/posts/github" => redirect("http://github.com/rails.atom")
+match "account/overview"
+ 
+# identical to
+ 
+match "account/overview", :to => "account#overview"
+
+get "account/overview"
+ 
+# identical to
+ 
+match "account/overview", :to => "account#overview", :via => "get"
+match "account/setup", :via => [:get, :post]
+
+resources :posts, :except => [:index]
+ 
+resources :posts, :only => [:new, :create]
+resources :projects, :path_names => { :edit => 'cambiar' }
+match "/foo/:id", :to => redirect("/bar/%{id}s")
+scope '(:locale)', :locale => /en|pl/ do
+  resources :descriptions
+end
+class Subdomain
+  def self.matches?(request)
+    case request.subdomain
+    when 'www', '', nil
+      false
+    else
+      true
+    end
+  end
+end
 ###
 class Metro.Route.DSL
   constructor: ->

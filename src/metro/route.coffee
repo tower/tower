@@ -30,8 +30,31 @@ class Metro.Route
     if @controller
       @id += @controller.name + @controller.action
     
-  match: (path) ->
-    @pattern.exec(path)
+  match: (requestOrPath) ->
+    if typeof requestOrPath == "string" then return @pattern.exec(requestOrPath)
+    path  = requestOrPath.location.path
+    
+    match = @pattern.exec(path)
+    return null unless match
+    return null unless @matchConstraints(requestOrPath)
+    match
+          
+  matchConstraints: (request) ->
+    constraints = @constraints
+    
+    switch typeof(constraints)
+      when "object"
+        for key, value of constraints
+          switch typeof(value)
+            when "string", "number"
+              return false unless request[key] == value
+            when "function", "object"
+              # regexp?
+              return false unless !!request.location[key].match(value)
+      when "function"
+        return constraints.call(request, request)
+      else
+        return false
     
   urlFor: (options = {}) ->
     result = @path

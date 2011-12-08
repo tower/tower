@@ -1,3 +1,3 @@
-Metro.Store.Sync =
+Metro.Store.Sync = {}
   
 module.exports = Metro.Store.Sync

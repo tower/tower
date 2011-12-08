@@ -30,11 +30,13 @@ Metro.Model.Scopes =
     
     includes: ->
       @scoped().includes(arguments...)
-    
+      
+    # Tile.paginate(perPage: 20, page: 3).where(title: "=~": "Hello").all()
     paginate: ->
       @scoped().paginate(arguments...)
     
     # GEO!  
+    # Tile.within(3, origin: [42.12415, -81.3815719]).all()
     within: ->
       @scoped().within(arguments...)
     

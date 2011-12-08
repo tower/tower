@@ -1,24 +1,20 @@
-class Metro.Middleware.Router
-  constructor: (request, response, next) ->
-    unless @constructor == Metro.Middleware.Router
-      return (new Metro.Middleware.Router(request, response, next)).call(request, response, next)
-      
-  call: (request, response, callback) ->
-    self = @
-    
-    @find request, response, (controller) ->
-      if controller
-        response.writeHead(200, controller.headers)
-        response.write(controller.body)
-        response.end()
-        controller.clear()
-      else
-        self.error(request, response)
-    
-    response
+Metro.Middleware.Routes = (request, response, callback) ->
+  @find request, response, (controller) ->
+    if controller
+      response.writeHead(200, controller.headers)
+      response.write(controller.body)
+      response.end()
+      controller.clear()
+    else
+      self.error(request, response)
   
+  response
+  
+Metro.Support.Object.extend Metro.Middleware.Routes,  
   find: (request, response, callback) ->
     routes      = Metro.Route.all()
+    @processHost request, response
+    @processAgent request, response
     
     for route in routes
       controller = @processRoute route, request, response
@@ -31,11 +27,17 @@ class Metro.Middleware.Router
       callback(null)
     
     controller
+  
+  # https://github.com/3rd-Eden/useragent/blob/master/lib/useragent.js  
+  processHost: (request, response) ->
+    request.location ||= new Metro.Net.Url(request.url)
+  
+  # https://github.com/shenoudab/active_device  
+  processAgent: (request, response) ->
+    request.userAgent ||= request.headers["user-agent"] if request.headers
     
   processRoute: (route, request, response) ->
-    url   = request.parsedUrl ||= new Metro.Net.Url(request.url)
-    path  = url.attr("path")
-    match = route.match(path)
+    match = route.match(request)
     
     return null unless match
     method  = request.method.toLowerCase()
@@ -47,9 +49,7 @@ class Metro.Middleware.Router
       params[keys[i].name] = if capture then decodeURIComponent(capture) else null
     
     controller      = route.controller
-    
     params.action   = controller.action if controller
-    
     request.params  = params
     
     controller      = new (Metro.constant(Metro.namespaced(route.controller.className))) if controller
@@ -61,4 +61,4 @@ class Metro.Middleware.Router
       response.setHeader('Content-Type', 'text/plain')
       response.end("No path matches #{request.url}")
       
-module.exports = Metro.Middleware.Router
+module.exports = Metro.Middleware.Routes

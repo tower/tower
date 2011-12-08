@@ -1,10 +1,12 @@
 class Metro.Net.Response
   constructor: (data = {}) ->
     @url        = data.url
-    @parsedUrl  = data.parsedUrl
-    @pathname   = @parsedUrl.attr("path")
-    @query      = @parsedUrl.data.query
-    @title      = data.title    || document.title
+    @location   = data.location
+    @pathname   = @location.path
+    @query      = @parsedUrl.param
+    @title      = data.title
+    @title    ||= document?.title
+    @body       = data.body     || {}
     @headers    = data.headers  || {}
     @headerSent = false
     @statusCode = 200

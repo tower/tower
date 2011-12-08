@@ -17,14 +17,12 @@ class Metro.Store.Redis extends Metro.Object
   all: (query, callback) ->
 
   length: (query, callback) ->
-    
+  
   @alias "count", "length"
-    
+  
   remove: (query, callback) ->
     
   clear: ->
-    
-  toArray: ->
     
   create: (record) ->
     

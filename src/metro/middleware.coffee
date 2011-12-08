@@ -1,7 +1,6 @@
 Metro.Middleware = {}
 
-require './middleware/router'
-require './middleware/static'
-require './middleware/query'
+require './middleware/location'
+require './middleware/routes'
 
 module.exports = Metro.Middleware

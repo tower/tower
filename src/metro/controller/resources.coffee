@@ -1,8 +1,9 @@
 Metro.Controller.Resources =
   ClassMethods:
     # resource name: "user", collectionName: "users", className: "User"
-    resource: (options = {}) ->
-      @_resource = options
+    resource: (options) ->
+      @_resource = options if options
+      @_resource
 
   _create: (callback) ->
     

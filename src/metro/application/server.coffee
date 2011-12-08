@@ -59,7 +59,8 @@ class Metro.Application
     server.use connect.session secret: Metro.sessionSecret
     server.use connect.bodyParser()
     server.use connect.csrf()
-    server.use Metro.Middleware.Router
+    server.use Metro.Middleware.Location
+    server.use Metro.Middleware.Routes
     server
     
   listen: ->

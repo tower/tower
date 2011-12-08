@@ -1,136 +1,93 @@
 class Metro.Net.Param
-  initialize: (key, options = {}) ->
-    self.controller = options.controller
-    self.key        = key.toString()
-    self.modelName  = options.modelName
-    self.namespace  = self.modelName.toS.pluralize.toSym if modelName.present?
-    self.exact      = options.exact || false
-    self.default    = options.default
+  @perPage          : 20
+  @sortDirection    : "ASC"
+  @sortKey          : "sort"                 # or "order", etc.
+  @limitKey         : "limit"                # or "perPage", etc.
+  @pageKey          : "page"
+  @separator        : "_"                    # or "-"
+  
+  # this is not used, just thinking...
+  # nested relationships as user[location][city]=san+diego
+  @operators:  
+    gte             : ":value..t"          
+    gt              : ":value...t"
+    lte             : "t..:value"
+    lte             : "t...:value"
+    rangeInclusive : ":i..:f"             # count=0..4
+    rangeExclusive : ":i...:f"            # date=2011-08-10...2011-10-03
+    in              : [",", "+OR+"]        # tags=ruby,javascript and tags=ruby+OR+javascript
+    nin             : "-"                  # tags=-ruby,-javascript and tags=ruby+OR+javascript
+    all             : "[:value]"           # tags=[ruby,javascript] and tags=ruby+AND+javascript
+    nil             : "[-]"                # tags=[-]
+    notNil         : "[+]"                # tags=ruby,[+]
+    asc             : ["+", ""]
+    desc            : "-"
+    geo             : ":lat,:lng,:radius"   # geo=20,-50,7
+    
+  @create: (key, options) ->
+    options.type ||= "String"
+    new Metro.Net.Param[options.type](key, options)
+    
+  constructor: (key, options = {}) ->
+    @controller = options.controller
+    @key        = key.toString()
+    @modelName  = options.modelName
+    @namespace  = Metro.Support.String.pluralize(@modelName) if modelName?
+    @exact      = options.exact || false
+    @default    = options.default
   
   parse: (value) -> value
   
   render: (value) -> value
   
+  toScope: (value) ->
+    result = @parse(value)
+  
   parseValue: (value, operators) ->
     namespace: @namespace, key: @key, operators: operators, value: value
   
   _clean: (string) ->
-    string.gsub(/^-/, "").gsub(/^\+-/, "").gsub(/^'|'$/, "").gsub("+", " ").gsub(/^\^/, "").gsub(/\$$/, "").strip
+    string.replace(/^-/, "").replace(/^\+-/, "").replace(/^'|'$/, "").replace("+", " ").replace(/^\^/, "").replace(/\$$/, "").replace(/^\s+|\s+$/, "")
 
 class Metro.Net.Param.String extends Metro.Net.Param
   parse: (value) ->
-    arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/).map (node) ->
+    arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/)
+    
+    for node, i in arrays
       values = []
       
       # ([\+\-\^]?[\w@\-_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')
-      node.scan(/([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/).flatten.each (token) ->
-        token.gsub!(/^\+?-+/, "")
-        negation = $& && $&.length > 0
-        token.gsub!(/^\'(.+)\'$/, "\\1")
-        exact    = $& && $&.length > 0
+      node.replace /([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, (_, token) =>
+        negation    = false
+        exact       = false
+        
+        token       = token.replace /^(\+?-+)/, (_, $1) ->
+          negation  = $1 && $1.length > 0
+          ""
+          
+        token       = token.replace /^\'(.+)\'$/, (_, $1) ->
+          exact  = $1 && $1.length > 0
+          $1
         
         if negation
-          operators = [exact ? "!=" : "!~"]
+          operators = [if exact then "!=" else "!~"]
         else
-          operators = [exact ? "=" : "=~"]
-        end
+          operators = [if exact then "=" else "=~"]
         
-        operators << "^" if token =~ /^\+?\-?\^/
-        operators << "$" if token =~ /\$$/
+        operators.push "^" if !!token.match(/^\+?\-?\^/)
+        operators.push "$" if !!token.match(/\$$/)
         
-        values    << parseValue(clean(token), operators)
-      end
+        values.push @parseValue(@_clean(token), operators)
+        _
       
-      values
-
-class Metro.Net.Param.Number extends Metro.Net.Param
-  parse: (value) ->
-    values  = []
+      arrays[i] = values
     
-    value.toS.split(/[,\|]/).each (string) ->
-      if string.match(/([^\.]+)?(\.{2})([^\.]+)?/)
-        startsOn  = RegExp.$1
-        operator  = RegExp.$2
-        endsOn    = RegExp.$3
-        range     = []
-        range.push parseValue(startsOn, [">="]) if Metro.Support.Object.present(startsOn) && startsOn.match(/^\d/)
-        range.push parseValue(endsOn, ["<="])   if Metro.Support.Object.present(endsOn) && endsOn.match(/^\d/)
-        values.push range
-      else
-        values.push [parseValue(string, ["="])]
+    arrays
     
-    values
-  
-  parseValue: (value, operators) ->
-    super(value.toI, operators) # or toF ?
-
-class Metro.Net.Param.Limit extends Metro.Net.Param
-  parse: (value) ->
-    result = value.toS.scan(/(\d+)/).flatten[0]
-    Metro.Support.Object.present(result) ? result.toI : self.default
-  
-  render: (value) ->
-    parse(value)
-
-class Metro.Net.Param.Time extends Metro.Net.Param
-  parse: (value, as = "time") ->
-    values  = []
-
-    value.toS.split(/[\s,\+]/).each (string) ->
-      if string =~ /([^\.]+)?(\.\.)([^\.]+)?/
-        startsOn, operator, endsOn = $1, $2, $3
-        range   = []
-        range   << parseValue(startsOn, [">="]) if !!(startsOn.present? && startsOn =~ /^\d/)
-        range   << parseValue(endsOn, ["<="])   if !!(endsOn.present? && endsOn =~ /^\d/)
-        values  << range
-      else
-        values  << [parseValue(string, ["="])]
-
-    values
-
-  parseValue: (value, operators) ->
-    super(::Time.zone.parse(value), operators)
-
-class Metro.Net.Param.Date extends Metro.Net.Param.Time
-  parse: (value) ->
-    super(value, "date")
-    
-class Metro.Net.Param.Order extends Metro.Net.Param
-  parse: (value) ->
-    value.split(",").map (string) ->
-      string.scan(/([\w-]+[^\-\+])([\+\-])?/).map do |token, operator|
-        operator = operator == "-" ? "-" : "+"
-        token    = clean(token)
-        
-        if controller.present?
-          param = controller.find(token)
-          token = param.tableKey
-        end
-
-        {:namespace => namespace, :key => token, :operators => [operator]}
-  
-  
-  orderHash: (value) ->
-    value.split(",").inject(ActiveSupport::OrderedHash.new) do |hash, string|
-      string.scan(/([\w-]+[^\-\+])([\+\-])?/).each do |token, operator|
-        hash[clean(token)] = operator == "-" ? "-" : "+"
-      end
-      hash
-      
-class Metro.Net.Param.Offset extends Metro.Net.Param
-  parse: (value) ->
-    result = value.toS.scan(/(\d+)/).flatten[0]
-    result.present? ? result.toI : self.default
-  
-  render: (value) ->
-    parse(value)
-
-# Todo
-class Metro.Net.Param.Geo extends Metro.Net.Param
-  parse: (value) ->
-    value.toS.split(/,\s*/).map(&:toF) # [41.31419, -88.1847]
-  
-  render: (value) ->
-    parse(value)
+  toScope: (value) ->
+    nodes   = super(value)[0]
+    result  = {}
+    for node in nodes
+      result[node.key]
 
 module.exports = Metro.Net.Param
