@@ -7,11 +7,11 @@ Metro.Support.EventEmitter =
   events: ->
     @_events ||= {}
   
-  hasEvent: (key) ->
+  hasEventListener: (key) ->
     Metro.Support.Object.isPresent(@events(), key)
     
   event: (key) ->
-    events()[key] ||= new Metro.Event(@, key)
+    @events()[key] ||= new Metro.Event(@, key)
     
   on: (key, handler) ->
     @event(key).addHandler(handler)
@@ -34,7 +34,8 @@ Metro.Support.EventEmitter =
     @event(key).isPrevented()
     
   fire: (key) ->
-    @event(key).fire(Metro.Support.Array.args(arguments, 1))
+    event = @event(key)
+    event.fire.call event, Metro.Support.Array.args(arguments, 1)
     
   allowAndFire: (key) ->
     @event(key).allowAndFire(Metro.Support.Array.args(arguments, 1))

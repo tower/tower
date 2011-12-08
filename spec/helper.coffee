@@ -37,3 +37,4 @@ beforeEach ->
   Metro.Application.instance().initialize()
   Metro.root          = process.cwd() + "/spec/spec-app"
   Metro.publicPath    = Metro.root + "/public"
+  Metro.Support.Dependencies.load "#{Metro.root}/app/models"

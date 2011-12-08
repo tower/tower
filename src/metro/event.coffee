@@ -37,7 +37,7 @@ class Metro.Event extends Metro.Object
     resetOneShot: ->
       @_oneShotFired  = false
       @_oneShotArgs   = null
-
+    
     fire: ->
       return false if @isPrevented() or @_oneShotFired
       context   = @handlerContext()

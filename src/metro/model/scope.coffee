@@ -27,6 +27,10 @@ class Metro.Model.Scope
     @conditions.push ["includes", arguments]
     @
     
+  paginate: ->
+    @conditions.push ["paginate", arguments]
+    @
+    
   within: ->
     @conditions.push ["within", arguments]
     @

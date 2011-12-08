@@ -19,7 +19,7 @@ class Metro.Application
     Metro.Support.I18n.load "#{Metro.root}/config/locales/en"
     require "#{Metro.root}/config/routes"
     
-    Metro.Support.Dependencies.load "#{Metro.root}/app/models"
+    #Metro.Support.Dependencies.load "#{Metro.root}/app/models"
     #Metro.Model.initialize()
     #Metro.View.initialize()
     Metro.Support.Dependencies.load("#{Metro.root}/app/helpers")

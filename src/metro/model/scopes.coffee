@@ -31,6 +31,9 @@ Metro.Model.Scopes =
     includes: ->
       @scoped().includes(arguments...)
     
+    paginate: ->
+      @scoped().paginate(arguments...)
+    
     # GEO!  
     within: ->
       @scoped().within(arguments...)

@@ -85,7 +85,7 @@ describe "route", ->
       Metro.Application.instance().teardown()
       
       Metro.Route.draw ->
-        @resource "user"
+        @resource "user", ->
         
         @resources "posts", ->
           @resources "comments"

@@ -31,10 +31,10 @@ Metro.Model.Attributes =
       @attributes[name] ||= @constructor.attribute(name).defaultValue(@)
     
     set: (name, value) ->
-      @_attributeChange(name, value)
+      beforeValue = @_attributeChange(name, value)
       @attributes[name] = value
       value
-      #@emit("fieldChanged", beforeValue: beforeValue, value: value)
+      @fire("change", beforeValue: beforeValue, value: value)# if @hasEventListener("change")
       
     toUpdates: ->
       result      = {}
