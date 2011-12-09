@@ -1,4 +1,4 @@
-connect = require('connect')
+connect = require('express')
 File    = require('pathfinder').File
 
 class Metro.Application
@@ -6,7 +6,7 @@ class Metro.Application
     @_instance ||= require "#{Metro.root}/config/application"
   
   constructor: ->
-    @server ||= require('connect')()
+    @server ||= require('express').createServer()
     
   use: ->
     server.use(arguments...)

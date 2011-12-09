@@ -19,7 +19,12 @@ Metro.Controller.Processing =
   process: ->
     @processQuery()
     
-    @[@params.action]()
+    block = (callback) =>
+      @[@params.action].call @, callback
+    
+    @runFilters block, (error) ->
+      console.log "ERROR in callback!"
+      console.log error
     
   processQuery: ->
   

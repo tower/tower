@@ -11,10 +11,19 @@ Metro.Model.Persistence =
     
     deleteAll: ->
       @store().clear()
-      
+    
+    # @store new Metro.Store.MongoDB(name: "users")
+    # @store name: "users"
     store: (value) ->
-      @_store = value if value
-      @_store ||= new Metro.Store.Memory(name: @collectionName(), className: @name)
+      # add options!
+      if @_store && typeof value == "object"
+        Metro.Support.Object.extend @_store, value
+      else if value
+        @_store = value
+      
+      @_store ||= new @defaultStore(name: @collectionName(), className: @name)
+        
+    defaultStore: Metro.Store.Memory
       
     collectionName: ->
       Metro.Support.String.camelize(Metro.Support.String.pluralize(@name), true)
@@ -30,10 +39,10 @@ Metro.Model.Persistence =
       if @isNew()
         @_create(callback)
       else
-        @_update(callback)
+        @_update(@toUpdates(), callback)
     
-    _update: (callback) ->
-      @constructor.update {id: @id}, @toUpdates(), (error, docs) =>
+    _update: (attributes, callback) ->
+      @constructor.update id: @id, attributes, (error, docs) =>
         throw error if error
         @changes = {}
         callback.call(@, error) if callback
@@ -49,14 +58,9 @@ Metro.Model.Persistence =
       @
     
     reset: ->
-      
-    updateAttribute: (key, value) ->
     
     updateAttributes: (attributes, callback) ->
-      for key, value of attributes
-        @[key] = value
-      
-      @save(callback)
+      @_update(attributes, callback)
       
     increment: (attribute, amount = 1) ->
     

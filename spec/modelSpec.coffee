@@ -98,7 +98,7 @@ describe 'Metro.Model', ->
     it 'should serialize to JSON', ->
       expected = '{"firstName":"Terminator","id":1,"createdAt":'
       expected += JSON.stringify(new Date)
-      expected += '}'
+      expected += ',"postIds":[]}'
       expect(@user.toJSON()).toEqual expected
       
     it 'should unmarshall from JSON', ->
@@ -133,3 +133,46 @@ describe 'Metro.Model', ->
       
     it 'should have a default', ->
       expect((new User).createdAt).toEqual new Date
+
+  describe 'creating associations', ->
+    beforeEach ->
+      User.deleteAll()
+      @user = User.create(firstName: 'Terminator', id: 1)
+      
+    it 'should create a post from a user', ->
+      post = @user.posts.create()
+      expect(post.userId).toEqual 1
+      expect(post.title).toBeFalsy()
+      
+      post = @user.posts.create(title: "A Post!")
+      expect(post.userId).toEqual 1
+      expect(post.title).toEqual "A Post!"
+      
+      expect(Page.count()).toEqual 2
+      expect(@user.postIds).toEqual [0, 1]
+      
+      @user.updateAttributes "$pull": "postIds": [0]
+      expect(@user.postIds).toEqual [1]
+      
+    it 'should build a post', ->
+      post = @user.posts.build()
+      expect(post.userId).toEqual 1
+      expect(post.id).toBeFalsy()
+      
+    it 'should build a user from a post', ->
+      post = Page.create(title: "Something")
+      user = post.buildUser(firstName: "Santa")
+      
+      expect(user.firstName).toEqual "Santa"
+      expect(user.postIds).toEqual [1]
+      expect(user.id).toBeFalsy()
+      
+    it 'should create a user from a post', ->
+      post = Page.create(title: "Something")
+      user = post.createUser(firstName: "Santa")
+      
+      expect(user.firstName).toEqual "Santa"
+      expect(user.postIds).toEqual [1]
+      expect(user.id).toEqual 0
+      
+      expect(post.user).toEqual user

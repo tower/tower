@@ -398,7 +398,7 @@ class Metro.Route.DSL
     options.as || options.name
     
   _extractConstraints: (options) ->
-    options.constraints || {}
+    Metro.Support.Object.extend(@_scope.constraints || {}, options.constraints || {})
     
   _extractDefaults: (options) ->
     options.defaults || {}
@@ -428,7 +428,7 @@ class Metro.Route.DSL
     throw new Error("No controller was specified for the route #{options.path}") unless controller
     
     controller  = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller")
-    action      = action.toLowerCase()
+    #action      = action.toLowerCase()
     
     name: controller, action: action, className: Metro.Support.String.camelize("#{controller}")
 

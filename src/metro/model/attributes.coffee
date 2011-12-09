@@ -28,7 +28,8 @@ Metro.Model.Attributes =
       @constructor.attribute(name).typecast(value)
     
     get: (name) ->
-      @attributes[name] ||= @constructor.attribute(name).defaultValue(@)
+      @attributes[name] = @constructor.attribute(name).defaultValue(@) unless @attributes.hasOwnProperty(name)
+      @attributes[name]
     
     set: (name, value) ->
       beforeValue = @_attributeChange(name, value)

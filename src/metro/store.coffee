@@ -3,6 +3,13 @@
 # https://github.com/kriszyp/perstore
 class Metro.Store extends Metro.Object
   @defaultLimit: 100
+  
+  @atomicModifiers:
+    "$set":     "$set"
+    "$push":    "$push"
+    "$pushAll": "$pushAll"
+    "$pull":    "$pull"
+    "$pullAll": "$pullAll"
 
   @reservedOperators:
     "_sort":  "_sort"

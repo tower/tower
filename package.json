@@ -48,7 +48,8 @@
     "underscore.logger":  ">= 0.3.1",
     "shift":              ">= 0.1.5",
     "pathfinder":         ">= 0.1.5",
-    "commander":          ">= 0.4.0"
+    "commander":          ">= 0.4.0",
+    "express":            ">= 2.5.1"
   },
   "devDependencies": {
     "stylus":             ">= 0.17.0",

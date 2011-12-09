@@ -9,6 +9,7 @@ class Metro.Controller extends Metro.Object
     @query        = {}
 
 require './controller/caching'
+require './controller/callbacks'
 require './controller/helpers'
 require './controller/http'
 require './controller/layouts'
@@ -21,6 +22,7 @@ require './controller/responding'
 require './controller/sockets'
 
 Metro.Controller.include Metro.Controller.Caching
+Metro.Controller.include Metro.Controller.Callbacks
 Metro.Controller.include Metro.Controller.Helpers
 Metro.Controller.include Metro.Controller.HTTP
 Metro.Controller.include Metro.Controller.Layouts

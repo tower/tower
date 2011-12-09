@@ -19,7 +19,7 @@ global.User = class MetroSpecApp.User extends Metro.Model
   @scope "byBaldwin", firstName: "=~": "Baldwin"
   @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
   
-  @hasMany "posts", className: "Page"
+  @hasMany "posts", className: "Page", cache: true # postIds
   
   @validate "firstName", presence: true
 

@@ -1,5 +1,5 @@
 Metro.Middleware.Routes = (request, response, callback) ->
-  @find request, response, (controller) ->
+  Metro.Middleware.Routes.find request, response, (controller) ->
     if controller
       response.writeHead(200, controller.headers)
       response.write(controller.body)

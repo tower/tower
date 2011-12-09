@@ -1,4 +1,4 @@
-class Metro.Model.Scope
+class Metro.Model.Scope extends Metro.Object
   constructor: (sourceClassName) ->
     @sourceClassName  = sourceClassName
     @conditions       = []
@@ -54,6 +54,18 @@ class Metro.Model.Scope
   updateAll: ->
     
   find: ->
+    
+  build: (attributes, callback) ->
+    @store().build Metro.Support.Object.extend(@query(), attributes), callback
+    
+  create: (attributes, callback) ->
+    @store().create Metro.Support.Object.extend(@query(), attributes), callback
+    
+  updateAttribute: (key, value, callback) ->
+    attributes      = {}
+    @store().update @query(), attributes, callback
+    
+  updateAttributes: (attributes, callback) ->
     
   query: ->
     conditions = @conditions

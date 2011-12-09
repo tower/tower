@@ -80,7 +80,11 @@ class Metro.Store.Memory extends Metro.Store
     @find(query, callback)
 
   length: (query, callback) ->
-    @find(query, (error, records) -> callback.call(@, error, records.length) if callback).length
+    result = 0
+    @find query, (error, records) -> 
+      result = records.length
+      callback.call(@, error, result) if callback
+    result
     
   @alias "count", "length"
     
@@ -96,19 +100,26 @@ class Metro.Store.Memory extends Metro.Store
   clear: ->
     @records = []
     
-  toArray: ->
-    @records
-    
   create: (attributes, callback) ->
     attributes.id ?= @generateId()
-    @records[attributes.id] = @serializeAttributes(attributes)
+    record        = @serializeAttributes(attributes)
+    @records[attributes.id] = record
+    callback.call @, null, record if callback
+    record
+    
+  build: (attributes, callback) ->
+    record        = @serializeAttributes(attributes)
+    callback.call @, null, record if callback
+    record
     
   update: (query, attributes, callback) ->
+    self = @
+    
     @find query, (error, records) ->
       unless error
         for record, i in records
           for key, value of attributes
-            record.attributes[key] = value
+            self._updateAttribute(record.attributes, key, value)
             
       callback.call(@, error, records) if callback
   
@@ -137,6 +148,29 @@ class Metro.Store.Memory extends Metro.Store
   
   generateId: ->
     @lastId++
+    
+  _updateAttribute: (attributes, key, value) ->
+    if @_atomicModifier(key)
+      @["_#{key.replace("$", "")}AtomicUpdate"](attributes, value)
+    else
+      attributes[key] = value
+    
+  _atomicModifier: (key) ->
+    !!@constructor.atomicModifiers[key]
+    
+  _pushAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      attributes[_key] ||= []
+      attributes[_key].push _value
+    attributes
+    
+  _pullAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      _attributeValue = attributes[_key]
+      if _attributeValue
+        for item in _value
+          _attributeValue.splice _attributeValue.indexOf(item), 1
+    attributes
     
   _matchesOperators: (record, recordValue, operators) ->
     success = true
