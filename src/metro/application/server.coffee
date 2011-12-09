@@ -60,6 +60,8 @@ class Metro.Application
     server.use connect.bodyParser()
     server.use connect.csrf()
     server.use Metro.Middleware.Location
+    if Metro.httpCredentials
+      server.use connect.basicAuth(Metro.httpCredentials.username, Metro.httpCredentials.password)
     server.use Metro.Middleware.Routes
     server
     
