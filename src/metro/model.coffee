@@ -1,6 +1,6 @@
 class Metro.Model extends Metro.Object
   constructor: (attrs = {}) ->
-    definitions = @constructor.keys()
+    definitions = @constructor.attributes()
     attributes  = {}
     
     for key, value of attrs

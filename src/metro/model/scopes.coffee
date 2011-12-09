@@ -43,14 +43,14 @@ Metro.Model.Scopes =
     scoped: ->
       new Metro.Model.Scope(Metro.namespaced(@name))
     
-    all: (callback) ->
-      @store().all(callback)
+    all: (query, callback) ->
+      @store().all(query, callback)
   
-    first: (callback) ->
-      @store().first(callback)
+    first: (query, callback) ->
+      @store().first(query, callback)
   
-    last: (callback) ->
-      @store().last(callback)
+    last: (query, callback) ->
+      @store().last(query, callback)
     
     find: (id, callback) ->
       @store().find(id, callback)

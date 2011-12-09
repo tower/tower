@@ -16,12 +16,17 @@ Metro.Model.Persistence =
     # @store name: "users"
     store: (value) ->
       # add options!
-      if @_store && typeof value == "object"
+      return @_store if !value && @_store
+      
+      if typeof value == "object"
+        @_store ||= new @defaultStore(name: @collectionName(), className: Metro.namespaced(@name))
         Metro.Support.Object.extend @_store, value
       else if value
         @_store = value
       
-      @_store ||= new @defaultStore(name: @collectionName(), className: @name)
+      @_store ||= new @defaultStore(name: @collectionName(), className: Metro.namespaced(@name))
+        
+      @_store
         
     defaultStore: Metro.Store.Memory
       

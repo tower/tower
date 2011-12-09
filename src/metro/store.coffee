@@ -50,7 +50,8 @@ class Metro.Store extends Metro.Object
     models
     
   serializeAttributes: (attributes) ->
-    new @klass(attributes)
+    klass = Metro.constant(@className)
+    new klass(attributes)
     
   deserializeAttributes: (model) ->
     model.attributes
@@ -58,7 +59,6 @@ class Metro.Store extends Metro.Object
   constructor: (options = {}) ->
     @name       = options.name
     @className  = options.className || Metro.namespaced(Metro.Support.String.camelize(Metro.Support.String.singularize(@name)))
-    @klass      = Metro.constant(@className)
 
 require './store/cassandra'
 require './store/couchdb'

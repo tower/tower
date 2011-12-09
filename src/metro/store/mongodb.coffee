@@ -64,7 +64,7 @@ class Metro.Store.MongoDB extends Metro.Store
   find: (query, callback) ->
     self = @
     
-    @collection().find().toArray (error, docs) ->
+    @collection().find(@_translateQuery(query)).toArray (error, docs) ->
       unless error
         for doc in docs
           doc.id = doc["_id"]
@@ -82,8 +82,8 @@ class Metro.Store.MongoDB extends Metro.Store
   
   last: (query, callback) ->
   
-  all: (callback) ->
-    @find({}, callback)
+  all: (query, callback) ->
+    @find(query, callback)
   
   length: (query, callback) ->
     @collection().count (error, result) ->
@@ -124,7 +124,7 @@ class Metro.Store.MongoDB extends Metro.Store
     options.safe    = false
     options.upsert  = false
     
-    @collection().update @_translateQuery(query), attributes, options, (error, docs) ->
+    @collection().update @_translateQuery(query), "$set": attributes, options, (error, docs) ->
       throw error if error
       callback.call(@, error, docs) if callback
       
@@ -140,7 +140,10 @@ class Metro.Store.MongoDB extends Metro.Store
     
   _translateQuery: (query) ->
     result        = {}
-    result["_id"] = query.id if query.id
+    try
+      result["_id"] = @constructor.database.bson_serializer.ObjectID(query.id.toString()) if query.id
+    catch error
+      result["_id"] = query.id
     delete query.id
     result[key]   = value for key, value of query
     result

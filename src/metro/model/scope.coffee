@@ -35,14 +35,14 @@ class Metro.Model.Scope extends Metro.Object
     @conditions.push ["within", arguments]
     @
     
-  all: (callback) ->
-    @store().all(@query(), callback)
+  all: (query, callback) ->
+    @store().all(Metro.Support.Object.extend(@query(), query), callback)
     
-  first: (callback) ->
+  first: (query, callback) ->
     @store().first(@query(), callback)
     
-  last: (callback) ->
-    @store().last(@query(), callback)
+  last: (query, callback) ->
+    @store().last(query, @query(), callback)
     
   store: ->
     Metro.constant(@sourceClassName).store()

@@ -4,7 +4,7 @@ Metro.Model.Attributes =
     
   ClassMethods:
     key: (key, options = {}) ->
-      @keys()[key] = new Metro.Model.Attribute(key, options)
+      @attributes()[key] = new Metro.Model.Attribute(key, options)
       
       if Metro.accessors
         Object.defineProperty @prototype, key, 
@@ -15,17 +15,24 @@ Metro.Model.Attributes =
       
       @
       
-    keys: ->
-      @_keys ||= {}
+    attributes: ->
+      @_attributes ||= {}
       
     attribute: (name) ->
-      attribute = @keys()[name]
+      attribute = @attributes()[name]
       throw new Error("Attribute '#{name}' does not exist on '#{@name}'") unless attribute
       attribute
       
+    typecast: (name, value) ->
+      attribute = @attributes()[name]
+      if attribute
+        attribute.typecast(value)
+      else
+        value
+      
   InstanceMethods:
     typecast: (name, value) ->
-      @constructor.attribute(name).typecast(value)
+      @constructor.typecast(name, value)
     
     get: (name) ->
       @attributes[name] = @constructor.attribute(name).defaultValue(@) unless @attributes.hasOwnProperty(name)
