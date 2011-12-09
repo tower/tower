@@ -11,15 +11,22 @@ class Metro.Store.FileSystem extends Metro.Object
     path          = query.path
     ext           = query.ext || ""
     return @records[path] if @records[path]
-    pattern       = if typeof(path) == "string" then new RegExp("#{path}\\.#{ext}", "i") else path
+    loadPaths = @loadPaths
+    patterns  = []
+    if typeof(path) == "string"
+      for loadPath in loadPaths
+        patterns.push new RegExp("#{loadPath}/#{path}\\.#{ext}", "i")
+    else
+      patterns.push path
     
-    templatePaths = File.files.apply(File, @loadPaths)
+    templatePaths = File.files.apply(File, loadPaths)
     
     for templatePath in templatePaths
-      if !!pattern.exec(templatePath)
-        @records[path] = templatePath
-        callback(null, templatePath) if callback
-        return templatePath
+      for pattern in patterns
+        if !!templatePath.match(pattern)
+          @records[path] = templatePath
+          callback(null, templatePath) if callback
+          return templatePath
         
     callback(null, null) if callback
     null

@@ -21,7 +21,7 @@ Metro.View.Rendering =
   
   _renderLayout: (body, options, callback) ->
     if options.layout
-      layout  = @_readTemplate(options.layout, options.type)
+      layout  = @_readTemplate("layouts/#{options.layout}", options.type)
       options.locals.yield = body
       
       @_renderString(layout, options, callback)

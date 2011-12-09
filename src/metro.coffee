@@ -22,7 +22,7 @@ require './metro/generator'
 Metro.root                = process.cwd()
 Metro.publicPath          = process.cwd() + "/public"
 Metro.publicCacheDuration = 60 * 1000
-Metro.View.store(new Metro.Store.FileSystem(["./app/views"]))
+Metro.View.store(new Metro.Store.FileSystem(["app/views"]))
 Metro.sessionSecret       = "metro-session-secret"
 Metro.cookieSecret        = "metro-cookie-secret"
 Metro.render              = (string, options = {}) ->

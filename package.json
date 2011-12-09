@@ -1,6 +1,6 @@
 {
   "name": "metro",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Rails Framework for Node.js",
   "homepage": "http://viatropos.github.com/metro.js",
   "main": "lib/metro.js",
