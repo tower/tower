@@ -1,13 +1,13 @@
 {
   "name": "metro",
-  "version": "0.3.3",
-  "description": "Rails-esque Framework for Node.js",
+  "version": "0.3.5",
+  "description": "Rails Framework for Node.js",
   "homepage": "http://viatropos.github.com/metro.js",
   "main": "lib/metro.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
     "framework",
-    "compression",
+    "rails",
     "node"
   ],
   "maintainers": [{
