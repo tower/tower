@@ -10,6 +10,9 @@ Metro.Model.Serialization =
       records
 
     fromForm: (data) ->
+      
+    fromXML: (data) ->
+      
   
   # https://github.com/oozcitak/xmlbuilder-js
   toXML: ->

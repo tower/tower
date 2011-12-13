@@ -57,118 +57,70 @@ fail:
 
 ###
 class Metro.Model.Scope extends Metro.Object
-  constructor: (sourceClassName) ->
-    @sourceClassName  = sourceClassName
-    @conditions       = []
+  @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within"]
+  @finders:   ["find", "all", "first", "last"]
+  @builders:  ["build", "create", "update". "updateAll", "delete", "deleteAll", "destroy", "destroyAll"]
   
-  where: ->
-    @conditions.push ["where", arguments]
-    @
-    
-  order: ->
-    @conditions.push ["order", arguments]
-    @
-    
-  limit: ->
-    @conditions.push ["limit", arguments]
-    @
-    
-  select: ->
-    @conditions.push ["select", arguments]
-    @
-    
-  joins: ->
-    @conditions.push ["joins", arguments]
-    @
-    
-  includes: ->
-    @conditions.push ["includes", arguments]
-    @
-    
-  paginate: ->
-    @conditions.push ["paginate", arguments]
-    @
-    
-  within: ->
-    @conditions.push ["within", arguments]
-    @
+  constructor: (options = {}) ->
+    @sourceClassName  = options.sourceClassName
+    @criteria         = options.criteria || new Metro.Model.Criteria
+  
+  for key in @scopes
+    @::[key] = ->
+      @criteria[key](arguments...)
+      @
     
   # find(1)  
   # find(1, 2, 3)
   find: (ids..., callback) ->
-    {query, options} = @_translateConditions()
-    @store().find ids..., query, options, callback
+    @store().find ids..., @criteria.query, @criteria.options, callback
     
   all: (callback) ->
-    {query, options} = @_translateConditions()
-    @store().all query, options, callback
+    @store().all @criteria.query, @criteria.options, callback
     
   first: (callback) ->
-    {query, options} = @_translateConditions()
-    @store().first(callback)
+    @store().first @criteria.query, @criteria.options, callback
     
   last: (callback) ->
-    {query, options} = @_translateConditions()
-    @store().last(callback)
+    @store().last @criteria.query, @criteria.options, callback
   
   build: (attributes, callback) ->
-    {query, options} = @_translateConditions()
-    attributes = Metro.Support.Object.extend query, attributes
-    @store().build options, attributes, callback
+    @store().build Metro.Support.Object.extend(@criteria.query, attributes), @criteria.options, callback
     
   create: (attributes, callback) ->
-    {query, options} = @_translateConditions()
-    attributes = Metro.Support.Object.extend query, attributes
-    @store().create options, attributes, callback
-    #@store().create Metro.Support.Object.extend(@_translateConditions(@conditions), attributes), callback
+    @store().create Metro.Support.Object.extend(@criteria.query, attributes), @criteria.options, callback
   
   update: (ids..., updates, callback) ->
-    {query, options} = @_translateConditions()
-    @store().update ids..., query, options, callback
+    @store().update ids..., @criteria.query, @criteria.options, callback
     
   updateAll: (updates, callback) ->
-    {query, options} = @_translateConditions()
-    @store().updateAll updates, query, options, callback
+    @store().updateAll updates, @criteria.query, @criteria.options, callback
   
   delete: (ids..., callback)->
-    {query, options} = @_translateConditions()
-    @store().delete ids..., query, options, callback
+    @store().delete ids..., @criteria.query, @criteria.options, callback
 
   deleteAll: (callback) ->
-    {query, options} = @_translateConditions()
-    @store().deleteAll query, options, callback
+    @store().deleteAll @criteria.query, @criteria.options, callback
     
   destroy: (ids..., callback) ->
-    {query, options} = @_translateConditions()
-    @store().destroy ids..., query, options, callback
+    @store().destroy ids..., @criteria.query, @criteria.options, callback
     
   destroyAll: (callback) ->
-    {query, options} = @_translateConditions()
-    @store().destroyAll query, options, callback
-    
-  _createQuery: ->
-    conditions  = @conditions
-    query       = {}
-    store       = @store()
-    
-    for condition in conditions
-      switch condition[0]
-        when "where"
-          item = condition[1][0]
-          for key, value of item
-            query[key] = value
-        when "order"
-          options.sort = condition[1][0]
-    
-    query: query, options: options
-  
-  # @_translateUpdateAttributes tags: [1, 2]
-  _translateUpdateAttributes: (attributes) ->
+    @store().destroyAll @criteria.query, @criteria.options, callback
     
   store: ->
     @model().store()
     
   model: ->
     Metro.constant(@sourceClassName)
+    
+  # you want to clone it so you can reuse it multiple times:
+  # 
+  #     users = User.where(username: /santa/)
+  #     newUsers = users.where(createdAt: ">=": _(2).days().ago())
+  #     users.all()
+  #     newUsers.all()
+  clone: ->
+    new @(source: @sourceClassName, criteria: @criteria.clone())
 
 module.exports = Metro.Model.Scope

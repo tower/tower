@@ -383,3 +383,31 @@ These are projects that should either be integrated into Metro, or rewritten to 
 ### Mailers
 
 - https://github.com/marak/node_mailer
+
+## Design Principles
+
+### Minimize the number of methods
+
+- less code to manage
+- fewer methods to memorize
+- smaller footprint (less code for the browser to download)
+- differs from Rails
+- opt-in helper method generation
+
+```
+model.buildRelation("user") # can opt into
+# vs.
+model.buildUser()
+```
+
+### Use double underscore `__name` for private/protected methods
+
+### Use single underscore for Ruby-ish `bang!` methods: `_create()`.
+
+### Organize the code so it can be compiled for the client
+
+- put `module.exports = X` at the bottom of each file so it can be stripped with a regular expression.
+
+### Create Underscore.js Compatible Helpers
+
+- write helpers so they are independent of underscore but can be swapped.

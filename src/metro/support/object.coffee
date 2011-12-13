@@ -10,6 +10,30 @@ Metro.Support.Object =
     
     object
     
+  cloneHash: (options) ->
+    result = {}
+    
+    for key, value of options
+      if @isArray(value)
+        result[key] = @cloneArray(value)
+      else if @isHash(value)
+        result[key] = @cloneHash(value)
+      else
+        result[key] = value
+        
+    result
+        
+  cloneArray: (value) ->
+    result = value.concat()
+    
+    for item, i in result
+      if @isArray(item)
+        result[i] = @cloneArray(item)
+      else if @isHash(item)
+        result[i] = @cloneHash(item)
+        
+    result
+    
   deepMerge: (object) ->
     args = Metro.Support.Array.args(arguments, 1)
     
@@ -110,9 +134,11 @@ Metro.Support.Object =
   
   isA: (object, isa) ->
     
-  isHash: ->
-    object = arguments[0] || @
+  isHash: (object) ->
     _.isObject(object) && !(_.isFunction(object) || _.isArray(object))
+    
+  isArray: (object) ->
+    _.isArray(object)
   
   isPresent: (object) ->
     !@isBlank(object)

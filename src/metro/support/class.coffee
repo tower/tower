@@ -76,5 +76,10 @@ class Metro.Class
   
   className: ->
     @constructor.className()
-
+  
+  constructor: ->
+    @initialize()
+    
+  initialize: ->
+    
 module.exports = Metro.Class

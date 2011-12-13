@@ -35,6 +35,8 @@ Metro.Model.Persistence =
       
     resourceName: ->
       Metro.Support.String.camelize(@name, true)
+      
+    clone: (model) ->
   
   InstanceMethods:
     isNew: ->
@@ -62,16 +64,8 @@ Metro.Model.Persistence =
       
       @
     
-    reset: ->
-    
     updateAttributes: (attributes, callback) ->
       @_update(attributes, callback)
-      
-    increment: (attribute, amount = 1) ->
-    
-    decrement: (attribute, amount = 1) ->
-    
-    reload: ->
     
     delete: (callback) ->
       if @isNew()
@@ -93,18 +87,13 @@ Metro.Model.Persistence =
       
     toObject: ->
       @attributes
-    
-    isDirty: ->
-      Metro.Support.Object.isPresent(@changes)
 
-    _attributeChange: (attribute, value) ->
-      array       = @changes[attribute] ||= []
-      beforeValue = array[0] ||= @attributes[attribute]
-      array[1]    = value
-      array       = null if array[0] == array[1]
+    clone: ->
+
+    reset: ->  
+    reload: ->
       
-      if array then @changes[attribute] = array else delete @changes[attribute]
+    toggle: (name) ->
       
-      beforeValue
 
 module.exports = Metro.Model.Persistence

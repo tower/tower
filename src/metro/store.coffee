@@ -6,38 +6,39 @@ class Metro.Store extends Metro.Object
   
   @atomicModifiers:
     "$set":     "$set"
+    "$unset":   "$unset"
     "$push":    "$push"
     "$pushAll": "$pushAll"
     "$pull":    "$pull"
     "$pullAll": "$pullAll"
-
+    
   @reservedOperators:
-    "_sort":  "_sort"
-    "_limit": "_limit"
+    "_sort":    "_sort"
+    "_limit":   "_limit"
   
   @queryOperators:
     ">=":       "gte"
-    "$gte":      "gte"
+    "$gte":     "gte"
     ">":        "gt"
-    "$gt":       "gt"
+    "$gt":      "gt"
     "<=":       "lte"
-    "$lte":      "lte"
+    "$lte":     "lte"
     "<":        "lt"
-    "$lt":       "lt"
-    "$in":       "in"
-    "$nin":      "nin"
-    "$any":      "any"
-    "$all":      "all"
+    "$lt":      "lt"
+    "$in":      "in"
+    "$nin":     "nin"
+    "$any":     "any"
+    "$all":     "all"
     "=~":       "m"
-    "$m":        "m"
+    "$m":       "m"
     "!~":       "nm"
-    "$nm":       "nm"
+    "$nm":      "nm"
     "=":        "eq"
-    "$eq":       "eq"
+    "$eq":      "eq"
     "!=":       "neq"
-    "$neq":      "neq"
-    "$null":     "null"
-    "$notNull":  "notNull"
+    "$neq":     "neq"
+    "$null":    "null"
+    "$notNull": "notNull"
   
   serialize: (data) ->
     return data unless @serializeAttributes
@@ -59,6 +60,7 @@ class Metro.Store extends Metro.Object
   constructor: (options = {}) ->
     @name       = options.name
     @className  = options.className || Metro.namespaced(Metro.Support.String.camelize(Metro.Support.String.singularize(@name)))
+    @model      = Metro.constant(@className)
   
   # find(1)  
   # find(1, 2, 3)
@@ -83,7 +85,7 @@ class Metro.Store extends Metro.Object
     record
     
   schema: ->
-    Metro.constant(@className).schema()
+    @model.schema()
 
 require './store/cassandra'
 require './store/couchdb'
