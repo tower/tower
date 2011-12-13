@@ -17,27 +17,27 @@ class Metro.Store extends Metro.Object
   
   @queryOperators:
     ">=":       "gte"
-    "gte":      "gte"
+    "$gte":      "gte"
     ">":        "gt"
-    "gt":       "gt"
+    "$gt":       "gt"
     "<=":       "lte"
-    "lte":      "lte"
+    "$lte":      "lte"
     "<":        "lt"
-    "lt":       "lt"
-    "in":       "in"
-    "nin":      "nin"
-    "any":      "any"
-    "all":      "all"
+    "$lt":       "lt"
+    "$in":       "in"
+    "$nin":      "nin"
+    "$any":      "any"
+    "$all":      "all"
     "=~":       "m"
-    "m":        "m"
+    "$m":        "m"
     "!~":       "nm"
-    "nm":       "nm"
+    "$nm":       "nm"
     "=":        "eq"
-    "eq":       "eq"
+    "$eq":       "eq"
     "!=":       "neq"
-    "neq":      "neq"
-    "null":     "null"
-    "notNull":  "notNull"
+    "$neq":      "neq"
+    "$null":     "null"
+    "$notNull":  "notNull"
   
   serialize: (data) ->
     return data unless @serializeAttributes
@@ -59,6 +59,31 @@ class Metro.Store extends Metro.Object
   constructor: (options = {}) ->
     @name       = options.name
     @className  = options.className || Metro.namespaced(Metro.Support.String.camelize(Metro.Support.String.singularize(@name)))
+  
+  # find(1)  
+  # find(1, 2, 3)
+  # find(ids..., callback)
+  find: (ids..., query, options, callback) ->
+    if ids.length == 1
+      query.id = ids[0]
+      @findOne query, options, callback
+    else
+      query.id = $in: ids
+      @all query, options, callback
+  
+  first: (query, options, callback) ->
+    @findOne query, options, callback
+
+  last: (query, options, callback) ->
+    @findOne query, options, callback
+    
+  build: (attributes, callback) ->
+    record        = @serializeAttributes(attributes)
+    callback.call @, null, record if callback
+    record
+    
+  schema: ->
+    Metro.constant(@className).schema()
 
 require './store/cassandra'
 require './store/couchdb'

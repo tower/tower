@@ -27,7 +27,7 @@ Metro.Model.Persistence =
       @_store ||= new @defaultStore(name: @collectionName(), className: Metro.namespaced(@name))
         
       @_store
-        
+      
     defaultStore: Metro.Store.Memory
       
     collectionName: ->

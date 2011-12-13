@@ -1,7 +1,7 @@
 Metro.Support.Object.extend Metro, 
   env:        "development"
   port:       1597
-  version:    "0.2.6"
+  version:    "0.3.6"
   client:     typeof(window) != "undefined"
   root:       "/"
   publicPath: "/"

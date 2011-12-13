@@ -1,35 +1,12 @@
 class Metro.Model.Attribute
-  constructor: (name, options = {}) ->
-    @name = name
-    @type = options.type || "string"
+  # @field "title", type: "String", short: "t", default: "Hello"
+  # @id "title", "name"
+  constructor: (name, type, options = {}) ->
+    @name     = name
+    @type     = options.type || "string"
     @_default = options.default
-    
-    @typecastMethod = switch @type
-      when Array, "array" then @_typecastArray
-      when Date, "date", "time" then @_typecastDate
-      when Number, "number", "integer" then @_typecastInteger
-      when "float" then @_typecastFloat
-      else @_typecastString
-    
-  typecast: (value) ->
-    @typecastMethod.call(@, value)
-    
-  _typecastArray: (value) ->
-    value
-    
-  _typecastString: (value) ->
-    value
-    
-  _typecastDate: (value) ->
-    value
-    
-  _typecastInteger: (value) ->
-    return null if value == null || value == undefined
-    parseInt(value)
-    
-  _typecastFloat: (value) ->
-    return null if value == null || value == undefined
-    parseFloat(value)
+    @_encode  = options.encode
+    @_decode  = options.decode
     
   defaultValue: (record) ->
     _default = @_default
@@ -39,5 +16,20 @@ class Metro.Model.Attribute
         _default.call(record)
       else
         _default
+        
+  encode: (value, binding) ->
+    @code @_encode, value, binding
+    
+  decode: (value, binding) ->
+    @code @_decode, value, binding
+    
+  code: (type, value, binding) ->
+    switch type
+      when "string"
+        binding[type].call binding[type], value
+      when "function"
+        type.call _encode, value
+      else
+        value
     
 module.exports = Metro.Model.Attribute

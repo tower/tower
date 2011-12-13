@@ -227,3 +227,4 @@ describe "route", ->
     it 'should parse time', ->
       Metro.Controller.params limit: 20, ->
         @param "title"
+      

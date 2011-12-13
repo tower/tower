@@ -107,11 +107,6 @@ class Metro.Store.Memory extends Metro.Store
     callback.call @, null, record if callback
     record
     
-  build: (attributes, callback) ->
-    record        = @serializeAttributes(attributes)
-    callback.call @, null, record if callback
-    record
-    
   update: (query, attributes, callback) ->
     self = @
     

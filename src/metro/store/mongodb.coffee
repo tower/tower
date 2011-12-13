@@ -38,6 +38,14 @@ class Metro.Store.MongoDB extends Metro.Store
       env   = @env()
       mongo = @lib()
       
+      if env.url
+        url = new Metro.Net.Url(env.url)
+        env.name      = url.segments[0] || url.user
+        env.host      = url.hostname
+        env.port      = url.port
+        env.username  = url.user
+        env.password  = url.password
+      
       new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) ->
         throw error if error
         if env.username && env.password
@@ -61,30 +69,6 @@ class Metro.Store.MongoDB extends Metro.Store
     
     @_collection
   
-  find: (query, callback) ->
-    self = @
-    
-    @collection().find(@_translateQuery(query)).toArray (error, docs) ->
-      unless error
-        for doc in docs
-          doc.id = doc["_id"]
-          delete doc["_id"]
-        docs = self.serialize(docs)
-      
-      callback.call(@, error, docs)
-    
-    @
-    
-  @alias "select", "find"
-  
-  first: (query, callback) ->
-    
-  
-  last: (query, callback) ->
-  
-  all: (query, callback) ->
-    @find(query, callback)
-  
   length: (query, callback) ->
     @collection().count (error, result) ->
       callback.call @, error, result
@@ -99,20 +83,7 @@ class Metro.Store.MongoDB extends Metro.Store
       callback.call(@, error) if callback
     
   @alias "clear", "removeAll"
-    
-  create: (attributes, callback) ->
-    self    = @
-    record  = @serializeAttributes(attributes)
-    
-    @collection().insert attributes, (error, docs) ->
-      doc                   = docs[0]
-      record.attributes.id  = doc["_id"]
-      callback.call(@, error, record) if callback
-      
-    attributes.id = attributes["_id"]
-    delete attributes["_id"]
-    
-    record
+  @alias "deleteAll", "deleteAll"
     
   update: (query, attributes, options, callback) ->
     if typeof options == 'function'
@@ -137,68 +108,148 @@ class Metro.Store.MongoDB extends Metro.Store
     @
     
   sort: ->
+  
+  # tags: [1, 2] == $set: tags: [1, 2]
+  # createdAt: Date == $set: createdAt: mongodate
+  _serializeAttributes: (attributes) ->
+    set = {}
     
-  _translateQuery: (query) ->
-    result        = {}
-    try
-      result["_id"] = @constructor.database.bson_serializer.ObjectID(query.id.toString()) if query.id
-    catch error
-      result["_id"] = query.id
-    delete query.id
-    result[key]   = value for key, value of query
+    for key, value of attributes
+      if @_atomicOperator(key)
+        attributes[key] = @_serializeAttributes(value)
+      else
+        set[key]        = @_serializeAttribute(key, value)
+    
+    attributes["$set"] = Metro.Support.Object.extend(attributes["$set"], set)
+    
+    attributes
+        
+  _serializeAttribute: (key, value) ->
+    switch @owner.attributeType(key)
+      when "string"
+        value.toString()
+      when "integer"
+        parseInt(value)
+      when "float"
+        parseFloat(value)
+      when "date", "time"
+        value
+      when "array"
+        value
+      when "id"
+        @serializeId value
+      else
+        value
+        
+  _serializeAssociation: ->
+      
+  # to mongo
+  serializeId: (value) ->
+    @constructor.database.bson_serializer.ObjectID(value.toString())
+  
+  # from mongo
+  deserializeId: (value) ->
+    value.toString()
+    
+  serializeDate: (value) ->
+    value
+    
+  deserializeDate: (value) ->
+    value
+    
+  serializeArray: (value) ->
+    
+  deserializeArray: (value) ->
+    
+  # tags: $in: ["javascript"]
+  # id: $in: ['1', '2']
+  # id: 1
+  serializeQueryAttributes: (query) ->
+    result      = {}
+    schema      = @schema()
+    result[key] = @serializeQueryAttribute(key, value, schema) for key, value of query
+    
     result
+    
+  serializeQueryAttribute: (key, value, schema) ->
+    encoder   = @["encode#{schema[key].type}"] if schema[key]
+    if encoder
+      if typeof value == "object"
+        for _key, _value of value
+          if @arrayOperator(_key)
+            for item in _value
+              if encoder
+    else
+      value
   
-  matches: (record, query) ->
-    self    = @
-    success = true
-    
-    for key, value of query
-      continue if !!Metro.Store.reservedOperators[key]
-      recordValue = record[key]
-      if typeof(value) == 'object'
-        success = self._matchesOperators(record, recordValue, value)
-      else
-        value = value.call(record) if typeof(value) == "function"
-        success = recordValue == value
-      return false unless success
-    
-    true
+  findOne: (query, options, callback) ->
+    options.limit = 1
+    @collection().findOne @_translateQuery(query), options,  (error, doc) ->
+      doc = self.serializeAttributes(doc) unless error
+      callback.call(@, error, doc)
+    @
   
-  generateId: ->
-    @lastId++
-    
-  _matchesOperators: (record, recordValue, operators) ->
-    success = true
+  # all()  
+  # all(title: "Title")
+  # all({title: "Title"}, {safe: true})
+  # all({title: "Title"}, {safe: true}, (error, records) ->)
+  # You can only do the last one!
+  all: (query, options, callback) ->
     self    = @
     
-    for key, value of operators
-      if operator = Metro.Store.queryOperators[key]
-        value = value.call(record) if typeof(value) == "function"
-        switch operator
-          when "gt"
-            success = self._isGreaterThan(recordValue, value)
-          when "gte"
-            success = self._isGreaterThanOrEqualTo(recordValue, value)
-          when "lt"
-            success = self._isLessThan(recordValue, value)
-          when "lte"
-            success = self._isLessThanOrEqualTo(recordValue, value)
-          when "eq"
-            success = self._isEqualTo(recordValue, value)
-          when "neq"
-            success = self._isNotEqualTo(recordValue, value)
-          when "m"
-            success = self._isMatchOf(recordValue, value)
-          when "nm"
-            success = self._isNotMatchOf(recordValue, value)
-          when "any"
-            success = self._anyIn(recordValue, value)
-          when "all"
-            success = self._allIn(recordValue, value)
-        return false unless success
-      else
-        return recordValue == operators
+    @collection().find(@_translateQuery(query), options).toArray (error, docs) ->
+      unless error
+        for doc in docs
+          doc.id = doc["_id"]
+          delete doc["_id"]
+        docs = self.serialize(docs)
+      
+      callback.call(@, error, docs)
     
-    true
+    @
+  
+  create: (attributes, query, options, callback) ->
+    self    = @
+    record  = @serializeAttributes(attributes)
+    
+    @collection().insert attributes, (error, docs) ->
+      doc                   = docs[0]
+      record.id  = doc["_id"]
+      callback.call(@, error, record) if callback
+    
+    record.id = attributes["_id"]
+    delete attributes["_id"]
+    
+    record
+    
+  update: (ids..., updates, query, options, callback) ->
+    @store().update(ids..., updates, callback)
+    
+  updateAll: (updates, query, options, callback) ->
+    @store().updateAll(updates, callback)
+
+  delete: (ids..., query, options, callback)->
+    @store().delete(ids..., callback)
+
+  deleteAll: (query, options, callback) ->
+    @store().deleteAll(ids..., callback)
+    
+  destroy: (ids..., query, options, callback) ->
+    @store().destroy(ids..., callback)
+    
+  destroyAll: (query, options, callback) ->
+    @store().destroy(ids..., callback)
+    
+  encodeString: (value) ->
+   
+  decodeString: (value) ->
+   
+  encodeOrder: (value) ->
+   
+  decodeOrder: (value) ->
+   
+  encodeDate: (value) ->
+   
+  decodeDate: (value) ->
     
 module.exports = Metro.Store.MongoDB

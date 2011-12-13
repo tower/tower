@@ -57,11 +57,11 @@ npm install metro --dev # npm install metro -d
 |-- app
 |   |-- controllers
 |   |   |-- admin
-|   |   |   |-- posts_controller.coffee
-|   |   |   `-- users_controller.coffee
-|   |   |-- posts_controller.coffee
-|   |   |-- sessions_controller.coffee
-|   |   `-- users_controller.coffee
+|   |   |   |-- postsController.coffee
+|   |   |   `-- usersController.coffee
+|   |   |-- postsController.coffee
+|   |   |-- sessionsController.coffee
+|   |   `-- usersController.coffee
 |   |-- models
 |   |   |-- post.coffee
 |   |   `-- user.coffee
@@ -77,15 +77,11 @@ npm install metro --dev # npm install metro -d
 |   |   `-- posts
 |   |       |-- index.jade
 |   |       `-- show.jade
-|   |-- observers
-|   |   |-- posts_observer.coffee
-|   |   |-- sessions_observer.coffee
-|   |   `-- users_observer.coffee
 |   `-- helpers
 |       |-- admin
-|       |   |-- posts_helper.coffee
-|       |   `-- tags_helper.coffee
-|       `-- posts_helper.coffee
+|       |   |-- postsHelper.coffee
+|       |   `-- tagsHelper.coffee
+|       `-- postsHelper.coffee
 `-- config
 |    |-- application.coffee
 |    |-- locale
@@ -94,8 +90,8 @@ npm install metro --dev # npm install metro -d
 `-- spec
 |    |-- helper.coffee
 |    |-- models
-|    |   |-- post_spec.coffee
-|    |   |-- user_spec.coffee
+|    |   |-- postSpec.coffee
+|    |   |-- userSpec.coffee
 |    `-- acceptance
 |        |-- login.coffee
 |        |-- signup.coffee

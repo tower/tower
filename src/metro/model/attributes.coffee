@@ -3,6 +3,9 @@ Metro.Model.Attributes =
   #  @key "id"
     
   ClassMethods:
+    # key "tags", encode: "encodeTags", decode: (value) -> value.split(/\s+,/)
+    # encodeTags: (value) ->
+    
     key: (key, options = {}) ->
       @attributes()[key] = new Metro.Model.Attribute(key, options)
       
@@ -17,6 +20,8 @@ Metro.Model.Attributes =
       
     attributes: ->
       @_attributes ||= {}
+      
+    @alias "schema", "attributes"
       
     attribute: (name) ->
       attribute = @attributes()[name]
