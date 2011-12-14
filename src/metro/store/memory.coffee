@@ -101,7 +101,7 @@ class Metro.Store.Memory extends Metro.Store
     
   create: (attributes, options, callback) ->
     attributes.id ?= @generateId()
-    record        = @serializeAttributes(attributes)
+    record        = @serializeModel(attributes)
     @records[attributes.id] = record
     callback.call @, null, record if callback
     record
@@ -131,7 +131,9 @@ class Metro.Store.Memory extends Metro.Store
     for key, value of query
       continue if !!Metro.Store.reservedOperators[key]
       recordValue = record[key]
-      if typeof value == "object"
+      if Metro.Support.Object.isRegExp(value)
+        success = recordValue.match(value)
+      else if typeof value == "object"
         success = self._matchesOperators(record, recordValue, value)
       else
         value = value.call(record) if typeof(value) == "function"
@@ -186,7 +188,7 @@ class Metro.Store.Memory extends Metro.Store
             success = self._isEqualTo(recordValue, value)
           when "$neq"
             success = self._isNotEqualTo(recordValue, value)
-          when "$m"
+          when "$regex"
             success = self._isMatchOf(recordValue, value)
           when "$nm"
             success = self._isNotMatchOf(recordValue, value)

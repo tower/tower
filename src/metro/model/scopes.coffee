@@ -13,8 +13,9 @@ Metro.Model.Scopes =
       @[name] = if scope instanceof Metro.Model.Scope then scope else @where(scope)
     
     scoped: ->
-      new Metro.Model.Scope(model: @)
-
+      scope = new Metro.Model.Scope(model: @)
+      scope.where(type: @name) if @baseClass().name != @name
+      scope
 
 for key in Metro.Model.Scope.scopes
   ((_key)->

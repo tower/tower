@@ -12,7 +12,7 @@ class Metro.Model extends Metro.Object
     @attributes   = attributes
     @changes      = {}
     @errors       = []
-    @relations    = {}
+    #@relations    = {}
     @readonly     = false
   
 require './model/scope'

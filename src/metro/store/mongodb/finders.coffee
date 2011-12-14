@@ -5,10 +5,16 @@ Metro.Store.MongoDB.Finders =
     options.limit = 1
     options       = @serializeOptions(options)
     
-    @collection().findOne query, options, (error, doc) ->
-      doc = self.serialize(doc) unless error
+    @collection().findOne query, (error, doc) ->
+      doc = self.serializeModel(doc) unless error || !doc
       callback.call(@, error, doc) if callback
     @
+    
+  serializeModel: (attributes) ->
+    klass = Metro.constant(@className)
+    attributes.id ||= attributes._id
+    delete attributes._id
+    new klass(attributes)
   
   # all()  
   # all(title: "Title")

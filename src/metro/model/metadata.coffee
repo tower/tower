@@ -1,8 +1,12 @@
 Metro.Model.Metadata =
   ClassMethods:
     baseClass: ->
+      if @__super__ && @__super__.constructor.baseClass && @__super__.constructor != Metro.Model
+        @__super__.constructor.baseClass()
+      else
+        @
       
-    stiName: ->  
+    stiName: ->
       
     toParam: ->
       Metro.Support.String.parameterize(@className())

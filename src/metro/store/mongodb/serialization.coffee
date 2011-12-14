@@ -14,7 +14,7 @@ Metro.Store.MongoDB.Serialization =
           result[key][_key] = @encode schema[_key], _value
       else
         result["$set"]    ||= {}
-        result["$set"][key] = @encode schema[key], _value
+        result["$set"][key] = @encode schema[key], value
     
     result
     
@@ -46,6 +46,7 @@ Metro.Store.MongoDB.Serialization =
     
     for key, value of query
       field = schema[key]
+      key   = "_id" if key == "id"
       if Metro.Support.Object.isHash(value)
         result[key] = {}
         for _key, _value of value
@@ -93,7 +94,7 @@ Metro.Store.MongoDB.Serialization =
         value
         
   decodeDate: (value) ->
-    
+    value
   
   encodeBoolean: (value) ->
     if @constructor.booleans.hasOwnProperty(value)
@@ -102,19 +103,19 @@ Metro.Store.MongoDB.Serialization =
       throw new Error("#{value.toString()} is not a boolean")
       
   encodeArray: (value) ->
-    unless value.nil? || value.is_a?(Array)
-      throw new Error(Array, value)
+    unless value == null || Metro.Support.Object.isArray(value)
+      throw new Error("Value is not Array")
     value
     
   encodeFloat: (value) ->
-    return null if Metro.Support.Object.blank(value)
+    return null if Metro.Support.Object.isBlank(value)
     try
       parseFloat(value)
     catch error
       value
     
   encodeInteger: (value) ->
-    return null if Metro.Support.Object.blank(value)
+    return null if !value && value != 0
     if value.toString().match(/(^[-+]?[0-9]+$)|(\.0+)$/) then parseInt(value) else parseFloat(value)
   
   encodeLocalized: (value) ->

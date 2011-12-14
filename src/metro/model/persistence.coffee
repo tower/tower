@@ -1,16 +1,19 @@
 Metro.Model.Persistence =
   ClassMethods:
     create: (attributes, callback) ->
-      @store().create(attributes, callback)
+      @scoped().create(attributes, callback)
     
-    update: (query, attributes, callback) ->
-      @store().update(query, attributes, callback)
+    update: (ids..., updates, callback) ->
+      @scoped().update(ids..., updates, callback)
+      
+    updateAll: (updates, query, callback) ->
+      @scoped().updateAll(updates, query, callback)
       
     destroy: (query, callback) ->
-      @store().destroy(query, callback)
+      @scoped().destroy(query, callback)
     
     deleteAll: ->
-      @store().clear()
+      @scoped().deleteAll()
     
     # @store new Metro.Store.MongoDB(name: "users")
     # @store name: "users"
@@ -49,9 +52,8 @@ Metro.Model.Persistence =
         @_update(@toUpdates(), callback)
     
     _update: (attributes, callback) ->
-      @constructor.update id: @id, attributes, (error, docs) =>
-        throw error if error
-        @changes = {}
+      @constructor.update @id, attributes, (error) =>
+        @changes = {} unless error
         callback.call(@, error) if callback
       
       @

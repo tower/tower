@@ -176,3 +176,16 @@ describe 'Metro.Model', ->
       expect(user.id).toEqual 0
       
       expect(post.user).toEqual user
+    
+  describe 'hierarchical', ->
+    it 'should build tree', ->
+      parent  = Category.create()
+      childA  = parent.children.create()
+      childB  = parent.children.create()
+      
+      console.log parent
+      console.log childA
+      console.log childB
+      console.log parent.children.all()
+      
+      console.log childB.parent

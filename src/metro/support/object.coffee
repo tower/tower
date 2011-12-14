@@ -134,6 +134,9 @@ Metro.Support.Object =
   
   isA: (object, isa) ->
     
+  isRegExp: (object) ->
+    !!(object && object.test && object.exec && (object.ignoreCase || object.ignoreCase == false))
+    
   isHash: (object) ->
     @isObject(object) && !(@isFunction(object) || @isArray(object))
     

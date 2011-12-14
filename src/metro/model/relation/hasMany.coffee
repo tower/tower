@@ -24,7 +24,6 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
   class @Scope extends @Scope
     constructor: (options = {}) ->
       super
-      
       if @foreignKey && @owner.id != undefined
         defaults = {}
         defaults[@foreignKey] = @owner.id 

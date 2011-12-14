@@ -93,7 +93,7 @@ class Metro.Model.Scope extends Metro.Object
     @store().create Metro.Support.Object.extend(@criteria.query, attributes), @criteria.options, callback
   
   update: (ids..., updates, callback) ->
-    @store().update ids..., @criteria.query, @criteria.options, callback
+    @store().update ids..., updates, @criteria.query, @criteria.options, callback
     
   updateAll: (updates, callback) ->
     @store().updateAll updates, @criteria.query, @criteria.options, callback

@@ -14,17 +14,17 @@ Metro.Store.MongoDB.Persistence =
     
     record
     
-  updateAll: (updates, query, options, callback) ->
+  updateAll: (updates, query, options, callback) ->  
     updates         = @serializeAttributesForUpdate(updates)
     query           = @serializeQuery(query)
     options         = @serializeOptions(options)
     
-    options.safe    = false unless options.hasOwnProperty("safe")
+    options.safe    = true unless options.hasOwnProperty("safe")
     options.upsert  = false unless options.hasOwnProperty("upsert")
+    #options.multi   = true unless options.hasOwnProperty("multi")
     
-    @collection().update query, updates, options, (error, docs) ->
-      throw error if error
-      callback.call(@, error, docs) if callback
+    @collection().update query, updates, options, (error) ->
+      callback.call(@, error) if callback
       
     @
 

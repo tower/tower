@@ -29,8 +29,9 @@ class Metro.Store extends Metro.Object
     "$nin":     "$nin"
     "$any":     "$any"
     "$all":     "$all"
-    "=~":       "$m"
-    "$m":       "$m"
+    "=~":       "$regex"
+    "$m":       "$regex"
+    "$regex":   "$regex"
     "!~":       "$nm"
     "$nm":      "$nm"
     "=":        "$eq"
@@ -55,20 +56,18 @@ class Metro.Store extends Metro.Object
     0.0:     false
   
   serialize: (data) ->
-    return data unless @serializeAttributes
-    data[i] = @serializeAttributes(item) for item, i in data
+    data[i] = @serializeModel(item) for item, i in data
     data
   
   deserialize: (models) ->
-    return models unless @deserializeAttributes
-    models[i] = @deserializeAttributes(model) for model, i in models
+    models[i] = @deserializeModel(model) for model, i in models
     models
     
-  serializeAttributes: (attributes) ->
+  serializeModel: (attributes) ->
     klass = Metro.constant(@className)
     new klass(attributes)
     
-  deserializeAttributes: (model) ->
+  deserializeModel: (model) ->
     model.attributes
     
   constructor: (options = {}) ->
@@ -94,16 +93,17 @@ class Metro.Store extends Metro.Object
     @findOne query, options, callback
     
   build: (attributes, options, callback) ->
-    record        = @serializeAttributes(attributes)
+    record        = @serializeModel(attributes)
     callback.call @, null, record if callback
     record
     
   update: (ids..., updates, query, options, callback) ->
+    #query.id = if ids.length == 1 then ids[0] else $in: ids
     query.id = $in: ids
     @updateAll updates, query, options, callback
     
   delete: (ids..., query, options, callback) ->
-    query.id = $in: ids
+    query.id = if ids.length == 1 then ids[0] else $in: ids
     @deleteAll query, options, callback
     
   schema: ->
