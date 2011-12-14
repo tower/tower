@@ -9,7 +9,7 @@ class Metro.Model.Relation.BelongsTo extends Metro.Model.Relation
         get: -> @relation(name).first()
         set: (value) -> @relation(name).set(value)
     
-    owner.field "#{name}Id"
+    owner.field "#{name}Id", type: "Id"
     
     self        = @
     
