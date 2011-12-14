@@ -434,6 +434,8 @@ User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 
   @render json: User.toJSON(records)
 
 # should handle these but doesn't yet.  
-Post.includes("user").where(user: firstName: "=~": "Baldwin").all()
-Post.includes("user").where("user.firstName": "=~": "Baldwin").all()
+Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
+Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
+# userIds = User.where(firstName: "=~": "Baldwin").select("id")
+# Post.where(authorId: $in: userIds).all()
 ```
