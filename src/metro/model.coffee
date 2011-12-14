@@ -26,7 +26,6 @@ require './model/relations'
 require './model/field'
 require './model/versioning'
 require './model/fields'
-require './model/finders'
 require './model/persistence'
 require './model/atomic'
 require './model/scopes'
@@ -43,7 +42,6 @@ Metro.Model.include Metro.Model.Dirty
 Metro.Model.include Metro.Model.Criteria
 Metro.Model.include Metro.Model.Scopes
 Metro.Model.include Metro.Model.States
-Metro.Model.include Metro.Model.Finders
 Metro.Model.include Metro.Model.Inheritance
 Metro.Model.include Metro.Model.Serialization
 Metro.Model.include Metro.Model.Relations

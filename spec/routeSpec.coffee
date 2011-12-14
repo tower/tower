@@ -224,7 +224,14 @@ describe "route", ->
       expect(result[1].value).toEqual "World"
       expect(result[1].operators).toEqual ["=~"]
       
-    it 'should parse time', ->
       Metro.Controller.params limit: 20, ->
         @param "title"
+
+      controller  = new Metro.Controller
+      controller.params.title = "Hello+World"
+      criteria    = controller.criteria()
+      expect(criteria.query).toEqual {title: "=~": "Hello World"}
       
+  describe 'url builder', ->
+    it 'should build a url from a model class', ->
+      url = Metro.urlFor

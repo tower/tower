@@ -58,7 +58,7 @@ fail:
 ###
 class Metro.Model.Scope extends Metro.Object
   @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within"]
-  @finders:   ["find", "all", "first", "last"]
+  @finders:   ["find", "all", "first", "last", "count"]
   @builders:  ["build", "create", "update", "updateAll", "delete", "deleteAll", "destroy", "destroyAll"]
   
   constructor: (options = {}) ->
@@ -85,6 +85,9 @@ class Metro.Model.Scope extends Metro.Object
     
   last: (callback) ->
     @store().last @criteria.query, @criteria.options, callback
+    
+  count: (callback) ->
+    @store().count @criteria.query, @criteria.options, callback
   
   build: (attributes, callback) ->
     @store().build Metro.Support.Object.extend(@criteria.query, attributes), @criteria.options, callback
@@ -105,10 +108,10 @@ class Metro.Model.Scope extends Metro.Object
     @store().deleteAll @criteria.query, @criteria.options, callback
     
   destroy: (ids..., callback) ->
-    @store().destroy ids..., @criteria.query, @criteria.options, callback
+    @store().delete ids..., @criteria.query, @criteria.options, callback
     
   destroyAll: (callback) ->
-    @store().destroyAll @criteria.query, @criteria.options, callback
+    @store().deleteAll @criteria.query, @criteria.options, callback
     
   store: ->
     @model.store()

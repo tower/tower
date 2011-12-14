@@ -52,7 +52,7 @@ Metro.Store.MongoDB.Serialization =
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]
           _key      = operator if operator
-          result[key][_key] = @encode field, _value
+          result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
     
@@ -61,16 +61,17 @@ Metro.Store.MongoDB.Serialization =
   serializeOptions: (options = {}) ->
     options
   
-  encode: (field, value) ->
+  encode: (field, value, operation) ->
     return value unless field
     method = @["encode#{field.type}"]
-    value = method(value) if method
+    value = method.call(@, value) if method
+    value = [value] if operation == "$in" && !Metro.Support.Object.isArray(value)
     value
     
-  decode: (field, value) ->
+  decode: (field, value, operation) ->
     return value unless field
     method = @["decode#{field.type}"]
-    value = method(value) if method
+    value = method.call(@, value) if method
     value
   
   encodeString: (value) ->
@@ -132,11 +133,12 @@ Metro.Store.MongoDB.Serialization =
     null
     
   # to mongo
-  serializeId: (value) ->
+  encodeId: (value) ->
+    return value unless value
     @constructor.database.bson_serializer.ObjectID(value.toString())
   
   # from mongo
-  deserializeId: (value) ->
+  decodeId: (value) ->
     value.toString()
     
 module.exports = Metro.Store.MongoDB.Serialization

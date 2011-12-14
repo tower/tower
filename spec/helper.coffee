@@ -41,7 +41,7 @@ global.Page = class MetroSpecApp.Page extends Metro.Model
   
   @validate "rating", min: 0, max: 10
   
-  @belongsTo "user"
+  @belongsTo "user", cache: true
   
 global.Post = class MetroSpecApp.Post extends Page
   @hasMany "categories", embedded: true

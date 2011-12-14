@@ -1,6 +1,6 @@
 Metro.Middleware = {}
 
 require './middleware/location'
-require './middleware/routes'
+require './middleware/router'
 
 module.exports = Metro.Middleware

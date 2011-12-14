@@ -143,6 +143,14 @@ Metro.Support.Object =
   isArray: Array.isArray || (object) ->
     toString.call(object) == '[object Array]'
     
+  kind: (object) ->
+    if typeof(object) != "object" return typeof(object)
+    if object == null return "null"
+    if object.constructor == (new Array).constructor) return "array"
+    if object.constructor == (new Date).constructor) return "date"
+    if object.constructor == (new RegExp).constructor) return "regex"
+    return "object"
+    
   isObject: (object) ->
     return object == Object(object)
   

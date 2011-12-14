@@ -91,7 +91,7 @@ describe 'Metro.Model', ->
     it 'should serialize to JSON', ->
       expected = '{"firstName":"Terminator","id":1,"createdAt":'
       expected += JSON.stringify(new Date)
-      expected += ',"postIds":[]}'
+      expected += ',"likes":0,"tags":[],"postIds":[]}'
       expect(@user.toJSON()).toEqual expected
       
     it 'should unmarshall from JSON', ->
@@ -187,3 +187,18 @@ describe 'Metro.Model', ->
       #console.log parent.children.all()
       #
       #console.log childB.parent
+  
+  describe 'updating', ->
+    beforeEach ->
+      User.store(new Metro.Store.Memory(name: "users", className: "MetroSpecApp.User"))
+      User.deleteAll()
+      Page.deleteAll()
+      Post.deleteAll()
+      
+    it 'should $push values if the attribute is defined as an array when I updateAttributes', ->
+      user = User.create(firstName: "music")
+      expect(user.postIds.length).toEqual 0
+      user.posts.create(title: "A Post")
+      expect(user.postIds.length).toEqual 1
+      user.updateAttributes postIds: 2
+      expect(user.postIds.length).toEqual 2

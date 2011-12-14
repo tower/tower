@@ -62,7 +62,7 @@ class Metro.Application
     server.use Metro.Middleware.Location
     if Metro.httpCredentials
       server.use connect.basicAuth(Metro.httpCredentials.username, Metro.httpCredentials.password)
-    server.use Metro.Middleware.Routes
+    server.use Metro.Middleware.Router
     server
     
   listen: ->

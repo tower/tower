@@ -7,12 +7,19 @@ Metro.Support.Object.extend Metro,
   publicPath: "/"
   namespace:  null
   logger:     if typeof(_console) != 'undefined' then _console else console
+  stack: ->
+    try
+      throw new Error
+    catch error
+      return error.stack
   raise: ->
     throw new Error(Metro.t(arguments...))
   configure:  ->
   initialize: -> Metro.Application.initialize()
   t:          -> Metro.Support.I18n.t(arguments...)
   case:        "camelcase"
+  urlFor: ->
+    Metro.Route.urlFor(arguments...)
   stringify: ->
     string = Metro.Support.Array.args(arguments).join("_")
     switch Metro.case

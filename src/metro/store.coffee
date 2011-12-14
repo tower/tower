@@ -107,7 +107,7 @@ class Metro.Store extends Metro.Object
     @deleteAll query, options, callback
     
   schema: ->
-    @model.schema()
+    Metro.constant(@className).schema()
 
 require './store/cassandra'
 require './store/couchdb'

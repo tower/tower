@@ -20,5 +20,6 @@ class Metro.Model.Relation.BelongsTo extends Metro.Model.Relation
       @createRelation(name, attributes, callback)
       
   class @Scope extends @Scope
+    # need to do something here about Reflection
   
 module.exports = Metro.Model.Relation.BelongsTo

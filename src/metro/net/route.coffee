@@ -1,4 +1,4 @@
-class Metro.Route
+class Metro.Net.Route extends Metro.Object
   @store: ->
     @_store ||= []
   
@@ -12,13 +12,13 @@ class Metro.Route
     @_store = []
   
   @draw: (callback) ->
-    callback.apply(new Metro.Route.DSL(@))
+    callback.apply(new Metro.Net.Route.DSL(@))
   
   constructor: (options) ->
     options     ||= options
     @path         = options.path
     @name         = options.name
-    @method       = options.method
+    @method       = options.method.toUpperCase()
     @ip           = options.ip
     @defaults     = options.defaults || {}
     @constraints  = options.constraints
@@ -33,12 +33,12 @@ class Metro.Route
   match: (requestOrPath) ->
     if typeof requestOrPath == "string" then return @pattern.exec(requestOrPath)
     path  = requestOrPath.location.path
-    
+    return null unless requestOrPath.method.toUpperCase() == @method
     match = @pattern.exec(path)
     return null unless match
     return null unless @matchConstraints(requestOrPath)
     match
-          
+    
   matchConstraints: (request) ->
     constraints = @constraints
     
@@ -92,7 +92,14 @@ class Metro.Route
     )
     
     new RegExp('^' + path + '$', if !!caseSensitive then '' else 'i')
+  
+Metro.Route = Metro.Net.Route
 
 require './route/dsl'
+require './route/urls'
+require './route/polymorphicUrls'
 
-module.exports = Metro.Route
+Metro.Net.Route.include Metro.Net.Route.Urls
+Metro.Net.Route.include Metro.Net.Route.PolymorphicUrls
+
+module.exports = Metro.Net.Route

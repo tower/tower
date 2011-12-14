@@ -11,7 +11,6 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
     
     @foreignKey = options.foreignKey || Metro.Support.String.camelize("#{owner.name}Id", true)
     
-    @cache      = false unless @hasOwnProperty("cache")
     if @cache
       if typeof @cache == "string"
         @cache    = true
@@ -19,7 +18,7 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
       else
         @cacheKey = Metro.Support.String.singularize(name) + "Ids"
       
-      @owner.field @cacheKey, type: "array", default: []
+      @owner.field @cacheKey, type: "Array", default: []
   
   class @Scope extends @Scope
     constructor: (options = {}) ->

@@ -38,7 +38,7 @@ Metro.Store.MongoDB.Finders =
     @
   
   count: (query, options, callback) ->
-    @collection().count query, options, (error, result) ->
+    @collection().count query, (error, result) ->
       callback.call @, error, result if callback
     @
 

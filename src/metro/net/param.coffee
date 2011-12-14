@@ -30,7 +30,8 @@ class Metro.Net.Param
     
   constructor: (key, options = {}) ->
     @controller = options.controller
-    @key        = key.toString()
+    @key        = key
+    @attribute  = options.as || @key
     @modelName  = options.modelName
     @namespace  = Metro.Support.String.pluralize(@modelName) if modelName?
     @exact      = options.exact || false
@@ -40,11 +41,11 @@ class Metro.Net.Param
   
   render: (value) -> value
   
-  toScope: (value) ->
+  toCriteria: (value) ->
     result = @parse(value)
   
   parseValue: (value, operators) ->
-    namespace: @namespace, key: @key, operators: operators, value: value
+    namespace: @namespace, key: @key, operators: operators, value: value, attribute: @attribute
   
   _clean: (string) ->
     string.replace(/^-/, "").replace(/^\+-/, "").replace(/^'|'$/, "").replace("+", " ").replace(/^\^/, "").replace(/\$$/, "").replace(/^\s+|\s+$/, "")
@@ -84,10 +85,12 @@ class Metro.Net.Param.String extends Metro.Net.Param
     
     arrays
     
-  toScope: (value) ->
+  toCriteria: (value) ->
     nodes   = super(value)[0]
     result  = {}
     for node in nodes
-      result[node.key]
+      result[node.attribute] ||= {}
+      result[node.attribute][node.operators[0]] = node.value
+    result
 
 module.exports = Metro.Net.Param

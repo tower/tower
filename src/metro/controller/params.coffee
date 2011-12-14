@@ -22,15 +22,19 @@ Metro.Controller.Params =
       @_params      ||= {}
       @_params[key] = Metro.Net.Param.create(key, Metro.Support.Object.extend({}, @_paramsOptions || {}, options))
   
-  scopedParams: ->
-    return @_scopedParams if @_scopedParams
+  criteria: ->
+    return @_criteria if @_criteria
     
-    @_scopedParams = {}
+    @_criteria = criteria = new Metro.Model.Criteria
     
-    params = @constructor.params()
+    parsers = @constructor.params()
+    params  = @params
     
-    #for key, value of params
-    #  @_scopedParams[key] = 
+    for name, parser of parsers
+      if params.hasOwnProperty(name)
+        criteria.where(parser.toCriteria(params[name]))
+        
+    criteria
   
   withParams: (path, newParams = {}) ->
     params = Metro.Support.Object.extend @query, newParams

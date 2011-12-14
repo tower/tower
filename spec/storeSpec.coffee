@@ -1,5 +1,5 @@
 require './helper'
-
+###
 Metro.Store.MongoDB.initialize()
 quit = false
 
@@ -48,7 +48,7 @@ describe 'Metro.Store', ->
     #  self = @
     #  
     #  runs ->
-    #    User.count {}, (error, result) ->
+    #    User.count (error, result) ->
     #      count = result
     #    User.all (error, result) ->
     #      self.user = result[0]
@@ -70,7 +70,7 @@ describe 'Metro.Store', ->
       waits 200
       
       runs ->
-        User.count {}, (error, result) ->
+        User.count (error, result) ->
           count = result
           
       waits 200
@@ -84,7 +84,7 @@ describe 'Metro.Store', ->
       waits 200
       
       runs ->
-        User.count {}, (error, result) ->
+        User.count (error, result) ->
           count = result
         
       waits 200
@@ -111,7 +111,6 @@ describe 'Metro.Store', ->
       waits 300
       
       runs ->
-        console.log users
         expect(user.firstName).toEqual "Lance"
       
     it 'should update records', ->
@@ -147,3 +146,4 @@ describe 'Metro.Store', ->
         expect(user.tags).toEqual ["one"]
         console.log ""
         quit = true
+###

@@ -19,11 +19,14 @@ class Metro.Model.Field
   defaultValue: (record) ->
     _default = @_default
     
-    switch typeof(_default)
-      when 'function'
-        _default.call(record)
-      else
-        _default
+    if Metro.Support.Object.isArray(_default)
+      _default.concat()
+    else if Metro.Support.Object.isHash(_default)
+      Metro.Support.Object.extend({}, _default)
+    else if typeof(_default) == "function"
+      _default.call(record)
+    else
+      _default
         
   encode: (value, binding) ->
     @code @_encode, value, binding

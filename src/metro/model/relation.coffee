@@ -5,6 +5,7 @@ class Metro.Model.Relation extends Metro.Object
     @owner            = owner
     @name             = name
     @targetClassName  = Metro.namespaced(options.className || Metro.Support.String.camelize(name))
+    @cache      = false unless @hasOwnProperty("cache")
   
   scoped: (record) ->
     new @constructor.Scope(model: Metro.constant(@targetClassName), owner: record, relation: @)

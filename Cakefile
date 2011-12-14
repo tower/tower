@@ -104,7 +104,7 @@ window.Metro    = new (class Metro)
         result += code
         compileEach 'controller', null, (code) ->
           result += code
-          compileEach 'route', null, (code) ->
+          compileEach 'net', null, (code) ->
             result += code
             compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
               result += code

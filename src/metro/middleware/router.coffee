@@ -1,5 +1,5 @@
-Metro.Middleware.Routes = (request, response, callback) ->
-  Metro.Middleware.Routes.find request, response, (controller) ->
+Metro.Middleware.Router = (request, response, callback) ->
+  Metro.Middleware.Router.find request, response, (controller) ->
     if controller
       response.writeHead(200, controller.headers)
       response.write(controller.body)
@@ -10,7 +10,7 @@ Metro.Middleware.Routes = (request, response, callback) ->
   
   response
   
-Metro.Support.Object.extend Metro.Middleware.Routes,  
+Metro.Support.Object.extend Metro.Middleware.Router,  
   find: (request, response, callback) ->
     routes      = Metro.Route.all()
     @processHost request, response
@@ -61,4 +61,4 @@ Metro.Support.Object.extend Metro.Middleware.Routes,
       response.setHeader('Content-Type', 'text/plain')
       response.end("No path matches #{request.url}")
       
-module.exports = Metro.Middleware.Routes
+module.exports = Metro.Middleware.Router

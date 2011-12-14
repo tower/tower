@@ -1,7 +1,7 @@
 Metro.Store.MongoDB.Persistence =
   create: (attributes, options, callback) ->
     self        = @
-    record      = @serialize(attributes)
+    record      = @serializeModel(attributes)
     attributes  = @serializeAttributesForCreate(attributes)
     options     = @serializeOptions(options)
     

@@ -1,88 +1,53 @@
-###
-* Metro.Route.DSL
-* match "/posts/github" => redirect("http://github.com/rails.atom")
-match "account/overview"
- 
-# identical to
- 
-match "account/overview", :to => "account#overview"
-
-get "account/overview"
- 
-# identical to
- 
-match "account/overview", :to => "account#overview", :via => "get"
-match "account/setup", :via => [:get, :post]
-
-resources :posts, :except => [:index]
- 
-resources :posts, :only => [:new, :create]
-resources :projects, :path_names => { :edit => 'cambiar' }
-match "/foo/:id", :to => redirect("/bar/%{id}s")
-scope '(:locale)', :locale => /en|pl/ do
-  resources :descriptions
-end
-class Subdomain
-  def self.matches?(request)
-    case request.subdomain
-    when 'www', '', nil
-      false
-    else
-      true
-    end
-  end
-end
-###
-class Metro.Route.DSL
+class Metro.Net.Route.DSL
   constructor: ->
     @_scope = {}
-  
+
   match: ->
     @scope ||= {}
-    Metro.Route.create(new Metro.Route(@_extractOptions(arguments...)))
-    
+    Metro.Net.Route.create(new Metro.Net.Route(@_extractOptions(arguments...)))
+
   get: ->
     @matchMethod("get", Metro.Support.Array.args(arguments))
-    
+
   post: ->
     @matchMethod("post", Metro.Support.Array.args(arguments))
-    
+
   put: ->
     @matchMethod("put", Metro.Support.Array.args(arguments))
-    
+
   delete: ->
     @matchMethod("delete", Metro.Support.Array.args(arguments))
-    
+
   matchMethod: (method, args) ->
     if typeof args[args.length - 1] == "object"
       options       = args.pop()
     else
       options       = {}
-      
+
     name            = args.shift()
     options.method  = method
     options.action  = name
     options.name    = name
     if @_scope.name
       options.name = @_scope.name + Metro.Support.String.camelize(options.name)
-    
+
     path = "/#{name}"
     path = @_scope.path + path if @_scope.path
-    
+
     @match(path, options)
     @
-    
+
   scope: (options = {}, block) ->
     originalScope = @_scope ||= {}
     @_scope = Metro.Support.Object.extend {}, originalScope, options
     block.call(@)
     @_scope = originalScope
     @
-    
+
   controller: (controller, options, block) ->
     options.controller = controller
     @scope(options, block)
-  
+
   ###
   * Scopes routes to a specific namespace. For example:
   * 
@@ -133,14 +98,14 @@ class Metro.Route.DSL
       options   = {}
     else
       options   = {}
-    
+
     options = Metro.Support.Object.extend(name: path, path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
-      
+
     if options.name && @_scope.name
       options.name = @_scope.name + Metro.Support.String.camelize(options.name)
-    
+
     @scope(options, block)
-    
+
   # === Parameter Restriction
   # Allows you to constrain the nested routes based on a set of rules.
   # For instance, in order to change the routes to allow for a dot character in the +id+ parameter:
@@ -168,7 +133,7 @@ class Metro.Route.DSL
   # where as any user connecting outside of this range will be told there is no such route.
   constraints: (options, block) ->
     @scope(constraints: options, block)
-    
+
   # Allows you to set default parameters for a route, such as this:
   # 
   #   defaults id: 'home', ->
@@ -177,7 +142,7 @@ class Metro.Route.DSL
   # Using this, the `:id` parameter here will default to 'home'.
   defaults: (options, block) ->
     @scope(defaults: options, block)
-  
+
   # Sometimes, you have a resource that clients always look up without
   # referencing an ID. A common example, /profile always shows the
   # profile of the currently logged in user. In this case, you can use
@@ -207,7 +172,7 @@ class Metro.Route.DSL
     @match "#{name}/edit", Metro.Support.Object.extend({action: "edit"}, options)
     @match "#{name}", Metro.Support.Object.extend({action: "update", method: "PUT"}, options)
     @match "#{name}", Metro.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
-    
+
   # In Rails, a resourceful route provides a mapping between HTTP verbs
   # and URLs and controller actions. By convention, each action also maps
   # to particular CRUD operations in a database. A single entry in the
@@ -311,17 +276,17 @@ class Metro.Route.DSL
     else
       options  = {}
     options.controller ||= name
-    
+
     path = "/#{name}"
     path = @_scope.path + path if @_scope.path
-    
+
     if @_scope.name
       many = @_scope.name + Metro.Support.String.camelize(name)
     else
       many = name
-    
+
     one   = Metro.Support.String.singularize(many)
-    
+
     @match "#{path}", Metro.Support.Object.extend({name: "#{many}", action: "index"}, options)
     @match "#{path}/new", Metro.Support.Object.extend({name: "new#{Metro.Support.String.camelize(one)}", action: "new"}, options)
     @match "#{path}", Metro.Support.Object.extend({action: "create", method: "POST"}, options)
@@ -329,11 +294,11 @@ class Metro.Route.DSL
     @match "#{path}/:id/edit", Metro.Support.Object.extend({name: "edit#{Metro.Support.String.camelize(one)}", action: "edit"}, options)
     @match "#{path}/:id", Metro.Support.Object.extend({action: "update", method: "PUT"}, options)
     @match "#{path}/:id", Metro.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
-    
+
     if callback
       @scope Metro.Support.Object.extend({path: "#{path}/:#{Metro.Support.String.singularize(name)}Id", name: one}, options), callback
     @
-  
+
   # To add a route to the collection:
   #
   #   resources "photos", ->
@@ -345,7 +310,7 @@ class Metro.Route.DSL
   # create the <tt>searchPhotosUrl</tt> and <tt>searchPhotosPath</tt>
   # route helpers.
   collection: ->
-  
+
   # To add a member route, add a member block into the resource block:
   #
   #   @resources "photos", ->
@@ -356,19 +321,19 @@ class Metro.Route.DSL
   # preview action of +PhotosController+. It will also create the
   # <tt>previewPhotoUrl</tt> and <tt>previewPhotoPath</tt> helpers.
   member: ->
-    
+
   root: (options) ->
     @match '/', Metro.Support.Object.extend(as: "root", options)
-    
+
   _extractOptions: ->
     args            = Metro.Support.Array.args(arguments)
     path            = "/" + args.shift().replace(/^\/|\/$/, "")
-    
+
     if typeof args[args.length - 1] == "object"
       options       = args.pop()
     else
       options       = {}
-    
+
     options.to      ||= args.shift() if args.length > 0
     options.path    = path
     format          = @_extractFormat(options)
@@ -379,7 +344,7 @@ class Metro.Route.DSL
     controller      = @_extractController(options)
     anchor          = @_extractAnchor(options)
     name            = @_extractName(options)
-    
+
     options         = Metro.Support.Object.extend options,
       method:         method
       constraints:    constraints
@@ -389,29 +354,29 @@ class Metro.Route.DSL
       controller:     controller
       anchor:         anchor
       ip:             options.ip
-    
+
     options
-    
+
   _extractFormat: (options) ->
-    
+
   _extractName: (options) ->
     options.as || options.name
-    
+
   _extractConstraints: (options) ->
     Metro.Support.Object.extend(@_scope.constraints || {}, options.constraints || {})
-    
+
   _extractDefaults: (options) ->
     options.defaults || {}
-    
+
   _extractPath: (options) ->
     "#{options.path}.:format?"
-    
+
   _extractRequestMethod: (options) ->
     (options.method || options.via || "GET").toUpperCase()
-  
+
   _extractAnchor: (options) ->
     options.anchor
-    
+
   _extractController: (options = {}) ->
     to = options.to
     if to
@@ -421,15 +386,15 @@ class Metro.Route.DSL
       else
         controller  = to[0]
         action      = to[1]
-    
+
     controller   ||= options.controller || @_scope.controller
     action       ||= options.action
-    
+
     throw new Error("No controller was specified for the route #{options.path}") unless controller
-    
+
     controller  = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller")
     #action      = action.toLowerCase()
-    
-    name: controller, action: action, className: Metro.Support.String.camelize("#{controller}")
 
+    name: controller, action: action, className: Metro.Support.String.camelize("#{controller}")
+      
 module.exports = Metro.Route.DSL
