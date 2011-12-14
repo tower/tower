@@ -60,9 +60,7 @@ describe 'Metro.Model', ->
     it 'should be invalid', ->
       expect(@user.validate()).toEqual false
       
-      expect(@user.errors).toEqual [
-        { attribute : 'firstName', message : "firstName can't be blank" }
-      ]
+      expect(@user.errors).toEqual({ 'firstName' : ["firstName can't be blank"] })
       
       @user.firstName = "Joe"
       
@@ -72,18 +70,13 @@ describe 'Metro.Model', ->
       @user.firstName = null
       
       expect(@user.validate()).toEqual false
-      expect(@user.errors).toEqual [
-        { attribute : 'firstName', message : "firstName can't be blank" }
-      ]
+      expect(@user.errors).toEqual({ 'firstName' : ["firstName can't be blank"] })
     
     it 'should validate from attribute definition', ->
       page = new Page(title: "A Page")
       
       expect(page.validate()).toEqual false
-      expect(page.errors).toEqual [
-        { attribute : 'rating', message : 'rating must be a minimum of 0' }, 
-        { attribute : 'rating', message : 'rating must be a maximum of 10' }
-      ]
+      expect(page.errors).toEqual { 'rating': ['rating must be a minimum of 0', 'rating must be a maximum of 10' ] }
       
       page.rating = 10
       

@@ -17,8 +17,7 @@ Metro.Model.Validations =
   validate: ->
     validators      = @constructor.validators()
     success         = true
-    errors          = @errors
-    errors.length   = 0
+    errors          = @errors = {}
     
     for validator in validators
       unless validator.validateEach(@, errors)

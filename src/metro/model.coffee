@@ -11,7 +11,7 @@ class Metro.Model extends Metro.Object
     
     @attributes   = attributes
     @changes      = {}
-    @errors       = []
+    @errors       = {}
     #@relations    = {}
     @readonly     = false
   

@@ -8,9 +8,6 @@ Metro.Model.Fields =
     field: (name, options) ->
       @fields()[name] = new Metro.Model.Field(@, name, options)
     
-    key: (name, options) ->
-      @field name, options
-      
     fields: ->
       @_fields ||= {}
       

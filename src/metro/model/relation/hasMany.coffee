@@ -19,7 +19,7 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
       else
         @cacheKey = Metro.Support.String.singularize(name) + "Ids"
       
-      @owner.key @cacheKey, type: "array", default: []
+      @owner.field @cacheKey, type: "array", default: []
   
   class @Scope extends @Scope
     constructor: (options = {}) ->

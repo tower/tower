@@ -7,9 +7,8 @@ class Metro.Model.Validator.Format
   validate: (record, attribute, errors) ->
     value = record[attribute]
     unless !!@value.exec(value)
-      errors.push
-        attribute: attribute
-        message: Metro.t("model.errors.format", attribute: attribute, value: @value.toString())
+      errors[attribute] ||= []
+      errors[attribute].push Metro.t("model.errors.format", attribute: attribute, value: @value.toString())
       return false
     true
     
