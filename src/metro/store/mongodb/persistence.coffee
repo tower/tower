@@ -1,66 +1,40 @@
-Metro.Store.MongoDB.Persistence =     
-  remove: (query, callback) ->
+Metro.Store.MongoDB.Persistence =
+  create: (attributes, options, callback) ->
+    self        = @
+    record      = @serialize(attributes)
+    attributes  = @serializeAttributesForCreate(attributes)
+    options     = @serializeOptions(options)
     
-  removeAll: (callback) ->
-    @collection().remove (error) ->
-      callback.call(@, error) if callback
+    @collection().insert attributes, options, (error, docs) ->
+      doc       = docs[0]
+      record.id = doc["_id"]
+      callback.call(@, error, record) if callback
     
-  #@alias "clear", "removeAll"
-  #@alias "deleteAll", "deleteAll"
-  
-  update: (query, attributes, options, callback) ->
-    if typeof options == 'function'
-      callback = options
-      options = {}
-    else if !options
-      options = {}
-      
-    options.safe    = false
-    options.upsert  = false
+    record.id   = attributes["_id"]
     
-    @collection().update @_translateQuery(query), "$set": attributes, options, (error, docs) ->
+    record
+    
+  updateAll: (updates, query, options, callback) ->
+    updates         = @serializeAttributesForUpdate(updates)
+    query           = @serializeQuery(query)
+    options         = @serializeOptions(options)
+    
+    options.safe    = false unless options.hasOwnProperty("safe")
+    options.upsert  = false unless options.hasOwnProperty("upsert")
+    
+    @collection().update query, updates, options, (error, docs) ->
       throw error if error
       callback.call(@, error, docs) if callback
       
     @
-    
-  destroy: (query, callback) ->
-    @collection().remove @_translateQuery(query), (error) ->
-      callback.call(@, error) if callback
-      
-    @
-  
-  create: (attributes, query, options, callback) ->
-    self    = @
-    record  = @serializeAttributes(attributes)
-    
-    @collection().insert attributes, (error, docs) ->
-      doc                   = docs[0]
-      record.id  = doc["_id"]
-      callback.call(@, error, record) if callback
-    
-    record.id = attributes["_id"]
-    delete attributes["_id"]
-    
-    record
-    
-  update: (ids..., updates, query, options, callback) ->
-    @store().update(ids..., updates, callback)
-    
-  updateAll: (updates, query, options, callback) ->
-    @store().updateAll(updates, callback)
-
-  delete: (ids..., query, options, callback)->
-    @store().delete(ids..., callback)
 
   deleteAll: (query, options, callback) ->
-    @store().deleteAll(ids..., callback)
+    query           = @serializeQuery(query)
+    options         = @serializeOptions(options)
     
-  destroy: (ids..., query, options, callback) ->
-    @store().destroy(ids..., callback)
-    
-  destroyAll: (query, options, callback) ->
-    @store().destroy(ids..., callback)
-  
+    @collection().remove query, options, (error) ->
+      callback.call(@, error) if callback
+
+    @
     
 module.exports = Metro.Store.MongoDB.Persistence

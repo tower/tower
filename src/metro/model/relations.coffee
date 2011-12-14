@@ -3,7 +3,7 @@ Metro.Model.Relations =
   #  @relations = {}
   
   ClassMethods:
-    hasOne: (name) ->
+    hasOne: (name, options) ->
       @relations()[name]  = new Metro.Model.Relation.HasOne(@, name, options)
     
     # Adds hasMany relation to model.
@@ -13,11 +13,11 @@ Metro.Model.Relations =
     #     class User extends Metro.Model
     #       @hasMany "categories", className: "Category"
     # 
-    hasMany: (name) ->
+    hasMany: (name, options) ->
       @relations()[name]  = new Metro.Model.Relation.HasMany(@, name, options)
     
-    belongsTo: (name) ->      
-      @relations()[name] = new Metro.Model.Relation.BelongsTo(@, name, options)
+    belongsTo: (name, options) ->      
+      @relations()[name]  = new Metro.Model.Relation.BelongsTo(@, name, options)
     
     relations: ->
       @_relations ||= {}

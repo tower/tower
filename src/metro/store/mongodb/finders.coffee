@@ -1,8 +1,12 @@
 Metro.Store.MongoDB.Finders =   
   findOne: (query, options, callback) ->
+    self          = @
+    query         = @serializeQuery(query)
     options.limit = 1
-    @collection().findOne @_translateQuery(query), options,  (error, doc) ->
-      doc = self.serializeAttributes(doc) unless error
+    options       = @serializeOptions(options)
+    
+    @collection().findOne query, options, (error, doc) ->
+      doc = self.serialize(doc) unless error
       callback.call(@, error, doc)
     @
   
@@ -12,9 +16,11 @@ Metro.Store.MongoDB.Finders =
   # all({title: "Title"}, {safe: true}, (error, records) ->)
   # You can only do the last one!
   all: (query, options, callback) ->
-    self    = @
+    self          = @
+    query         = @serializeQuery(query)
+    options       = @serializeOptions(options)
     
-    @collection().find(@_translateQuery(query), options).toArray (error, docs) ->
+    @collection().find(query, options).toArray (error, docs) ->
       unless error
         for doc in docs
           doc.id = doc["_id"]
@@ -25,11 +31,9 @@ Metro.Store.MongoDB.Finders =
     
     @
   
-  length: (query, callback) ->
-    @collection().count (error, result) ->
+  count: (query, options, callback) ->
+    @collection().count query, options, (error, result) ->
       callback.call @, error, result
     @
-    
-  count: @length
 
 module.exports = Metro.Store.MongoDB.Finders

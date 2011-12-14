@@ -6,8 +6,8 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
       Metro.Support.Object.defineProperty owner.prototype, name, 
         enumerable: true, 
         configurable: true, 
-        get: -> @association(name)
-        set: (value) -> @association(name).set(value)
+        get: -> @relation(name)
+        set: (value) -> @relation(name).set(value)
     
     @foreignKey = options.foreignKey || Metro.Support.String.camelize("#{owner.name}Id", true)
     
@@ -22,7 +22,7 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
       @owner.key @cacheKey, type: "array", default: []
   
   class @Scope extends @Scope
-    constructor: (sourceClassName, owner, association) ->
+    constructor: (options = {}) ->
       super
       
       if @foreignKey && @owner.id != undefined
@@ -32,13 +32,13 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
         
     create: (attributes, callback) ->
       self        = @
-      association = @association
+      relation = @relation
       
-      @store().create Metro.Support.Object.extend(@query(), attributes), (error, record) ->
+      @store().create Metro.Support.Object.extend(@criteria.query, attributes), (error, record) ->
         unless error
-          if association && association.cache
+          if relation && relation.cache
             updates = {}
-            updates[association.cacheKey] = record.id
+            updates[relation.cacheKey] = record.id
             self.owner.updateAttributes "$push": updates, callback
           else
             callback.call @, error, record if callback

@@ -1,38 +1,135 @@
-Metro.Store.MongoDB.Serialization =  
+Metro.Store.MongoDB.Serialization =
   # tags: [1, 2] == $set: tags: [1, 2]
   # createdAt: Date == $set: createdAt: mongodate
-  _serializeAttributes: (attributes) ->
-    set = {}
+  serializeAttributesForUpdate: (attributes) ->
+    result  = {}
+    schema  = @schema()
     
     for key, value of attributes
-      if @_atomicOperator(key)
-        attributes[key] = @_serializeAttributes(value)
+      operator              = @constructor.operators[key]
+      if operator
+        key                 = operator
+        result[key]       ||= {}
+        for _key, _value of value
+          result[key][_key] = @encode schema[_key], _value
       else
-        set[key]        = @_serializeAttribute(key, value)
+        result["$set"]    ||= {}
+        result["$set"][key] = @encode schema[key], _value
     
-    attributes["$set"] = Metro.Support.Object.extend(attributes["$set"], set)
+    result
     
+  serializeAttributesForCreate: (attributes) ->
+    result  = {}
+    schema  = @schema()
+    
+    for key, value of attributes
+      operator              = @constructor.operators[key]
+      unless operator
+        result[key]         = @encode schema[key], value
+    
+    result
+    
+  deserializeAttributes: (attributes) ->
+    schema  = @schema()
+    
+    for key, value of attributes
+      field = schema[key]
+      attributes[key] = @decode field, value if field
+      
     attributes
+  
+  # title: "santa"  
+  # createdAt: "<": new Date()
+  serializeQuery: (query) ->
+    schema  = @schema()
+    result  = {}
     
-  _serializeAttribute: (key, value) ->
-    switch @owner.attributeType(key)
+    for key, value of query
+      field = schema[key]
+      if Metro.Support.Object.isHash(value)
+        result[key] = {}
+        for _key, _value of value
+          operator  = @constructor.operators[_key]
+          _key      = operator if operator
+          result[key][_key] = @encode field, _value
+      else
+        result[key] = @encode field, value
+    
+    result
+    
+  serializeOptions: (options = {}) ->
+    options
+  
+  encode: (field, value) ->
+    return value unless field
+    method = @["encode#{field.type}"]
+    value = method(value) if method
+    value
+    
+  decode: (field, value) ->
+    return value unless field
+    method = @["decode#{field.type}"]
+    value = method(value) if method
+    value
+  
+  encodeString: (value) ->
+    value.toString()
+   
+  encodeOrder: (value) ->
+    
+  encodeDate: (value) ->
+    # if Metro.Support.config.useTimeZone
+    time = require('moment')
+    switch typeof(value)
       when "string"
-        value.toString()
-      when "integer"
-        parseInt(value)
-      when "float"
-        parseFloat(value)
-      when "date", "time"
-        value
-      when "array"
-        value
-      when "id"
-        @serializeId value
+        time.parse(value)
+      when DateTime
+        time.local(value.year, value.month, value.day, value.hour, value.min, value.sec)
+      when Date
+        time.local(value.year, value.month, value.day)
+      when Array
+        time.local(value)
       else
         value
         
-  _serializeAssociation: ->
+  decodeDate: (value) ->
+    
+  
+  encodeBoolean: (value) ->
+    if @constructor.booleans.hasOwnProperty(value)
+      @constructor.booleans[value]
+    else
+      throw new Error("#{value.toString()} is not a boolean")
       
+  encodeArray: (value) ->
+    unless value.nil? || value.is_a?(Array)
+      throw new Error(Array, value)
+    value
+    
+  encodeFloat: (value) ->
+    return null if Metro.Support.Object.blank(value)
+    try
+      parseFloat(value)
+    catch error
+      value
+    
+  encodeInteger: (value) ->
+    return null if Metro.Support.Object.blank(value)
+    if value.toString().match(/(^[-+]?[0-9]+$)|(\.0+)$/) then parseInt(value) else parseFloat(value)
+  
+  encodeLocalized: (value) ->
+    object = {}
+    object[I18n.locale] = value.toString()
+  
+  decodeLocalized: (value) ->  
+    value[I18n.locale]
+    
+  encodeNilClass: (value) ->
+    null
+    
+  decodeNilClass: (value) ->
+    null
+    
   # to mongo
   serializeId: (value) ->
     @constructor.database.bson_serializer.ObjectID(value.toString())
@@ -41,47 +138,4 @@ Metro.Store.MongoDB.Serialization =
   deserializeId: (value) ->
     value.toString()
     
-  serializeDate: (value) ->
-    value
-    
-  deserializeDate: (value) ->
-    value
-    
-  serializeArray: (value) ->
-    
-  deserializeArray: (value) ->
-    
-  # tags: $in: ["javascript"]
-  # id: $in: ['1', '2']
-  # id: 1
-  serializeQueryAttributes: (query) ->
-    result      = {}
-    schema      = @schema()
-    result[key] = @serializeQueryAttribute(key, value, schema) for key, value of query
-    
-    result
-    
-  serializeQueryAttribute: (key, value, schema) ->
-    encoder   = @["encode#{schema[key].type}"] if schema[key]
-    if encoder
-      if typeof value == "object"
-        for _key, _value of value
-          if @arrayOperator(_key)
-            for item in _value
-              encoder
-    else
-      value
-  
-  encodeString: (value) ->
-   
-  decodeString: (value) ->
-   
-  encodeOrder: (value) ->
-   
-  decodeOrder: (value) ->
-   
-  encodeDate: (value) ->
-   
-  decodeDate: (value) ->
-
 module.exports = Metro.Store.MongoDB.Serialization

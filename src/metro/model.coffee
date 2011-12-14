@@ -1,28 +1,30 @@
 class Metro.Model extends Metro.Object
   constructor: (attrs = {}) ->
-    definitions = @constructor.attributes()
+    definitions = @constructor.fields()
     attributes  = {}
     
     for key, value of attrs
-      attributes[key] = @typecast(key, value)
+      attributes[key] = value
     
     for name, definition of definitions
-      attributes[name] ||= @typecast(name, definition.defaultValue(@)) unless attrs.hasOwnProperty(name)
+      attributes[name] ||= definition.defaultValue(@) unless attrs.hasOwnProperty(name)
     
     @attributes   = attributes
     @changes      = {}
-    @associations = {}
     @errors       = []
+    @relations    = {}
     @readonly     = false
   
 require './model/scope'
 require './model/callbacks'
+require './model/criteria'
 require './model/dirty'
 require './model/metadata'
 require './model/inheritance'
 require './model/relation'
 require './model/relations'
 require './model/field'
+require './model/versioning'
 require './model/fields'
 require './model/finders'
 require './model/persistence'
@@ -35,8 +37,10 @@ require './model/validations'
 
 Metro.Model.include Metro.Model.Persistence
 Metro.Model.include Metro.Model.Atomic
+Metro.Model.include Metro.Model.Versioning
 Metro.Model.include Metro.Model.Metadata
 Metro.Model.include Metro.Model.Dirty
+Metro.Model.include Metro.Model.Criteria
 Metro.Model.include Metro.Model.Scopes
 Metro.Model.include Metro.Model.States
 Metro.Model.include Metro.Model.Finders

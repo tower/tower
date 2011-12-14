@@ -59,11 +59,11 @@ fail:
 class Metro.Model.Scope extends Metro.Object
   @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within"]
   @finders:   ["find", "all", "first", "last"]
-  @builders:  ["build", "create", "update". "updateAll", "delete", "deleteAll", "destroy", "destroyAll"]
+  @builders:  ["build", "create", "update", "updateAll", "delete", "deleteAll", "destroy", "destroyAll"]
   
   constructor: (options = {}) ->
-    @sourceClassName  = options.sourceClassName
-    @criteria         = options.criteria || new Metro.Model.Criteria
+    @model    = options.model
+    @criteria = options.criteria || new Metro.Model.Criteria
   
   for key in @scopes
     @::[key] = ->
@@ -109,10 +109,7 @@ class Metro.Model.Scope extends Metro.Object
     @store().destroyAll @criteria.query, @criteria.options, callback
     
   store: ->
-    @model().store()
-    
-  model: ->
-    Metro.constant(@sourceClassName)
+    @model.store()
     
   # you want to clone it so you can reuse it multiple times:
   # 
@@ -121,6 +118,6 @@ class Metro.Model.Scope extends Metro.Object
   #     users.all()
   #     newUsers.all()
   clone: ->
-    new @(source: @sourceClassName, criteria: @criteria.clone())
+    new @(model: @model, criteria: @criteria.clone())
 
 module.exports = Metro.Model.Scope

@@ -7,17 +7,17 @@ class Metro.Model.Relation extends Metro.Object
     @targetClassName  = Metro.namespaced(options.className || Metro.Support.String.camelize(name))
   
   scoped: (record) ->
-    new @constructor.Scope(@targetClassName, record, @)
+    new @constructor.Scope(model: @owner, owner: record, relation: @)
   
   class @Scope extends Metro.Model.Scope
-    constructor: (sourceClassName, owner, association) ->
+    constructor: (options = {}) ->
       super
-      @owner            = owner
-      @association      = association
-      @foreignKey       = association.foreignKey
+      @owner        = options.owner
+      @relation     = options.relation
+      @foreignKey   = @relation.foreignKey
   
-require './association/belongsTo'
-require './association/hasMany'
-require './association/hasOne'
+require './relation/belongsTo'
+require './relation/hasMany'
+require './relation/hasOne'
 
 module.exports = Metro.Model.Relation

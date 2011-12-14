@@ -42,7 +42,7 @@ class Metro.Store.Memory extends Metro.Store
   # 
   #     store.find _all: tags: ["tomato", "cucumber"]
   # 
-  find: (query, callback) ->
+  all: (query, options, callback) ->
     result  = []
     records = @records
     self    = @
@@ -65,33 +65,32 @@ class Metro.Store.Memory extends Metro.Store
     callback.call(self, null, result) if callback
 
     result
-    
-  @alias "select", "find"
   
-  first: (query, callback) ->
-    result = @find(query, (error, records) -> callback.call(@, error, records[0]) if callback)
-    result[0]
+  first: (query, options, callback) ->
+    record = null
+    @all query, (error, records) -> 
+      record = records[0]
+      callback.call(@, error, record) if callback
+    record
   
-  last: (query, callback) ->
-    result = @find(query, (error, records) -> callback.call(@, error, records[records.length - 1]) if callback)
-    result[result.length - 1]
+  last: (query, options, callback) ->
+    record = null
+    @all query, (error, records) -> 
+      record = records[records.length - 1]
+      callback.call(@, error, record) if callback
+    record
   
-  all: (query, callback) ->
-    @find(query, callback)
-
-  length: (query, callback) ->
+  count: (query, options, callback) ->
     result = 0
-    @find query, (error, records) -> 
+    @all query, (error, records) -> 
       result = records.length
       callback.call(@, error, result) if callback
     result
-    
-  @alias "count", "length"
-    
-  remove: (query, callback) ->
+  
+  deleteAll: (query, options, callback) ->
     _records = @records
     
-    @find query, (error, records) ->
+    @all query, (error, records) ->
       unless error
         for record in records
           _records.splice(_records.indexOf(record), 1)
@@ -110,7 +109,7 @@ class Metro.Store.Memory extends Metro.Store
   update: (query, attributes, callback) ->
     self = @
     
-    @find query, (error, records) ->
+    @all query, (error, records) ->
       unless error
         for record, i in records
           for key, value of attributes
@@ -234,8 +233,5 @@ class Metro.Store.Memory extends Metro.Store
     for value in array
       return false if recordValue.indexOf(value) == -1
     true
-    
-  toString: ->
-    @constructor.name
   
 module.exports = Metro.Store.Memory

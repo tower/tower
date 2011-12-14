@@ -6,7 +6,7 @@ class Metro.Model.Criteria
   _mergeQuery: (conditions = {}) ->
     Metro.Support.Object.extend(@query, conditions)
     
-  _mergeOptions: (options = {})
+  _mergeOptions: (options = {}) ->
     Metro.Support.Object.extend(@options, options)
     
   where: (conditions) ->
@@ -40,7 +40,7 @@ class Metro.Model.Criteria
   
   # Tile.within(3, origin: [42.12415, -81.3815719]).all()  
   within: (options) ->
-    throw new Error("within not yet implemented")
+    @
     
   clone: ->
     new @(Metro.Support.Object.cloneHash(@query), Metro.Support.Object.cloneHash(@options))

@@ -12,4 +12,13 @@ Metro.Model.Dirty =
     
     beforeValue
     
+  toUpdates: ->
+    result      = {}
+    attributes  = @attributes
+    
+    for key, array of @changes
+      result[key] = attributes[key]
+    
+    result
+    
 module.exports = Metro.Model.Dirty

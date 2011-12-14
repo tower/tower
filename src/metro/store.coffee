@@ -17,28 +17,42 @@ class Metro.Store extends Metro.Object
     "_limit":   "_limit"
   
   @queryOperators:
-    ">=":       "gte"
-    "$gte":     "gte"
-    ">":        "gt"
-    "$gt":      "gt"
-    "<=":       "lte"
-    "$lte":     "lte"
-    "<":        "lt"
-    "$lt":      "lt"
-    "$in":      "in"
-    "$nin":     "nin"
-    "$any":     "any"
-    "$all":     "all"
-    "=~":       "m"
-    "$m":       "m"
-    "!~":       "nm"
-    "$nm":      "nm"
-    "=":        "eq"
-    "$eq":      "eq"
-    "!=":       "neq"
-    "$neq":     "neq"
-    "$null":    "null"
-    "$notNull": "notNull"
+    ">=":       "$gte"
+    "$gte":     "$gte"
+    ">":        "$gt"
+    "$gt":      "$gt"
+    "<=":       "$lte"
+    "$lte":     "$lte"
+    "<":        "$lt"
+    "$lt":      "$lt"
+    "$in":      "$in"
+    "$nin":     "$nin"
+    "$any":     "$any"
+    "$all":     "$all"
+    "=~":       "$m"
+    "$m":       "$m"
+    "!~":       "$nm"
+    "$nm":      "$nm"
+    "=":        "$eq"
+    "$eq":      "$eq"
+    "!=":       "$neq"
+    "$neq":     "$neq"
+    "$null":    "$null"
+    "$notNull": "$notNull"
+    
+  @booleans:
+    true:    true
+    "true":  true
+    "TRUE":  true
+    "1":     true
+    1:       true
+    1.0:     true
+    false:   false
+    "false": false
+    "FALSE": false
+    "0":     false
+    0:       false
+    0.0:     false
   
   serialize: (data) ->
     return data unless @serializeAttributes
@@ -79,10 +93,18 @@ class Metro.Store extends Metro.Object
   last: (query, options, callback) ->
     @findOne query, options, callback
     
-  build: (attributes, callback) ->
+  build: (attributes, options, callback) ->
     record        = @serializeAttributes(attributes)
     callback.call @, null, record if callback
     record
+    
+  update: (ids..., updates, query, options, callback) ->
+    query.id = $in: ids
+    @updateAll updates, query, options, callback
+    
+  delete: (ids..., query, options, callback) ->
+    query.id = $in: ids
+    @deleteAll query, options, callback
     
   schema: ->
     @model.schema()

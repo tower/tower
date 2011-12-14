@@ -13,6 +13,8 @@ Metro.Model.Serialization =
       
     fromXML: (data) ->
       
+    toJSON: (records) ->
+      JSON.stringify(records)
   
   # https://github.com/oozcitak/xmlbuilder-js
   toXML: ->

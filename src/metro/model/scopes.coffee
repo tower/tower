@@ -13,15 +13,18 @@ Metro.Model.Scopes =
       @[name] = if scope instanceof Metro.Model.Scope then scope else @where(scope)
     
     scoped: ->
-      new Metro.Model.Scope(Metro.namespaced(@name))
+      new Metro.Model.Scope(model: @)
 
-for key in Metro.Model.Scope.scopes
-  Metro.Model.Scopes.ClassMethods[key] ->
-    @scoped()[key](arguments...)
-    @
-    
-for key in Metro.Model.Scope.finders
-  Metro.Model.Scopes.ClassMethods[key] ->
-    @scoped()[key](arguments...)
-    
+(->
+  for key in Metro.Model.Scope.scopes
+    Metro.Model.Scopes.ClassMethods[key] = ->
+      @scoped()[key](arguments...)
+)()
+
+(->
+  for key in Metro.Model.Scope.finders
+    Metro.Model.Scopes.ClassMethods[key] = ->
+      @scoped()[key](arguments...)
+)()
+
 module.exports = Metro.Model.Scopes
