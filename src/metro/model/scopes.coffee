@@ -15,16 +15,17 @@ Metro.Model.Scopes =
     scoped: ->
       new Metro.Model.Scope(model: @)
 
-(->
-  for key in Metro.Model.Scope.scopes
-    Metro.Model.Scopes.ClassMethods[key] = ->
-      @scoped()[key](arguments...)
-)()
 
-(->
-  for key in Metro.Model.Scope.finders
-    Metro.Model.Scopes.ClassMethods[key] = ->
-      @scoped()[key](arguments...)
-)()
+for key in Metro.Model.Scope.scopes
+  ((_key)->
+    Metro.Model.Scopes.ClassMethods[_key] = ->
+      @scoped()[_key](arguments...)
+  )(key)
+
+for key in Metro.Model.Scope.finders
+  ((_key)->
+    Metro.Model.Scopes.ClassMethods[_key] = ->
+      @scoped()[_key](arguments...)
+  )(key)
 
 module.exports = Metro.Model.Scopes

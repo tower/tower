@@ -6,7 +6,7 @@ Metro.Store.MongoDB.Serialization =
     schema  = @schema()
     
     for key, value of attributes
-      operator              = @constructor.operators[key]
+      operator              = @constructor.atomicModifiers[key]
       if operator
         key                 = operator
         result[key]       ||= {}
@@ -23,7 +23,7 @@ Metro.Store.MongoDB.Serialization =
     schema  = @schema()
     
     for key, value of attributes
-      operator              = @constructor.operators[key]
+      operator              = @constructor.atomicModifiers[key]
       unless operator
         result[key]         = @encode schema[key], value
     
@@ -49,7 +49,7 @@ Metro.Store.MongoDB.Serialization =
       if Metro.Support.Object.isHash(value)
         result[key] = {}
         for _key, _value of value
-          operator  = @constructor.operators[_key]
+          operator  = @constructor.queryOperators[_key]
           _key      = operator if operator
           result[key][_key] = @encode field, _value
       else

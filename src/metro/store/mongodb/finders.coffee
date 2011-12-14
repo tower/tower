@@ -7,7 +7,7 @@ Metro.Store.MongoDB.Finders =
     
     @collection().findOne query, options, (error, doc) ->
       doc = self.serialize(doc) unless error
-      callback.call(@, error, doc)
+      callback.call(@, error, doc) if callback
     @
   
   # all()  
@@ -27,13 +27,13 @@ Metro.Store.MongoDB.Finders =
           delete doc["_id"]
         docs = self.serialize(docs)
       
-      callback.call(@, error, docs)
+      callback.call(@, error, docs) if callback
     
     @
   
   count: (query, options, callback) ->
     @collection().count query, options, (error, result) ->
-      callback.call @, error, result
+      callback.call @, error, result if callback
     @
 
 module.exports = Metro.Store.MongoDB.Finders

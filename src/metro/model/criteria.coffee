@@ -12,8 +12,8 @@ class Metro.Model.Criteria
   where: (conditions) ->
     @_mergeQuery conditions
     
-  order: (options) ->
-    @_mergeOptions sort: options
+  order: (attribute, direction = "asc") ->
+    @_mergeOptions sort: [attribute, direction]
     
   offset: (number) ->
     @_mergeOptions offset: number

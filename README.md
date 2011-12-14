@@ -423,14 +423,14 @@ class App.User extends Metro.Model
   @scope "byBaldwin", firstName: "=~": "Baldwin"
   @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
   
-  @hasMany "posts", className: "App.Page", cache: true # postIds
+  @hasMany "posts", className: "App.Post", cache: true # postIds
   
   @validate "firstName", presence: true
   
 class App.Post extends Metro.Model
   @belongsTo "author", className: "App.User"
   
-User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).paginate(page: 5).desc("createdAt").desc("firstName").all (error, records) =>
+User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all (error, records) =>
   @render json: User.toJSON(records)
 
 # should handle these but doesn't yet.  

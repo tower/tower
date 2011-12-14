@@ -7,7 +7,7 @@ class Metro.Model.Relation extends Metro.Object
     @targetClassName  = Metro.namespaced(options.className || Metro.Support.String.camelize(name))
   
   scoped: (record) ->
-    new @constructor.Scope(model: @owner, owner: record, relation: @)
+    new @constructor.Scope(model: Metro.constant(@targetClassName), owner: record, relation: @)
   
   class @Scope extends Metro.Model.Scope
     constructor: (options = {}) ->

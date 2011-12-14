@@ -14,6 +14,8 @@ Metro.Model.Fields =
     fields: ->
       @_fields ||= {}
       
+    schema: -> @fields()
+      
   InstanceMethods:
     get: (name) ->
       @attributes[name] = @constructor.fields()[name].defaultValue(@) unless @has(name)

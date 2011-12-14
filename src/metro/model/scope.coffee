@@ -66,9 +66,11 @@ class Metro.Model.Scope extends Metro.Object
     @criteria = options.criteria || new Metro.Model.Criteria
   
   for key in @scopes
-    @::[key] = ->
-      @criteria[key](arguments...)
-      @
+    ((_key)->
+      @::[_key] = ->
+        @criteria[_key](arguments...)
+        @
+    ).call(@, key)
     
   # find(1)  
   # find(1, 2, 3)

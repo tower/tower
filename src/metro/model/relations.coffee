@@ -29,7 +29,7 @@ Metro.Model.Relations =
   
   InstanceMethods:
     relation: (name) ->
-      @relations[name] ||= @constructor.relation(name).scoped(@)
+      @constructor.relation(name).scoped(@)
       
     buildRelation: (name, attributes, callback) ->
       @relation(name).build(attributes, callback)

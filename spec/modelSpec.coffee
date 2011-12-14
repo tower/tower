@@ -28,7 +28,7 @@ describe 'Metro.Model', ->
       expect(users.length).toEqual 2
       expect(users[0].firstName).toEqual "Dane"
       
-      users = User.where(firstName: "=~": "a").order(["firstName", "desc"]).all()
+      users = User.where(firstName: "=~": "a").order("firstName", "desc").all()
       expect(users.length).toEqual 2
       expect(users[0].firstName).toEqual "Lance"
     

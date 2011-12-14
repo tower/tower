@@ -1,5 +1,5 @@
 require './helper'
-###
+
 Metro.Store.MongoDB.initialize()
 quit = false
 
@@ -93,4 +93,3 @@ describe 'Metro.Store', ->
         expect(count).toEqual 0
         console.log ""
         quit = true
-###

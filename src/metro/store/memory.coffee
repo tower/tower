@@ -48,14 +48,14 @@ class Metro.Store.Memory extends Metro.Store
     self    = @
     
     if Metro.Support.Object.isPresent(query)
-      sort    = query._sort
-      limit   = query._limit || Metro.Store.defaultLimit
+      sort    = options.sort
+      limit   = options.limit || Metro.Store.defaultLimit
       
       for key, record of records
         result.push(record) if @matches(record, query)
         # break if result.length >= limit
       
-      result = @sort(result, query._sort) if sort
+      result = @sort(result, sort) if sort
       
       result = result[0..limit - 1] if limit
     else
@@ -68,14 +68,14 @@ class Metro.Store.Memory extends Metro.Store
   
   first: (query, options, callback) ->
     record = null
-    @all query, (error, records) -> 
+    @all query, options, (error, records) -> 
       record = records[0]
       callback.call(@, error, record) if callback
     record
   
   last: (query, options, callback) ->
     record = null
-    @all query, (error, records) -> 
+    @all query, options, (error, records) -> 
       record = records[records.length - 1]
       callback.call(@, error, record) if callback
     record
@@ -99,14 +99,14 @@ class Metro.Store.Memory extends Metro.Store
   clear: ->
     @records = []
     
-  create: (attributes, callback) ->
+  create: (attributes, options, callback) ->
     attributes.id ?= @generateId()
     record        = @serializeAttributes(attributes)
     @records[attributes.id] = record
     callback.call @, null, record if callback
     record
     
-  update: (query, attributes, callback) ->
+  update: (updates, query, attributes, callback) ->
     self = @
     
     @all query, (error, records) ->
@@ -131,7 +131,7 @@ class Metro.Store.Memory extends Metro.Store
     for key, value of query
       continue if !!Metro.Store.reservedOperators[key]
       recordValue = record[key]
-      if typeof(value) == 'object'
+      if typeof value == "object"
         success = self._matchesOperators(record, recordValue, value)
       else
         value = value.call(record) if typeof(value) == "function"
@@ -174,25 +174,25 @@ class Metro.Store.Memory extends Metro.Store
       if operator = Metro.Store.queryOperators[key]
         value = value.call(record) if typeof(value) == "function"
         switch operator
-          when "gt"
+          when "$gt"
             success = self._isGreaterThan(recordValue, value)
-          when "gte"
+          when "$gte"
             success = self._isGreaterThanOrEqualTo(recordValue, value)
-          when "lt"
+          when "$lt"
             success = self._isLessThan(recordValue, value)
-          when "lte"
+          when "$lte"
             success = self._isLessThanOrEqualTo(recordValue, value)
-          when "eq"
+          when "$eq"
             success = self._isEqualTo(recordValue, value)
-          when "neq"
+          when "$neq"
             success = self._isNotEqualTo(recordValue, value)
-          when "m"
+          when "$m"
             success = self._isMatchOf(recordValue, value)
-          when "nm"
+          when "$nm"
             success = self._isNotMatchOf(recordValue, value)
-          when "any"
+          when "$any"
             success = self._anyIn(recordValue, value)
-          when "all"
+          when "$all"
             success = self._allIn(recordValue, value)
         return false unless success
       else

@@ -32,9 +32,9 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
         
     create: (attributes, callback) ->
       self        = @
-      relation = @relation
+      relation    = @relation
       
-      @store().create Metro.Support.Object.extend(@criteria.query, attributes), (error, record) ->
+      @store().create Metro.Support.Object.extend(@criteria.query, attributes), @criteria.options, (error, record) ->
         unless error
           if relation && relation.cache
             updates = {}

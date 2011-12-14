@@ -135,10 +135,13 @@ Metro.Support.Object =
   isA: (object, isa) ->
     
   isHash: (object) ->
-    _.isObject(object) && !(_.isFunction(object) || _.isArray(object))
+    @isObject(object) && !(@isFunction(object) || @isArray(object))
     
-  isArray: (object) ->
-    _.isArray(object)
+  isArray: Array.isArray || (object) ->
+    toString.call(object) == '[object Array]'
+    
+  isObject: (object) ->
+    return object == Object(object)
   
   isPresent: (object) ->
     !@isBlank(object)
