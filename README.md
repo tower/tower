@@ -414,7 +414,7 @@ model.buildUser()
 
 ## Model
 
-```
+``` coffeescript
 class App.User extends Metro.Model
   @key "firstName"
   @key "createdAt", type: "Date", default: -> new Date()
@@ -438,4 +438,6 @@ Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
 Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
 # userIds = User.where(firstName: "=~": "Baldwin").select("id")
 # Post.where(authorId: $in: userIds).all()
+
+User.includes("posts").where("posts.title": "Welcome").all()
 ```
