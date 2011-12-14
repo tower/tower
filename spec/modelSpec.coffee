@@ -183,9 +183,14 @@ describe 'Metro.Model', ->
       childA  = parent.children.create()
       childB  = parent.children.create()
       
-      console.log parent
-      console.log childA
-      console.log childB
-      console.log parent.children.all()
+      expect(parent.parentId).toEqual undefined
+      expect(childA.parentId).toEqual 0
+      expect(childB.parentId).toEqual 0
+      expect(parent.children.all()).toEqual [childA, childB]
       
-      console.log childB.parent
+      #console.log parent
+      #console.log childA
+      #console.log childB
+      #console.log parent.children.all()
+      #
+      #console.log childB.parent
