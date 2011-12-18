@@ -41,5 +41,5 @@ Metro.Support.I18n =
     @_interpolator ||= new (require('shift').Mustache)
     
 Metro.Support.I18n.t = Metro.Support.I18n.translate
-  
+
 module.exports = Metro.Support.I18n

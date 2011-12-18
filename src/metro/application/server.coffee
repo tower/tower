@@ -3,9 +3,12 @@ File    = require('pathfinder').File
 
 class Metro.Application
   @instance: ->
-    @_instance ||= require "#{Metro.root}/config/application"
+    unless @_instance
+      require "#{Metro.root}/config/application"
+    @_instance
   
   constructor: ->
+    Metro.Application._instance = @
     @server ||= require('express').createServer()
     
   use: ->

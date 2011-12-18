@@ -1,4 +1,4 @@
-Metro.Store.MongoDB.Finders =   
+Metro.Store.MongoDB.Finders =
   findOne: (query, options, callback) ->
     self          = @
     query         = @serializeQuery(query)

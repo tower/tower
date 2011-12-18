@@ -1,4 +1,42 @@
-# Metro.js
+# Metro.js | Urban.js | Citizen.js | Tau.js | Top.js | Jimmy.js
+
+Minified & Gzipped: 15.7kb
+
+- https://github.com/powmedia/backbone-forms
+- https://github.com/search?type=Repositories&language=JavaScript&q=validation&repo=&langOverride=&x=0&y=0&start_value=1
+- http://happyjs.com/
+- https://github.com/flatiron/director
+- https://github.com/hij1nx/EventEmitter2
+
+## Client Extensions
+
+Have CachedCommons.org let you load files with `require('socket.io')`:
+
+``` coffeescript
+# metro/controllers/sockets
+require('socket.io')
+
+# essentially...
+require = (key) ->
+  $.getScript("http://cachedcommons.org/javascripts/#{key}.min.js")
+```
+
+- underscore.js
+- underscore.string.js
+- moment.js (date/time)
+- mustache.js
+- socket.io
+- pluralization
+- schema.org (https://github.com/indexzero/node-schema-org)
+- geo: https://github.com/manuelbieh/Geolib
+- tiny-require.js (browser + node)
+  - useragent (npm install useragent)
+  - shift.js (templating)
+  - async.js (callbacks)
+  - mimetypes
+
+window.μ = new class Urban
+αστικός, == Urban
 
 > Attention All Passengers:  Client and server are merging...  You may now begin coding.
 

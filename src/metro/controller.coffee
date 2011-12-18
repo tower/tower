@@ -1,5 +1,6 @@
 class Metro.Controller extends Metro.Object
   constructor: ->
+    @constructor.instance = @
     @headers      = {}
     @status       = 200
     @request      = null
@@ -7,8 +8,15 @@ class Metro.Controller extends Metro.Object
     @contentType = "text/html"
     @params       = {}
     @query        = {}
+    @resourceName   = @constructor.resourceName
+    @resourceType   = @constructor.resourceType
+    @collectionName = @constructor.collectionName
+    
+    if @constructor._belongsTo
+      @hasParent    = true
+    else
+      @hasParent    = false
 
-require './controller/caching'
 require './controller/callbacks'
 require './controller/helpers'
 require './controller/http'
@@ -21,7 +29,6 @@ require './controller/resources'
 require './controller/responding'
 require './controller/sockets'
 
-Metro.Controller.include Metro.Controller.Caching
 Metro.Controller.include Metro.Controller.Callbacks
 Metro.Controller.include Metro.Controller.Helpers
 Metro.Controller.include Metro.Controller.HTTP

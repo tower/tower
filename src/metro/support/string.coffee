@@ -4,6 +4,9 @@ Metro.Support.String =
   underscore_rx1: /([A-Z]+)([A-Z][a-z])/g
   underscore_rx2: /([a-z\d])([A-Z])/g
   
+  parameterize: (string) ->
+    Metro.Support.String.underscore(Metro.Support.String.pluralize(string)).replace("_", "-")
+  
   constantize: (string, scope = global) ->
     scope[@camelize(string)]
   

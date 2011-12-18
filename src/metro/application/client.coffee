@@ -1,7 +1,12 @@
 # Mostly like connect/http.js server
 
-class Metro.Application.Client extends Metro.Object
+class Metro.Application extends Metro.Object
+  @instance: ->
+    @_instance
+
   constructor: (middleware = []) ->
+    Metro.Application._instance = @
+    
     @stack    = []
     
     @use(_middleware) for _middleware in middleware

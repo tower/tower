@@ -28,3 +28,5 @@ class Metro.Net.Response
     @body       += body
     @sent       = true
     @headerSent = true
+
+module.exports = Metro.Net.Response

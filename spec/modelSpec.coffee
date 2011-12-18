@@ -47,10 +47,10 @@ describe 'Metro.Model', ->
       Page.deleteAll()
       
     it 'should associate', ->
-      posts = @user.posts.where(title: "=~": "First").all()
+      posts = @user.posts().where(title: "=~": "First").all()
       expect(posts.length).toEqual 1
       
-      posts = @user.posts.where(title: "=~": "first").all()
+      posts = @user.posts().where(title: "=~": "first").all()
       expect(posts.length).toEqual 0
       
   describe 'validations', ->
@@ -133,11 +133,11 @@ describe 'Metro.Model', ->
       @user = User.create(firstName: 'Terminator', id: 1)
       
     it 'should create a post from a user', ->
-      post = @user.posts.create()
+      post = @user.posts().create()
       expect(post.userId).toEqual 1
       expect(post.title).toBeFalsy()
       
-      post = @user.posts.create(title: "A Post!")
+      post = @user.posts().create(title: "A Post!")
       expect(post.userId).toEqual 1
       expect(post.title).toEqual "A Post!"
       
@@ -148,7 +148,7 @@ describe 'Metro.Model', ->
       expect(@user.postIds).toEqual [1]
       
     it 'should build a post', ->
-      post = @user.posts.build()
+      post = @user.posts().build()
       expect(post.userId).toEqual 1
       expect(post.id).toBeFalsy()
       
@@ -168,18 +168,18 @@ describe 'Metro.Model', ->
       expect(user.postIds).toEqual [1]
       expect(user.id).toEqual 0
       
-      expect(post.user).toEqual user
+      expect(post.user()).toEqual user
     
   describe 'hierarchical', ->
     it 'should build tree', ->
       parent  = Category.create()
-      childA  = parent.children.create()
-      childB  = parent.children.create()
+      childA  = parent.children().create()
+      childB  = parent.children().create()
       
       expect(parent.parentId).toEqual undefined
       expect(childA.parentId).toEqual 0
       expect(childB.parentId).toEqual 0
-      expect(parent.children.all()).toEqual [childA, childB]
+      expect(parent.children().all()).toEqual [childA, childB]
       
       #console.log parent
       #console.log childA
@@ -198,7 +198,7 @@ describe 'Metro.Model', ->
     it 'should $push values if the attribute is defined as an array when I updateAttributes', ->
       user = User.create(firstName: "music")
       expect(user.postIds.length).toEqual 0
-      user.posts.create(title: "A Post")
+      user.posts().create(title: "A Post")
       expect(user.postIds.length).toEqual 1
       user.updateAttributes postIds: 2
       expect(user.postIds.length).toEqual 2

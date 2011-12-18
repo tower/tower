@@ -39,7 +39,12 @@ Metro.Support.Object.extend Metro,
       for part in parts
         node = node[part]
     catch error
-      throw new Error("Constant '#{string}' wasn't found")
+      # try doing namespace version as last resort
+      namespace = Metro.namespace()
+      if namespace && parts[0] != namespace
+        Metro.constant("#{namespace}.#{string}")
+      else
+        throw new Error("Constant '#{string}' wasn't found")
     node
     
   namespaced: (string) ->

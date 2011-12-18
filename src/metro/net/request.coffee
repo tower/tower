@@ -9,3 +9,5 @@ class Metro.Net.Request
     @body       = data.body     || {}
     @headers    = data.headers  || {}
     @method     = data.method   || "GET"
+
+module.exports = Metro.Net.Request

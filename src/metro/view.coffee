@@ -6,13 +6,15 @@ class Metro.View extends Metro.Object
     store: (store) ->
       @_store = store if store
       @_store ||= new Metro.Store.Memory
-    
+  
+  # so you copy the controller over  
   constructor: (context = {}) ->
-    @context = context
+    @_context = context
 
 require './view/helpers'
 require './view/rendering'
 
 Metro.View.include Metro.View.Rendering
+Metro.View.include Metro.View.Helpers
 
 module.exports = Metro.View

@@ -2,14 +2,17 @@ class Metro.Model.Relation.BelongsTo extends Metro.Model.Relation
   constructor: (owner, name, options = {}) ->
     super(owner, name, options)
     
-    if Metro.accessors
-      Metro.Support.Object.defineProperty owner.prototype, name, 
-        enumerable: true, 
-        configurable: true, 
-        get: -> @relation(name).first()
-        set: (value) -> @relation(name).set(value)
+    #if Metro.accessors
+    #  Metro.Support.Object.defineProperty owner.prototype, name, 
+    #    enumerable: true, 
+    #    configurable: true, 
+    #    get: -> @relation(name).first()
+    #    set: (value) -> @relation(name).set(value)
     
     owner.field "#{name}Id", type: "Id"
+    
+    owner.prototype[name] = (callback) ->
+      @relation(name).first(callback)
     
     self        = @
     

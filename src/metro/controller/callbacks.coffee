@@ -1,5 +1,3 @@
-async = require 'async'
-
 Metro.Controller.Callbacks =
   ClassMethods:
     filters: ->
@@ -36,7 +34,7 @@ Metro.Controller.Callbacks =
             return next(new Error("did not pass filter")) unless result
             next()
     
-    async.forEachSeries beforeFilters, iterator, (error) ->
+    require('async').forEachSeries beforeFilters, iterator, (error) ->
       return callback(error) if error
       
       block.call self#, (error) ->

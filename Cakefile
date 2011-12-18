@@ -6,26 +6,33 @@ gzip    = require 'gzip'
 engine  = new Shift.CoffeeScript
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
+require 'underscore.logger'
 
 #Metro   = require './lib/metro'
 compressor = new Shift.UglifyJS
 
-compileDirectory = (root, check, callback) ->
-  code = ''
-  path = "./src/metro/#{root}.coffee"
+compileFile = (root, path, check) ->
   data = fs.readFileSync path, 'utf-8'
   data = data.replace /require '([^']+)'\n/g, (_, _path) ->
-    _path = "./src/metro/#{root}/#{_path.toString().split("/")[2]}.coffee"
+    _path = "#{root}/#{_path.toString().split("/")[2]}.coffee"
     if !check || check(_path)
-      fs.readFileSync _path, 'utf-8'
+      #fs.readFileSync _path, 'utf-8'
+      _root = _path.split(".")[-3..-2].join(".")
+      try
+        compileFile(_root, _path, check) + "\n\n"
+      catch error
+        _console.info _path
+        _console.error error.stack
+        ""
     else
       ""
   
   data = data.replace(/module\.exports\s*=.*\s*/g, "")
-  code += data# + "\n"
+  data + "\n\n"
   
+compileDirectory = (root, check, callback) ->
+  code = compileFile("./src/metro/#{root}", "./src/metro/#{root}.coffee", check)
   callback(code) if callback
-  
   code
   
 compileEach = (root, check, callback) ->
@@ -88,47 +95,54 @@ task 'to-underscore', ->
 task 'build', ->
   result = """
 window.global ||= window
-window.Metro    = new (class Metro)
+module = window.module || {}
+Metro = window.Metro = new (class Metro)
+window.Metro.logger = if this["_console"] then _console else console
 
 """
-  result += fs.readFileSync("./src/metro/application/configuration.coffee", "utf-8") + "\n"
-  result += fs.readFileSync("./src/metro/application/client.coffee", "utf-8") + "\n"
-  
-  compileEach 'support', ((path) -> !!!path.match(/(path|lookup|dependencies)/)), (code) ->
+  compileEach 'support', ((path) -> !!!path.match(/(dependencies)/)), (code) ->
     result += code
-    result += fs.readFileSync("./src/metro/object.coffee", "utf-8") + "\n"
+    result += fs.readFileSync("./src/metro/object.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
     
-    compileEach 'model', null, (code) ->
+    result += fs.readFileSync("./src/metro/application/client.coffee", "utf-8") + "\n"
+    
+    result += fs.readFileSync("./src/metro/application/configuration.coffee", "utf-8") + "\n"
+    
+    compileEach 'event', null, (code) ->
       result += code
-      compileEach 'view', null, (code) ->
+      
+      compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
         result += code
-        compileEach 'controller', null, (code) ->
+        compileEach 'model', null, (code) ->
           result += code
-          compileEach 'net', null, (code) ->
+          compileEach 'view', null, (code) ->
             result += code
-            compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
+            compileEach 'controller', null, (code) ->
               result += code
-              
-              result += "\nMetro.Middleware = new (class Namespace)\n"
-              result += fs.readFileSync("./src/metro/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
-              
-              engine.render result, bare: false, (error, result) ->
-                console.log error.stack if error
-                fs.writeFile "./dist/metro.js", result
-                unless error
-                  compressor = new Shift.UglifyJS
-                  #result = obscurify(result)
+              compileEach 'net', null, (code) ->
+                result += code
+                compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
+                  result += code
+                
+                  # result += fs.readFileSync("./src/metro/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
                   
-                  compressor.render result, (error, result) ->
-                    fs.writeFileSync("./dist/metro.min.js", result)
+                  engine.render result, bare: false, (error, result) ->
+                    _console.error error.stack if error
+                    fs.writeFile "./dist/metro.js", result
+                    unless error
+                      compressor = new Shift.UglifyJS
+                      #result = obscurify(result)
+                  
+                      compressor.render result, (error, result) ->
+                        fs.writeFileSync("./dist/metro.min.js", result)
+                  
+                        gzip result, (error, result) ->
                     
-                    gzip result, (error, result) ->
-                      
-                      fs.writeFileSync("./dist/metro.min.js.gz", result)
-                      
-                      console.log "Minified & Gzipped: #{fs.statSync("./dist/metro.min.js.gz").size}"
-                      
-                      fs.writeFile "./dist/metro.min.js.gz", compressor.render(result)
+                          fs.writeFileSync("./dist/metro.min.js.gz", result)
+                    
+                          console.log "Minified & Gzipped: #{fs.statSync("./dist/metro.min.js.gz").size}"
+                    
+                          fs.writeFile "./dist/metro.min.js.gz", compressor.render(result)
             
 task 'build-generic', ->
   paths   = findit.sync('./src')

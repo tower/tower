@@ -1,16 +1,28 @@
 Metro.View.Helpers =
-  contentTypeTag: (type = "UTF-8") ->
-    "\n    <meta charset=\"#{type}\" />"
+  titleTag: (title) ->
+    "<title>#{title}</title>"
   
-  t: (string) ->
-    Metro.translate(string)
+  metaTag: (name, content) ->
+    """<meta name="#{name}" content="#{content}"/>"""
   
-  javascriptTag: (path) ->
-    "\n    <script type=\"text/javascript\" src=\"#{path}\" ></script>"
-  
-  stylesheetTag: (path) ->
-    "\n    <link href=\"#{path}\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>"
+  tag: (name, options) ->
     
+  linkTag: (title, path, options) ->
+    
+  imageTag: (path, options) ->
+    
+  csrfMetaTag: ->
+    @metaTag("csrf-token", @request.session._csrf)
+  
+  contentTypeTag: (type = "UTF-8") ->
+    "<meta charset=\"#{type}\" />"
+
+  javascriptTag: (path) ->
+    "<script type=\"text/javascript\" src=\"#{path}\" ></script>"
+
+  stylesheetTag: (path) ->
+    "<link href=\"#{path}\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>"
+
   javascripts: (source) ->
     if Metro.env == "production"
       manifest  = Metro.assetManifest
@@ -25,7 +37,7 @@ Metro.View.Helpers =
       for path in paths
         result.push @javascriptTag("/javascripts#{path}.js")
       result.join("")
-  
+
   stylesheets: (source) ->
     if Metro.env == "production"
       manifest  = Metro.assetManifest
@@ -40,16 +52,11 @@ Metro.View.Helpers =
       for path in paths
         result.push @stylesheetTag("/stylesheets#{path}.css")
       result.join("")
-    
-  titleTag: (title) ->
-    "<title>#{title}</title>"
-    
-  metaTag: (name, content) ->
-    
-  tag: (name, options) ->
   
-  linkTag: (title, path, options) ->
-    
-  imageTag: (path, options) ->
+  t: (string) ->
+    Metro.translate(string)
+  
+  l: (object) ->
+    Metro.localize(string)
     
 module.exports = Metro.View.Helpers

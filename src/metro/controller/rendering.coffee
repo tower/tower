@@ -21,7 +21,7 @@ Metro.Controller.Rendering =
     
     self = @
     
-    view.render options, (error, body) ->
+    view.render.call view, options, (error, body) ->
       if error
         self.body = error.stack
       else

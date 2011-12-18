@@ -29,10 +29,12 @@ require './model/fields'
 require './model/persistence'
 require './model/atomic'
 require './model/scopes'
+require './model/nestedAttributes'
 require './model/serialization'
 require './model/states'
 require './model/validator'
 require './model/validations'
+require './model/timestamp'
 
 Metro.Model.include Metro.Model.Persistence
 Metro.Model.include Metro.Model.Atomic
@@ -44,6 +46,7 @@ Metro.Model.include Metro.Model.Scopes
 Metro.Model.include Metro.Model.States
 Metro.Model.include Metro.Model.Inheritance
 Metro.Model.include Metro.Model.Serialization
+Metro.Model.include Metro.Model.NestedAttributes
 Metro.Model.include Metro.Model.Relations
 Metro.Model.include Metro.Model.Validations
 Metro.Model.include Metro.Model.Callbacks

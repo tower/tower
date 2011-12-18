@@ -73,7 +73,6 @@ class Metro.Store extends Metro.Object
   constructor: (options = {}) ->
     @name       = options.name
     @className  = options.className || Metro.namespaced(Metro.Support.String.camelize(Metro.Support.String.singularize(@name)))
-    @model      = Metro.constant(@className)
   
   # find(1)  
   # find(1, 2, 3)
@@ -105,7 +104,7 @@ class Metro.Store extends Metro.Object
   delete: (ids..., query, options, callback) ->
     query.id = if ids.length == 1 then ids[0] else $in: ids
     @deleteAll query, options, callback
-    
+  
   schema: ->
     Metro.constant(@className).schema()
 

@@ -63,15 +63,14 @@
         return sorting;
       });
       return objects.sort(function(a, b) {
-        var bspecialProperties;
-        return arrayComparator(a, bspecialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']);
+        return arrayComparator(a, b);
       });
     }
   };
 
-  Metro.Class = (function() {
+  specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods'];
 
-    function Class() {}
+  Metro.Class = (function() {
 
     Class.alias = function(to, from) {
       return Metro.Support.Object.alias(this.prototype, to, from);
@@ -151,14 +150,6 @@
       return object;
     };
 
-    Class.instanceMethods = function() {
-      return Metro.Support.Object.methods(this.prototype);
-    };
-
-    Class.classMethods = function() {
-      return Metro.Support.Object.methods(this);
-    };
-
     Class.className = function() {
       return Metro.Support.Object.functionName(this);
     };
@@ -166,6 +157,12 @@
     Class.prototype.className = function() {
       return this.constructor.className();
     };
+
+    function Class() {
+      this.initialize();
+    }
+
+    Class.prototype.initialize = function() {};
 
     return Class;
 
@@ -176,12 +173,12 @@
     events: function() {
       return this._events || (this._events = {});
     },
-    hasEvent: function(key) {
+    hasEventListener: function(key) {
       return Metro.Support.Object.isPresent(this.events(), key);
     },
     event: function(key) {
       var _base;
-      return (_base = events())[key] || (_base[key] = new Metro.Event(this, key));
+      return (_base = this.events())[key] || (_base[key] = new Metro.Event(this, key));
     },
     on: function(key, handler) {
       return this.event(key).addHandler(handler);
@@ -206,7 +203,9 @@
       return this.event(key).isPrevented();
     },
     fire: function(key) {
-      return this.event(key).fire(Metro.Support.Array.args(arguments, 1));
+      var event;
+      event = this.event(key);
+      return event.fire.call(event, Metro.Support.Array.args(arguments, 1));
     },
     allowAndFire: function(key) {
       return this.event(key).allowAndFire(Metro.Support.Array.args(arguments, 1));
@@ -293,6 +292,34 @@
         }
       }
       return object;
+    },
+    cloneHash: function(options) {
+      var key, result, value;
+      result = {};
+      for (key in options) {
+        value = options[key];
+        if (this.isArray(value)) {
+          result[key] = this.cloneArray(value);
+        } else if (this.isHash(value)) {
+          result[key] = this.cloneHash(value);
+        } else {
+          result[key] = value;
+        }
+      }
+      return result;
+    },
+    cloneArray: function(value) {
+      var i, item, result, _len;
+      result = value.concat();
+      for (i = 0, _len = result.length; i < _len; i++) {
+        item = result[i];
+        if (this.isArray(item)) {
+          result[i] = this.cloneArray(item);
+        } else if (this.isHash(item)) {
+          result[i] = this.cloneHash(item);
+        }
+      }
+      return result;
     },
     deepMerge: function(object) {
       var args, key, node, value, _i, _len;
@@ -413,11 +440,36 @@
     isFunction: function(object) {
       return !!(object && object.constructor && object.call && object.apply);
     },
+    toArray: function(object) {
+      if (this.isArray(object)) {
+        return object;
+      } else {
+        return [object];
+      }
+    },
+    keys: function(object) {
+      return Object.keys(object);
+    },
     isA: function(object, isa) {},
-    isHash: function() {
-      var object;
-      object = arguments[0] || this;
-      return _.isObject(object) && !(_.isFunction(object) || _.isArray(object));
+    isRegExp: function(object) {
+      return !!(object && object.test && object.exec && (object.ignoreCase || object.ignoreCase === false));
+    },
+    isHash: function(object) {
+      return this.isObject(object) && !(this.isFunction(object) || this.isArray(object));
+    },
+    isArray: Array.isArray || function(object) {
+      return toString.call(object) === '[object Array]';
+    },
+    kind: function(object) {
+      if (typeof object !== "object") return typeof object;
+      if (object === null) return "null";
+      if (object.constructor === (new Array).constructor) return "array";
+      if (object.constructor === (new Date).constructor) return "date";
+      if (object.constructor === (new RegExp).constructor) return "regex";
+      return "object";
+    },
+    isObject: function(object) {
+      return object === Object(object);
     },
     isPresent: function(object) {
       return !this.isBlank(object);

@@ -1,13 +1,17 @@
 class Metro.Model.Relation.HasMany extends Metro.Model.Relation
+  # @param
   constructor: (owner, name, options = {}) ->
     super(owner, name, options)
     
-    if Metro.accessors
-      Metro.Support.Object.defineProperty owner.prototype, name, 
-        enumerable: true, 
-        configurable: true, 
-        get: -> @relation(name)
-        set: (value) -> @relation(name).set(value)
+    #if Metro.accessors
+    #  Metro.Support.Object.defineProperty owner.prototype, name, 
+    #    enumerable: true, 
+    #    configurable: true, 
+    #    get: -> @relation(name)
+    #    set: (value) -> @relation(name).set(value)
+    
+    owner.prototype[name] = ->
+      @relation(name)
     
     @foreignKey = options.foreignKey || Metro.Support.String.camelize("#{owner.name}Id", true)
     
@@ -23,9 +27,12 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
   class @Scope extends @Scope
     constructor: (options = {}) ->
       super
-      if @foreignKey && @owner.id != undefined
-        defaults = {}
-        defaults[@foreignKey] = @owner.id 
+      
+      id = @owner.get("id")
+      
+      if @foreignKey && id != undefined
+        defaults              = {}
+        defaults[@foreignKey] = id
         @where defaults
         
     create: (attributes, callback) ->
@@ -36,7 +43,7 @@ class Metro.Model.Relation.HasMany extends Metro.Model.Relation
         unless error
           if relation && relation.cache
             updates = {}
-            updates[relation.cacheKey] = record.id
+            updates[relation.cacheKey] = record.get("id")
             self.owner.updateAttributes "$push": updates, callback
           else
             callback.call @, error, record if callback

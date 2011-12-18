@@ -10,7 +10,7 @@ Metro.Controller.Processing =
     @headers  = {}
     @callback = next
     
-    if @format && @format != "undefined"
+    if @format && @format != "undefined" && Metro.Support["Path"]
       @contentType = Metro.Support.Path.contentType(@format)
     else
       @contentType = "text/html"

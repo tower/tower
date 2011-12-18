@@ -1,10 +1,12 @@
 (function() {
-  var Metro, Namespace, specialProperties;
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; }, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice;
+  var Metro, key, module, specialProperties, _fn, _fn2, _i, _j, _len, _len2, _ref, _ref2;
+  var __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __slice = Array.prototype.slice, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   window.global || (window.global = window);
 
-  window.Metro = new (Metro = (function() {
+  module = window.module || {};
+
+  Metro = window.Metro = new (Metro = (function() {
 
     function Metro() {}
 
@@ -12,207 +14,7 @@
 
   })());
 
-  Metro.Support.Object.extend(Metro, {
-    env: "development",
-    port: 1597,
-    version: "0.2.6",
-    client: typeof window !== "undefined",
-    root: "/",
-    publicPath: "/",
-    namespace: null,
-    logger: typeof _console !== 'undefined' ? _console : console,
-    raise: function() {
-      throw new Error(Metro.t.apply(Metro, arguments));
-    },
-    configure: function() {},
-    initialize: function() {
-      return Metro.Application.initialize();
-    },
-    t: function() {
-      var _ref;
-      return (_ref = Metro.Support.I18n).t.apply(_ref, arguments);
-    },
-    "case": "camelcase",
-    stringify: function() {
-      var string;
-      string = Metro.Support.Array.args(arguments).join("_");
-      switch (Metro["case"]) {
-        case "snakecase":
-          return Metro.Support.String.underscore(string);
-        default:
-          return Metro.Support.String.camelcase(string);
-      }
-    },
-    namespace: function() {
-      return Metro.Application.instance().constructor.name;
-    },
-    accessors: true,
-    constant: function(string) {
-      var node, part, parts, _i, _len;
-      node = global;
-      try {
-        parts = string.split(".");
-        for (_i = 0, _len = parts.length; _i < _len; _i++) {
-          part = parts[_i];
-          node = node[part];
-        }
-      } catch (error) {
-        throw new Error("Constant '" + string + "' wasn't found");
-      }
-      return node;
-    },
-    namespaced: function(string) {
-      var namespace;
-      namespace = Metro.namespace();
-      if (namespace) {
-        return "" + namespace + "." + string;
-      } else {
-        return string;
-      }
-    }
-  });
-
-  Metro.Application.Client = (function() {
-
-    __extends(Client, Metro.Object);
-
-    function Client(middleware) {
-      var _i, _len, _middleware;
-      if (middleware == null) middleware = [];
-      this.stack = [];
-      for (_i = 0, _len = middleware.length; _i < _len; _i++) {
-        _middleware = middleware[_i];
-        this.use(_middleware);
-      }
-      this.History = global.History;
-    }
-
-    Client.prototype.initialize = function() {
-      this.extractAgent();
-      this.use(Metro.Middleware.Router);
-      return this;
-    };
-
-    Client.prototype.extractAgent = function() {
-      return Metro.agent = new Metro.Net.Agent({
-        os: navigator,
-        ip: navigator,
-        browser: navigator,
-        language: navigator
-      });
-    };
-
-    Client.prototype.use = function(route, handle) {
-      this.route = "/";
-      if ("string" !== typeof route) {
-        handle = route;
-        route = "/";
-      }
-      if ("/" === route[route.length - 1]) {
-        route = route.substr(0, route.length - 1);
-      }
-      this.stack.push({
-        route: route,
-        handle: handle
-      });
-      return this;
-    };
-
-    Client.prototype.listen = function() {
-      var self;
-      self = this;
-      if (this.listening) return;
-      this.listening = true;
-      if (this.History && this.History.enabled) {
-        return this.History.Adapter.bind(global, "statechange", function() {
-          var parsedUrl, request, response, state;
-          state = History.getState();
-          parsedUrl = new Metro.Route.Url(state.url);
-          request = new Request({
-            url: state.url,
-            parsedUrl: parsedUrl,
-            params: _.extend({
-              title: state.title
-            }, state.data || {})
-          });
-          response = new Response({
-            url: state.url,
-            parsedUrl: parsedUrl
-          });
-          return self.handle(request, response);
-        });
-      } else {
-        return _console.warn("History not enabled");
-      }
-    };
-
-    Client.prototype.run = function() {
-      return this.listen();
-    };
-
-    Client.prototype.handle = function(request, response, out) {
-      var env, index, next, removed, stack, writeHead;
-      env = Metro.env;
-      next = function(err) {
-        var arity, c, layer, msg, path, removed;
-        layer = void 0;
-        path = void 0;
-        c = void 0;
-        request.url = removed + request.url;
-        request.originalUrl = request.originalUrl || request.url;
-        removed = "";
-        layer = stack[index++];
-        if (!layer || response.headerSent) {
-          if (out) return out(err);
-          if (err) {
-            msg = ("production" === env ? "Internal Server Error" : err.stack || err.toString());
-            if ("test" !== env) console.error(err.stack || err.toString());
-            if (response.headerSent) return request.socket.destroy();
-            response.statusCode = 500;
-            response.setHeader("Content-Type", "text/plain");
-            response.end(msg);
-          } else {
-            response.statusCode = 404;
-            response.setHeader("Content-Type", "text/plain");
-            response.end("Cannot " + request.method + " " + request.url);
-          }
-          return;
-        }
-        try {
-          path = request.pathname;
-          if (undefined === path) path = "/";
-          if (0 !== path.indexOf(layer.route)) return next(err);
-          c = path[layer.route.length];
-          if (c && "/" !== c && "." !== c) return next(err);
-          removed = layer.route;
-          request.url = request.url.substr(removed.length);
-          if ("/" !== request.url[0]) request.url = "/" + request.url;
-          arity = layer.handle.length;
-          if (err) {
-            if (arity === 4) {
-              return layer.handle(err, request, response, next);
-            } else {
-              return next(err);
-            }
-          } else if (arity < 4) {
-            return layer.handle(request, response, next);
-          } else {
-            return next();
-          }
-        } catch (e) {
-          return next(e);
-        }
-      };
-      writeHead = response.writeHead;
-      stack = this.stack;
-      removed = "";
-      index = 0;
-      return next();
-    };
-
-    return Client;
-
-  })();
+  window.Metro.logger = this["_console"] ? _console : console;
 
   Metro.Support = {};
 
@@ -275,15 +77,14 @@
         return sorting;
       });
       return objects.sort(function(a, b) {
-        var bspecialProperties;
-        return arrayComparator(a, bspecialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']);
+        return arrayComparator(a, b);
       });
     }
   };
 
-  Metro.Class = (function() {
+  specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods'];
 
-    function Class() {}
+  Metro.Class = (function() {
 
     Class.alias = function(to, from) {
       return Metro.Support.Object.alias(this.prototype, to, from);
@@ -363,14 +164,6 @@
       return object;
     };
 
-    Class.instanceMethods = function() {
-      return Metro.Support.Object.methods(this.prototype);
-    };
-
-    Class.classMethods = function() {
-      return Metro.Support.Object.methods(this);
-    };
-
     Class.className = function() {
       return Metro.Support.Object.functionName(this);
     };
@@ -378,6 +171,12 @@
     Class.prototype.className = function() {
       return this.constructor.className();
     };
+
+    function Class() {
+      this.initialize();
+    }
+
+    Class.prototype.initialize = function() {};
 
     return Class;
 
@@ -388,12 +187,12 @@
     events: function() {
       return this._events || (this._events = {});
     },
-    hasEvent: function(key) {
+    hasEventListener: function(key) {
       return Metro.Support.Object.isPresent(this.events(), key);
     },
     event: function(key) {
       var _base;
-      return (_base = events())[key] || (_base[key] = new Metro.Event(this, key));
+      return (_base = this.events())[key] || (_base[key] = new Metro.Event(this, key));
     },
     on: function(key, handler) {
       return this.event(key).addHandler(handler);
@@ -418,7 +217,9 @@
       return this.event(key).isPrevented();
     },
     fire: function(key) {
-      return this.event(key).fire(Metro.Support.Array.args(arguments, 1));
+      var event;
+      event = this.event(key);
+      return event.fire.call(event, Metro.Support.Array.args(arguments, 1));
     },
     allowAndFire: function(key) {
       return this.event(key).allowAndFire(Metro.Support.Array.args(arguments, 1));
@@ -505,6 +306,34 @@
         }
       }
       return object;
+    },
+    cloneHash: function(options) {
+      var key, result, value;
+      result = {};
+      for (key in options) {
+        value = options[key];
+        if (this.isArray(value)) {
+          result[key] = this.cloneArray(value);
+        } else if (this.isHash(value)) {
+          result[key] = this.cloneHash(value);
+        } else {
+          result[key] = value;
+        }
+      }
+      return result;
+    },
+    cloneArray: function(value) {
+      var i, item, result, _len;
+      result = value.concat();
+      for (i = 0, _len = result.length; i < _len; i++) {
+        item = result[i];
+        if (this.isArray(item)) {
+          result[i] = this.cloneArray(item);
+        } else if (this.isHash(item)) {
+          result[i] = this.cloneHash(item);
+        }
+      }
+      return result;
     },
     deepMerge: function(object) {
       var args, key, node, value, _i, _len;
@@ -625,11 +454,36 @@
     isFunction: function(object) {
       return !!(object && object.constructor && object.call && object.apply);
     },
+    toArray: function(object) {
+      if (this.isArray(object)) {
+        return object;
+      } else {
+        return [object];
+      }
+    },
+    keys: function(object) {
+      return Object.keys(object);
+    },
     isA: function(object, isa) {},
-    isHash: function() {
-      var object;
-      object = arguments[0] || this;
-      return _.isObject(object) && !(_.isFunction(object) || _.isArray(object));
+    isRegExp: function(object) {
+      return !!(object && object.test && object.exec && (object.ignoreCase || object.ignoreCase === false));
+    },
+    isHash: function(object) {
+      return this.isObject(object) && !(this.isFunction(object) || this.isArray(object));
+    },
+    isArray: Array.isArray || function(object) {
+      return toString.call(object) === '[object Array]';
+    },
+    kind: function(object) {
+      if (typeof object !== "object") return typeof object;
+      if (object === null) return "null";
+      if (object.constructor === (new Array).constructor) return "array";
+      if (object.constructor === (new Date).constructor) return "date";
+      if (object.constructor === (new RegExp).constructor) return "regex";
+      return "object";
+    },
+    isObject: function(object) {
+      return object === Object(object);
     },
     isPresent: function(object) {
       return !this.isBlank(object);
@@ -747,7 +601,733 @@
 
   })();
 
-  module.exports = Metro.Object;
+  Metro.Application = (function() {
+
+    __extends(Application, Metro.Object);
+
+    Application.instance = function() {
+      return this._instance;
+    };
+
+    function Application(middleware) {
+      var _i, _len, _middleware;
+      if (middleware == null) middleware = [];
+      Metro.Application._instance = this;
+      this.stack = [];
+      for (_i = 0, _len = middleware.length; _i < _len; _i++) {
+        _middleware = middleware[_i];
+        this.use(_middleware);
+      }
+      this.History = global.History;
+    }
+
+    Application.prototype.initialize = function() {
+      this.extractAgent();
+      this.use(Metro.Middleware.Location);
+      this.use(Metro.Middleware.Routes);
+      return this;
+    };
+
+    Application.prototype.extractAgent = function() {
+      return Metro.agent = new Metro.Net.Agent({
+        os: navigator,
+        ip: navigator,
+        browser: navigator,
+        language: navigator
+      });
+    };
+
+    Application.prototype.use = function(route, handle) {
+      this.route = "/";
+      if ("string" !== typeof route) {
+        handle = route;
+        route = "/";
+      }
+      if ("/" === route[route.length - 1]) {
+        route = route.substr(0, route.length - 1);
+      }
+      this.stack.push({
+        route: route,
+        handle: handle
+      });
+      return this;
+    };
+
+    Application.prototype.listen = function() {
+      var self;
+      self = this;
+      if (this.listening) return;
+      this.listening = true;
+      if (this.History && this.History.enabled) {
+        return this.History.Adapter.bind(global, "statechange", function() {
+          var location, request, response, state;
+          state = History.getState();
+          location = new Metro.Route.Url(state.url);
+          request = new Request({
+            url: state.url,
+            location: location,
+            params: Metro.Support.Object.extend({
+              title: state.title
+            }, state.data || {})
+          });
+          response = new Response({
+            url: state.url,
+            location: location
+          });
+          return self.handle(request, response);
+        });
+      } else {
+        return _console.warn("History not enabled");
+      }
+    };
+
+    Application.prototype.run = function() {
+      return this.listen();
+    };
+
+    Application.prototype.handle = function(request, response, out) {
+      var env, index, next, removed, stack, writeHead;
+      env = Metro.env;
+      next = function(err) {
+        var arity, c, layer, msg, path, removed;
+        layer = void 0;
+        path = void 0;
+        c = void 0;
+        request.url = removed + request.url;
+        request.originalUrl = request.originalUrl || request.url;
+        removed = "";
+        layer = stack[index++];
+        if (!layer || response.headerSent) {
+          if (out) return out(err);
+          if (err) {
+            msg = ("production" === env ? "Internal Server Error" : err.stack || err.toString());
+            if ("test" !== env) console.error(err.stack || err.toString());
+            if (response.headerSent) return request.socket.destroy();
+            response.statusCode = 500;
+            response.setHeader("Content-Type", "text/plain");
+            response.end(msg);
+          } else {
+            response.statusCode = 404;
+            response.setHeader("Content-Type", "text/plain");
+            response.end("Cannot " + request.method + " " + request.url);
+          }
+          return;
+        }
+        try {
+          path = request.location.path;
+          if (undefined === path) path = "/";
+          if (0 !== path.indexOf(layer.route)) return next(err);
+          c = path[layer.route.length];
+          if (c && "/" !== c && "." !== c) return next(err);
+          removed = layer.route;
+          request.url = request.url.substr(removed.length);
+          if ("/" !== request.url[0]) request.url = "/" + request.url;
+          arity = layer.handle.length;
+          if (err) {
+            if (arity === 4) {
+              return layer.handle(err, request, response, next);
+            } else {
+              return next(err);
+            }
+          } else if (arity < 4) {
+            return layer.handle(request, response, next);
+          } else {
+            return next();
+          }
+        } catch (e) {
+          return next(e);
+        }
+      };
+      writeHead = response.writeHead;
+      stack = this.stack;
+      removed = "";
+      index = 0;
+      return next();
+    };
+
+    return Application;
+
+  })();
+
+  Metro.Support.Object.extend(Metro, {
+    env: "development",
+    port: 1597,
+    version: "0.3.6",
+    client: typeof window !== "undefined",
+    root: "/",
+    publicPath: "/",
+    namespace: null,
+    logger: typeof _console !== 'undefined' ? _console : console,
+    stack: function() {
+      try {
+        throw new Error;
+      } catch (error) {
+        return error.stack;
+      }
+    },
+    raise: function() {
+      throw new Error(Metro.t.apply(Metro, arguments));
+    },
+    configure: function() {},
+    initialize: function() {
+      return Metro.Application.initialize();
+    },
+    t: function() {
+      var _ref;
+      return (_ref = Metro.Support.I18n).t.apply(_ref, arguments);
+    },
+    "case": "camelcase",
+    urlFor: function() {
+      var _ref;
+      return (_ref = Metro.Route).urlFor.apply(_ref, arguments);
+    },
+    stringify: function() {
+      var string;
+      string = Metro.Support.Array.args(arguments).join("_");
+      switch (Metro["case"]) {
+        case "snakecase":
+          return Metro.Support.String.underscore(string);
+        default:
+          return Metro.Support.String.camelcase(string);
+      }
+    },
+    namespace: function() {
+      return Metro.Application.instance().constructor.name;
+    },
+    accessors: true,
+    constant: function(string) {
+      var node, part, parts, _i, _len;
+      node = global;
+      try {
+        parts = string.split(".");
+        for (_i = 0, _len = parts.length; _i < _len; _i++) {
+          part = parts[_i];
+          node = node[part];
+        }
+      } catch (error) {
+        throw new Error("Constant '" + string + "' wasn't found");
+      }
+      return node;
+    },
+    namespaced: function(string) {
+      var namespace;
+      namespace = Metro.namespace();
+      if (namespace) {
+        return "" + namespace + "." + string;
+      } else {
+        return string;
+      }
+    }
+  });
+
+  Metro.Event = (function() {
+
+    __extends(Event, Metro.Object);
+
+    Event.include({
+      ClassMethods: {
+        "for": function(object, key) {
+          if (object.isEventEmitter) {
+            return object.event(key);
+          } else {
+            return new Metro.Event(object, key);
+          }
+        }
+      },
+      isEvent: true,
+      addHandler: function(handler) {
+        this.handlers.push(handler);
+        if (this.oneShot) this.autofireHandler(handler);
+        return this;
+      },
+      removeHandler: function(handler) {
+        this.handlers.splice(1, this.handlers.indexOf(handler));
+        return this;
+      },
+      handlerContext: function() {
+        return this.base;
+      },
+      prevent: function() {
+        return ++this._preventCount;
+      },
+      allow: function() {
+        if (this._preventCount) --this._preventCount;
+        return this._preventCount;
+      },
+      isPrevented: function() {
+        return this._preventCount > 0;
+      },
+      autofireHandler: function(handler) {
+        if (this._oneShotFired && (this._oneShotArgs != null)) {
+          return handler.apply(this.handlerContext(), this._oneShotArgs);
+        }
+      },
+      resetOneShot: function() {
+        this._oneShotFired = false;
+        return this._oneShotArgs = null;
+      },
+      fire: function() {
+        var args, context, handler, handlers, _i, _len, _results;
+        if (this.isPrevented() || this._oneShotFired) return false;
+        context = this.handlerContext();
+        args = arguments;
+        handlers = this.handlers;
+        if (this.oneShot) {
+          this._oneShotFired = true;
+          this._oneShotArgs = arguments;
+        }
+        _results = [];
+        for (_i = 0, _len = handlers.length; _i < _len; _i++) {
+          handler = handlers[_i];
+          _results.push(handler.apply(context, args));
+        }
+        return _results;
+      },
+      allowAndFire: function() {
+        this.allow();
+        return this.fire.apply(this, arguments);
+      }
+    });
+
+    function Event(base, key) {
+      this.base = base;
+      this.key = key;
+      this.handlers = [];
+      this._preventCount = 0;
+    }
+
+    return Event;
+
+  })();
+
+  Metro.Store = (function() {
+
+    __extends(Store, Metro.Object);
+
+    Store.defaultLimit = 100;
+
+    Store.atomicModifiers = {
+      "$set": "$set",
+      "$unset": "$unset",
+      "$push": "$push",
+      "$pushAll": "$pushAll",
+      "$pull": "$pull",
+      "$pullAll": "$pullAll"
+    };
+
+    Store.reservedOperators = {
+      "_sort": "_sort",
+      "_limit": "_limit"
+    };
+
+    Store.queryOperators = {
+      ">=": "$gte",
+      "$gte": "$gte",
+      ">": "$gt",
+      "$gt": "$gt",
+      "<=": "$lte",
+      "$lte": "$lte",
+      "<": "$lt",
+      "$lt": "$lt",
+      "$in": "$in",
+      "$nin": "$nin",
+      "$any": "$any",
+      "$all": "$all",
+      "=~": "$regex",
+      "$m": "$regex",
+      "$regex": "$regex",
+      "!~": "$nm",
+      "$nm": "$nm",
+      "=": "$eq",
+      "$eq": "$eq",
+      "!=": "$neq",
+      "$neq": "$neq",
+      "$null": "$null",
+      "$notNull": "$notNull"
+    };
+
+    Store.booleans = {
+      "true": true,
+      "true": true,
+      "TRUE": true,
+      "1": true,
+      1: true,
+      1.0: true,
+      "false": false,
+      "false": false,
+      "FALSE": false,
+      "0": false,
+      0: false,
+      0.0: false
+    };
+
+    Store.prototype.serialize = function(data) {
+      var i, item, _len;
+      for (i = 0, _len = data.length; i < _len; i++) {
+        item = data[i];
+        data[i] = this.serializeModel(item);
+      }
+      return data;
+    };
+
+    Store.prototype.deserialize = function(models) {
+      var i, model, _len;
+      for (i = 0, _len = models.length; i < _len; i++) {
+        model = models[i];
+        models[i] = this.deserializeModel(model);
+      }
+      return models;
+    };
+
+    Store.prototype.serializeModel = function(attributes) {
+      var klass;
+      klass = Metro.constant(this.className);
+      return new klass(attributes);
+    };
+
+    Store.prototype.deserializeModel = function(model) {
+      return model.attributes;
+    };
+
+    function Store(options) {
+      if (options == null) options = {};
+      this.name = options.name;
+      this.className = options.className || Metro.namespaced(Metro.Support.String.camelize(Metro.Support.String.singularize(this.name)));
+    }
+
+    Store.prototype.find = function() {
+      var callback, ids, options, query, _i;
+      ids = 4 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 3) : (_i = 0, []), query = arguments[_i++], options = arguments[_i++], callback = arguments[_i++];
+      if (ids.length === 1) {
+        query.id = ids[0];
+        return this.findOne(query, options, callback);
+      } else {
+        query.id = {
+          $in: ids
+        };
+        return this.all(query, options, callback);
+      }
+    };
+
+    Store.prototype.first = function(query, options, callback) {
+      return this.findOne(query, options, callback);
+    };
+
+    Store.prototype.last = function(query, options, callback) {
+      return this.findOne(query, options, callback);
+    };
+
+    Store.prototype.build = function(attributes, options, callback) {
+      var record;
+      record = this.serializeModel(attributes);
+      if (callback) callback.call(this, null, record);
+      return record;
+    };
+
+    Store.prototype.update = function() {
+      var callback, ids, options, query, updates, _i;
+      ids = 5 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 4) : (_i = 0, []), updates = arguments[_i++], query = arguments[_i++], options = arguments[_i++], callback = arguments[_i++];
+      query.id = {
+        $in: ids
+      };
+      return this.updateAll(updates, query, options, callback);
+    };
+
+    Store.prototype["delete"] = function() {
+      var callback, ids, options, query, _i;
+      ids = 4 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 3) : (_i = 0, []), query = arguments[_i++], options = arguments[_i++], callback = arguments[_i++];
+      query.id = ids.length === 1 ? ids[0] : {
+        $in: ids
+      };
+      return this.deleteAll(query, options, callback);
+    };
+
+    Store.prototype.schema = function() {
+      return Metro.constant(this.className).schema();
+    };
+
+    return Store;
+
+  })();
+
+  Metro.Store.Memory = (function() {
+
+    __extends(Memory, Metro.Store);
+
+    function Memory(options) {
+      Memory.__super__.constructor.call(this, options);
+      this.records = {};
+      this.lastId = 0;
+    }
+
+    return Memory;
+
+  })();
+
+  Metro.Store.Memory.Finders = {
+    all: function(query, options, callback) {
+      var key, limit, record, records, result, self, sort;
+      result = [];
+      records = this.records;
+      self = this;
+      if (Metro.Support.Object.isPresent(query)) {
+        sort = options.sort;
+        limit = options.limit || Metro.Store.defaultLimit;
+        for (key in records) {
+          record = records[key];
+          if (this.matches(record, query)) result.push(record);
+        }
+        if (sort) result = this.sort(result, sort);
+        if (limit) result = result.slice(0, (limit - 1) + 1 || 9e9);
+      } else {
+        for (key in records) {
+          record = records[key];
+          result.push(record);
+        }
+      }
+      if (callback) callback.call(self, null, result);
+      return result;
+    },
+    first: function(query, options, callback) {
+      var record;
+      record = null;
+      this.all(query, options, function(error, records) {
+        record = records[0];
+        if (callback) return callback.call(this, error, record);
+      });
+      return record;
+    },
+    last: function(query, options, callback) {
+      var record;
+      record = null;
+      this.all(query, options, function(error, records) {
+        record = records[records.length - 1];
+        if (callback) return callback.call(this, error, record);
+      });
+      return record;
+    },
+    count: function(query, options, callback) {
+      var result;
+      result = 0;
+      this.all(query, options, function(error, records) {
+        result = records.length;
+        if (callback) return callback.call(this, error, result);
+      });
+      return result;
+    },
+    sort: function() {
+      var _ref;
+      return (_ref = Metro.Support.Array).sortBy.apply(_ref, arguments);
+    }
+  };
+
+  Metro.Store.Memory.Persistence = {
+    create: function(attributes, options, callback) {
+      var record, _ref;
+      if ((_ref = attributes.id) == null) attributes.id = this.generateId();
+      record = this.serializeModel(attributes);
+      this.records[attributes.id] = record;
+      if (callback) callback.call(this, null, record);
+      return record;
+    },
+    updateAll: function(updates, query, options, callback) {
+      var self;
+      self = this;
+      return this.all(query, options, function(error, records) {
+        var i, key, record, value, _len;
+        if (!error) {
+          for (i = 0, _len = records.length; i < _len; i++) {
+            record = records[i];
+            for (key in updates) {
+              value = updates[key];
+              self._updateAttribute(record.attributes, key, value);
+            }
+          }
+        }
+        if (callback) return callback.call(this, error, records);
+      });
+    },
+    deleteAll: function(query, options, callback) {
+      var _records;
+      _records = this.records;
+      if (Metro.Support.Object.isBlank(query)) {
+        return this.clear(callback);
+      } else {
+        return this.all(query, function(error, records) {
+          var record, _i, _len;
+          if (!error) {
+            for (_i = 0, _len = records.length; _i < _len; _i++) {
+              record = records[_i];
+              _records.splice(_records.indexOf(record), 1);
+            }
+          }
+          if (callback) return callback.call(this, error, records);
+        });
+      }
+    },
+    clear: function(callback) {
+      this.records = {};
+      if (callback) callback.call(this, error, records);
+      return this.records;
+    }
+  };
+
+  Metro.Store.Memory.Serialization = {
+    matches: function(record, query) {
+      var key, recordValue, schema, self, success, value;
+      self = this;
+      success = true;
+      schema = this.schema();
+      for (key in query) {
+        value = query[key];
+        if (!!Metro.Store.reservedOperators[key]) continue;
+        recordValue = record[key];
+        if (Metro.Support.Object.isRegExp(value)) {
+          success = recordValue.match(value);
+        } else if (typeof value === "object") {
+          success = self._matchesOperators(record, recordValue, value);
+        } else {
+          if (typeof value === "function") value = value.call(record);
+          success = recordValue === value;
+        }
+        if (!success) return false;
+      }
+      return true;
+    },
+    generateId: function() {
+      return this.lastId++;
+    },
+    _updateAttribute: function(attributes, key, value) {
+      var field;
+      field = this.schema()[key];
+      if (field && field.type === "Array" && !Metro.Support.Object.isArray(value)) {
+        attributes[key] || (attributes[key] = []);
+        return attributes[key].push(value);
+      } else if (this._atomicModifier(key)) {
+        return this["_" + (key.replace("$", "")) + "AtomicUpdate"](attributes, value);
+      } else {
+        return attributes[key] = value;
+      }
+    },
+    _atomicModifier: function(key) {
+      return !!this.constructor.atomicModifiers[key];
+    },
+    _pushAtomicUpdate: function(attributes, value) {
+      var _key, _value;
+      for (_key in value) {
+        _value = value[_key];
+        attributes[_key] || (attributes[_key] = []);
+        attributes[_key].push(_value);
+      }
+      return attributes;
+    },
+    _pullAtomicUpdate: function(attributes, value) {
+      var item, _attributeValue, _i, _key, _len, _value;
+      for (_key in value) {
+        _value = value[_key];
+        _attributeValue = attributes[_key];
+        if (_attributeValue) {
+          for (_i = 0, _len = _value.length; _i < _len; _i++) {
+            item = _value[_i];
+            _attributeValue.splice(_attributeValue.indexOf(item), 1);
+          }
+        }
+      }
+      return attributes;
+    },
+    _matchesOperators: function(record, recordValue, operators) {
+      var key, operator, self, success, value;
+      success = true;
+      self = this;
+      for (key in operators) {
+        value = operators[key];
+        if (operator = Metro.Store.queryOperators[key]) {
+          if (typeof value === "function") value = value.call(record);
+          switch (operator) {
+            case "$gt":
+              success = self._isGreaterThan(recordValue, value);
+              break;
+            case "$gte":
+              success = self._isGreaterThanOrEqualTo(recordValue, value);
+              break;
+            case "$lt":
+              success = self._isLessThan(recordValue, value);
+              break;
+            case "$lte":
+              success = self._isLessThanOrEqualTo(recordValue, value);
+              break;
+            case "$eq":
+              success = self._isEqualTo(recordValue, value);
+              break;
+            case "$neq":
+              success = self._isNotEqualTo(recordValue, value);
+              break;
+            case "$regex":
+              success = self._isMatchOf(recordValue, value);
+              break;
+            case "$nm":
+              success = self._isNotMatchOf(recordValue, value);
+              break;
+            case "$any":
+              success = self._anyIn(recordValue, value);
+              break;
+            case "$all":
+              success = self._allIn(recordValue, value);
+          }
+          if (!success) return false;
+        } else {
+          return recordValue === operators;
+        }
+      }
+      return true;
+    },
+    _isGreaterThan: function(recordValue, value) {
+      return recordValue && recordValue > value;
+    },
+    _isGreaterThanOrEqualTo: function(recordValue, value) {
+      return recordValue && recordValue >= value;
+    },
+    _isLessThan: function(recordValue, value) {
+      return recordValue && recordValue < value;
+    },
+    _isLessThanOrEqualTo: function(recordValue, value) {
+      return recordValue && recordValue <= value;
+    },
+    _isEqualTo: function(recordValue, value) {
+      return recordValue === value;
+    },
+    _isNotEqualTo: function(recordValue, value) {
+      return recordValue !== value;
+    },
+    _isMatchOf: function(recordValue, value) {
+      return !!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
+    },
+    _isNotMatchOf: function(recordValue, value) {
+      return !!!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
+    },
+    _anyIn: function(recordValue, array) {
+      var value, _i, _len;
+      for (_i = 0, _len = array.length; _i < _len; _i++) {
+        value = array[_i];
+        if (recordValue.indexOf(value) > -1) return true;
+      }
+      return false;
+    },
+    _allIn: function(recordValue, value) {
+      var _i, _len;
+      for (_i = 0, _len = array.length; _i < _len; _i++) {
+        value = array[_i];
+        if (recordValue.indexOf(value) === -1) return false;
+      }
+      return true;
+    }
+  };
+
+  Metro.Store.Memory.include(Metro.Store.Memory.Finders);
+
+  Metro.Store.Memory.include(Metro.Store.Memory.Persistence);
+
+  Metro.Store.Memory.include(Metro.Store.Memory.Serialization);
 
   Metro.Model = (function() {
 
@@ -756,412 +1336,775 @@
     function Model(attrs) {
       var attributes, definition, definitions, key, name, value;
       if (attrs == null) attrs = {};
-      definitions = this.constructor.keys();
+      definitions = this.constructor.fields();
       attributes = {};
       for (key in attrs) {
         value = attrs[key];
-        attributes[key] = this.typecast(key, value);
+        attributes[key] = value;
       }
       for (name in definitions) {
         definition = definitions[name];
         if (!attrs.hasOwnProperty(name)) {
-          attributes[name] || (attributes[name] = this.typecast(name, definition.defaultValue(this)));
+          attributes[name] || (attributes[name] = definition.defaultValue(this));
         }
       }
       this.attributes = attributes;
       this.changes = {};
-      this.associations = {};
-      this.errors = [];
+      this.errors = {};
+      this.readonly = false;
     }
-
-    Model.prototype.toLabel = function() {
-      return this.className();
-    };
-
-    Model.prototype.toPath = function() {
-      return this.constructor.toParam() + "/" + this.toParam();
-    };
-
-    Model.prototype.toParam = function() {
-      return this.get("id").toString();
-    };
-
-    Model.toParam = function() {
-      return Metro.Support.String.parameterize(this.className());
-    };
 
     return Model;
 
   })();
 
-  Metro.Model.Scope = (function() {
+  /*
+  Passing options hash containing :conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :group, :having, :from, :lock to any of the ActiveRecord provided class methods, is now deprecated.
+  
+  New AR 3.0 API:
+  
+      new(attributes)
+      create(attributes)
+      create!(attributes)
+      find(id_or_array)
+      destroy(id_or_array)
+      destroy_all
+      delete(id_or_array)
+      delete_all
+      update(ids, updates)
+      update_all(updates)
+      exists?
+      
+      first
+      all
+      last
+      find(1)
+      
+  success:  
+    string:
+      User.where(title: $in: ["Hello", "World"]).all()
+      User.where(title: $eq: "Hello").all()
+      User.where(title: "Hello").all()
+      User.where(title: "=~": "Hello").all()
+      User.where(title: "=~": /Hello/).all()
+      
+      # create from scope only if exact matches
+      User.where(title: "Hello").create()
+    
+    id:  
+      User.find(1)
+      User.find(1, 2, 3)
+      User.where(id: $in: [1, 2, 3]).all()
+      User.where(id: $nin: [1, 2, 3]).all()
+      User.where($or: [{id: 1}, {username: "john"}]).all()
+      User.anyIn(id: [1, 2, 3]).all()
+      User.excludes(firstName: "Hello", lastName: "World").all()
+      
+    order:
+      User.asc("id").desc("username").all()
+      User.order(["asc", "id"], ["desc", "username"]).all()
+      User.where(username: "=~": /^a/).asc("username").desc("createdAt").all()
+      
+    date:
+      User.where(createdAt: ">=": 10000000).where(createdAt: "<=": 40000000).all()
+      
+    nested:
+      User.where(posts: createdAt: ">=": x).all()
+      
+  fail:
+    string:  
+      User.where(title: $in: ["Hello", "World"]).create()
+  */
 
-    function Scope(sourceClassName) {
-      this.sourceClassName = sourceClassName;
-      this.conditions = [];
+  Metro.Model.Scope = (function() {
+    var key, _fn, _i, _len, _ref;
+
+    __extends(Scope, Metro.Object);
+
+    Scope.scopes = ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within"];
+
+    Scope.finders = ["find", "all", "first", "last", "count"];
+
+    Scope.builders = ["build", "create", "update", "updateAll", "delete", "deleteAll", "destroy", "destroyAll"];
+
+    function Scope(options) {
+      if (options == null) options = {};
+      this.model = options.model;
+      this.criteria = options.criteria || new Metro.Model.Criteria;
     }
 
-    Scope.prototype.where = function() {
-      this.conditions.push(["where", arguments]);
-      return this;
+    _ref = Scope.scopes;
+    _fn = function(_key) {
+      return this.prototype[_key] = function() {
+        var _ref2;
+        (_ref2 = this.criteria)[_key].apply(_ref2, arguments);
+        return this;
+      };
     };
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      key = _ref[_i];
+      _fn.call(Scope, key);
+    }
 
-    Scope.prototype.order = function() {
-      this.conditions.push(["order", arguments]);
-      return this;
-    };
-
-    Scope.prototype.limit = function() {
-      this.conditions.push(["limit", arguments]);
-      return this;
-    };
-
-    Scope.prototype.select = function() {
-      this.conditions.push(["select", arguments]);
-      return this;
-    };
-
-    Scope.prototype.joins = function() {
-      this.conditions.push(["joins", arguments]);
-      return this;
-    };
-
-    Scope.prototype.includes = function() {
-      this.conditions.push(["includes", arguments]);
-      return this;
-    };
-
-    Scope.prototype.within = function() {
-      this.conditions.push(["within", arguments]);
-      return this;
+    Scope.prototype.find = function() {
+      var callback, ids, _j, _ref2;
+      ids = 2 <= arguments.length ? __slice.call(arguments, 0, _j = arguments.length - 1) : (_j = 0, []), callback = arguments[_j++];
+      return (_ref2 = this.store()).find.apply(_ref2, __slice.call(ids).concat([this.criteria.query], [this.criteria.options], [callback]));
     };
 
     Scope.prototype.all = function(callback) {
-      return this.store().all(this.query(), callback);
+      return this.store().all(this.criteria.query, this.criteria.options, callback);
     };
 
     Scope.prototype.first = function(callback) {
-      return this.store().first(this.query(), callback);
+      return this.store().first(this.criteria.query, this.criteria.options, callback);
     };
 
     Scope.prototype.last = function(callback) {
-      return this.store().last(this.query(), callback);
+      return this.store().last(this.criteria.query, this.criteria.options, callback);
+    };
+
+    Scope.prototype.count = function(callback) {
+      return this.store().count(this.criteria.query, this.criteria.options, callback);
+    };
+
+    Scope.prototype.build = function(attributes, callback) {
+      return this.store().build(Metro.Support.Object.extend(this.criteria.query, attributes), this.criteria.options, callback);
+    };
+
+    Scope.prototype.create = function(attributes, callback) {
+      return this.store().create(Metro.Support.Object.extend(this.criteria.query, attributes), this.criteria.options, callback);
+    };
+
+    Scope.prototype.update = function() {
+      var callback, ids, updates, _j, _ref2;
+      ids = 3 <= arguments.length ? __slice.call(arguments, 0, _j = arguments.length - 2) : (_j = 0, []), updates = arguments[_j++], callback = arguments[_j++];
+      return (_ref2 = this.store()).update.apply(_ref2, __slice.call(ids).concat([updates], [this.criteria.query], [this.criteria.options], [callback]));
+    };
+
+    Scope.prototype.updateAll = function(updates, callback) {
+      return this.store().updateAll(updates, this.criteria.query, this.criteria.options, callback);
+    };
+
+    Scope.prototype["delete"] = function() {
+      var callback, ids, _j, _ref2;
+      ids = 2 <= arguments.length ? __slice.call(arguments, 0, _j = arguments.length - 1) : (_j = 0, []), callback = arguments[_j++];
+      return (_ref2 = this.store())["delete"].apply(_ref2, __slice.call(ids).concat([this.criteria.query], [this.criteria.options], [callback]));
+    };
+
+    Scope.prototype.deleteAll = function(callback) {
+      return this.store().deleteAll(this.criteria.query, this.criteria.options, callback);
+    };
+
+    Scope.prototype.destroy = function() {
+      var callback, ids, _j, _ref2;
+      ids = 2 <= arguments.length ? __slice.call(arguments, 0, _j = arguments.length - 1) : (_j = 0, []), callback = arguments[_j++];
+      return (_ref2 = this.store())["delete"].apply(_ref2, __slice.call(ids).concat([this.criteria.query], [this.criteria.options], [callback]));
+    };
+
+    Scope.prototype.destroyAll = function(callback) {
+      return this.store().deleteAll(this.criteria.query, this.criteria.options, callback);
     };
 
     Scope.prototype.store = function() {
-      return Metro.constant(this.sourceClassName).store();
+      return this.model.store();
     };
 
-    Scope.prototype.query = function() {
-      var condition, conditions, item, key, result, value, _i, _len;
-      conditions = this.conditions;
-      result = {};
-      for (_i = 0, _len = conditions.length; _i < _len; _i++) {
-        condition = conditions[_i];
-        switch (condition[0]) {
-          case "where":
-            item = condition[1][0];
-            for (key in item) {
-              value = item[key];
-              result[key] = value;
-            }
-            break;
-          case "order":
-            result._sort = condition[1][0];
-        }
-      }
-      return result;
+    Scope.prototype.clone = function() {
+      return new this({
+        model: this.model,
+        criteria: this.criteria.clone()
+      });
     };
 
     return Scope;
 
   })();
 
-  Metro.Model.Association = (function() {
+  Metro.Model.Callbacks = {};
 
-    __extends(Association, Metro.Object);
+  Metro.Model.Criteria = (function() {
 
-    function Association(owner, name, options) {
+    function Criteria(query, options) {
+      if (query == null) query = {};
       if (options == null) options = {};
-      if (Metro.accessors) {
-        Metro.Support.Object.defineProperty(owner.prototype, name, {
-          enumerable: true,
-          configurable: true,
-          get: function() {
-            return this.association(name);
-          },
-          set: function(value) {
-            return this.association(name).set(value);
-          }
-        });
-      }
-      this.owner = owner;
-      this.name = name;
-      this.targetClassName = Metro.namespaced(options.className || Metro.Support.String.camelize(name));
+      this.query = query;
+      this.options = options;
     }
 
-    Association.prototype.scoped = function(record) {
-      return (new Metro.Model.Scope(this.targetClassName)).where(this.conditions(record));
+    Criteria.prototype._mergeQuery = function(conditions) {
+      if (conditions == null) conditions = {};
+      return Metro.Support.Object.extend(this.query, conditions);
     };
 
-    Association.prototype.conditions = function(record) {
-      var result;
-      result = {};
-      if (this.foreignKey && record.id) result[this.foreignKey] = record.id;
-      return result;
+    Criteria.prototype._mergeOptions = function(options) {
+      if (options == null) options = {};
+      return Metro.Support.Object.extend(this.options, options);
     };
 
-    Association.delegate("where", "find", "all", "first", "last", "store", {
-      to: "scoped"
-    });
+    Criteria.prototype.where = function(conditions) {
+      return this._mergeQuery(conditions);
+    };
 
-    return Association;
+    Criteria.prototype.order = function(attribute, direction) {
+      if (direction == null) direction = "asc";
+      return this._mergeOptions({
+        sort: [attribute, direction]
+      });
+    };
+
+    Criteria.prototype.offset = function(number) {
+      return this._mergeOptions({
+        offset: number
+      });
+    };
+
+    Criteria.prototype.limit = function(number) {
+      return this._mergeOptions({
+        limit: number
+      });
+    };
+
+    Criteria.prototype.select = function() {
+      return this._mergeOptions({
+        fields: Metro.Support.Array.args(arguments)
+      });
+    };
+
+    Criteria.prototype.joins = function() {
+      return this._mergeOptions({
+        joins: Metro.Support.Array.args(arguments)
+      });
+    };
+
+    Criteria.prototype.includes = function() {
+      return this._mergeOptions({
+        includes: Metro.Support.Array.args(arguments)
+      });
+    };
+
+    Criteria.prototype.paginate = function(options) {
+      var limit, page;
+      limit = options.perPage || options.limit;
+      page = options.page || 0;
+      this.limit(limit);
+      return this.offset(page * limit);
+    };
+
+    Criteria.prototype.within = function(options) {
+      return this;
+    };
+
+    Criteria.prototype.clone = function() {
+      return new this(Metro.Support.Object.cloneHash(this.query), Metro.Support.Object.cloneHash(this.options));
+    };
+
+    return Criteria;
 
   })();
 
-  require('./association/belongsTo');
+  Metro.Model.Dirty = {
+    isDirty: function() {
+      return Metro.Support.Object.isPresent(this.changes);
+    },
+    _attributeChange: function(attribute, value) {
+      var array, beforeValue, _base;
+      array = (_base = this.changes)[attribute] || (_base[attribute] = []);
+      beforeValue = array[0] || (array[0] = this.attributes[attribute]);
+      array[1] = value;
+      if (array[0] === array[1]) array = null;
+      if (array) {
+        this.changes[attribute] = array;
+      } else {
+        delete this.changes[attribute];
+      }
+      return beforeValue;
+    },
+    toUpdates: function() {
+      var array, attributes, key, result, _ref;
+      result = {};
+      attributes = this.attributes;
+      _ref = this.changes;
+      for (key in _ref) {
+        array = _ref[key];
+        result[key] = attributes[key];
+      }
+      return result;
+    }
+  };
 
-  require('./association/hasMany');
-
-  require('./association/hasOne');
-
-  Metro.Model.Associations = {
+  Metro.Model.Metadata = {
     ClassMethods: {
-      associations: function() {
-        return this._associations || (this._associations = {});
-      },
-      association: function(name) {
-        var association;
-        association = this.associations()[name];
-        if (!association) {
-          throw new Error("Reflection for '" + name + "' does not exist on '" + this.name + "'");
+      baseClass: function() {
+        if (this.__super__ && this.__super__.constructor.baseClass && this.__super__.constructor !== Metro.Model) {
+          return this.__super__.constructor.baseClass();
+        } else {
+          return this;
         }
-        return association;
       },
-      hasOne: function(name, options) {
+      stiName: function() {},
+      toParam: function() {
+        return Metro.Support.String.parameterize(this.className());
+      }
+    },
+    toLabel: function() {
+      return this.className();
+    },
+    toPath: function() {
+      return this.constructor.toParam() + "/" + this.toParam();
+    },
+    toParam: function() {
+      return this.get("id").toString();
+    }
+  };
+
+  Metro.Model.Inheritance = {
+    _computeType: function() {}
+  };
+
+  Metro.Model.Relation = (function() {
+
+    __extends(Relation, Metro.Object);
+
+    function Relation(owner, name, options, callback) {
+      var key, value;
+      if (options == null) options = {};
+      for (key in options) {
+        value = options[key];
+        this[key] = value;
+      }
+      this.owner = owner;
+      this.name = name;
+      this.targetClassName = options.type || options.className || Metro.namespaced(Metro.Support.String.camelize(name));
+      this.dependent || (this.dependent = false);
+      this.counterCache || (this.counterCache = false);
+      if (!this.hasOwnProperty("cache")) this.cache = false;
+      if (!this.hasOwnProperty("readOnly")) this.readOnly = false;
+      if (!this.hasOwnProperty("validate")) this.validate = false;
+      if (!this.hasOwnProperty("autoSave")) this.autoSave = false;
+      if (!this.hasOwnProperty("touch")) this.touch = false;
+      this.inverseOf || (this.inverseOf = void 0);
+      if (!this.hasOwnProperty("polymorphic")) this.polymorphic = false;
+      if (!this.hasOwnProperty("default")) this["default"] = false;
+    }
+
+    Relation.prototype.scoped = function(record) {
+      return new this.constructor.Scope({
+        model: Metro.constant(this.targetClassName),
+        owner: record,
+        relation: this
+      });
+    };
+
+    Relation.Scope = (function() {
+
+      __extends(Scope, Metro.Model.Scope);
+
+      Scope.prototype.constructable = function() {
+        return !!!this.relation.polymorphic;
+      };
+
+      function Scope(options) {
         if (options == null) options = {};
+        Scope.__super__.constructor.apply(this, arguments);
+        this.owner = options.owner;
+        this.relation = options.relation;
+        this.foreignKey = this.relation.foreignKey;
+      }
+
+      return Scope;
+
+    })();
+
+    return Relation;
+
+  })();
+
+  Metro.Model.Relation.BelongsTo = (function() {
+
+    __extends(BelongsTo, Metro.Model.Relation);
+
+    function BelongsTo(owner, name, options) {
+      var self;
+      if (options == null) options = {};
+      BelongsTo.__super__.constructor.call(this, owner, name, options);
+      owner.field("" + name + "Id", {
+        type: "Id"
+      });
+      owner.prototype[name] = function(callback) {
+        return this.relation(name).first(callback);
+      };
+      self = this;
+      owner.prototype["build" + (Metro.Support.String.camelize(name))] = function(attributes, callback) {
+        return this.buildRelation(name, attributes, callback);
+      };
+      owner.prototype["create" + (Metro.Support.String.camelize(name))] = function(attributes, callback) {
+        return this.createRelation(name, attributes, callback);
+      };
+    }
+
+    BelongsTo.Scope = (function() {
+
+      __extends(Scope, BelongsTo.Scope);
+
+      function Scope() {
+        Scope.__super__.constructor.apply(this, arguments);
+      }
+
+      return Scope;
+
+    })();
+
+    return BelongsTo;
+
+  })();
+
+  Metro.Model.Relation.HasMany = (function() {
+
+    __extends(HasMany, Metro.Model.Relation);
+
+    function HasMany(owner, name, options) {
+      if (options == null) options = {};
+      HasMany.__super__.constructor.call(this, owner, name, options);
+      owner.prototype[name] = function() {
+        return this.relation(name);
+      };
+      this.foreignKey = options.foreignKey || Metro.Support.String.camelize("" + owner.name + "Id", true);
+      if (this.cache) {
+        if (typeof this.cache === "string") {
+          this.cache = true;
+          this.cacheKey = this.cacheKey;
+        } else {
+          this.cacheKey = Metro.Support.String.singularize(name) + "Ids";
+        }
+        this.owner.field(this.cacheKey, {
+          type: "Array",
+          "default": []
+        });
+      }
+    }
+
+    HasMany.Scope = (function() {
+
+      __extends(Scope, HasMany.Scope);
+
+      function Scope(options) {
+        var defaults, id;
+        if (options == null) options = {};
+        Scope.__super__.constructor.apply(this, arguments);
+        id = this.owner.get("id");
+        if (this.foreignKey && id !== void 0) {
+          defaults = {};
+          defaults[this.foreignKey] = id;
+          this.where(defaults);
+        }
+      }
+
+      Scope.prototype.create = function(attributes, callback) {
+        var relation, self;
+        self = this;
+        relation = this.relation;
+        return this.store().create(Metro.Support.Object.extend(this.criteria.query, attributes), this.criteria.options, function(error, record) {
+          var updates;
+          if (!error) {
+            if (relation && relation.cache) {
+              updates = {};
+              updates[relation.cacheKey] = record.get("id");
+              return self.owner.updateAttributes({
+                "$push": updates
+              }, callback);
+            } else {
+              if (callback) return callback.call(this, error, record);
+            }
+          } else {
+            if (callback) return callback.call(this, error, record);
+          }
+        });
+      };
+
+      return Scope;
+
+    })();
+
+    return HasMany;
+
+  })();
+
+  Metro.Model.Relation.HasOne = (function() {
+
+    __extends(HasOne, Metro.Model.Relation);
+
+    function HasOne() {
+      HasOne.__super__.constructor.apply(this, arguments);
+    }
+
+    return HasOne;
+
+  })();
+
+  Metro.Model.Relations = {
+    ClassMethods: {
+      hasOne: function(name, options) {
+        return this.relations()[name] = new Metro.Model.Relation.HasOne(this, name, options);
       },
       hasMany: function(name, options) {
-        if (options == null) options = {};
-        return this.associations()[name] = new Metro.Model.Association.HasMany(this, name, options);
+        return this.relations()[name] = new Metro.Model.Relation.HasMany(this, name, options);
       },
       belongsTo: function(name, options) {
-        var association;
-        if (options == null) options = {};
-        this.associations()[name] = association = new Metro.Model.Association.BelongsTo(this, name, options);
-        this.key("" + name + "Id");
-        return association;
+        return this.relations()[name] = new Metro.Model.Relation.BelongsTo(this, name, options);
+      },
+      relations: function() {
+        return this._relations || (this._relations = {});
+      },
+      relation: function(name) {
+        var relation;
+        relation = this.relations()[name];
+        if (!relation) {
+          throw new Error("Relation '" + name + "' does not exist on '" + this.name + "'");
+        }
+        return relation;
       }
     },
     InstanceMethods: {
-      association: function(name) {
-        var _base;
-        return (_base = this.associations)[name] || (_base[name] = this.constructor.association(name).scoped(this));
+      relation: function(name) {
+        return this.constructor.relation(name).scoped(this);
+      },
+      buildRelation: function(name, attributes, callback) {
+        return this.relation(name).build(attributes, callback);
+      },
+      createRelation: function(name, attributes, callback) {
+        return this.relation(name).create(attributes, callback);
       }
     }
   };
 
-  Metro.Model.Attribute = (function() {
+  Metro.Model.Field = (function() {
 
-    function Attribute(name, options) {
+    function Field(owner, name, options) {
+      var key;
       if (options == null) options = {};
-      this.name = name;
+      this.owner = owner;
+      this.name = key = name;
       this.type = options.type || "string";
       this._default = options["default"];
-      this.typecastMethod = (function() {
-        switch (this.type) {
-          case Array:
-          case "array":
-            return this._typecastArray;
-          case Date:
-          case "date":
-          case "time":
-            return this._typecastDate;
-          case Number:
-          case "number":
-          case "integer":
-            return this._typecastInteger;
-          case "float":
-            return this._typecastFloat;
-          default:
-            return this._typecastString;
-        }
-      }).call(this);
+      this._encode = options.encode;
+      this._decode = options.decode;
+      if (Metro.accessors) {
+        Object.defineProperty(this.owner.prototype, name, {
+          enumerable: true,
+          configurable: true,
+          get: function() {
+            return this.get(key);
+          },
+          set: function(value) {
+            return this.set(key, value);
+          }
+        });
+      }
     }
 
-    Attribute.prototype.typecast = function(value) {
-      return this.typecastMethod.call(this, value);
-    };
-
-    Attribute.prototype._typecastArray = function(value) {
-      return value;
-    };
-
-    Attribute.prototype._typecastString = function(value) {
-      return value;
-    };
-
-    Attribute.prototype._typecastDate = function(value) {
-      return value;
-    };
-
-    Attribute.prototype._typecastInteger = function(value) {
-      if (value === null || value === void 0) return null;
-      return parseInt(value);
-    };
-
-    Attribute.prototype._typecastFloat = function(value) {
-      if (value === null || value === void 0) return null;
-      return parseFloat(value);
-    };
-
-    Attribute.prototype.defaultValue = function(record) {
+    Field.prototype.defaultValue = function(record) {
       var _default;
       _default = this._default;
-      switch (typeof _default) {
-        case 'function':
-          return _default.call(record);
-        default:
-          return _default;
+      if (Metro.Support.Object.isArray(_default)) {
+        return _default.concat();
+      } else if (Metro.Support.Object.isHash(_default)) {
+        return Metro.Support.Object.extend({}, _default);
+      } else if (typeof _default === "function") {
+        return _default.call(record);
+      } else {
+        return _default;
       }
     };
 
-    return Attribute;
+    Field.prototype.encode = function(value, binding) {
+      return this.code(this._encode, value, binding);
+    };
+
+    Field.prototype.decode = function(value, binding) {
+      return this.code(this._decode, value, binding);
+    };
+
+    Field.prototype.code = function(type, value, binding) {
+      switch (type) {
+        case "string":
+          return binding[type].call(binding[type], value);
+        case "function":
+          return type.call(_encode, value);
+        default:
+          return value;
+      }
+    };
+
+    return Field;
 
   })();
 
-  Metro.Model.Attributes = {
+  Metro.Model.Versioning = {};
+
+  Metro.Model.Fields = {
     ClassMethods: {
-      key: function(key, options) {
-        if (options == null) options = {};
-        this.keys()[key] = new Metro.Model.Attribute(key, options);
-        if (Metro.accessors) {
-          Object.defineProperty(this.prototype, key, {
-            enumerable: true,
-            configurable: true,
-            get: function() {
-              return this.get(key);
-            },
-            set: function(value) {
-              return this.set(key, value);
-            }
-          });
-        }
-        return this;
+      field: function(name, options) {
+        return this.fields()[name] = new Metro.Model.Field(this, name, options);
       },
-      keys: function() {
-        return this._keys || (this._keys = {});
+      fields: function() {
+        return this._fields || (this._fields = {});
       },
-      attribute: function(name) {
-        var attribute;
-        attribute = this.keys()[name];
-        if (!attribute) {
-          throw new Error("Attribute '" + name + "' does not exist on '" + this.name + "'");
-        }
-        return attribute;
+      schema: function() {
+        return this.fields();
       }
     },
     InstanceMethods: {
-      typecast: function(name, value) {
-        return this.constructor.attribute(name).typecast(value);
-      },
       get: function(name) {
-        var _base;
-        return (_base = this.attributes)[name] || (_base[name] = this.constructor.attribute(name).defaultValue(this));
+        if (!this.has(name)) {
+          this.attributes[name] = this.constructor.fields()[name].defaultValue(this);
+        }
+        return this.attributes[name];
       },
       set: function(name, value) {
-        this._attributeChange(name, value);
+        var beforeValue;
+        beforeValue = this._attributeChange(name, value);
         this.attributes[name] = value;
+        this.fire("change", {
+          beforeValue: beforeValue,
+          value: value
+        });
         return value;
       },
-      toUpdates: function() {
-        var array, attributes, key, result, _ref;
-        result = {};
-        attributes = this.attributes;
-        _ref = this.changes;
-        for (key in _ref) {
-          array = _ref[key];
-          result[key] = attributes[key];
-        }
-        return result;
+      has: function(name) {
+        return this.attributes.hasOwnProperty(name);
       }
     }
   };
 
   Metro.Model.Persistence = {
     ClassMethods: {
-      create: function(attributes, callback) {
-        return this.store().create(new this(attributes), callback);
+      load: function(array) {
+        var item, record, records, _i, _len;
+        if (!Metro.Support.Object.isArray(array)) array = [array];
+        records = this.store().records;
+        for (_i = 0, _len = array.length; _i < _len; _i++) {
+          item = array[_i];
+          record = item instanceof Metro.Model ? item : new this(item);
+          records[record.id] = record;
+        }
+        return records;
       },
-      update: function(query, attributes, callback) {
-        return this.store().update(query, attributes, callback);
+      create: function(attributes, callback) {
+        return this.scoped().create(attributes, callback);
+      },
+      update: function() {
+        var callback, ids, updates, _i, _ref;
+        ids = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), updates = arguments[_i++], callback = arguments[_i++];
+        return (_ref = this.scoped()).update.apply(_ref, __slice.call(ids).concat([updates], [callback]));
+      },
+      updateAll: function(updates, query, callback) {
+        return this.scoped().updateAll(updates, query, callback);
       },
       destroy: function(query, callback) {
-        return this.store().destroy(query, callback);
+        return this.scoped().destroy(query, callback);
       },
-      updateAll: function() {},
       deleteAll: function() {
-        return this.store().clear();
+        return this.scoped().deleteAll();
       },
       store: function(value) {
-        if (value) this._store = value;
-        return this._store || (this._store = new Metro.Store.Memory);
-      }
+        if (!value && this._store) return this._store;
+        if (typeof value === "object") {
+          this._store || (this._store = new this.defaultStore({
+            name: this.collectionName(),
+            className: Metro.namespaced(this.name)
+          }));
+          Metro.Support.Object.extend(this._store, value);
+        } else if (value) {
+          this._store = value;
+        }
+        this._store || (this._store = new this.defaultStore({
+          name: this.collectionName(),
+          className: Metro.namespaced(this.name)
+        }));
+        return this._store;
+      },
+      defaultStore: Metro.Store.Memory,
+      collectionName: function() {
+        return Metro.Support.String.camelize(Metro.Support.String.pluralize(this.name), true);
+      },
+      resourceName: function() {
+        return Metro.Support.String.camelize(this.name, true);
+      },
+      clone: function(model) {}
     },
     InstanceMethods: {
       isNew: function() {
-        return !!!attributes.id;
+        return !!!this.attributes.id;
       },
       save: function(callback) {
         if (this.isNew()) {
           return this._create(callback);
         } else {
-          return this._update(callback);
+          return this._update(this.toUpdates(), callback);
         }
       },
-      _update: function(callback) {
-        return this.constructor.update(this.toUpdates(), callback);
+      _update: function(attributes, callback) {
+        var _this = this;
+        this.constructor.update(this.id, attributes, function(error) {
+          if (!error) _this.changes = {};
+          if (callback) return callback.call(_this, error);
+        });
+        return this;
       },
       _create: function(callback) {
-        return this.constructor.create(this.toUpdates(), callback);
+        var _this = this;
+        this.constructor.create(this.attributes, function(error, docs) {
+          if (error) throw error;
+          _this.changes = {};
+          if (callback) return callback.call(_this, error);
+        });
+        return this;
       },
-      reset: function() {},
-      updateAttribute: function(key, value) {},
-      updateAttributes: function(attributes) {
-        return this.constructor.update(attributes, callback);
+      updateAttributes: function(attributes, callback) {
+        return this._update(attributes, callback);
       },
-      increment: function(attribute, amount) {
-        if (amount == null) amount = 1;
+      "delete": function(callback) {
+        var _this = this;
+        if (this.isNew()) {
+          if (callback) callback.apply(null, this);
+        } else {
+          this.constructor.destroy({
+            id: this.id
+          }, function(error) {
+            if (!error) delete _this.attributes.id;
+            if (callback) return callback.apply(_this, error);
+          });
+        }
+        return this;
       },
-      decrement: function(attribute, amount) {
-        if (amount == null) amount = 1;
+      destroy: function(callback) {
+        return this["delete"](function(error) {
+          if (error) throw error;
+          if (callback) return callback.apply(error, this);
+        });
       },
-      reload: function() {},
-      "delete": function() {},
-      destroy: function() {},
-      isDestroyed: function() {},
       isPersisted: function() {
         return !!this.isNew();
       },
       toObject: function() {
         return this.attributes;
       },
-      isDirty: function() {
-        return Metro.Support.Object.isPresent(this.changes);
-      },
-      _attributeChange: function(attribute, value) {
-        var array, beforeValue, _base;
-        array = (_base = this.changes)[attribute] || (_base[attribute] = []);
-        beforeValue = array[0] || (array[0] = this.attributes[attribute]);
-        array[1] = value;
-        if (array[0] === array[1]) array = null;
-        if (array) {
-          this.changes[attribute] = array;
-        } else {
-          delete this.changes[attribute];
-        }
-        return beforeValue;
+      clone: function() {},
+      reset: function() {},
+      reload: function() {},
+      toggle: function(name) {}
+    }
+  };
+
+  Metro.Model.Atomic = {
+    ClassMethods: {
+      inc: function(attribute, amount) {
+        if (amount == null) amount = 1;
       }
+    },
+    inc: function(attribute, amount) {
+      if (amount == null) amount = 1;
     }
   };
 
@@ -1170,83 +2113,137 @@
       scope: function(name, scope) {
         return this[name] = scope instanceof Metro.Model.Scope ? scope : this.where(scope);
       },
-      where: function() {
-        var _ref;
-        return (_ref = this.scoped()).where.apply(_ref, arguments);
-      },
-      order: function() {
-        var _ref;
-        return (_ref = this.scoped()).order.apply(_ref, arguments);
-      },
-      limit: function() {
-        var _ref;
-        return (_ref = this.scoped()).limit.apply(_ref, arguments);
-      },
-      select: function() {
-        var _ref;
-        return (_ref = this.scoped()).select.apply(_ref, arguments);
-      },
-      joins: function() {
-        var _ref;
-        return (_ref = this.scoped()).joins.apply(_ref, arguments);
-      },
-      includes: function() {
-        var _ref;
-        return (_ref = this.scoped()).includes.apply(_ref, arguments);
-      },
-      within: function() {
-        var _ref;
-        return (_ref = this.scoped()).within.apply(_ref, arguments);
-      },
       scoped: function() {
-        return new Metro.Model.Scope(Metro.namespaced(this.name));
-      },
-      all: function(callback) {
-        return this.store().all(callback);
-      },
-      first: function(callback) {
-        return this.store().first(callback);
-      },
-      last: function(callback) {
-        return this.store().last(callback);
-      },
-      find: function(id, callback) {
-        return this.store().find(id, callback);
-      },
-      count: function(callback) {
-        return this.store().count(callback);
-      },
-      exists: function(callback) {
-        return this.store().exists(callback);
+        var scope;
+        scope = new Metro.Model.Scope({
+          model: this
+        });
+        if (this.baseClass().name !== this.name) {
+          scope.where({
+            type: this.name
+          });
+        }
+        return scope;
       }
+    }
+  };
+
+  _ref = Metro.Model.Scope.scopes;
+  _fn = function(_key) {
+    return Metro.Model.Scopes.ClassMethods[_key] = function() {
+      var _ref2;
+      return (_ref2 = this.scoped())[_key].apply(_ref2, arguments);
+    };
+  };
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    key = _ref[_i];
+    _fn(key);
+  }
+
+  _ref2 = Metro.Model.Scope.finders;
+  _fn2 = function(_key) {
+    return Metro.Model.Scopes.ClassMethods[_key] = function() {
+      var _ref3;
+      return (_ref3 = this.scoped())[_key].apply(_ref3, arguments);
+    };
+  };
+  for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+    key = _ref2[_j];
+    _fn2(key);
+  }
+
+  Metro.Model.NestedAttributes = {
+    ClassMethods: {
+      acceptsNestedAttributesFor: function() {}
+    },
+    assignNestedAttributesForOneToOneAssociation: function(associationName, attributes, assignmentOpts) {
+      if (assignmentOpts == null) assignmentOpts = {};
+    },
+    assignNestedAttributesForCollectionAssociation: function(associationName, attributesCollection, assignmentOpts) {
+      if (assignmentOpts == null) assignmentOpts = {};
     }
   };
 
   Metro.Model.Serialization = {
     ClassMethods: {
       fromJSON: function(data) {
-        var i, record, records, _len;
+        var i, record, records, _len3;
         records = JSON.parse(data);
         if (!(records instanceof Array)) records = [records];
-        for (i = 0, _len = records.length; i < _len; i++) {
+        for (i = 0, _len3 = records.length; i < _len3; i++) {
           record = records[i];
           records[i] = new this(record);
         }
         return records;
       },
-      fromForm: function(data) {}
+      fromForm: function(data) {},
+      fromXML: function(data) {},
+      toJSON: function(records, options) {
+        if (options == null) options = {};
+        return JSON.stringify(records);
+      }
     },
     toXML: function() {},
-    toJSON: function() {
-      return JSON.stringify(this.attributes);
+    toJSON: function(options) {
+      return JSON.stringify(this._serializableHash(options));
     },
     toObject: function() {
       return this.attributes;
     },
     clone: function() {
       return new this.constructor(Metro.Support.Object.clone(this.attributes));
+    },
+    _serializableHash: function(options) {
+      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _k, _l, _len3, _len4, _len5, _len6, _m;
+      if (options == null) options = {};
+      result = {};
+      attributeNames = Metro.Support.Object.keys(this.attributes);
+      if (only = options.only) {
+        attributeNames = _.union(Metro.Support.Object.toArray(only), attributeNames);
+      } else if (except = options.except) {
+        attributeNames = _.difference(Metro.Support.Object.toArray(except), attributeNames);
+      }
+      for (_k = 0, _len3 = attributeNames.length; _k < _len3; _k++) {
+        name = attributeNames[_k];
+        result[name] = this._readAttributeForSerialization(name);
+      }
+      if (methods = options.methods) {
+        methodNames = Metro.Support.Object.toArray(methods);
+        for (_l = 0, _len4 = methods.length; _l < _len4; _l++) {
+          name = methods[_l];
+          result[name] = this[name]();
+        }
+      }
+      if (includes = options.include) {
+        includes = Metro.Support.Object.toArray(includes);
+        for (_m = 0, _len5 = includes.length; _m < _len5; _m++) {
+          include = includes[_m];
+          if (!Metro.Support.Object.isHash(include)) {
+            tmp = {};
+            tmp[include] = {};
+            include = tmp;
+            tmp = void 0;
+          }
+          for (name in include) {
+            opts = include[name];
+            records = this[name]().all();
+            for (i = 0, _len6 = records.length; i < _len6; i++) {
+              record = records[i];
+              records[i] = record._serializableHash(opts);
+            }
+            result[name] = records;
+          }
+        }
+      }
+      return result;
+    },
+    _readAttributeForSerialization: function(name, type) {
+      if (type == null) type = "json";
+      return this[name];
     }
   };
+
+  Metro.Model.States = {};
 
   Metro.Model.Validator = (function() {
 
@@ -1271,11 +2268,11 @@
     }
 
     Validator.prototype.validateEach = function(record, errors) {
-      var attribute, success, _i, _len, _ref;
+      var attribute, success, _k, _len3, _ref3;
       success = true;
-      _ref = this.attributes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        attribute = _ref[_i];
+      _ref3 = this.attributes;
+      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+        attribute = _ref3[_k];
         if (!this.validate(record, attribute, errors)) success = false;
       }
       return success;
@@ -1285,13 +2282,133 @@
 
   })();
 
-  require('./validator/format');
+  Metro.Model.Validator.Format = (function() {
 
-  require('./validator/length');
+    function Format(value, attributes) {
+      Format.__super__.constructor.call(this, value, attributes);
+      this.value = typeof value === 'string' ? new RegExp(value) : value;
+    }
 
-  require('./validator/presence');
+    Format.prototype.validate = function(record, attribute, errors) {
+      var value;
+      value = record[attribute];
+      if (!this.value.exec(value)) {
+        errors[attribute] || (errors[attribute] = []);
+        errors[attribute].push(Metro.t("model.errors.format", {
+          attribute: attribute,
+          value: this.value.toString()
+        }));
+        return false;
+      }
+      return true;
+    };
 
-  require('./validator/uniqueness');
+    return Format;
+
+  })();
+
+  Metro.Model.Validator.Length = (function() {
+
+    __extends(Length, Metro.Model.Validator);
+
+    function Length(name, value, attributes) {
+      Length.__super__.constructor.apply(this, arguments);
+      this.validate = (function() {
+        switch (name) {
+          case "min":
+            return this.validateMinimum;
+          case "max":
+            return this.validateMaximum;
+          default:
+            return this.validateLength;
+        }
+      }).call(this);
+    }
+
+    Length.prototype.validateMinimum = function(record, attribute, errors) {
+      var value;
+      value = record[attribute];
+      if (!(typeof value === 'number' && value >= this.value)) {
+        errors[attribute] || (errors[attribute] = []);
+        errors[attribute].push(Metro.t("model.errors.minimum", {
+          attribute: attribute,
+          value: this.value
+        }));
+        return false;
+      }
+      return true;
+    };
+
+    Length.prototype.validateMaximum = function(record, attribute, errors) {
+      var value;
+      value = record[attribute];
+      if (!(typeof value === 'number' && value <= this.value)) {
+        errors[attribute] || (errors[attribute] = []);
+        errors[attribute].push(Metro.t("model.errors.maximum", {
+          attribute: attribute,
+          value: this.value
+        }));
+        return false;
+      }
+      return true;
+    };
+
+    Length.prototype.validateLength = function(record, attribute, errors) {
+      var value;
+      value = record[attribute];
+      if (!(typeof value === 'number' && value === this.value)) {
+        errors[attribute] || (errors[attribute] = []);
+        errors[attribute].push(Metro.t("model.errors.length", {
+          attribute: attribute,
+          value: this.value
+        }));
+        return false;
+      }
+      return true;
+    };
+
+    return Length;
+
+  })();
+
+  Metro.Model.Validator.Presence = (function() {
+
+    __extends(Presence, Metro.Model.Validator);
+
+    function Presence() {
+      Presence.__super__.constructor.apply(this, arguments);
+    }
+
+    Presence.prototype.validate = function(record, attribute, errors) {
+      if (!Metro.Support.Object.isPresent(record[attribute])) {
+        errors[attribute] || (errors[attribute] = []);
+        errors[attribute].push(Metro.t("model.errors.presence", {
+          attribute: attribute
+        }));
+        return false;
+      }
+      return true;
+    };
+
+    return Presence;
+
+  })();
+
+  Metro.Model.Validator.Uniqueness = (function() {
+
+    __extends(Uniqueness, Metro.Model.Validator);
+
+    function Uniqueness() {
+      Uniqueness.__super__.constructor.apply(this, arguments);
+    }
+
+    Uniqueness.prototype.validate = function(record, attribute, errors) {
+      return true;
+    };
+
+    return Uniqueness;
+
+  })();
 
   Metro.Model.Validations = {
     ClassMethods: {
@@ -1315,73 +2432,101 @@
       }
     },
     validate: function() {
-      var errors, success, validator, validators, _i, _len;
+      var errors, success, validator, validators, _k, _len3;
       validators = this.constructor.validators();
       success = true;
-      errors = this.errors;
-      errors.length = 0;
-      for (_i = 0, _len = validators.length; _i < _len; _i++) {
-        validator = validators[_i];
+      errors = this.errors = {};
+      for (_k = 0, _len3 = validators.length; _k < _len3; _k++) {
+        validator = validators[_k];
         if (!validator.validateEach(this, errors)) success = false;
       }
       return success;
     }
   };
 
+  Metro.Model.Timestamp = {
+    CreatedAt: {},
+    UpdatedAt: {}
+  };
+
   Metro.Model.include(Metro.Model.Persistence);
+
+  Metro.Model.include(Metro.Model.Atomic);
+
+  Metro.Model.include(Metro.Model.Versioning);
+
+  Metro.Model.include(Metro.Model.Metadata);
+
+  Metro.Model.include(Metro.Model.Dirty);
+
+  Metro.Model.include(Metro.Model.Criteria);
 
   Metro.Model.include(Metro.Model.Scopes);
 
+  Metro.Model.include(Metro.Model.States);
+
+  Metro.Model.include(Metro.Model.Inheritance);
+
   Metro.Model.include(Metro.Model.Serialization);
 
-  Metro.Model.include(Metro.Model.Associations);
+  Metro.Model.include(Metro.Model.NestedAttributes);
+
+  Metro.Model.include(Metro.Model.Relations);
 
   Metro.Model.include(Metro.Model.Validations);
 
-  Metro.Model.include(Metro.Model.Attributes);
+  Metro.Model.include(Metro.Model.Callbacks);
+
+  Metro.Model.include(Metro.Model.Fields);
 
   Metro.View = (function() {
 
     __extends(View, Metro.Object);
 
     View.extend({
-      loadPaths: ["./app/views"],
       engine: "jade",
       prettyPrint: false,
+      loadPaths: ["app/views"],
       store: function(store) {
         if (store) this._store = store;
-        return this._store || (this._store = new Metro.Store.FileSystem);
+        return this._store || (this._store = new Metro.Store.Memory);
       }
     });
 
-    function View(controller) {
-      this.controller = controller;
+    function View(context) {
+      if (context == null) context = {};
+      this._context = context;
     }
-
-    View.prototype.store = function() {
-      return this.constructor.store();
-    };
 
     return View;
 
   })();
 
   Metro.View.Helpers = {
+    titleTag: function(title) {
+      return "<title>" + title + "</title>";
+    },
+    metaTag: function(name, content) {
+      return "<meta name=\"" + name + "\" content=\"" + content + "\"/>";
+    },
+    tag: function(name, options) {},
+    linkTag: function(title, path, options) {},
+    imageTag: function(path, options) {},
+    csrfMetaTag: function() {
+      return this.metaTag("csrf-token", this.request.session._csrf);
+    },
     contentTypeTag: function(type) {
       if (type == null) type = "UTF-8";
-      return "\n    <meta charset=\"" + type + "\" />";
-    },
-    t: function(string) {
-      return Metro.translate(string);
+      return "<meta charset=\"" + type + "\" />";
     },
     javascriptTag: function(path) {
-      return "\n    <script type=\"text/javascript\" src=\"" + path + "\" ></script>";
+      return "<script type=\"text/javascript\" src=\"" + path + "\" ></script>";
     },
     stylesheetTag: function(path) {
-      return "\n    <link href=\"" + path + "\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>";
+      return "<link href=\"" + path + "\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>";
     },
     javascripts: function(source) {
-      var manifest, path, paths, result, _i, _len;
+      var manifest, path, paths, result, _k, _len3;
       if (Metro.env === "production") {
         manifest = Metro.assetManifest;
         source = "" + source + ".js";
@@ -1392,15 +2537,15 @@
       } else {
         paths = Metro.assets.javascripts[source];
         result = [];
-        for (_i = 0, _len = paths.length; _i < _len; _i++) {
-          path = paths[_i];
+        for (_k = 0, _len3 = paths.length; _k < _len3; _k++) {
+          path = paths[_k];
           result.push(this.javascriptTag("/javascripts" + path + ".js"));
         }
         return result.join("");
       }
     },
     stylesheets: function(source) {
-      var manifest, path, paths, result, _i, _len;
+      var manifest, path, paths, result, _k, _len3;
       if (Metro.env === "production") {
         manifest = Metro.assetManifest;
         source = "" + source + ".css";
@@ -1411,21 +2556,94 @@
       } else {
         paths = Metro.assets.stylesheets[source];
         result = [];
-        for (_i = 0, _len = paths.length; _i < _len; _i++) {
-          path = paths[_i];
+        for (_k = 0, _len3 = paths.length; _k < _len3; _k++) {
+          path = paths[_k];
           result.push(this.stylesheetTag("/stylesheets" + path + ".css"));
         }
         return result.join("");
       }
     },
-    titleTag: function(title) {
-      return "<title>" + title + "</title>";
+    t: function(string) {
+      return Metro.translate(string);
     },
-    metaTag: function(name, content) {},
-    tag: function(name, options) {},
-    linkTag: function(title, path, options) {},
-    imageTag: function(path, options) {}
+    l: function(object) {
+      return Metro.localize(string);
+    }
   };
+
+  Metro.View.Rendering = {
+    render: function(options, callback) {
+      var self;
+      options.type || (options.type = this.constructor.engine);
+      if (!options.hasOwnProperty("layout") && this._context.layout) {
+        options.layout = this._context.layout();
+      }
+      options.locals = this._renderingContext(options);
+      self = this;
+      return this._renderBody(options, function(error, body) {
+        return self._renderLayout(body, options, callback);
+      });
+    },
+    _renderBody: function(options, callback) {
+      if (options.text) {
+        return callback(null, options.text);
+      } else if (options.json) {
+        return callback(null, typeof options.json === "string" ? options.json : JSON.stringify(options.json));
+      } else {
+        if (!options.inline) {
+          options.template = this._readTemplate(options.template, options.type);
+        }
+        return this._renderString(options.template, options, callback);
+      }
+    },
+    _renderLayout: function(body, options, callback) {
+      var layout;
+      if (options.layout) {
+        layout = this._readTemplate("layouts/" + options.layout, options.type);
+        options.locals.yield = body;
+        return this._renderString(layout, options, callback);
+      } else {
+        return callback(null, body);
+      }
+    },
+    _renderString: function(string, options, callback) {
+      var engine;
+      if (options == null) options = {};
+      if (options.type) {
+        engine = require("shift").engine(options.type);
+        return engine.render(string, options.locals, callback);
+      } else {
+        engine = require("shift");
+        options.locals.string = string;
+        return engine.render(options.locals, callback);
+      }
+    },
+    _renderingContext: function(options) {
+      var key, locals, value, _ref3;
+      locals = this;
+      _ref3 = this._context;
+      for (key in _ref3) {
+        value = _ref3[key];
+        if (!key.match(/^(render|constructor)/)) this[key] = value;
+      }
+      locals = Metro.Support.Object.extend(locals, options.locals);
+      if (this.constructor.prettyPrint) locals.pretty = true;
+      return locals;
+    },
+    _readTemplate: function(path, ext) {
+      var template;
+      template = this.constructor.store().find({
+        path: path,
+        ext: ext
+      });
+      if (!template) throw new Error("Template '" + path + "' was not found.");
+      return template;
+    }
+  };
+
+  Metro.View.include(Metro.View.Rendering);
+
+  Metro.View.include(Metro.View.Helpers);
 
   Metro.Controller = (function() {
 
@@ -1445,7 +2663,58 @@
 
   })();
 
-  Metro.Controller.Caching = {};
+  Metro.Controller.Callbacks = {
+    ClassMethods: {
+      filters: function() {
+        return this._filters || (this._filters = {
+          before: [],
+          after: []
+        });
+      },
+      beforeFilter: function() {
+        var args;
+        args = Metro.Support.Array.args(arguments);
+        this.filters().before.push({
+          method: args.shift(),
+          options: args.shift()
+        });
+        return this;
+      },
+      afterFilter: function() {}
+    },
+    runFilters: function(block, callback) {
+      var afterFilters, beforeFilters, iterator, self;
+      self = this;
+      beforeFilters = this.constructor.filters().before;
+      afterFilters = this.constructor.filters().after;
+      iterator = function(filter, next) {
+        var method, result;
+        method = filter.method;
+        if (typeof method === "string") {
+          if (!self[method]) {
+            throw new Error("Method '" + method + "' not defined on " + self.constructor.name);
+          }
+          method = self[method];
+        }
+        switch (method.length) {
+          case 0:
+            result = method.call(self);
+            if (!result) return next(new Error("did not pass filter"));
+            return next();
+          default:
+            return method.call(self, function(error, result) {
+              if (error) return next(error);
+              if (!result) return next(new Error("did not pass filter"));
+              return next();
+            });
+        }
+      };
+      return require('async').forEachSeries(beforeFilters, iterator, function(error) {
+        if (error) return callback(error);
+        return block.call(self);
+      });
+    }
+  };
 
   Metro.Controller.Helpers = {
     ClassMethods: {
@@ -1479,30 +2748,125 @@
     }
   };
 
+  Metro.Controller.Params = {
+    ClassMethods: {
+      params: function(options, callback) {
+        if (typeof options === 'function') {
+          callback = options;
+          options = {};
+        }
+        if (options) {
+          this._paramsOptions = Metro.Support.Object.extend(this._paramsOptions || {}, options);
+          callback.call(this);
+        }
+        return this._params || (this._params = {});
+      },
+      param: function(key, options) {
+        if (options == null) options = {};
+        this._params || (this._params = {});
+        return this._params[key] = Metro.Net.Param.create(key, Metro.Support.Object.extend({}, this._paramsOptions || {}, options));
+      }
+    },
+    criteria: function() {
+      var criteria, name, params, parser, parsers;
+      if (this._criteria) return this._criteria;
+      this._criteria = criteria = new Metro.Model.Criteria;
+      parsers = this.constructor.params();
+      params = this.params;
+      for (name in parsers) {
+        parser = parsers[name];
+        if (params.hasOwnProperty(name)) {
+          criteria.where(parser.toCriteria(params[name]));
+        }
+      }
+      return criteria;
+    },
+    withParams: function(path, newParams) {
+      var params, queryString;
+      if (newParams == null) newParams = {};
+      params = Metro.Support.Object.extend(this.query, newParams);
+      if (Metro.Support.Object.blank(params)) return path;
+      queryString = this.queryFor(params);
+      return "" + path + "?" + query_string;
+    },
+    queryFor: function(params) {
+      if (params == null) params = {};
+    },
+    paramOperators: function(key) {}
+  };
+
+  Metro.Controller.Processing = {
+    call: function(request, response, next) {
+      this.request = request;
+      this.response = response;
+      this.params = this.request.params || {};
+      this.cookies = this.request.cookies || {};
+      this.query = this.request.query || {};
+      this.session = this.request.session || {};
+      this.format = this.params.format;
+      this.headers = {};
+      this.callback = next;
+      if (this.format && this.format !== "undefined") {
+        this.contentType = Metro.Support.Path.contentType(this.format);
+      } else {
+        this.contentType = "text/html";
+      }
+      return this.process();
+    },
+    process: function() {
+      var block;
+      var _this = this;
+      this.processQuery();
+      block = function(callback) {
+        return _this[_this.params.action].call(_this, callback);
+      };
+      return this.runFilters(block, function(error) {
+        console.log("ERROR in callback!");
+        return console.log(error);
+      });
+    },
+    processQuery: function() {},
+    clear: function() {
+      this.request = null;
+      this.response = null;
+      return this.headers = null;
+    }
+  };
+
   Metro.Controller.Redirecting = {
     redirectTo: function() {}
   };
 
   Metro.Controller.Rendering = {
     render: function() {
-      var args, callback, finish, self, view, _base;
+      var args, callback, options, self, view, _base;
       args = Metro.Support.Array.args(arguments);
       if (args.length >= 2 && typeof args[args.length - 1] === "function") {
         callback = args.pop();
+      } else {
+        callback = null;
+      }
+      if (args.length > 1 && typeof args[args.length - 1] === "object") {
+        options = args.pop();
+      }
+      if (typeof args[0] === "object") {
+        options = args[0];
+      } else {
+        options || (options = {});
+        options.template = args[0];
       }
       view = new Metro.View(this);
       (_base = this.headers)["Content-Type"] || (_base["Content-Type"] = this.contentType);
       self = this;
-      args.push(finish = function(error, body) {
+      return view.render.call(view, options, function(error, body) {
         if (error) {
           self.body = error.stack;
         } else {
           self.body = body;
         }
         if (callback) callback(error, body);
-        return self.callback();
+        if (self.callback) return self.callback();
       });
-      return view.render.apply(view, args);
     },
     renderToBody: function(options) {
       this._processOptions(options);
@@ -1516,6 +2880,26 @@
     _renderTemplate: function(options) {
       return this.template.render(viewContext, options);
     }
+  };
+
+  Metro.Controller.Resources = {
+    ClassMethods: {
+      resource: function(options) {
+        if (options) this._resource = options;
+        return this._resource;
+      }
+    },
+    _create: function(callback) {},
+    resource: function() {},
+    collection: function() {},
+    resourceClass: function() {},
+    buildResource: function() {},
+    createResource: function() {},
+    updateResource: function() {},
+    destroyResource: function() {},
+    parent: function() {},
+    endOfAssociationChain: function() {},
+    associationChain: function() {}
   };
 
   Metro.Controller.Responding = {
@@ -1545,37 +2929,15 @@
             action: this.action
           });
       }
-    },
-    call: function(request, response, next) {
-      this.request = request;
-      this.response = response;
-      this.params = this.request.params || {};
-      this.cookies = this.request.cookies || {};
-      this.query = this.request.query || {};
-      this.session = this.request.session || {};
-      this.format = this.params.format;
-      this.headers = {};
-      this.callback = next;
-      if (this.format && this.format !== "undefined") {
-        this.contentType = Metro.Support.Path.contentType(this.format);
-      } else {
-        this.contentType = "text/html";
-      }
-      return this.process();
-    },
-    process: function() {
-      this.processQuery();
-      return this[this.params.action]();
-    },
-    processQuery: function() {},
-    clear: function() {
-      this.request = null;
-      this.response = null;
-      return this.headers = null;
     }
   };
 
-  Metro.Controller.include(Metro.Controller.Caching);
+  Metro.Controller.Sockets = {
+    broadcast: function() {},
+    emit: function() {}
+  };
+
+  Metro.Controller.include(Metro.Controller.Callbacks);
 
   Metro.Controller.include(Metro.Controller.Helpers);
 
@@ -1583,13 +2945,178 @@
 
   Metro.Controller.include(Metro.Controller.Layouts);
 
+  Metro.Controller.include(Metro.Controller.Params);
+
+  Metro.Controller.include(Metro.Controller.Processing);
+
   Metro.Controller.include(Metro.Controller.Redirecting);
 
   Metro.Controller.include(Metro.Controller.Rendering);
 
+  Metro.Controller.include(Metro.Controller.Resources);
+
   Metro.Controller.include(Metro.Controller.Responding);
 
-  Metro.Route = (function() {
+  Metro.Controller.include(Metro.Controller.Sockets);
+
+  Metro.Net = {};
+
+  Metro.Net.Agent = (function() {
+
+    function Agent(attributes) {
+      var key, value;
+      if (attributes == null) attributes = {};
+      for (key in attributes) {
+        value = attributes[key];
+        this[key] = value;
+      }
+    }
+
+    return Agent;
+
+  })();
+
+  Metro.Net.Param = (function() {
+
+    Param.perPage = 20;
+
+    Param.sortDirection = "ASC";
+
+    Param.sortKey = "sort";
+
+    Param.limitKey = "limit";
+
+    Param.pageKey = "page";
+
+    Param.separator = "_";
+
+    Param.operators = {
+      gte: ":value..t",
+      gt: ":value...t",
+      lte: "t..:value",
+      lte: "t...:value",
+      rangeInclusive: ":i..:f",
+      rangeExclusive: ":i...:f",
+      "in": [",", "+OR+"],
+      nin: "-",
+      all: "[:value]",
+      nil: "[-]",
+      notNil: "[+]",
+      asc: ["+", ""],
+      desc: "-",
+      geo: ":lat,:lng,:radius"
+    };
+
+    Param.create = function(key, options) {
+      options.type || (options.type = "String");
+      return new Metro.Net.Param[options.type](key, options);
+    };
+
+    function Param(key, options) {
+      if (options == null) options = {};
+      this.controller = options.controller;
+      this.key = key;
+      this.attribute = options.as || this.key;
+      this.modelName = options.modelName;
+      if (typeof modelName !== "undefined" && modelName !== null) {
+        this.namespace = Metro.Support.String.pluralize(this.modelName);
+      }
+      this.exact = options.exact || false;
+      this["default"] = options["default"];
+    }
+
+    Param.prototype.parse = function(value) {
+      return value;
+    };
+
+    Param.prototype.render = function(value) {
+      return value;
+    };
+
+    Param.prototype.toCriteria = function(value) {
+      var result;
+      return result = this.parse(value);
+    };
+
+    Param.prototype.parseValue = function(value, operators) {
+      return {
+        namespace: this.namespace,
+        key: this.key,
+        operators: operators,
+        value: value,
+        attribute: this.attribute
+      };
+    };
+
+    Param.prototype._clean = function(string) {
+      return string.replace(/^-/, "").replace(/^\+-/, "").replace(/^'|'$/, "").replace("+", " ").replace(/^\^/, "").replace(/\$$/, "").replace(/^\s+|\s+$/, "");
+    };
+
+    return Param;
+
+  })();
+
+  Metro.Net.Param.String = (function() {
+
+    __extends(String, Metro.Net.Param);
+
+    function String() {
+      String.__super__.constructor.apply(this, arguments);
+    }
+
+    String.prototype.parse = function(value) {
+      var arrays, i, node, values, _len3;
+      var _this = this;
+      arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/);
+      for (i = 0, _len3 = arrays.length; i < _len3; i++) {
+        node = arrays[i];
+        values = [];
+        node.replace(/([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, function(_, token) {
+          var exact, negation, operators;
+          negation = false;
+          exact = false;
+          token = token.replace(/^(\+?-+)/, function(_, $1) {
+            negation = $1 && $1.length > 0;
+            return "";
+          });
+          token = token.replace(/^\'(.+)\'$/, function(_, $1) {
+            exact = $1 && $1.length > 0;
+            return $1;
+          });
+          if (negation) {
+            operators = [exact ? "!=" : "!~"];
+          } else {
+            operators = [exact ? "=" : "=~"];
+          }
+          if (!!token.match(/^\+?\-?\^/)) operators.push("^");
+          if (!!token.match(/\$$/)) operators.push("$");
+          values.push(_this.parseValue(_this._clean(token), operators));
+          return _;
+        });
+        arrays[i] = values;
+      }
+      return arrays;
+    };
+
+    String.prototype.toCriteria = function(value) {
+      var node, nodes, result, _k, _len3, _name;
+      nodes = String.__super__.toCriteria.call(this, value)[0];
+      result = {};
+      for (_k = 0, _len3 = nodes.length; _k < _len3; _k++) {
+        node = nodes[_k];
+        result[_name = node.attribute] || (result[_name] = {});
+        result[node.attribute][node.operators[0]] = node.value;
+      }
+      return result;
+    };
+
+    return String;
+
+  })();
+
+  Metro.Net.Route = (function() {
+
+    __extends(Route, Metro.Object);
 
     Route.store = function() {
       return this._store || (this._store = []);
@@ -1603,15 +3130,19 @@
       return this.store();
     };
 
+    Route.clear = function() {
+      return this._store = [];
+    };
+
     Route.draw = function(callback) {
-      return callback.apply(new Metro.Route.DSL(this));
+      return callback.apply(new Metro.Net.Route.DSL(this));
     };
 
     function Route(options) {
       options || (options = options);
       this.path = options.path;
       this.name = options.name;
-      this.method = options.method;
+      this.method = (options.method || "GET").toUpperCase();
       this.ip = options.ip;
       this.defaults = options.defaults || {};
       this.constraints = options.constraints;
@@ -1625,8 +3156,67 @@
       }
     }
 
-    Route.prototype.match = function(path) {
-      return this.pattern.exec(path);
+    Route.prototype.match = function(requestOrPath) {
+      var match, path;
+      if (typeof requestOrPath === "string") {
+        return this.pattern.exec(requestOrPath);
+      }
+      path = requestOrPath.location.path;
+      if (requestOrPath.method.toUpperCase() !== this.method) return null;
+      match = this.pattern.exec(path);
+      if (!match) return null;
+      if (!this.matchConstraints(requestOrPath)) return null;
+      return match;
+    };
+
+    Route.prototype.matchConstraints = function(request) {
+      var constraints, key, value, _results;
+      constraints = this.constraints;
+      switch (typeof constraints) {
+        case "object":
+          _results = [];
+          for (key in constraints) {
+            value = constraints[key];
+            switch (typeof value) {
+              case "string":
+              case "number":
+                if (request[key] !== value) {
+                  return false;
+                } else {
+                  _results.push(void 0);
+                }
+                break;
+              case "function":
+              case "object":
+                if (!request.location[key].match(value)) {
+                  return false;
+                } else {
+                  _results.push(void 0);
+                }
+                break;
+              default:
+                _results.push(void 0);
+            }
+          }
+          return _results;
+          break;
+        case "function":
+          return constraints.call(request, request);
+        default:
+          return false;
+      }
+    };
+
+    Route.prototype.urlFor = function(options) {
+      var key, result, value;
+      if (options == null) options = {};
+      result = this.path;
+      for (key in options) {
+        value = options[key];
+        result = result.replace(new RegExp(":" + key + "\\??", "g"), value);
+      }
+      result = result.replace(new RegExp("\\.?:\\w+\\??", "g"), "");
+      return result;
     };
 
     Route.prototype.extractPattern = function(path, caseSensitive, strict) {
@@ -1663,45 +3253,64 @@
 
   })();
 
-  /*
-  * Metro.Route.DSL
-  */
+  Metro.Route = Metro.Net.Route;
 
-  Metro.Route.DSL = (function() {
+  Metro.Net.Route.DSL = (function() {
 
-    function DSL() {}
+    function DSL() {
+      this._scope = {};
+    }
 
     DSL.prototype.match = function() {
       this.scope || (this.scope = {});
-      return Metro.Route.create(new Metro.Route(this._extractOptions.apply(this, arguments)));
+      return Metro.Net.Route.create(new Metro.Net.Route(this._extractOptions.apply(this, arguments)));
     };
 
     DSL.prototype.get = function() {
-      return this.matchMethod.apply(this, ["get"].concat(__slice.call(arguments)));
+      return this.matchMethod("get", Metro.Support.Array.args(arguments));
     };
 
     DSL.prototype.post = function() {
-      return this.matchMethod.apply(this, ["post"].concat(__slice.call(arguments)));
+      return this.matchMethod("post", Metro.Support.Array.args(arguments));
     };
 
     DSL.prototype.put = function() {
-      return this.matchMethod.apply(this, ["put"].concat(__slice.call(arguments)));
+      return this.matchMethod("put", Metro.Support.Array.args(arguments));
     };
 
     DSL.prototype["delete"] = function() {
-      return this.matchMethod.apply(this, ["delete"].concat(__slice.call(arguments)));
+      return this.matchMethod("delete", Metro.Support.Array.args(arguments));
     };
 
-    DSL.prototype.matchMethod = function(method) {
-      var options;
-      options = arguments.pop();
-      options.via = method;
-      arguments.push(options);
-      this.match(options);
+    DSL.prototype.matchMethod = function(method, args) {
+      var name, options, path;
+      if (typeof args[args.length - 1] === "object") {
+        options = args.pop();
+      } else {
+        options = {};
+      }
+      name = args.shift();
+      options.method = method;
+      options.action = name;
+      options.name = name;
+      if (this._scope.name) {
+        options.name = this._scope.name + Metro.Support.String.camelize(options.name);
+      }
+      path = "/" + name;
+      if (this._scope.path) path = this._scope.path + path;
+      this.match(path, options);
       return this;
     };
 
-    DSL.prototype.scope = function() {};
+    DSL.prototype.scope = function(options, block) {
+      var originalScope;
+      if (options == null) options = {};
+      originalScope = this._scope || (this._scope = {});
+      this._scope = Metro.Support.Object.extend({}, originalScope, options);
+      block.call(this);
+      this._scope = originalScope;
+      return this;
+    };
 
     DSL.prototype.controller = function(controller, options, block) {
       options.controller = controller;
@@ -1754,13 +3363,23 @@
     */
 
     DSL.prototype.namespace = function(path, options, block) {
+      if (typeof options === 'function') {
+        block = options;
+        options = {};
+      } else {
+        options = {};
+      }
       options = Metro.Support.Object.extend({
+        name: path,
         path: path,
         as: path,
         module: path,
         shallowPath: path,
         shallowPrefix: path
       }, options);
+      if (options.name && this._scope.name) {
+        options.name = this._scope.name + Metro.Support.String.camelize(options.name);
+      }
       return this.scope(options, block);
     };
 
@@ -1776,9 +3395,85 @@
       }, block);
     };
 
-    DSL.prototype.resource = function() {};
+    DSL.prototype.resource = function(name, options) {
+      if (options == null) options = {};
+      options.controller = name;
+      this.match("" + name + "/new", Metro.Support.Object.extend({
+        action: "new"
+      }, options));
+      this.match("" + name, Metro.Support.Object.extend({
+        action: "create",
+        method: "POST"
+      }, options));
+      this.match("" + name + "/", Metro.Support.Object.extend({
+        action: "show"
+      }, options));
+      this.match("" + name + "/edit", Metro.Support.Object.extend({
+        action: "edit"
+      }, options));
+      this.match("" + name, Metro.Support.Object.extend({
+        action: "update",
+        method: "PUT"
+      }, options));
+      return this.match("" + name, Metro.Support.Object.extend({
+        action: "destroy",
+        method: "DELETE"
+      }, options));
+    };
 
-    DSL.prototype.resources = function() {};
+    DSL.prototype.resources = function(name, options, callback) {
+      var many, one, path;
+      if (typeof options === 'function') {
+        callback = options;
+        options = {};
+      } else {
+        options = {};
+      }
+      options.controller || (options.controller = name);
+      path = "/" + name;
+      if (this._scope.path) path = this._scope.path + path;
+      if (this._scope.name) {
+        many = this._scope.name + Metro.Support.String.camelize(name);
+      } else {
+        many = name;
+      }
+      one = Metro.Support.String.singularize(many);
+      this.match("" + path, Metro.Support.Object.extend({
+        name: "" + many,
+        action: "index"
+      }, options));
+      this.match("" + path + "/new", Metro.Support.Object.extend({
+        name: "new" + (Metro.Support.String.camelize(one)),
+        action: "new"
+      }, options));
+      this.match("" + path, Metro.Support.Object.extend({
+        action: "create",
+        method: "POST"
+      }, options));
+      this.match("" + path + "/:id", Metro.Support.Object.extend({
+        name: "" + one,
+        action: "show"
+      }, options));
+      this.match("" + path + "/:id/edit", Metro.Support.Object.extend({
+        name: "edit" + (Metro.Support.String.camelize(one)),
+        action: "edit"
+      }, options));
+      this.match("" + path + "/:id", Metro.Support.Object.extend({
+        action: "update",
+        method: "PUT"
+      }, options));
+      this.match("" + path + "/:id", Metro.Support.Object.extend({
+        action: "destroy",
+        method: "DELETE"
+      }, options));
+      if (callback) {
+        this.scope(Metro.Support.Object.extend({
+          path: "" + path + "/:" + (Metro.Support.String.singularize(name)) + "Id",
+          name: one
+        }, options), callback);
+      }
+      return this;
+    };
 
     DSL.prototype.collection = function() {};
 
@@ -1791,9 +3486,15 @@
     };
 
     DSL.prototype._extractOptions = function() {
-      var anchor, constraints, controller, defaults, format, method, name, options, path;
-      path = "/" + arguments[0].replace(/^\/|\/$/, "");
-      options = arguments[arguments.length - 1] || {};
+      var anchor, args, constraints, controller, defaults, format, method, name, options, path;
+      args = Metro.Support.Array.args(arguments);
+      path = "/" + args.shift().replace(/^\/|\/$/, "");
+      if (typeof args[args.length - 1] === "object") {
+        options = args.pop();
+      } else {
+        options = {};
+      }
+      if (args.length > 0) options.to || (options.to = args.shift());
       options.path = path;
       format = this._extractFormat(options);
       options.path = this._extractPath(options);
@@ -1819,11 +3520,11 @@
     DSL.prototype._extractFormat = function(options) {};
 
     DSL.prototype._extractName = function(options) {
-      return options.as;
+      return options.as || options.name;
     };
 
     DSL.prototype._extractConstraints = function(options) {
-      return options.constraints || {};
+      return Metro.Support.Object.extend(this._scope.constraints || {}, options.constraints || {});
     };
 
     DSL.prototype._extractDefaults = function(options) {
@@ -1835,7 +3536,7 @@
     };
 
     DSL.prototype._extractRequestMethod = function(options) {
-      return options.via || options.requestMethod;
+      return (options.method || options.via || "GET").toUpperCase();
     };
 
     DSL.prototype._extractAnchor = function(options) {
@@ -1844,17 +3545,23 @@
 
     DSL.prototype._extractController = function(options) {
       var action, controller, to;
-      to = options.to.split('#');
-      if (to.length === 1) {
-        action = to[0];
-      } else {
-        controller = to[0];
-        action = to[1];
+      if (options == null) options = {};
+      to = options.to;
+      if (to) {
+        to = to.split('#');
+        if (to.length === 1) {
+          action = to[0];
+        } else {
+          controller = to[0];
+          action = to[1];
+        }
       }
-      controller || (controller = options.controller || this.scope.controller);
-      action || (action = options.action || this.scope.action);
+      controller || (controller = options.controller || this._scope.controller);
+      action || (action = options.action);
+      if (!controller) {
+        throw new Error("No controller was specified for the route " + options.path);
+      }
       controller = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller");
-      action = action.toLowerCase();
       return {
         name: controller,
         action: action,
@@ -1866,325 +3573,188 @@
 
   })();
 
-  Metro.Store = {
-    defaultLimit: 100,
-    reservedOperators: {
-      "_sort": "_sort",
-      "_limit": "_limit"
-    },
-    queryOperators: {
-      ">=": "gte",
-      "gte": "gte",
-      ">": "gt",
-      "gt": "gt",
-      "<=": "lte",
-      "lte": "lte",
-      "<": "lt",
-      "lt": "lt",
-      "in": "in",
-      "nin": "nin",
-      "any": "any",
-      "all": "all",
-      "=~": "m",
-      "m": "m",
-      "!~": "nm",
-      "nm": "nm",
-      "=": "eq",
-      "eq": "eq",
-      "!=": "neq",
-      "neq": "neq",
-      "null": "null",
-      "notNull": "notNull"
+  Metro.Net.Route.Urls = {
+    ClassMethods: {
+      urlFor: function(options) {
+        var action, anchor, controller, host, port;
+        switch (typeof options) {
+          case "string":
+            return options;
+          default:
+            return controller = options.controller, action = options.action, host = options.host, port = options.port, anchor = options.anchor, options;
+        }
+      }
     }
   };
 
-  Metro.Store.Memory = (function() {
+  Metro.Net.Route.PolymorphicUrls = {
+    ClassMethods: {
+      polymorphicUrl: function() {}
+    }
+  };
 
-    __extends(Memory, Metro.Object);
+  Metro.Net.Route.include(Metro.Net.Route.Urls);
 
-    function Memory() {
-      this.records = {};
-      this.lastId = 0;
+  Metro.Net.Route.include(Metro.Net.Route.PolymorphicUrls);
+
+  Metro.Net.Request = (function() {
+
+    function Request(data) {
+      if (data == null) data = {};
+      this.url = data.url;
+      this.location = data.location;
+      this.pathname = this.location.path;
+      this.query = this.parsedUrl.param;
+      this.title = data.title;
+      this.title || (this.title = typeof document !== "undefined" && document !== null ? document.title : void 0);
+      this.body = data.body || {};
+      this.headers = data.headers || {};
+      this.method = data.method || "GET";
     }
 
-    Memory.prototype.addIndex = function() {
-      var attributes;
-      attributes = Array.prototype.slice.call(arguments, 0, arguments.length);
-      this.index[attributes] = key;
-      return this;
-    };
-
-    Memory.prototype.removeIndex = function() {
-      var attributes;
-      attributes = Array.prototype.slice.call(arguments, 0, arguments.length);
-      delete this.index[attributes];
-      return this;
-    };
-
-    Memory.prototype.find = function(query, callback) {
-      var key, limit, record, records, result, sort;
-      result = [];
-      records = this.records;
-      if (Metro.Support.Object.isPresent(query)) {
-        sort = query._sort;
-        limit = query._limit || Metro.Store.defaultLimit;
-        for (key in records) {
-          record = records[key];
-          if (this.matches(record, query)) result.push(record);
-        }
-        if (sort) result = this.sort(result, query._sort);
-        if (limit) result = result.slice(0, (limit - 1) + 1 || 9e9);
-      } else {
-        for (key in records) {
-          record = records[key];
-          result.push(record);
-        }
-      }
-      if (callback) callback(result);
-      return result;
-    };
-
-    Memory.alias("select", "find");
-
-    Memory.prototype.first = function(query, callback) {
-      var result;
-      result = this.find(query, function(records) {
-        if (callback) return callback(records[0]);
-      });
-      return result[0];
-    };
-
-    Memory.prototype.last = function(query, callback) {
-      var result;
-      result = this.find(query, function(records) {
-        if (callback) return callback(records[records.length - 1]);
-      });
-      return result[result.length - 1];
-    };
-
-    Memory.prototype.all = function(query, callback) {
-      return this.find(query, callback);
-    };
-
-    Memory.prototype.length = function(query, callback) {
-      return this.find(query, function(records) {
-        if (callback) return callback(records.length);
-      }).length;
-    };
-
-    Memory.alias("count", "length");
-
-    Memory.prototype.remove = function(query, callback) {
-      var _records;
-      _records = this.records;
-      return this.select(query, function(records) {
-        var record, _i, _len;
-        for (_i = 0, _len = records.length; _i < _len; _i++) {
-          record = records[_i];
-          _records.splice(_records.indexOf(record), 1);
-        }
-        if (callback) return callback(records);
-      });
-    };
-
-    Memory.prototype.clear = function() {
-      return this.records = [];
-    };
-
-    Memory.prototype.toArray = function() {
-      return this.records;
-    };
-
-    Memory.prototype.create = function(record) {
-      var _ref;
-      if (!record.id) {
-        Metro.raise("errors.store.missingAttribute", "id", "Store#create", record);
-      }
-      if ((_ref = record.id) == null) record.id = this.generateId();
-      return this.records[record.id] = record;
-    };
-
-    Memory.prototype.update = function(record) {
-      if (!record.id) {
-        Metro.raise("errors.store.missingAttribute", "id", "Store#update", record);
-      }
-      return this.records[record.id] = record;
-    };
-
-    Memory.prototype.destroy = function(record) {
-      return this.find(id).destroy();
-    };
-
-    Memory.prototype.sort = function() {
-      var _ref;
-      return (_ref = Metro.Support.Array).sortBy.apply(_ref, arguments);
-    };
-
-    Memory.prototype.matches = function(record, query) {
-      var key, recordValue, self, success, value;
-      self = this;
-      success = true;
-      for (key in query) {
-        value = query[key];
-        if (!!Metro.Store.reservedOperators[key]) continue;
-        recordValue = record[key];
-        if (typeof value === 'object') {
-          success = self._matchesOperators(record, recordValue, value);
-        } else {
-          if (typeof value === "function") value = value.call(record);
-          success = recordValue === value;
-        }
-        if (!success) return false;
-      }
-      return true;
-    };
-
-    Memory.prototype.generateId = function() {
-      return this.lastId++;
-    };
-
-    Memory.prototype._matchesOperators = function(record, recordValue, operators) {
-      var key, operator, self, success, value;
-      success = true;
-      self = this;
-      for (key in operators) {
-        value = operators[key];
-        if (operator = Metro.Store.queryOperators[key]) {
-          if (typeof value === "function") value = value.call(record);
-          switch (operator) {
-            case "gt":
-              success = self._isGreaterThan(recordValue, value);
-              break;
-            case "gte":
-              success = self._isGreaterThanOrEqualTo(recordValue, value);
-              break;
-            case "lt":
-              success = self._isLessThan(recordValue, value);
-              break;
-            case "lte":
-              success = self._isLessThanOrEqualTo(recordValue, value);
-              break;
-            case "eq":
-              success = self._isEqualTo(recordValue, value);
-              break;
-            case "neq":
-              success = self._isNotEqualTo(recordValue, value);
-              break;
-            case "m":
-              success = self._isMatchOf(recordValue, value);
-              break;
-            case "nm":
-              success = self._isNotMatchOf(recordValue, value);
-              break;
-            case "any":
-              success = self._anyIn(recordValue, value);
-              break;
-            case "all":
-              success = self._allIn(recordValue, value);
-          }
-          if (!success) return false;
-        } else {
-          return recordValue === operators;
-        }
-      }
-      return true;
-    };
-
-    Memory.prototype._isGreaterThan = function(recordValue, value) {
-      return recordValue && recordValue > value;
-    };
-
-    Memory.prototype._isGreaterThanOrEqualTo = function(recordValue, value) {
-      return recordValue && recordValue >= value;
-    };
-
-    Memory.prototype._isLessThan = function(recordValue, value) {
-      return recordValue && recordValue < value;
-    };
-
-    Memory.prototype._isLessThanOrEqualTo = function(recordValue, value) {
-      return recordValue && recordValue <= value;
-    };
-
-    Memory.prototype._isEqualTo = function(recordValue, value) {
-      return recordValue === value;
-    };
-
-    Memory.prototype._isNotEqualTo = function(recordValue, value) {
-      return recordValue !== value;
-    };
-
-    Memory.prototype._isMatchOf = function(recordValue, value) {
-      return !!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
-    };
-
-    Memory.prototype._isNotMatchOf = function(recordValue, value) {
-      return !!!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
-    };
-
-    Memory.prototype._anyIn = function(recordValue, array) {
-      var value, _i, _len;
-      for (_i = 0, _len = array.length; _i < _len; _i++) {
-        value = array[_i];
-        if (recordValue.indexOf(value) > -1) return true;
-      }
-      return false;
-    };
-
-    Memory.prototype._allIn = function(recordValue, value) {
-      var _i, _len;
-      for (_i = 0, _len = array.length; _i < _len; _i++) {
-        value = array[_i];
-        if (recordValue.indexOf(value) === -1) return false;
-      }
-      return true;
-    };
-
-    Memory.prototype.toString = function() {
-      return this.constructor.name;
-    };
-
-    return Memory;
+    return Request;
 
   })();
 
-  Metro.Middleware = new (Namespace = (function() {
+  Metro.Net.Response = (function() {
 
-    function Namespace() {}
-
-    return Namespace;
-
-  })());
-
-  Metro.Middleware.Router = (function() {
-
-    function Router(request, response, next) {
-      if (this.constructor !== Metro.Middleware.Router) {
-        return (new Metro.Middleware.Router(request, response, next)).call(request, response, callback);
-      }
+    function Response(data) {
+      if (data == null) data = {};
+      this.url = data.url;
+      this.location = data.location;
+      this.pathname = this.location.path;
+      this.query = this.parsedUrl.param;
+      this.title = data.title;
+      this.title || (this.title = typeof document !== "undefined" && document !== null ? document.title : void 0);
+      this.body = data.body || {};
+      this.headers = data.headers || {};
+      this.headerSent = false;
+      this.statusCode = 200;
+      this.body = "";
     }
 
-    Router.prototype.call = function(request, response, callback) {
-      var self;
-      self = this;
-      this.find(request, response, function(controller) {
-        if (controller) {
-          response.writeHead(200, controller.headers);
-          response.write(controller.body);
-          response.end();
-          return controller.clear();
-        } else {
-          return self.error(request, response);
-        }
-      });
-      return response;
+    Response.prototype.writeHead = function(statusCode, headers) {
+      this.statusCode = statusCode;
+      return this.headers = headers;
     };
 
-    Router.prototype.find = function(request, response, callback) {
-      var controller, route, routes, _i, _len;
+    Response.prototype.setHeader = function(key, value) {
+      if (this.headerSent) throw new Error("Headers already sent");
+      return this.headers[key] = value;
+    };
+
+    Response.prototype.write = function(body) {
+      if (body == null) body = '';
+      return this.body += body;
+    };
+
+    Response.prototype.end = function(body) {
+      if (body == null) body = '';
+      this.body += body;
+      this.sent = true;
+      return this.headerSent = true;
+    };
+
+    return Response;
+
+  })();
+
+  Metro.Net.Url = (function() {
+
+    Url.key = ["source", "protocol", "host", "userInfo", "user", "password", "hostname", "port", "relative", "path", "directory", "file", "query", "fragment"];
+
+    Url.aliases = {
+      anchor: "fragment"
+    };
+
+    Url.parser = {
+      strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+      loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+    };
+
+    Url.querystringParser = /(?:^|&|;)([^&=;]*)=?([^&;]*)/g;
+
+    Url.fragmentParser = /(?:^|&|;)([^&=;]*)=?([^&;]*)/g;
+
+    Url.typeParser = /(youtube|vimeo|eventbrite)/;
+
+    Url.prototype.parse = function(string) {
+      var attributes, domains, fragment, i, key, params, parsed, value;
+      key = this.constructor.key;
+      string = decodeURI(string);
+      parsed = this.constructor.parser[(this.strictMode || false ? "strict" : "loose")].exec(string);
+      attributes = {};
+      this.params = params = {};
+      this.fragment = fragment = {
+        params: {}
+      };
+      i = 14;
+      while (i--) {
+        attributes[key[i]] = parsed[i] || "";
+      }
+      attributes["query"].replace(this.constructor.querystringParser, function($0, $1, $2) {
+        if ($1) return params[$1] = $2;
+      });
+      attributes["fragment"].replace(this.constructor.fragmentParser, function($0, $1, $2) {
+        if ($1) return fragment.params[$1] = $2;
+      });
+      this.segments = attributes.path.replace(/^\/+|\/+$/g, "").split("/");
+      fragment.segments = attributes.fragment.replace(/^\/+|\/+$/g, "").split("/");
+      for (key in attributes) {
+        value = attributes[key];
+        this[key] || (this[key] = value);
+      }
+      this.root = (attributes.host ? attributes.protocol + "://" + attributes.hostname + (attributes.port ? ":" + attributes.port : "") : "");
+      domains = this.hostname.split(".");
+      this.domain = domains.slice(domains.length - 1 - this.depth, (domains.length - 1) + 1 || 9e9).join(".");
+      this.subdomains = domains.slice(0, (domains.length - 2 - this.depth) + 1 || 9e9);
+      this.subdomain = this.subdomains.join(".");
+      if (this.port != null) return this.port = parseInt(this.port);
+    };
+
+    function Url(url, depth, strictMode) {
+      if (depth == null) depth = 1;
+      this.strictMode = strictMode || false;
+      this.depth = depth || 1;
+      if (typeof window !== "undefined" && window !== null) {
+        this.url = url || (url = window.location.toString());
+      }
+      this.parse(url);
+    }
+
+    return Url;
+
+  })();
+
+  Metro.Middleware = {};
+
+  Metro.Middleware.Location = function(request, response, next) {
+    request.location || (request.location = new Metro.Net.Url(request.url.match(/^http/) ? request.url : "http://" + request.headers.host + request.url));
+    return next();
+  };
+
+  Metro.Middleware.Router = function(request, response, callback) {
+    Metro.Middleware.Router.find(request, response, function(controller) {
+      if (controller) {
+        response.writeHead(200, controller.headers);
+        response.write(controller.body);
+        response.end();
+        return controller.clear();
+      } else {
+        return self.error(request, response);
+      }
+    });
+    return response;
+  };
+
+  Metro.Support.Object.extend(Metro.Middleware.Router, {
+    find: function(request, response, callback) {
+      var controller, route, routes, _k, _len3;
       routes = Metro.Route.all();
-      for (_i = 0, _len = routes.length; _i < _len; _i++) {
-        route = routes[_i];
+      this.processHost(request, response);
+      this.processAgent(request, response);
+      for (_k = 0, _len3 = routes.length; _k < _len3; _k++) {
+        route = routes[_k];
         controller = this.processRoute(route, request, response);
         if (controller) break;
       }
@@ -2196,19 +3766,24 @@
         callback(null);
       }
       return controller;
-    };
-
-    Router.prototype.processRoute = function(route, request, response) {
-      var capture, controller, i, keys, match, method, params, path, url, _len;
-      url = request.parsedUrl || (request.parsedUrl = new Metro.Net.Url(request.url));
-      path = url.attr("path");
-      match = route.match(path);
+    },
+    processHost: function(request, response) {
+      return request.location || (request.location = new Metro.Net.Url(request.url));
+    },
+    processAgent: function(request, response) {
+      if (request.headers) {
+        return request.userAgent || (request.userAgent = request.headers["user-agent"]);
+      }
+    },
+    processRoute: function(route, request, response) {
+      var capture, controller, i, keys, match, method, params, _len3;
+      match = route.match(request);
       if (!match) return null;
       method = request.method.toLowerCase();
       keys = route.keys;
       params = Metro.Support.Object.extend({}, route.defaults, request.query || {}, request.body || {});
       match = match.slice(1);
-      for (i = 0, _len = match.length; i < _len; i++) {
+      for (i = 0, _len3 = match.length; i < _len3; i++) {
         capture = match[i];
         params[keys[i].name] = capture ? decodeURIComponent(capture) : null;
       }
@@ -2216,21 +3791,17 @@
       if (controller) params.action = controller.action;
       request.params = params;
       if (controller) {
-        controller = new Metro.constant(Metro.namespaced(route.controller.className));
+        controller = new (Metro.constant(Metro.namespaced(route.controller.className)));
       }
       return controller;
-    };
-
-    Router.prototype.error = function(request, response) {
+    },
+    error: function(request, response) {
       if (response) {
         response.statusCode = 404;
         response.setHeader('Content-Type', 'text/plain');
         return response.end("No path matches " + request.url);
       }
-    };
-
-    return Router;
-
-  })();
+    }
+  });
 
 }).call(this);

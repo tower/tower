@@ -131,6 +131,12 @@ Metro.Support.Object =
     
   isFunction: (object) ->
     !!(object && object.constructor && object.call && object.apply)
+    
+  toArray: (object) ->
+    if @isArray(object) then object else [object]
+  
+  keys: (object) ->
+    Object.keys(object)
   
   isA: (object, isa) ->
     
@@ -144,11 +150,11 @@ Metro.Support.Object =
     toString.call(object) == '[object Array]'
     
   kind: (object) ->
-    if typeof(object) != "object" return typeof(object)
-    if object == null return "null"
-    if object.constructor == (new Array).constructor) return "array"
-    if object.constructor == (new Date).constructor) return "date"
-    if object.constructor == (new RegExp).constructor) return "regex"
+    return typeof(object) if typeof(object) != "object"
+    return "null" if object == null
+    return "array" if object.constructor == (new Array).constructor
+    return "date" if object.constructor == (new Date).constructor
+    return "regex" if object.constructor == (new RegExp).constructor
     return "object"
     
   isObject: (object) ->
@@ -158,6 +164,7 @@ Metro.Support.Object =
     !@isBlank(object)
   
   isBlank: (object) ->
+    return (object == "") if typeof object == "string"
     return false for key, value of object
     return true
     

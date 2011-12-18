@@ -1,8 +1,8 @@
 Metro.View.Rendering =
   render: (options, callback) ->
-    options.locals      = @_renderingContext(options)
     options.type        ||= @constructor.engine
-    options.layout      = @context.layout() if !options.hasOwnProperty("layout") && @context.layout
+    options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
+    options.locals      = @_renderingContext(options)
     
     self = @
     
@@ -38,13 +38,10 @@ Metro.View.Rendering =
       engine.render(options.locals, callback)
   
   _renderingContext: (options) ->
-    context    = @context
-    locals        = {}
-    
-    for key, value of context
-      locals[key] = value unless key == "constructor"
-    
-    locals        = Metro.Support.Object.extend(locals, @locals || {}, options.locals)
+    locals  = @
+    for key, value of @_context
+      @[key] = value unless key.match(/^(render|constructor)/)
+    locals        = Metro.Support.Object.extend(locals, options.locals)
     locals.pretty = true if @constructor.prettyPrint
     locals
     

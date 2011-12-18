@@ -71,7 +71,7 @@ describe "route", ->
       expect(route.defaults).toEqual {flow: "signup"}
     
     it "should be found in the router", ->
-      router      = Metro.Middleware.Routes
+      router      = Metro.Middleware.Router
       request     = method: "get", url: "http://www.local.host:3000/login"
       
       controller  = router.find request, {}, (controller) ->

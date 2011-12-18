@@ -1,6 +1,13 @@
 
-  Metro.Middleware.Routes = function(request, response, callback) {
-    Metro.Middleware.Routes.find(request, response, function(controller) {
+  Metro.Middleware = {};
+
+  Metro.Middleware.Location = function(request, response, next) {
+    request.location || (request.location = new Metro.Net.Url(request.url.match(/^http/) ? request.url : "http://" + request.headers.host + request.url));
+    return next();
+  };
+
+  Metro.Middleware.Router = function(request, response, callback) {
+    Metro.Middleware.Router.find(request, response, function(controller) {
       if (controller) {
         response.writeHead(200, controller.headers);
         response.write(controller.body);
@@ -13,7 +20,7 @@
     return response;
   };
 
-  Metro.Support.Object.extend(Metro.Middleware.Routes, {
+  Metro.Support.Object.extend(Metro.Middleware.Router, {
     find: function(request, response, callback) {
       var controller, route, routes, _i, _len;
       routes = Metro.Route.all();
@@ -69,5 +76,3 @@
       }
     }
   });
-
-  module.exports = Metro.Middleware.Routes;

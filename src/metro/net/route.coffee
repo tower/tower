@@ -18,7 +18,7 @@ class Metro.Net.Route extends Metro.Object
     options     ||= options
     @path         = options.path
     @name         = options.name
-    @method       = options.method.toUpperCase()
+    @method       = (options.method || "GET").toUpperCase()
     @ip           = options.ip
     @defaults     = options.defaults || {}
     @constraints  = options.constraints

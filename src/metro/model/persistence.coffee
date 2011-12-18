@@ -1,5 +1,17 @@
 Metro.Model.Persistence =
   ClassMethods:
+    # tmp fix, for memory model
+    load: (array) ->
+      array   = [array] unless Metro.Support.Object.isArray(array)
+      records = @store().records
+      for item in array
+        record = if item instanceof Metro.Model then item else new @(item)
+        records[record.id] = record
+      records
+      
+    build: (attributes) ->
+      new @(attributes)
+      
     create: (attributes, callback) ->
       @scoped().create(attributes, callback)
     
@@ -45,24 +57,34 @@ Metro.Model.Persistence =
     isNew: ->
       !!!@attributes.id
     
-    save: (callback) ->
+    save: (options, callback) ->
+      if typeof options == "function"
+        callback  = options
+        options   = {}
+      
+      unless options.validate == false
+        unless @validate()
+          callback.call @, null, false if callback
+          return false
+      
       if @isNew()
         @_create(callback)
       else
         @_update(@toUpdates(), callback)
+        
+      true
     
     _update: (attributes, callback) ->
       @constructor.update @id, attributes, (error) =>
         @changes = {} unless error
-        callback.call(@, error) if callback
+        callback.call(@, error, !error) if callback
       
       @
       
     _create: (callback) ->
       @constructor.create @attributes, (error, docs) =>
-        throw error if error
-        @changes = {}
-        callback.call(@, error) if callback
+        @changes = {} unless error
+        callback.call(@, error, !error) if callback
       
       @
     
