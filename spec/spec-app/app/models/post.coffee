@@ -1,3 +1,3 @@
-class MetroSpecApp.Post extends Metro.Model
+class CoachSpecApp.Post extends Coach.Model
   
-module.exports = MetroSpecApp.Post
+module.exports = CoachSpecApp.Post

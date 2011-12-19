@@ -1,4 +1,3 @@
-# Metro.js | Urban.js | Citizen.js | Tau.js | Top.js | Jimmy.js
 
 Minified & Gzipped: 15.7kb
 
@@ -13,7 +12,7 @@ Minified & Gzipped: 15.7kb
 Have CachedCommons.org let you load files with `require('socket.io')`:
 
 ``` coffeescript
-# metro/controllers/sockets
+# coach/controllers/sockets
 require('socket.io')
 
 # essentially...
@@ -79,13 +78,13 @@ window.μ = new class Urban
 ## Install
 
 ``` bash
-npm install metro
+npm install coach
 ```
 
-To install Metro with development dependencies, use:
+To install Coach with development dependencies, use:
 
 ``` bash
-npm install metro --dev # npm install metro -d
+npm install coach --dev # npm install coach -d
 ```
 
 ## Structure
@@ -144,14 +143,14 @@ This makes it so you don't have to use `require` everywhere on the client, setti
 
 ``` coffeescript
 class MyApp.User
-  @include Metro.Model
+  @include Coach.Model
 ```
 
 or
 
 ``` coffeescript
 class User
-  @include Metro.Model
+  @include Coach.Model
 
 MyApp.User = User
 ```
@@ -161,7 +160,7 @@ Instead of
 ``` coffeescript
 # user.coffee
 class User
-  @include Metro.Model
+  @include Coach.Model
 
 module.exports = User
 
@@ -174,14 +173,14 @@ Because of the naming/folder conventions, you can get away with this without any
 ## Generator
 
 ``` bash
-metro new my-app
+coach new my-app
 ```
 
 ## App
 
 ``` coffeescript
 # index.coffee
-class Movement extends Metro.Application
+class Movement extends Coach.Application
 ```
 
 ## Routes
@@ -198,24 +197,24 @@ route "/posts/:id",     "posts#update", via: "put"
 route "/posts/:id",     "posts#destroy", via: "delete"
 ```
 
-Routes are really just models, `Metro.Route`.  You can add and remove and search them however you like:
+Routes are really just models, `Coach.Route`.  You can add and remove and search them however you like:
 
 ``` coffeescript
-Metro.Route.where(pattern: "=~": "/posts").first()
+Coach.Route.where(pattern: "=~": "/posts").first()
 ```
 
 ## Models
 
 ``` coffeescript
 class User
-  @include Metro.Model
+  @include Coach.Model
   
   @key "id"
   @key "firstName"
   @key "createdAt", type: "time"
   
   @scope "byMrBaldwin", @where firstName: "=~": "Baldwin"
-  @scope "thisWeek", @where createdAt: ">=": -> Metro.Support.Time.now().beginningOfWeek().toDate()
+  @scope "thisWeek", @where createdAt: ">=": -> Coach.Support.Time.now().beginningOfWeek().toDate()
   
   @hasMany "posts", className: "Page"
   
@@ -237,7 +236,7 @@ User.where(firstName: "=~": "a").order(["firstName", "desc"]).all()
 ## Controllers
 
 ``` coffeescript
-class PostsController extends Metro.Controller
+class PostsController extends Coach.Controller
   index: ->
     @posts = Post.all()
     
@@ -271,7 +270,7 @@ class PostsController extends Metro.Controller
 There's a unified interface to the different types of stores, so you can use the model and have it transparently manage data.  For example, for the browser, you can use the memory store, and for the server, you can use the mongodb store.  Redis, PostgreSQL, and Neo4j are in the pipeline.
 
 ``` coffeescript
-class PageView extents Metro.Model
+class PageView extents Coach.Model
   @store "redis"
 ```
 
@@ -307,14 +306,14 @@ Since all of the controller/routing code is available on the client, you can go 
 
 ``` coffeescript
 # Just request the url, and let it do it's thing
-Metro.get '/posts'
+Coach.get '/posts'
 
 # Same thing, this time passing parameters
-Metro.get '/posts', createdAt: "2011-10-26..2011-10-31"
+Coach.get '/posts', createdAt: "2011-10-26..2011-10-31"
 
 # Dynamic
-Metro.urlFor(Post.first()) #=> "/posts/the-id"
-Metro.navigate Metro.urlFor(post)
+Coach.urlFor(Post.first()) #=> "/posts/the-id"
+Coach.navigate Coach.urlFor(post)
 ```
 
 Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
@@ -323,7 +322,7 @@ Those methods pass through the router and client-side middleware so you have acc
 
 ``` coffeescript
 # config/application.coffee
-class MyApp extends Metro.Application
+class MyApp extends Coach.Application
   @config.encoding = "utf-8"
   @config.filterParameters += ["password", "password_confirmation"]
   @config.loadPaths += ["./themes"]
@@ -393,7 +392,7 @@ PostsPresenter =
 
 ## Research
 
-These are projects that should either be integrated into Metro, or rewritten to decrease file size.
+These are projects that should either be integrated into Coach, or rewritten to decrease file size.
 
 ### Database
 
@@ -453,7 +452,7 @@ model.buildUser()
 ## Model
 
 ``` coffeescript
-class App.User extends Metro.Model
+class App.User extends Coach.Model
   @key "firstName"
   @key "createdAt", type: "Date", default: -> new Date()
   @key "coordinates", type: "Geo"
@@ -465,7 +464,7 @@ class App.User extends Metro.Model
   
   @validate "firstName", presence: true
   
-class App.Post extends Metro.Model
+class App.Post extends Coach.Model
   @belongsTo "author", className: "App.User"
   
 User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all (error, records) =>
@@ -478,4 +477,87 @@ Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
 # Post.where(authorId: $in: userIds).all()
 
 User.includes("posts").where("posts.title": "Welcome").all()
+```
+
+## Controller
+
+All controller actions are just events.  This means then that controllers handle events:
+
+- DOM events
+- socket messages
+- url requests
+
+Instead of having to create a controller for each type of message, why not just establish some conventions:
+
+``` coffeescript
+class PostsController extends Coach.Controller
+  # url handler, just like Rails
+  create: ->
+    
+  # socket.io handler
+  @on "create", "syncCreate" # created by default... knows because it's named after an action
+  @on "notification", "flashMessage" # knows it's socket because 'notification' isn't an action or dom event keyword
+  @on "mousemove", "updateHeatMap", type: 'socket' # if you name a socket event after a keyword then pass the `type: 'socket'` option.
+  
+  # dom event handler
+  @on "click", "click"
+  @on "click .item a", "clickItem"
+  # or as an object
+  @on "click .itemA a": "clickItemA",
+    "click .itemB a": "clickItemB",
+    "click .itemC a": "clickItemC"
+  
+  @on "change #user-first-name-input", "enable", dependent: "#user-last-name-input"
+  @on "change #user-first-name-input", "enable #user-last-name-input" # enable: (selector)
+  @on "change #user-first-name-input", "validate"
+  @on "change #user-first-name-input", bind: "firstName"
+  @bind "change #user-first-name-input", "firstName"
+  @on "click #add-user-address", "addAddress"
+  @on "click #add-user-address", "add", object: "address"
+  @on "click #remove-user-address", "removeAddress"
+  # $(window).on('click', '#user-details', "toggleDetails");
+  @on "click #user-details", "toggleDetails"
+
+  # show or hide
+  toggleShowHide: ->
+
+  show: ->
+
+  hide: ->
+
+  toggleSelectDeselect: ->
+
+  select: ->
+
+  deselect: ->
+
+  toggleAddRemove: ->
+
+  add: ->
+
+  remove: ->
+
+  toggleEnableDisable: ->  
+    if _.blank(value)
+      @disable()
+    else
+      @enable()
+
+  # enable or disable
+  enable: ->
+    $(options.dependent).attr("disabled", false)
+
+  disable: ->
+    $(options.dependent).attr("disabled", true)
+
+  validate: (element) ->
+    element
+
+  invalidate: ->
+
+  bind: ->
+  
+  next: ->
+    
+  prev: ->
 ```

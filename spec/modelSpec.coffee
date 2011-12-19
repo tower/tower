@@ -1,8 +1,8 @@
 require './helper'
 
-describe 'Metro.Model', ->
+describe 'Coach.Model', ->
   beforeEach ->
-    User.store(new Metro.Store.Memory(name: "users", className: "MetroSpecApp.User"))
+    User.store(new Coach.Store.Memory(name: "users", className: "CoachSpecApp.User"))
   
   describe 'scopes', ->
     afterEach ->
@@ -190,7 +190,7 @@ describe 'Metro.Model', ->
   
   describe 'updating', ->
     beforeEach ->
-      User.store(new Metro.Store.Memory(name: "users", className: "MetroSpecApp.User"))
+      User.store(new Coach.Store.Memory(name: "users", className: "CoachSpecApp.User"))
       User.deleteAll()
       Page.deleteAll()
       Post.deleteAll()

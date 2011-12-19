@@ -1,2 +1,0 @@
-class Metro.Controller.Responder
-  

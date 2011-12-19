@@ -1,2 +1,2 @@
-class MetroSpecApp.ApplicationController extends Metro.Controller  
+class CoachSpecApp.ApplicationController extends Coach.Controller  
   @layout   "application"

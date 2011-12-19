@@ -1,1 +1,1 @@
-class MetroSpecApp.PostsController extends MetroSpecApp.ApplicationController
+class CoachSpecApp.PostsController extends CoachSpecApp.ApplicationController

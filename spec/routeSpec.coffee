@@ -3,14 +3,14 @@ require './helper'
 describe "route", ->
   describe "route", ->
     it "should match routes with keys", ->
-      route = new Metro.Route(path: "/users/:id/:tag")
+      route = new Coach.Route(path: "/users/:id/:tag")
       match = route.match("/users/10/symbols")
       
       expect(match[1]).toEqual("10")
       expect(match[2]).toEqual("symbols")
       
     it "should match routes with splats", ->
-      route = new Metro.Route(path: "/users/:id/*categories")
+      route = new Coach.Route(path: "/users/:id/*categories")
       match = route.match("/users/10/one/two/three")
       
       expect(match[1]).toEqual("10")
@@ -20,7 +20,7 @@ describe "route", ->
       expect(route.keys[1]).toEqual { name: 'categories', optional: false, splat: true }
       
     it "should match routes with optional splats", ->
-      route = new Metro.Route(path: "/users/:id(/*categories)")
+      route = new Coach.Route(path: "/users/:id(/*categories)")
       match = route.match("/users/10/one/two/three")
       
       expect(match[1]).toEqual("10")
@@ -30,7 +30,7 @@ describe "route", ->
       expect(route.keys[1]).toEqual { name: 'categories', optional: true, splat: true }
       
     it "should match routes with optional formats", ->
-      route = new Metro.Route(path: "/users/:id.:format?")
+      route = new Coach.Route(path: "/users/:id.:format?")
       match = route.match("/users/10.json")
       
       expect(match[1]).toEqual("10")
@@ -41,9 +41,9 @@ describe "route", ->
   
   describe "mapper", ->
     beforeEach ->
-      Metro.Application.instance().teardown()
+      Coach.Application.instance().teardown()
       
-      Metro.Route.draw ->
+      Coach.Route.draw ->
         @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}, constraints: {subdomain: /www/}
         
         @match "/users",          to: "users#index", via: "get"
@@ -54,9 +54,9 @@ describe "route", ->
         @match "/users/:id",      to: "users#destroy", via: "delete"
     
     it "should map", ->
-      routes  = Metro.Route.all()
+      routes  = Coach.Route.all()
       
-      # console.log Metro.Route.first(pattern: "=~": "/users/10/edit")
+      # console.log Coach.Route.first(pattern: "=~": "/users/10/edit")
       
       expect(routes.length).toEqual(7)
       
@@ -71,7 +71,7 @@ describe "route", ->
       expect(route.defaults).toEqual {flow: "signup"}
     
     it "should be found in the router", ->
-      router      = Metro.Middleware.Router
+      router      = Coach.Middleware.Router
       request     = method: "get", url: "http://www.local.host:3000/login"
       
       controller  = router.find request, {}, (controller) ->
@@ -82,9 +82,9 @@ describe "route", ->
 
   describe 'resources', ->
     beforeEach ->
-      Metro.Application.instance().teardown()
+      Coach.Application.instance().teardown()
       
-      Metro.Route.draw ->
+      Coach.Route.draw ->
         @resource "user"
         
         @resources "posts", ->
@@ -103,7 +103,7 @@ describe "route", ->
               @get "dashboard"
     
     it 'should have single resource routes', ->
-      routes = Metro.Route.all()[0..5]
+      routes = Coach.Route.all()[0..5]
       
       expect(routes[0].path).toEqual "/user/new.:format?"
       expect(routes[1].path).toEqual "/user.:format?"
@@ -113,7 +113,7 @@ describe "route", ->
       expect(routes[5].path).toEqual "/user.:format?"
       
     it 'should have multiple resource routes', ->
-      routes = Metro.Route.all()[6..13]
+      routes = Coach.Route.all()[6..13]
     
       expect(routes[0].path).toEqual "/posts.:format?"
       expect(routes[0].method).toEqual "GET"
@@ -132,7 +132,7 @@ describe "route", ->
       expect(routes[6].method).toEqual "DELETE"
       
     it 'should have nested routes', ->
-      routes = Metro.Route.all()[13..20]
+      routes = Coach.Route.all()[13..20]
       
       # index
       route = routes[0]
@@ -165,7 +165,7 @@ describe "route", ->
       expect(route.method).toEqual "GET"
       
     it 'should have namespaces', ->
-      routes = Metro.Route.all()[20..26]
+      routes = Coach.Route.all()[20..26]
       
       # index
       route = routes[0]
@@ -186,7 +186,7 @@ describe "route", ->
       expect(route.method).toEqual "GET"
       
     it 'should have namespaces with nesting', ->
-      routes = Metro.Route.all()[27..32]
+      routes = Coach.Route.all()[27..32]
       
       # index
       route = routes[0]
@@ -203,7 +203,7 @@ describe "route", ->
       expect(route.urlFor(postId: 8)).toEqual "/admin/posts/8/comments/new"
       
     #it 'should have "get"', ->
-    #  routes = Metro.Route.all()[32..35]
+    #  routes = Coach.Route.all()[32..35]
     #  
     #  route = routes[routes.length - 1]
     #  
@@ -212,7 +212,7 @@ describe "route", ->
     
   describe 'params', ->
     it 'should parse string', ->
-      param   = new Metro.Net.Param.String("title", modelName: "User")
+      param   = new Coach.Net.Param.String("title", modelName: "User")
       
       result  = param.parse("-Hello+World")
       result  = result[0]
@@ -224,14 +224,14 @@ describe "route", ->
       expect(result[1].value).toEqual "World"
       expect(result[1].operators).toEqual ["=~"]
       
-      Metro.Controller.params limit: 20, ->
+      Coach.Controller.params limit: 20, ->
         @param "title"
 
-      controller  = new Metro.Controller
+      controller  = new Coach.Controller
       controller.params.title = "Hello+World"
       criteria    = controller.criteria()
       expect(criteria.query).toEqual {title: "=~": "Hello World"}
       
   describe 'url builder', ->
     it 'should build a url from a model class', ->
-      url = Metro.urlFor
+      url = Coach.urlFor

@@ -2,17 +2,17 @@ require './helper'
 
 describe "application", ->
   beforeEach ->
-    @application = Metro.Application.instance().initialize()
+    @application = Coach.Application.instance().initialize()
     
   it "should load routes", ->
-    expect(Metro.Route.all().length).toEqual 1
+    expect(Coach.Route.all().length).toEqual 1
     
   it "should load models", ->
-    expect(MetroSpecApp.Post).toBeTruthy()
+    expect(CoachSpecApp.Post).toBeTruthy()
   
   it "should load controllers", ->
-    expect(MetroSpecApp.ApplicationController).toBeTruthy()
-    expect(MetroSpecApp.PostsController).toBeTruthy()
+    expect(CoachSpecApp.ApplicationController).toBeTruthy()
+    expect(CoachSpecApp.PostsController).toBeTruthy()
     
   it "should respond to requests", ->
     #console.log @application.app

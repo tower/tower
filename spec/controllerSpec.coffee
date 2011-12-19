@@ -1,6 +1,6 @@
 require './helper'
 
-class MetroSpecApp.CustomController extends Metro.Controller
+class CoachSpecApp.CustomController extends Coach.Controller
   @beforeFilter "setCurrentUser"
   
   index: ->
@@ -11,20 +11,20 @@ class MetroSpecApp.CustomController extends Metro.Controller
     @currentUser = name: "Lance"
     callback(null, true)
 
-describe 'Metro.Controller', ->
+describe 'Coach.Controller', ->
   describe 'Callbacks', ->
     controller  = null
     router      = null
     
     beforeEach ->
-      Metro.Application.instance().teardown()
+      Coach.Application.instance().teardown()
 
-      Metro.Route.draw ->
+      Coach.Route.draw ->
         @match "/custom",  to: "custom#index"
         @match "/custom/:id",  to: "custom#show"
       
-      controller  = new MetroSpecApp.CustomController()
-      router      = Metro.Middleware.Routes
+      controller  = new CoachSpecApp.CustomController()
+      router      = Coach.Middleware.Routes
       
     it 'should run callbacks', ->
       request       = method: "get", url: "http://www.local.host:3000/custom"

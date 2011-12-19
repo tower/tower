@@ -1,5 +1,5 @@
-class MetroSpecApp.SessionsController extends MetroSpecApp.ApplicationController
-  #@include Metro.View.Helpers
+class CoachSpecApp.SessionsController extends CoachSpecApp.ApplicationController
+  #@include Coach.View.Helpers
   
   new: ->
     @render text: "Login", layout: false

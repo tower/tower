@@ -1,20 +1,20 @@
 require './helper'
 ###
-Metro.Store.MongoDB.initialize()
+Coach.Store.MongoDB.initialize()
 quit = false
 
-describe 'Metro.Store', ->
+describe 'Coach.Store', ->
   beforeEach ->
-    User.store(new Metro.Store.MongoDB(name: "users", className: "User"))
+    User.store(new Coach.Store.MongoDB(name: "users", className: "User"))
   
   afterEach ->
-    User.store(new Metro.Store.Memory(name: "users", className: "User"))
+    User.store(new Coach.Store.Memory(name: "users", className: "User"))
 
   describe 'mongo', ->
     afterEach ->
       User.deleteAll()
       #process.exit() if quit
-      Metro.Store.MongoDB.database.close() if quit
+      Coach.Store.MongoDB.database.close() if quit
       
     it 'should have a getter', ->  
       waits 1000

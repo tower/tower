@@ -1,1 +1,1 @@
-module.exports = global.MetroSpecApp = new class MetroSpecApp extends Metro.Application
+module.exports = global.CoachSpecApp = new class CoachSpecApp extends Coach.Application

@@ -1,0 +1,2 @@
+class Coach.Controller.Responder
+  

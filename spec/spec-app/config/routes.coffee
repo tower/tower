@@ -1,2 +1,2 @@
-Metro.Route.draw ->
+Coach.Route.draw ->
   @match "/login",          to: "sessions#new", via: "get", as: "login"

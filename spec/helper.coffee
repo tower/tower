@@ -1,17 +1,17 @@
 require '../lib/metro'
 # require './secrets'
 
-Metro.root            = process.cwd() + "/spec/spec-app"
-Metro.publicPath      = Metro.root + "/public"
-Metro.env             = "test"
-Metro.View.loadPaths  = ["./spec/spec-app/app/views"]
+Coach.root            = process.cwd() + "/spec/spec-app"
+Coach.publicPath      = Coach.root + "/public"
+Coach.env             = "test"
+Coach.View.loadPaths  = ["./spec/spec-app/app/views"]
 
-Metro.Application.instance().initialize()
+Coach.Application.instance().initialize()
 
 # You must either "extends X" or create a constructor: -> super
 # so that coffeescript generates a callback to the parent class!
   
-global.Category = class MetroSpecApp.Category extends Metro.Model
+global.Category = class CoachSpecApp.Category extends Coach.Model
   @field "id"
   @hasMany "children", className: "Category", foreignKey: "parentId"
   @belongsTo "parent", className: "Category", foreignKey: "parentId"
@@ -19,7 +19,7 @@ global.Category = class MetroSpecApp.Category extends Metro.Model
   
   # @hierarchical "parent", "child"
 
-global.User = class MetroSpecApp.User extends Metro.Model
+global.User = class CoachSpecApp.User extends Coach.Model
   @field "id"
   @field "firstName"
   @field "createdAt", type: "Time", default: -> new Date()
@@ -33,7 +33,7 @@ global.User = class MetroSpecApp.User extends Metro.Model
   
   @validate "firstName", presence: true
 
-global.Page = class MetroSpecApp.Page extends Metro.Model
+global.Page = class CoachSpecApp.Page extends Coach.Model
   @field "id"
   @field "title"
   @field "rating"#, min: 0, max: 1
@@ -43,12 +43,12 @@ global.Page = class MetroSpecApp.Page extends Metro.Model
   
   @belongsTo "user", cache: true
   
-global.Post = class MetroSpecApp.Post extends Page
+global.Post = class CoachSpecApp.Post extends Page
   @hasMany "categories", embedded: true
 
 beforeEach ->
-  Metro.Application.instance().teardown()
-  Metro.Application.instance().initialize()
-  Metro.root          = process.cwd() + "/spec/spec-app"
-  Metro.publicPath    = Metro.root + "/public"
-  Metro.Support.Dependencies.load "#{Metro.root}/app/models"
+  Coach.Application.instance().teardown()
+  Coach.Application.instance().initialize()
+  Coach.root          = process.cwd() + "/spec/spec-app"
+  Coach.publicPath    = Coach.root + "/public"
+  Coach.Support.Dependencies.load "#{Coach.root}/app/models"

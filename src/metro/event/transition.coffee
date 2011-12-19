@@ -1,2 +1,0 @@
-class Metro.State.Transition
-  
