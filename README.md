@@ -121,7 +121,46 @@ Coach.Route.where(pattern: "=~": "/posts").first()
 
 ## Views
 
-Use any template framework for your views.  Includes [shift.js](http://github.com/viatropos/shift.js) which is a normalized interface on most of the Node.js templating languages.
+The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure coffeescript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Coach.View.engine = "jade"` in `config/application`.  Coach uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
+
+``` coffeescript
+# app/views/layouts/application.coffee
+doctype 5
+html ->
+  head ->
+    meta charset: 'utf-8'
+    title "#{@title or 'Untitled'} | My awesome website"
+    meta name: 'description', content: @desc if @desc?
+    link rel: 'stylesheet', href: '/stylesheets/application.css'
+  body ->
+    header ->
+      h1 @title or 'Untitled'
+      nav ->
+        ul ->
+          (li -> a href: '/', -> 'Home') unless @path is '/'
+          li -> a href: '/chunky', -> 'Bacon!'
+          switch @user.role
+            when 'owner', 'admin'
+              li -> a href: '/admin', -> 'Secret Stuff'
+            when 'vip'
+              li -> a href: '/vip', -> 'Exclusive Stuff'
+            else
+              li -> a href: '/commoners', -> 'Just Stuff'
+    section ->
+      yield()
+    footer ->
+      p shoutify('bye')
+```
+
+``` coffeescript
+# app/views/posts/new.coffee
+formFor @post, ->
+  fieldset ->
+    legend "Basic Info"
+    field "title"
+    field "body", as: "text"
+  submit "Save"
+```
 
 Soon will add form and table builders.
 
