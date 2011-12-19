@@ -1,93 +1,20 @@
+# Coach.js
 
-Minified & Gzipped: 15.7kb
-
-- https://github.com/powmedia/backbone-forms
-- https://github.com/search?type=Repositories&language=JavaScript&q=validation&repo=&langOverride=&x=0&y=0&start_value=1
-- http://happyjs.com/
-- https://github.com/flatiron/director
-- https://github.com/hij1nx/EventEmitter2
-
-## Client Extensions
-
-Have CachedCommons.org let you load files with `require('socket.io')`:
-
-``` coffeescript
-# coach/controllers/sockets
-require('socket.io')
-
-# essentially...
-require = (key) ->
-  $.getScript("http://cachedcommons.org/javascripts/#{key}.min.js")
-```
-
-- underscore.js
-- underscore.string.js
-- moment.js (date/time)
-- mustache.js
-- socket.io
-- pluralization
-- schema.org (https://github.com/indexzero/node-schema-org)
-- geo: https://github.com/manuelbieh/Geolib
-- tiny-require.js (browser + node)
-  - useragent (npm install useragent)
-  - shift.js (templating)
-  - async.js (callbacks)
-  - mimetypes
-
-window.μ = new class Urban
-αστικός, == Urban
-
-> Attention All Passengers:  Client and server are merging...  You may now begin coding.
-
-## Parts
-
-- Core: Core extensions, base files, I18n
-- Model + Store
-- View + Controller + Middleware + Route
-- Event
-- Date, String, etc.
-
-## Features
-
-- `Store` layer to all popular databases, which just normalizes the data for the `Model` layer.
-  - MongoDB
-  - Redis
-  - [Cassandra](https://github.com/wadey/node-thrift)
-  - PostgreSQL
-  - CouchDB
-- `Model` layer with validations, sophisticated attribute management, associations, named and chainable scopes, etc.
-- `Controller` layer that works pretty much exactly like the Rails controller system.
-- `View` layer which works just like Rails
-- `Route` layer, which handles mapping and finding routes
-- `Event` layer, for callbacks and event management [todo]
-- `Asset` layer, for asset compression pipeline just like Sprockets + Rails.  Handles image sprite creation too.
-- `I18n` layer [todo]
-- `Spec` layer for setting up tests for your app just like Rails.
-- `Generator` [todo]
-- `Component` layer, for building complex forms, tables, widgets, etc. [todo]
-- `Template` layer, so you can swap out any template engines. In the [Node.js Shift Module](https://github.com/viatropos/shift.js).
-- Can also use on the client:
-  - Model
-  - View
-  - Controller
-  - Route
-  - Template
-  - Support
-- Optimized for the browser.
+> Full Stack Web Framework for Node.js.  Minified & Gzipped: 15.7kb
 
 ## Install
 
 ``` bash
-npm install coach
+npm install coach -d
 ```
 
-To install Coach with development dependencies, use:
+## Generator
 
 ``` bash
-npm install coach --dev # npm install coach -d
+coach new my-app
 ```
 
-## Structure
+### Structure
 
 ``` bash
 .
@@ -135,66 +62,55 @@ npm install coach --dev # npm install coach -d
 |        `-- posts.coffee
 ```
 
-## Tips
-
-#### Create a namespace for your app.
-
-This makes it so you don't have to use `require` everywhere on the client, setting the same variable over and over again.
+## Application
 
 ``` coffeescript
-class MyApp.User
-  @include Coach.Model
+# config/application.coffee
+class App extends Coach.Application
+  @config.encoding = "utf-8"
+  @config.filterParameters += ["password", "password_confirmation"]
+  @config.loadPaths += ["./themes"]
 ```
 
-or
+## Models
 
 ``` coffeescript
-class User
-  @include Coach.Model
+class App.User extends Coach.Model
+  @key "firstName"
+  @key "createdAt", type: "Date", default: -> new Date()
+  @key "coordinates", type: "Geo"
+  
+  @scope "byBaldwin", firstName: "=~": "Baldwin"
+  @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
+  
+  @hasMany "posts", className: "App.Post", cache: true # postIds
+  
+  @validate "firstName", presence: true
+  
+class App.Post extends Coach.Model
+  @belongsTo "author", className: "App.User"
+  
+User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all (error, records) =>
+  @render json: User.toJSON(records)
 
-MyApp.User = User
-```
+# should handle these but doesn't yet.  
+Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
+Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
+# userIds = User.where(firstName: "=~": "Baldwin").select("id")
+# Post.where(authorId: $in: userIds).all()
 
-Instead of
-
-``` coffeescript
-# user.coffee
-class User
-  @include Coach.Model
-
-module.exports = User
-
-# somewhere else
-User = require('../app/models/user')
-```
-
-Because of the naming/folder conventions, you can get away with this without any worries.  It also decreases the final output code :)
-
-## Generator
-
-``` bash
-coach new my-app
-```
-
-## App
-
-``` coffeescript
-# index.coffee
-class Movement extends Coach.Application
+User.includes("posts").where("posts.title": "Welcome").all()
 ```
 
 ## Routes
 
 ``` coffeescript
 # config/routes.coffee
-route "/login",         "sessions#new", via: "get", as: "login"
-                        
-route "/posts",         "posts#index", via: "get"
-route "/posts/:id/edit","posts#edit", via: "get"
-route "/posts/:id",     "posts#show", via: "get"
-route "/posts",         "posts#create", via: "post"
-route "/posts/:id",     "posts#update", via: "put"
-route "/posts/:id",     "posts#destroy", via: "delete"
+Coach.Route.draw ->
+  @match "/login",         "sessions#new", via: "get", as: "login"
+  
+  @resources "posts", ->
+    @resources "comments"
 ```
 
 Routes are really just models, `Coach.Route`.  You can add and remove and search them however you like:
@@ -203,35 +119,11 @@ Routes are really just models, `Coach.Route`.  You can add and remove and search
 Coach.Route.where(pattern: "=~": "/posts").first()
 ```
 
-## Models
+## Views
 
-``` coffeescript
-class User
-  @include Coach.Model
-  
-  @key "id"
-  @key "firstName"
-  @key "createdAt", type: "time"
-  
-  @scope "byMrBaldwin", @where firstName: "=~": "Baldwin"
-  @scope "thisWeek", @where createdAt: ">=": -> Coach.Support.Time.now().beginningOfWeek().toDate()
-  
-  @hasMany "posts", className: "Page"
-  
-  @validates "firstName", presence: true
-```
+Use any template framework for your views.  Includes [shift.js](http://github.com/viatropos/shift.js) which is a normalized interface on most of the Node.js templating languages.
 
-Models have:
-
-- validations
-- named (and chainable) scopes
-- attributes
-- associations
-- callbacks
-
-``` coffeescript
-User.where(firstName: "=~": "a").order(["firstName", "desc"]).all()
-```
+Soon will add form and table builders.
 
 ## Controllers
 
@@ -265,37 +157,6 @@ class PostsController extends Coach.Controller
     @post = Post.find(@params.id)
 ```
 
-## Store
-
-There's a unified interface to the different types of stores, so you can use the model and have it transparently manage data.  For example, for the browser, you can use the memory store, and for the server, you can use the mongodb store.  Redis, PostgreSQL, and Neo4j are in the pipeline.
-
-``` coffeescript
-class PageView extents Coach.Model
-  @store "redis"
-```
-
-## Views
-
-Use any template framework for your views.  Includes [shift.js](http://github.com/viatropos/shift.js) which is a normalized interface on most of the Node.js templating languages.
-
-Soon will add form and table builders.
-
-## Web Sockets
-
-Web Sockets work just like actions in controllers, using socket.io.
-
-``` coffeescript
-class ConnectionsController
-  new: ->
-    @emit text: "Welcome!"
-  
-  create: ->
-    @broadcast user: params.id, text: params.text
-    
-  destroy: ->
-    @emit text: "Adios"
-```
-
 ## Middleware
 
 It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
@@ -317,20 +178,6 @@ Coach.navigate Coach.urlFor(post)
 ```
 
 Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
-
-## Application
-
-``` coffeescript
-# config/application.coffee
-class MyApp extends Coach.Application
-  @config.encoding = "utf-8"
-  @config.filterParameters += ["password", "password_confirmation"]
-  @config.loadPaths += ["./themes"]
-  
-MyApp.Application.initialize()
-```
-
-## Watchfile
 
 ## Internationalization
 
@@ -363,7 +210,7 @@ en:
       one: "You might have 1 message"
 ```
 
-## Test, Development, Minify
+## Test, Develop, Minify
 
 ``` bash
 cake coffee
@@ -371,193 +218,14 @@ cake spec
 cake minify
 ```
 
-- https://github.com/rstacruz/js2coffee
-- http://momentjs.com/
-- http://sugarjs.com/
-- http://rickharrison.github.com/validate.js/
-- https://github.com/javve/list
-- http://debuggable.com/posts/testing-node-js-modules-with-travis-ci:4ec62298-aec4-4ee3-8b5a-2c96cbdd56cb
-- http://dtrace.org/resources/bmc/QCon.pdf
-- http://derbyjs.com/
-- http://www.html5rocks.com/en/tutorials/file/filesystem/
-- https://github.com/gregdingle/genetify
-- https://github.com/jquery/qunit
+## License
 
-## Presenter
+(The MIT License)
 
-``` coffeescript
-PostsPresenter =
-  index: ->
-```
+Copyright &copy; 2011 - 2012 [Lance Pollard](http://twitter.com/viatropos) &lt;lancejpollard@gmail.com&gt;
 
-## Research
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-These are projects that should either be integrated into Coach, or rewritten to decrease file size.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-### Database
-
-- https://github.com/zefhemel/persistencejs
-
-### Routes & History
-
-- https://github.com/balupton/history.js
-- https://github.com/millermedeiros/crossroads.js
-
-### Models
-
-- https://github.com/maccman/spine
-- https://github.com/biggie/biggie-orm
-
-### Events
-
-- http://millermedeiros.github.com/js-signals
-
-### Payment Gateways
-
-- https://github.com/jamescarr/paynode
-- https://github.com/braintree/braintree_node
-
-### Mailers
-
-- https://github.com/marak/node_mailer
-
-## Design Principles
-
-### Minimize the number of methods
-
-- less code to manage
-- fewer methods to memorize
-- smaller footprint (less code for the browser to download)
-- differs from Rails
-- opt-in helper method generation
-
-```
-model.buildRelation("user") # can opt into
-# vs.
-model.buildUser()
-```
-
-### Use double underscore `__name` for private/protected methods
-
-### Use single underscore for Ruby-ish `bang!` methods: `_create()`.
-
-### Organize the code so it can be compiled for the client
-
-- put `module.exports = X` at the bottom of each file so it can be stripped with a regular expression.
-
-### Create Underscore.js Compatible Helpers
-
-- write helpers so they are independent of underscore but can be swapped.
-
-## Model
-
-``` coffeescript
-class App.User extends Coach.Model
-  @key "firstName"
-  @key "createdAt", type: "Date", default: -> new Date()
-  @key "coordinates", type: "Geo"
-  
-  @scope "byBaldwin", firstName: "=~": "Baldwin"
-  @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
-  
-  @hasMany "posts", className: "App.Post", cache: true # postIds
-  
-  @validate "firstName", presence: true
-  
-class App.Post extends Coach.Model
-  @belongsTo "author", className: "App.User"
-  
-User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all (error, records) =>
-  @render json: User.toJSON(records)
-
-# should handle these but doesn't yet.  
-Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
-Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
-# userIds = User.where(firstName: "=~": "Baldwin").select("id")
-# Post.where(authorId: $in: userIds).all()
-
-User.includes("posts").where("posts.title": "Welcome").all()
-```
-
-## Controller
-
-All controller actions are just events.  This means then that controllers handle events:
-
-- DOM events
-- socket messages
-- url requests
-
-Instead of having to create a controller for each type of message, why not just establish some conventions:
-
-``` coffeescript
-class PostsController extends Coach.Controller
-  # url handler, just like Rails
-  create: ->
-    
-  # socket.io handler
-  @on "create", "syncCreate" # created by default... knows because it's named after an action
-  @on "notification", "flashMessage" # knows it's socket because 'notification' isn't an action or dom event keyword
-  @on "mousemove", "updateHeatMap", type: 'socket' # if you name a socket event after a keyword then pass the `type: 'socket'` option.
-  
-  # dom event handler
-  @on "click", "click"
-  @on "click .item a", "clickItem"
-  # or as an object
-  @on "click .itemA a": "clickItemA",
-    "click .itemB a": "clickItemB",
-    "click .itemC a": "clickItemC"
-  
-  @on "change #user-first-name-input", "enable", dependent: "#user-last-name-input"
-  @on "change #user-first-name-input", "enable #user-last-name-input" # enable: (selector)
-  @on "change #user-first-name-input", "validate"
-  @on "change #user-first-name-input", bind: "firstName"
-  @bind "change #user-first-name-input", "firstName"
-  @on "click #add-user-address", "addAddress"
-  @on "click #add-user-address", "add", object: "address"
-  @on "click #remove-user-address", "removeAddress"
-  # $(window).on('click', '#user-details', "toggleDetails");
-  @on "click #user-details", "toggleDetails"
-
-  # show or hide
-  toggleShowHide: ->
-
-  show: ->
-
-  hide: ->
-
-  toggleSelectDeselect: ->
-
-  select: ->
-
-  deselect: ->
-
-  toggleAddRemove: ->
-
-  add: ->
-
-  remove: ->
-
-  toggleEnableDisable: ->  
-    if _.blank(value)
-      @disable()
-    else
-      @enable()
-
-  # enable or disable
-  enable: ->
-    $(options.dependent).attr("disabled", false)
-
-  disable: ->
-    $(options.dependent).attr("disabled", true)
-
-  validate: (element) ->
-    element
-
-  invalidate: ->
-
-  bind: ->
-  
-  next: ->
-    
-  prev: ->
-```
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
