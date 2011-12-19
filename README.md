@@ -32,15 +32,17 @@ coach new my-app
 |   |-- views
 |   |   |-- admin
 |   |   |   `-- posts
-|   |   |       |-- edit.jade
-|   |   |       |-- index.jade
-|   |   |       |-- new.jade
+|   |   |       |-- _form.coffee
+|   |   |       |-- edit.coffee
+|   |   |       |-- index.coffee
+|   |   |       |-- new.coffee
+|   |   |       |-- show.coffee
 |   |   |-- layouts
-|   |   |   `-- application.jade
+|   |   |   `-- application.coffee
 |   |   |-- shared
 |   |   `-- posts
-|   |       |-- index.jade
-|   |       `-- show.jade
+|   |       |-- index.coffee
+|   |       `-- show.coffee
 |   `-- helpers
 |       |-- admin
 |       |   |-- postsHelper.coffee
