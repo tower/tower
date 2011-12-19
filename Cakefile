@@ -188,6 +188,7 @@ task 'spec', 'Run jasmine specs', ->
 task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
   coffee = spawn './node_modules/coffee-script/bin/coffee', ['-o', 'lib', '-w', 'src']
   coffee.stdout.on 'data', (data) -> console.log data.toString().trim()
+  coffee.stderr.on 'data', (data) -> console.log data.toString().trim()
   
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/metro/route/dsl.js', (err, stdout, stderr) ->

@@ -1,3 +1,4 @@
+###
 Coach.View.Components =    
   formFor: ->
     form options.outerHTML, ->
@@ -197,3 +198,4 @@ Coach.View.Components =
       else
         linkTo options.value, options.path, options.innerHTML
       span options.separator if options.separator
+###
