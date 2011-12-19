@@ -121,7 +121,30 @@ Coach.Route.where(pattern: "=~": "/posts").first()
 
 ## Views
 
-The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure coffeescript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Coach.View.engine = "jade"` in `config/application`.  Coach uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
+``` coffeescript
+# app/views/posts/new.coffee
+formFor @post, ->
+  fieldset ->
+    legend "Basic Info"
+    field "title"
+    field "body", as: "text"
+  submit "Save"
+```
+
+``` coffeescript
+# app/views/posts/index.coffee
+tableFor @posts, ->
+  thead ->
+    tcell "Title"
+    tcell "Author"
+  tbody ->
+    for post in @posts
+      trow 
+        tcell post.title
+        tcell post.author.name
+  tfoot ->
+    pagination @posts
+```
 
 ``` coffeescript
 # app/views/layouts/application.coffee
@@ -152,17 +175,7 @@ html ->
       p shoutify('bye')
 ```
 
-``` coffeescript
-# app/views/posts/new.coffee
-formFor @post, ->
-  fieldset ->
-    legend "Basic Info"
-    field "title"
-    field "body", as: "text"
-  submit "Save"
-```
-
-Soon will add form and table builders.
+The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure coffeescript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Coach.View.engine = "jade"` in `config/application`.  Coach uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
 
 ## Controllers
 
