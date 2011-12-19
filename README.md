@@ -215,28 +215,6 @@ class PostsController extends Coach.Controller
     @post = Post.find(@params.id)
 ```
 
-## Middleware
-
-It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
-
-## History
-
-Since all of the controller/routing code is available on the client, you can go directly through that system just like you would the server.
-
-``` coffeescript
-# Just request the url, and let it do it's thing
-Coach.get '/posts'
-
-# Same thing, this time passing parameters
-Coach.get '/posts', createdAt: "2011-10-26..2011-10-31"
-
-# Dynamic
-Coach.urlFor(Post.first()) #=> "/posts/the-id"
-Coach.navigate Coach.urlFor(post)
-```
-
-Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
-
 ## Internationalization
 
 The default interpolator is mustache.  You can swap that out with any template engine you want.
@@ -267,6 +245,28 @@ en:
     future:
       one: "You might have 1 message"
 ```
+
+## Helpers
+
+Since all of the controller/routing code is available on the client, you can go directly through that system just like you would the server.
+
+``` coffeescript
+# Just request the url, and let it do it's thing
+Coach.get '/posts'
+
+# Same thing, this time passing parameters
+Coach.get '/posts', createdAt: "2011-10-26..2011-10-31"
+
+# Dynamic
+Coach.urlFor(Post.first()) #=> "/posts/the-id"
+Coach.navigate Coach.urlFor(post)
+```
+
+Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
+
+## Middleware
+
+It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
 
 ## Test, Develop, Minify
 
