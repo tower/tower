@@ -121,6 +121,8 @@ Coach.Route.where(pattern: "=~": "/posts").first()
 
 ## Views
 
+### Forms
+
 ``` coffeescript
 # app/views/posts/new.coffee
 formFor @post, ->
@@ -130,6 +132,8 @@ formFor @post, ->
     field "body", as: "text"
   submit "Save"
 ```
+
+### Tables
 
 ``` coffeescript
 # app/views/posts/index.coffee
@@ -145,6 +149,8 @@ tableFor @posts, ->
   tfoot ->
     pagination @posts
 ```
+
+### Layouts
 
 ``` coffeescript
 # app/views/layouts/application.coffee
