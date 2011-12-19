@@ -1,11 +1,11 @@
 en =
   model:
     errors:
-      presence:             "{{attribute}} can't be blank"
-      minimum:              "{{attribute}} must be a minimum of {{value}}"
-      maximum:              "{{attribute}} must be a maximum of {{value}}"
-      length:               "{{attribute}} must be equal to {{value}}"
-      format:               "{{attribute}} must be match the format {{value}}"
+      presence:             "%{attribute} can't be blank"
+      minimum:              "%{attribute} must be a minimum of %{value}"
+      maximum:              "%{attribute} must be a maximum of %{value}"
+      length:               "%{attribute} must be equal to %{value}"
+      format:               "%{attribute} must be match the format %{value}"
       inclusion:            "%{attribute} is not included in the list"
       exclusion:            "%{attribute} is reserved"
       invalid:              "%{attribute} is invalid"
@@ -30,5 +30,7 @@ en =
     fullMessages:           
       format:               "%{message}"
       #format:              "%{attribute} %{message}"
+      
+Coach.Support.I18n.load en
 
 module.exports = en

@@ -1,4 +1,4 @@
-class Coach.View extends Coach.Object
+class Coach.View extends Coach.Class
   @extend
     engine:         "jade"
     prettyPrint:    false

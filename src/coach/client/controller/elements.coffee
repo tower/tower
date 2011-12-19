@@ -7,7 +7,7 @@ Coach.Controller.Elements =
       for key, selector of selectors
         result[key] = target[method](selector)
     
-    result    
+    result
     
   processElements: (target, options = {}) ->
     @elements = @extractElements(target, options)

@@ -1,1 +1,1 @@
-class CoachSpecApp.PostsController extends CoachSpecApp.ApplicationController
+class CoachSpecApp.PostsController extends Coach.Controller

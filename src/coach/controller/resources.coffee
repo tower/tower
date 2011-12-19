@@ -12,6 +12,24 @@ Coach.Controller.Resources =
       options.key = key
       options.type ||= Coach.Support.String.camelize(options.key)
       @_belongsTo = options
+      
+    # Defines wich actions to keep from the inherited controller.    
+    actions: ->
+      args = Coach.Support.Array.args(arguments)
+
+      if typeof args[args.length - 1] == "object"
+        options = args.pop()
+      else
+        options = {}
+
+      actions         = ["index", "new", "create", "show", "edit", "update", "destroy"]
+      actionsToRemove = _.difference(actions, args, options.except || [])
+
+      for action in actionsToRemove
+        @[action] = null
+        delete @[action]
+
+      @
 
   index: ->
     @_index arguments...
@@ -33,24 +51,6 @@ Coach.Controller.Resources =
 
   destroy: ->
     @_destroy arguments...
-
-  # Defines wich actions to keep from the inherited controller.    
-  @actions: ->
-    args = Coach.Support.Array.args(arguments)
-
-    if typeof args[args.length - 1] == "object"
-      options = args.pop()
-    else
-      options = {}
-
-    actions         = ["index", "new", "create", "show", "edit", "update", "destroy"]
-    actionsToRemove = _.difference(actions, args, options.except || [])
-    
-    for action in actionsToRemove
-      @[action] = null
-      delete @[action]
-
-    @
 
   # @on "update", format: "html", success: true, ->
 

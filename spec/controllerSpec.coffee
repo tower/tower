@@ -24,7 +24,7 @@ describe 'Coach.Controller', ->
         @match "/custom/:id",  to: "custom#show"
       
       controller  = new CoachSpecApp.CustomController()
-      router      = Coach.Middleware.Routes
+      router      = Coach.Middleware.Router
       
     it 'should run callbacks', ->
       request       = method: "get", url: "http://www.local.host:3000/custom"

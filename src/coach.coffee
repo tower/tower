@@ -30,3 +30,4 @@ Coach.domain              = "localhost"
 
 Coach.run = (argv) ->
   (new Coach.Command.Server(argv)).run()
+

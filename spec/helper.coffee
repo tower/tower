@@ -1,4 +1,4 @@
-require '../lib/metro'
+require '../lib/coach'
 # require './secrets'
 
 Coach.root            = process.cwd() + "/spec/spec-app"

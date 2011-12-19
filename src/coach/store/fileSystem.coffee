@@ -1,6 +1,6 @@
 File = require('pathfinder').File
 
-class Coach.Store.FileSystem extends Coach.Object
+class Coach.Store.FileSystem extends Coach.Store
   # add load paths if you need to, e.g.
   # Coach.View.store().loadPaths.push("themes/views")
   constructor: (loadPaths = []) ->

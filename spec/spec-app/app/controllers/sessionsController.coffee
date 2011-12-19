@@ -1,4 +1,4 @@
-class CoachSpecApp.SessionsController extends CoachSpecApp.ApplicationController
+class CoachSpecApp.SessionsController extends Coach.Controller
   #@include Coach.View.Helpers
   
   new: ->

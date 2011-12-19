@@ -1,10 +1,10 @@
 Coach.Support.I18n =
+  PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g
+  
   load: (pathOrObject, language = @defaultLanguage) ->
     store     = @store()
     language  = store[language] ||= {}
-    
     Coach.Support.Object.deepMerge(language, if typeof(pathOrObject) == "string" then require(pathOrObject) else pathOrObject)
-    
     @
   
   defaultLanguage: "en"
@@ -18,7 +18,7 @@ Coach.Support.I18n =
         when 1 then key += ".one"
         else key += ".other"
     
-    @interpolator().render(@lookup(key, options.language), locals: options)
+    @interpolate(@lookup(key, options.language), options)
   
   lookup: (key, language = @defaultLanguage) ->
     parts   = key.split(".")
@@ -37,8 +37,19 @@ Coach.Support.I18n =
   store: ->
     @_store ||= {}
   
-  interpolator: ->
-    @_interpolator ||= new (require('shift').Mustache)
+  # https://github.com/svenfuchs/i18n/blob/master/lib/i18n/interpolate/ruby.rb
+  interpolate: (string, locals = {}) ->
+    string.replace @PATTERN, (match, $1, $2, $3) ->
+      if match == '%%'
+        '%'
+      else
+        key = $1 || $2
+        if locals.hasOwnProperty(key)
+          value = locals[key]
+        else
+          throw new Error("Missing interpolation argument #{key}")
+        value = value.call(locals) if typeof value == 'function'
+        if $3 then sprintf("%#{$3}", value) else value
     
 Coach.Support.I18n.t = Coach.Support.I18n.translate
 

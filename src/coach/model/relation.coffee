@@ -1,4 +1,4 @@
-class Coach.Model.Relation extends Coach.Object
+class Coach.Model.Relation extends Coach.Class
   # http://apidock.com/rails/ActiveRecord/Associations/ClassMethods/belongs_to
   # hasMany "articles", type: "Post"
   # 

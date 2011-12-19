@@ -1,7 +1,7 @@
 # Stores are the interface models use to find their data.
 # http://www.w3.org/TR/IndexedDB/
 # https://github.com/kriszyp/perstore
-class Coach.Store extends Coach.Object
+class Coach.Store extends Coach.Class
   @defaultLimit: 100
   
   @atomicModifiers:

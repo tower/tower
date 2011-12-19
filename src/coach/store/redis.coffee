@@ -1,5 +1,5 @@
 # https://github.com/mranney/node_redis
-class Coach.Store.Redis extends Coach.Object
+class Coach.Store.Redis extends Coach.Store
   @lib: ->
     require("redis")
   

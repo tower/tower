@@ -15,7 +15,6 @@ class Coach.Model extends Coach.Class
     @attributes   = attributes
     @changes      = {}
     @errors       = {}
-    #@relations    = {}
     @readonly     = false
   
 require './model/scope'
@@ -38,6 +37,7 @@ require './model/states'
 require './model/validator'
 require './model/validations'
 require './model/timestamp'
+require './model/locale/en'
 
 Coach.Model.include Coach.Model.Persistence
 Coach.Model.include Coach.Model.Atomic

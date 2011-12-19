@@ -56,7 +56,7 @@ fail:
     User.where(title: $in: ["Hello", "World"]).create()
 
 ###
-class Coach.Model.Scope extends Coach.Object
+class Coach.Model.Scope extends Coach.Class
   @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within"]
   @finders:   ["find", "all", "first", "last", "count"]
   @builders:  ["build", "create", "update", "updateAll", "delete", "deleteAll", "destroy", "destroyAll"]

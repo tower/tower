@@ -9,5 +9,6 @@ require './support/number'
 require './support/object'
 require './support/regexp'
 require './support/string'
+require './support/locale/en'
 
 module.exports = Coach.Support
