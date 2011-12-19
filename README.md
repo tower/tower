@@ -14,7 +14,7 @@ npm install coach -d
 coach new my-app
 ```
 
-### Structure
+## Structure
 
 ``` bash
 .
