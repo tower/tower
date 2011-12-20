@@ -18,7 +18,7 @@ describe 'Coach.Controller', ->
     
     beforeEach ->
       Coach.Application.instance().teardown()
-
+      
       Coach.Route.draw ->
         @match "/custom",  to: "custom#index"
         @match "/custom/:id",  to: "custom#show"

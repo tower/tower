@@ -11,9 +11,9 @@ class Coach.Controller extends Coach.Class
     @contentType = "text/html"
     @params       = {}
     @query        = {}
-    @resourceName   = @constructor.resourceName
-    @resourceType   = @constructor.resourceType
-    @collectionName = @constructor.collectionName
+    @resourceName   = @constructor.resourceName()
+    @resourceType   = @constructor.resourceType()
+    @collectionName = @constructor.collectionName()
     
     if @constructor._belongsTo
       @hasParent    = true

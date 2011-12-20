@@ -33,9 +33,9 @@ Coach.Support.Object.extend Coach,
   accessors: true
   constant: (string) ->
     node  = global
+    parts = string.split(".")
     
     try
-      parts = string.split(".")
       for part in parts
         node = node[part]
     catch error

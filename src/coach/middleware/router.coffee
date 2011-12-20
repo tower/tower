@@ -6,7 +6,7 @@ Coach.Middleware.Router = (request, response, callback) ->
       response.end()
       controller.clear()
     else
-      self.error(request, response)
+      Coach.Middleware.Router.error(request, response)
   
   response
   

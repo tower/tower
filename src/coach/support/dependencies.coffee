@@ -1,4 +1,3 @@
-fs = require('fs')
 File  = require('pathfinder').File
 # https://github.com/fairfieldt/coffeescript-concat/blob/master/coffeescript-concat.coffee
 # https://github.com/serpentem/coffee-toaster
@@ -8,11 +7,14 @@ File  = require('pathfinder').File
 #   Coach.Support.Dependencies.loadPath(path)
 
 Coach.Support.Dependencies =
-  load: (directory) ->
+  load: (directory, callback) ->
     paths = File.files(directory) if File.exists(directory)
     paths ||= []
     for path in paths
-      @loadPath(path) if !!path.match(/\.(coffee|js)/)
+      if callback
+        callback(path)
+      else
+        @loadPath(path) if !!path.match(/\.(coffee|js)/)
   
   loadPath: (path) ->
     self  = @

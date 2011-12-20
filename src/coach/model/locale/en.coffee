@@ -1,4 +1,4 @@
-en =
+Coach.Support.I18n.load module.exports =
   model:
     errors:
       presence:             "%{attribute} can't be blank"
@@ -30,7 +30,3 @@ en =
     fullMessages:           
       format:               "%{message}"
       #format:              "%{attribute} %{message}"
-      
-Coach.Support.I18n.load en
-
-module.exports = en

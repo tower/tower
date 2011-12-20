@@ -5,7 +5,7 @@ class Coach.View extends Coach.Class
     loadPaths:      ["app/views"]
     store: (store) ->
       @_store = store if store
-      @_store ||= new Coach.Store.Memory
+      @_store ||= new Coach.Store.Memory(name: "view")
   
   # so you copy the controller over  
   constructor: (context = {}) ->

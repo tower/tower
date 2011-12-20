@@ -1,44 +1,63 @@
 class Coach.Application extends Coach.Class
   @instance: ->
     @_instance
+    
+  @defaultStack: ->
+    @use Coach.Middleware.Location
+    #@use Coach.Middleware.Cookies
+    @use Coach.Middleware.Router
+    @middleware
+    
+  @use: ->
+    @middleware ||= []
+    @middleware.push arguments
+    
+  #use: (route, handle) ->
+  use: ->
+    @constructor.use arguments...
 
-  constructor: (middleware = []) ->
+  constructor: (middlewares = []) ->
+    throw new Error("Already initialized application") if Coach.Application._instance
     Coach.Application._instance = @
+    Coach.Application.middleware ||= []
     
     @io       = global["io"]
-    
+    @History  = global.History
     @stack    = []
     
-    @use(_middleware) for _middleware in middleware
-    
-    @History  = global.History
+    @use(middleware) for middleware in middlewares
     
   initialize: ->
     @extractAgent()
-    @use Coach.Middleware.Location
-    @use Coach.Middleware.Routes
+    @applyMiddleware()
     @
+  
+  applyMiddleware: ->  
+    middlewares = @constructor.middleware
     
-  extractAgent: ->
-    Coach.agent = new Coach.Net.Agent
-      os:       navigator
-      ip:       navigator
-      browser:  navigator
-      language: navigator
+    unless middlewares && middlewares.length > 0
+      middlewares = @constructor.defaultStack()
+      
+    @middleware(middleware...) for middleware in middlewares
     
-  use: (route, handle) ->
-    @route = "/"
-    
-    unless "string" is typeof route
+  middleware: ->
+    args    = Coach.Support.Array.args(arguments)
+    route   = "/"
+    handle  = args.pop()
+    unless typeof route == "string"
       handle = route
       route = "/"
 
     route = route.substr(0, route.length - 1) if "/" is route[route.length - 1]
-
+    
     @stack.push route: route, handle: handle
-
+    
     @
-
+    
+  extractAgent: ->
+    Coach.cookies = Coach.Net.Cookies.parse()
+    Coach.agent   = new Coach.Net.Agent(JSON.parse(Coach.cookies["user-agent"] || '{}'))
+    
   listen: ->
     self = @
     return if @listening
@@ -47,9 +66,9 @@ class Coach.Application extends Coach.Class
     if @History && @History.enabled
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
-        location  = new Coach.Route.Url(state.url)
-        request   = new Request(url: state.url, location: location, params: Coach.Support.Object.extend(title: state.title, (state.data || {})))
-        response  = new Response(url: state.url, location: location)
+        location  = new Coach.Net.Url(state.url)
+        request   = new Coach.Net.Request(url: state.url, location: location, params: Coach.Support.Object.extend(title: state.title, (state.data || {})))
+        response  = new Coach.Net.Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response
     else

@@ -6,6 +6,15 @@ Coach.Controller.Resources =
       @_resourceType    = options.type if options.hasOwnProperty("type")
       @_collectionName  = options.collectionName if options.hasOwnProperty("collectionName")
       @
+      
+    resourceType: ->
+      @_resourceType ||= Coach.Support.String.singularize(@name.replace(/(Controller)$/, ""))
+      
+    resourceName: ->
+      @_resourceName ||= Coach.Support.String.camelize(@resourceType(), true)
+      
+    collectionName: ->
+      @_collectionName ||= Coach.Support.String.pluralize(@resourceName())
     
     # belongsTo "project", finder: "findByTitle", param: "projectTitle", type: "Project"
     belongsTo: (key, options = {}) ->

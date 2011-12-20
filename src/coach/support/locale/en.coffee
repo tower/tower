@@ -1,4 +1,4 @@
-en =
+Coach.Support.I18n.load module.exports =
   date:
     formats:
       # Use the strftime parameters for formats.
@@ -31,7 +31,3 @@ en =
       wordsConnector: ", "
       twoWordsConnector: " and "
       lastWordConnector: ", and "
-
-Coach.Support.I18n.load en
-
-module.exports = en

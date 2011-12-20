@@ -1,3 +1,4 @@
+###
 Coach.Controller.Elements =
   # @extractElements $(".item a"), find: {meta: "span small"}, closest: {title: ".item h1"}
   extractElements: (target, options = {}) ->
@@ -41,3 +42,4 @@ Coach.Controller.Elements =
       if field.length
         field.css("background", "yellow")
         $("input", field).after("<output class='error'>#{errors.join("\n")}</output>")
+###

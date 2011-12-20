@@ -3,7 +3,7 @@ class Coach.Net.Request
     @url        = data.url
     @location   = data.location
     @pathname   = @location.path
-    @query      = @parsedUrl.param
+    @query      = @location.query
     @title      = data.title
     @title    ||= document?.title
     @body       = data.body     || {}

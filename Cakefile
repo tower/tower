@@ -8,48 +8,52 @@ engine  = new Shift.CoffeeScript
 sys     = require 'util'
 require 'underscore.logger'
 
-#Metro   = require './lib/metro'
+#Coach   = require './lib/coach'
 compressor = new Shift.UglifyJS
 
 compileFile = (root, path, check) ->
-  data = fs.readFileSync path, 'utf-8'
-  data = data.replace /require '([^']+)'\n/g, (_, _path) ->
-    _path = "#{root}/#{_path.toString().split("/")[2]}.coffee"
-    if !check || check(_path)
-      #fs.readFileSync _path, 'utf-8'
-      _root = _path.split(".")[-3..-2].join(".")
-      try
-        compileFile(_root, _path, check) + "\n\n"
-      catch error
-        _console.info _path
-        _console.error error.stack
+  try
+    data = fs.readFileSync path, 'utf-8'
+    data = data.replace /require '([^']+)'\n/g, (_, _path) ->
+      #_path = "#{root}/#{_path.toString().split("/")[2]}.coffee"
+      _path = "#{root}/#{_path.toString().split("/")[2..-1].join("/")}.coffee"
+      if !check || check(_path)
+        #fs.readFileSync _path, 'utf-8'
+        _root = _path.split(".")[-3..-2].join(".")
+        #_root = _path.replace(/\.coffee$/, "")
+        try
+          compileFile(_root, _path, check) + "\n\n"
+        catch error
+          _console.info _path
+          _console.error error.stack
+          ""
+      else
         ""
-    else
-      ""
-  
-  data = data.replace(/module\.exports\s*=.*\s*/g, "")
-  data + "\n\n"
+    data = data.replace(/module\.exports\s*=.*\s*/g, "")
+    data + "\n\n"
+  catch error
+    ""
   
 compileDirectory = (root, check, callback) ->
-  code = compileFile("./src/metro/#{root}", "./src/metro/#{root}.coffee", check)
+  code = compileFile("./src/coach/#{root}", "./src/coach/#{root}.coffee", check)
   callback(code) if callback
   code
   
 compileEach = (root, check, callback) ->
   result = compileDirectory root, check, callback
   
-  #fs.writeFile "./dist/metro/#{root}.coffee", result
+  #fs.writeFile "./dist/coach/#{root}.coffee", result
   engine.render result, bare: false, (error, result) ->
-    fs.writeFile "./dist/metro/#{root}.js", result
+    fs.writeFile "./dist/coach/#{root}.js", result
     unless error
-      fs.writeFile "./dist/metro/#{root}.min.js", compressor.render(result)
+      fs.writeFile "./dist/coach/#{root}.min.js", compressor.render(result)
       
 obscurify = (content) ->
   replacements = {}
-  replacements[process.env.NS || "Metro"] = "Metro" # use "M" for ultimate compression
+  replacements[process.env.NS || "Coach"] = "Coach" # use "M" for ultimate compression
   replacements["_C"]  = "ClassMethods"
   replacements["_I"]  = "InstanceMethods"
-  replacements["_"]   = /Metro\.Support\.(String|Object|Number|Array|RegExp)/
+  replacements["_"]   = /Coach\.Support\.(String|Object|Number|Array|RegExp)/
   
   for replacement, lookup of replacements
     content = content.replace(lookup, replacement)
@@ -61,11 +65,11 @@ task 'to-underscore', ->
   result    = "_.mixin\n"
   
   for _module in _modules
-    content = fs.readFileSync("./src/metro/support/#{_module}.coffee", "utf-8") + "\n"
-    content = content.replace(/Metro\.Support\.\w+\ *=\ */g, "")
+    content = fs.readFileSync("./src/coach/support/#{_module}.coffee", "utf-8") + "\n"
+    content = content.replace(/Coach\.Support\.\w+\ *=\ */g, "")
     result += content
     
-  path  = "dist/metro.support.underscore.js"  
+  path  = "dist/coach.support.underscore.js"  
   sizes = []
   
   result = obscurify(result)
@@ -96,17 +100,16 @@ task 'build', ->
   result = """
 window.global ||= window
 module = window.module || {}
-Metro = window.Metro = new (class Metro)
-window.Metro.logger = if this["_console"] then _console else console
+Coach = window.Coach = new (class Coach)
+window.Coach.logger = if this["_console"] then _console else console
 
 """
   compileEach 'support', ((path) -> !!!path.match(/(dependencies)/)), (code) ->
     result += code
-    result += fs.readFileSync("./src/metro/object.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
     
-    result += fs.readFileSync("./src/metro/application/client.coffee", "utf-8") + "\n"
+    result += fs.readFileSync("./src/coach/application/client.coffee", "utf-8") + "\n"
     
-    result += fs.readFileSync("./src/metro/application/configuration.coffee", "utf-8") + "\n"
+    result += fs.readFileSync("./src/coach/application/configuration.coffee", "utf-8") + "\n"
     
     compileEach 'event', null, (code) ->
       result += code
@@ -124,25 +127,25 @@ window.Metro.logger = if this["_console"] then _console else console
                 compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
                   result += code
                 
-                  # result += fs.readFileSync("./src/metro/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
+                  # result += fs.readFileSync("./src/coach/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
                   
                   engine.render result, bare: false, (error, result) ->
                     _console.error error.stack if error
-                    fs.writeFile "./dist/metro.js", result
+                    fs.writeFile "./dist/coach.js", result
                     unless error
                       compressor = new Shift.UglifyJS
                       #result = obscurify(result)
                   
                       compressor.render result, (error, result) ->
-                        fs.writeFileSync("./dist/metro.min.js", result)
+                        fs.writeFileSync("./dist/coach.min.js", result)
                   
                         gzip result, (error, result) ->
                     
-                          fs.writeFileSync("./dist/metro.min.js.gz", result)
+                          fs.writeFileSync("./dist/coach.min.js.gz", result)
                     
-                          console.log "Minified & Gzipped: #{fs.statSync("./dist/metro.min.js.gz").size}"
+                          console.log "Minified & Gzipped: #{fs.statSync("./dist/coach.min.js.gz").size}"
                     
-                          fs.writeFile "./dist/metro.min.js.gz", compressor.render(result)
+                          fs.writeFile "./dist/coach.min.js.gz", compressor.render(result)
             
 task 'build-generic', ->
   paths   = findit.sync('./src')
@@ -161,16 +164,16 @@ task 'build-generic', ->
       next()
 
   async.forEachSeries paths, iterate, ->
-    fs.writeFile './dist/metro.coffee', result
+    fs.writeFile './dist/coach.coffee', result
     engine.render result, (error, result) ->
       console.log error
-      fs.writeFile './dist/metro.js', result
+      fs.writeFile './dist/coach.js', result
       unless error
         compressor = new Shift.UglifyJS
-        fs.writeFile './dist/metro.min.js', compressor.render(result)
+        fs.writeFile './dist/coach.min.js', compressor.render(result)
         #compressor.render result, (error, result) ->
         #  console.log error
-        #  fs.writeFile './dist/metro.min.js', result
+        #  fs.writeFile './dist/coach.min.js', result
 
 task 'clean', 'Remove built files in ./dist', ->
 
@@ -191,7 +194,7 @@ task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
   coffee.stderr.on 'data', (data) -> console.log data.toString().trim()
   
 task 'docs', 'Build the docs', ->
-  exec './node_modules/dox/bin/dox < ./lib/metro/route/dsl.js', (err, stdout, stderr) ->
+  exec './node_modules/dox/bin/dox < ./lib/coach/route/dsl.js', (err, stdout, stderr) ->
     throw err if err
     console.log stdout + stderr
 

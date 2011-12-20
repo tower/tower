@@ -1,4 +1,6 @@
 require './helper'
+ck = require 'coffeekup'
+fs  = require 'fs'
 
 describe "views", ->
   describe "configuration", ->
@@ -21,16 +23,13 @@ describe "views", ->
       controller = new Coach.Controller
       controller.render "posts/edit", locals: title: "First Commit", (error, result) ->
         expect(result).toEqual '<form action="/posts/1"><label>Title</label><input type="text" name="title" value="First Commit"/></form>'
-###
-  describe "helpers", ->
-    it "should have stylesheet helpers", ->
-      view    = new Coach.View.Base
-      view.locals = _.extend({}, new Coach.View.Helpers)
-      result  = view.render "posts/show"
-      expect(result).toEqual '<link href="application.css"></link>'
+
+  describe 'form builder', ->
+    it 'should render with coffeekup', ->
+      expect(ck.render -> h1 "Hello World").toEqual "<h1>Hello World</h1>"
       
-    it "should have stylesheet helpers from controller", ->
-      controller  = new SessionsController
-      result      = controller.render "posts/show"
-      expect(result).toEqual '<link href="application.css"></link>'
-###
+    it 'should render a form from a post', ->
+      template  = fs.readFileSync "spec/spec-app/app/views/posts/new.coffee", "utf-8"
+      post      = new Post
+      
+      #expect(ck.render(template, locals: {post: post}, format: true)).toEqual "<form></form>"

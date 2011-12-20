@@ -1,6 +1,7 @@
 Coach.Net = {}
 
 require './net/agent'
+require './net/cookies'
 require './net/param'
 require './net/route'
 require './net/request'
