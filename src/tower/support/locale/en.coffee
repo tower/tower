@@ -1,4 +1,4 @@
-Coach.Support.I18n.load module.exports =
+Tower.Support.I18n.load module.exports =
   date:
     formats:
       # Use the strftime parameters for formats.

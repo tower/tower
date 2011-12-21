@@ -1,6 +1,6 @@
 Tower.Model.Validations =
   ClassMethods:
-    validate: ->
+    validates: ->
       attributes = Tower.Support.Array.args(arguments)
       options    = attributes.pop()
       
@@ -14,7 +14,7 @@ Tower.Model.Validations =
     validators: ->
       @_validators ||= []
   
-  validates: ->
+  validate: ->
     validators      = @constructor.validators()
     success         = true
     errors          = @errors = {}
