@@ -1,9 +1,9 @@
 {
-  "name": "coach",
+  "name": "tower",
   "version": "0.3.0",
   "description": "Full Stack Web Framework for Node.js",
-  "homepage": "http://viatropos.github.com/coach.js",
-  "main": "lib/coach.js",
+  "homepage": "http://viatropos.github.com/tower.js",
+  "main": "lib/tower.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
     "framework",
@@ -24,17 +24,17 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/viatropos/coach.js/issues"
+    "url": "https://github.com/viatropos/tower.js/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/viatropos/coach.js.git"
+    "url": "https://github.com/viatropos/tower.js.git"
   },
   "engines": { "node": ">= 0.4.0" },
   "directories": {
     "lib" : "./lib"
   },
-  "bin": { "coach": "./bin/coach" },
+  "bin": { "tower": "./bin/tower" },
   "dependencies": {
     "underscore":         ">= 1.1.6",
     "underscore.string":  ">= 1.1.6",

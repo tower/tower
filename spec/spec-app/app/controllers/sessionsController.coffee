@@ -1,5 +1,5 @@
-class CoachSpecApp.SessionsController extends Coach.Controller
-  #@include Coach.View.Helpers
+class TowerSpecApp.SessionsController extends Tower.Controller
+  #@include Tower.View.Helpers
   
   new: ->
     @render text: "Login", layout: false

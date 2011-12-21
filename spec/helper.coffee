@@ -1,17 +1,17 @@
-require '../lib/coach'
+require '../lib/tower'
 # require './secrets'
 
-Coach.root            = process.cwd() + "/spec/spec-app"
-Coach.publicPath      = Coach.root + "/public"
-Coach.env             = "test"
-Coach.View.loadPaths  = ["./spec/spec-app/app/views"]
+Tower.root            = process.cwd() + "/spec/spec-app"
+Tower.publicPath      = Tower.root + "/public"
+Tower.env             = "test"
+Tower.View.loadPaths  = ["./spec/spec-app/app/views"]
 
-Coach.Application.instance().initialize()
+Tower.Application.instance().initialize()
 
 # You must either "extends X" or create a constructor: -> super
 # so that coffeescript generates a callback to the parent class!
   
-global.Category = class CoachSpecApp.Category extends Coach.Model
+global.Category = class TowerSpecApp.Category extends Tower.Model
   @field "id"
   @hasMany "children", className: "Category", foreignKey: "parentId"
   @belongsTo "parent", className: "Category", foreignKey: "parentId"
@@ -19,7 +19,7 @@ global.Category = class CoachSpecApp.Category extends Coach.Model
   
   # @hierarchical "parent", "child"
 
-global.User = class CoachSpecApp.User extends Coach.Model
+global.User = class TowerSpecApp.User extends Tower.Model
   @field "id"
   @field "firstName"
   @field "createdAt", type: "Time", default: -> new Date()
@@ -31,24 +31,24 @@ global.User = class CoachSpecApp.User extends Coach.Model
   
   @hasMany "posts", className: "Page", cache: true # postIds
   
-  @validate "firstName", presence: true
+  @validates "firstName", presence: true
 
-global.Page = class CoachSpecApp.Page extends Coach.Model
+global.Page = class TowerSpecApp.Page extends Tower.Model
   @field "id"
   @field "title"
   @field "rating"#, min: 0, max: 1
   @field "type"
   
-  @validate "rating", min: 0, max: 10
+  @validates "rating", min: 0, max: 10
   
   @belongsTo "user", cache: true
   
-global.Post = class CoachSpecApp.Post extends Page
+global.Post = class TowerSpecApp.Post extends Page
   @hasMany "categories", embedded: true
 
 beforeEach ->
-  Coach.Application.instance().teardown()
-  Coach.Application.instance().initialize()
-  Coach.root          = process.cwd() + "/spec/spec-app"
-  Coach.publicPath    = Coach.root + "/public"
-  Coach.Support.Dependencies.load "#{Coach.root}/app/models"
+  Tower.Application.instance().teardown()
+  Tower.Application.instance().initialize()
+  Tower.root          = process.cwd() + "/spec/spec-app"
+  Tower.publicPath    = Tower.root + "/public"
+  Tower.Support.Dependencies.load "#{Tower.root}/app/models"

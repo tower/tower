@@ -1,20 +1,20 @@
 require './helper'
 ###
-Coach.Store.MongoDB.initialize()
+Tower.Store.MongoDB.initialize()
 quit = false
 
-describe 'Coach.Store', ->
+describe 'Tower.Store', ->
   beforeEach ->
-    User.store(new Coach.Store.MongoDB(name: "users", className: "User"))
+    User.store(new Tower.Store.MongoDB(name: "users", className: "User"))
   
   afterEach ->
-    User.store(new Coach.Store.Memory(name: "users", className: "User"))
+    User.store(new Tower.Store.Memory(name: "users", className: "User"))
 
   describe 'mongo', ->
     afterEach ->
       User.deleteAll()
       #process.exit() if quit
-      Coach.Store.MongoDB.database.close() if quit
+      Tower.Store.MongoDB.database.close() if quit
       
     it 'should have a getter', ->  
       waits 1000

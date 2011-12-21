@@ -1,2 +1,2 @@
-class CoachSpecApp.ApplicationController extends Coach.Controller  
+class TowerSpecApp.ApplicationController extends Tower.Controller  
   @layout   "application"

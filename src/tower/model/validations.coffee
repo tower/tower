@@ -1,0 +1,28 @@
+Tower.Model.Validations =
+  ClassMethods:
+    validate: ->
+      attributes = Tower.Support.Array.args(arguments)
+      options    = attributes.pop()
+      
+      Tower.raise("missing_options", "#{@name}.validates") unless typeof(options) == "object"
+      
+      validators = @validators()
+      
+      for key, value of options
+        validators.push Tower.Model.Validator.create(key, value, attributes)
+        
+    validators: ->
+      @_validators ||= []
+  
+  validates: ->
+    validators      = @constructor.validators()
+    success         = true
+    errors          = @errors = {}
+    
+    for validator in validators
+      unless validator.validateEach(@, errors)
+        success = false
+    
+    success
+  
+module.exports = Tower.Model.Validations

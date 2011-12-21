@@ -1,1 +1,1 @@
-module.exports = global.CoachSpecApp = new class CoachSpecApp extends Coach.Application
+module.exports = global.TowerSpecApp = new class TowerSpecApp extends Tower.Application

@@ -1,6 +1,6 @@
 require './helper'
 
-class CoachSpecApp.CustomController extends Coach.Controller
+class TowerSpecApp.CustomController extends Tower.Controller
   @beforeFilter "setCurrentUser"
   
   index: ->
@@ -11,20 +11,20 @@ class CoachSpecApp.CustomController extends Coach.Controller
     @currentUser = name: "Lance"
     callback(null, true)
 
-describe 'Coach.Controller', ->
+describe 'Tower.Controller', ->
   describe 'Callbacks', ->
     controller  = null
     router      = null
     
     beforeEach ->
-      Coach.Application.instance().teardown()
+      Tower.Application.instance().teardown()
       
-      Coach.Route.draw ->
+      Tower.Route.draw ->
         @match "/custom",  to: "custom#index"
         @match "/custom/:id",  to: "custom#show"
       
-      controller  = new CoachSpecApp.CustomController()
-      router      = Coach.Middleware.Router
+      controller  = new TowerSpecApp.CustomController()
+      router      = Tower.Middleware.Router
       
     it 'should run callbacks', ->
       request       = method: "get", url: "http://www.local.host:3000/custom"

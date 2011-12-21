@@ -1,3 +1,3 @@
-class CoachSpecApp.Post extends Coach.Model
+class TowerSpecApp.Post extends Tower.Model
   
-module.exports = CoachSpecApp.Post
+module.exports = TowerSpecApp.Post

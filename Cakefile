@@ -8,7 +8,7 @@ engine  = new Shift.CoffeeScript
 sys     = require 'util'
 require 'underscore.logger'
 
-#Coach   = require './lib/coach'
+#Tower   = require './lib/tower'
 compressor = new Shift.UglifyJS
 
 compileFile = (root, path, check) ->
@@ -35,25 +35,25 @@ compileFile = (root, path, check) ->
     ""
   
 compileDirectory = (root, check, callback) ->
-  code = compileFile("./src/coach/#{root}", "./src/coach/#{root}.coffee", check)
+  code = compileFile("./src/tower/#{root}", "./src/tower/#{root}.coffee", check)
   callback(code) if callback
   code
   
 compileEach = (root, check, callback) ->
   result = compileDirectory root, check, callback
   
-  #fs.writeFile "./dist/coach/#{root}.coffee", result
+  #fs.writeFile "./dist/tower/#{root}.coffee", result
   engine.render result, bare: false, (error, result) ->
-    fs.writeFile "./dist/coach/#{root}.js", result
+    fs.writeFile "./dist/tower/#{root}.js", result
     unless error
-      fs.writeFile "./dist/coach/#{root}.min.js", compressor.render(result)
+      fs.writeFile "./dist/tower/#{root}.min.js", compressor.render(result)
       
 obscurify = (content) ->
   replacements = {}
-  replacements[process.env.NS || "Coach"] = "Coach" # use "M" for ultimate compression
+  replacements[process.env.NS || "Tower"] = "Tower" # use "M" for ultimate compression
   replacements["_C"]  = "ClassMethods"
   replacements["_I"]  = "InstanceMethods"
-  replacements["_"]   = /Coach\.Support\.(String|Object|Number|Array|RegExp)/
+  replacements["_"]   = /Tower\.Support\.(String|Object|Number|Array|RegExp)/
   
   for replacement, lookup of replacements
     content = content.replace(lookup, replacement)
@@ -65,11 +65,11 @@ task 'to-underscore', ->
   result    = "_.mixin\n"
   
   for _module in _modules
-    content = fs.readFileSync("./src/coach/support/#{_module}.coffee", "utf-8") + "\n"
-    content = content.replace(/Coach\.Support\.\w+\ *=\ */g, "")
+    content = fs.readFileSync("./src/tower/support/#{_module}.coffee", "utf-8") + "\n"
+    content = content.replace(/Tower\.Support\.\w+\ *=\ */g, "")
     result += content
     
-  path  = "dist/coach.support.underscore.js"  
+  path  = "dist/tower.support.underscore.js"  
   sizes = []
   
   result = obscurify(result)
@@ -100,16 +100,16 @@ task 'build', ->
   result = """
 window.global ||= window
 module = window.module || {}
-Coach = window.Coach = new (class Coach)
-window.Coach.logger = if this["_console"] then _console else console
+Tower = window.Tower = new (class Tower)
+window.Tower.logger = if this["_console"] then _console else console
 
 """
   compileEach 'support', ((path) -> !!!path.match(/(dependencies)/)), (code) ->
     result += code
     
-    result += fs.readFileSync("./src/coach/application/client.coffee", "utf-8") + "\n"
+    result += fs.readFileSync("./src/tower/application/client.coffee", "utf-8") + "\n"
     
-    result += fs.readFileSync("./src/coach/application/configuration.coffee", "utf-8") + "\n"
+    result += fs.readFileSync("./src/tower/application/configuration.coffee", "utf-8") + "\n"
     
     compileEach 'event', null, (code) ->
       result += code
@@ -127,25 +127,25 @@ window.Coach.logger = if this["_console"] then _console else console
                 compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
                   result += code
                 
-                  # result += fs.readFileSync("./src/coach/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
+                  # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
                   
                   engine.render result, bare: false, (error, result) ->
                     _console.error error.stack if error
-                    fs.writeFile "./dist/coach.js", result
+                    fs.writeFile "./dist/tower.js", result
                     unless error
                       compressor = new Shift.UglifyJS
                       #result = obscurify(result)
                   
                       compressor.render result, (error, result) ->
-                        fs.writeFileSync("./dist/coach.min.js", result)
+                        fs.writeFileSync("./dist/tower.min.js", result)
                   
                         gzip result, (error, result) ->
                     
-                          fs.writeFileSync("./dist/coach.min.js.gz", result)
+                          fs.writeFileSync("./dist/tower.min.js.gz", result)
                     
-                          console.log "Minified & Gzipped: #{fs.statSync("./dist/coach.min.js.gz").size}"
+                          console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
                     
-                          fs.writeFile "./dist/coach.min.js.gz", compressor.render(result)
+                          fs.writeFile "./dist/tower.min.js.gz", compressor.render(result)
             
 task 'build-generic', ->
   paths   = findit.sync('./src')
@@ -164,16 +164,16 @@ task 'build-generic', ->
       next()
 
   async.forEachSeries paths, iterate, ->
-    fs.writeFile './dist/coach.coffee', result
+    fs.writeFile './dist/tower.coffee', result
     engine.render result, (error, result) ->
       console.log error
-      fs.writeFile './dist/coach.js', result
+      fs.writeFile './dist/tower.js', result
       unless error
         compressor = new Shift.UglifyJS
-        fs.writeFile './dist/coach.min.js', compressor.render(result)
+        fs.writeFile './dist/tower.min.js', compressor.render(result)
         #compressor.render result, (error, result) ->
         #  console.log error
-        #  fs.writeFile './dist/coach.min.js', result
+        #  fs.writeFile './dist/tower.min.js', result
 
 task 'clean', 'Remove built files in ./dist', ->
 
@@ -194,7 +194,7 @@ task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
   coffee.stderr.on 'data', (data) -> console.log data.toString().trim()
   
 task 'docs', 'Build the docs', ->
-  exec './node_modules/dox/bin/dox < ./lib/coach/route/dsl.js', (err, stdout, stderr) ->
+  exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->
     throw err if err
     console.log stdout + stderr
 

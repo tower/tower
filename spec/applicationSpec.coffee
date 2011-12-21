@@ -2,17 +2,17 @@ require './helper'
 
 describe "application", ->
   beforeEach ->
-    @application = Coach.Application.instance().initialize()
+    @application = Tower.Application.instance().initialize()
     
   it "should load routes", ->
-    expect(Coach.Route.all().length).toEqual 1
+    expect(Tower.Route.all().length).toEqual 1
     
   it "should load models", ->
-    expect(CoachSpecApp.Post).toBeTruthy()
+    expect(TowerSpecApp.Post).toBeTruthy()
   
   it "should load controllers", ->
-    expect(CoachSpecApp.ApplicationController).toBeTruthy()
-    expect(CoachSpecApp.PostsController).toBeTruthy()
+    expect(TowerSpecApp.ApplicationController).toBeTruthy()
+    expect(TowerSpecApp.PostsController).toBeTruthy()
     
   it "should respond to requests", ->
     #console.log @application.app

@@ -1,8 +1,8 @@
 require './helper'
 
-describe 'Coach.Model', ->
+describe 'Tower.Model', ->
   beforeEach ->
-    User.store(new Coach.Store.Memory(name: "users", className: "CoachSpecApp.User"))
+    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
   
   describe 'scopes', ->
     afterEach ->
@@ -190,7 +190,7 @@ describe 'Coach.Model', ->
   
   describe 'updating', ->
     beforeEach ->
-      User.store(new Coach.Store.Memory(name: "users", className: "CoachSpecApp.User"))
+      User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
       User.deleteAll()
       Page.deleteAll()
       Post.deleteAll()
