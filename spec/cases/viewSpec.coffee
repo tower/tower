@@ -1,4 +1,4 @@
-require './helper'
+require '../config'
 ck = require 'coffeekup'
 fs  = require 'fs'
 

@@ -20,6 +20,7 @@ class Tower.Model.Scope extends Tower.Class
     @store().find ids..., @criteria.query, @criteria.options, callback
     
   all: (callback) ->
+    console.log @criteria.query
     @store().all @criteria.query, @criteria.options, callback
     
   first: (callback) ->
@@ -57,6 +58,9 @@ class Tower.Model.Scope extends Tower.Class
     
   store: ->
     @model.store()
+    
+  merge: (scope) ->
+    @criteria.merge(scope.criteria)
     
   # you want to clone it so you can reuse it multiple times:
   # 

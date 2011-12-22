@@ -72,30 +72,60 @@ class App extends Tower.Application
   @config.encoding = "utf-8"
   @config.filterParameters += ["password", "password_confirmation"]
   @config.loadPaths += ["./themes"]
+  
+App.initialize()
 ```
 
 ## Models
 
 ``` coffeescript
+class App.Post extends Tower.Model
+  @field "title"
+  @field "body"
+  @field "tags", type: ["String"], default: []
+  
+  @belongsTo "author", type: "User"
+  
+  @hasMany "comments", as: "commentable"
+  @hasMany "commenters", through: "comments", source: "author"
+  
+class App.Comment extends Tower.Model
+  @field "message"
+  
+  @belongsTo "author", type: "User"
+  @belongsTo "commentable", polymorphic: true
+  
 class App.User extends Tower.Model
-  @key "firstName"
-  @key "createdAt", type: "Date", default: -> new Date()
-  @key "coordinates", type: "Geo"
+  @field "firstName"
+  @field "lastName"
+  @field "email"
+  @field "activatedAt", type: "Date", default: -> new Date()
   
-  @scope "byBaldwin", firstName: "=~": "Baldwin"
-  @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
+  @hasOne "address", embed: true
   
-  @hasMany "posts", className: "App.Post", cache: true # postIds
+  @hasMany "posts"
+  @hasmany "comments", through: "posts"
+  
+  @scope "thisWeek", -> @where(createdAt: ">=": -> require('moment')().subtract('days', 7))
   
   @validate "firstName", presence: true
   
-class App.Post extends Tower.Model
-  @belongsTo "author", className: "App.User"
+class App.Address extends Tower.Model
+  @field "street"
+  @field "city"
+  @field "state"
+  @field "zip"
+  @field "coordinates", type: "Geo"
   
-User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all (error, records) =>
-  @render json: User.toJSON(records)
+  @belongsTo "user", embed: true
+```
 
-# should handle these but doesn't yet.  
+### Chainable Queries/Scopes
+
+``` coffeescript
+User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all()
+
+# should handle these but doesn't yet.
 Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
 Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
 # userIds = User.where(firstName: "=~": "Baldwin").select("id")

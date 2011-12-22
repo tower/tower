@@ -1,4 +1,4 @@
-require './helper'
+require '../config'
 
 describe "application", ->
   beforeEach ->

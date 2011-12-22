@@ -1,4 +1,4 @@
-require './helper'
+require '../config'
 
 class TowerSpecApp.CustomController extends Tower.Controller
   @beforeFilter "setCurrentUser"

@@ -11,6 +11,9 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     
     owner.field "#{name}Id", type: "Id"
     
+    if @polymorphic
+      owner.field "#{name}Type", type: "String"
+    
     owner.prototype[name] = (callback) ->
       @relation(name).first(callback)
     

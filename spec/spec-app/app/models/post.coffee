@@ -1,3 +1,4 @@
-class TowerSpecApp.Post extends Tower.Model
+class TowerSpecApp.Post extends Page
+  @hasMany "categories", embed: true, as: "categorizable"
   
-module.exports = TowerSpecApp.Post
+global.Post = TowerSpecApp.Post

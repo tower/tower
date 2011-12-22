@@ -1,9 +1,19 @@
 # http://mongoosejs.com/docs/embedded-documents.html
 # http://mongoid.org/docs/relations/embedded/1-n.html
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
-  # @param
+  ###
+  # HasMany Relation
+  #
+  # Examples
+  # 
+  #     @hasMany "posts"
+  #     @hasMany "articles", type: "Post"
+  #     @hasMany "comments", as: "commentable"
+  ###
   constructor: (owner, name, options = {}) ->
     super(owner, name, options)
+    
+    @polymorphic = options.hasOwnProperty("as")
     
     #if Tower.accessors
     #  Tower.Support.Object.defineProperty owner.prototype, name, 
@@ -15,7 +25,14 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     owner.prototype[name] = ->
       @relation(name)
     
-    @foreignKey = options.foreignKey || Tower.Support.String.camelize("#{owner.name}Id", true)
+    if options.foreignKey
+      @foreignKey = options.foreignKey
+    else if @as
+      @foreignKey = "#{@as}Id"
+    else
+      @foreignKey = Tower.Support.String.camelize("#{owner.name}Id", true)
+      
+    @foreignType ||= "#{@as}Type" if @polymorphic
     
     if @cache
       if typeof @cache == "string"
@@ -28,15 +45,20 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
   
   class @Scope extends @Scope
     constructor: (options = {}) ->
-      super
+      super(options)
       
       id = @owner.get("id")
       
-      if @foreignKey && id != undefined
+      if @foreignKey
         defaults              = {}
-        defaults[@foreignKey] = id
+        defaults[@foreignKey] = id if id != undefined
+        defaults[@relation.foreignType] = @owner.constructor.name if @relation.foreignType
         @where defaults
-        
+    
+    ###
+    # @return {Server} for chaining
+    # @api public
+    ###    
     create: (attributes, callback) ->
       self        = @
       relation    = @relation

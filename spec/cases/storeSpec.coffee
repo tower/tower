@@ -1,4 +1,4 @@
-require './helper'
+require '../config'
 ###
 Tower.Store.MongoDB.initialize()
 quit = false

@@ -1,4 +1,4 @@
-require './helper'
+require '../config'
 
 describe 'Tower.Model', ->
   beforeEach ->
@@ -202,3 +202,7 @@ describe 'Tower.Model', ->
       expect(user.postIds.length).toEqual 1
       user.updateAttributes postIds: 2
       expect(user.postIds.length).toEqual 2
+      
+  describe "hasMany through", ->
+    it 'should create both objects', ->
+      

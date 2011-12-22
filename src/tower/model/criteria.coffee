@@ -44,5 +44,9 @@ class Tower.Model.Criteria
     
   clone: ->
     new @(Tower.Support.Object.cloneHash(@query), Tower.Support.Object.cloneHash(@options))
+    
+  merge: (criteria) ->
+    @_mergeQuery(criteria.query)
+    @_mergeOptions(criteria.options)
 
 module.exports = Tower.Model.Criteria

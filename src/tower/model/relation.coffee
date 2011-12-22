@@ -19,7 +19,7 @@ class Tower.Model.Relation extends Tower.Class
     
     @owner            = owner
     @name             = name
-    @targetClassName  = options.type || options.className || Tower.namespaced(Tower.Support.String.camelize(name))
+    @targetClassName  = @type = Tower.namespaced(options.type || options.className || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
     # delete: Delete the child documents.
     # destroy: Destroy the child documents.
     # nullify: Orphan the child documents.
@@ -49,6 +49,8 @@ class Tower.Model.Relation extends Tower.Class
   
 require './relation/belongsTo'
 require './relation/hasMany'
+require './relation/hasManyThrough'
 require './relation/hasOne'
+require './relation/hasOneThrough'
 
 module.exports = Tower.Model.Relation
