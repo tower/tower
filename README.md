@@ -403,11 +403,13 @@ All assets are read from `/public`, which is the compiled output of everything i
 ``` coffeescript
 require('design.io').extension('watchfile')
 
+# stylesheet watcher
 require("design.io-stylesheets")
   ignore: /(public|node_modules|zzz|less)/
   outputPath: (path) ->
     "public/stylesheets/#{path}".replace(/\.(css|styl|less)/, ".css")
-      
+
+# javascript watcher
 require("design.io-javascripts")
   ignore:   /(public|node_modules|server|spec.*[sS]pec)/
   outputPath: (path) ->
