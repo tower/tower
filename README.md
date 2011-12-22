@@ -134,7 +134,7 @@ class App.Address extends Tower.Model
   @belongsTo "user", embed: true
 ```
 
-### Chainable Scopes/Queries
+### Chainable Scopes, Queries, and Pagination
 
 ``` coffeescript
 User
