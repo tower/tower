@@ -1,7 +1,7 @@
 {
   "name": "tower",
   "version": "0.3.0",
-  "description": "Full Stack Web Framework for Node.js",
+  "description": "Full Stack Web Framework for Node.js and the Browser",
   "homepage": "http://viatropos.github.com/tower.js",
   "main": "lib/tower.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
