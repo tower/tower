@@ -16,6 +16,8 @@ tower new my-app
 
 ## Structure
 
+Here's how you might organize a blog:
+
 ``` bash
 .
 |-- app
