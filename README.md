@@ -366,6 +366,7 @@ It's built on [connect](http://github.com/sencha/connect), so you can use any of
 ## Assets
 
 ``` coffeescript
+# config/assets.coffee
 Tower.assets =
   javascripts:
     vendor: [
