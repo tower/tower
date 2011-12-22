@@ -23,6 +23,7 @@ tower new my-app
 |   |   |-- admin
 |   |   |   |-- postsController.coffee
 |   |   |   `-- usersController.coffee
+|   |   |-- commentsController.coffee
 |   |   |-- postsController.coffee
 |   |   |-- sessionsController.coffee
 |   |   `-- usersController.coffee
@@ -83,11 +84,19 @@ class App.Post extends Tower.Model
   @field "title"
   @field "body"
   @field "tags", type: ["String"], default: []
+  @field "slug"
+  
+  @key "slug"
   
   @belongsTo "author", type: "User"
   
   @hasMany "comments", as: "commentable"
   @hasMany "commenters", through: "comments", source: "author"
+  
+  @before "validate", "slugify"
+  
+  slugify: ->
+    @slug = @title.replace(/^[a-z0-9]+/g, "-").toLowerCase()
   
 class App.Comment extends Tower.Model
   @field "message"
@@ -110,6 +119,11 @@ class App.User extends Tower.Model
   
   @validate "firstName", presence: true
   
+  @after "create", "welcome"
+  
+  welcome: ->
+    Tower.Mailer.welcome(@).deliver()
+  
 class App.Address extends Tower.Model
   @field "street"
   @field "city"
@@ -123,14 +137,16 @@ class App.Address extends Tower.Model
 ### Chainable Queries/Scopes
 
 ``` coffeescript
-User.where(createdAt: ">=": _(2).days().ago(), "<=": new Date()).within(radius: 2).desc("createdAt").asc("firstName").paginate(page: 5).all()
+User
+  .where(createdAt: ">=": _(2).days().ago(), "<=": new Date())
+  .within(radius: 2)
+  .desc("createdAt")
+  .asc("firstName")
+  .paginate(page: 5)
+  .all()
 
-# should handle these but doesn't yet.
 Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
 Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
-# userIds = User.where(firstName: "=~": "Baldwin").select("id")
-# Post.where(authorId: $in: userIds).all()
-
 User.includes("posts").where("posts.title": "Welcome").all()
 ```
 
@@ -245,6 +261,17 @@ class PostsController extends Tower.Controller
     
   destroy: ->
     @post = Post.find(@params.id)
+```
+
+Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).
+
+## Mailers
+
+``` coffeescript
+class App.Notification extends Tower.Mailer
+  # app/views/mailers/welcome.coffee template
+  @welcome: (user) ->
+    @mail to: user.email, from: "me@gmail.com"
 ```
 
 ## Internationalization
