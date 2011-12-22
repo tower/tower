@@ -398,6 +398,26 @@ Tower.assets =
 
 All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor`, and wherever else you might put things.  The default is to use stylus for css in `/app/assets/stylesheets`.
 
+## Watchfile
+
+``` coffeescript
+require('design.io').extension('watchfile')
+
+require("design.io-stylesheets")
+  ignore: /(public|node_modules|zzz|less)/
+  outputPath: (path) ->
+    "public/stylesheets/#{path}".replace(/\.(css|styl|less)/, ".css")
+      
+require("design.io-javascripts")
+  ignore:   /(public|node_modules|server|spec.*[sS]pec)/
+  outputPath: (path) ->
+    "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+    
+watch /app\/views\/.+\.mustache/
+  update: (path) ->
+    # do anything!
+```
+
 ### Minify and Gzip
 
 ``` bash
