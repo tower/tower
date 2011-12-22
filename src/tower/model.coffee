@@ -26,7 +26,6 @@ require './model/inheritance'
 require './model/relation'
 require './model/relations'
 require './model/field'
-require './model/versioning'
 require './model/fields'
 require './model/persistence'
 require './model/atomic'
@@ -41,7 +40,6 @@ require './model/locale/en'
 
 Tower.Model.include Tower.Model.Persistence
 Tower.Model.include Tower.Model.Atomic
-Tower.Model.include Tower.Model.Versioning
 Tower.Model.include Tower.Model.Metadata
 Tower.Model.include Tower.Model.Dirty
 Tower.Model.include Tower.Model.Criteria

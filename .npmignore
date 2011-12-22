@@ -4,8 +4,10 @@
 .git*
 Cakefile
 wiki/
-examples/
+docs/
 src/
 spec/
+dist/
+examples/
 favicon.ico
 Watchfile
