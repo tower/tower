@@ -155,10 +155,22 @@ User.includes("posts").where("posts.title": "Welcome").all()
 ``` coffeescript
 # config/routes.coffee
 Tower.Route.draw ->
-  @match "/login",         "sessions#new", via: "get", as: "login"
+  @match "/login", "sessions#new", via: "get", as: "login"
+  @match "/logout", "sessions#destroy", via: "get", as: "logout"
   
   @resources "posts", ->
     @resources "comments"
+    
+  @namespace "admin", ->
+    @resources "users"
+    @resources "posts", ->
+      @resources "comments"
+      
+  @constraints subdomain: /^api$/, ->
+    @resources "posts", ->
+      @resources "comments"
+      
+  @match "(/*path)", to: "application#index", via: "get"
 ```
 
 Routes are really just models, `Tower.Route`.  You can add and remove and search them however you like:
