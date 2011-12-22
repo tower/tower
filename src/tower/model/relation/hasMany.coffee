@@ -55,10 +55,6 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
         defaults[@relation.foreignType] = @owner.constructor.name if @relation.foreignType
         @where defaults
     
-    ###
-    # @return {Server} for chaining
-    # @api public
-    ###    
     create: (attributes, callback) ->
       self        = @
       relation    = @relation

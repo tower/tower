@@ -134,7 +134,7 @@ class App.Address extends Tower.Model
   @belongsTo "user", embed: true
 ```
 
-### Chainable Queries/Scopes
+### Chainable Scopes/Queries
 
 ``` coffeescript
 User
@@ -148,6 +148,32 @@ User
 Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
 Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
 User.includes("posts").where("posts.title": "Welcome").all()
+```
+
+### Associations
+
+``` coffeescript
+user = User.first()
+
+# hasMany "posts"
+posts = user.posts().where(title: "First Post").first()
+post  = user.posts().build(title: "A Post!")
+post  = user.posts().create(title: "A Saved Post!")
+posts = user.posts().all()
+
+# hasMany "comments", through: "posts"
+comments  = user.comments().where(message: /(javascript)/).limit(10).all()
+```
+
+### Validations
+
+``` coffeescript
+user = new User
+user.save() #=> false
+user.errors #=> {"email": ["Email must be present"]}
+user.email  = "me@gmail.com"
+user.save() #=> true
+user.errors #=> {}
 ```
 
 ## Routes
