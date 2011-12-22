@@ -144,10 +144,6 @@ User
   .asc("firstName")
   .paginate(page: 5)
   .all()
-
-Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
-Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
-User.includes("posts").where("posts.title": "Welcome").all()
 ```
 
 ### Associations
@@ -163,6 +159,11 @@ posts = user.posts().all()
 
 # hasMany "comments", through: "posts"
 comments  = user.comments().where(message: /(javascript)/).limit(10).all()
+
+# eager load associations
+Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
+Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
+User.includes("posts").where("posts.title": "Welcome").all()
 ```
 
 ### Validations
