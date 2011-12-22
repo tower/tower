@@ -413,8 +413,8 @@ cake assets:publish
 ## Test, Develop, Minify
 
 ``` bash
-cake coffee
 cake spec
+cake coffee
 cake minify
 ```
 
