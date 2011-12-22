@@ -247,7 +247,8 @@ html ->
     meta charset: 'utf-8'
     title "#{@title or 'Untitled'} | My awesome website"
     meta name: 'description', content: @desc if @desc?
-    link rel: 'stylesheet', href: '/stylesheets/application.css'
+    stylesheets "vendor", "application"
+    javascripts "vendor", "lib", "application"
   body ->
     header ->
       h1 @title or 'Untitled'
@@ -361,6 +362,52 @@ Those methods pass through the router and client-side middleware so you have acc
 ## Middleware
 
 It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
+
+## Assets
+
+``` coffeescript
+Tower.assets =
+  javascripts:
+    vendor: [
+      "/vendor/javascripts/jquery.js"
+      "/vendor/javascripts/underscore.js"
+      "/vendor/javascripts/socket.io"
+      "/vendor/javascripts/tower.js"
+    ]
+    
+    lib: [
+      "/lib/grid.js"
+      "/lib/profiler.js"
+    ]
+    
+    application: [
+      "/app/models/post.js"
+      "/app/models/comment.js"
+    ]
+    
+  stylesheets:
+    vendor: [
+      "/vendor/stylesheets/reset.css"
+    ]
+    application: [
+      "/app/assets/stylesheets/application.css"
+      "/app/assets/stylesheets/theme.css"
+    ]
+```
+
+All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor`, and wherever else you might put things.  The default is to use stylus for css in `/app/assets/stylesheets`.
+
+### Minify and Gzip
+
+``` bash
+cake assets:compile
+```
+
+### Push to S3
+
+``` bash
+cake assets:publish
+```
 
 ## Test, Develop, Minify
 
