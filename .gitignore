@@ -27,3 +27,5 @@ spec/secrets.coffee
 inspiration.md
 favicon.png
 dist/*.gz
+wiki
+docs
