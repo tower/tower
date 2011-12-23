@@ -135,7 +135,17 @@ Tower.Store.MongoDB.Serialization =
   # to mongo
   encodeId: (value) ->
     return value unless value
-    @constructor.database.bson_serializer.ObjectID(value.toString())
+    if _.isArray(value)
+      result = []
+      for item, i in value
+        try
+          id        = @constructor.database.bson_serializer.ObjectID(value.toString())
+          result[i] = id
+        catch error
+          id
+      return result
+    else
+      @constructor.database.bson_serializer.ObjectID(value.toString())
   
   # from mongo
   decodeId: (value) ->

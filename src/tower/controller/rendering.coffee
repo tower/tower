@@ -19,7 +19,7 @@ Tower.Controller.Rendering =
     view    = new Tower.View(@)
     @headers["Content-Type"] ||= @contentType
     
-    self = @
+    self    = @
     
     view.render.call view, options, (error, body) ->
       if error

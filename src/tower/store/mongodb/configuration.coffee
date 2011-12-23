@@ -2,19 +2,19 @@ Tower.Store.MongoDB.Configuration =
   ClassMethods:
     config:
       development:
-        name: "metro-development"
+        name: "tower-development"
         port: 27017
         host: "127.0.0.1"
       test:
-        name: "metro-test"
+        name: "tower-test"
         port: 27017
         host: "127.0.0.1"
       staging:
-        name: "metro-staging"
+        name: "tower-staging"
         port: 27017
         host: "127.0.0.1"
       production:
-        name: "metro-production"
+        name: "tower-production"
         port: 27017
         host: "127.0.0.1"
     
