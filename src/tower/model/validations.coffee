@@ -4,7 +4,7 @@ Tower.Model.Validations =
       attributes = Tower.Support.Array.args(arguments)
       options    = attributes.pop()
       
-      Tower.raise("missing_options", "#{@name}.validates") unless typeof(options) == "object"
+      Tower.raise("missingOptions", "#{@name}.validates") unless typeof(options) == "object"
       
       validators = @validators()
       

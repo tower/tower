@@ -5,7 +5,7 @@
 ## Install
 
 ``` bash
-npm install tower -d
+npm install tower
 ```
 
 ## Generator

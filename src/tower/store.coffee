@@ -1,6 +1,4 @@
-# Stores are the interface models use to find their data.
-# http://www.w3.org/TR/IndexedDB/
-# https://github.com/kriszyp/perstore
+# http://towerjs.org/docs/store
 class Tower.Store extends Tower.Class
   @defaultLimit: 100
   
@@ -114,7 +112,9 @@ require './store/fileSystem'
 require './store/local'
 require './store/memory'
 require './store/mongodb'
+require './store/neo4j'
 require './store/postgresql'
+require './store/riak'
 require './store/redis'
 
 module.exports = Tower.Store

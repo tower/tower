@@ -25,6 +25,6 @@ Tower.Store.MongoDB.Configuration =
       @config[Tower.env]
     
     lib: ->
-      @_lib ||= require('mongodb')
+      require 'mongodb'
 
 module.exports = Tower.Store.MongoDB.Configuration

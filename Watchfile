@@ -1,0 +1,18 @@
+File = require('pathfinder').File
+
+require('design.io').extension('watchfile')
+
+require("design.io-javascripts")
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules|server|spec.*[sS]pec)/
+  #outputPath: (path) ->
+  #  "spec/tmp/test.css"
+  write: (path, string) ->
+    path = path.replace(/^(src)/, "lib").replace(/\.(js|coffee)/, ".js")
+    #growl.notify("updated #{path}", { title: 'Stylesheets' })
+    try
+      File.write path, string, (error) ->
+        console.log(error.stack) if error
+    catch error
+      console.log error.stack

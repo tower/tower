@@ -29,3 +29,5 @@ favicon.png
 dist/*.gz
 wiki
 docs
+spec/tmp
+tmp
