@@ -5,7 +5,7 @@ Tower.Support.String =
   underscore_rx2: /([a-z\d])([A-Z])/g
   
   parameterize: (string) ->
-    Tower.Support.String.underscore(Tower.Support.String.pluralize(string)).replace("_", "-")
+    Tower.Support.String.underscore(string).replace("_", "-")
   
   constantize: (string, scope = global) ->
     scope[@camelize(string)]

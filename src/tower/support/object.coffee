@@ -22,7 +22,7 @@ Tower.Support.Object =
         result[key] = value
         
     result
-        
+  
   cloneArray: (value) ->
     result = value.concat()
     
