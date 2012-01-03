@@ -1,5 +1,4 @@
 require '../config'
-ck = require 'coffeekup'
 fs  = require 'fs'
 
 describe "views", ->

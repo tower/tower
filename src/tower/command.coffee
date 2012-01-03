@@ -1,8 +1,8 @@
 Tower.Command = 
   run: (argv) ->
     command = argv[2]
-    command = Tower.Support.String.camelize(command)
-    command = new Tower.Command[command](argv)
+    throw new Error("You must give tower a command (e.g. 'tower new my-app' or 'tower server')") unless command
+    command = new Tower.Command[Tower.Support.String.camelize(command)](argv)
     command.run()
 
 require './command/generate'

@@ -20,7 +20,7 @@ Tower.Controller.Params =
       
     param: (key, options = {}) ->  
       @_params      ||= {}
-      @_params[key] = Tower.Net.Param.create(key, Tower.Support.Object.extend({}, @_paramsOptions || {}, options))
+      @_params[key] = Tower.HTTP.Param.create(key, Tower.Support.Object.extend({}, @_paramsOptions || {}, options))
   
   criteria: ->
     return @_criteria if @_criteria

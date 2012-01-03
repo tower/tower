@@ -26,5 +26,3 @@ describe 'belongsTo', ->
       expect(comment.attributes.hasOwnProperty("commentableType")).toBeTruthy()
       expect(comment.attributes.commentableType).toEqual "Post"
       expect(comment.attributes.hasOwnProperty("commenterId")).toBeTruthy()
-      
-      console.log post.commenters().all()

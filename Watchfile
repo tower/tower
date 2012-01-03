@@ -5,7 +5,7 @@ require('design.io').extension('watchfile')
 require("design.io-javascripts")
   compress: false
   debug:    false
-  ignore:   /(public|node_modules|server|spec.*[sS]pec)/
+  ignore:   /(public|node_modules|server|spec|dist)/
   #outputPath: (path) ->
   #  "spec/tmp/test.css"
   write: (path, string) ->

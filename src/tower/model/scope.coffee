@@ -14,13 +14,12 @@ class Tower.Model.Scope extends Tower.Class
         @
     ).call(@, key)
     
-  # find(1)  
+  # find(1)
   # find(1, 2, 3)
   find: (ids..., callback) ->
     @store().find ids..., @criteria.query, @criteria.options, callback
     
   all: (callback) ->
-    console.log @criteria.query
     @store().all @criteria.query, @criteria.options, callback
     
   first: (callback) ->

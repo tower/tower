@@ -212,7 +212,7 @@ describe "route", ->
     
   describe 'params', ->
     it 'should parse string', ->
-      param   = new Tower.Net.Param.String("title", modelName: "User")
+      param   = new Tower.HTTP.Param.String("title", modelName: "User")
       
       result  = param.parse("-Hello+World")
       result  = result[0]

@@ -1,4 +1,6 @@
 # http://towerjs.org/docs/store
+# Store knows about the Model, Model has 1 property: @store,
+# so model doesn't really know about the store.
 class Tower.Store extends Tower.Class
   @defaultLimit: 100
   
