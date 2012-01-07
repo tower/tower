@@ -2,6 +2,7 @@ Tower.Support = {}
 
 require './support/array'
 require './support/class'
+require './support/descendentsTracker'
 require './support/dependencies'
 require './support/eventEmitter'
 require './support/i18n'

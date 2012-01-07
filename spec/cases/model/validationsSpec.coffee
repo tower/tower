@@ -1,11 +1,9 @@
 require '../../config'
 
 describe 'Tower.Model', ->
-  beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
-      
   describe 'validations', ->
     beforeEach ->
+      spec.resetUserStore()
       @user = new User(id: 1)
     
     it 'should be invalid', ->

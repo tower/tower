@@ -1,31 +1,6 @@
 Tower.Model.Persistence =
   ClassMethods:
-    # tmp fix, for memory model
-    load: (array) ->
-      array   = [array] unless Tower.Support.Object.isArray(array)
-      records = @store().records
-      for item in array
-        record = if item instanceof Tower.Model then item else new @(item)
-        records[record.id] = record
-      records
-      
-    build: (attributes) ->
-      new @(attributes)
-      
-    create: (attributes, callback) ->
-      @scoped().create(attributes, callback)
-    
-    update: (ids..., updates, callback) ->
-      @scoped().update(ids..., updates, callback)
-      
-    updateAll: (updates, query, callback) ->
-      @scoped().updateAll(updates, query, callback)
-      
-    destroy: (query, callback) ->
-      @scoped().destroy(query, callback)
-    
-    deleteAll: ->
-      @scoped().deleteAll()
+    defaultStore: Tower.Store.Memory
     
     # @store new Tower.Store.MongoDB(name: "users")
     # @store name: "users"
@@ -42,8 +17,15 @@ Tower.Model.Persistence =
       @_store ||= new @defaultStore(name: @collectionName(), className: Tower.namespaced(@name))
         
       @_store
-      
-    defaultStore: Tower.Store.Memory
+    
+    # tmp fix, for memory model
+    load: (array) ->
+      array   = [array] unless Tower.Support.Object.isArray(array)
+      records = @store().records
+      for item in array
+        record = if item instanceof Tower.Model then item else new @(item)
+        records[record.id] = record
+      records
       
     collectionName: ->
       Tower.Support.String.camelize(Tower.Support.String.pluralize(@name), true)
@@ -58,6 +40,8 @@ Tower.Model.Persistence =
       !!!@attributes.id
     
     save: (options, callback) ->
+      throw new Error("Record is readOnly") if @readOnly
+      
       if typeof options == "function"
         callback  = options
         options   = {}
@@ -93,18 +77,25 @@ Tower.Model.Persistence =
     
     delete: (callback) ->
       if @isNew()
-        callback.apply(null, @) if callback
+        callback.call null, @ if callback
       else
         @constructor.destroy id: @id, (error) =>
           delete @attributes.id unless error
-          callback.apply(@, error) if callback
+          callback.call @, error if callback
       
+      @destroyed = true  
+      @freeze()
       @
     
     destroy: (callback) ->
+      @destroyRelations()
+      
       @delete (error) ->
         throw error if error
-        callback.apply(error, @) if callback
+        callback.call error, @ if callback
+    
+    # Freeze the attributes hash such that associations are still accessible, even on destroyed records.    
+    freeze: ->
     
     isPersisted: ->
       !!@isNew()

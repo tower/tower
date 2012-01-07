@@ -14,7 +14,7 @@ Tower.Store.MongoDB.Persistence =
     
     record
     
-  updateAll: (updates, query, options, callback) ->  
+  update: (updates, query, options, callback) ->  
     updates         = @serializeAttributesForUpdate(updates)
     query           = @serializeQuery(query)
     options         = @serializeOptions(options)
@@ -28,7 +28,7 @@ Tower.Store.MongoDB.Persistence =
       
     @
 
-  deleteAll: (query, options, callback) ->
+  delete: (query, options, callback) ->
     query           = @serializeQuery(query)
     options         = @serializeOptions(options)
     

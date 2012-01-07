@@ -42,10 +42,13 @@ class Tower.Model.Relation extends Tower.Class
       !!!@relation.polymorphic
     
     constructor: (options = {}) ->
-      super
+      super(options)
       @owner        = options.owner
       @relation     = options.relation
       @foreignKey   = @relation.foreignKey
+      
+    clone: ->
+      new @constructor(model: @model, criteria: @criteria.clone(), owner: @owner, relation: @relation)
   
 require './relation/belongsTo'
 require './relation/hasMany'

@@ -2,11 +2,11 @@ require '../../config'
 
 describe 'Tower.Model', ->
   beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
+    spec.resetUserStore()
       
   describe 'inheritance', ->
     beforeEach ->
-      User.deleteAll()
+      spec.resetUserStore()
       User.create(firstName: 'Terminator', id: 1, createdAt: new Date())
       User.create(firstName: 'Terminator 2', id: 2, createdAt: require('moment')().subtract('days', 20))
       User.create(firstName: 'Terminator 3', id: 3, createdAt: new Date())

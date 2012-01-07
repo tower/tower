@@ -1,5 +1,7 @@
 require 'underscore.logger'
 
+global._ = require 'underscore'
+
 module.exports  = global.Tower = Tower = new (class Tower)
 
 Tower.logger    = _console
@@ -27,6 +29,8 @@ Tower.render              = (string, options = {}) ->
   Shift.render(options.type, string, options)
   
 Tower.domain              = "localhost"
+
+Tower.async               = require 'async'
 
 Tower.run = (argv) ->
   (new Tower.Command.Server(argv)).run()

@@ -1,12 +1,9 @@
 require '../../config'
 
 describe 'Tower.Model', ->
-  beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
-    
   describe 'updating', ->
     beforeEach ->
-      User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
+      spec.resetUserStore()
       User.deleteAll()
       Page.deleteAll()
       Post.deleteAll()

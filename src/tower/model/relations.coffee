@@ -46,5 +46,7 @@ Tower.Model.Relations =
     
     createRelation: (name, attributes, callback) ->
       @relation(name).create(attributes, callback)
+      
+    destroyRelations: ->
     
 module.exports = Tower.Model.Relations

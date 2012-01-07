@@ -29,4 +29,9 @@ for key in Tower.Model.Scope.finders
       @scoped()[_key](arguments...)
   )(key)
 
+for key in Tower.Model.Scope.builders
+  do (key) ->
+    Tower.Model.Scopes.ClassMethods[key] = ->
+      @scoped()[key](arguments...)
+
 module.exports = Tower.Model.Scopes

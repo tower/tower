@@ -1,10 +1,10 @@
 require '../../config'
 
 describe 'Tower.Model', ->
-  beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
-  
   describe 'scopes', ->
+    beforeEach ->
+      spec.resetUserStore()
+
     afterEach ->
       User.deleteAll()
       

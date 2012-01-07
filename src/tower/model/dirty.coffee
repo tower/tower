@@ -12,6 +12,21 @@ Tower.Model.Dirty =
     
     beforeValue
     
+  attributeChanged: (name) ->
+    change = @changes[name]
+    return false unless change
+    change[0] != change[1]
+    
+  attributeChange: (name) ->
+    change = @changes[name]
+    return undefined unless change
+    change[1]
+    
+  attributeWas: (name) ->
+    change = @changes[name]
+    return undefined unless change
+    change[0]
+    
   toUpdates: ->
     result      = {}
     attributes  = @attributes

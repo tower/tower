@@ -1,9 +1,9 @@
+require '../../config'
+
 describe 'Tower.Model', ->
-  beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
-      
   describe 'associations', ->
     beforeEach ->
+      spec.resetUserStore()
       @user = User.create(id: 1, firstName: "Lance")
       @post = Page.create(id: 1, title: "First Post", userId: @user.id)
       
@@ -17,15 +17,10 @@ describe 'Tower.Model', ->
       
       posts = @user.posts().where(title: "=~": "first").all()
       expect(posts.length).toEqual 0
-      require '../config'
-
-      describe 'Tower.Model', ->
-        beforeEach ->
-          User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
 
   describe 'creating associations', ->
     beforeEach ->
-      User.deleteAll()
+      spec.resetUserStore()
       @user = User.create(firstName: 'Terminator', id: 1)
 
     it 'should create a post from a user', ->

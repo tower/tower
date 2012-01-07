@@ -73,5 +73,4 @@ Tower.Store.Memory.Finders =
   sort: ->
     Tower.Support.Array.sortBy(arguments...)
     
-
 module.exports = Tower.Store.Memory.Finders

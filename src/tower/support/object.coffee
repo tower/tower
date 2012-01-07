@@ -43,7 +43,25 @@ Tower.Support.Object =
         else
           object[key] = value
     object
-
+    
+  deepMergeWithArrays: (object) ->
+    args = Tower.Support.Array.args(arguments, 1)
+    
+    for node in args
+      for key, value of node when key not in specialProperties
+        oldValue = object[key]
+        if oldValue
+          if @isArray(oldValue)
+            object[key] = oldValue.concat value
+          else if typeof oldValue == "object" && typeof value == "object"
+            object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
+          else
+            object[key] = value
+        else
+          object[key] = value
+          
+    object
+  
   defineProperty: (object, key, options = {}) ->
     Object.defineProperty object, key, options
   

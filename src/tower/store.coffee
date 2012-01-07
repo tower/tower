@@ -77,17 +77,18 @@ class Tower.Store extends Tower.Class
   # find(1)  
   # find(1, 2, 3)
   # find(ids..., callback)
-  find: (ids..., query, options, callback) ->
-    if ids.length == 1
-      query.id = ids[0]
-      @findOne query, options, callback
-    else
-      query.id = $in: ids
-      @all query, options, callback
+  find: (query, options, callback) ->
+    #if query.id && query.id.length == 1
+    #  query.id = ids[0]
+    #  @findOne query, options, callback
+    #else
+    #  query.id = $in: ids
+    #  @all query, options, callback
+    @all query, options, callback
   
   first: (query, options, callback) ->
     @findOne query, options, callback
-
+    
   last: (query, options, callback) ->
     @findOne query, options, callback
     
@@ -96,14 +97,14 @@ class Tower.Store extends Tower.Class
     callback.call @, null, record if callback
     record
     
-  update: (ids..., updates, query, options, callback) ->
-    #query.id = if ids.length == 1 then ids[0] else $in: ids
-    query.id = $in: ids
-    @updateAll updates, query, options, callback
+  update: (updates, query, options, callback) ->
+    @
     
-  delete: (ids..., query, options, callback) ->
-    query.id = if ids.length == 1 then ids[0] else $in: ids
-    @deleteAll query, options, callback
+  delete: (query, options, callback) ->
+    @
+    
+  destroy: ->
+    @delete arguments...
   
   schema: ->
     Tower.constant(@className).schema()

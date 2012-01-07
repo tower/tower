@@ -60,7 +60,7 @@ class Tower.Class
     
     object
   
-  @include: (object) ->  
+  @include: (object) ->
     @extend(object.ClassMethods) if object.hasOwnProperty("ClassMethods")
     @include(object.InstanceMethods) if object.hasOwnProperty("InstanceMethods")
     

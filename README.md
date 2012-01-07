@@ -76,7 +76,7 @@ class App extends Tower.Application
   @config.filterParameters += ["password", "password_confirmation"]
   @config.loadPaths += ["./themes"]
   
-App.initialize()
+global.App = module.exports = App
 ```
 
 ## Models

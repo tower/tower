@@ -1,4 +1,4 @@
-Tower.Store.Memory.Persistence =    
+Tower.Store.Memory.Persistence =
   create: (attributes, options, callback) ->
     attributes.id ?= @generateId()
     record        = @serializeModel(attributes)

@@ -1,40 +1,45 @@
 {
-  "name": "tower",
-  "version": "0.3.0",
-  "description": "Full Stack Web Framework for Node.js and the Browser",
-  "homepage": "http://viatropos.github.com/tower.js",
-  "main": "lib/tower.js",
-  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "name":                 "tower",
+  "version":              "0.3.1",
+  "description":          "Full Stack Web Framework for Node.js and the Browser",
+  "homepage":             "http://viatropos.github.com/tower.js",
+  "main":                 "lib/tower.js",
+  "author":               "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
     "framework",
     "rails",
     "node"
   ],
   "maintainers": [{
-    "name": "Lance Pollard",
-    "email": "lancejpollard@gmail.com",
-    "web": "http://lancepollard.com"
+    "name":               "Lance Pollard",
+    "email":              "lancejpollard@gmail.com",
+    "web":                "http://lancepollard.com"
   }],
   "contributors": [
+  
   ],
   "licenses": [
     {
-      "type": "MIT",
-      "url": "http://mths.be/mit"
+      "type":             "MIT",
+      "url":              "http://mths.be/mit"
     }
   ],
   "bugs": {
-    "url": "https://github.com/viatropos/tower.js/issues"
+    "url":                "https://github.com/viatropos/tower.js/issues"
   },
   "repository": {
-    "type": "git",
-    "url": "https://github.com/viatropos/tower.js.git"
+    "type":               "git",
+    "url":                "https://github.com/viatropos/tower.js.git"
   },
-  "engines": { "node": ">= 0.4.0" },
+  "engines": {
+    "node":               ">= 0.4.0"
+  },
   "directories": {
-    "lib" : "./lib"
+    "lib" :               "./lib"
   },
-  "bin": { "tower": "./bin/tower" },
+  "bin": {
+    "tower":              "./bin/tower"
+  },
   "dependencies": {
     "underscore":         ">= 1.1.6",
     "underscore.string":  ">= 1.1.6",
@@ -58,6 +63,7 @@
     "mustache":           ">= 0.3.1-dev",
     "markdown":           ">= 0.2.1",
     "uglify-js":          ">= 1.1.1",
-    "design.io":          ">= 0.1.0"
+    "design.io":          ">= 0.1.0",
+    "mocha":              ">= 0.8.1"
   }
 }

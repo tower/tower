@@ -4,21 +4,21 @@ class Tower.Controller extends Tower.Class
   
   constructor: ->
     @constructor.instance = @
-    @headers      = {}
-    @status       = 200
-    @request      = null
-    @response     = null
-    @contentType = "text/html"
-    @params       = {}
-    @query        = {}
-    @resourceName   = @constructor.resourceName()
-    @resourceType   = @constructor.resourceType()
-    @collectionName = @constructor.collectionName()
+    @headers              = {}
+    @status               = 200
+    @request              = null
+    @response             = null
+    @contentType          = "text/html"
+    @params               = {}
+    @query                = {}
+    @resourceName         = @constructor.resourceName()
+    @resourceType         = @constructor.resourceType()
+    @collectionName       = @constructor.collectionName()
     
     if @constructor._belongsTo
-      @hasParent    = true
+      @hasParent          = true
     else
-      @hasParent    = false
+      @hasParent          = false
 
 require './controller/callbacks'
 require './controller/helpers'

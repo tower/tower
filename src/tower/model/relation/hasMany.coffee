@@ -53,7 +53,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
         defaults              = {}
         defaults[@foreignKey] = id if id != undefined
         defaults[@relation.foreignType] = @owner.constructor.name if @relation.foreignType
-        @where defaults
+        @criteria.where defaults
     
     create: (attributes, callback) ->
       self        = @

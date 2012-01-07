@@ -1,12 +1,10 @@
 require '../../config'
 
 describe 'Tower.Model', ->
-  beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
-
   describe 'serialization', ->
     beforeEach ->
-      User.deleteAll()
+      spec.resetUserStore()
+
       @user = new User(firstName: 'Terminator', id: 1)
       
     it 'should serialize to JSON', ->

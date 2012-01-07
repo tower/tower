@@ -6,7 +6,9 @@ Tower.Store.MongoDB.Serialization =
     schema  = @schema()
     
     for key, value of attributes
+      continue if key == "id" && value == undefined || value == null
       operator              = @constructor.atomicModifiers[key]
+      
       if operator
         key                 = operator
         result[key]       ||= {}
@@ -23,6 +25,7 @@ Tower.Store.MongoDB.Serialization =
     schema  = @schema()
     
     for key, value of attributes
+      continue if key == "id" && value == undefined || value == null
       operator              = @constructor.atomicModifiers[key]
       unless operator
         result[key]         = @encode schema[key], value
