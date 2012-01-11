@@ -30,7 +30,7 @@ Tower.Support.Object.extend Tower.Middleware.Router,
   
   # https://github.com/3rd-Eden/useragent/blob/master/lib/useragent.js  
   processHost: (request, response) ->
-    request.location ||= new Tower.HTTP.Url(request.url)
+    request.location ||= new Tower.Dispatch.Url(request.url)
   
   # https://github.com/shenoudab/active_device  
   processAgent: (request, response) ->

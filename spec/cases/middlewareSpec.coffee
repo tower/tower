@@ -1,6 +1,6 @@
 require '../config'
 
-describe "middleware", ->
+describe "Tower.Middleware", ->
   describe "body", ->
   
   describe "query", ->

@@ -1,6 +1,6 @@
 require '../config'
 
-describe "application", ->
+describe "Tower.Application", ->
   beforeEach ->
     @application = Tower.Application.instance().initialize()
     

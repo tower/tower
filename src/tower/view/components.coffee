@@ -1,11 +1,3 @@
-render ->
-  global.h1 = ->
-  global.tag = ->
-  global.form = ->
-  
-  formFor ->
-    Tower.View.Components.Form.render(arguments...)
-
 Tower.View.Components =
   formFor: ->
     Tower.View.Components.Form.render(arguments...)
@@ -51,7 +43,6 @@ class Tower.View.Components.Form
     @render()
     
   render: ->
-    console.log form
     form @attributes, ->
       input type: "hidden", name: "_method", value: @attributes["data-method"]
 
