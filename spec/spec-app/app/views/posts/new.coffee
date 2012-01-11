@@ -1,2 +1,2 @@
-form post, ->
+formFor @post, ->
   li "Hll"

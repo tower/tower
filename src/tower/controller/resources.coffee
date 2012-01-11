@@ -14,7 +14,7 @@ Tower.Controller.Resources =
       @_resourceName ||= Tower.Support.String.camelize(@resourceType(), true)
       
     collectionName: ->
-      @_collectionName ||= Tower.Support.String.pluralize(@resourceName())
+      @_collectionName ||= Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
     
     # belongsTo "project", finder: "findByTitle", param: "projectTitle", type: "Project"
     belongsTo: (key, options = {}) ->
@@ -81,7 +81,8 @@ Tower.Controller.Resources =
         @respondWithStatus success, callback
 
   _show: (callback) ->
-    @respondWithScoped callback
+    @findResource (error, resource) =>
+      @respondWith resource, callback
 
   _update: (callback) ->
     @findResource (error, resource) =>
@@ -121,13 +122,15 @@ Tower.Controller.Resources =
           failureResponder[format].call @, error
 
   buildResource: (callback) ->
-    @scoped (scope) =>
+    @scoped (error, scope) =>
+      return callback.call @, error, null if error
       @[@resourceName]  = @resource = resource = scope.build(@params[@resourceName])
       callback.call @, null, resource if callback
       resource
     
   findResource: (callback) ->
-    @scoped (scope) =>
+    @scoped (error, scope) =>
+      return callback.call @, error, null if error
       scope.find @params.id, (error, resource) =>
         @[@resourceName]  = @resource = resource
         callback.call @, error, resource
@@ -147,7 +150,7 @@ Tower.Controller.Resources =
     if @_scope
       callback.call @, @_scope if callback
       return @_scope
-  
+    
     if @hasParent
       @findParent (error, parent) =>
         callback.call @, error, @parent[@collectionName]

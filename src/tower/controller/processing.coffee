@@ -22,9 +22,7 @@ Tower.Controller.Processing =
     block = (callback) =>
       @[@params.action].call @, callback
     
-    @runFilters block, (error) ->
-      console.log "ERROR in callback!"
-      console.log error
+    @runCallbacks "action", block
     
   processQuery: ->
   

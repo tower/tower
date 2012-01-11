@@ -4,6 +4,4 @@ Tower.Controller.Helpers =
       @_helpers ||= []
       @_helpers.push(object)
 
-  urlFor: ->
-  
 module.exports = Tower.Controller.Helpers

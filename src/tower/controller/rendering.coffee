@@ -16,6 +16,12 @@ Tower.Controller.Rendering =
       options ||= {}
       options.template = args[0]
       
+    if options.template
+      if typeof options.template == "string" && !!!options.template.match(/\//)
+        options.template = "#{@collectionName}/#{options.template}"
+    else if options.action
+      options.template = "#{@collectionName}/#{options.action}"
+      
     view    = new Tower.View(@)
     @headers["Content-Type"] ||= @contentType
     

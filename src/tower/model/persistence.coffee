@@ -35,9 +35,10 @@ Tower.Model.Persistence =
       
     clone: (model) ->
       
-    create: (attributes, callback) ->
+    create2: (attributes, callback) ->
       record = new @(attributes)
-      record.save callback
+      record.save (error, success) =>
+        callback.call @, error, record if callback
       record
   
   InstanceMethods:

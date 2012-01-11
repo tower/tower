@@ -7,7 +7,7 @@ Tower.Store.Memory.Persistence =
     record
   
   # must have all 5 args!
-  updateAll: (updates, query, options, callback) ->
+  update: (updates, query, options, callback) ->
     self = @
     
     @all query, options, (error, records) ->
@@ -18,7 +18,7 @@ Tower.Store.Memory.Persistence =
             
       callback.call(@, error, records) if callback
   
-  deleteAll: (query, options, callback) ->
+  delete: (query, options, callback) ->
     _records = @records
     
     if Tower.Support.Object.isBlank(query)

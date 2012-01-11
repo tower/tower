@@ -35,6 +35,8 @@ beforeEach ->
   Tower.Application.instance().initialize()
   Tower.root          = process.cwd() + "/spec/spec-app"
   Tower.publicPath    = Tower.root + "/public"
+  Tower.View.engine = "coffee"
+  Tower.View.store().loadPaths = ["spec/spec-app/app/views"]
   
   models = File.files("#{Tower.root}/app/models")
   for model in models

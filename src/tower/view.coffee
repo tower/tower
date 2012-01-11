@@ -1,6 +1,6 @@
 class Tower.View extends Tower.Class
   @extend
-    engine:         "jade"
+    engine:         "coffee"
     prettyPrint:    false
     loadPaths:      ["app/views"]
     store: (store) ->
@@ -11,10 +11,12 @@ class Tower.View extends Tower.Class
   constructor: (context = {}) ->
     @_context = context
 
+require './view/components'
 require './view/helpers'
 require './view/rendering'
 
 Tower.View.include Tower.View.Rendering
 Tower.View.include Tower.View.Helpers
+Tower.View.include Tower.View.Components
 
 module.exports = Tower.View

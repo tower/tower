@@ -84,7 +84,10 @@ class Tower.Store extends Tower.Class
     #else
     #  query.id = $in: ids
     #  @all query, options, callback
-    @all query, options, callback
+    if query.id && query.id.hasOwnProperty("$in") && query.id.$in.length == 1
+      @first query, options, callback
+    else
+      @all query, options, callback
   
   first: (query, options, callback) ->
     @findOne query, options, callback

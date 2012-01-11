@@ -19,16 +19,11 @@ Tower.Support.Callbacks =
       @
       
     appendCallback: (phase) ->
-      args        = Tower.Support.Array.args(arguments, 1)
-      if typeof args[args.length - 1] == "function"
-        method    = args.pop()
-      if typeof args[args.length - 1] == "object"
-        options   = args.pop()
-      options   ||= {}
-      method      = args.pop()
+      {method, options, filters}  = @_callbackArgs(Tower.Support.Array.args(arguments, 1))
+      
       callbacks   = @callbacks()
       
-      for filter in args
+      for filter in filters
         callback = callbacks[filter] ||= new Tower.Support.Callbacks.Chain
         callback.push phase, method, options
         
@@ -36,6 +31,16 @@ Tower.Support.Callbacks =
       
     prependCallback: (action, phase, run, options = {}) ->
       @
+      
+    _callbackArgs: (args) ->
+      if typeof args[args.length - 1] == "function"
+        method    = args.pop()
+      if typeof args[args.length - 1] == "object"
+        options   = args.pop()
+      options   ||= {}
+      method      = args.pop()
+      
+      method: method, options: options, filters: args
       
     callbacks: ->
       @_callbacks ||= {}
@@ -47,7 +52,7 @@ Tower.Support.Callbacks =
       chain.run(@, block)
     else
       block.call @
-        
+      
 class Tower.Support.Callbacks.Chain
   constructor: (options = {}) ->
     @[key] = value for key, value of options

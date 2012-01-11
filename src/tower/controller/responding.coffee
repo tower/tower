@@ -16,20 +16,17 @@ Tower.Controller.Responding =
     else
       options   = {}
       
-    @respond(callback)
-    
-  respond: (callback) ->
     if callback
       callback.call @
     else
       data        = args
-
+      
       switch(@format)
         when "json"
           @render json: data
         when "xml"
           @render xml: data
         else
-          @render action: @action
+          @render action: @params.action
     
 module.exports = Tower.Controller.Responding

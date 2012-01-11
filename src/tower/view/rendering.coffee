@@ -29,7 +29,19 @@ Tower.View.Rendering =
       callback(null, body)
       
   _renderString: (string, options = {}, callback) ->
-    if options.type
+    if !!options.type.match(/coffee/)
+      e       = null
+      result  = null
+      try
+        locals          = options.locals
+        locals.cache    = Tower.env != "development"
+        locals.hardcode = Tower.View.Components
+        result = require('coffeekup').render string, locals
+      catch error
+        e = error
+      
+      callback e, result
+    else if options.type
       engine = require("shift").engine(options.type)
       engine.render(string, options.locals, callback)
     else
@@ -45,9 +57,10 @@ Tower.View.Rendering =
     locals.pretty = true if @constructor.prettyPrint
     locals
     
-  _readTemplate: (path, ext) ->
-    template = @constructor.store().find(path: path, ext: ext)
-    throw new Error("Template '#{path}' was not found.") unless template
-    template
+  _readTemplate: (template, ext) ->
+    return template unless typeof template == "string"
+    result = @constructor.store().find(path: template, ext: ext)
+    throw new Error("Template '#{template}' was not found.") unless result
+    result
   
 module.exports = Tower.View.Rendering

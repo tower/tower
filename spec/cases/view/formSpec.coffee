@@ -1,14 +1,17 @@
 require '../../config'
-ck = require 'coffeekup'
-fs  = require 'fs'
 
-describe "views", ->
-  describe 'form builder', ->
-    it 'should render with coffeekup', ->
-      expect(ck.render -> h1 "Hello World").toEqual "<h1>Hello World</h1>"
-      
-    it 'should render a form from a post', ->
-      template  = fs.readFileSync "spec/spec-app/app/views/posts/new.coffee", "utf-8"
-      post      = new Post
-      
-      #expect(ck.render(template, locals: {post: post}, format: true)).toEqual "<form></form>"
+controller  = null
+user        = null
+
+describe 'Tower.Controller.Rendering', ->
+  beforeEach ->
+    controller = new TowerSpecApp.PostsController
+    User.store(new Tower.Store.Memory(name: "users", type: "User"))
+    user = User.create id: 1, firstName: "Lance"
+    
+  test 'resourceful', ->  
+    controller.params.id = 1
+    controller.params.action = "new"
+    controller.post = new Post
+    controller.new()
+    console.log controller.body
