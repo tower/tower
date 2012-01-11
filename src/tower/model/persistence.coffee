@@ -34,6 +34,11 @@ Tower.Model.Persistence =
       Tower.Support.String.camelize(@name, true)
       
     clone: (model) ->
+      
+    create: (attributes, callback) ->
+      record = new @(attributes)
+      record.save callback
+      record
   
   InstanceMethods:
     isNew: ->
@@ -45,30 +50,34 @@ Tower.Model.Persistence =
       if typeof options == "function"
         callback  = options
         options   = {}
+      options ||= {}
       
       unless options.validate == false
         unless @validate()
           callback.call @, null, false if callback
           return false
       
-      if @isNew()
-        @_create(callback)
-      else
-        @_update(@toUpdates(), callback)
+      @runCallbacks "save", ->
+        if @isNew()
+          @_create(callback)
+        else
+          @_update(@toUpdates(), callback)
         
       true
     
     _update: (attributes, callback) ->
-      @constructor.update @id, attributes, (error) =>
-        @changes = {} unless error
-        callback.call(@, error, !error) if callback
+      @runCallbacks "update", ->
+        @constructor.update @id, attributes, (error) =>
+          @changes = {} unless error
+          callback.call(@, error, !error) if callback
       
       @
       
     _create: (callback) ->
-      @constructor.create @attributes, (error, docs) =>
-        @changes = {} unless error
-        callback.call(@, error, !error) if callback
+      @runCallbacks "create", ->
+        @constructor.store().create @attributes, (error, docs) =>
+          @changes = {} unless error
+          callback.call(@, error, !error) if callback
       
       @
     

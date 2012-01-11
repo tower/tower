@@ -18,16 +18,14 @@ Tower.Model.Scopes =
       scope
 
 for key in Tower.Model.Scope.scopes
-  ((_key)->
-    Tower.Model.Scopes.ClassMethods[_key] = ->
-      @scoped()[_key](arguments...)
-  )(key)
+  do (key) ->
+    Tower.Model.Scopes.ClassMethods[key] = ->
+      @scoped()[key](arguments...)
 
 for key in Tower.Model.Scope.finders
-  ((_key)->
-    Tower.Model.Scopes.ClassMethods[_key] = ->
-      @scoped()[_key](arguments...)
-  )(key)
+  do (key) ->
+    Tower.Model.Scopes.ClassMethods[key] = ->
+      @scoped()[key](arguments...)
 
 for key in Tower.Model.Scope.builders
   do (key) ->

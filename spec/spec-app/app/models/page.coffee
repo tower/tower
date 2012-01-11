@@ -7,7 +7,7 @@ class TowerSpecApp.Page extends Tower.Model
   @validates "rating", min: 0, max: 10
   
   @belongsTo "user", cache: true
-  @hasMany "comments", as: "commentable"
+  @hasMany "comments", as: "commentable", type: "Comment"
   @hasMany "commenters", through: "comments", type: "User"
   
 global.Page = TowerSpecApp.Page

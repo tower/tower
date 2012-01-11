@@ -120,3 +120,6 @@ describe 'Tower.Model.Criteria', ->
       
   test '#clone', ->
     expect(criteria.clone()).toBeTruthy()
+    
+  test '#allIn', ->
+    

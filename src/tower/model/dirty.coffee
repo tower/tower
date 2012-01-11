@@ -27,6 +27,9 @@ Tower.Model.Dirty =
     return undefined unless change
     change[0]
     
+  resetAttribute: (name) ->
+    
+    
   toUpdates: ->
     result      = {}
     attributes  = @attributes

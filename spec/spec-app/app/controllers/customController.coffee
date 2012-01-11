@@ -1,5 +1,5 @@
 class TowerSpecApp.CustomController extends Tower.Controller
-  @beforeFilter "setCurrentUser"
+  @before "setCurrentUser"
   
   index: ->
     @indexCalled = true

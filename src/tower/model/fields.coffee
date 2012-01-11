@@ -15,7 +15,10 @@ Tower.Model.Fields =
       
   InstanceMethods:
     get: (name) ->
-      @attributes[name] = @constructor.fields()[name].defaultValue(@) unless @has(name)
+      unless @has(name)
+        field = @constructor.fields()[name]
+        @attributes[name] = field.defaultValue(@) if field
+        
       @attributes[name]
     
     set: (name, value) ->

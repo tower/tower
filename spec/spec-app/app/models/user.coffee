@@ -12,5 +12,7 @@ class TowerSpecApp.User extends Tower.Model
   @hasMany "comments", source: "commenter"
   
   @validates "firstName", presence: true
+  
+  @timestamps()
 
 global.User = TowerSpecApp.User

@@ -9,10 +9,12 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     #    get: -> @relation(name).first()
     #    set: (value) -> @relation(name).set(value)
     
-    owner.field "#{name}Id", type: "Id"
+    @foreignKey = "#{name}Id"
+    owner.field @foreignKey, type: "Id"
     
     if @polymorphic
-      owner.field "#{name}Type", type: "String"
+      @foreignType = "#{name}Type"
+      owner.field @foreignType, type: "String"
     
     owner.prototype[name] = (callback) ->
       @relation(name).first(callback)

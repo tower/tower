@@ -26,7 +26,7 @@ Tower.env             = "test"
 Tower.View.loadPaths  = ["./spec/spec-app/app/views"]
 
 Tower.Application.instance().initialize()
-Tower.Store.MongoDB.initialize()
+#Tower.Store.MongoDB.initialize()
 # You must either "extends X" or create a constructor: -> super
 # so that coffeescript generates a callback to the parent class!
 i = 0

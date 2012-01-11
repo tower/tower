@@ -32,6 +32,7 @@ require './controller/resources'
 require './controller/responding'
 require './controller/sockets'
 
+Tower.Controller.include Tower.Support.Callbacks
 Tower.Controller.include Tower.Controller.Callbacks
 Tower.Controller.include Tower.Controller.Helpers
 Tower.Controller.include Tower.Controller.HTTP

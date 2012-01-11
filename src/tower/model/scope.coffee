@@ -1,5 +1,5 @@
 class Tower.Model.Scope extends Tower.Class
-  @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within"]
+  @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within", "allIn", "allOf", "alsoIn", "anyIn", "anyOf", "near", "notIn"]
   @finders:   ["find", "all", "first", "last", "count"]
   @builders:  ["build", "create", "update", "delete", "destroy"]
   
@@ -9,12 +9,11 @@ class Tower.Model.Scope extends Tower.Class
     @store    = @model.store()
   
   for key in @scopes
-    ((_key)->
-      @::[_key] = ->
+    do (key) =>
+      @::[key] = ->
         clone = @clone()
-        clone.criteria[_key](arguments...)
+        clone.criteria[key](arguments...)
         clone
-    ).call(@, key)
     
   # find(1)
   # find(1, 2, 3)

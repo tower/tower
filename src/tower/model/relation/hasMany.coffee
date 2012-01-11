@@ -59,7 +59,9 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       self        = @
       relation    = @relation
       
-      @store().create Tower.Support.Object.extend(@criteria.query, attributes), @criteria.options, (error, record) ->
+      attributes  = @_serializeAttributes(attributes)
+      
+      @store.create Tower.Support.Object.extend(@criteria.query, attributes), @criteria.options, (error, record) ->
         unless error
           if relation && relation.cache
             updates = {}
@@ -69,5 +71,20 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
             callback.call @, error, record if callback
         else
           callback.call @, error, record if callback
+          
+    _serializeAttributes: (attributes = {}) ->
+      target = Tower.constant(@relation.targetClassName)
+      
+      for name, relation of target.relations()
+        if attributes.hasOwnProperty(name)
+          value = attributes[name]
+          delete attributes[name]
+          if relation instanceof Tower.Model.Relation.BelongsTo
+            attributes[relation.foreignKey] = value.id
+            attributes[relation.foreignType] = value.type if relation.polymorphic
+            
+      attributes
+      
+    hasCachedCounter: ->
   
 module.exports = Tower.Model.Relation.HasMany

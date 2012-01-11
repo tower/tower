@@ -49,6 +49,14 @@ class Tower.Model.Relation extends Tower.Class
       
     clone: ->
       new @constructor(model: @model, criteria: @criteria.clone(), owner: @owner, relation: @relation)
+      
+    setInverseInstance: (record) ->
+      if record && @invertibleFor(record)
+        inverse = record.relation(@inverseReflectionFor(record).name)
+        inverse.target = owner
+    
+    invertibleFor: (record) ->
+      true
   
 require './relation/belongsTo'
 require './relation/hasMany'

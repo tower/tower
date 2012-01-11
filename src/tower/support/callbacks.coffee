@@ -1,49 +1,89 @@
 # @todo
 Tower.Support.Callbacks =
   ClassMethods:
-    # (name, filterList, block) ->
-    setCallback: (name) ->
-      mapped = null
+    # 
+    #     @before "save", "doAction"
+    #     @before "save", "doAction", if: true
+    #     @before "save", ->
+    #     @before "setCurrentUser"
+    before: ->
+      @appendCallback "before", arguments...
       
-      @_updateCallbacks name, filter_list, block, (target, chain, type, filters, options) ->
-        mapped ||= filters.map (filter) ->
-          Callback.new(chain, filter, type, options.dup, self)
-
-        filters.each (filter) ->
-          chain.delete_if (c) -> c.matches?(type, filter)
+    after: ->
+      @appendCallback "after", arguments...
+      
+    callback: ->
+      @appendCallback arguments...
+      
+    removeCallback: (action, phase, run) ->
+      @
+      
+    appendCallback: (phase) ->
+      args        = Tower.Support.Array.args(arguments, 1)
+      if typeof args[args.length - 1] == "function"
+        method    = args.pop()
+      if typeof args[args.length - 1] == "object"
+        options   = args.pop()
+      options   ||= {}
+      method      = args.pop()
+      callbacks   = @callbacks()
+      
+      for filter in args
+        callback = callbacks[filter] ||= new Tower.Support.Callbacks.Chain
+        callback.push phase, method, options
         
-        if options.prepend then chain.unshift(mapped.reverse) else chain.push(mapped)
-
-        target["_#{name}Callbacks"] = chain
-    
-    resetCallbacks: (name) ->
+      @
       
-    # This is used internally to append, prepend and skip callbacks to the
-    # CallbackChain.
-    #
-    _updateCallbacks: (name, filters = [], block = nil) ->
-      type    = if filters.first.in?(["before", "after", "around"]) then filters.shift else "before"
-      options = if filters.last.is_a?(Hash) then filters.pop else {}
-      filters.unshift(block) if block
+    prependCallback: (action, phase, run, options = {}) ->
+      @
       
-      targets = [@] + Tower.Support.DescendantsTracker.descendants(@)
+    callbacks: ->
+      @_callbacks ||= {}
       
-      for target in targets
-        chain = target["_#{name}Callbacks"]
-        yield target, chain.dup, type, filters, options
-        target._defineCallback(name)
-    
-    defineCallbacks: (callbacks...) ->
-      options = if typeof callbacks[callbacks.length - 1] == "object" then callbacks.pop() else {}
-      
-    _defineCallback: (name) ->
-      body = send("_#{symbol}_callbacks").compile
-      
-      @["_run#{Tower.Support.String.camelize(name)}Callbacks"] = (key = null, block) ->
-        
-  
   # runCallbacks "save", ->
-  runCallbacks: (kind) ->
-    @["_run#{Tower.Support.String.camelize(kind)}Callbacks"]
+  runCallbacks: (kind, block) ->
+    chain = @constructor.callbacks()[kind]
+    if chain
+      chain.run(@, block)
+    else
+      block.call @
+        
+class Tower.Support.Callbacks.Chain
+  constructor: (options = {}) ->
+    @[key] = value for key, value of options
+
+    @before ||= []
+    @after  ||= []
+
+  run: (binding, block) ->
+    runner    = (callback, next) => callback.run(binding, next)
+    
+    async     = Tower.async
+    
+    async.forEachSeries @before, runner, (error) =>
+      unless error
+        block.call binding, (error) =>
+          unless error
+            async.forEachSeries @after, runner, (error) =>
+              binding
+    
+  push: (phase, method, filters, options) ->
+    @[phase].push new Tower.Support.Callback(method, filters, options)
+    
+class Tower.Support.Callback
+  constructor: (method, options = {}) ->
+    @method   = method
+    @options  = options
+    
+  run: (binding, next) ->
+    method  = @method
+    method  = binding[method] if typeof method == "string"
+    
+    switch method.length
+      when 0
+        result = method.call binding
+        next(if !result then new Error("Callback did not pass") else null)
+      else
+        method.call binding, next
 
 module.exports = Tower.Support.Callbacks
