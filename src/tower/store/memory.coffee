@@ -22,7 +22,7 @@ class Tower.Store.Memory extends Tower.Store
 require './memory/finders'
 require './memory/persistence'
 require './memory/serialization'
-    
+
 Tower.Store.Memory.include Tower.Store.Memory.Finders
 Tower.Store.Memory.include Tower.Store.Memory.Persistence
 Tower.Store.Memory.include Tower.Store.Memory.Serialization

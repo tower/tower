@@ -12,7 +12,6 @@ class Tower.Dispatch.Response
     @statusCode = 200
     @body       = ""
 
-  # writeHead(200, controller.headers)
   writeHead: (statusCode, headers) ->
     @statusCode = statusCode
     @headers    = headers

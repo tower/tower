@@ -11,9 +11,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
   validateMinimum: (record, attribute, errors) ->
     value = record[attribute]
     unless typeof(value) == 'number' && value >= @value
-      errors[attribute] ||= []
-      errors[attribute].push Tower.t("model.errors.minimum", attribute: attribute, value: @value)
-      return false
+      return @error record, attribute, errors, Tower.t("model.errors.minimum", attribute: attribute, value: @value)
     true
   
   validateMaximum: (record, attribute, errors) ->

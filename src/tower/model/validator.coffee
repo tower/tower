@@ -21,6 +21,11 @@ class Tower.Model.Validator
         success = false
     success
     
+  error: (record, attribute, errors, message) ->
+    errors[attribute] ||= []
+    errors[attribute].push message
+    false
+    
 require './validator/format'
 require './validator/length'
 require './validator/presence'

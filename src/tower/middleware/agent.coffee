@@ -16,7 +16,7 @@ Tower.Middleware.Agent = (request, response, next) ->
   request.agent = new Tower.Dispatch.Agent(attributes)
   
   # so we can easily parse it out
-  response.cookie("user-agent", JSON.stringify(attributes))
+  # response.cookie("user-agent", JSON.stringify(attributes))
   
   next() if next
 

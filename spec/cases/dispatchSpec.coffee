@@ -535,4 +535,20 @@ describe 'Tower.Dispatch.Param', ->
     #test 'NIN range with IN range `1..100,^10..50` (is this even possible in mongodb?)', ->
     #  criteria  = param.toCriteria("1..100,^10..50")
     #  expect(criteria.query).toEqual { "$or": [{"likeCount": {"$gte": 1}}, {"likeCount": {"$lte": 100}}], "$nor": [{"likeCount": {"$gte": 10}}, {"likeCount": {"$lte": 50}}] }
+    
+    @operators:
+      gte:            ":value..t"          
+      gt:             ":value...t"
+      lte:            "t..:value"
+      lte:            "t...:value"
+      rangeInclusive: ":i..:f"             # count=0..4
+      rangeExclusive: ":i...:f"            # date=2011-08-10...2011-10-03
+      in:             [",", "+OR+"]        # tags=ruby,javascript and tags=ruby+OR+javascript
+      nin:            "-"                  # tags=-ruby,-javascript and tags=ruby+OR+javascript
+      all:            "[:value]"           # tags=[ruby,javascript] and tags=ruby+AND+javascript
+      nil:            "[-]"                # tags=[-]
+      notNil:         "[+]"                # tags=ruby,[+]
+      asc:            ["+", ""]
+      desc:           "-"
+      geo:            ":lat,:lng,:radius"   # geo=20,-50,7
 ###

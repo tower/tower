@@ -1,5 +1,4 @@
-# The event code isn't required for context functionality, but you can add it separately!
-class Tower.Event extends Tower.Class
+class Tower.Dispatch.Event extends Tower.Class
   @for: (object, key) ->
     if object.isEventEmitter
       object.event(key)
@@ -59,4 +58,4 @@ class Tower.Event extends Tower.Class
     @allow()
     @fire(arguments...)
   
-module.exports = Tower.Event
+module.exports = Tower.Event = Tower.Dispatch.Event

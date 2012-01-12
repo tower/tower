@@ -1,12 +1,4 @@
 class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
-  ###
-  * HasManyThrough Relation
-  * 
-  * Examples
-  * 
-  *     @hasMany "comments", through: "articles"
-  * 
-  ###
   constructor: (owner, name, options = {}) ->
     super(owner, name, options)
     

@@ -89,12 +89,6 @@ class Tower.Store extends Tower.Class
     else
       @all query, options, callback
   
-  first: (query, options, callback) ->
-    @findOne query, options, callback
-    
-  last: (query, options, callback) ->
-    @findOne query, options, callback
-    
   build: (attributes, options, callback) ->
     record        = @serializeModel(attributes)
     callback.call @, null, record if callback

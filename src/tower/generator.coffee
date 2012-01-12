@@ -1,4 +1,3 @@
-#Emergent = require 'emergent'
 class Tower.Generator extends Tower.Class#Emergent.Generator
   # @desc "This generator creates an initializer file at config/initializers"
   @desc: (string) ->
@@ -12,18 +11,18 @@ class Tower.Generator extends Tower.Class#Emergent.Generator
     
     @destinationRoot ||= process.cwd()
     
-    @cd = "."
+    @cd       = "."
+    @project  = {}
+    @user     = {}
 
 require './generator/actions'
 require './generator/attribute'
 require './generator/configuration'
-require './generator/naming'
 require './generator/resources'
 
 Tower.Generator.include Tower.Generator.Actions
 Tower.Generator.include Tower.Generator.Attribute
 Tower.Generator.include Tower.Generator.Configuration
-Tower.Generator.include Tower.Generator.Naming
 Tower.Generator.include Tower.Generator.Resources
 
 require './generator/generators/app/appGenerator'

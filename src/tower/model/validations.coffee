@@ -3,9 +3,6 @@ Tower.Model.Validations =
     validates: ->
       attributes = Tower.Support.Array.args(arguments)
       options    = attributes.pop()
-      
-      Tower.raise("missingOptions", "#{@name}.validates") unless typeof(options) == "object"
-      
       validators = @validators()
       
       for key, value of options
@@ -14,15 +11,16 @@ Tower.Model.Validations =
     validators: ->
       @_validators ||= []
   
-  validate: ->
-    validators      = @constructor.validators()
-    success         = true
-    errors          = @errors = {}
+  validate: (callback) ->
+    @runCallbacks "validate", =>
+      validators      = @constructor.validators()
+      success         = true
+      errors          = @errors = {}
     
-    for validator in validators
-      unless validator.validateEach(@, errors)
-        success = false
-    
-    success
+      for validator in validators
+        unless validator.validateEach(@, errors)
+          success = false
+      
+      success
   
 module.exports = Tower.Model.Validations

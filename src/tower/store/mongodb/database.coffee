@@ -8,7 +8,7 @@ Tower.Store.MongoDB.Database =
         mongo = @lib()
       
         if env.url
-          url = new Tower.Net.Url(env.url)
+          url = new Tower.Dispatch.Url(env.url)
           env.name      = url.segments[0] || url.user
           env.host      = url.hostname
           env.port      = url.port

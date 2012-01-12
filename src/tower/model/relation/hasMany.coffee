@@ -1,15 +1,4 @@
-# http://mongoosejs.com/docs/embedded-documents.html
-# http://mongoid.org/docs/relations/embedded/1-n.html
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
-  ###
-  # HasMany Relation
-  #
-  # Examples
-  # 
-  #     @hasMany "posts"
-  #     @hasMany "articles", type: "Post"
-  #     @hasMany "comments", as: "commentable"
-  ###
   constructor: (owner, name, options = {}) ->
     super(owner, name, options)
     

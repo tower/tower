@@ -29,16 +29,13 @@ class Tower.Model.Criteria
     
   includes: ->
     @_mergeOptions includes: Tower.Support.Array.args(arguments)
-    
-  # paginate perPage: 20, page: 20
-  # Tile.paginate(perPage: 20, page: 3).where(title: "=~": "Hello").all()
+  
   paginate: (options) ->
     limit   = options.perPage || options.limit
     page    = options.page || 1
     @limit  limit
     @offset((page - 1) * limit)
   
-  # Tile.within(3, origin: [42.12415, -81.3815719]).all()  
   within: (options) ->
     @
     

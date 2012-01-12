@@ -1,14 +1,7 @@
-# @states "status", ->
-#   @state "draft"
-#   @state "published"
-#   @state "archived"
-#   
-#   @event "publish", ->
-#     @transition from: "draft", to: "published"
 Tower.Model.States =
   ClassMethods:
     states: (name) ->
-      @stateMachines()[name] = new Tower.Event.StateMachine(arguments...)
+      @stateMachines()[name] = new Tower.Dispatch.StateMachine(arguments...)
     
     stateMachines: ->
       @_stateMachines ||= {}

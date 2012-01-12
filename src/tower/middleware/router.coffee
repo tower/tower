@@ -28,7 +28,6 @@ Tower.Support.Object.extend Tower.Middleware.Router,
     
     controller
   
-  # https://github.com/3rd-Eden/useragent/blob/master/lib/useragent.js  
   processHost: (request, response) ->
     request.location ||= new Tower.Dispatch.Url(request.url)
   

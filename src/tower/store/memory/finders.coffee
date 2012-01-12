@@ -1,28 +1,5 @@
-Tower.Store.Memory.Finders =  
-  # Find all matches, given an options hash.
-  # 
-  # This options hash is the result of chained criteria for a Model,
-  # or you can manually write it.
-  #
-  # @example Find where `createdAt` is greater than or equal to 2 days ago
-  # 
-  #     store.find ">=": "createdAt": 2.days().ago()
-  # 
-  # @example Find where `email` matches "gmail.com".
-  # 
-  #     store.find "=~": "email": /gmail\.com/
-  #     store.find "=~": "email": "gmail.com"
-  #     store.find "email": /gmail\.com/
-  # 
-  # @example Find where `tags` at least has one of the following...
-  # 
-  #     store.find _any: tags: ["tomato", "cucumber"]
-  # 
-  # @example Find where `tags` must have all of the following...
-  # 
-  #     store.find _all: tags: ["tomato", "cucumber"]
-  # 
-  all: (query, options, callback) ->
+Tower.Store.Memory.Finders =
+  find: (query, options, callback) ->
     result  = []
     records = @records
     self    = @

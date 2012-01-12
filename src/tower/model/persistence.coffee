@@ -2,8 +2,6 @@ Tower.Model.Persistence =
   ClassMethods:
     defaultStore: Tower.Store.Memory
     
-    # @store new Tower.Store.MongoDB(name: "users")
-    # @store name: "users"
     store: (value) ->
       # add options!
       return @_store if !value && @_store

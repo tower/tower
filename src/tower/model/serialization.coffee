@@ -8,33 +8,12 @@ Tower.Model.Serialization =
         records[i] = new @(record)
 
       records
-
-    fromForm: (data) ->
-      
-    fromXML: (data) ->
-      
+    
     toJSON: (records, options = {}) ->
       JSON.stringify(records)
   
-  # https://github.com/oozcitak/xmlbuilder-js
-  toXML: ->
-  
-  # @param only
-  # @param include
-  # @param except
-  # @param methods
-  # 
-  #     @user.toJSON
-  #       include:
-  #         posts:
-  #           include:
-  #             taggings:
-  #               include:
-  #                 tag:
-  #                   only: "name"
   toJSON: (options) ->
     @_serializableHash(options)
-    #JSON.stringify(@attributes)
   
   toObject: ->
     @attributes

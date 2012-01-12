@@ -1,4 +1,3 @@
-# @todo
 Tower.Support.Callbacks =
   ClassMethods:
     # 
@@ -45,7 +44,6 @@ Tower.Support.Callbacks =
     callbacks: ->
       @_callbacks ||= {}
       
-  # runCallbacks "save", ->
   runCallbacks: (kind, block) ->
     chain = @constructor.callbacks()[kind]
     if chain

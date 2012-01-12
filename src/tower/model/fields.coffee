@@ -1,33 +1,25 @@
 Tower.Model.Fields =
-  #included: ->
-  #  @key "id"
-    
   ClassMethods:
-    # key "tags", encode: "encodeTags", decode: (value) -> value.split(/\s+,/)
-    # encodeTags: (value) ->
     field: (name, options) ->
       @fields()[name] = new Tower.Model.Field(@, name, options)
     
     fields: ->
       @_fields ||= {}
       
-    schema: -> @fields()
+  get: (name) ->
+    unless @has(name)
+      field = @constructor.fields()[name]
+      @attributes[name] = field.defaultValue(@) if field
       
-  InstanceMethods:
-    get: (name) ->
-      unless @has(name)
-        field = @constructor.fields()[name]
-        @attributes[name] = field.defaultValue(@) if field
-        
-      @attributes[name]
+    @attributes[name]
+  
+  set: (name, value) ->
+    beforeValue       = @_attributeChange(name, value)
+    @attributes[name] = value
+    #@fire("change", beforeValue: beforeValue, value: value)# if @hasEventListener("change")
+    value
     
-    set: (name, value) ->
-      beforeValue       = @_attributeChange(name, value)
-      @attributes[name] = value
-      #@fire("change", beforeValue: beforeValue, value: value)# if @hasEventListener("change")
-      value
-      
-    has: (name) ->
-      @attributes.hasOwnProperty(name)
+  has: (name) ->
+    @attributes.hasOwnProperty(name)
   
 module.exports = Tower.Model.Fields

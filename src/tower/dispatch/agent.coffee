@@ -1,6 +1,6 @@
 class Tower.Dispatch.Agent
   constructor: (attributes = {}) ->
-    @[key] = value for key, value of attributes
+    _.extend @, attributes
     
   toJSON: ->
     family:   @family

@@ -1,7 +1,41 @@
 class Tower.Model.Scope extends Tower.Class
-  @scopes:    ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within", "allIn", "allOf", "alsoIn", "anyIn", "anyOf", "near", "notIn"]
-  @finders:   ["find", "all", "first", "last", "count"]
-  @builders:  ["build", "create", "update", "delete", "destroy"]
+  @scopes: [
+    "where", 
+    "order", 
+    "asc", 
+    "desc", 
+    "limit", 
+    "offset", 
+    "select", 
+    "joins", 
+    "includes", 
+    "excludes", 
+    "paginate", 
+    "within", 
+    "allIn", 
+    "allOf", 
+    "alsoIn", 
+    "anyIn", 
+    "anyOf", 
+    "near", 
+    "notIn"
+  ]
+  
+  @finders: [
+    "find", 
+    "all", 
+    "first", 
+    "last", 
+    "count"
+  ]
+  
+  @builders: [
+    "build", 
+    "create", 
+    "update", 
+    "delete", 
+    "destroy"
+  ]
   
   constructor: (options = {}) ->
     @model    = options.model
@@ -14,21 +48,19 @@ class Tower.Model.Scope extends Tower.Class
         clone = @clone()
         clone.criteria[key](arguments...)
         clone
-    
-  # find(1)
-  # find(1, 2, 3)
+  
   find: ->
     {criteria, callback} = @_extractArgs(arguments, ids: true)
     @store.find criteria.query, criteria.options, callback
     
   all: (callback) ->
-    @store.all @criteria.query, @criteria.options, callback
+    @store.find @criteria.query, @criteria.options, callback
     
   first: (callback) ->
-    @store.first @criteria.query, @criteria.options, callback
+    @store.findOne @criteria.query, @criteria.options, callback
     
   last: (callback) ->
-    @store.last @criteria.query, @criteria.options, callback
+    @store.findOne @criteria.query, @criteria.options, callback
     
   count: (callback) ->
     @store.count @criteria.query, @criteria.options, callback
@@ -36,24 +68,9 @@ class Tower.Model.Scope extends Tower.Class
   build: (attributes, callback) ->
     @store.build Tower.Support.Object.extend(@criteria.query, attributes), @criteria.options, callback
   
-  # ## Examples
-  #
-  #     User.create name: "John", (error, record)
-  #
   create: (attributes, callback) ->
     @store.create Tower.Support.Object.extend({}, @criteria.query, attributes), @criteria.options, callback
   
-  # ## Examples
-  #
-  #     User.update 1, 2, 3, name: "John", (error, records)
-  #     User.update 1, 2, 3, name: "John", (error)
-  #     User.update [1, 2, 3], name: "John", (error, records)
-  #     User.update [1, 2, 3], name: "John", (error)
-  #     User.update name: "John", (error, records)
-  #     User.update name: "John", (error)
-  #     User.update 1, 2, 3, {name: "John"}, {instantiate: false, validate: false}, (error)
-  #     User.update {name: "John"}, {instantiate: false, validate: false}, (error)
-  #
   update: ->
     {criteria, updates, options, callback} = @_extractArgs(arguments, ids: true, updates: true, options: true)
     
@@ -69,15 +86,6 @@ class Tower.Model.Scope extends Tower.Class
     else
       @store.update updates, criteria.query, criteria.options, callback
   
-  # ## Examples
-  # 
-  #     # delete users 1, 2, and 3
-  #     User.delete 1, 2, 3, (error, records)
-  #     User.delete [1, 2, 3], (error, records)
-  #     User.delete [1, 2, 3], (error)
-  #     User.delete 1, 2, 3, {instantiate: false, validate: false}, (error)
-  #     User.delete {instantiate: false, validate: false}, (error)
-  # 
   delete: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true, options: true)
     
@@ -96,18 +104,9 @@ class Tower.Model.Scope extends Tower.Class
   destroy: ->
     @delete arguments...
     
-  store: ->
-    @model.store()
-    
   merge: (scope) ->
     @criteria.merge(scope.criteria)
     
-  # you want to clone it so you can reuse it multiple times:
-  # 
-  #     users = User.where(username: /santa/)
-  #     newUsers = users.where(createdAt: ">=": _(2).days().ago())
-  #     users.all()
-  #     newUsers.all()
   clone: ->
     new @constructor(model: @model, criteria: @criteria.clone())
     
@@ -128,7 +127,6 @@ class Tower.Model.Scope extends Tower.Class
       else
         options   = args.pop()
         
-    # in case you're trying to cheat :)
     updates     = undefined unless opts.updates
     options ||= {}
     options.instantiate = true unless options.hasOwnProperty("instantiate")

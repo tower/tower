@@ -1,7 +1,4 @@
 Tower.Model.Relations =
-  #included: ->
-  #  @relations = {}
-  
   ClassMethods:
     hasOne: (name, options) ->
       if options && options.hasOwnProperty("through")
@@ -11,13 +8,6 @@ Tower.Model.Relations =
 
       @relations()[name]  = new relationClass(@, name, options)
     
-    # Adds hasMany relation to model.
-    # 
-    # @example Post with many categories
-    # 
-    #     class User extends Tower.Model
-    #       @hasMany "categories", className: "Category"
-    # 
     hasMany: (name, options) ->
       if options && options.hasOwnProperty("through")
         relationClass = Tower.Model.Relation.HasManyThrough

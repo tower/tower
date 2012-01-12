@@ -7,7 +7,6 @@ class Tower.View extends Tower.Class
       @_store = store if store
       @_store ||= new Tower.Store.Memory(name: "view")
   
-  # so you copy the controller over  
   constructor: (context = {}) ->
     @_context = context
 

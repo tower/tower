@@ -1,6 +1,4 @@
 class Tower.Model.Field
-  # @field "title", type: "String", short: "t", default: "Hello"
-  # @id "title", "name"
   constructor: (owner, name, options = {}) ->
     @owner    = owner
     @name     = key = name
