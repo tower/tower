@@ -3,6 +3,8 @@ require '../config'
 scope     = null
 criteria  = null
 
+###
+
 describe 'Tower.Model', ->
   beforeEach ->
     User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
@@ -587,7 +589,7 @@ describe 'Tower.Model.Relation.Scope', ->
         expect(scope.store.all).toHaveBeenCalledWith {}#{ pageId : 10 }, {  }, undefined
         
         console.log post.commenters().all()
-      
+###      
 ###      
   describe 'hasMany :through', ->
     beforeEach ->

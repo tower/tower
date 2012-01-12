@@ -2,7 +2,7 @@ require '../config'
 
 controller  = null
 user        = null
-
+###
 describe 'Tower.Controller', ->
   test 'PostsController#resourceName', ->
     controller = new TowerSpecApp.PostsController
@@ -69,3 +69,4 @@ describe 'Tower.Controller.Rendering', ->
     controller.params.id = 1
     controller.params.action = "show"
     controller.show()
+###

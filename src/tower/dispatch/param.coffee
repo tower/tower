@@ -42,7 +42,21 @@ class Tower.Dispatch.Param
   render: (value) -> value
   
   toCriteria: (value) ->
-    result = @parse(value)
+    nodes     = @parse(value)
+    criteria  = new Tower.Model.Criteria
+    for set in nodes
+      for node in set
+        attribute = node.attribute
+        operator  = node.operators[0]
+        query = {}
+        if operator == "$eq"
+          query[attribute] = node.value
+        else
+          query[attribute] = {}
+          query[attribute][operator] = node.value
+          
+        criteria.where(query)
+    criteria
   
   parseValue: (value, operators) ->
     namespace: @namespace, key: @key, operators: operators, value: value, attribute: @attribute
@@ -71,9 +85,9 @@ class Tower.Dispatch.Param.String extends Tower.Dispatch.Param
           $1
         
         if negation
-          operators = [if exact then "!=" else "!~"]
+          operators = [if exact then "$neq" else "$notMatch"]
         else
-          operators = [if exact then "=" else "=~"]
+          operators = [if exact then "$eq" else "$match"]
         
         operators.push "^" if !!token.match(/^\+?\-?\^/)
         operators.push "$" if !!token.match(/\$$/)
@@ -85,12 +99,73 @@ class Tower.Dispatch.Param.String extends Tower.Dispatch.Param
     
     arrays
     
-  toCriteria: (value) ->
-    nodes   = super(value)[0]
-    result  = {}
-    for node in nodes
-      result[node.attribute] ||= {}
-      result[node.attribute][node.operators[0]] = node.value
-    result
+class Tower.Dispatch.Param.Date extends Tower.Dispatch.Param
+  parse: (value) ->
+    values  = []
+    array   = value.toString().split(/[\s,\+]/)
+    
+    for string in array
+      isRange = false
+      
+      string.replace /([^\.]+)?(\.\.)([^\.]+)?/, (_, startsOn, operator, endsOn) =>
+        isRange = true
+        range   = []
+        range.push @parseValue(startsOn, ["$gte"]) if !!(startsOn && startsOn.match(/^\d/))
+        range.push @parseValue(endsOn, ["$lte"])   if !!(endsOn && endsOn.match(/^\d/))
+        values.push range
+      
+      values.push [@parseValue(string, ["$eq"])] unless isRange
+    
+    values
+    
+  parseValue: (value, operators) ->
+    super(Tower.date(value), operators)
+    
+class Tower.Dispatch.Param.Number extends Tower.Dispatch.Param
+  parse: (value) ->
+    values  = []
+    array   = value.toString().split(/[,\|]/)
+    
+    for string in array
+      isRange   = false
+      negation  = !!string.match(/^\^/)
+      string    = string.replace(/^\^/, "")
+      
+      string.replace /([^\.]+)?(\.{2})([^\.]+)?/, (_, startsOn, operator, endsOn) =>
+        isRange = true
+        range   = []
+        range.push @parseValue(startsOn, ["$gte"]) if !!(startsOn && startsOn.match(/^\d/))
+        range.push @parseValue(endsOn, ["$lte"])   if !!(endsOn && endsOn.match(/^\d/))
+        values.push range
+      
+      unless isRange
+        values.push [@parseValue(string, ["$eq"])]
+      
+    values
+    
+  parseValue: (value, operators) ->
+    super(parseFloat(value), operators)
+    
+class Tower.Dispatch.Param.Array extends Tower.Dispatch.Param
+  parse: (value) ->
+    values  = []
+    array   = value.toString().split(/[,\|]/)
+    
+    for string in array
+      isRange   = false
+      negation  = !!string.match(/^\^/)
+      string    = string.replace(/^\^/, "")
+      
+      string.replace /([^\.]+)?(\.{2})([^\.]+)?/, (_, startsOn, operator, endsOn) =>
+        isRange = true
+        range   = []
+        range.push @parseValue(startsOn, ["$gte"]) if !!(startsOn && startsOn.match(/^\d/))
+        range.push @parseValue(endsOn, ["$lte"])   if !!(endsOn && endsOn.match(/^\d/))
+        values.push range
+      
+      unless isRange
+        values.push [@parseValue(string, ["$eq"])]
+      
+    values
 
 module.exports = Tower.Dispatch.Param

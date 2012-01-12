@@ -7,15 +7,25 @@ class Tower.Generator extends Tower.Class#Emergent.Generator
     generator = new Tower.Generator[Tower.Support.String.camelize(type)](options)
     generator.run()
     
-  constructor: (program) ->
-    @program = program
+  constructor: (options = {}) ->
+    _.extend @, options
+    
+    @destinationRoot ||= process.cwd()
+    
+    @cd = "."
 
+require './generator/actions'
 require './generator/attribute'
+require './generator/configuration'
 require './generator/naming'
 require './generator/resources'
 
+Tower.Generator.include Tower.Generator.Actions
 Tower.Generator.include Tower.Generator.Attribute
+Tower.Generator.include Tower.Generator.Configuration
 Tower.Generator.include Tower.Generator.Naming
 Tower.Generator.include Tower.Generator.Resources
+
+require './generator/generators/app/appGenerator'
 
 module.exports = Tower.Generator

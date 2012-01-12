@@ -31,6 +31,7 @@ Tower.render              = (string, options = {}) ->
 Tower.domain              = "localhost"
 
 Tower.async               = require 'async'
+Tower.date                = -> require('moment')(arguments...)._d
 
 Tower.run = (argv) ->
   (new Tower.Command.Server(argv)).run()
