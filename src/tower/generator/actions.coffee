@@ -92,6 +92,8 @@ Tower.Generator.Actions =
     options.project =
       name: "test-project"
       title: "Test Project"
+      
+    options.model = @model
     
     data    = @render(File.read(source), options)
     

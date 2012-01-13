@@ -1,7 +1,4 @@
 class Tower.Generator extends Tower.Class#Emergent.Generator
-  # @desc "This generator creates an initializer file at config/initializers"
-  @desc: (string) ->
-  
   @run: (type, options = {}) ->
     generator = new Tower.Generator[Tower.Support.String.camelize(type)](options)
     generator.run()
@@ -26,5 +23,6 @@ Tower.Generator.include Tower.Generator.Configuration
 Tower.Generator.include Tower.Generator.Resources
 
 require './generator/generators/app/appGenerator'
+require './generator/generators/model/modelGenerator'
 
 module.exports = Tower.Generator

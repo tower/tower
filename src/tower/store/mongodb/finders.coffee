@@ -16,11 +16,6 @@ Tower.Store.MongoDB.Finders =
     delete attributes._id
     new klass(attributes)
   
-  # all()  
-  # all(title: "Title")
-  # all({title: "Title"}, {safe: true})
-  # all({title: "Title"}, {safe: true}, (error, records) ->)
-  # You can only do the last one!
   all: (query, options, callback) ->
     self          = @
     query         = @serializeQuery(query)

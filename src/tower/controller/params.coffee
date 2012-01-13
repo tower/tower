@@ -1,12 +1,5 @@
 Tower.Controller.Params =
   ClassMethods:
-    
-    # @params limit: 20, sort: "created_at desc", ->
-    #   @param "name", to: "users.fullName", type: "string"
-    #   @param "email"
-    #   @param "status"
-    #   @param "role", to: {roles: "name"}, type: "string"
-    #   @param "createdAt"
     params: (options, callback) ->
       if typeof options == 'function'
         callback  =  options

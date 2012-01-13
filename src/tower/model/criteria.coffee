@@ -3,17 +3,17 @@ class Tower.Model.Criteria
     @query      = query
     @options    = options
   
-  _mergeQuery: (conditions = {}) ->
-    Tower.Support.Object.deepMergeWithArrays(@query, conditions)
-    
-  _mergeOptions: (options = {}) ->
-    Tower.Support.Object.deepMergeWithArrays(@options, options)
-    
   where: (conditions) ->
     @_mergeQuery conditions
     
   order: (attribute, direction = "asc") ->
     @_mergeOptions sort: [[attribute, direction]]
+    
+  asc: (attributes...) ->
+    @order(attribute) for attribute in attributes
+    
+  desc: (attributes...) ->
+    @order(attribute, "desc") for attribute in attributes
     
   offset: (number) ->
     @_mergeOptions offset: number
@@ -45,5 +45,11 @@ class Tower.Model.Criteria
   merge: (criteria) ->
     @_mergeQuery(criteria.query)
     @_mergeOptions(criteria.options)
+  
+  _mergeQuery: (conditions = {}) ->
+    Tower.Support.Object.deepMergeWithArrays(@query, conditions)
+
+  _mergeOptions: (options = {}) ->
+    Tower.Support.Object.deepMergeWithArrays(@options, options)
 
 module.exports = Tower.Model.Criteria

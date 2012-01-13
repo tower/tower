@@ -1,10 +1,5 @@
 Tower.Support.Callbacks =
   ClassMethods:
-    # 
-    #     @before "save", "doAction"
-    #     @before "save", "doAction", if: true
-    #     @before "save", ->
-    #     @before "setCurrentUser"
     before: ->
       @appendCallback "before", arguments...
       

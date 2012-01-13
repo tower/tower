@@ -1,16 +1,6 @@
 Tower.Model.Dirty =
   isDirty: ->
     Tower.Support.Object.isPresent(@changes)
-
-  _attributeChange: (attribute, value) ->
-    array       = @changes[attribute] ||= []
-    beforeValue = array[0] ||= @attributes[attribute]
-    array[1]    = value
-    array       = null if array[0] == array[1]
-    
-    if array then @changes[attribute] = array else delete @changes[attribute]
-    
-    beforeValue
     
   attributeChanged: (name) ->
     change = @changes[name]
@@ -29,7 +19,6 @@ Tower.Model.Dirty =
     
   resetAttribute: (name) ->
     
-    
   toUpdates: ->
     result      = {}
     attributes  = @attributes
@@ -38,5 +27,15 @@ Tower.Model.Dirty =
       result[key] = attributes[key]
     
     result
+
+  _attributeChange: (attribute, value) ->
+    array       = @changes[attribute] ||= []
+    beforeValue = array[0] ||= @attributes[attribute]
+    array[1]    = value
+    array       = null if array[0] == array[1]
+    
+    if array then @changes[attribute] = array else delete @changes[attribute]
+    
+    beforeValue
     
 module.exports = Tower.Model.Dirty

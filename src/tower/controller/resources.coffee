@@ -1,6 +1,5 @@
 Tower.Controller.Resources =
   ClassMethods:
-    # resource name: "user", collectionName: "users", type: "User"
     resource: (options) ->
       @_resourceName    = options.name if options.hasOwnProperty("name")
       @_resourceType    = options.type if options.hasOwnProperty("type")
@@ -16,13 +15,11 @@ Tower.Controller.Resources =
     collectionName: ->
       @_collectionName ||= Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
     
-    # belongsTo "project", finder: "findByTitle", param: "projectTitle", type: "Project"
     belongsTo: (key, options = {}) ->
       options.key = key
       options.type ||= Tower.Support.String.camelize(options.key)
       @_belongsTo = options
-      
-    # Defines wich actions to keep from the inherited controller.    
+    
     actions: ->
       args = Tower.Support.Array.args(arguments)
 
@@ -60,14 +57,7 @@ Tower.Controller.Resources =
 
   destroy: ->
     @_destroy arguments...
-
-  # @on "update", format: "html", success: true, ->
-
-  #update:
-  #  success: ->
-  #    @
-  #  failure:
-
+  
   _index: (callback) ->
     @respondWithScoped callback
 

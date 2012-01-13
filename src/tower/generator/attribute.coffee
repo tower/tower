@@ -1,11 +1,10 @@
 class Tower.Generator.Attribute
-  constructor: (name, type) ->
-    type  = string if Tower.Support.Object.blank(type)
+  constructor: (name, type = "string") ->
     @name = name
     @type = type
 
   fieldType: ->
-    @fieldType ||= switch type
+    @fieldType ||= switch @type
       when "integer"                then "numberField"
       when "float", "decimal"       then "textField"
       when "time"                   then "timeSelect"
@@ -17,7 +16,7 @@ class Tower.Generator.Attribute
         "textField"
     
   default: ->
-    @default ||= switch type
+    @default ||= switch @type
       when "integer"                        then 1
       when "float"                          then 1.5
       when "decimal"                        then "9.99"

@@ -1,13 +1,6 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
 
 class Tower.Class
-  # Rename an instance method
-  #
-  # ``` coffeescript
-  # class User
-  #   @alias "methods", "instanceMethods"
-  #
-  # ```
   @alias: (to, from) ->
     Tower.Support.Object.alias(@::, to, from)
   

@@ -50,3 +50,12 @@ describe 'Tower.Generator', ->
       
     test 'create an app', ->
       generator.run()
+  
+  describe 'Tower.Generator.ModelGenerator', ->
+    beforeEach ->
+      sourceRoot      = process.cwd() + "/src/tower/generator/generators/model"
+      destinationRoot = process.cwd() + "/spec/tmp"
+      generator   = new Tower.Generator.ModelGenerator(["User", "email:string"], sourceRoot: sourceRoot, destinationRoot: destinationRoot)
+    
+    test 'create an app', ->
+      generator.run()
