@@ -2,7 +2,7 @@ Tower.Generator.Configuration =
   ClassMethods:
     desc: (usage, description, options = {}) ->
       if options.for
-        task = @findAndRefreshTask(options[:for])
+        task = @findAndRefreshTask(options.for)
         task.usage = usage             if usage
         task.description = description if description
       else
@@ -24,18 +24,18 @@ Tower.Generator.Configuration =
       
       delete options["in"]
       delete options["as"]
-
+      
       for name in names
         defaults = if options.type == "boolean"
           {}
         else if @defaultValueForOption(name, options).in?([true, false])
           {banner: ""}
         else
-          {desc: "#{name.toS.humanize} to be invoked", banner: "NAME"}
-
+          {desc: "#{Tower.Support.String.titleize(name)} to be invoked", banner: "NAME"}
+        
         unless classOptions.hasOwnProperty(name)
           classOption(name, defaults.merge(options))
-
+        
         hooks[name] = [inBase, asHook]
         @invokeFromOption name, options, block
     

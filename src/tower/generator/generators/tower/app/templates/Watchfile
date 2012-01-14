@@ -1,0 +1,19 @@
+require('design.io').extension('watchfile')
+
+require("design.io-stylesheets")
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules)/
+  outputPath: (path) ->
+    "public/stylesheets/#{path}".replace(/\.(sass|scss|stylus|styl|less|css)/, ".css")
+
+require("design.io-javascripts")
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules|server|test.*|spec.*[sS]pec)/
+  outputPath: (path) ->
+    "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+
+watch /app\/views\/*.coffee/
+  update: (path) ->
+    

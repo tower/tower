@@ -1,10 +1,16 @@
 class Tower.Generator extends Tower.Class#Emergent.Generator
-  @run: (type, options = {}) ->
-    generator = new Tower.Generator[Tower.Support.String.camelize(type)](options)
+  @run: (type, argv) ->
+    generator = new Tower.Generator[Tower.Support.String.camelize(type)](argv)
     generator.run()
     
-  constructor: (options = {}) ->
+  constructor: (argv, options = {}) ->
     _.extend @, options
+    
+    @project  = new Tower.Generator.Project(argv.shift())
+    @user     = {}
+    
+    if argv.length > 0 && argv[0].charAt(0) != "-"
+      @model  = new Tower.Generator.Model(argv.shift())
     
     @destinationRoot ||= process.cwd()
     
@@ -13,7 +19,6 @@ class Tower.Generator extends Tower.Class#Emergent.Generator
     @user     = {}
 
 require './generator/actions'
-require './generator/attribute'
 require './generator/configuration'
 require './generator/resources'
 
@@ -22,7 +27,8 @@ Tower.Generator.include Tower.Generator.Attribute
 Tower.Generator.include Tower.Generator.Configuration
 Tower.Generator.include Tower.Generator.Resources
 
-require './generator/generators/app/appGenerator'
-require './generator/generators/model/modelGenerator'
+require './generator/generators/tower/app/appGenerator'
+require './generator/generators/tower/model/modelGenerator'
+require './generator/generators/tower/view/viewGenerator'
 
 module.exports = Tower.Generator

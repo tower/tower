@@ -1,6 +1,7 @@
 require 'underscore.logger'
 
 global._ = require 'underscore'
+_.mixin(require('underscore.string'))
 
 module.exports  = global.Tower = Tower = new (class Tower)
 

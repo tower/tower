@@ -1,2 +1,0 @@
-Tower.Route.draw ->
-  

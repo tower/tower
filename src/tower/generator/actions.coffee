@@ -23,23 +23,19 @@ Tower.Generator.Actions =
   
   createFile: (path, data) ->
     File.write @destinationPath(path), data
-    
+  
   destinationPath: (path) ->
     File.join(@destinationRoot, @cd, path)
-    
+  
   file: (file, data) ->
     @createFile(file, data)
-    
-  removeFile: (file) ->
-    
+  
   createDirectory: (name) ->
     File.mkdirpSync(@destinationPath(name))
-    
+  
   directory: (name) ->
     @createDirectory(name)
-    
-  removeDirectory: (name) ->
-    
+  
   emptyDirectory: (name) ->
     
   inside: (directory, block) ->
@@ -91,7 +87,10 @@ Tower.Generator.Actions =
       
     options.project =
       name: "test-project"
-      title: "Test Project"
+      title: "TestProject"
+      className: "TestProject"
+      description: ""
+      keywords: ""
       
     options.model = @model
     
@@ -182,19 +181,19 @@ Tower.Generator.Actions =
   _onConflictBehavior: (block) ->
     @sayStatus "exist", "blue", block
     
-  _args: (args, index) ->
-    args = Array.prototype.slice.call(args, index, args.length - 1)
+  _args: (args, index = 0) ->
+    args = Array.prototype.slice.call(args, index, args.length)
     
     if typeof args[args.length - 1] == "function"
       block = args.pop()
     else
       block = null
-    
+      
     if Tower.Support.Object.isHash(args[args.length - 1])
       options = args.pop()
     else
       options = {}
-      
+        
     args: args, options: options, block: block
     
   findInSourcePaths: (path) ->
