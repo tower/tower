@@ -178,7 +178,7 @@ task 'build-generic', ->
 task 'clean', 'Remove built files in ./dist', ->
 
 task 'spec', 'Run jasmine specs', ->
-  spec = spawn './node_modules/jasmine-node/bin/jasmine-node', ['--coffee', './spec']
+  spec = spawn './node_modules/jasmine-node/bin/jasmine-node', ['--coffee', './test']
   spec.stdout.on 'data', (data) ->
     data = data.toString().replace(/^\s*|\s*$/g, '')
     if data.match(/\u001b\[3\dm[\.F]\u001b\[0m/)

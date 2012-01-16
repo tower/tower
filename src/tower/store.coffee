@@ -71,9 +71,6 @@ class Tower.Store extends Tower.Class
     @name       = options.name
     @className  = options.className || Tower.namespaced(Tower.Support.String.camelize(Tower.Support.String.singularize(@name)))
   
-  # find(1)  
-  # find(1, 2, 3)
-  # find(ids..., callback)
   find: (query, options, callback) ->
     #if query.id && query.id.length == 1
     #  query.id = ids[0]
@@ -101,7 +98,7 @@ class Tower.Store extends Tower.Class
     @delete arguments...
   
   schema: ->
-    Tower.constant(@className).schema()
+    Tower.constant(@className).fields()
 
 require './store/cassandra'
 require './store/couchdb'

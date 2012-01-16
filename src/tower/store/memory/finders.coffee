@@ -20,19 +20,19 @@ Tower.Store.Memory.Finders =
         result.push(record)
     
     callback.call(self, null, result) if callback
-
+    
     result
   
   first: (query, options, callback) ->
     record = null
-    @all query, options, (error, records) -> 
+    @find query, options, (error, records) -> 
       record = records[0]
       callback.call(@, error, record) if callback
     record
   
   last: (query, options, callback) ->
     record = null
-    @all query, options, (error, records) -> 
+    @find query, options, (error, records) -> 
       record = records[records.length - 1]
       callback.call(@, error, record) if callback
     record
@@ -40,7 +40,7 @@ Tower.Store.Memory.Finders =
   count: (query, options, callback) ->
     result = 0
     
-    @all query, options, (error, records) -> 
+    @find query, options, (error, records) -> 
       result = records.length
       callback.call(@, error, result) if callback
       

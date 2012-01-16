@@ -2,6 +2,13 @@
 
 > Full Stack Web Framework for Node.js and the Browser.  Minified & Gzipped: 15.7kb
 
+## Todo
+
+- Controller testing framework
+  - mock http requests
+  - mock socket requests
+- Database reset and testing
+
 ## Install
 
 ``` bash

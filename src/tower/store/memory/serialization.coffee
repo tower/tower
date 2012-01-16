@@ -56,6 +56,8 @@ Tower.Store.Memory.Serialization =
       if operator = Tower.Store.queryOperators[key]
         value = value.call(record) if typeof(value) == "function"
         switch operator
+          when "$in", "$any"
+            success = self._anyIn(recordValue, value)
           when "$gt"
             success = self._isGreaterThan(recordValue, value)
           when "$gte"
@@ -72,8 +74,6 @@ Tower.Store.Memory.Serialization =
             success = self._isMatchOf(recordValue, value)
           when "$nm"
             success = self._isNotMatchOf(recordValue, value)
-          when "$any"
-            success = self._anyIn(recordValue, value)
           when "$all"
             success = self._allIn(recordValue, value)
         return false unless success
@@ -107,8 +107,12 @@ Tower.Store.Memory.Serialization =
     !!!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
     
   _anyIn: (recordValue, array) ->
-    for value in array
-      return true if recordValue.indexOf(value) > -1
+    if _.isArray(recordValue)
+      for value in array
+        return true if recordValue.indexOf(value) > -1
+    else
+      for value in array
+        return true if recordValue == value
     false
     
   _allIn: (recordValue, value) ->

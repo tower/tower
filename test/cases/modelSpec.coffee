@@ -27,7 +27,7 @@ describe 'Tower.Model.Callbacks', ->
 
 describe 'Tower.Model.Field', ->
   beforeEach ->
-    spec.resetUserStore()
+    test.resetUserStore()
     @user = new User(firstName: 'Terminator', id: 1)
     
   it 'should track attribute changes', ->
@@ -48,7 +48,7 @@ describe 'Tower.Model.Field', ->
     
 describe 'Tower.Model.Hierarchical', ->
   beforeEach ->
-    spec.resetUserStore()
+    test.resetUserStore()
     
   test 'build tree', ->
     parent  = Category.create()
@@ -69,7 +69,7 @@ describe 'Tower.Model.Hierarchical', ->
 
 describe 'Tower.Model.Inheritance', ->
   beforeEach ->
-    spec.resetUserStore()
+    test.resetUserStore()
     User.create(firstName: 'Terminator', id: 1, createdAt: new Date())
     User.create(firstName: 'Terminator 2', id: 2, createdAt: require('moment')().subtract('days', 20))
     User.create(firstName: 'Terminator 3', id: 3, createdAt: new Date())
@@ -83,7 +83,7 @@ describe 'Tower.Model.Inheritance', ->
 describe 'Tower.Model.Relation', ->
   describe 'associations', ->
     beforeEach ->
-      spec.resetUserStore()
+      test.resetUserStore()
       @user = User.create(id: 1, firstName: "Lance")
       @post = Page.create(id: 1, title: "First Post", userId: @user.id)
       
@@ -100,7 +100,7 @@ describe 'Tower.Model.Relation', ->
 
   describe 'creating associations', ->
     beforeEach ->
-      spec.resetUserStore()
+      test.resetUserStore()
       @user = User.create(firstName: 'Terminator', id: 1)
 
     it 'should create a post from a user', ->
@@ -196,7 +196,7 @@ describe 'Tower.Model.Relation', ->
 describe 'Tower.Model.Persistence', ->
   describe 'updating', ->
     beforeEach ->
-      spec.resetUserStore()
+      test.resetUserStore()
       User.deleteAll()
       Page.deleteAll()
       Post.deleteAll()
@@ -212,7 +212,7 @@ describe 'Tower.Model.Persistence', ->
 
 describe 'Tower.Model.Serialization', ->
   beforeEach ->
-    spec.resetUserStore()
+    test.resetUserStore()
 
     @user = new User(firstName: 'Terminator', id: 1)
     

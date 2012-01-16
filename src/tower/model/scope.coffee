@@ -75,7 +75,7 @@ class Tower.Model.Scope extends Tower.Class
     {criteria, updates, options, callback} = @_extractArgs(arguments, ids: true, updates: true, options: true)
     
     if options.instantiate || options.validate
-      @store.all criteria.query, criteria.options, (error, records) =>
+      @store.find criteria.query, criteria.options, (error, records) =>
         if error
           callback.call @, error, records
         else
@@ -90,7 +90,7 @@ class Tower.Model.Scope extends Tower.Class
     {criteria, options, callback} = @_extractArgs(arguments, ids: true, options: true)
     
     if options.instantiate || options.validate
-      @store.all criteria.query, criteria.options, (error, records) =>
+      @store.find criteria.query, criteria.options, (error, records) =>
         if error
           callback.call @, error, records
         else

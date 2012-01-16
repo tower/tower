@@ -20,7 +20,7 @@ describe 'Tower.Generator', ->
   describe 'Tower.Generator.Actions', ->
     beforeEach ->
       sourceRoot      = process.cwd() + "/src/tower/generator/generators/tower/app"
-      destinationRoot = process.cwd() + "/spec/tmp"
+      destinationRoot = process.cwd() + "/test/tmp"
       fs.unlinkSync File.join(destinationRoot, "Cakefile") if File.exists(File.join(destinationRoot, "Cakefile"))
       generator   = new Tower.Generator(sourceRoot: sourceRoot, destinationRoot: destinationRoot)
       
@@ -45,7 +45,7 @@ describe 'Tower.Generator', ->
   describe 'Tower.Generator.AppGenerator', ->
     beforeEach ->
       sourceRoot      = process.cwd() + "/src/tower/generator/generators/tower/app"
-      destinationRoot = process.cwd() + "/spec/tmp"
+      destinationRoot = process.cwd() + "/test/tmp"
       generator   = new Tower.Generator.AppGenerator(sourceRoot: sourceRoot, destinationRoot: destinationRoot)
       
     test 'create an app', ->
@@ -54,7 +54,7 @@ describe 'Tower.Generator', ->
   describe 'Tower.Generator.ModelGenerator', ->
     beforeEach ->
       sourceRoot      = process.cwd() + "/src/tower/generator/generators/tower/model"
-      destinationRoot = process.cwd() + "/spec/tmp"
+      destinationRoot = process.cwd() + "/test/tmp"
       generator   = new Tower.Generator.ModelGenerator(["User", "email:string"], sourceRoot: sourceRoot, destinationRoot: destinationRoot)
     
     test 'create an app', ->
@@ -63,7 +63,7 @@ describe 'Tower.Generator', ->
   describe 'Tower.Generator.ViewGenerator', ->
     beforeEach ->
       sourceRoot      = process.cwd() + "/src/tower/generator/generators/tower/view"
-      destinationRoot = process.cwd() + "/spec/tmp"
+      destinationRoot = process.cwd() + "/test/tmp"
       generator   = new Tower.Generator.ViewGenerator(["User", "email:string"], sourceRoot: sourceRoot, destinationRoot: destinationRoot)
 
     test 'create an app', ->

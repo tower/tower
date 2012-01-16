@@ -24,7 +24,7 @@ Tower.Store.Memory.Persistence =
     if Tower.Support.Object.isBlank(query)
       @clear(callback)
     else
-      @all query, (error, records) ->
+      @find query, (error, records) ->
         unless error
           for record in records
             _records.splice(_records.indexOf(record), 1)
