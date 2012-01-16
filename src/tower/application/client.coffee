@@ -22,7 +22,7 @@ class Tower.Application extends Tower.Class
     Tower.Application.middleware ||= []
     
     @io       = global["io"]
-    @History  = global.History
+    @History  = global["History"]
     @stack    = []
     
     @use(middleware) for middleware in middlewares

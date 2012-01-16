@@ -94,7 +94,7 @@ Tower.Controller.Resources =
   respondWithStatus: (success, callback) ->
     format            = @params.format || "html"
     formats           = @constructor.respondTo().concat()
-
+    
     switch callback.length
       when 0, 1
         responder = new Tower.Controller.Responder(formats)

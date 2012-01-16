@@ -27,7 +27,7 @@ class Tower.Store.FileSystem extends Tower.Store
           @records[path] = templatePath
           callback(null, templatePath) if callback
           return templatePath
-        
+    
     callback(null, null) if callback
     null
     

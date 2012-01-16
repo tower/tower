@@ -1,4 +1,15 @@
 Tower.Controller.Rendering =
+  ClassMethods:
+    addRenderer: (key, block) ->
+      @renderers()[key] = block
+      
+    addRenderers: (renderers = {}) ->
+      @addRenderer for key, block of renderers
+      @
+      
+    renderers: ->
+      @_renderers ||= {}
+      
   render: ->
     args = Tower.Support.Array.args(arguments)
     
@@ -36,15 +47,43 @@ Tower.Controller.Rendering =
       self.callback() if self.callback
     
   renderToBody: (options) ->
-    @_processOptions(options)
+    @_processRenderOptions(options)
     @_renderTemplate(options)
     
   renderToString: ->
-    options = @_normalizeRender(arguments...)
-    @renderToBody(options)
+    @renderToBody @_normalizeRender(arguments...)
     
-  # private
+  sendFile: (path, options = {}) ->
+  
+  sendData: (data, options = {}) ->
+  
   _renderTemplate: (options) ->
     @template.render(viewContext, options)
+    
+  _processRenderOptions: (options = {}) ->
+    @status               = options.status if options.status
+    @contentType          = options.contentType if options.contentType
+    @headers["Location"]  = @urlFor(options.location) if options.location
+    @
+    
+  _normalizeRender: ->
+    @_normalizeOptions @_normalizeArgs(arguments...)
+  
+  _normalizeArgs: (action, options = {}) ->
+    switch typeof(action)
+      when "undefined", "object"
+        options = action || {}
+      when "string"
+        key = if !!action.match(/\//) then "file" else "action"
+        options[key] = action
+      else
+        options.partial = action
+    
+    options
+
+  _normalizeOptions: (options = {}) ->
+    options.partial = @action if options.partial == true
+    options.template ||= (options.action || @action)
+    options
 
 module.exports = Tower.Controller.Rendering

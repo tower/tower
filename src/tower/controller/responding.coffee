@@ -1,9 +1,29 @@
 Tower.Controller.Responding =
   ClassMethods:
     respondTo: ->
-      @_respondTo ||= []
-      @_respondTo = @_respondTo.concat(Tower.Support.Array.args(arguments))
+      mimes     = @mimes()
+      args      = Tower.Support.Array.args(arguments)
+      
+      if typeof args[args.length - 1] == "object"
+        options = args.pop()
+      else
+        options = {}
+        
+      only      = Tower.Support.Object.toArray(options.only) if options.only
+      except    = Tower.Support.Object.toArray(options.except) if options.except
+      
+      for name in args
+        mimes[name]         = {}
+        mimes[name].only    = only if only
+        mimes[name].except  = except if except
+      
+      @
+      
+    mimes: ->
+      @_mimes ||= {}
     
+  respondTo: ->
+  
   respondWith: ->
     args      = Tower.Support.Array.args(arguments)
     callback  = null
@@ -28,5 +48,25 @@ Tower.Controller.Responding =
           @render xml: data
         else
           @render action: @params.action
+          
+  _mimesForAction: ->
+    action  = @action
+    
+    result  = []
+    mimes   = @constructor.mimes()
+    
+    for mime, config of mimes
+      success = false
+      
+      if config.except
+        success = !action.in?(config[:except])
+      elsif config.only
+        success = action.in?(config[:only])
+      else
+        success = true
+      
+      result.push mime if success
+      
+    result
     
 module.exports = Tower.Controller.Responding

@@ -1,4 +1,4 @@
-Tower.Controller.Processing =
+Tower.Controller.Instrumentation =
   call: (request, response, next) ->
     @request  = request
     @response = response
@@ -7,6 +7,7 @@ Tower.Controller.Processing =
     @query    = @request.query || {}
     @session  = @request.session || {}
     @format   = @params.format
+    @action   = @params.action
     @headers  = {}
     @callback = next
     
@@ -14,15 +15,14 @@ Tower.Controller.Processing =
       @contentType = Tower.Support.Path.contentType(@format)
     else
       @contentType = "text/html"
+    
     @process()
     
   process: ->
     @processQuery()
     
-    block = (callback) =>
+    @runCallbacks "action", (callback) =>
       @[@params.action].call @, callback
-    
-    @runCallbacks "action", block
     
   processQuery: ->
   
@@ -31,4 +31,4 @@ Tower.Controller.Processing =
     @response = null
     @headers  = null
 
-module.exports = Tower.Controller.Processing
+module.exports = Tower.Controller.Instrumentation

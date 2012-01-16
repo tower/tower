@@ -54,7 +54,8 @@
     "commander":          ">= 0.4.0",
     "express":            ">= 2.5.1",
     "socket.io":          ">= 0.8.7",
-    "coffeekup",          ">= 0.3.1"
+    "coffeekup",          ">= 0.3.1",
+    "csv":                ">= 0.0.10"
   },
   "devDependencies": {
     "coffee-script":      ">= 1.1.3",

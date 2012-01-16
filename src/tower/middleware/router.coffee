@@ -31,7 +31,6 @@ Tower.Support.Object.extend Tower.Middleware.Router,
   processHost: (request, response) ->
     request.location ||= new Tower.Dispatch.Url(request.url)
   
-  # https://github.com/shenoudab/active_device  
   processAgent: (request, response) ->
     request.userAgent ||= request.headers["user-agent"] if request.headers
     

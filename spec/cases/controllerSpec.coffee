@@ -1,5 +1,8 @@
 require '../config'
 
+class global.MimesController extends Tower.Controller
+  @respondTo "html", "json", "pdf"
+
 controller  = null
 user        = null
 ###

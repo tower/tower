@@ -16,7 +16,6 @@ Tower.Model.Fields =
   set: (name, value) ->
     beforeValue       = @_attributeChange(name, value)
     @attributes[name] = value
-    #@fire("change", beforeValue: beforeValue, value: value)# if @hasEventListener("change")
     value
     
   has: (name) ->

@@ -18,10 +18,10 @@ Tower.Controller.Params =
   criteria: ->
     return @_criteria if @_criteria
     
-    @_criteria = criteria = new Tower.Model.Criteria
+    @_criteria  = criteria = new Tower.Model.Criteria
     
-    parsers = @constructor.params()
-    params  = @params
+    parsers     = @constructor.params()
+    params      = @params
     
     for name, parser of parsers
       if params.hasOwnProperty(name)
