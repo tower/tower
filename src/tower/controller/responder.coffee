@@ -1,30 +1,29 @@
 class Tower.Controller.Responder
-  constructor: (controller, resources, options = {}) ->
-    @controller       = controller
-    @request          = controller.request
-    @format           = controller.formats[0]
-    @resource         = resources[resources.length - 1]
-    @resources        = resources
-    @action           = options.action
-    @defaultResponse  = options.defaultResponse
-    
-    delete options.action
-    delete options.defaultResponse
-    
-    @options          = options
+  @respond: (controller, options, callback) ->
+    responder = new @(controller, options)
+    responder.respond callback
   
-  respond: ->
-    method  = "to#{format.toUpperCase()}"
+  constructor: (controller, options = {}) ->
+    @controller       = controller
+    @options          = options
+    
+    for format in @controller.formats
+      do (format) =>
+        @[format] = (callback) -> @["_#{format}"] = callback
+  
+  respond: (callback) ->
+    callback.call @controller, @ if callback
+    method  = "_#{@controller.format}"
     method  = @[method]
     if method then method() else @toFormat()
   
-  toHTML: ->
+  html: ->
     try
       @defaultRender()
     catch error
       @_navigationBehavior(error)
   
-  toJSON: ->
+  json: ->
     @defaultRender()
   
   toFormat: ->
@@ -60,9 +59,6 @@ class Tower.Controller.Responder
   resourceLocation: ->
     @options.location || @resources
   
-  #alias :navigationLocation :resourceLocation
-  #alias :apiLocation :resourceLocation
-  
   defaultRender: ->
     @defaultResponse.call(options)
   
@@ -70,7 +66,7 @@ class Tower.Controller.Responder
     @controller.render _.extend givenOptions, options, format: resource
   
   displayErrors: ->
-    controller.render format: @resourceErrors, status: "unprocessableEntity"
+    @controller.render format: @resourceErrors, status: "unprocessableEntity"
   
   hasErrors: ->
     @resource.respondTo?("errors") && !@resource.errors.empty?
@@ -79,9 +75,9 @@ class Tower.Controller.Responder
     @action ||= ACTIONS_FOR_VERBS[request.requestMethodSymbol]
   
   resourceErrors: ->
-    if @respondTo?("#{format}ResourceErrors") then @["#{format}RresourceErrors"] else @resource.errors
+    if @hasOwnProperty("#{format}ResourceErrors") then @["#{format}RresourceErrors"] else @resource.errors
   
   jsonResourceErrors: ->
-    errors: resource.errors
+    errors: @resource.errors
   
 module.exports = Tower.Controller.Responder

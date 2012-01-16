@@ -13,6 +13,41 @@ class Tower.Dispatch.Route extends Tower.Class
   
   @draw: (callback) ->
     callback.apply(new Tower.Dispatch.Route.DSL(@))
+    
+  @findController: (request, response, callback) ->
+    routes      = Tower.Route.all()
+    
+    for route in routes
+      controller = route.toController request
+      break if controller
+    
+    if controller
+      controller.call request, response, ->
+        callback(controller)
+    else
+      callback(null)
+    
+    controller
+    
+  toController: (request) ->
+    match = @match(request)
+    
+    return null unless match
+    
+    method  = request.method.toLowerCase()
+    keys    = @keys
+    params  = Tower.Support.Object.extend({}, @defaults, request.query || {}, request.body || {})
+    match   = match[1..-1]
+    
+    for capture, i in match
+      params[keys[i].name] = if capture then decodeURIComponent(capture) else null
+    
+    controller      = @controller
+    params.action   = controller.action if controller
+    request.params  = params
+    
+    controller      = new (Tower.constant(Tower.namespaced(@controller.className))) if controller
+    controller
   
   constructor: (options) ->
     options     ||= options

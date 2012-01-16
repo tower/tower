@@ -25,6 +25,25 @@ Tower.publicPath      = Tower.root + "/public"
 Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/test-app/app/views"]
 
+Tower.request = (method, action, options, callback) ->
+  if typeof options == "function"
+    callback      = options
+    options       = {}
+  options       ||= {}
+  params          = _.extend {}, options
+  params.action   = action
+  url             = "http://example.com/#{action}"
+  location        = new Tower.Dispatch.Url(url)
+  controller      = new TowerSpecApp.CustomController()
+  request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
+  response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+  request.params  = params
+  # extend actual http request to make this fully realistic!
+  #Tower.Application.instance().handle request, response, ->
+  #  console.log response.controller
+  controller.call request, response, (error, result) ->
+    callback.call @, @response
+
 Tower.Application.instance().initialize()
 
 require "#{Tower.root}/app/controllers/customController"

@@ -5,8 +5,7 @@ Tower.Controller.addRenderers
     json = JSON.stringify(json) unless typeof(json) == "string"
     json = "#{options.callback}(#{json})" if options.callback
     @contentType ||= mime.lookup("json")
-    
-    callback json
+    callback null, json if callback
     json
   
   # https://github.com/wdavidw/node-csv-parser

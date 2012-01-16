@@ -1,5 +1,12 @@
 Tower.Middleware.Location = (request, response, next) ->
-  request.location ||= new Tower.Dispatch.Url(if request.url.match(/^http/) then request.url else "http://#{request.headers.host}#{request.url}")
+  unless request.location
+    if request.url.match(/^http/)
+      url = request.url
+    else
+      url = "http://#{request.headers.host}#{request.url}"
+      
+    request.location = new Tower.Dispatch.Url(url)
+    
   next()
   
 module.exports = Tower.Middleware.Location

@@ -1,8 +1,12 @@
 require '../../config'
-###
+
+controller  = null
+user        = null
+router      = null
+
 describe 'Tower.Controller.Responding', ->
-  test 'respondWith(post)' ->
-    get '/show', (error, response) ->
-    
-  test 'respondWith("admin", post)' ->
-###
+  test 'jsonOrYaml', ->
+    Tower.get 'jsonOrYaml', format: "json", ->
+      expect(@body).toEqual "JSON!"
+      expect(@contentType).toEqual "application/json"
+  

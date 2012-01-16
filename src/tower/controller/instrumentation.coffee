@@ -13,9 +13,8 @@ Tower.Controller.Instrumentation =
     
     if @format && @format != "undefined" && Tower.Support["Path"]
       @contentType = Tower.Support.Path.contentType(@format)
-    else
-      @contentType = "text/html"
-    
+    #else
+    #  @contentType = "text/html"
     @process()
     
   process: ->

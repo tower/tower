@@ -1,4 +1,4 @@
-Tower.Controller.Resources =
+Tower.Controller.Resourceful =
   ClassMethods:
     resource: (options) ->
       @_resourceName    = options.name if options.hasOwnProperty("name")
@@ -85,36 +85,33 @@ Tower.Controller.Resources =
       return @failure(error) unless resource
       resource.destroy (error, success) =>
         @respondWithStatus success, callback
-
+  
   respondWithScoped: (callback) ->
-    @scoped (error, resource) => 
+    @scoped (error, resource) =>
       return @failure(error) if error
       @respondWith(resource, callback)
 
   respondWithStatus: (success, callback) ->
-    format            = @params.format || "html"
-    formats           = @constructor.respondTo().concat()
+    options = records: @resource
     
     switch callback.length
       when 0, 1
-        responder = new Tower.Controller.Responder(formats)
-        callback.call @, responder
-        responder[format].call @
+        Tower.Controller.Responder.respond(@, options, callback)
       else
-        successResponder = new Tower.Controller.Responder(formats)
-        failureResponder = new Tower.Controller.Responder(formats)
-
+        successResponder = new Tower.Controller.Responder(@, options)
+        failureResponder = new Tower.Controller.Responder(@, options)
+        
         callback.call @, successResponder, failureResponder
-
+        
         if success
           successResponder[format].call @
         else
           failureResponder[format].call @, error
-
+  
   buildResource: (callback) ->
     @scoped (error, scope) =>
       return callback.call @, error, null if error
-      @[@resourceName]  = @resource = resource = scope.build(@params[@resourceName])
+      @[@resourceName] = @resource = resource = scope.build(@params[@resourceName])
       callback.call @, null, resource if callback
       resource
     
@@ -137,14 +134,13 @@ Tower.Controller.Resources =
       false
 
   scoped: (callback) ->
-    if @_scope
-      callback.call @, @_scope if callback
-      return @_scope
+    callbackWithScope = (error, scope) ->
+      callback.call @, error, scope.where(@criteria())
     
     if @hasParent
       @findParent (error, parent) =>
-        callback.call @, error, @parent[@collectionName]
+        callbackWithScope(error, parent[@collectionName])
     else
-      callback.call @, null, Tower.constant(@resourceType)
+      callbackWithScope null, Tower.constant(@resourceType)
 
-module.exports = Tower.Controller.Resources
+module.exports = Tower.Controller.Resourceful

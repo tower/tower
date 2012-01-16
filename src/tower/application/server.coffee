@@ -77,6 +77,9 @@ class Tower.Application extends Tower.Class
     delete Tower.Controller._helpers
     delete Tower.Controller._layout
     delete Tower.Controller._theme
+    
+  handle: ->
+    @server.handle arguments...
   
   stack: ->
     middlewares = @constructor.middleware

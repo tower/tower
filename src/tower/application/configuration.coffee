@@ -5,21 +5,42 @@ Tower.Support.Object.extend Tower,
   client:     typeof(window) != "undefined"
   root:       "/"
   publicPath: "/"
+  case:       "camelcase"
   namespace:  null
+  accessors:  typeof(window) == "undefined"
   logger:     if typeof(_console) != 'undefined' then _console else console
-  stack: ->
-    try
-      throw new Error
-    catch error
-      return error.stack
+  
+  get: ->
+    Tower.request "get", arguments...
+
+  post: ->
+    Tower.request "post", arguments...
+
+  put: ->
+    Tower.request "put", arguments...
+
+  destroy: ->
+    Tower.request "delete", arguments...
+  
+  request: (method, path, options, callback) ->
+    if typeof options == "function"
+      callback      = options
+      options       = {}
+    options       ||= {}
+    url             = path
+    location        = new Tower.Dispatch.Url(url)
+    request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
+    response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+    Tower.Application.instance().handle request, response, ->
+      callback.call @, @response
+      
   raise: ->
     throw new Error(Tower.t(arguments...))
-  configure:  ->
+    
   initialize: -> Tower.Application.initialize()
+  
   t:          -> Tower.Support.I18n.t(arguments...)
-  case:        "camelcase"
-  #urlFor: ->
-    #Tower.Route.urlFor(arguments...)
+  
   stringify: ->
     string = Tower.Support.Array.args(arguments).join("_")
     switch Tower.case
@@ -27,10 +48,10 @@ Tower.Support.Object.extend Tower,
         Tower.Support.String.underscore(string)
       else
         Tower.Support.String.camelcase(string)
+        
   namespace:  ->
     Tower.Application.instance().constructor.name
-    
-  accessors: true
+  
   constant: (string) ->
     node  = global
     parts = string.split(".")

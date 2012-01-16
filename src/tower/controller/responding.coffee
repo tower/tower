@@ -22,7 +22,8 @@ Tower.Controller.Responding =
     mimes: ->
       @_mimes ||= {}
     
-  respondTo: ->
+  respondTo: (block) ->
+    Tower.Controller.Responder.respond(@, {}, block)
   
   respondWith: ->
     args      = Tower.Support.Array.args(arguments)
@@ -35,20 +36,11 @@ Tower.Controller.Responding =
       options   = args.pop()
     else
       options   = {}
-      
-    if callback
-      callback.call @
-    else
-      data        = args
-      
-      switch(@format)
-        when "json"
-          @render json: data
-        when "xml"
-          @render xml: data
-        else
-          @render action: @params.action
-          
+
+    options.records = args
+
+    Tower.Controller.Responder.respond(@, options, callback)
+    
   _mimesForAction: ->
     action  = @action
     
@@ -59,9 +51,9 @@ Tower.Controller.Responding =
       success = false
       
       if config.except
-        success = !action.in?(config[:except])
-      elsif config.only
-        success = action.in?(config[:only])
+        success = !_.include(config.except, action)
+      else if config.only
+        success = _.include(config.only, action)
       else
         success = true
       

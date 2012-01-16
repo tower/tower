@@ -1,4 +1,6 @@
 class TowerSpecApp.CustomController extends Tower.Controller
+  @respondTo "html", "json", "yaml"
+  
   @before "setCurrentUser"
   @resource type: "TowerSpecApp.User"
   
@@ -26,10 +28,10 @@ class TowerSpecApp.CustomController extends Tower.Controller
   helloWorld: ->
 
   helloWorldFile: ->
-    @render file: File.expandPath("../../fixtures/hello", __FILE__), formats: ["html"]
+    @render file: "#{Tower.root}/test-app/app/views/files/hello", formats: ["html"]
   
   conditionalHello: ->
-    if stale?(lastModified: Time.now.utc.beginningOfDay, etag: ["foo", 123])
+    if @isStale(lastModified: Time.now.utc.beginningOfDay, etag: ["foo", 123])
       @render action: 'helloWorld'
   
   conditionalHelloWithRecord: ->
@@ -62,11 +64,11 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render action: 'helloWorld'
   
   conditionalHelloWithExpiresInWithPublicWithMoreKeys: ->
-    expiresIn 1.minute, public: true, 'max-stale' => 5.hours
+    expiresIn 1.minute, public: true, 'max-stale' : 5.hours
     @render action: 'helloWorld'
   
   conditionalHelloWithExpiresInWithPublicWithMoreKeysOldSyntax: ->
-    expiresIn 1.minute, public: true, private: nil, 'max-stale' => 5.hours
+    expiresIn 1.minute, public: true, private: null, 'max-stale' : 5.hours
     @render action: 'helloWorld'
   
   conditionalHelloWithExpiresNow: ->
@@ -75,10 +77,10 @@ class TowerSpecApp.CustomController extends Tower.Controller
   
   conditionalHelloWithBangs: ->
     @render action: 'helloWorld'
-    beforeFilter "handleLastModifiedAndEtags", "only"=>"conditionalHelloWithBangs"
+    beforeFilter "handleLastModifiedAndEtags", "only": "conditionalHelloWithBangs"
 
   handleLastModifiedAndEtags: ->
-    freshWhen(lastModified: Time.now.utc.beginningOfDay, etag: [ "foo", 123 ])
+    @freshWhen(lastModified: Time.now.utc.beginningOfDay, etag: [ "foo", 123 ])
   
   # "ported":
   renderHelloWorld: ->
@@ -95,10 +97,6 @@ class TowerSpecApp.CustomController extends Tower.Controller
   # "ported":
   renderTemplateInTopDirectory: ->
     @render template: 'shared'
-  
-  # "deprecated":
-  renderTemplateInTopDirectoryWithSlash: ->
-    @render template: '/shared'
   
   # "ported":
   renderHelloWorldFromVariable: ->
@@ -168,7 +166,7 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render path, locals: {secret: 'in the sauce'}
   
   accessingRequestInTemplate: ->
-    @render inline:  "Hello: <%= request.host %>"
+    @render inline: "Hello: <%= request.host %>"
   
   accessingLoggerInTemplate: ->
     @render inline:  "<%= logger.class %>"
@@ -184,8 +182,8 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render text: "hello world", status: 404
   
   # "ported":
-  renderTextWithNil: ->
-    @render text: nil
+  renderTextWithNull: ->
+    @render text: null
   
   # "ported":
   renderTextWithFalse: ->
@@ -198,23 +196,11 @@ class TowerSpecApp.CustomController extends Tower.Controller
   renderNothingWithAppendix: ->
     @render text: "appended"
   
-  # This test is testing 3 things:
-  #   @render "file" in AV      "ported":
-  #   @render "template" in AC  "ported":
-  #   setting content type
-  renderXmlHello: ->
-    @name = "David"
-    @render template: "test/hello"
-  
-  renderXmlHelloAsStringTemplate: ->
-    @name = "David"
-    @render "test/hello"
-  
   renderLineOffset: ->
     @render inline: '<% raise %>', locals: {foo: 'bar'}
   
   heading: ->
-    head "ok"
+    @head "ok"
   
   greeting: ->
     # let's just rely on the template
@@ -229,7 +215,7 @@ class TowerSpecApp.CustomController extends Tower.Controller
   
   # "ported":
   builderLayoutTest: ->
-    @name = nil
+    @name = null
     @render action: "hello", layout: "layouts/builder"
   
   # "move": test this in Action View
@@ -250,7 +236,7 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render text: "How's there? " + renderToString(template: "test/list")
   
   accessingParamsInTemplate: ->
-    @render inline: "Hello: <%= params["name"] %>"
+    @render inline: 'Hello: <%= params["name"] %>'
   
   accessingLocalAssignsInInlineTemplate: ->
     name = params["localName"]
@@ -269,7 +255,7 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @foo = renderToString inline: "this is a test"
   
   defaultRender: ->
-    @alternateDefaultRender ||= nil
+    @alternateDefaultRender ||= null
     if @alternateDefaultRender
       @alternateDefaultRender.call
     else
@@ -307,14 +293,14 @@ class TowerSpecApp.CustomController extends Tower.Controller
   
   renderToStringWithCaughtException: ->
     @before = "i'm before the render"
-    begin
+    try
       renderToString file: "exception that will be caught- hope my future instance vars still work!"
-    rescue
-        @after = "i'm after the render"
+    catch error
+      @after = "i'm after the render"
     @render template: "test/helloWorld"
   
   accessingParamsInTemplateWithLayout: ->
-    @render layout: true, inline:  "Hello: <%= params["name"] %>"
+    @render layout: true, inline:  'Hello: <%= params["name"] %>'
   
   # "ported":
   renderWithExplicitTemplate: ->
@@ -339,8 +325,8 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render text: "world"
   
   doubleRedirect: ->
-    redirectTo action: "doubleRender"
-    redirectTo action: "doubleRender"
+    @redirectTo action: "doubleRender"
+    @redirectTo action: "doubleRender"
   
   renderAndRedirect: ->
     @render text: "hello"
@@ -377,7 +363,7 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render action: "contentFor", layout: "yield"
   
   renderContentTypeFromBody: ->
-    response.contentType = Mime:"RSS"
+    response.contentType = Mime: "RSS"
     @render text: "hello world!"
   
   headWithLocationHeader: ->
@@ -399,7 +385,7 @@ class TowerSpecApp.CustomController extends Tower.Controller
     head xCustomHeader: "something"
   
   headWithWwwAuthenticateHeader: ->
-    head 'WWW-Authenticate' => 'something'
+    head 'WWW-Authenticate' : 'something'
   
   headWithStatusCodeFirst: ->
     head "forbidden", xCustomHeader: "something"
@@ -428,10 +414,10 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render partial: "customer", locals: { customer: Customer.new("david") }
   
   partialWithFormBuilder: ->
-    @render partial: ActionView:"Helpers":"FormBuilder".new("post", nil, viewContext, {}, Proc.new {})
+    @render partial: ActionView: "Helpers": "FormBuilder".new("post", null, viewContext, {}, Proc.new {})
   
   partialWithFormBuilderSubclass: ->
-    @render partial: LabellingFormBuilder.new("post", nil, viewContext, {}, Proc.new {})
+    @render partial: LabellingFormBuilder.new("post", null, viewContext, {}, Proc.new {})
   
   partialCollection: ->
     @render partial: "customer", collection: [ Customer.new("david"), Customer.new("mary") ]
@@ -477,10 +463,10 @@ class TowerSpecApp.CustomController extends Tower.Controller
     @render partial: "hashObject", object: {firstName: "Sam"}
   
   partialWithNestedObject: ->
-    @render partial: "quiz/questions/question", object: Quiz:"Question".new("first")
+    @render partial: "quiz/questions/question", object: Quiz: "Question".new("first")
   
   partialWithNestedObjectShorthand: ->
-    @render Quiz:"Question".new("first")
+    @render Quiz: "Question".new("first")
   
   partialHashCollection: ->
     @render partial: "hashObject", collection: [ {firstName: "Pratik"}, {firstName: "Amy"} ]
@@ -498,13 +484,119 @@ class TowerSpecApp.CustomController extends Tower.Controller
   renderCallToPartialWithLayoutInMainLayoutAndWithinContentForLayout: ->
     @render action: "callingPartialWithLayout", layout: "layouts/partialWithLayout"
   
-  rescueAction: ->(e)
-    raise
-  
-  beforeFilter only: "renderWithFilters" do
-    request.format = "xml"
-  
   # Ensure that the before filter is executed *before* self.formats is set.
   renderWithFilters: ->
     @render action: "formattedXmlErb"
+    
+  ## JSON
   
+  renderJsonNull: ->
+    @render json: null
+
+  renderJsonRenderToString: ->
+    @render text: renderToString(json: '[]')
+
+  renderJsonHelloWorld: ->
+    @render json: JSON.stringify(hello: 'world')
+    
+  renderJsonHelloWorldWithParams: ->
+    @render json: JSON.stringify(hello: @params.hello)
+
+  renderJsonHelloWorldWithStatus: ->
+    @render json: JSON.stringify(hello: 'world'), status: 401
+
+  renderJsonHelloWorldWithCallback: ->
+    @render json: JSON.stringify(hello: 'world'), callback: 'alert'
+
+  renderJsonWithCustomContentType: ->
+    @render json: JSON.stringify(hello: 'world'), contentType: 'text/javascript'
+
+  renderSymbolJson: ->
+    @render json: JSON.stringify(hello: 'world')
+
+  renderJsonWithRenderToString: ->
+    @render json: {hello: @renderToString(partial: 'partial')}
+  
+  htmlXmlOrRss: ->
+    @respondTo (type) =>
+      type.html => @render text: "HTML"
+      type.xml  => @render text: "XML"
+      type.rss  => @render text: "RSS"
+      type.all  => @render text: "Nothing"
+
+  jsOrHtml: ->
+    @respondTo (type) =>
+      type.html => @render text: "HTML"
+      type.js   => @render text: "JS"
+      type.all  => @render text: "Nothing"
+
+  jsonOrYaml: ->
+    @respondTo (type) ->
+      type.json => @render text: "JSON!"
+      type.yaml => @render text: "YAML!"
+
+  htmlOrXml: ->
+    @respondTo (type) ->
+      type.html => @render text: "HTML"
+      type.xml  => @render text: "XML"
+      type.all  => @render text: "Nothing"
+
+  jsonXmlOrHtml: ->
+    @respondTo (type) ->
+      type.json => @render text: 'JSON'
+      type.xml => @render xml: 'XML'
+      type.html => @render text: 'HTML'
+  
+  forcedXml: ->
+    @request.format = "xml"
+    
+    @respondTo (type) ->
+      type.html => @render text: "HTML"
+      type.xml  => @render text: "XML"
+
+  justXml: ->
+    @respondTo (type) ->
+      type.xml  => @render text: "XML"
+
+  usingDefaults: ->
+    @respondTo (type) ->
+      type.html()
+      type.xml()
+
+  usingDefaultsWithTypeList: ->
+    respondTo("html", "xml")
+
+  madeForContentType: ->
+    @respondTo (type) ->
+      type.rss  => @render text: "RSS"
+      type.atom => @render text: "ATOM"
+      type.all  => @render text: "Nothing"
+
+  customTypeHandling: ->
+    @respondTo (type) ->
+      type.html => @render text: "HTML"
+      type.all  => @render text: "Nothing"
+
+  customConstantHandling: ->
+    @respondTo (type) ->
+      type.html   => @render text: "HTML"
+      type.mobile => @render text: "Mobile"
+
+  customConstantHandlingWithoutBlock: ->
+    @respondTo (type) ->
+      type.html   => @render text: "HTML"
+      type.mobile()
+
+  handleAny: ->
+    @respondTo (type) ->
+      type.html => @render text: "HTML"
+      type.any "js", "xml", => @render text: "Either JS or XML"
+    
+  handleAnyAny: ->
+    @respondTo (type) ->
+      type.html => @render text: 'HTML'
+      type.any => @render text: 'Whatever you ask for, I got it'
+
+  allTypesWithLayout: ->
+    @respondTo (type) ->
+      type.html()

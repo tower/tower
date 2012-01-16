@@ -4,47 +4,14 @@ Tower.Controller.Rendering =
       @renderers()[key] = block
       
     addRenderers: (renderers = {}) ->
-      @addRenderer for key, block of renderers
+      @addRenderer(key, block) for key, block of renderers
       @
       
     renderers: ->
       @_renderers ||= {}
-      
+          
   render: ->
-    args = Tower.Support.Array.args(arguments)
-    
-    if args.length >= 2 && typeof(args[args.length - 1]) == "function"
-      callback = args.pop()
-    else
-      callback = null
-      
-    if args.length > 1 && typeof(args[args.length - 1]) == "object"
-      options = args.pop()
-    
-    if typeof args[0] == "object"
-      options = args[0]
-    else
-      options ||= {}
-      options.template = args[0]
-      
-    if options.template
-      if typeof options.template == "string" && !!!options.template.match(/\//)
-        options.template = "#{@collectionName}/#{options.template}"
-    else if options.action
-      options.template = "#{@collectionName}/#{options.action}"
-      
-    view    = new Tower.View(@)
-    @headers["Content-Type"] ||= @contentType
-    
-    self    = @
-    
-    view.render.call view, options, (error, body) ->
-      if error
-        self.body = error.stack
-      else
-        self.body = body
-      callback(error, body) if callback
-      self.callback() if self.callback
+    @renderToBody @_normalizeRender(arguments...)
     
   renderToBody: (options) ->
     @_processRenderOptions(options)
@@ -58,7 +25,30 @@ Tower.Controller.Rendering =
   sendData: (data, options = {}) ->
   
   _renderTemplate: (options) ->
-    @template.render(viewContext, options)
+    callback = (error, body) =>
+      if error
+        @status ||= 404
+        @body   = error.stack
+      else
+        @status ||= 200
+        @body     = body
+      @callback() if @callback
+      
+    return if @_handleRenderers(options, callback)
+    
+    @contentType ||= "text/html"
+    
+    @headers["Content-Type"] = @contentType
+    
+    view    = new Tower.View(@)
+    view.render.call view, options, callback
+    
+  _handleRenderers: (options, callback) ->
+    for name, renderer of Tower.Controller.renderers()
+      if options.hasOwnProperty(name)
+        renderer.call @, options[name], options, callback
+        return true
+    false
     
   _processRenderOptions: (options = {}) ->
     @status               = options.status if options.status
@@ -72,7 +62,7 @@ Tower.Controller.Rendering =
   _normalizeArgs: (action, options = {}) ->
     switch typeof(action)
       when "undefined", "object"
-        options = action || {}
+        options   = action || {}
       when "string"
         key = if !!action.match(/\//) then "file" else "action"
         options[key] = action
@@ -80,10 +70,10 @@ Tower.Controller.Rendering =
         options.partial = action
     
     options
-
+  
   _normalizeOptions: (options = {}) ->
     options.partial = @action if options.partial == true
-    options.template ||= (options.action || @action)
+    options.template ||= (@collectionName + "/" + (options.action || @action))
     options
 
 module.exports = Tower.Controller.Rendering

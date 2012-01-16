@@ -1,0 +1,1 @@
+class App.Membership extends Tower.Model
