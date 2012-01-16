@@ -1,4 +1,4 @@
-require '../config'
+require '../../config'
 
 scope   = null
 user    = null

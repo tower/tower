@@ -9,7 +9,7 @@ Tower.Model.Metadata =
     stiName: ->
       
     toParam: ->
-      Tower.Support.String.parameterize(@className())
+      Tower.Support.String.pluralize Tower.Support.String.parameterize(@name)
 
   toLabel: ->
     @className()

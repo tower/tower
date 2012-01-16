@@ -18,8 +18,8 @@ Tower.Support.Object.extend Tower,
   initialize: -> Tower.Application.initialize()
   t:          -> Tower.Support.I18n.t(arguments...)
   case:        "camelcase"
-  urlFor: ->
-    Tower.Route.urlFor(arguments...)
+  #urlFor: ->
+    #Tower.Route.urlFor(arguments...)
   stringify: ->
     string = Tower.Support.Array.args(arguments).join("_")
     switch Tower.case

@@ -1,5 +1,5 @@
 require '../config'
-
+###
 generator       = null
 sourceRoot      = null
 destinationRoot = null
@@ -68,3 +68,4 @@ describe 'Tower.Generator', ->
 
     test 'create an app', ->
       generator.run()
+###

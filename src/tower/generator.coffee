@@ -23,7 +23,6 @@ require './generator/configuration'
 require './generator/resources'
 
 Tower.Generator.include Tower.Generator.Actions
-Tower.Generator.include Tower.Generator.Attribute
 Tower.Generator.include Tower.Generator.Configuration
 Tower.Generator.include Tower.Generator.Resources
 

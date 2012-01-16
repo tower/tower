@@ -10,4 +10,6 @@ class TowerSpecApp.Page extends Tower.Model
   @hasMany "comments", as: "commentable", type: "Comment"
   @hasMany "commenters", through: "comments", type: "User"
   
+  @timestamps()
+  
 global.Page = TowerSpecApp.Page

@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "underscore":         ">= 1.1.6",
-    "underscore.string":  ">= 1.1.6",
+    "underscore.string":  ">= 1.2.0",
     "mime":               ">= 1.2.4",
     "connect":            ">= 1.7.1",
     "qs":                 ">= 0.3.1",

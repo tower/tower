@@ -5,17 +5,14 @@ class global.MimesController extends Tower.Controller
 
 controller  = null
 user        = null
-###
-describe 'Tower.Controller', ->
-  test 'PostsController#resourceName', ->
-    controller = new TowerSpecApp.PostsController
-    expect(controller.resourceName).toEqual "post"
-    expect(controller.collectionName).toEqual "posts"
-    expect(controller.resourceType).toEqual "Post"
+router      = null
 
-describe 'Tower.Controller.Callbacks', ->
+get = (path, options = {}) ->
+  controller = new TowerSpecApp.CustomController()
+
+describe 'Tower.Controller', ->
   beforeEach ->
-    Tower.Application.instance().teardown()
+    #Tower.Application.instance().teardown()
     
     Tower.Route.draw ->
       @match "/custom",  to: "custom#index"
@@ -24,34 +21,41 @@ describe 'Tower.Controller.Callbacks', ->
     controller  = new TowerSpecApp.CustomController()
     router      = Tower.Middleware.Router
     
-  it 'should run callbacks', ->
-    request       = method: "get", url: "http://www.local.host:3000/custom"
-    indexFinished = false
+  test 'resource', ->
+    controller = new TowerSpecApp.PostsController
+    expect(controller.resourceName).toEqual "post"
+    expect(controller.collectionName).toEqual "posts"
+    expect(controller.resourceType).toEqual "Post"
     
-    controller    = router.find request, {}, (controller) ->
-      indexFinished  = true
+  test 'posts controller', ->
+    get '/', (response) ->
+    get '/', format: "json", (response) ->
     
-    waits 300
-    
-    runs ->
-      expect(controller.currentUser).toEqual name: "Lance"
-      expect(controller.indexCalled).toEqual true
-      expect(indexFinished).toEqual true
-      
-    #runs ->
-    #  request       = method: "get", url: "http://www.local.host:3000/custom/2"
-    #  indexFinished = false
-    #  
-    #  controller    = router.find request, {}, (controller) ->
-    #    indexFinished  = true
-    #
-    #waits 300
-    #
-    #runs ->
-    #  expect(controller.currentUser).toEqual name: "Lance"
-    #  expect(controller.indexCalled).toEqual false
-    #  expect(controller.indexFinished).toEqual false
-
+  #test 'should run callbacks', ->
+  #  request       = method: "get", url: "http://www.local.host:3000/custom"
+  #  indexFinished = false
+  #  
+  #  controller    = router.find request, {}, (controller) ->
+  #    indexFinished  = true
+  #  
+  #  expect(controller.currentUser).toEqual name: "Lance"
+  #  expect(controller.indexCalled).toEqual true
+  #  expect(indexFinished).toEqual true
+  #  
+  #  #runs ->
+  #  #  request       = method: "get", url: "http://www.local.host:3000/custom/2"
+  #  #  indexFinished = false
+  #  #  
+  #  #  controller    = router.find request, {}, (controller) ->
+  #  #    indexFinished  = true
+  #  #
+  #  #waits 300
+  #  #
+  #  #runs ->
+  #  #  expect(controller.currentUser).toEqual name: "Lance"
+  #  #  expect(controller.indexCalled).toEqual false
+  #  #  expect(controller.indexFinished).toEqual false
+###
 describe 'Tower.Controller.Rendering', ->
   beforeEach ->
     controller = new TowerSpecApp.CustomController
