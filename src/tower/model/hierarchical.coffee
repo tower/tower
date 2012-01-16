@@ -1,4 +1,3 @@
-# https://github.com/benedikt/mongoid-tree
 Tower.Model.Hierarchical =
   ClassMethods:
     hierarchical: ->
