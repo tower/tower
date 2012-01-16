@@ -26,12 +26,14 @@ Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/test-app/app/views"]
 
 Tower.Application.instance().initialize()
+
+require "#{Tower.root}/app/controllers/customController"
 #Tower.Store.MongoDB.initialize()
 # You must either "extends X" or create a constructor: -> super
 # so that coffeescript generates a callback to the parent class!
 i = 0
 beforeEach ->
-  Tower.Application.instance().teardown()
+  #Tower.Application.instance().teardown()
   Tower.Application.instance().initialize()
   Tower.root          = process.cwd() + "/test/test-app"
   Tower.publicPath    = Tower.root + "/public"
@@ -41,6 +43,10 @@ beforeEach ->
   models = File.files("#{Tower.root}/app/models")
   for model in models
     require(model) if File.exists(model)
+    
+  controllers = File.files("#{Tower.root}/app/controllers")
+  for controller in controllers
+    require(controller) if File.exists(controller)
 
 ###
 

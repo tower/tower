@@ -7,19 +7,37 @@ controller  = null
 user        = null
 router      = null
 
-get = (path, options = {}) ->
-  controller = new TowerSpecApp.CustomController()
+get     = (action, options = {}, callback) ->
+  request "get", action, options, callback
+  
+post    = (action, options = {}, callback) ->
+  request "post", action, options, callback
+  
+put     = (action, options = {}, callback) ->
+  request "put", action, options, callback
+  
+destroy = (action, options = {}, callback) ->
+  request "delete", action, options, callback
+
+request = (method, action, options = {}, callback) ->
+  params              = _.extend {}, options
+  params.action       = action
+  url            = "http://example.com/#{action}"
+  location       = new Tower.Dispatch.Url(url)
+  controller     = new TowerSpecApp.CustomController()
+  request        = new Tower.Dispatch.Request(url: url, location: location, method: method)
+  response       = new Tower.Dispatch.Response(url: url, location: location, method: method)
+  request.params = params
+  controller.call request, response, (error, result) ->
+    callback.call @, @response
 
 describe 'Tower.Controller', ->
   beforeEach ->
-    #Tower.Application.instance().teardown()
-    
     Tower.Route.draw ->
       @match "/custom",  to: "custom#index"
       @match "/custom/:id",  to: "custom#show"
     
     controller  = new TowerSpecApp.CustomController()
-    router      = Tower.Middleware.Router
     
   test 'resource', ->
     controller = new TowerSpecApp.PostsController
@@ -28,8 +46,9 @@ describe 'Tower.Controller', ->
     expect(controller.resourceType).toEqual "Post"
     
   test 'posts controller', ->
-    get '/', (response) ->
-    get '/', format: "json", (response) ->
+    get 'renderCoffeeKupFromTemplate', {}, ->
+      expect(@body).toEqual "<h1>Hello World</h1>"
+      expect(@contentType).toEqual "text/html"
     
   #test 'should run callbacks', ->
   #  request       = method: "get", url: "http://www.local.host:3000/custom"
