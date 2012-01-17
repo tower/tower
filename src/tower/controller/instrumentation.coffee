@@ -6,22 +6,17 @@ Tower.Controller.Instrumentation =
     @cookies  = @request.cookies || {}
     @query    = @request.query || {}
     @session  = @request.session || {}
-    @format   = @params.format
+    @format   = @params.format || "html"
     @action   = @params.action
     @headers  = {}
     @callback = next
-    
-    if @format && @format != "undefined" && Tower.Support["Path"]
-      @contentType = Tower.Support.Path.contentType(@format)
-    #else
-    #  @contentType = "text/html"
     @process()
     
   process: ->
     @processQuery()
     
     @runCallbacks "action", (callback) =>
-      @[@params.action].call @, callback
+      @[@action].call @, callback
     
   processQuery: ->
   

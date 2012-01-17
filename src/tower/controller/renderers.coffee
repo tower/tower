@@ -9,8 +9,8 @@ Tower.Controller.addRenderers
     json
   
   # https://github.com/wdavidw/node-csv-parser
-  csv: (csv, options, callback) ->
+  # csv: (csv, options, callback) ->
     
   # https://github.com/devongovett/pdfkit
-  pdf: (data, options, callback) ->
+  # pdf: (data, options, callback) ->
     

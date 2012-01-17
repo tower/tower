@@ -79,10 +79,17 @@ describe 'Tower.Store.Memory', ->
     test 'paginate(perPage: 20, page: 2)'
     test 'page(2)'
     
+    describe 'update', ->
+      test 'update(name: "Tom")', ->
+        User.update name: "Tom", (error) ->
+          console.log "UPDATE"
+        
+      test 'update(1, 2, name: "Tom")', ->
+        User.update name: "Tom", (error) ->
+        
+      test 'where(name: "John").update(name: "Tom")', ->
+        User.where(name: "John").update name: "Tom", (error) ->
+    
     describe 'destroy', ->
       test 'where(name: "John").destroy()', ->
         User.where(name: "John").destroy (error) ->
-        
-    describe 'update', ->
-      test 'where(name: "John").update(name: "Tom")', ->
-        User.where(name: "John").update name: "Tom", (error) ->

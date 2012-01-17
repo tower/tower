@@ -10,7 +10,9 @@ Tower.Controller.Resourceful =
       @_resourceType ||= Tower.Support.String.singularize(@name.replace(/(Controller)$/, ""))
       
     resourceName: ->
-      @_resourceName ||= Tower.Support.String.camelize(@resourceType(), true)
+      return @_resourceName if @_resourceName
+      parts = @resourceType().split(".")
+      @_resourceName = Tower.Support.String.camelize(parts[parts.length - 1], true)
       
     collectionName: ->
       @_collectionName ||= Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
@@ -62,13 +64,17 @@ Tower.Controller.Resourceful =
     @respondWithScoped callback
 
   _new: (callback) ->
-    @respondWithScoped callback
+    @buildResource (error, resource) =>
+      return @failure(error) unless resource
+      @respondWith(resource, callback)
 
   _create: (callback) ->
     @buildResource (error, resource) =>
       return @failure(error) unless resource
       resource.save (error, success) =>
-        @respondWithStatus success, callback
+        @respondWithStatus success, (format) =>
+          format.html => @redirectTo "/"
+          format.json => @render text: "success", status: 200
 
   _show: (callback) ->
     @findResource (error, resource) =>
@@ -87,26 +93,25 @@ Tower.Controller.Resourceful =
         @respondWithStatus success, callback
   
   respondWithScoped: (callback) ->
-    @scoped (error, resource) =>
+    @scoped (error, scope) =>
       return @failure(error) if error
-      @respondWith(resource, callback)
+      @respondWith(scope.build(), callback)
 
   respondWithStatus: (success, callback) ->
     options = records: @resource
     
-    switch callback.length
-      when 0, 1
-        Tower.Controller.Responder.respond(@, options, callback)
+    if callback && callback.length > 1
+      successResponder = new Tower.Controller.Responder(@, options)
+      failureResponder = new Tower.Controller.Responder(@, options)
+    
+      callback.call @, successResponder, failureResponder
+    
+      if success
+        successResponder[format].call @
       else
-        successResponder = new Tower.Controller.Responder(@, options)
-        failureResponder = new Tower.Controller.Responder(@, options)
-        
-        callback.call @, successResponder, failureResponder
-        
-        if success
-          successResponder[format].call @
-        else
-          failureResponder[format].call @, error
+        failureResponder[format].call @, error
+    else
+      Tower.Controller.Responder.respond(@, options, callback)
   
   buildResource: (callback) ->
     @scoped (error, scope) =>
@@ -134,8 +139,8 @@ Tower.Controller.Resourceful =
       false
 
   scoped: (callback) ->
-    callbackWithScope = (error, scope) ->
-      callback.call @, error, scope.where(@criteria())
+    callbackWithScope = (error, scope) =>
+      callback.call @, error, scope.where(@criteria().query)
     
     if @hasParent
       @findParent (error, parent) =>

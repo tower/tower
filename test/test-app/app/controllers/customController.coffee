@@ -6,10 +6,6 @@ class TowerSpecApp.CustomController extends Tower.Controller
   
   @
   
-  index: ->
-    @indexCalled = true
-    @render json: JSON.stringify(musica: "universalis")
-    
   renderUser: ->
     
   renderCoffeeKupFromTemplate: ->

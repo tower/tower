@@ -7,7 +7,7 @@ router      = null
 describe 'Tower.Controller.Rendering', ->
   test 'renderCoffeeKupFromTemplate', ->
     Tower.get 'renderCoffeeKupFromTemplate', ->
-      expect(@body).toEqual "<h1>Hello World</h1>"
+      expect(@body).toEqual "<h1>Hello World</h1>\n"
       expect(@contentType).toEqual "text/html"
   
   test 'renderHelloWorldFromVariable', ->

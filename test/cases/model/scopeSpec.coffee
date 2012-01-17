@@ -2,21 +2,20 @@ require '../../config'
 
 scope     = null
 criteria  = null
-###
+user      = null
+
 describe 'Tower.Model.Scope', ->
   beforeEach ->
-    spec.resetUserStore()
     User.store(new Tower.Store.Memory(name: "users", type: "User"))
     scope = User.scoped()
-    @user = User.create(id: 1, firstName: "Lance")
+    user = User.create(id: 1, firstName: "Lance")
     User.create(id: 2, firstName: "Dane")
-
+    
   afterEach ->
-    User.deleteAll()
     scope = null
     
-  it 'should have a getter', ->
-    expect(@user.firstName).toEqual "Lance"
+  test 'should have a getter', ->
+    expect(user.get('firstName')).toEqual "Lance"
     
   it 'should have where scope', ->
     user = User.where(firstName: "Lance").first()
@@ -126,4 +125,3 @@ describe 'Tower.Model.Scope', ->
     expect(clone2.criteria.query).toEqual name: "Lance", email: "example@gmail.com"
     expect(clone.criteria.query).toEqual name: "Lance"
     expect(scope.criteria.query).toEqual {}
-###

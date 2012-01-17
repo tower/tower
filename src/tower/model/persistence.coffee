@@ -13,7 +13,7 @@ Tower.Model.Persistence =
         @_store = value
       
       @_store ||= new @defaultStore(name: @collectionName(), className: Tower.namespaced(@name))
-        
+      
       @_store
     
     # tmp fix, for memory model

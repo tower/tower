@@ -38,7 +38,7 @@ Tower.Controller.Responding =
       options   = {}
 
     options.records = args
-
+    
     Tower.Controller.Responder.respond(@, options, callback)
     
   _mimesForAction: ->

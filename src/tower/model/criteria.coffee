@@ -29,6 +29,9 @@ class Tower.Model.Criteria
     
   includes: ->
     @_mergeOptions includes: Tower.Support.Array.args(arguments)
+    
+  page: (number) ->
+    @offset(number)
   
   paginate: (options) ->
     limit   = options.perPage || options.limit

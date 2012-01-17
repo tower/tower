@@ -13,18 +13,14 @@ class Tower.Controller.Responder
   
   respond: (callback) ->
     callback.call @controller, @ if callback
-    method  = "_#{@controller.format}"
-    method  = @[method]
-    if method then method() else @toFormat()
+    method  = @["_#{@controller.format}"]
+    if method then method.call(@) else @toFormat()
   
-  html: ->
-    try
-      @defaultRender()
-    catch error
-      @_navigationBehavior(error)
+  _html: ->
+    @controller.render action: @controller.action
   
-  json: ->
-    @defaultRender()
+  _json: ->
+    @controller.render json: _.flatten(@options.records)[0]
   
   toFormat: ->
     try
@@ -37,14 +33,14 @@ class Tower.Controller.Responder
   
   _navigationBehavior: (error) ->
     if get?
-      raise error
+      throw error
     else if hasErrors? && defaultAction
       @render action: @defaultAction
     else
       @redirectTo @navigationLocation
 
   _apiBehavior: (error) ->
-    raise error unless resourceful?
+    #throw error unless resourceful?
     
     if get?
       @display resource
@@ -63,7 +59,7 @@ class Tower.Controller.Responder
     @defaultResponse.call(options)
   
   display: (resource, givenOptions = {}) ->
-    @controller.render _.extend givenOptions, options, format: resource
+    @controller.render _.extend givenOptions, @options, format: @resource
   
   displayErrors: ->
     @controller.render format: @resourceErrors, status: "unprocessableEntity"
