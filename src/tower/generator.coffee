@@ -1,4 +1,6 @@
 class Tower.Generator extends Tower.Class#Emergent.Generator
+  sourceRoot: __dirname
+  
   @run: (type, options) ->
     new Tower.Generator[Tower.Support.String.camelize(type)](options)
     
@@ -35,5 +37,10 @@ Tower.Generator.include Tower.Generator.Shell
 require './generator/generators/tower/app/appGenerator'
 require './generator/generators/tower/model/modelGenerator'
 require './generator/generators/tower/view/viewGenerator'
+require './generator/generators/tower/controller/controllerGenerator'
+require './generator/generators/tower/helper/helperGenerator'
+require './generator/generators/tower/assets/assetsGenerator'
+require './generator/generators/tower/mailer/mailerGenerator'
+require './generator/generators/tower/scaffold/scaffoldGenerator'
 
 module.exports = Tower.Generator

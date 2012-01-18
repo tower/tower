@@ -16,7 +16,7 @@ Tower.Generator.Resources =
       model:            @model
       destinationRoot:  @destinationRoot
       
-    generator = new Tower.Generator[Tower.Support.String.camelize(type)](options)
+    generator = new Tower.Generator[Tower.Support.String.camelize(type) + "Generator"](options)
     generator.run()
   
   nodeModule: (name, options = {}) ->

@@ -5,7 +5,6 @@ class Tower.Generator.ScaffoldGenerator extends Tower.Generator
     @generate "model"
     @generate "view"
     @generate "controller"
-    @generate "mailer"
     @generate "helper"
     @generate "assets"
   

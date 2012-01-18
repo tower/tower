@@ -26,7 +26,9 @@ Tower.Generator.Actions =
       @log "create", path
       File.write path, data
     
-  log: (action, path) ->
+  log: (action, path) ->    
+    return if action == "create" && File.exists(path)
+    
     key = switch action
       when "create"
         '   \x1b[36mcreate\x1b[0m'
