@@ -1,3 +1,5 @@
-cake 'db:push', ->
+require 'Tower'
 
-cake 'db:pull', ->
+task 'db:push', ->
+
+task 'db:pull', ->

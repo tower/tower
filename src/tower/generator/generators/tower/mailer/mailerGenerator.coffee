@@ -1,7 +1,7 @@
 class Tower.Generator.MailerGenerator extends Tower.Generator
   run: ->
     @inside "app", ->
-      @inside "controllers", ->
-        @template "controller.coffee", "#{@model.resourceName}.coffee", ->
+      @inside "mailers", ->
+        @template "mailer.coffee", "#{@model.resourceName}Mailer.coffee", ->
   
-module.exports = Tower.Generator.ModelGenerator
+module.exports = Tower.Generator.MailerGenerator

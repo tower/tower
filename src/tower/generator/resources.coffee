@@ -1,3 +1,5 @@
+File = require('pathfinder').File
+
 Tower.Generator.Resources =  
   route: (routingCode) ->
     @log "route", routingCode
@@ -5,16 +7,27 @@ Tower.Generator.Resources =
     
     @inRoot ->
       @injectIntoFile 'config/routes.rb', "\n  #{routing_code}\n", after: sentinel, verbose: false
+      
+  generate: (type) ->
+    options =
+      program:          @program
+      project:          @project
+      user:             @user
+      model:            @model
+      destinationRoot:  @destinationRoot
+      
+    generator = new Tower.Generator[Tower.Support.String.camelize(type)](options)
+    generator.run()
   
   nodeModule: (name, options = {}) ->
     
   locals: ->
-    model: @model
+    model: @model, project: @project, user: @user
     
-  attribute: (name, type = "string") ->
+  builtAttribute: (name, type = "string") ->
     name:       name
     type:       type
-    humanName:  _.titleize(name)
+    humanName:  _.humanize(name)
     fieldType:  switch type
       when "integer"                then "numberField"
       when "float", "decimal"       then "textField"
@@ -38,36 +51,68 @@ Tower.Generator.Resources =
       else
         ""
   
-  model: (name, namespace) ->
-    return @model if @model
-    
+  buildModel: (name, namespace) ->
     name                 = Tower.Support.String.camelize(name, true)
     namespace            = namespace
     className            = Tower.Support.String.camelize(name)
-    pluralClassName      = Tower.Support.String.pluralize(@className)
-    namespacedClassName  = "#{namespace}.#{@className}"
-    pluralName           = Tower.Support.String.pluralize(@name)
-    cssName              = Tower.Support.String.parameterize(@name)
-    pluralCssName        = Tower.Support.String.parameterize(@pluralName)
-    humanName            = _.titleize(@className)
+    pluralClassName      = Tower.Support.String.pluralize(className)
+    namespacedClassName  = "#{namespace}.#{className}"
+    pluralName           = Tower.Support.String.pluralize(name)
+    cssName              = Tower.Support.String.parameterize(name)
+    pluralCssName        = Tower.Support.String.parameterize(pluralName)
+    humanName            = _.titleize(className)
     attributes = []
     
     for pair in argv
       pair  = pair.split(":")
       name  = pair[0]
       type  = Tower.Support.String.camelize(pair[1] || pair[0], true)
-      attributes.push new Tower.Generator.Attribute(name, Tower.Support.String.camelize(type))
+      attributes.push @builtAttribute(name, Tower.Support.String.camelize(type))
     
-    @model =
-      name:                name
-      namespace:           namespace
-      className:           className
-      pluralClassName:     pluralClassName
-      namespacedClassName: namespacedClassName
-      pluralName:          pluralName
-      cssName:             cssName
-      pluralCssName:       pluralCssName
-      humanName:           humanName
-      attributes:          attributes
+    name:                name
+    namespace:           namespace
+    className:           className
+    pluralClassName:     pluralClassName
+    namespacedClassName: namespacedClassName
+    pluralName:          pluralName
+    cssName:             cssName
+    pluralCssName:       pluralCssName
+    humanName:           humanName
+    attributes:          attributes
+    
+  buildProject: (name = @projectName) ->
+    name:           name
+    className:      Tower.Support.String.camelize(@program.namespace || name)
+    cssName:        Tower.Support.String.parameterize(@program.namespace || name)
+    pluralCssName:  Tower.Support.String.parameterize(Tower.Support.String.pluralize(@program.namespace || name))
+    
+  buildUser: (callback) ->
+    configFile = process.env.HOME + "/.tower.json";
+    
+    unless File.exists(configFile)
+      user = {}
+      @prompt "github username", (username) =>
+        user.username = username
+        @prompt "email", (email) =>
+          user.email  = email
+          @prompt "your full name", (name) =>
+            user.name = name
+            databases   = ["mongodb"]
+            @choose "default database", databases, (index) =>
+              user.database = databases[index]
+              
+              File.write configFile, JSON.stringify(user, null, 2)
+              
+              process.nextTick ->
+                callback(user)
+    else
+      try
+        user  = JSON.parse(File.read(configFile))
+      catch error
+        user  = {}
+      
+      user.database ||= "mongodb"
+      
+      callback(user)
 
 module.exports = Tower.Generator.Resources

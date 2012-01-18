@@ -1,4 +1,6 @@
 class Tower.Generator.ViewGenerator extends Tower.Generator
+  sourceRoot: __dirname
+  
   run: ->
     @inside "app", ->
       @inside "views", ->

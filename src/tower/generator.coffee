@@ -1,30 +1,36 @@
 class Tower.Generator extends Tower.Class#Emergent.Generator
-  @run: (type, argv) ->
-    generator = new Tower.Generator[Tower.Support.String.camelize(type)](argv)
-    generator.run()
+  @run: (type, options) ->
+    new Tower.Generator[Tower.Support.String.camelize(type)](options)
     
-  constructor: (argv, options = {}) ->
+  constructor: (options = {}) ->
     _.extend @, options
     
-    @project  = new Tower.Generator.Project(argv.shift())
-    @user     = {}
+    unless @projectName
+      name = process.cwd().split("/")
+      @projectName = name[name.length - 1]
+      
+    @destinationRoot  ||= process.cwd()
     
-    if argv.length > 0 && argv[0].charAt(0) != "-"
-      @model  = new Tower.Generator.Model(argv.shift())
+    @currentSourceDirectory = @currentDestinationDirectory = "."
     
-    @destinationRoot ||= process.cwd()
-    
-    @cd       = "."
-    @project  = {}
-    @user     = {}
+    unless @project
+      @project          = @buildProject()
+      @user             = {}
+      @buildUser (user) =>
+        @user   = user
+        @model  = @buildModel(@modelName, @project.className) if @modelName
+        
+        @run()
 
 require './generator/actions'
 require './generator/configuration'
 require './generator/resources'
+require './generator/shell'
 
 Tower.Generator.include Tower.Generator.Actions
 Tower.Generator.include Tower.Generator.Configuration
 Tower.Generator.include Tower.Generator.Resources
+Tower.Generator.include Tower.Generator.Shell
 
 require './generator/generators/tower/app/appGenerator'
 require './generator/generators/tower/model/modelGenerator'

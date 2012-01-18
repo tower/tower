@@ -22,6 +22,8 @@ Tower.Store.Memory.Finders =
     callback.call(self, null, result) if callback
     
     result
+    
+  findOne: ->
   
   first: (query, options, callback) ->
     record = null

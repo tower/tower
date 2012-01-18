@@ -1,6 +1,8 @@
-File = require('pathfinder').File
-_path  = require('path')
+File  = require('pathfinder').File
+_path = require('path')
 fs    = require('fs')
+_url  = require('url')
+rest  = require('restler')
 
 File.mkdirpSync = (dir) ->
   dir = _path.resolve(_path.normalize(dir))
@@ -17,32 +19,59 @@ File.mkdirpSync = (dir) ->
         console.error(e)
 
 Tower.Generator.Actions =
+  get: (url, to) ->
+    path  = @destinationPath(to)
+    
+    rest.get(url).on 'complete', (data) =>
+      @log "create", path
+      File.write path, data
+    
+  log: (action, path) ->
+    key = switch action
+      when "create"
+        '   \x1b[36mcreate\x1b[0m'
+      when "destroy"
+        '   \x1b[36mremove\x1b[0m'
+    
+    console.log("#{key} : #{File.relativePath(path)}")
+    
   injectIntoFile: (file, options, callback) ->
     
   readFile: (file) ->
   
   createFile: (path, data) ->
-    File.write @destinationPath(path), data
+    path = @destinationPath(path)
+    @log "create", path
+    File.write path, data
   
   destinationPath: (path) ->
-    File.join(@destinationRoot, @cd, path)
+    File.join(@destinationRoot, @currentDestinationDirectory, path)
   
   file: (file, data) ->
     @createFile(file, data)
   
   createDirectory: (name) ->
-    File.mkdirpSync(@destinationPath(name))
+    path = @destinationPath(name)
+    @log "create", path
+    File.mkdirpSync(path)
   
   directory: (name) ->
     @createDirectory(name)
   
   emptyDirectory: (name) ->
     
-  inside: (directory, block) ->
-    cd  = @cd
-    @cd = File.join(@cd, directory)
+  inside: (directory, sourceDirectory, block) ->
+    if typeof sourceDirectory == "function"
+      block           = sourceDirectory
+      sourceDirectory = directory
+    
+    currentSourceDirectory        = @currentSourceDirectory
+    @currentSourceDirectory       = File.join(@currentSourceDirectory, sourceDirectory)
+    currentDestinationDirectory   = @currentDestinationDirectory
+    @currentDestinationDirectory  = File.join(@currentDestinationDirectory, directory)
     block.call @
-    @cd = cd
+    @currentSourceDirectory       = currentSourceDirectory
+    @currentDestinationDirectory  = currentDestinationDirectory
     
   copyFile: (source) ->
     {args, options, block} = @_args(arguments, 1)
@@ -60,41 +89,13 @@ Tower.Generator.Actions =
 
     @createLink destination, source, options
   
-  get: (source) ->
-    {args, options, block} = @_args(arguments, 1)
-    destination = args.first
-    
-    source = File.expandFile(@findInSourcePaths(source.to_s)) unless !!source.match(/^https?\:\/\//)
-    render = open source, (input) -> input.binmode.read
-    
-    destination ||= if block_given?
-      block.arity == if 1 then block.call(render) else block.call
-    else
-      File.basename(source)
-    
-    @createFile destination, render, options
-  
   template: (source) ->
     {args, options, block} = @_args(arguments, 1)
     destination = args[0] || source.replace(/\.tt$/, '')
     
     source  = File.expandFile(@findInSourcePaths(source))
     
-    options.user =
-      name: "Lance Pollard"
-      email: "lancejpollard@gmail.com"
-      username: "viatropos"
-      
-    options.project =
-      name: "test-project"
-      title: "TestProject"
-      className: "TestProject"
-      description: ""
-      keywords: ""
-      
-    options.model = @model
-    
-    data    = @render(File.read(source), options)
+    data    = @render(File.read(source), @locals())
     
     @createFile destination, data, options
     
@@ -197,6 +198,6 @@ Tower.Generator.Actions =
     args: args, options: options, block: block
     
   findInSourcePaths: (path) ->
-    File.expandFile(File.join(@sourceRoot, "templates", @cd, path))
+    File.expandFile(File.join(@sourceRoot, "templates", @currentSourceDirectory, path))
     
 module.exports = Tower.Generator.Actions

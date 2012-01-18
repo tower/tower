@@ -4,10 +4,9 @@ class Tower.Command.Generate
     
     @program
       .option('-e, --environment [value]', 'output parsed comments for debugging')
-      .option('-i, --integer <n>', 'An integer argument', parseInt)
-      .option('-f, --float <n>', 'A float argument', parseFloat)
       .parse(argv)
   
   run: ->
+    Tower.Generator.run("#{@project.args[0]}Generator", program: @program, modelName: @program.args[2])
   
 module.exports = Tower.Command.Generate

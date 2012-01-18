@@ -41,7 +41,7 @@ describe 'Tower.Generator', ->
       
     test '#inside', ->
       
-        
+      
   describe 'Tower.Generator.AppGenerator', ->
     beforeEach ->
       sourceRoot      = process.cwd() + "/src/tower/generator/generators/tower/app"

@@ -31,6 +31,12 @@ class Tower.Application extends Tower.Class
     unless @_instance
       require "#{Tower.root}/config/application"
     @_instance
+    
+  @configure: (block) ->
+    @initializers.push block
+  
+  @initializers: ->
+    @_initializers ||= []
   
   constructor: ->  
     throw new Error("Already initialized application") if Tower.Application._instance
@@ -51,17 +57,19 @@ class Tower.Application extends Tower.Class
       
     require "#{Tower.root}/config/routes"
     
-    #Tower.Support.Dependencies.load "#{Tower.root}/app/models"
-    #Tower.Model.initialize()
-    #Tower.View.initialize()
-    Tower.Support.Dependencies.load("#{Tower.root}/app/helpers")
-    #Tower.Controller.initialize()
-    Tower.Support.Dependencies.load("#{Tower.root}/app/controllers")
-    
     # load initializers
     require "#{Tower.root}/config/environments/#{Tower.env}"
     paths = File.files("#{Tower.root}/config/initializers")
     require(path) for path in paths
+    
+    configs = @constructor.initializers()
+    
+    for config in configs
+      config.call @
+    
+    Tower.Support.Dependencies.load "#{Tower.root}/app/models"
+    Tower.Support.Dependencies.load "#{Tower.root}/app/helpers"
+    Tower.Support.Dependencies.load "#{Tower.root}/app/controllers"
     
   teardown: ->
     #Tower.Route.teardown()
@@ -106,5 +114,7 @@ class Tower.Application extends Tower.Class
     @initialize()
     @stack()
     @listen()
+    
+require './assets'
 
 module.exports = Tower.Application

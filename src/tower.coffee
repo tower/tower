@@ -8,7 +8,6 @@ module.exports  = global.Tower = Tower = new (class Tower)
 Tower.logger    = _console
 
 require './tower/support'
-require './tower/event'
 require './tower/application/server'
 require './tower/application/configuration'
 require './tower/store'
