@@ -11,7 +11,7 @@ class Tower.Command.Server
   run: ->
     program     = @program
     Tower.env   = program.environment || "development"
-    Tower.port  = program.port      = if program.port then parseInt(program.port) else (process.env.PORT || 1597)
+    Tower.port  = program.port      = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
     
     Tower.Application.instance().run()
   

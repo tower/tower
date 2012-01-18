@@ -33,7 +33,7 @@ class Tower.Application extends Tower.Class
     @_instance
     
   @configure: (block) ->
-    @initializers.push block
+    @initializers().push block
   
   @initializers: ->
     @_initializers ||= []
@@ -52,8 +52,8 @@ class Tower.Application extends Tower.Class
     #Tower.Route.initialize()
     require "#{Tower.root}/config/application"
     
-    Tower.Support.Dependencies.load "#{Tower.root}/config/locales/en", (path) ->
-      Tower.Support.I18n.load path
+    paths = File.files("#{Tower.root}/config/locales/en")
+    Tower.Support.I18n.load path for path in paths
       
     require "#{Tower.root}/config/routes"
     
@@ -64,12 +64,13 @@ class Tower.Application extends Tower.Class
     
     configs = @constructor.initializers()
     
-    for config in configs
-      config.call @
+    config.call(@) for config in configs
     
-    Tower.Support.Dependencies.load "#{Tower.root}/app/models"
-    Tower.Support.Dependencies.load "#{Tower.root}/app/helpers"
-    Tower.Support.Dependencies.load "#{Tower.root}/app/controllers"
+    paths = File.files("#{Tower.root}/config/locales/en")
+    paths = paths.concat File.files("#{Tower.root}/app/helpers")
+    paths = paths.concat File.files("#{Tower.root}/app/controllers")
+    
+    require(path) for path in paths 
     
   teardown: ->
     #Tower.Route.teardown()

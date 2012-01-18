@@ -6,16 +6,15 @@ class <%= project.className %> extends Tower.Application
     @use "logger"
     @use "query"
     @use "cookieParser", Tower.cookieSecret
-    @use "session", secret: Tower.sessionSecret, cookie: {domain: ".#{Tower.cookieDomain}"}, store: new MongoStore(mongostore)
+    @use "session", secret: Tower.sessionSecret, cookie: {domain: ".#{Tower.cookieDomain}"}
     @use "bodyParser"
-    #@use "csrf"
+    @use "csrf"
     @use "methodOverride", "_method"
     @use Tower.Middleware.Agent
     @use Tower.Middleware.Location
     #if Tower.httpCredentials && Tower.branch != "development"
     #  @use "basicAuth", Tower.httpCredentials.username, Tower.httpCredentials.password
     
-    @use everyauth.middleware()
     @use Tower.Middleware.Router
 
 module.exports = global.<%= project.className %> = <%= project.className %>
