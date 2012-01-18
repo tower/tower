@@ -4,7 +4,7 @@ class Tower.Generator.ViewGenerator extends Tower.Generator
   run: ->
     @inside "app", ->
       @inside "views", ->
-        @directory "#{@model.collectionName}"
+        @directory "#{@model.pluralName}"
     
     views = [
       "_form",
@@ -18,6 +18,6 @@ class Tower.Generator.ViewGenerator extends Tower.Generator
     ]
     
     for view in views
-      @template "#{view}.coffee", "app/views/#{@model.collectionName}/#{view}.coffee"
+      @template "#{view}.coffee", "app/views/#{@model.pluralName}/#{view}.coffee"
 
 module.exports = Tower.Generator.ViewGenerator

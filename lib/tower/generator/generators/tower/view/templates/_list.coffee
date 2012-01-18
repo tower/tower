@@ -1,2 +1,2 @@
-ol class: "<%= model.collectionName %>", ->
-  partial "item", collection: @<%= model.collectionName %>
+ol class: "<%= model.pluralName %>", ->
+  partial "item", collection: @<%= model.pluralName %>

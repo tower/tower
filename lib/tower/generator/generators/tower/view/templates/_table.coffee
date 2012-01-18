@@ -6,10 +6,10 @@ tableFor "users", (t) ->
       t.cell()
       t.cell()
   t.body ->
-    for <%= model.resourceName %> in @<%= model.collectionName %>
+    for <%= model.name %> in @<%= model.pluralName %>
       t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
-        t.cell <%= model.resourceName %>.get("<%= model.attributes[i].name %>")<% } %>
-        t.cell linkTo 'Show', <%= model.resourceName %>
-        t.cell linkTo 'Edit', edit<%= model.className %>Path(<%= model.resourceName %>)
-        t.cell linkTo 'Destroy', <%= model.resourceName %>, method: "delete"
+        t.cell <%= model.name %>.get("<%= model.attributes[i].name %>")<% } %>
+        t.cell linkTo 'Show', <%= model.name %>
+        t.cell linkTo 'Edit', edit<%= model.className %>Path(<%= model.name %>)
+        t.cell linkTo 'Destroy', <%= model.name %>, method: "delete"
   linkTo 'New <%= model.className %>', new<%= model.className %>Path()

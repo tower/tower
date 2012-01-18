@@ -18,7 +18,7 @@ class Tower.Generator extends Tower.Class#Emergent.Generator
       @user             = {}
       @buildUser (user) =>
         @user   = user
-        @model  = @buildModel(@modelName, @project.className) if @modelName
+        @model  = @buildModel(@modelName, @project.className, @program.args) if @modelName
         
         @run()
 

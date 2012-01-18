@@ -1,3 +1,3 @@
-title "Listing <%= model.collectionName %>"
+title "Listing <%= model.pluralName %>"
 
 render "table"

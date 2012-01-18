@@ -51,7 +51,7 @@ Tower.Generator.Resources =
       else
         ""
   
-  buildModel: (name, namespace) ->
+  buildModel: (name, namespace, argv) ->
     name                 = Tower.Support.String.camelize(name, true)
     namespace            = namespace
     className            = Tower.Support.String.camelize(name)
@@ -65,9 +65,10 @@ Tower.Generator.Resources =
     
     for pair in argv
       pair  = pair.split(":")
-      name  = pair[0]
+      continue unless pair.length > 1
+      attr  = pair[0]
       type  = Tower.Support.String.camelize(pair[1] || pair[0], true)
-      attributes.push @builtAttribute(name, Tower.Support.String.camelize(type))
+      attributes.push @builtAttribute(attr, Tower.Support.String.camelize(type))
     
     name:                name
     namespace:           namespace

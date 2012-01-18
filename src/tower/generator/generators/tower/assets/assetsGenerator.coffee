@@ -5,8 +5,8 @@ class Tower.Generator.ScaffoldGenerator extends Tower.Generator
     @inside "app", ->
       @inside "client", ->
         @inside "stylesheets", ->
-          @template "stylesheet.css", "#{@model.resourceName}.styl"
+          @template "stylesheet.css", "#{@model.name}.styl"
         @inside "controllers", ->
-          @template "javascript.js", "#{@model.resourceName}.coffee"
+          @template "javascript.js", "#{@model.pluralName}Controller.coffee"
   
 module.exports = Tower.Generator.ScaffoldGenerator

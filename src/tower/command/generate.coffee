@@ -7,6 +7,6 @@ class Tower.Command.Generate
       .parse(argv)
   
   run: ->
-    Tower.Generator.run("#{@project.args[0]}Generator", program: @program, modelName: @program.args[2])
+    Tower.Generator.run("#{@program.args[1]}Generator", program: @program, modelName: @program.args[2])
   
 module.exports = Tower.Command.Generate

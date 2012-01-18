@@ -5,6 +5,6 @@ class Tower.Generator.ModelGenerator extends Tower.Generator
     @inside "app", ->
       @directory "models"
       
-    @template "model.coffee", "app/models/#{@model.fileName}.coffee", ->
+    @template "model.coffee", "app/models/#{@model.name}.coffee", ->
   
 module.exports = Tower.Generator.ModelGenerator
