@@ -1,19 +1,38 @@
 doctype 5
 html ->
-  head ->
-    meta charset: 'utf-8'
-    title t('title')
-    meta name: 'description', content: t('description')
-    meta name: 'keywords', content: t('keywords')
-    stylesheets "lib", "application"
-    script src: 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'
-    javascripts "vendor", "application"
-    
-    if Tower.env == "development"
-      javascripts "development"
-  body ->
-    header ->
-      h1 t('title')
-    section ->
-      yield()
-    footer ->
+  partial "shared/head"
+  
+  body role: "application"
+    if browserIs("ie")
+      javascriptTag "//html5shiv.googlecode.com/svn/trunk/html5.js"
+      
+    if contentFor "templates"
+      yield "templates"
+      
+    nav id: "navigation", role: "navigation"
+      div class: "frame"
+        partial "shared/navigation"
+        
+    header id: "header", role: "banner"
+      div class: "frame"
+        if hasFlash()
+          renderFlash
+        partial "shared/header"
+        
+    section id: "body", role: "main"
+      div class: "frame"
+        yield()
+        aside id: "sidebar", role: "complementary"
+          if contentFor "sidebar"
+            yield "sidebar"
+            
+    footer id: "footer", role: "contentinfo"
+      div class: "frame"
+        partial "shared/footer"
+        
+  if contentFor "popups"
+    aside id: "popups"
+      yield "popups"
+      
+  if contentFor "bodyJavascripts"
+    yield "bodyJavascripts"

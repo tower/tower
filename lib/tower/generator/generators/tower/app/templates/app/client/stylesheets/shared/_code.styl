@@ -1,0 +1,249 @@
+
+.linenodiv a, pre a {
+  display: block !important;
+  height: 0px !important;
+  line-height: 0px !important;
+}
+.linenodiv a {
+  font-family: Monaco, 'Lucida Console', monospace !important;
+  clear: both;
+  font-size: 12px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  //position: static;
+  height: 16px !important;
+  line-height: 16px !important;
+  padding: 0px 0px 0px 0px;
+  position: relative;
+}
+pre {
+  font-family: Monaco, 'Lucida Console', monospace !important;
+  white-space: pre;
+  color: #444;
+  //font-family: 'Bitstream Vera Sans Mono', 'Courier', monospace;
+  font-family: "Monaco, 'Lucida Console', monospace";
+  font-size: 12px;
+  margin: 0 !important;
+  border: none !important;
+  padding: 0px 0px 0px 0px;
+  .str {
+    color: #DD1144; }
+
+  .kwd {
+    color: #000000; }
+
+  .com {
+    color: #8e8e7e; }
+
+  .typ {
+    color: #458; } // teal
+
+  .lit {
+    color: #099; }
+
+  .pun {
+    color: #626262; }
+
+  .pln {
+    color: #445588; }
+
+  .tag {
+    color: #0b9de1; }
+
+  .atn {
+    color: #121212; }
+
+  .atv {
+    color: #b41d00; }
+
+  .dec {
+    color: #f46f09; }
+    
+  // hacked from github:
+  // :symbols
+  .ss {
+    color: #990073;
+  }
+  // has_many
+  .n {
+    color: black;
+  }
+  
+  .n, .nc, .no, .o, .nb, .p, .nf { color: #e6e1dc; }
+  .k, .kp, .nt, .kd { 
+    color: #bc4a48;
+    //color: #E14D4B
+    //color: #ff9357;
+  }
+  .mi {
+    color: #8ecd92;
+  }
+  .kc {
+    color: #e7ce9b; // boolean
+  }
+  .na {
+    color: #eef2b9 // markup attribute
+  }
+  .c, .c1 {
+    color: #bd66bf;
+  }
+  .s, .s1, .s2 {
+    color: #9dcd7e;
+  }
+  .ss { color: #78ccdd; } // symbol
+}
+pre span {
+  line-height: 16px;
+  height: 16px;
+}
+
+pre * {
+  line-height: 16px;
+}
+
+.linenodiv pre {
+  background-color: #eaecea;
+  background-color: white;
+  opacity: 0.9
+  border: 1px solid #aaa;
+  border-right: 1px solid #ddd;
+  height: 100%;
+}
+
+//&.multiple {
+//  &.data-html.data-haml table:nth-child(1) {
+//    display: none;
+//  }
+//}
+
+.show-html {
+  .data.multiple.data-html.data-haml table:nth-child(2) {
+    display: none;
+  }
+}
+.show-haml {
+  .data.multiple.data-html.data-haml table:nth-child(1) {
+    display: none;
+  }
+}
+
+.show-html.show-haml {
+  .data.multiple.data-html.data-haml table {
+    display: table;
+  }
+  .data.multiple.data-html.data-haml table:nth-child(1) {
+    margin-bottom: 21px;
+  }
+}
+
+div.data {
+  overflow-x: auto;
+  margin-bottom: 21px;
+  margin-left: -33px;
+  width: 643px;
+  .highlightsaf {
+    width: 300px !important;
+  }
+  table {
+    border: 1px solid #D9D9D9 !important;
+  }
+  
+  .highlight {
+    position: relative;
+    //margin-top: -10px !important; // hack
+    border-left: none;
+  }
+  .linenodiv {
+    position: relative;
+    line-height: 16px;
+    a {
+      display: inline-block !important;
+      color: #aaa;
+      position: relative;
+      top: 2px;
+    }
+  }
+  td:first-child {
+    //background-color: #eaecea !important;
+    background-color: white !important;
+    opacity: 0.9
+    //display: none;
+    width: 17px;
+    padding: 0px;
+  }
+  .linenodiv {
+    text-align: right;
+    padding: 8px;
+    min-width: 14px;
+    display: block;
+  } 
+}
+
+.type-css pre {
+  .nc {
+    color: #eef2b9 // markup attribute
+  }
+  .nt { color: #78ccdd; } // symbol
+}
+
+.type-yaml pre {
+  .p-Indicator, .l-Scalar-Plain {
+    color: #bc4a48;
+  }
+}
+
+pre {
+  //background: transparent !important;
+  color: #e6e1dc;
+  // merbivore
+  .n, .nc, .no, .o, .nb, .p, .nf { color: #e6e1dc; }
+  .k, .kp, .nt, .kd { 
+    color: #bc4a48;
+    //color: #E14D4B
+    //color: #ff9357;
+  }
+  .mi {
+    color: #8ecd92;
+  }
+  .kc {
+    color: #e7ce9b; // boolean
+  }
+  .na {
+    color: #eef2b9 // markup attribute
+  }
+  .c, .c1 {
+    color: #bd66bf;
+  }
+  .s, .s1, .s2, .sr, .err {
+    color: #9dcd7e; // string
+  }
+  .ss { //, .nv, .vi
+    color: #78ccdd // symbol, object key
+    color: #79C5CE
+  }
+}
+
+.type-css pre {
+  .nc {
+    color: #eef2b9 // markup attribute
+  }
+  .nt { color: #78ccdd; } // symbol
+}
+
+.type-yaml pre {
+  .p-Indicator, .l-Scalar-Plain {
+    color: #bc4a48;
+  }
+}
+.highlight {
+  //width: 558px;
+  //background: #fafaff
+  //background: white
+  background: transparent url('/images/backgrounds/charcoal.jpg') !important;
+  @include border-radius(3px);
+  padding: 8px;
+  //-webkit-box-shadow: rgba(0, 0, 0, 0.0664062) 0px 1px 2px inset;
+  //border: 1px solid #DDD;
+  //white-space: pre;
+}

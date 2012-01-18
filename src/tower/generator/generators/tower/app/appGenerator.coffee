@@ -95,6 +95,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/caolan/async/master/lib/async.js", "async.js"
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js", "socket.io.js"
           @get "https://raw.github.com/viatropos/design.io/master/design.io.js", "design.io.js"
+          @get "https://raw.github.com/viatropos/tower.js/master/dist/tower.js", "tower.js"
         @directory "stylesheets"
         @inside "swfs", ->
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"

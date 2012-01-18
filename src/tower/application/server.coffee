@@ -56,6 +56,7 @@ class Tower.Application extends Tower.Class
     Tower.Support.I18n.load path for path in paths
       
     require "#{Tower.root}/config/routes"
+    require "#{Tower.root}/config/assets"
     
     # load initializers
     require "#{Tower.root}/config/environments/#{Tower.env}"
@@ -66,7 +67,7 @@ class Tower.Application extends Tower.Class
     
     config.call(@) for config in configs
     
-    paths = File.files("#{Tower.root}/config/locales/en")
+    paths = File.files("#{Tower.root}/config/locales")
     paths = paths.concat File.files("#{Tower.root}/app/helpers")
     paths = paths.concat File.files("#{Tower.root}/app/controllers")
     

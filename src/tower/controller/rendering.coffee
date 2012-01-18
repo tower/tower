@@ -73,7 +73,7 @@ Tower.Controller.Rendering =
   
   _normalizeOptions: (options = {}) ->
     options.partial = @action if options.partial == true
-    options.template ||= (@collectionName + "/" + (options.action || @action))
+    options.template ||= (options.file || (@collectionName + "/" + (options.action || @action)))
     options
 
 module.exports = Tower.Controller.Rendering
