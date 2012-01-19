@@ -1,3 +1,4 @@
+###
 require '../../config'
 
 scope     = null
@@ -125,3 +126,4 @@ describe 'Tower.Model.Scope', ->
     expect(clone2.criteria.query).toEqual name: "Lance", email: "example@gmail.com"
     expect(clone.criteria.query).toEqual name: "Lance"
     expect(scope.criteria.query).toEqual {}
+###

@@ -1,3 +1,4 @@
+###
 require '../../config'
 
 generator       = null
@@ -20,3 +21,4 @@ describe 'Tower.Generator.AppGenerator', ->
   test 'create an app', ->
     #generator.run()
     Tower.Command.run(["tower", "new", "myapp", "-e", "jade"])
+###

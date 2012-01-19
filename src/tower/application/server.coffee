@@ -53,7 +53,8 @@ class Tower.Application extends Tower.Class
     require "#{Tower.root}/config/application"
     
     paths = File.files("#{Tower.root}/config/locales/en")
-    Tower.Support.I18n.load path for path in paths
+    for path in paths
+      Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
       
     require "#{Tower.root}/config/routes"
     require "#{Tower.root}/config/assets"
@@ -61,7 +62,9 @@ class Tower.Application extends Tower.Class
     # load initializers
     require "#{Tower.root}/config/environments/#{Tower.env}"
     paths = File.files("#{Tower.root}/config/initializers")
-    require(path) for path in paths
+    
+    for path in paths
+      require(path) if path.match(/\.(coffee|js)$/)
     
     configs = @constructor.initializers()
     
@@ -71,7 +74,8 @@ class Tower.Application extends Tower.Class
     paths = paths.concat File.files("#{Tower.root}/app/helpers")
     paths = paths.concat File.files("#{Tower.root}/app/controllers")
     
-    require(path) for path in paths 
+    for path in paths
+      require(path) if path.match(/\.(coffee|js)$/)
     
   teardown: ->
     #Tower.Route.teardown()

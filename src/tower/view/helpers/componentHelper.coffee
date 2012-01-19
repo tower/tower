@@ -4,5 +4,7 @@ Tower.View.ComponentHelper =
     
   tableFor: ->
     Tower.View.Table.render(__ck, arguments...)
+    
+  widget: ->
 
 module.exports = Tower.View.ComponentHelper

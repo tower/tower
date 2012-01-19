@@ -98,6 +98,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/viatropos/tower.js/master/dist/tower.js", "tower.js"
           @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
           @get "https://raw.github.com/timrwood/moment/master/moment.js", "moment.js"
+          @get "https://raw.github.com/medialize/URI.js/gh-pages/src/URI.js", "uri.js"
         @directory "stylesheets"
         @inside "swfs", ->
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"

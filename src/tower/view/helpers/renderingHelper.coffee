@@ -1,0 +1,37 @@
+Tower.View.RenderingHelper =
+  partial: (path, options, callback) ->
+    if typeof options == "function"
+      callback  = options
+      options   = {}
+    options   ||= {}
+    prefixes    = options.prefixes
+    prefixes  ||= [@_context.collectionName] if @_context
+    template    = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
+    
+    __ck.indent()
+    text(String(@renderWithEngine(String(template)))) # hack, but works 
+    null
+    
+  page: ->
+    args          = Tower.Support.Array.args(arguments)
+    options       = Tower.Support.Array.extractOptions(args)
+    browserTitle  = args.shift() || options.title
+    
+    @contentFor "title", ->
+      title browserTitle
+    
+  yields: (key) ->
+    value = @[key]
+    if typeof value == "function"
+      eval("(#{String(value)})()")
+    else
+      __ck.indent()
+      text(value)
+    null
+  
+  hasContentFor: (key) ->
+    !!(@hasOwnProperty(key) && @[key] && @[key] != "")
+    
+  contentFor: (key, block) ->
+    @[key] = block
+    null

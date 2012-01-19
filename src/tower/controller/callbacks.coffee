@@ -3,7 +3,13 @@ Tower.Controller.Callbacks =
     beforeAction: ->
       @before "action", arguments...
       
-    afterAction: ->
+    beforeFilter: ->
       @before "action", arguments...
+      
+    afterAction: ->
+      @after "action", arguments...
+      
+    afterFilter: ->
+      @after "action", arguments...
 
 module.exports = Tower.Controller.Callbacks

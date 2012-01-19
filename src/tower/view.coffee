@@ -100,6 +100,7 @@ require './view/helpers/dateHelper'
 require './view/helpers/elementHelper'
 require './view/helpers/headHelper'
 require './view/helpers/numberHelper'
+require './view/helpers/renderingHelper'
 require './view/helpers/stringHelper'
 
 Tower.View.include Tower.View.Rendering
@@ -109,6 +110,7 @@ Tower.View.include Tower.View.ComponentHelper
 Tower.View.include Tower.View.DateHelper
 Tower.View.include Tower.View.HeadHelper
 Tower.View.include Tower.View.NumberHelper
+Tower.View.include Tower.View.RenderingHelper
 Tower.View.include Tower.View.StringHelper
 
 module.exports = Tower.View

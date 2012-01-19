@@ -13,5 +13,8 @@ Tower.Controller.Helpers =
   layout: ->
     layout = @constructor._layout
     if typeof(layout) == "function" then layout.apply(@) else layout
+    
+  urlFor: ->
+    Tower.urlFor arguments...
 
 module.exports = Tower.Controller.Helpers

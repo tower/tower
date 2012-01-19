@@ -1,3 +1,4 @@
+###
 require '../../config'
 
 require '../storeSpec'
@@ -93,3 +94,5 @@ describe 'Tower.Store.Memory', ->
     describe 'destroy', ->
       test 'where(name: "John").destroy()', ->
         User.where(name: "John").destroy (error) ->
+
+###

@@ -51,7 +51,8 @@ Tower.Controller.Events =
       
       @io.on name, (data) =>
         @_dispatch undefined, handler, data 
-      
+    
+    # http://www.ravelrumba.com/blog/event-delegation-jquery-performance/  
     addDomEventHandler: (name, handler, options) ->
       parts             = name.split(/\ +/)
       name              = parts.shift()

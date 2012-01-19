@@ -1,3 +1,5 @@
+###
+
 require '../../config'
 
 describe 'Tower.Model.Finders', ->
@@ -9,3 +11,4 @@ describe 'Tower.Model.Finders', ->
     Topic.exists 45, (error, result) -> expect(result).toEqual false
     Topic.exists (error, result) -> expect(result).toEqual true
     Topic.exists null, (error, result) -> expect(result).toEqual false
+###

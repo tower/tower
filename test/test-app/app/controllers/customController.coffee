@@ -310,6 +310,9 @@ class TowerSpecApp.CustomController extends Tower.Controller
   
   renderWithExplicitStringTemplate: ->
     @render "test/helloWorld"
+    
+  renderWithExplicitStringTemplateAsAction: ->
+    @render "helloWorld"
   
   # "ported":
   renderWithExplicitTemplateWithLocals: ->

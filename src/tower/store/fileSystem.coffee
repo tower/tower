@@ -10,11 +10,14 @@ class Tower.Store.FileSystem extends Tower.Store
   findPath: (query, callback) ->
     path          = query.path
     ext           = query.ext || ""
-    return @records[path] if @records[path]
-    loadPaths = @loadPaths
-    patterns  = []
+    prefixes      = query.prefixes || []
+    loadPaths     = @loadPaths
+    patterns      = []
+    
     if typeof(path) == "string"
       for loadPath in loadPaths
+        for prefix in prefixes
+          patterns.push new RegExp("#{loadPath}/#{prefix}/#{path}\\.#{ext}", "i")
         patterns.push new RegExp("#{loadPath}/#{path}\\.#{ext}", "i")
     else
       patterns.push path
@@ -24,7 +27,6 @@ class Tower.Store.FileSystem extends Tower.Store
     for templatePath in templatePaths
       for pattern in patterns
         if !!templatePath.match(pattern)
-          @records[path] = templatePath
           callback(null, templatePath) if callback
           return templatePath
     
@@ -33,7 +35,7 @@ class Tower.Store.FileSystem extends Tower.Store
     
   find: (query, callback) ->
     path = @findPath query
-    return File.read(path) if path
+    return (File.read(path) || "") if path
     null
     
   @alias "select", "find"

@@ -41,7 +41,11 @@ Tower.Controller.Rendering =
     @headers["Content-Type"] = @contentType
     
     view    = new Tower.View(@)
-    view.render.call view, options, callback
+    
+    try
+      view.render.call view, options, callback
+    catch error
+      callback error
     
   _handleRenderers: (options, callback) ->
     for name, renderer of Tower.Controller.renderers()
@@ -72,8 +76,10 @@ Tower.Controller.Rendering =
     options
   
   _normalizeOptions: (options = {}) ->
-    options.partial = @action if options.partial == true
-    options.template ||= (options.file || (@collectionName + "/" + (options.action || @action)))
+    options.partial     = @action if options.partial == true
+    options.prefixes  ||= [] 
+    options.prefixes.push @collectionName
+    options.template ||= (options.file || (options.action || @action))
     options
 
 module.exports = Tower.Controller.Rendering

@@ -1,3 +1,4 @@
+###
 require '../config'
 
 view = null
@@ -53,3 +54,4 @@ describe 'Tower.View', ->
 </form>
 
 '''
+###

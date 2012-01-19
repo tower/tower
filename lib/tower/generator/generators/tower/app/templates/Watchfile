@@ -1,6 +1,7 @@
 require('design.io').extension('watchfile')
 
-File = require('pathfinder').File
+File  = require('pathfinder').File
+Shift = require('shift')
 
 require("design.io-stylesheets")
   compress: false
@@ -17,13 +18,29 @@ require("design.io-javascripts")
     "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
 
 watch /app\/views\/*.coffee/
-  update: (path) ->
+  update: (path, callback) ->
     nodes = path.replace("app/views", "").split("/")
     name  = {}
     
     data  = File.read(path)
     
     @broadcast body: data, id: id, selector: selector, path: "/#{name}"
+    
+    files   = File.files("app/views")
+    result  = {}
+    
+    for file in files
+      continue unless file.match(/\.coffee$/)
+      result[File.basename(file, File.extname(file))] = File.read(file)
+    
+    engine = new Shift.CoffeeScript
+    engine.render "Tower.View.cache = #{JSON.stringify(result)}", (error, templates) ->
+      if error
+        console.log error
+      else
+        File.write "public/javascripts/app/views/templates.js", templates
+        
+        callback()
     
   client:
     update: (data) ->

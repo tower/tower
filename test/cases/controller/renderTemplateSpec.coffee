@@ -14,6 +14,10 @@ describe 'Tower.Controller.Rendering', ->
     Tower.get 'renderHelloWorldFromVariable', ->
       expect(@person).toEqual "david"
       expect(@body).toEqual "hello david"
+      
+  test 'renderWithExplicitStringTemplateAsAction', ->
+    Tower.get 'renderWithExplicitStringTemplateAsAction', ->
+      expect(@body).toEqual "<h1>Hello World!!!</h1>\n"
 
   #test 'helloWorldFile', ->
   #  Tower.get 'helloWorldFile', ->
