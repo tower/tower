@@ -1,8 +1,7 @@
-class Tower.View.Table
-  constructor: (template, args...) ->
-    @template         = template
+class Tower.View.Table extends Tower.View.Component
+  constructor: (args, options) ->
+    super
     
-    options           = Tower.Support.Array.extractOptions(args)
     recordOrKey       = args.shift()
     
     @key              = @recordKey(recordOrKey)

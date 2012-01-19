@@ -1,14 +1,13 @@
-class Tower.View.Form.Field
-  constructor: (options = {}) ->
-    #super
-    @[key] = value for key, value of options
+class Tower.View.Form.Field extends Tower.View.Component
+  constructor: (args, options) ->
+    super
     # input type
     #options.as    ||= attribute.inputType(options)
     @inputType     = options.as
     @inputs         = []
     
     # class
-  
+    
     #classes = [config.fieldClass, inputType]
     #
     #unless ["submit", "fieldset"].include?(inputType)
@@ -49,11 +48,8 @@ class Tower.View.Form.Field
     key     = args.shift || attribute.name
     @inputs.push inputFor(inputType, key, options)
     
-  tag: (key, args...) ->
-    @template.tag key, args
-    
   render: (block) ->
-    @tag "li", @attributes, =>
+    @tag Tower.View.fieldTag, @attributes, =>
       #input(attribute.name) unless blockGiven?
       @tag "input", type: "email"
       #elements = extractElements!(attributes)
@@ -65,8 +61,8 @@ class Tower.View.Form.Field
       #yield(self) if blockGiven? # template.captureHaml(self, block)
 
   inputFor: (key, attribute, options = {}) ->
-    Storefront:"Components":"Form":"Input".find(key.toSym).new(@inputAttributes.merge(options))
-
+    Tower.View.Form.Input.find(key).new(@inputAttributes.merge(options))
+  
   extractElements: (options = {}) ->
     elements = []
     if ["hidden", "submit"].include?(inputType)

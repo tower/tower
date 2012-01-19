@@ -3,6 +3,6 @@ Tower.View.ComponentHelper =
     Tower.View.Form.render(__ck, arguments...)
     
   tableFor: ->
-    Tower.View.Table.render(arguments...)
+    Tower.View.Table.render(__ck, arguments...)
 
 module.exports = Tower.View.ComponentHelper

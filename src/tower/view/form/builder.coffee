@@ -1,5 +1,5 @@
-class Tower.View.Form.Builder
-  constructor: (options = {}) ->
+class Tower.View.Form.Builder extends Tower.View.Component
+  constructor: (args, options = {}) ->
     @template       = options.template
     @model          = options.model
     @attribute      = options.attribute

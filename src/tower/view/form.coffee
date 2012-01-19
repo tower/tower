@@ -1,35 +1,27 @@
-class Tower.View.Form
-  @render: ->
-    (new @(arguments...)).render()
+class Tower.View.Form extends Tower.View.Component
+  constructor: (args, options) ->
+    super
     
-  constructor: ->
-    args        = Tower.Support.Array.args(arguments)
-    @template   = args.shift()
     @model      = args.shift()
     
     if typeof @model == "string"
       klass     = Tower.constant(Tower.Support.String.camelize(@model))
       @model    = if klass then new klass else null
     
-    @callback    = args.pop()
-    
     @attributes = @_extractAttributes(args.pop())
   
-  tag: (key, args...) ->
-    @template.tag key, args
-  
-  render: (callback)->
+  render: (callback) ->
     @tag "form", @attributes, =>
       @tag "input", type: "hidden", name: "_method", value: @attributes["data-method"]
-      if @callback
+      if callback
         builder    = new Tower.View.Form.Builder(
           template:   @template
           tabindex:   1
           accessKeys: {}
           model:      @model
         )
-        builder.render(@callback)
-    
+        builder.render(callback)
+  
   _extractAttributes: (options = {}) ->
     attributes                  = options.html || {}
     attributes.action           = options.url

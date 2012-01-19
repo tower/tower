@@ -1,9 +1,8 @@
-class Tower.View.Form.Fieldset
-  constructor: (options = {}) ->
-    #super
-    @[key] = value for key, value of options
+class Tower.View.Form.Fieldset extends Tower.View.Component
+  constructor: (args, options) ->
+    super
     #@label      = @localize("titles", options[:label], nil, (attributes[:locale_options] || {}).merge(:allow_blank => true)) if options[:label].present?
-  
+    
     #merge_class! attributes, *[
     #  config.fieldset_class
     #]
@@ -22,17 +21,14 @@ class Tower.View.Form.Fieldset
       index:        @index
       parentIndex: @parentIndex
     )
-    
-  tag: (key, args...) ->
-    @template.tag key, args
-    
+  
   # form.inputs :basic_info, :locale_options => {:count => 1, :past => true}
   render: (block) ->
     @tag "fieldset", @attributes, =>
       if @label
-        @tag "legend", class: "legend", =>
+        @tag "legend", class: Tower.View.legendClass, =>
           @tag "span", @label
-      @tag "ol", class: "fields", =>
+      @tag Tower.View.fieldListTag, class: Tower.View.fieldListClass, =>
         @builder.render(block)
     
 module.exports = Tower.View.Form.Fieldset
