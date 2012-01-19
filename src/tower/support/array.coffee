@@ -1,4 +1,10 @@
 Tower.Support.Array =
+  extractOptions: (args) ->
+    if typeof args[args.length - 1] == "object" then args.pop() else {}
+    
+  extractBlock: (args) ->
+    if typeof args[args.length - 1] == "function" then args.pop() else null
+    
   args: (args, index = 0, withCallback = false, withOptions = false) ->
     args = Array.prototype.slice.call(args, index, args.length)
     

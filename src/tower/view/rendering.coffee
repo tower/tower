@@ -7,6 +7,7 @@ Tower.View.Rendering =
     self = @
     
     @_renderBody options, (error, body) ->
+      return callback(error, body) if error
       self._renderLayout(body, options, callback)
       
   _renderBody: (options, callback) ->
@@ -35,8 +36,13 @@ Tower.View.Rendering =
       try
         locals          = options.locals
         locals.cache    = Tower.env != "development"
-        locals.hardcode = Tower.View.Components
+        locals.format   = true
+        locals.hardcode = _.extend {}, 
+          Tower.View.ComponentHelper
+          Tower.View.AssetHelper
+          Tower.View.HeadHelper
         result = require('coffeekup').render string, locals
+        
       catch error
         e = error
       
