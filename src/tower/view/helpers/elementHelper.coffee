@@ -41,3 +41,5 @@ Tower.View.ElementHelper =
           result.push item.toString()
           
     result
+    
+module.exports = Tower.View.ElementHelper

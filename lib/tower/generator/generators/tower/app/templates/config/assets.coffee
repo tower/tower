@@ -11,8 +11,11 @@ Tower.assets =
     
     vendor: [
       '/vendor/javascripts/underscore'
+      '/vendor/javascripts/underscore.string'
       '/vendor/javascripts/socket.io'
       '/vendor/javascripts/async'
+      '/vendor/javascripts/history'
+      '/vendor/javascripts/moment'
     ]
     
     development: [

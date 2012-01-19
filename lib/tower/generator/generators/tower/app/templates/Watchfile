@@ -1,5 +1,7 @@
 require('design.io').extension('watchfile')
 
+File = require('pathfinder').File
+
 require("design.io-stylesheets")
   compress: false
   debug:    false
@@ -16,4 +18,18 @@ require("design.io-javascripts")
 
 watch /app\/views\/*.coffee/
   update: (path) ->
+    nodes = path.replace("app/views", "").split("/")
+    name  = {}
     
+    data  = File.read(path)
+    
+    @broadcast body: data, id: id, selector: selector, path: "/#{name}"
+    
+  client:
+    update: (data) ->
+      Tower.View.cache[data.id] = data
+      
+      if data.reload
+        window.location = data.path
+      else
+        Tower.get data.path

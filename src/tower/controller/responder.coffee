@@ -7,9 +7,10 @@ class Tower.Controller.Responder
     @controller       = controller
     @options          = options
     
-    for format in @controller.formats
-      do (format) =>
-        @[format] = (callback) -> @["_#{format}"] = callback
+    @accept(format) for format in @controller.formats
+
+  accept: (format) ->
+    @[format] = (callback) -> @["_#{format}"] = callback
   
   respond: (callback) ->
     callback.call @controller, @ if callback
