@@ -7,6 +7,10 @@ Tower.Model.Scopes =
       scope = new Tower.Model.Scope(model: @)
       scope.where(type: @name) if @baseClass().name != @name
       scope
+      
+    defaultSort: (object) ->
+      @_defaultSort = object if object
+      @_defaultSort
 
 for key in Tower.Model.Scope.scopes
   do (key) ->

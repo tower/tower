@@ -2,7 +2,6 @@ Tower.Store.Memory.Finders =
   find: (query, options, callback) ->
     result  = []
     records = @records
-    self    = @
     
     if Tower.Support.Object.isPresent(query)
       sort    = options.sort
@@ -19,23 +18,15 @@ Tower.Store.Memory.Finders =
       for key, record of records
         result.push(record)
     
-    callback.call(self, null, result) if callback
+    callback.call(@, null, result) if callback
     
     result
     
-  findOne: ->
-  
-  first: (query, options, callback) ->
+  findOne: (query, options, callback) ->
     record = null
+    options.limit = 1
     @find query, options, (error, records) -> 
       record = records[0]
-      callback.call(@, error, record) if callback
-    record
-  
-  last: (query, options, callback) ->
-    record = null
-    @find query, options, (error, records) -> 
-      record = records[records.length - 1]
       callback.call(@, error, record) if callback
     record
   
@@ -49,7 +40,7 @@ Tower.Store.Memory.Finders =
     result
     
   # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
-  sort: ->
-    Tower.Support.Array.sortBy(arguments...)
+  sort: (records, sortings) ->
+    Tower.Support.Array.sortBy(records, sortings...)
     
 module.exports = Tower.Store.Memory.Finders

@@ -74,3 +74,21 @@ Tower.Support.Object.extend Tower,
       "#{namespace}.#{string}"
     else
       string
+      
+  async: (array, iterator, callback) ->
+    return callback() unless array.length
+    completed = 0
+    iterate = ->
+      iterator array[completed], (error) ->
+        if error
+          callback error
+          callback = ->
+        else
+          completed += 1
+          if completed == array.length
+            callback()
+          else
+            iterate()
+
+    iterate()
+

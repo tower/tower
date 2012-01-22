@@ -16,14 +16,8 @@ Tower.Model.Persistence =
       
       @_store
     
-    # tmp fix, for memory model
     load: (array) ->
-      array   = [array] unless Tower.Support.Object.isArray(array)
-      records = @store().records
-      for item in array
-        record = if item instanceof Tower.Model then item else new @(item)
-        records[record.id] = record
-      records
+      @store().load(array)
       
     collectionName: ->
       Tower.Support.String.camelize(Tower.Support.String.pluralize(@name), true)
@@ -33,16 +27,7 @@ Tower.Model.Persistence =
       
     clone: (model) ->
       
-    create2: (attributes, callback) ->
-      record = new @(attributes)
-      record.save (error, success) =>
-        callback.call @, error, record if callback
-      record
-  
   InstanceMethods:
-    isNew: ->
-      !!!@attributes.id
-    
     save: (options, callback) ->
       throw new Error("Record is readOnly") if @readOnly
       
@@ -65,48 +50,50 @@ Tower.Model.Persistence =
       true
     
     _update: (attributes, callback) ->
-      @runCallbacks "update", ->
-        @constructor.update @id, attributes, (error) =>
-          @changes = {} unless error
-          callback.call(@, error, !error) if callback
+      @runCallbacks "update", =>
+        @store().update {id: @id}, attributes, instantiate: false, (error) =>
+          throw error if error && !callback
+          @changes    = {} unless error
+          @persistent = true
+          callback.call(@, error) if callback
       
       @
       
     _create: (callback) ->
-      @runCallbacks "create", ->
-        @constructor.store().create @attributes, (error, docs) =>
-          @changes = {} unless error
-          callback.call(@, error, !error) if callback
+      @runCallbacks "create", =>
+        @store().create @attributes, instantiate: false, (error, docs) =>
+          throw error if error && !callback
+          @changes    = {} unless error
+          @persistent = true
+          @store().load @
+          callback.call(@, error) if callback
       
       @
     
     updateAttributes: (attributes, callback) ->
       @_update(attributes, callback)
     
-    delete: (callback) ->
+    destroy: (callback) ->
       if @isNew()
-        callback.call null, @ if callback
+        callback.call @, null if callback
       else
-        @constructor.destroy id: @id, (error) =>
+        @store().destroy {id: @id}, instantiate: false, (error) =>
+          throw error if error && !callback
+          @persistent = false
           delete @attributes.id unless error
-          callback.call @, error if callback
+          callback.call(@, error) if callback
       
-      @destroyed = true  
-      @freeze()
+      @destroyed = true
       @
     
-    destroy: (callback) ->
-      @destroyRelations()
-      
-      @delete (error) ->
-        throw error if error
-        callback.call error, @ if callback
-    
-    # Freeze the attributes hash such that associations are still accessible, even on destroyed records.    
-    freeze: ->
+    delete: (callback) ->
+      @destroy(callback)
     
     isPersisted: ->
-      !!@isNew()
+      !!(@persistent)# && @attributes.hasOwnProperty("id") && @attributes.id != null && @attributes.id != undefined)
+      
+    isNew: ->
+      !!!@isPersisted()
       
     toObject: ->
       @attributes
@@ -118,5 +105,7 @@ Tower.Model.Persistence =
       
     toggle: (name) ->
       
-
+    store: ->
+      @constructor.store()
+      
 module.exports = Tower.Model.Persistence

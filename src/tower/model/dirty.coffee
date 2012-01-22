@@ -26,6 +26,8 @@ Tower.Model.Dirty =
     for key, array of @changes
       result[key] = attributes[key]
     
+    result.updatedAt ||= new Date
+    
     result
 
   _attributeChange: (attribute, value) ->

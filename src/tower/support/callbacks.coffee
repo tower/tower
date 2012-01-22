@@ -56,13 +56,11 @@ class Tower.Support.Callbacks.Chain
   run: (binding, block) ->
     runner    = (callback, next) => callback.run(binding, next)
     
-    async     = Tower.async
-    
-    async.forEachSeries @before, runner, (error) =>
+    Tower.async @before, runner, (error) =>
       unless error
         block.call binding, (error) =>
           unless error
-            async.forEachSeries @after, runner, (error) =>
+            Tower.async @after, runner, (error) =>
               binding
     
   push: (phase, method, filters, options) ->

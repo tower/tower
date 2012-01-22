@@ -82,7 +82,7 @@ Tower.Model.Hierarchical =
     self.left <= other.left && other.left < self.right && sameScope?(other)
     
   sameScope: (other) ->
-    Array(actsAsNestedSetOptions[:scope]).all? do |attr|
+    Array(actsAsNestedSetOptions.scope).all (attr) ->
       self.send(attr) == other.send(attr)
   
   leftSibling: ->

@@ -2,27 +2,28 @@ require '../../config'
 
 scope     = null
 criteria  = null
+user      = null
 
-###
 describe 'Tower.Model.Validation', ->
   beforeEach ->
-    spec.resetUserStore()
-    @user = new User(id: 1)
+    User.store(new Tower.Store.Memory(name: "users", type: "User"))
+    user = new User(id: 1)
   
   it 'should be invalid', ->
-    expect(@user.validate()).toEqual false
+    expect(user.validate()).toEqual false
     
-    expect(@user.errors).toEqual({ 'firstName' : ["firstName can't be blank"] })
+    expect(user.errors).toEqual({ 'firstName' : ["firstName can't be blank"] })
     
-    @user.firstName = "Joe"
+    user.firstName = "Joe"
     
-    expect(@user.validate()).toEqual true
-    expect(@user.errors).toEqual []
+    expect(user.validate()).toEqual true
+    expect(user.errors).toEqual []
     
-    @user.firstName = null
+    user.firstName = null
     
-    expect(@user.validate()).toEqual false
-    expect(@user.errors).toEqual({ 'firstName' : ["firstName can't be blank"] })
+    expect(user.validate()).toEqual false
+    
+    expect(user.errors).toEqual({ 'firstName' : ["firstName can't be blank"] })
   
   it 'should validate from attribute definition', ->
     page = new Page(title: "A Page")
@@ -34,4 +35,3 @@ describe 'Tower.Model.Validation', ->
     
     expect(page.validate()).toEqual true
     expect(page.errors).toEqual []
-###

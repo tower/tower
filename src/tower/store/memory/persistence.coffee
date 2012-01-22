@@ -1,38 +1,76 @@
 Tower.Store.Memory.Persistence =
-  create: (attributes, options, callback) ->
-    attributes.id ?= @generateId()
-    record        = @serializeModel(attributes)
-    @records[attributes.id] = record
-    callback.call @, null, record if callback
-    record
-  
-  # must have all 5 args!
-  update: (updates, query, options, callback) ->
-    self = @
+  load: (records) ->
+    records = Tower.Support.Object.toArray(records)
+    for record in records
+      record = @_buildOne(record)
+      @records[record.get("id")] = record
+    records
     
-    @all query, options, (error, records) ->
-      unless error
-        for record, i in records
-          for key, value of updates
-            self._updateAttribute(record.attributes, key, value)
-            
+  _create: (attributes, options, callback) ->
+    result    = null
+    
+    if Tower.Support.Object.isArray(attributes)
+      result  = []
+      for object in attributes
+        result.push @_createOne(object, options)
+      result
+    else
+      result  = @_createOne(attributes, options)
+    
+    callback.call @, null, result if callback
+    result
+    
+  _createOne: (attributes, options) ->
+    attributes.id ?= @generateId()
+    attributes
+    
+  _build: (attributes, options, callback) ->
+    result    = null
+
+    if Tower.Support.Object.isArray(attributes)
+      result  = []
+      for object in attributes
+        result.push @_buildOne(object, options)
+      result
+    else
+      result  = @_buildOne(attributes, options)
+      
+    callback.call @, null, result if callback
+    result
+
+  _buildOne: (attributes, options) ->
+    @serializeModel(attributes)
+    
+  # must have all 5 args!
+  _update: (updates, query, options, callback) ->
+    @find query, options, (error, records) =>
+      return callback(error) if error
+      for record, i in records
+        @_updateOne(record, updates)
       callback.call(@, error, records) if callback
+      records
+      
+  _updateOne: (record, updates) ->
+    for key, value of updates
+      @_updateAttribute(record.attributes, key, value)
   
-  delete: (query, options, callback) ->
+  _destroy: (query, options, callback) ->
     _records = @records
     
     if Tower.Support.Object.isBlank(query)
-      @clear(callback)
+      @_clear(callback)
     else
-      @find query, (error, records) ->
-        unless error
-          for record in records
-            _records.splice(_records.indexOf(record), 1)
+      @find query, options, (error, records) ->
+        return callback(error) if error
+        for record in records
+          #_records.splice(_records.indexOf(record), 1)
+          delete _records[record.id]
         callback.call(@, error, records) if callback
+        records
       
-  clear: (callback) ->
+  _clear: (callback) ->
     @records = {}
-    callback.call(@, error, records) if callback
-    @records
+    callback.call(@, null) if callback
+    null
 
 module.exports = Tower.Store.Memory.Persistence

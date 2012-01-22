@@ -1,18 +1,19 @@
 class Tower.Model extends Tower.Class
-  constructor: (attrs = {}) ->
+  constructor: (attrs = {}, options = {}) ->
     definitions = @constructor.fields()
     attributes  = {}
     
-    for key, value of attrs
-      attributes[key] = value
-    
     for name, definition of definitions
-      attributes[name] ||= definition.defaultValue(@) unless attrs.hasOwnProperty(name)
+      attributes[name] = definition.defaultValue(@) unless attrs.hasOwnProperty(name)
     
     @attributes   = attributes
     @changes      = {}
     @errors       = {}
-    @readonly     = false
+    @readonly     = if options.hasOwnProperty("readonly") then options.readonly else false
+    @persistent   = if options.hasOwnProperty("persistent") then options.persisted else false
+    
+    for key, value of attrs
+      @set key, value
   
 require './model/scope'
 require './model/criteria'

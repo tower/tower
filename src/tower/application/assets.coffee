@@ -49,7 +49,7 @@ Tower.Application.Assets =
           for name, paths of assets
             assetBlocks.push name: name, paths: paths
 
-          async.forEachSeries assetBlocks, compile, (error) ->
+          Tower.async assetBlocks, compile, (error) ->
             callback(error)
 
         bundleIterator = (data, next) ->
@@ -61,7 +61,7 @@ Tower.Application.Assets =
         ]
 
         process.nextTick ->
-          async.forEachSeries bundles, bundleIterator, (error) ->
+          Tower.async bundles, bundleIterator, (error) ->
             throw error if error
             _console.debug "Writing public/assets/manifest.json"
             fs.writeFileSync "public/assets/manifest.json", JSON.stringify(manifest, null, 2)
@@ -129,7 +129,7 @@ Tower.Application.Assets =
       else
         next()
     
-    async.forEachSeries paths, upload, (error) ->
+    Tower.async paths, upload, (error) ->
       console.log(error) if error
     
       File.write(cachePath, JSON.stringify(assetCache, null, 2))
