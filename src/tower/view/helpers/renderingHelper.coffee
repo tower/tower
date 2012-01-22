@@ -7,9 +7,8 @@ Tower.View.RenderingHelper =
     prefixes    = options.prefixes
     prefixes  ||= [@_context.collectionName] if @_context
     template    = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
-    
-    __ck.indent()
-    text(String(@renderWithEngine(String(template)))) # hack, but works 
+    template    = @renderWithEngine(String(template))
+    eval("(function() {#{String(template)}})").call(@)
     null
     
   page: ->

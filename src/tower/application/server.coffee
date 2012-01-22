@@ -52,7 +52,7 @@ class Tower.Application extends Tower.Class
     #Tower.Route.initialize()
     require "#{Tower.root}/config/application"
     
-    paths = File.files("#{Tower.root}/config/locales/en")
+    paths = File.files("#{Tower.root}/config/locales")
     for path in paths
       Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
       

@@ -1,9 +1,9 @@
 Tower.View.StringHelper =  
   t: (string) ->
-    Tower.translate(string)
+    Tower.Support.I18n.translate(string)
   
   l: (object) ->
-    Tower.localize(string)
+    Tower.Support.I18n.localize(string)
     
   boolean: (boolean) ->
     if boolean then "yes" else "no"

@@ -52,6 +52,7 @@ Tower.View.Rendering =
           Tower.View.AssetHelper
           Tower.View.HeadHelper
           Tower.View.RenderingHelper
+          Tower.View.StringHelper
           tags: require('coffeekup').tags
         
         result = require('coffeekup').render string, locals
@@ -82,6 +83,6 @@ Tower.View.Rendering =
     result
     
   renderWithEngine: (template, engine) ->
-    require("coffeekup").render(require("shift").engine(engine || "coffee").render(template), @)
+    require("shift").engine(engine || "coffee").render(template)
   
 module.exports = Tower.View.Rendering

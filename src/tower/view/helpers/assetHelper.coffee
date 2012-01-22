@@ -1,32 +1,55 @@
 Tower.View.AssetHelper =  
-  javascripts: (source) ->
-    if Tower.env == "production"
-      manifest  = Tower.assetManifest
-      source    = "#{source}.js"
-      source    = manifest[source] if manifest[source]
-      path      = "/javascripts/#{source}"
-      path      = "#{Tower.assetHost}#{path}" if Tower.assetHost
-      @javascriptTag(path)
-    else
-      paths   = Tower.assets.javascripts[source]
-      result  = []
-      for path in paths
-        result.push @javascriptTag("/javascripts#{path}.js")
-      result.join("")
+  javascripts: (sources...) ->
+    options = Tower.Support.Array.extractOptions(sources)
+    options.namespace = "javascripts"
+    options.extension = "js"
+    paths = @_extractAssetPaths sources, options
+    javascriptTag(path) for path in paths
+    return null
+    
+  javascript: ->
+    javascript.apply @, arguments
 
-  stylesheets: (source) ->
+  stylesheets: (sources...) ->
+    options = Tower.Support.Array.extractOptions(sources)
+    options.namespace = "stylesheets"
+    options.extension = "css"
+    paths = @_extractAssetPaths sources, options
+    stylesheetTag(path) for path in paths
+    return null
+      
+  stylesheet: ->
+    stylesheets.apply @, arguments
+    
+  _extractAssetPaths: (sources, options = {}) ->
+    namespace = options.namespace
+    extension = options.extension
+    result    = []
+    
     if Tower.env == "production"
       manifest  = Tower.assetManifest
-      source    = "#{source}.css"
-      source    = manifest[source] if manifest[source]
-      path      = "/stylesheets/#{source}"
-      path      = "#{Tower.assetHost}#{path}" if Tower.assetHost
-      @stylesheetTag(path)
+      for source in sources
+        unless !!source.match(/^(http|\/{2})/)
+          source    = "#{source}.#{extension}"
+          source    = manifest[source] if manifest[source]
+          source    = "/#{namespace}/#{source}"
+          source    = "#{Tower.assetHost}#{source}" if Tower.assetHost
+        result.push(source)
     else
-      paths   = Tower.assets.stylesheets[source]
-      result  = []
-      for path in paths
-        result.push @stylesheetTag("/stylesheets#{path}.css")
-      result.join("")
+      for source in sources
+        if !!source.match(/^(http|\/{2})/)
+          result.push(source)
+        else
+          paths   = Tower.assets[namespace][source]
+          for path in paths
+            result.push("/#{namespace}#{path}.#{extension}")
+    
+    result
+      
+  stylesheetTag: (source) ->
+    link rel: 'stylesheet', href: source
+    
+  javascriptTag: (source) ->
+    script src: source
 
 module.exports = Tower.View.AssetHelper
