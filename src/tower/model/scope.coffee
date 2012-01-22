@@ -30,7 +30,6 @@ class Tower.Model.Scope extends Tower.Class
   ]
   
   @builders: [
-    "build", 
     "create", 
     "update", 
     "delete", 
@@ -72,9 +71,6 @@ class Tower.Model.Scope extends Tower.Class
   count: (callback) ->
     criteria  = @criteria
     @store.count criteria.query, criteria.options, callback
-  
-  build: (attributes, callback) ->
-    @store.build Tower.Support.Object.extend(@criteria.query, attributes), @criteria.options, callback
   
   # create [{firstName: "Lance"}, {firstName: "Dane"}]
   # create [{firstName: "Lance"}, {firstName: "Dane"}], validate: false
