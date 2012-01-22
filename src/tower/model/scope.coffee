@@ -71,6 +71,10 @@ class Tower.Model.Scope extends Tower.Class
   count: (callback) ->
     criteria  = @criteria
     @store.count criteria.query, criteria.options, callback
+    
+  batch: ->
+    
+  build: ->
   
   # create [{firstName: "Lance"}, {firstName: "Dane"}]
   # create [{firstName: "Lance"}, {firstName: "Dane"}], validate: false
@@ -78,24 +82,75 @@ class Tower.Model.Scope extends Tower.Class
   # create validate: false
   create: ->
     {criteria, updates, callback} = @_extractArgs(arguments, updates: true, options: true, ids: false)
-    @store.create Tower.Support.Object.extend({}, criteria.query, updates), criteria.options, callback
+    attributes                    = Tower.Support.Object.extend({}, criteria.query, updates)
+    options                       = criteria.options
+
+    if options.instantiate
+      isArray = Tower.Support.Object.isArray(attributes)
+      @store.build attributes, options, (error, records) =>
+        console.log records
+        return callback(error) if error
+        records = Tower.Support.Object.toArray(records)
+        iterator = (record, next) -> record.save(next)
+        Tower.async records, iterator, (error) =>
+          unless callback
+            throw error if error
+          else
+            return callback(error) if error
+            if isArray
+              callback(error, records)
+            else
+              callback(error, records[0])
+    else
+      @store.create attributes, options, callback
   
   update: ->
     {criteria, updates, options, callback} = @_extractArgs(arguments, ids: true, updates: true, options: true)
-    @store.update updates, criteria.query, criteria.options, callback
-    
+    options = criteria.options
+    if options.instantiate
+      iterator = (record, next) -> record.updateAttributes(updates, next)
+      @_each criteria.query, criteria.options, iterator, callback
+    else
+      @store.update updates, criteria.query, criteria.options, callback
+  
   destroy: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true, options: true)
-    @store.destroy criteria.query, criteria.options, callback
+    options = criteria.options
+    if options.instantiate
+      iterator = (record, next) -> record.destroy(next)
+      @_each criteria.query, criteria.options, iterator, callback
+    else
+      @store.destroy criteria.query, criteria.options, callback
     
   delete: ->
     @destroy.apply @, arguments
+    
+  toCriteria: (sortDirection) ->
+    criteria = @criteria
+    
+    if sortDirection || !criteria.options.hasOwnProperty("sort")
+      criteria  = criteria.clone()
+      sort      = @model.defaultSort()
+      criteria[sortDirection || sort.direction](sort.name) if sort
+    
+    criteria
     
   merge: (scope) ->
     @criteria.merge(scope.criteria)
     
   clone: ->
     new @constructor(model: @model, criteria: @criteria.clone())
+    
+  _each: (query, options, iterator, callback) ->
+    @store.find query, options, (error, records) =>
+      if error
+        callback.call @, error, records
+      else
+        Tower.async records, iterator, (error) =>
+          unless callback
+            throw error if error
+          else
+            callback.call @, error, records if callback
   
   _extractArgs: (args, opts = {}) ->
     args        = Tower.Support.Array.args(args)
@@ -130,15 +185,5 @@ class Tower.Model.Scope extends Tower.Class
       criteria.where id: $in: ids
     
     criteria: criteria, updates: updates, callback: callback
-    
-  toCriteria: (sortDirection) ->
-    criteria = @criteria
-    
-    if sortDirection || !criteria.options.hasOwnProperty("sort")
-      criteria  = criteria.clone()
-      sort      = @model.defaultSort()
-      criteria[sortDirection || sort.direction](sort.name) if sort
-    
-    criteria
 
 module.exports = Tower.Model.Scope

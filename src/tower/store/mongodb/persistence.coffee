@@ -37,12 +37,4 @@ Tower.Store.MongoDB.Persistence =
 
     @
     
-  load: (array) ->
-    array   = Tower.Support.Object.toArray(array)
-    records = @records
-    for record in array
-      record = if record instanceof Tower.Model then record else @build(record)
-      records[record.id] = record
-    records
-    
 module.exports = Tower.Store.MongoDB.Persistence

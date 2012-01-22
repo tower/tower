@@ -71,62 +71,10 @@ class Tower.Store extends Tower.Class
   constructor: (options = {}) ->
     @name       = options.name
     @className  = options.type || Tower.namespaced(Tower.Support.String.camelize(Tower.Support.String.singularize(@name)))
-  
-  find: (query, options, callback) ->
-    
-  findOne: ->
-    
-  create: (attributes, options, callback) ->
-    if options.instantiate
-      @_createEach attributes, options, callback
-    else
-      @_create attributes, options, callback
-      
-  _createEach: (attributes, options, callback) ->
-    isArray = Tower.Support.Object.isArray(attributes)
-    
-    @_build attributes, options, (error, records) =>
-      return callback(error) if error
-      records = Tower.Support.Object.toArray(records)
-      iterator = (record, next) -> record.save(next)
-      Tower.async records, iterator, (error) =>
-        unless callback
-          throw error if error
-        else
-          return callback(error) if error
-          if isArray
-            callback(error, records)
-          else
-            callback(error, records[0])
-    
-  update: (updates, query, options, callback) ->
-    if options.instantiate
-      @_updateEach updates, query, options, callback
-    else
-      @_update updates, query, options, callback
-    
-  _updateEach: (updates, query, options, callback) ->
-    iterator = (record, next) -> record.updateAttributes(updates, next)
-    @each query, options, iterator, callback
-    
-  _update: (updates, query, options, callback) ->
-    
-    
-  destroy: (query, options, callback) ->
-    if options.instantiate
-      @_destroyEach query, options, callback
-    else
-      @_destroy query, options, callback
-      
-  _destroyEach: (query, options, callback) ->
-    iterator = (record, next) -> record.destroy(next)
-    @each query, options, iterator, callback
-    
-  _destroy: (query, options, callback) ->
     
   delete: (query, options, callback) ->
     @destroy.apply @, arguments
-
+  
   build: (attributes, options, callback) ->
     record        = @serializeModel(attributes)
     callback.call @, null, record if callback
@@ -134,17 +82,6 @@ class Tower.Store extends Tower.Class
     
   load: (records) ->
     
-  each: (query, options, iterator, callback) ->
-    @find query, options, (error, records) =>
-      if error
-        callback.call @, error, records
-      else
-        Tower.async records, iterator, (error) =>
-          unless callback
-            throw error if error
-          else
-            callback.call @, error, records if callback
-  
   schema: ->
     Tower.constant(@className).fields()
 

@@ -1,22 +1,11 @@
 Tower.Store.MongoDB.Finders =
-  findOne: (query, options, callback) ->
-    self          = @
-    query         = @serializeQuery(query)
-    options.limit = 1
-    options       = @serializeOptions(options)
-    
-    @collection().findOne query, (error, doc) ->
-      doc = self.serializeModel(doc) unless error || !doc
-      callback.call(@, error, doc) if callback
-    @
-    
   serializeModel: (attributes) ->
     klass = Tower.constant(@className)
     attributes.id ||= attributes._id
     delete attributes._id
     new klass(attributes)
   
-  all: (query, options, callback) ->
+  find: (query, options, callback) ->
     self          = @
     query         = @serializeQuery(query)
     options       = @serializeOptions(options)
@@ -30,6 +19,17 @@ Tower.Store.MongoDB.Finders =
       
       callback.call(@, error, docs) if callback
     
+    @
+    
+  findOne: (query, options, callback) ->
+    self          = @
+    query         = @serializeQuery(query)
+    options.limit = 1
+    options       = @serializeOptions(options)
+    
+    @collection().findOne query, (error, doc) ->
+      doc = self.serializeModel(doc) unless error || !doc
+      callback.call(@, error, doc) if callback
     @
   
   count: (query, options, callback) ->

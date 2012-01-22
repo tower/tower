@@ -43,13 +43,13 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "find"
       scope.find 1, 2, 3
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: true }, undefined
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: false }, undefined
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3]
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: true }, undefined
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: false }, undefined
       
     test '`[1, 2, 3], callback`', ->
       callback = ->
@@ -57,26 +57,26 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3], callback
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: true }, callback
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: false }, callback
       
     #test 'where(id: $in: [1, 2, 3]).find(1) should only pass id: $in: [1]', ->
     #  spyOn scope.store, "find"
     #  scope.where(id: $in: [1, 2, 3]).find(1)
     #  
-    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, { instantiate: true }, undefined
+    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, { instantiate: false }, undefined
       
   describe '#update', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "update"
       scope.update 1, 2, 3, {name: "Lance"}, instantiate: false
       
-      expect(scope.store.update).toHaveBeenCalledWith { name : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, { instantiate: true }, undefined 
+      expect(scope.store.update).toHaveBeenCalledWith { name : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "update"
       scope.update 1, 2, 3, {name: "Lance"}, instantiate: false
 
-      expect(scope.store.update).toHaveBeenCalledWith { name : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, { instantiate: true }, undefined 
+      expect(scope.store.update).toHaveBeenCalledWith { name : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined 
       
   describe '#destroy', ->
     test '`1, 2, 3`', ->
@@ -102,19 +102,19 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "create"
       scope.create(name: "Lance")
       
-      expect(scope.store.create).toHaveBeenCalledWith { name: "Lance" }, { instantiate: true }, undefined
+      expect(scope.store.create).toHaveBeenCalledWith { name: "Lance" }, { instantiate: false }, undefined
       
     test 'where(name: "Lance").create()', ->
       spyOn scope.store, "create"
       scope.where(name: "Lance").create()
       
-      expect(scope.store.create).toHaveBeenCalledWith { name: "Lance" }, { instantiate: true }, undefined
+      expect(scope.store.create).toHaveBeenCalledWith { name: "Lance" }, { instantiate: false }, undefined
       
     test 'create with an `id`', ->
       spyOn scope.store, "create"
       scope.create id: "something"
 
-      expect(scope.store.create).toHaveBeenCalledWith { id: "something" }, { instantiate: true }, undefined
+      expect(scope.store.create).toHaveBeenCalledWith { id: "something" }, { instantiate: false }, undefined
       
   test '#clone', ->
     clone = scope.where(name: "Lance")
