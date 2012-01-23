@@ -1,4 +1,3 @@
-###
 Tower.Controller.Elements =
   # @extractElements $(".item a"), find: {meta: "span small"}, closest: {title: ".item h1"}
   extractElements: (target, options = {}) ->
@@ -28,11 +27,8 @@ Tower.Controller.Elements =
       params.action = action
     
       elements  = _.extend {target: target, form: form}, @extractElements(target, options)
-    
-      if @_dispatch event, handler, elements: elements, params: params
-        true
-      else
-        false
+      
+      @_dispatch event, handler, elements: elements, params: params
         
   invalidForm: ->
     element = $("##{@resourceName}-#{@elementName}")
@@ -42,4 +38,5 @@ Tower.Controller.Elements =
       if field.length
         field.css("background", "yellow")
         $("input", field).after("<output class='error'>#{errors.join("\n")}</output>")
-###
+
+module.exports = Tower.Controller.Elements

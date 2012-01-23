@@ -165,13 +165,21 @@
       };
       return Tower.async(this.before, runner, function(error) {
         if (!error) {
-          return block.call(binding, function(error) {
-            if (!error) {
+          switch (block.length) {
+            case 0:
+              block.call(binding);
               return Tower.async(_this.after, runner, function(error) {
                 return binding;
               });
-            }
-          });
+            default:
+              return block.call(binding, function(error) {
+                if (!error) {
+                  return Tower.async(_this.after, runner, function(error) {
+                    return binding;
+                  });
+                }
+              });
+          }
         }
       });
     };
@@ -411,6 +419,9 @@
         }
       }
       return this.interpolate(this.lookup(key, options.language), options);
+    },
+    localize: function() {
+      return this.translate.apply(this, arguments);
     },
     lookup: function(key, language) {
       var part, parts, result, _i, _len;
@@ -1041,6 +1052,16 @@
 
     __extends(Application, Tower.Class);
 
+    Application.include(Tower.Support.Callbacks);
+
+    Application.configure = function(block) {
+      return this.initializers().push(block);
+    };
+
+    Application.initializers = function() {
+      return this._initializers || (this._initializers = []);
+    };
+
     Application.instance = function() {
       return this._instance;
     };
@@ -1229,6 +1250,7 @@
     namespace: null,
     accessors: typeof window === "undefined",
     logger: typeof _console !== 'undefined' ? _console : console,
+    config: {},
     get: function() {
       return Tower.request.apply(Tower, ["get"].concat(__slice.call(arguments)));
     },
@@ -1267,12 +1289,13 @@
     raise: function() {
       throw new Error(Tower.t.apply(Tower, arguments));
     },
-    initialize: function() {
-      return Tower.Application.initialize();
-    },
     t: function() {
       var _ref;
-      return (_ref = Tower.Support.I18n).t.apply(_ref, arguments);
+      return (_ref = Tower.Support.I18n).translate.apply(_ref, arguments);
+    },
+    l: function() {
+      var _ref;
+      return (_ref = Tower.Support.I18n).localize.apply(_ref, arguments);
     },
     stringify: function() {
       var string;
@@ -1438,13 +1461,6 @@
       return this.destroy.apply(this, arguments);
     };
 
-    Store.prototype.build = function(attributes, options, callback) {
-      var record;
-      record = this.serializeModel(attributes);
-      if (callback) callback.call(this, null, record);
-      return record;
-    };
-
     Store.prototype.load = function(records) {};
 
     Store.prototype.schema = function() {
@@ -1534,22 +1550,6 @@
   };
 
   Tower.Store.Memory.Persistence = {
-    build: function(attributes, options, callback) {
-      var object, result, _i, _len;
-      result = null;
-      if (Tower.Support.Object.isArray(attributes)) {
-        result = [];
-        for (_i = 0, _len = attributes.length; _i < _len; _i++) {
-          object = attributes[_i];
-          result.push(this.serializeModel(object));
-        }
-        result;
-      } else {
-        result = this.serializeModel(attributes);
-      }
-      if (callback) callback.call(this, null, result);
-      return result;
-    },
     load: function(records) {
       var record, _i, _len;
       records = Tower.Support.Object.toArray(records);
@@ -1561,7 +1561,7 @@
       return records;
     },
     create: function(attributes, options, callback) {
-      var object, result, _i, _len, _ref;
+      var object, result, _i, _len, _ref, _ref2;
       result = null;
       if (Tower.Support.Object.isArray(attributes)) {
         result = [];
@@ -1572,6 +1572,7 @@
         }
         result;
       } else {
+        if ((_ref2 = attributes.id) == null) attributes.id = this.generateId();
         result = attributes;
       }
       if (callback) callback.call(this, null, result);
@@ -1883,10 +1884,22 @@
 
     Scope.prototype.batch = function() {};
 
-    Scope.prototype.build = function() {};
+    Scope.prototype.build = function(attributes, options) {
+      var object, result, _j, _len2;
+      if (Tower.Support.Object.isArray(attributes)) {
+        result = [];
+        for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+          object = attributes[_j];
+          result.push(this.store.serializeModel(object));
+        }
+        return result;
+      } else {
+        return this.store.serializeModel(attributes);
+      }
+    };
 
     Scope.prototype.create = function() {
-      var attributes, callback, criteria, isArray, options, updates, _ref2;
+      var attributes, callback, criteria, isArray, iterator, options, records, updates, _ref2;
       var _this = this;
       _ref2 = this._extractArgs(arguments, {
         updates: true,
@@ -1896,25 +1909,25 @@
       attributes = Tower.Support.Object.extend({}, criteria.query, updates);
       if (options.instantiate) {
         isArray = Tower.Support.Object.isArray(attributes);
-        return this.store.build(attributes, options, function(error, records) {
-          var iterator;
-          if (error) return callback(error);
-          records = Tower.Support.Object.toArray(records);
-          iterator = function(record, next) {
+        records = Tower.Support.Object.toArray(this.build(attributes, options));
+        iterator = function(record, next) {
+          if (record) {
             return record.save(next);
-          };
-          return Tower.async(records, iterator, function(error) {
-            if (!callback) {
-              if (error) throw error;
+          } else {
+            return next();
+          }
+        };
+        return Tower.async(records, iterator, function(error) {
+          if (!callback) {
+            if (error) throw error;
+          } else {
+            if (error) return callback(error);
+            if (isArray) {
+              return callback(error, records);
             } else {
-              if (error) return callback(error);
-              if (isArray) {
-                return callback(error, records);
-              } else {
-                return callback(error, records[0]);
-              }
+              return callback(error, records[0]);
             }
-          });
+          }
         });
       } else {
         return this.store.create(attributes, options, callback);
@@ -2225,7 +2238,7 @@
       return this.constructor.toParam() + "/" + this.toParam();
     },
     toParam: function() {
-      return this.get("id").toString();
+      return String(this.get("id"));
     }
   };
 
@@ -2718,9 +2731,7 @@
           if (callback) callback.call(this, null);
         } else {
           this.runCallbacks("destroy", function() {
-            return _this.store().destroy({
-              id: _this.id
-            }, {
+            return _this.constructor.destroy(_this.id, {
               instantiate: false
             }, function(error) {
               if (error && !callback) throw error;
@@ -2746,20 +2757,19 @@
         return this.constructor.store();
       },
       _save: function(callback) {
+        var _this = this;
         return this.runCallbacks("save", function() {
-          if (this.isNew()) {
-            return this._create(callback);
+          if (_this.isNew()) {
+            return _this._create(callback);
           } else {
-            return this._update(this.toUpdates(), callback);
+            return _this._update(_this.toUpdates(), callback);
           }
         });
       },
       _update: function(attributes, callback) {
         var _this = this;
         this.runCallbacks("update", function() {
-          return _this.store().update({
-            id: _this.id
-          }, attributes, {
+          return _this.constructor.update(_this.id, attributes, {
             instantiate: false
           }, function(error) {
             if (error && !callback) throw error;
@@ -2773,13 +2783,16 @@
       _create: function(callback) {
         var _this = this;
         this.runCallbacks("create", function() {
-          return _this.store().create(_this.attributes, {
+          return _this.constructor.create(_this.attributes, {
             instantiate: false
-          }, function(error, docs) {
+          }, function(error, attributes) {
             if (error && !callback) throw error;
-            if (!error) _this.changes = {};
-            _this.persistent = true;
-            _this.store().load(_this);
+            if (!error) {
+              _.extend(_this.attributes, attributes);
+              _this.changes = {};
+              _this.persistent = true;
+              _this.store().load(_this);
+            }
             if (callback) return callback.call(_this, error);
           });
         });
@@ -3495,8 +3508,7 @@
       this.cellIndex = 0;
       this.scope = "table";
       this.headers = [];
-      options.summary || (options.summary = "Table for " + key.titleize);
-      options["class"] = ["data-table", options["class"]].compact.uniq.join(" ");
+      options.summary || (options.summary = "Table for " + (_.titleize(this.key)));
       options.role = "grid";
       data = options.data || (options.data = {});
       if (options.hasOwnProperty("total")) data.total = options.total;
@@ -4088,7 +4100,7 @@
           if (!source.match(/^(http|\/{2})/)) {
             source = "" + source + "." + extension;
             if (manifest[source]) source = manifest[source];
-            source = "/" + namespace + "/" + source;
+            source = "/assets/" + source;
             if (Tower.assetHost) source = "" + Tower.assetHost + source;
           }
           result.push(source);
@@ -4381,7 +4393,7 @@
 
   Tower.View.RenderingHelper = {
     partial: function(path, options, callback) {
-      var prefixes, template;
+      var item, name, prefixes, template, tmpl, _l, _len4, _ref4;
       if (typeof options === "function") {
         callback = options;
         options = {};
@@ -4394,7 +4406,19 @@
       if (this._context) prefixes || (prefixes = [this._context.collectionName]);
       template = this._readTemplate(path, prefixes, options.type || Tower.View.engine);
       template = this.renderWithEngine(String(template));
-      eval("(function() {" + (String(template)) + "})").call(this);
+      tmpl = "(function() {" + (String(template)) + "})";
+      if (options.collection) {
+        name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true);
+        _ref4 = options.collection;
+        for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+          item = _ref4[_l];
+          this[name] = item;
+          eval(tmpl).call(this);
+          delete this[name];
+        }
+      } else {
+        eval(tmpl).call(this);
+      }
       return null;
     },
     page: function() {
@@ -4407,13 +4431,13 @@
       });
     },
     yields: function(key) {
-      var value;
+      var ending, value;
       value = this[key];
       if (typeof value === "function") {
         eval("(" + (String(value)) + ")()");
       } else {
-        __ck.indent();
-        text(value);
+        ending = value.match(/\n$/) ? "\n" : "";
+        text(value.replace(/\n$/, "").replace(/^(?!\s+$)/mg, __ck.repeat('  ', __ck.tabs)) + ending);
       }
       return null;
     },
@@ -5190,6 +5214,130 @@
       return json;
     }
   });
+
+  Tower.Controller.Elements = {
+    extractElements: function(target, options) {
+      var key, method, result, selector, selectors;
+      if (options == null) options = {};
+      result = {};
+      for (method in options) {
+        selectors = options[method];
+        for (key in selectors) {
+          selector = selectors[key];
+          result[key] = target[method](selector);
+        }
+      }
+      return result;
+    },
+    processElements: function(target, options) {
+      if (options == null) options = {};
+      return this.elements = this.extractElements(target, options);
+    },
+    clickHandler: function(name, handler, options) {
+      var _this = this;
+      return $(this.dispatcher).on(name, function(event) {});
+    },
+    submitHandler: function(name, handler, options) {
+      var _this = this;
+      return $(this.dispatcher).on(name, function(event) {
+        var action, elements, form, method, params, target;
+        target = $(event.target);
+        form = target.closest("form");
+        action = form.attr("action");
+        method = (form.attr("data-method") || form.attr("method")).toUpperCase();
+        params = form.serializeParams();
+        params.method = method;
+        params.action = action;
+        elements = _.extend({
+          target: target,
+          form: form
+        }, _this.extractElements(target, options));
+        return _this._dispatch(event, handler, {
+          elements: elements,
+          params: params
+        });
+      });
+    },
+    invalidForm: function() {
+      var attribute, element, errors, field, _ref4, _results;
+      element = $("#" + this.resourceName + "-" + this.elementName);
+      _ref4 = this.resource.errors;
+      _results = [];
+      for (attribute in _ref4) {
+        errors = _ref4[attribute];
+        field = $("#" + this.resourceName + "-" + attribute + "-field");
+        if (field.length) {
+          field.css("background", "yellow");
+          _results.push($("input", field).after("<output class='error'>" + (errors.join("\n")) + "</output>"));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    }
+  };
+
+  Tower.Controller.Events = {
+    ClassMethods: {
+      DOM_EVENTS: ["click", "dblclick", "blur", "error", "focus", "focusIn", "focusOut", "hover", "keydown", "keypress", "keyup", "load", "mousedown", "mouseenter", "mouseleave", "mousemove", "mouseout", "mouseover", "mouseup", "mousewheel", "ready", "resize", "scroll", "select", "submit", "tap", "taphold", "swipe", "swipeleft", "swiperight"],
+      DOM_EVENT_PATTERN: new RegExp("^(" + (this.DOM_EVENTS.join("|")) + ")"),
+      dispatcher: global,
+      addEventHandler: function(name, handler, options) {
+        if (options.type === "socket" || !eventType.match(this.DOM_EVENT_PATTERN)) {
+          return this.addSocketEventHandler(name, handler, options);
+        } else {
+          return this.addDomEventHandler(name, handler, options);
+        }
+      },
+      socketNamespace: function() {
+        return Tower.Support.String.pluralize(Tower.Support.String.camelize(this.name.replace(/(Controller)$/, ""), false));
+      },
+      addSocketEventHandler: function(name, handler, options) {
+        var _this = this;
+        this.io || (this.io = Tower.Application.instance().io.connect(this.socketNamespace()));
+        return this.io.on(name, function(data) {
+          return _this._dispatch(void 0, handler, data);
+        });
+      },
+      addDomEventHandler: function(name, handler, options) {
+        var eventType, method, parts, selector;
+        var _this = this;
+        parts = name.split(/\ +/);
+        name = parts.shift();
+        selector = parts.join(" ");
+        if (selector && selector !== "") options.target = selector;
+        options.target || (options.target = "body");
+        eventType = name.split(/[\.:]/)[0];
+        method = this["" + eventType + "Handler"];
+        if (method) {
+          method.call(this, name, handler, options);
+        } else {
+          $(this.dispatcher).on(name, options.target, function(event) {
+            return _this._dispatch(handler, options);
+          });
+        }
+        return this;
+      },
+      _dispatch: function(handler, options) {
+        var controller;
+        if (options == null) options = {};
+        controller = this.instance();
+        controller.elements || (controller.elements = {});
+        controller.params || (controller.params = {});
+        if (options.params) _.extend(controller.params, options.params);
+        if (options.elements) _.extend(controller.elements, options.elements);
+        if (typeof handler === "string") {
+          return controller[handler].call(controller, event);
+        } else {
+          return handler.call(controller, event);
+        }
+      }
+    }
+  };
+
+  Tower.Controller.include(Tower.Controller.Elements);
+
+  Tower.Controller.include(Tower.Controller.Events);
 
   Tower.Dispatch = {};
 

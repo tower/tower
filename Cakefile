@@ -119,6 +119,8 @@ window.Tower.logger = if this["_console"] then _console else console
           result += code
           compileEach 'controller', null, (code) ->
             result += code
+            compileEach 'client/controller', null, (code) ->
+              result += code
             compileEach 'dispatch', null, (code) ->
               result += code
               compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->

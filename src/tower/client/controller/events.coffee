@@ -36,7 +36,7 @@ Tower.Controller.Events =
     DOM_EVENT_PATTERN: new RegExp("^(#{@DOM_EVENTS.join("|")})")
     
     dispatcher: global
-        
+    
     addEventHandler: (name, handler, options) ->
       if options.type == "socket" || !eventType.match(@DOM_EVENT_PATTERN)
         @addSocketEventHandler(name, handler, options)
@@ -81,3 +81,4 @@ Tower.Controller.Events =
       else
         handler.call controller, event
         
+module.exports = Tower.Controller.Events
