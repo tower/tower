@@ -1,4 +1,4 @@
-Tower.assets =
+module.exports =
   javascripts:
     application: [
       "/app/client/config/application"
@@ -19,6 +19,7 @@ Tower.assets =
     ]
     
     development: [
+      '/vendor/javascripts/mocha'
       '/vendor/javascripts/design.io'
     ]
   
@@ -34,8 +35,3 @@ Tower.assets =
     vendor: [
       
     ]
-    
-try
-  Tower.assetManifest = JSON.parse(require('fs').readFileSync('public/assets/manifest.json', 'utf-8'))
-catch error
-  Tower.assetManifest = {}

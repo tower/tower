@@ -54,10 +54,16 @@ class Tower.Support.Callbacks.Chain
     
     Tower.async @before, runner, (error) =>
       unless error
-        block.call binding, (error) =>
-          unless error
+        switch block.length
+          when 0
+            block.call(binding)
             Tower.async @after, runner, (error) =>
               binding
+          else
+            block.call binding, (error) =>
+              unless error
+                Tower.async @after, runner, (error) =>
+                  binding
     
   push: (phase, method, filters, options) ->
     @[phase].push new Tower.Support.Callback(method, filters, options)

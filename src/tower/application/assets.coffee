@@ -10,6 +10,12 @@ puts          = require('util').puts
 print         = require('util').print
 
 Tower.Application.Assets =
+  loadManifest: ->
+    try
+      Tower.assetManifest = JSON.parse(require('fs').readFileSync('public/assets/manifest.json', 'utf-8'))
+    catch error
+      Tower.assetManifest = {}
+    
   bundle: ->
     gzip          = require 'gzip'
     

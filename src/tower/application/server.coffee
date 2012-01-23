@@ -55,34 +55,44 @@ class Tower.Application extends Tower.Class
     #Tower.Route.initialize()
     require "#{Tower.root}/config/application"
     
-    @runCallbacks "initialize", (callback) =>
-      paths = File.files("#{Tower.root}/config/locales")
+    @runCallbacks "initialize", =>
+      paths = File.files("#{Tower.root}/config/preinitializers")
       for path in paths
-        Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
+        require(path) if path.match(/\.(coffee|js)$/)
       
-      require "#{Tower.root}/config/routes"
-      require "#{Tower.root}/config/assets"
-    
-      # load initializers
-      require "#{Tower.root}/config/environments/#{Tower.env}"
+      @runCallbacks "configure", =>
+        for key in ["session", "assets", "credentials", "databases"]
+          try
+            Tower.config[key] = require("#{Tower.root}/config/#{key}")
+          catch error
+            Tower.config[key] = {}
+        
+        Tower.Application.Assets.loadManifest()
+      
+        require("#{Tower.root}/config/routes")
+        
+        paths = File.files("#{Tower.root}/config/locales")
+        for path in paths
+          Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
+      
+        # load initializers
+        require "#{Tower.root}/config/environments/#{Tower.env}"
+      
       paths = File.files("#{Tower.root}/config/initializers")
-    
+      
       for path in paths
         require(path) if path.match(/\.(coffee|js)$/)
     
       configs = @constructor.initializers()
-    
+      
       config.call(@) for config in configs
-    
-      paths = File.files("#{Tower.root}/config/locales")
-      paths = paths.concat File.files("#{Tower.root}/app/helpers")
+      
+      paths = File.files("#{Tower.root}/app/helpers")
       paths = paths.concat File.files("#{Tower.root}/app/models")
       paths = paths.concat File.files("#{Tower.root}/app/controllers")
-    
+      
       for path in paths
         require(path) if path.match(/\.(coffee|js)$/)
-        
-      callback() if callback
     
   teardown: ->
     #Tower.Route.teardown()

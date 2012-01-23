@@ -3,10 +3,13 @@ File = require('pathfinder').File
 Tower.Generator.Resources =  
   route: (routingCode) ->
     @log "route", routingCode
-    sentinel = /\.Route\.draw do(?:\s*\|map\|)?\s*$/
+    sentinel = /\.Route\.draw ->(?:\s*\|map\|)?\s*$/
     
     @inRoot ->
-      @injectIntoFile 'config/routes.rb', "\n  #{routing_code}\n", after: sentinel, verbose: false
+      @injectIntoFile 'config/routes.coffee', "\n  #{routingCode}\n", after: sentinel, verbose: false
+      
+  inRoot: (block) ->
+    @inside ".", block
       
   generate: (type) ->
     options =
@@ -61,8 +64,8 @@ Tower.Generator.Resources =
     pluralClassName       = Tower.Support.String.pluralize(className)
     namespacedClassName   = "#{namespace}.#{className}"
     pluralName            = Tower.Support.String.pluralize(name)
-    cssName               = Tower.Support.String.parameterize(name)
-    pluralCssName         = Tower.Support.String.parameterize(pluralName)
+    paramName             = Tower.Support.String.parameterize(name)
+    pluralParamName       = Tower.Support.String.parameterize(pluralName)
     humanName             = _.titleize(className)
     attributes            = []
     relations             = []
@@ -84,8 +87,8 @@ Tower.Generator.Resources =
     pluralClassName:      pluralClassName
     namespacedClassName:  namespacedClassName
     pluralName:           pluralName
-    cssName:              cssName
-    pluralCssName:        pluralCssName
+    paramName:            paramName
+    pluralParamName:      pluralParamName
     humanName:            humanName
     attributes:           attributes
     relations:            relations
@@ -95,6 +98,13 @@ Tower.Generator.Resources =
     className:      Tower.Support.String.camelize(@program.namespace || name)
     cssName:        Tower.Support.String.parameterize(@program.namespace || name)
     pluralCssName:  Tower.Support.String.parameterize(Tower.Support.String.pluralize(@program.namespace || name))
+    session:        @generateRandom("hex")
+    
+  generateRandom: (code = "hex") ->
+    crypto  = require('crypto')
+    hash    = crypto.createHash("sha1")
+    hash.update(crypto.randomBytes(64).toString())
+    hash.digest(code)
     
   buildUser: (callback) ->
     configFile = process.env.HOME + "/.tower.json";

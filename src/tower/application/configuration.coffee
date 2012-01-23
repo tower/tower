@@ -9,6 +9,7 @@ Tower.Support.Object.extend Tower,
   namespace:  null
   accessors:  typeof(window) == "undefined"
   logger:     if typeof(_console) != 'undefined' then _console else console
+  config:     {}
   
   get: ->
     Tower.request "get", arguments...
@@ -36,10 +37,12 @@ Tower.Support.Object.extend Tower,
       
   raise: ->
     throw new Error(Tower.t(arguments...))
-    
-  initialize: -> Tower.Application.initialize()
   
-  t:          -> Tower.Support.I18n.t(arguments...)
+  t: ->
+    Tower.Support.I18n.translate(arguments...)
+    
+  l: ->
+    Tower.Support.I18n.localize(arguments...)
   
   stringify: ->
     string = Tower.Support.Array.args(arguments).join("_")

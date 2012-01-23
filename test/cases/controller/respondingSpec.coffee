@@ -1,3 +1,4 @@
+###
 require '../../config'
 
 controller  = null
@@ -9,4 +10,4 @@ describe 'Tower.Controller.Responding', ->
     Tower.get 'jsonOrYaml', format: "json", ->
       expect(@body).toEqual "JSON!"
       expect(@contentType).toEqual "application/json"
-  
+###

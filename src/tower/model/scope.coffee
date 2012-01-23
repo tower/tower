@@ -74,7 +74,14 @@ class Tower.Model.Scope extends Tower.Class
     
   batch: ->
     
-  build: ->
+  build: (attributes, options) ->
+    if Tower.Support.Object.isArray(attributes)
+      result  = []
+      for object in attributes
+        result.push @store.serializeModel(object)
+      result
+    else
+      @store.serializeModel(attributes)
   
   # create [{firstName: "Lance"}, {firstName: "Dane"}]
   # create [{firstName: "Lance"}, {firstName: "Dane"}], validate: false
@@ -87,20 +94,25 @@ class Tower.Model.Scope extends Tower.Class
     
     if options.instantiate
       isArray = Tower.Support.Object.isArray(attributes)
-      @store.build attributes, options, (error, records) =>
-        return callback(error) if error
-        records = Tower.Support.Object.toArray(records)
-        iterator = (record, next) -> record.save(next)
-        Tower.async records, iterator, (error) =>
-          unless callback
-            throw error if error
+      records = Tower.Support.Object.toArray(@build(attributes, options))
+      
+      iterator = (record, next) ->
+        if record
+          record.save(next)
+        else
+          next()
+        
+      Tower.async records, iterator, (error) =>
+        unless callback
+          throw error if error
+        else
+          return callback(error) if error
+          if isArray
+            callback(error, records)
           else
-            return callback(error) if error
-            if isArray
-              callback(error, records)
-            else
-              callback(error, records[0])
+            callback(error, records[0])
     else
+          
       @store.create attributes, options, callback
   
   update: ->

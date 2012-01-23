@@ -50,24 +50,31 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "config", ->
         @template "application.coffee"
         @template "assets.coffee"
+        @template "credentials.coffee"
+        @template "databases.coffee"
         @template "routes.coffee"
+        @template "session.coffee"
         
         @inside "environments", ->
           @template "development.coffee"
           @template "production.coffee"
           @template "test.coffee"
         
-        @inside "initializers", ->
-          @template "secrets.coffee"
-          @template "session.coffee"
-      
+        @directory "initializers"
+        
         @inside "locales", ->
           @template "en.coffee"
         
       @inside "lib", ->
         @directory "tasks"
         @inside "stylesheets", ->
+          @template "code.styl"
+          @template "forms.styl"
+          @template "mixins.styl"
           @template "reset.styl"
+          @template "tables.styl"
+          @template "typography.styl"
+          @template "variables.styl"
       
       @directory "log"
     
@@ -81,6 +88,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @template "crossdomain.xml"
         @template "humans.txt"
         @template "robots.txt"
+        @inside "javascripts", ->
+          @createFile "templates.js", ""
       
       @template "README.md"
       
@@ -106,6 +115,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
           @get "https://raw.github.com/timrwood/moment/master/moment.js", "moment.js"
           @get "https://raw.github.com/medialize/URI.js/gh-pages/src/URI.js", "uri.js"
+          @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
+          @get "https://raw.github.com/visionmedia/mocha/master/mocha.js", "mocha.js"
         @directory "stylesheets"
         @inside "swfs", ->
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"

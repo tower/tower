@@ -13,11 +13,11 @@ Tower.Model.Metadata =
 
   toLabel: ->
     @className()
-
+  
   toPath: ->
     @constructor.toParam() + "/" + @toParam()
 
   toParam: ->
-    @get("id").toString()
+    String(@get("id"))
 
 module.exports = Tower.Model.Metadata

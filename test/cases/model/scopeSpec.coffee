@@ -98,23 +98,30 @@ describe 'Tower.Model.Scope', ->
       expect(scope.store.destroy).toHaveBeenCalledWith  { firstName: "John", id : { $in : [ 1, 2, 3 ] } }, {  }, undefined
       
   describe '#create', ->
-    test 'create(firstName: "Lance!")', ->
-      spyOn scope.store, "create"
+    test 'build(firstName: "Lance!")', ->
+      spyOn scope, "build"
+      
       scope.create(firstName: "Lance!")
       
-      expect(scope.store.create).toHaveBeenCalledWith { firstName: "Lance!" }, {  }, undefined
+      expect(scope.build).toHaveBeenCalledWith(
+        { firstName: "Lance!" }, 
+        { instantiate: true }
+      )
       
-    test 'where(firstName: "Lance").create()', ->
+    test 'create(firstName: "Lantial")', ->
       spyOn scope.store, "create"
-      scope.where(firstName: "Lance").create()
       
-      expect(scope.store.create).toHaveBeenCalledWith { firstName: "Lance" }, {  }, undefined
+      scope.create(firstName: "Lantial")
       
-    test 'create with an `id`', ->
-      spyOn scope.store, "create"
-      scope.create id: "something"
-
-      expect(scope.store.create).toHaveBeenCalledWith { id: "something" }, {  }, undefined
+      args = scope.store.create.argsForCall[0]
+      
+      expect(args[0]).toEqual { firstName: "Lantial", createdAt: new Date, updatedAt: new Date, likes: 0, tags: [], postIds: [] }
+      expect(args[1]).toEqual { instantiate: false }
+      
+    test 'create(firstName: "Lantial")', ->
+      scope.create(firstName: "Lantial")
+      
+      expect(User.count()).toEqual 3
       
   test '#clone', ->
     clone = scope.where(firstName: "Lance")

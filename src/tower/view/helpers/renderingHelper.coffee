@@ -11,7 +11,15 @@ Tower.View.RenderingHelper =
     prefixes  ||= [@_context.collectionName] if @_context
     template    = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
     template    = @renderWithEngine(String(template))
-    eval("(function() {#{String(template)}})").call(@)
+    tmpl        = "(function() {#{String(template)}})"
+    if options.collection
+      name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true)
+      for item in options.collection
+        @[name] = item
+        eval(tmpl).call(@)
+        delete @[name]
+    else
+      eval(tmpl).call(@)
     null
     
   page: ->
@@ -27,8 +35,9 @@ Tower.View.RenderingHelper =
     if typeof value == "function"
       eval("(#{String(value)})()")
     else
-      __ck.indent()
-      text(value)
+      #__ck.indent()
+      ending = if value.match(/\n$/) then "\n" else ""
+      text(value.replace(/\n$/, "").replace(/^(?!\s+$)/mg, __ck.repeat('  ', __ck.tabs)) + ending)
     null
   
   hasContentFor: (key) ->

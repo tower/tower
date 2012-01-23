@@ -74,11 +74,6 @@ class Tower.Store extends Tower.Class
     
   delete: (query, options, callback) ->
     @destroy.apply @, arguments
-  
-  build: (attributes, options, callback) ->
-    record        = @serializeModel(attributes)
-    callback.call @, null, record if callback
-    record
     
   load: (records) ->
     

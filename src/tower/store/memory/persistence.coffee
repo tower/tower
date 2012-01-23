@@ -1,18 +1,4 @@
 Tower.Store.Memory.Persistence =
-  build: (attributes, options, callback) ->
-    result    = null
-    
-    if Tower.Support.Object.isArray(attributes)
-      result  = []
-      for object in attributes
-        result.push @serializeModel(object)
-      result
-    else
-      result  = @serializeModel(attributes)
-      
-    callback.call @, null, result if callback
-    result
-    
   load: (records) ->
     records = Tower.Support.Object.toArray(records)
     for record in records
@@ -30,6 +16,7 @@ Tower.Store.Memory.Persistence =
         result.push object
       result
     else
+      attributes.id ?= @generateId()
       result  = attributes
     
     callback.call @, null, result if callback

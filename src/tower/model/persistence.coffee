@@ -32,7 +32,7 @@ Tower.Model.Persistence =
         callback  = options
         options   = {}
       options ||= {}
-      
+        
       unless options.validate == false
         @validate (error, success) =>
           if success
@@ -52,7 +52,7 @@ Tower.Model.Persistence =
         callback.call @, null if callback
       else
         @runCallbacks "destroy", =>
-          @store().destroy {id: @id}, instantiate: false, (error) =>
+          @constructor.destroy @id, instantiate: false, (error) =>
             throw error if error && !callback
             @persistent = false
             delete @attributes.id unless error
@@ -75,7 +75,7 @@ Tower.Model.Persistence =
       @constructor.store()
       
     _save: (callback) ->
-      @runCallbacks "save", ->
+      @runCallbacks "save", =>
         if @isNew()
           @_create(callback)
         else
@@ -83,7 +83,7 @@ Tower.Model.Persistence =
     
     _update: (attributes, callback) ->
       @runCallbacks "update", =>
-        @store().update {id: @id}, attributes, instantiate: false, (error) =>
+        @constructor.update @id, attributes, instantiate: false, (error) =>
           throw error if error && !callback
           @changes    = {} unless error
           @persistent = true
@@ -93,11 +93,15 @@ Tower.Model.Persistence =
       
     _create: (callback) ->
       @runCallbacks "create", =>
-        @store().create @attributes, instantiate: false, (error, docs) =>
+        #@store().create @attributes, instantiate: false, (error, docs) =>
+        @constructor.create @attributes, instantiate: false, (error, attributes) =>
           throw error if error && !callback
-          @changes    = {} unless error
-          @persistent = true
-          @store().load(@)
+          unless error
+            _.extend @attributes, attributes
+            @changes    = {}
+            @persistent = true
+            @store().load(@)
+            
           callback.call(@, error) if callback
       
       @

@@ -10,8 +10,8 @@ class Tower.View.Table extends Tower.View.Component
     @scope            = "table"
     @headers          = []
     
-    options.summary ||= "Table for #{key.titleize}"
-    options.class     = ["data-table", options.class].compact.uniq.join(" ")
+    options.summary ||= "Table for #{_.titleize(@key)}"
+    #options.class     = ["data-table", options.class].compact.uniq.join(" ")
     options.role      = "grid"
     
     data              = options.data ||= {}

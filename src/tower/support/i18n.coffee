@@ -19,6 +19,9 @@ Tower.Support.I18n =
         else key += ".other"
     
     @interpolate(@lookup(key, options.language), options)
+    
+  localize: ->
+    @translate arguments...
   
   lookup: (key, language = @defaultLanguage) ->
     parts   = key.split(".")

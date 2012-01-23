@@ -5,5 +5,7 @@ class Tower.Generator.ControllerGenerator extends Tower.Generator
     @inside "app", '.', ->
       @inside "controllers", '.', ->
         @template "controller.coffee", "#{@model.pluralName}Controller.coffee"
+        
+    @route '@resources "' + @model.pluralName + '"'
   
 module.exports = Tower.Generator.ControllerGenerator
