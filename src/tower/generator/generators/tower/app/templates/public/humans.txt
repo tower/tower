@@ -1,0 +1,16 @@
+/* TEAM */
+  Front:      <%= user.name %>
+  Github:     <%= user.username %>
+  Location:   San Francisco, CA
+  
+  Middle:     <%= user.name %>
+  Github:     <%= user.username %>
+  Location:   San Francisco, CA
+  
+  Back:       <%= user.name %>
+  Github:     <%= user.username %>
+  Location:   San Francisco, CA
+
+/* SITE */
+  Standards: HTML5, CSS3
+  Components: jQuery, Node.js, Tower.js

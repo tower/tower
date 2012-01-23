@@ -1,4 +1,6 @@
-formFor "<%= model.name %>", -><% for (var i = 0; i < model.attributes.length; i++) { %>
-  field "<%= model.attributes[i].name %>", as: "<%= model.attributes[i].fieldType %>"
+formFor @<%= model.name %>, (f) ->
+  f.fieldset (fields) -><% for (var i = 0; i < model.attributes.length; i++) { %>
+    fields.field "<%= model.attributes[i].name %>", as: "<%= model.attributes[i].fieldType %>"
   <% } %>
-  submit "Submit"
+  f.fieldset (fields) ->
+    fields.submit "Submit"

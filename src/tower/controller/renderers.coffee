@@ -1,10 +1,8 @@
-mime = require 'mime'
-
 Tower.Controller.addRenderers
   json: (json, options, callback) ->
     json = JSON.stringify(json) unless typeof(json) == "string"
     json = "#{options.callback}(#{json})" if options.callback
-    @contentType ||= mime.lookup("json")
+    @contentType ||= require("mime").lookup("json")
     callback null, json if callback
     json
   

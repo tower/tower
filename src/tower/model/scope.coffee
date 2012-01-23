@@ -79,16 +79,15 @@ class Tower.Model.Scope extends Tower.Class
   # create [{firstName: "Lance"}, {firstName: "Dane"}]
   # create [{firstName: "Lance"}, {firstName: "Dane"}], validate: false
   # create {firstName: "Lance"}, validate: false
-  # create validate: false
+  # create {}, validate: false
   create: ->
-    {criteria, updates, callback} = @_extractArgs(arguments, updates: true, options: true, ids: false)
+    {criteria, updates, options, callback} = @_extractArgs(arguments, updates: true, options: true, ids: false)
+    
     attributes                    = Tower.Support.Object.extend({}, criteria.query, updates)
-    options                       = criteria.options
-
+    
     if options.instantiate
       isArray = Tower.Support.Object.isArray(attributes)
       @store.build attributes, options, (error, records) =>
-        console.log records
         return callback(error) if error
         records = Tower.Support.Object.toArray(records)
         iterator = (record, next) -> record.save(next)
@@ -106,7 +105,7 @@ class Tower.Model.Scope extends Tower.Class
   
   update: ->
     {criteria, updates, options, callback} = @_extractArgs(arguments, ids: true, updates: true, options: true)
-    options = criteria.options
+    
     if options.instantiate
       iterator = (record, next) -> record.updateAttributes(updates, next)
       @_each criteria.query, criteria.options, iterator, callback
@@ -115,7 +114,7 @@ class Tower.Model.Scope extends Tower.Class
   
   destroy: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true, options: true)
-    options = criteria.options
+    
     if options.instantiate
       iterator = (record, next) -> record.destroy(next)
       @_each criteria.query, criteria.options, iterator, callback
@@ -171,10 +170,10 @@ class Tower.Model.Scope extends Tower.Class
         options   = args.pop()
       
     updates     = {} unless opts.updates
-    updates ||= {}
+    updates   ||= {}
     
     criteria    = @criteria.clone()
-    options     = _.extend criteria.options, options
+    options   ||= {}
     
     options.instantiate = true unless options.hasOwnProperty("instantiate")
     
@@ -184,6 +183,6 @@ class Tower.Model.Scope extends Tower.Class
       delete criteria.query.id
       criteria.where id: $in: ids
     
-    criteria: criteria, updates: updates, callback: callback
+    criteria: criteria, updates: updates, callback: callback, options: options
 
 module.exports = Tower.Model.Scope

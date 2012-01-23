@@ -1,4 +1,4 @@
-en =
+module.exports =
   title:        "<%= project.title %>"
   description:  "<%= project.description %>"
   keywords:     "<%= project.keywords %>"

@@ -3,7 +3,6 @@ Tower.Model.Persistence =
     defaultStore: Tower.Store.Memory
     
     store: (value) ->
-      # add options!
       return @_store if !value && @_store
       
       if typeof value == "object"
@@ -25,11 +24,9 @@ Tower.Model.Persistence =
     resourceName: ->
       Tower.Support.String.camelize(@name, true)
       
-    clone: (model) ->
-      
   InstanceMethods:
     save: (options, callback) ->
-      throw new Error("Record is readOnly") if @readOnly
+      throw new Error("Record is read only") if @readOnly
       
       if typeof options == "function"
         callback  = options
@@ -37,17 +34,52 @@ Tower.Model.Persistence =
       options ||= {}
       
       unless options.validate == false
-        unless @validate()
-          callback.call @, null, false if callback
-          return false
+        @validate (error, success) =>
+          if success
+            @_save callback
+          else
+            callback.call @, null, false if callback
+      else
+        @_save callback
+        
+      @
+    
+    updateAttributes: (attributes, callback) ->
+      @_update(attributes, callback)
+    
+    destroy: (callback) ->
+      if @isNew()
+        callback.call @, null if callback
+      else
+        @runCallbacks "destroy", =>
+          @store().destroy {id: @id}, instantiate: false, (error) =>
+            throw error if error && !callback
+            @persistent = false
+            delete @attributes.id unless error
+            callback.call(@, error) if callback
       
+      @
+    
+    delete: (callback) ->
+      @destroy(callback)
+    
+    isPersisted: ->
+      !!(@persistent)# && @attributes.hasOwnProperty("id") && @attributes.id != null && @attributes.id != undefined)
+      
+    isNew: ->
+      !!!@isPersisted()
+      
+    reload: ->
+      
+    store: ->
+      @constructor.store()
+      
+    _save: (callback) ->
       @runCallbacks "save", ->
         if @isNew()
           @_create(callback)
         else
           @_update(@toUpdates(), callback)
-        
-      true
     
     _update: (attributes, callback) ->
       @runCallbacks "update", =>
@@ -65,47 +97,9 @@ Tower.Model.Persistence =
           throw error if error && !callback
           @changes    = {} unless error
           @persistent = true
-          @store().load @
+          @store().load(@)
           callback.call(@, error) if callback
       
       @
-    
-    updateAttributes: (attributes, callback) ->
-      @_update(attributes, callback)
-    
-    destroy: (callback) ->
-      if @isNew()
-        callback.call @, null if callback
-      else
-        @store().destroy {id: @id}, instantiate: false, (error) =>
-          throw error if error && !callback
-          @persistent = false
-          delete @attributes.id unless error
-          callback.call(@, error) if callback
-      
-      @destroyed = true
-      @
-    
-    delete: (callback) ->
-      @destroy(callback)
-    
-    isPersisted: ->
-      !!(@persistent)# && @attributes.hasOwnProperty("id") && @attributes.id != null && @attributes.id != undefined)
-      
-    isNew: ->
-      !!!@isPersisted()
-      
-    toObject: ->
-      @attributes
-
-    clone: ->
-
-    reset: ->  
-    reload: ->
-      
-    toggle: (name) ->
-      
-    store: ->
-      @constructor.store()
       
 module.exports = Tower.Model.Persistence

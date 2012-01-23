@@ -54,7 +54,7 @@ Tower.View.Rendering =
           Tower.View.RenderingHelper
           Tower.View.StringHelper
           tags: require('coffeekup').tags
-        
+        locals._ = _
         result = require('coffeekup').render string, locals
       catch error
         e = error

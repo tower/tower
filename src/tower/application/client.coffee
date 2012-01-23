@@ -1,4 +1,12 @@
 class Tower.Application extends Tower.Class
+  @include Tower.Support.Callbacks
+  
+  @configure: (block) ->
+    @initializers().push block
+  
+  @initializers: ->
+    @_initializers ||= []
+  
   @instance: ->
     @_instance
     

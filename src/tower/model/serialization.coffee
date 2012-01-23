@@ -10,13 +10,12 @@ Tower.Model.Serialization =
       records
     
     toJSON: (records, options = {}) ->
-      JSON.stringify(records)
+      result = []
+      result.push(record.toJSON()) for record in records
+      result
   
   toJSON: (options) ->
     @_serializableHash(options)
-  
-  toObject: ->
-    @attributes
   
   clone: ->
     new @constructor(Tower.Support.Object.clone(@attributes))

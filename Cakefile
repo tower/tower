@@ -111,41 +111,38 @@ window.Tower.logger = if this["_console"] then _console else console
     
     result += fs.readFileSync("./src/tower/application/configuration.coffee", "utf-8") + "\n"
     
-    compileEach 'event', null, (code) ->
+    compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
       result += code
-      
-      compileEach 'store', ((path) -> !!path.match('memory')), (code) ->
+      compileEach 'model', null, (code) ->
         result += code
-        compileEach 'model', null, (code) ->
+        compileEach 'view', null, (code) ->
           result += code
-          compileEach 'view', null, (code) ->
+          compileEach 'controller', null, (code) ->
             result += code
-            compileEach 'controller', null, (code) ->
+            compileEach 'dispatch', null, (code) ->
               result += code
-              compileEach 'net', null, (code) ->
+              compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
                 result += code
-                compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
-                  result += code
+              
+                # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
                 
-                  # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
+                engine.render result, bare: false, (error, result) ->
+                  _console.error error.stack if error
+                  fs.writeFile "./dist/tower.js", result
+                  unless error
+                    compressor = new Shift.UglifyJS
+                    #result = obscurify(result)
+                
+                    compressor.render result, (error, result) ->
+                      fs.writeFileSync("./dist/tower.min.js", result)
+                
+                      gzip result, (error, result) ->
                   
-                  engine.render result, bare: false, (error, result) ->
-                    _console.error error.stack if error
-                    fs.writeFile "./dist/tower.js", result
-                    unless error
-                      compressor = new Shift.UglifyJS
-                      #result = obscurify(result)
+                        fs.writeFileSync("./dist/tower.min.js.gz", result)
                   
-                      compressor.render result, (error, result) ->
-                        fs.writeFileSync("./dist/tower.min.js", result)
+                        console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
                   
-                        gzip result, (error, result) ->
-                    
-                          fs.writeFileSync("./dist/tower.min.js.gz", result)
-                    
-                          console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
-                    
-                          fs.writeFile "./dist/tower.min.js.gz", compressor.render(result)
+                        fs.writeFile "./dist/tower.min.js.gz", compressor.render(result)
             
 task 'build-generic', ->
   paths   = findit.sync('./src')

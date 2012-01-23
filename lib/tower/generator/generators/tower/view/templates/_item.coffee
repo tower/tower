@@ -1,5 +1,5 @@
 li class: "<%= model.cssName %>", ->
-  header class: "header" ->
+  header class: "header", ->
     h3 @<%= model.name %>.toLabel()
   dl class: "content", -><% for (var i = 0; i < model.attributes.length; i++) { %>
     dt "<%= model.attributes[i].humanName %>:"

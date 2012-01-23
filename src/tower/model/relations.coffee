@@ -1,15 +1,15 @@
 Tower.Model.Relations =
   ClassMethods:
-    hasOne: (name, options) ->
-      if options && options.hasOwnProperty("through")
+    hasOne: (name, options = {}) ->
+      if options.hasOwnProperty("through")
         relationClass = Tower.Model.Relation.HasOneThrough
       else
         relationClass = Tower.Model.Relation.HasOne
 
       @relations()[name]  = new relationClass(@, name, options)
     
-    hasMany: (name, options) ->
-      if options && options.hasOwnProperty("through")
+    hasMany: (name, options = {}) ->
+      if options.hasOwnProperty("through")
         relationClass = Tower.Model.Relation.HasManyThrough
       else
         relationClass = Tower.Model.Relation.HasMany
@@ -21,7 +21,7 @@ Tower.Model.Relations =
     
     relations: ->
       @_relations ||= {}
-
+      
     relation: (name) ->
       relation = @relations()[name]
       throw new Error("Relation '#{name}' does not exist on '#{@name}'") unless relation

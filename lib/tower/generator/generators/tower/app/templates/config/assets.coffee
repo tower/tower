@@ -13,9 +13,9 @@ Tower.assets =
       '/vendor/javascripts/underscore'
       '/vendor/javascripts/underscore.string'
       '/vendor/javascripts/socket.io'
-      '/vendor/javascripts/async'
       '/vendor/javascripts/history'
       '/vendor/javascripts/moment'
+      '/vendor/javascripts/tower'
     ]
     
     development: [
@@ -28,7 +28,7 @@ Tower.assets =
     ]
     
     lib: [
-      "/app/client/stylesheets/reset"
+      "/lib/stylesheets/reset"
     ]
     
     vendor: [

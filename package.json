@@ -58,7 +58,8 @@
     "coffeekup":          ">= 0.3.1",
     "ejs":                ">= 0.6.1",
     "restler":            ">= 0.0.1",
-    "useragent":          ">= 1.0.5"
+    "useragent":          ">= 1.0.5",
+    "stylus":             ">= 0.17.0"
   },
   "devDependencies": {
     "coffee-script":      ">= 1.1.3",

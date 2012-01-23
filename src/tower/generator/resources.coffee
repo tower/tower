@@ -26,60 +26,69 @@ Tower.Generator.Resources =
     
   builtAttribute: (name, type = "string") ->
     name:       name
-    type:       type
+    type:       switch type
+      when "text" then "String"
+      else
+        Tower.Support.camelize(type)
+        
     humanName:  _.humanize(name)
+    
     fieldType:  switch type
-      when "integer"                then "numberField"
-      when "float", "decimal"       then "textField"
-      when "time"                   then "timeSelect"
-      when "datetime", "timestamp"  then "datetimeSelect"
-      when "date"                   then "dateSelect"
-      when "text"                   then "textArea"
-      when "boolean"                then "checkBox"
+      when "integer"                    then "number"
+      when "float", "decimal", "string" then "string"
+      when "time"                       then "time"
+      when "datetime", "timestamp"      then "datetime"
+      when "date"                       then "date"
+      when "text"                       then "text"
+      when "boolean"                    then "checkbox"
       else
-        "textField"
+        "string"
+        
     default:    switch type
-      when "integer"                        then 1
-      when "float"                          then 1.5
-      when "decimal"                        then "9.99"
-      when "datetime", "timestamp", "time"  then Time.now.toString("db")
-      when "date"                           then Date.today.toString("db")
-      when "string"                         then (if name == "type" then "" else "MyString")
-      when "text"                           then "MyText"
-      when "boolean"                        then false
-      when "references", "belongsTo"        then null
+      when "integer"                        then 0
       else
-        ""
+        null
+        
+  buildRelation: (type, className) ->
+    name:       Tower.Support.String.camelize(className, true)
+    type:       type
+    humanName:  _.humanize(className)
   
   buildModel: (name, namespace, argv) ->
-    name                 = Tower.Support.String.camelize(name, true)
-    namespace            = namespace
-    className            = Tower.Support.String.camelize(name)
-    pluralClassName      = Tower.Support.String.pluralize(className)
-    namespacedClassName  = "#{namespace}.#{className}"
-    pluralName           = Tower.Support.String.pluralize(name)
-    cssName              = Tower.Support.String.parameterize(name)
-    pluralCssName        = Tower.Support.String.parameterize(pluralName)
-    humanName            = _.titleize(className)
-    attributes = []
+    name                  = Tower.Support.String.camelize(name, true)
+    namespace             = namespace
+    className             = Tower.Support.String.camelize(name)
+    pluralClassName       = Tower.Support.String.pluralize(className)
+    namespacedClassName   = "#{namespace}.#{className}"
+    pluralName            = Tower.Support.String.pluralize(name)
+    cssName               = Tower.Support.String.parameterize(name)
+    pluralCssName         = Tower.Support.String.parameterize(pluralName)
+    humanName             = _.titleize(className)
+    attributes            = []
+    relations             = []
     
     for pair in argv
       pair  = pair.split(":")
       continue unless pair.length > 1
-      attr  = pair[0]
-      type  = Tower.Support.String.camelize(pair[1] || pair[0], true)
-      attributes.push @builtAttribute(attr, Tower.Support.String.camelize(type))
+      key   = pair[0]
+      type  = Tower.Support.String.camelize(pair[1] || key, true)
+      
+      if key.match(/(belongsTo|hasMany|hasOne)/)
+        relations.push @buildRelation(key, Tower.Support.String.camelize(type))
+      else
+        attributes.push @builtAttribute(key, Tower.Support.String.camelize(type))
     
-    name:                name
-    namespace:           namespace
-    className:           className
-    pluralClassName:     pluralClassName
-    namespacedClassName: namespacedClassName
-    pluralName:          pluralName
-    cssName:             cssName
-    pluralCssName:       pluralCssName
-    humanName:           humanName
-    attributes:          attributes
+    name:                 name
+    namespace:            namespace
+    className:            className
+    pluralClassName:      pluralClassName
+    namespacedClassName:  namespacedClassName
+    pluralName:           pluralName
+    cssName:              cssName
+    pluralCssName:        pluralCssName
+    humanName:            humanName
+    attributes:           attributes
+    relations:            relations
     
   buildProject: (name = @projectName) ->
     name:           name

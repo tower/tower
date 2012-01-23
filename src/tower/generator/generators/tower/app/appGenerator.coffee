@@ -1,4 +1,6 @@
 class Tower.Generator.AppGenerator extends Tower.Generator
+  sourceRoot: __dirname
+  
   buildProject: (name = @projectName) ->
     project = super(name)
     
@@ -7,8 +9,6 @@ class Tower.Generator.AppGenerator extends Tower.Generator
     project.keywords    = @program.keywords
     
     project
-    
-  sourceRoot: __dirname
   
   run: ->
     @inside @project.name, '.', ->
@@ -37,8 +37,15 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @directory "models"
       
         @inside "views", ->
+          @template "index.coffee"
           @inside "layouts", ->
             @template "application.coffee"
+          @inside "shared", ->
+            @template "_footer.coffee"
+            @template "_header.coffee"
+            @template "_meta.coffee"
+            @template "_navigation.coffee"
+            @template "_sidebar.coffee"
     
       @inside "config", ->
         @template "application.coffee"

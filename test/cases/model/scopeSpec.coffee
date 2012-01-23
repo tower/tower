@@ -6,7 +6,7 @@ user      = null
 
 describe 'Tower.Model.Scope', ->
   beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", type: "User"))
+    User.store(new Tower.Store.Memory(firstName: "users", type: "User"))
     scope = User.scoped()
     user = User.create(id: 1, firstName: "Lance")
     User.create(id: 2, firstName: "Dane")
@@ -43,13 +43,13 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "find"
       scope.find 1, 2, 3
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: false }, undefined
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, undefined
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3]
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: false }, undefined
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, undefined
       
     test '`[1, 2, 3], callback`', ->
       callback = ->
@@ -57,70 +57,70 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3], callback
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, { instantiate: false }, callback
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, callback
       
     #test 'where(id: $in: [1, 2, 3]).find(1) should only pass id: $in: [1]', ->
     #  spyOn scope.store, "find"
     #  scope.where(id: $in: [1, 2, 3]).find(1)
     #  
-    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, { instantiate: false }, undefined
+    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, {  }, undefined
       
   describe '#update', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "update"
-      scope.update 1, 2, 3, {name: "Lance"}, instantiate: false
+      scope.update 1, 2, 3, {firstName: "Lance"}, instantiate: false
       
-      expect(scope.store.update).toHaveBeenCalledWith { name : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined 
+      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "update"
-      scope.update 1, 2, 3, {name: "Lance"}, instantiate: false
+      scope.update 1, 2, 3, {firstName: "Lance"}, instantiate: false
 
-      expect(scope.store.update).toHaveBeenCalledWith { name : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined 
+      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
       
   describe '#destroy', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "destroy"
       scope.destroy 1, 2, 3, instantiate: false
       
-      expect(scope.store.destroy).toHaveBeenCalledWith { id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined 
+      expect(scope.store.destroy).toHaveBeenCalledWith { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "destroy"
       scope.destroy 1, 2, 3, instantiate: false
       
-      expect(scope.store.destroy).toHaveBeenCalledWith  { id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined 
+      expect(scope.store.destroy).toHaveBeenCalledWith  { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
       
     test 'query + ids', ->
       spyOn scope.store, "destroy"
-      scope.where(name: "John").destroy 1, 2, 3, instantiate: false
+      scope.where(firstName: "John").destroy 1, 2, 3, instantiate: false
       
-      expect(scope.store.destroy).toHaveBeenCalledWith  { name: "John", id : { $in : [ 1, 2, 3 ] } }, { instantiate: false }, undefined
+      expect(scope.store.destroy).toHaveBeenCalledWith  { firstName: "John", id : { $in : [ 1, 2, 3 ] } }, {  }, undefined
       
   describe '#create', ->
-    test 'create(name: "Lance")', ->
+    test 'create(firstName: "Lance!")', ->
       spyOn scope.store, "create"
-      scope.create(name: "Lance")
+      scope.create(firstName: "Lance!")
       
-      expect(scope.store.create).toHaveBeenCalledWith { name: "Lance" }, { instantiate: false }, undefined
+      expect(scope.store.create).toHaveBeenCalledWith { firstName: "Lance!" }, {  }, undefined
       
-    test 'where(name: "Lance").create()', ->
+    test 'where(firstName: "Lance").create()', ->
       spyOn scope.store, "create"
-      scope.where(name: "Lance").create()
+      scope.where(firstName: "Lance").create()
       
-      expect(scope.store.create).toHaveBeenCalledWith { name: "Lance" }, { instantiate: false }, undefined
+      expect(scope.store.create).toHaveBeenCalledWith { firstName: "Lance" }, {  }, undefined
       
     test 'create with an `id`', ->
       spyOn scope.store, "create"
       scope.create id: "something"
 
-      expect(scope.store.create).toHaveBeenCalledWith { id: "something" }, { instantiate: false }, undefined
+      expect(scope.store.create).toHaveBeenCalledWith { id: "something" }, {  }, undefined
       
   test '#clone', ->
-    clone = scope.where(name: "Lance")
+    clone = scope.where(firstName: "Lance")
     clone2 = clone.where(email: "example@gmail.com")
     
     expect(clone.criteria.query).toNotEqual scope.criteria.query
-    expect(clone2.criteria.query).toEqual name: "Lance", email: "example@gmail.com"
-    expect(clone.criteria.query).toEqual name: "Lance"
+    expect(clone2.criteria.query).toEqual firstName: "Lance", email: "example@gmail.com"
+    expect(clone.criteria.query).toEqual firstName: "Lance"
     expect(scope.criteria.query).toEqual {}

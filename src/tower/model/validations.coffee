@@ -16,11 +16,12 @@ Tower.Model.Validations =
       validators      = @constructor.validators()
       success         = true
       errors          = @errors = {}
-    
+      
       for validator in validators
         unless validator.validateEach(@, errors)
           success = false
       
+      callback.call @, null, success if callback
       success
   
 module.exports = Tower.Model.Validations

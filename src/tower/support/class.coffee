@@ -52,6 +52,9 @@ class Tower.Class
     extended.apply(object) if extended
     
     object
+    
+  @self: (object) ->
+    @extend object
   
   @include: (object) ->
     @extend(object.ClassMethods) if object.hasOwnProperty("ClassMethods")

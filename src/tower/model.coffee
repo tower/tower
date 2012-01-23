@@ -9,7 +9,7 @@ class Tower.Model extends Tower.Class
     @attributes   = attributes
     @changes      = {}
     @errors       = {}
-    @readonly     = if options.hasOwnProperty("readonly") then options.readonly else false
+    @readOnly     = if options.hasOwnProperty("readOnly") then options.readOnly else false
     @persistent   = if options.hasOwnProperty("persistent") then options.persisted else false
     
     for key, value of attrs
