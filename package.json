@@ -2,7 +2,7 @@
   "name":                 "tower",
   "version":              "0.3.1",
   "description":          "Full Stack Web Framework for Node.js and the Browser",
-  "homepage":             "http://viatropos.github.com/tower.js",
+  "homepage":             "http://viatropos.github.com/tower",
   "main":                 "lib/tower.js",
   "author":               "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
@@ -25,11 +25,11 @@
     }
   ],
   "bugs": {
-    "url":                "https://github.com/viatropos/tower.js/issues"
+    "url":                "https://github.com/viatropos/tower/issues"
   },
   "repository": {
     "type":               "git",
-    "url":                "https://github.com/viatropos/tower.js.git"
+    "url":                "https://github.com/viatropos/tower.git"
   },
   "engines": {
     "node":               ">= 0.4.0"

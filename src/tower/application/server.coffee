@@ -7,6 +7,8 @@ io      = require('socket.io').listen(server)
 class Tower.Application extends Tower.Class
   @include Tower.Support.Callbacks
   
+  @autoloadPaths: ["app/helpers", "app/models", "app/controllers"]
+  
   @use: ->
     @middleware ||= []
     @middleware.push arguments
@@ -88,7 +90,7 @@ class Tower.Application extends Tower.Class
       config.call(@) for config in configs
       
       paths = File.files("#{Tower.root}/app/helpers")
-      paths = paths.concat File.files("#{Tower.root}/app/models")
+      #paths = paths.concat File.files("#{Tower.root}/app/models")
       paths = paths.concat ["#{Tower.root}/app/controllers/applicationController"]
       paths = paths.concat File.files("#{Tower.root}/app/controllers")
       

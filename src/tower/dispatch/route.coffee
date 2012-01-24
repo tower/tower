@@ -40,7 +40,7 @@ class Tower.Dispatch.Route extends Tower.Class
     match   = match[1..-1]
     
     for capture, i in match
-      params[keys[i].name] = if capture then decodeURIComponent(capture) else null
+      params[keys[i].name] ||= if capture then decodeURIComponent(capture) else null
     
     controller      = @controller
     params.action   = controller.action if controller

@@ -20,7 +20,7 @@ Tower.Controller.Responding =
       @
       
     mimes: ->
-      @_mimes ||= {}
+      @_mimes ||= {json: {}, html: {}}
     
   respondTo: (block) ->
     Tower.Controller.Responder.respond(@, {}, block)

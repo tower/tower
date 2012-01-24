@@ -36,9 +36,7 @@ Tower.Controller.Rendering =
       
     return if @_handleRenderers(options, callback)
     
-    @contentType ||= "text/html"
-    
-    @headers["Content-Type"] = @contentType
+    @headers["Content-Type"] ||= "text/html"
     
     view    = new Tower.View(@)
     
@@ -55,9 +53,9 @@ Tower.Controller.Rendering =
     false
     
   _processRenderOptions: (options = {}) ->
-    @status               = options.status if options.status
-    @contentType          = options.contentType if options.contentType
-    @headers["Location"]  = @urlFor(options.location) if options.location
+    @status                   = options.status if options.status
+    @headers["Content-Type"]  = options.contentType if options.contentType
+    @headers["Location"]      = @urlFor(options.location) if options.location
     @
     
   _normalizeRender: ->

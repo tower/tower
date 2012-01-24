@@ -64,9 +64,11 @@ Tower.Support.Object.extend Tower,
         node = node[part]
     catch error
       # try doing namespace version as last resort
+      node = null
+    unless node
       namespace = Tower.namespace()
       if namespace && parts[0] != namespace
-        Tower.constant("#{namespace}.#{string}")
+        node = Tower.constant("#{namespace}.#{string}")
       else
         throw new Error("Constant '#{string}' wasn't found")
     node

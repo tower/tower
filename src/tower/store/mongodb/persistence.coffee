@@ -8,7 +8,7 @@ Tower.Store.MongoDB.Persistence =
     @collection().insert attributes, options, (error, docs) ->
       doc       = docs[0]
       record.id = doc["_id"]
-      callback.call(@, error, record) if callback
+      callback.call(@, error, record.attributes) if callback
     
     record.id   = attributes["_id"]
     

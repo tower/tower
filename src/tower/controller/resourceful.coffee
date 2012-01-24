@@ -74,7 +74,7 @@ Tower.Controller.Resourceful =
       resource.save (error, success) =>
         @respondWithStatus success, (format) =>
           format.html => @redirectTo "/"
-          format.json => @render text: "success", status: 200
+          format.json => @render json: resource, status: 200
 
   _show: (callback) ->
     @findResource (error, resource) =>
