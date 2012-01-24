@@ -238,7 +238,6 @@ formFor "post", (f) ->
   f.fieldset (fields) ->
     fields.field "title", as: "string"
     fields.field "body", as: "text"
-    fields.field "position", as: "textField"
   
   f.fieldset (fields) ->
     fields.submit "Submit"
@@ -253,7 +252,6 @@ tableFor "posts", (t) ->
     t.row ->
       t.cell "title", sort: true
       t.cell "body", sort: true
-      t.cell "position", sort: true
       t.cell()
       t.cell()
       t.cell()
@@ -262,7 +260,6 @@ tableFor "posts", (t) ->
       t.row ->
         t.cell post.get("title")
         t.cell post.get("body")
-        t.cell post.get("position")
         t.cell linkTo 'Show', post
         t.cell linkTo 'Edit', editPostPath(post)
         t.cell linkTo 'Destroy', post, method: "delete"
