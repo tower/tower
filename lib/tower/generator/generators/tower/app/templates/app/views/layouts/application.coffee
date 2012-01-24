@@ -7,7 +7,7 @@ html ->
     #if browserIs "ie"
     #  javascriptTag "http://html5shiv.googlecode.com/svn/trunk/html5.js"
       
-    if contentFor "templates"
+    if hasContentFor "templates"
       yields "templates"
       
     nav id: "navigation", role: "navigation", ->
@@ -24,16 +24,16 @@ html ->
       div class: "frame", ->
         yields "body"
         aside id: "sidebar", role: "complementary", ->
-          if contentFor "sidebar"
+          if hasContentFor "sidebar"
             yields "sidebar"
             
     footer id: "footer", role: "contentinfo", ->
       div class: "frame", ->
         partial "shared/footer"
         
-  if contentFor "popups"
+  if hasContentFor "popups"
     aside id: "popups", ->
       yields "popups"
       
-  if contentFor "bottom"
+  if hasContentFor "bottom"
     yields "bottom"

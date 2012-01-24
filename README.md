@@ -1,18 +1,15 @@
 # Tower.js
 
-> Full Stack Web Framework for Node.js and the Browser.  Minified & Gzipped: 15.7kb
+> Full Stack Web Framework for Node.js and the Browser.
 
-## Todo
+Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built for the client and server from the ground up.
 
-- Controller testing framework
-  - mock http requests
-  - mock socket requests
-- Database reset and testing
+Includes a database-agnostic ORM with browser (memory) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.  If not, let me know!
 
 ## Install
 
 ``` bash
-npm install tower
+npm install tower -g
 ```
 
 ## Generator
@@ -79,11 +76,22 @@ Here's how you might organize a blog:
 ``` coffeescript
 # config/application.coffee
 class App extends Tower.Application
-  @config.encoding = "utf-8"
-  @config.filterParameters += ["password", "password_confirmation"]
-  @config.loadPaths += ["./themes"]
-  
-global.App = module.exports = App
+  @configure ->
+    @use "favicon", Tower.publicPath + "/favicon.ico"
+    @use "static",  Tower.publicPath, maxAge: Tower.publicCacheDuration
+    @use "profiler" if Tower.env != "production"
+    @use "logger"
+    @use "query"
+    @use "cookieParser", Tower.session.secret
+    @use "session", Tower.session.key
+    @use "bodyParser"
+    @use "csrf"
+    @use "methodOverride", "_method"
+    @use Tower.Middleware.Agent
+    @use Tower.Middleware.Location
+    @use Tower.Middleware.Router
+
+module.exports = global.App = App
 ```
 
 ## Models
@@ -221,29 +229,39 @@ Tower.Route.where(pattern: "=~": "/posts").first()
 
 ``` coffeescript
 # app/views/posts/new.coffee
-formFor @post, ->
-  fieldset ->
-    legend "Basic Info"
-    field "title"
-    field "body", as: "text"
-  submit "Save"
+formFor "post", (f) ->
+  f.fieldset (fields) ->
+    fields.field "title", as: "string"
+    fields.field "body", as: "text"
+    fields.field "position", as: "textField"
+  
+  f.fieldset (fields) ->
+    fields.submit "Submit"
 ```
 
 ### Tables
 
 ``` coffeescript
 # app/views/posts/index.coffee
-tableFor @posts, ->
-  thead ->
-    tcell "Title"
-    tcell "Author"
-  tbody ->
+tableFor "posts", (t) ->
+  t.head ->
+    t.row ->
+      t.cell "title", sort: true
+      t.cell "body", sort: true
+      t.cell "position", sort: true
+      t.cell()
+      t.cell()
+      t.cell()
+  t.body ->
     for post in @posts
-      trow 
-        tcell post.title
-        tcell post.author.name
-  tfoot ->
-    pagination @posts
+      t.row ->
+        t.cell post.get("title")
+        t.cell post.get("body")
+        t.cell post.get("position")
+        t.cell linkTo 'Show', post
+        t.cell linkTo 'Edit', editPostPath(post)
+        t.cell linkTo 'Destroy', post, method: "delete"
+  linkTo 'New Post', newPostPath()
 ```
 
 ### Layouts
@@ -253,29 +271,53 @@ tableFor @posts, ->
 doctype 5
 html ->
   head ->
-    meta charset: 'utf-8'
-    title "#{@title or 'Untitled'} | My awesome website"
-    meta name: 'description', content: @desc if @desc?
-    stylesheets "vendor", "application"
+    meta charset: "utf-8"
+
+    title t("title")
+
+    meta name: "description", content: t("description")
+    meta name: "keywords", content: t("keywords")
+    meta name: "robots", content: t("robots")
+    meta name: "author", content: t("author")
+
+    csrfMetaTag()
+
+    appleViewportMetaTag width: "device-width", max: 1, scalable: false
+    
+    stylesheets "lib", "vendor", "application"
+
+    javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
     javascripts "vendor", "lib", "application"
-  body ->
-    header ->
-      h1 @title or 'Untitled'
-      nav ->
-        ul ->
-          (li -> a href: '/', -> 'Home') unless @path is '/'
-          li -> a href: '/chunky', -> 'Bacon!'
-          switch @user.role
-            when 'owner', 'admin'
-              li -> a href: '/admin', -> 'Secret Stuff'
-            when 'vip'
-              li -> a href: '/vip', -> 'Exclusive Stuff'
-            else
-              li -> a href: '/commoners', -> 'Just Stuff'
-    section ->
-      yield()
-    footer ->
-      p shoutify('bye')
+  
+  body role: "application", ->
+    if hasContentFor "templates"
+      yield "templates"
+      
+    nav id: "navigation", role: "navigation", ->
+      div class: "frame", ->
+        partial "shared/navigation"
+        
+    header id: "header", role: "banner", ->
+      div class: "frame", ->
+        partial "shared/header"
+        
+    section id: "body", role: "main", ->
+      div class: "frame", ->
+        yields "body"
+        aside id: "sidebar", role: "complementary", ->
+          if hasContentFor "sidebar"
+            yields "sidebar"
+            
+    footer id: "footer", role: "contentinfo", ->
+      div class: "frame", ->
+        partial "shared/footer"
+        
+  if hasContentFor "popups"
+    aside id: "popups", ->
+      yields "popups"
+      
+  if hasContentFor "bottom"
+    yields "bottom"
 ```
 
 The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure coffeescript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
@@ -314,6 +356,30 @@ class PostsController extends Tower.Controller
 
 Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).
 
+## Databases
+
+``` coffeescript
+# config/databases.coffee
+module.exports =
+  mongodb:
+    development:
+      name: "app-development"
+      port: 27017
+      host: "127.0.0.1"
+    test:
+      name: "app-test"
+      port: 27017
+      host: "127.0.0.1"
+    staging:
+      name: "app-staging"
+      port: 27017
+      host: "127.0.0.1"
+    production:
+      name: "app-production"
+      port: 27017
+      host: "127.0.0.1"
+```
+
 ## Mailers
 
 ``` coffeescript
@@ -326,7 +392,8 @@ class App.Notification extends Tower.Mailer
 ## Internationalization
 
 ``` coffeescript
-en:
+# config/locales/en.coffee
+module.exports =
   hello: "world"
   forms:
     titles:
@@ -376,7 +443,7 @@ It's built on [connect](http://github.com/sencha/connect), so you can use any of
 
 ``` coffeescript
 # config/assets.coffee
-Tower.assets =
+module.exports =
   javascripts:
     vendor: [
       "/vendor/javascripts/jquery.js"

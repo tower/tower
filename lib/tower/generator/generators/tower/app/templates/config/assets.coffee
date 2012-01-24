@@ -3,6 +3,7 @@ module.exports =
     application: [
       "/app/client/config/application"
       "/config/routes"
+      "/app/views/templates.js"
     ]
     
     lib: [

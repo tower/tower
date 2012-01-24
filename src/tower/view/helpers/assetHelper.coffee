@@ -40,7 +40,7 @@ Tower.View.AssetHelper =
         if !!source.match(/^(http|\/{2})/)
           result.push(source)
         else
-          paths   = Tower.assets[namespace][source]
+          paths   = Tower.config.assets[namespace][source]
           for path in paths
             result.push("/#{namespace}#{path}.#{extension}")
     

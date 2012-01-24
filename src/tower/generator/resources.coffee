@@ -2,7 +2,7 @@ File = require('pathfinder').File
 
 Tower.Generator.Resources =  
   route: (routingCode) ->
-    @log "route", routingCode
+    #@log "route", routingCode
     sentinel = /\.Route\.draw ->(?:\s*\|map\|)?\s*$/
     
     @inRoot ->
@@ -29,10 +29,10 @@ Tower.Generator.Resources =
     
   builtAttribute: (name, type = "string") ->
     name:       name
-    type:       switch type
+    type:       switch type.toLowerCase()
       when "text" then "String"
       else
-        Tower.Support.camelize(type)
+        Tower.Support.String.camelize(type)
         
     humanName:  _.humanize(name)
     

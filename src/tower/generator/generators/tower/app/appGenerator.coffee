@@ -25,6 +25,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @directory "helpers"
           @inside "stylesheets", ->
             @template "application.styl"
+          @inside "controllers", ->
+            @template "applicationController.coffee"
           
         @inside "controllers", ->
           @template "applicationController.coffee"
@@ -78,9 +80,9 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       
       @directory "log"
     
-      @template "package.json"
+      @template "pack", "package.json"
       @template "Procfile" unless @program.skipProcfile
-    
+      
       @inside "public", ->
         @template "404.html"
         @template "500.html"
@@ -89,7 +91,9 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @template "humans.txt"
         @template "robots.txt"
         @inside "javascripts", ->
-          @createFile "templates.js", ""
+          @inside "app", ->
+            @inside "views", ->
+              @createFile "templates.js", ""
       
       @template "README.md"
       
@@ -115,8 +119,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
           @get "https://raw.github.com/timrwood/moment/master/moment.js", "moment.js"
           @get "https://raw.github.com/medialize/URI.js/gh-pages/src/URI.js", "uri.js"
-          @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
           @get "https://raw.github.com/visionmedia/mocha/master/mocha.js", "mocha.js"
+          @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
         @directory "stylesheets"
         @inside "swfs", ->
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"

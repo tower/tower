@@ -33,8 +33,6 @@ Tower.Controller.Events =
       "swiperight"
     ]
     
-    DOM_EVENT_PATTERN: new RegExp("^(#{@DOM_EVENTS.join("|")})")
-    
     dispatcher: global
     
     addEventHandler: (name, handler, options) ->
@@ -80,5 +78,7 @@ Tower.Controller.Events =
         controller[handler].call controller, event
       else
         handler.call controller, event
+        
+Tower.Controller.Events.ClassMethods.DOM_EVENT_PATTERN = new RegExp("^(#{Tower.Controller.Events.ClassMethods.DOM_EVENTS.join("|")})")
         
 module.exports = Tower.Controller.Events
