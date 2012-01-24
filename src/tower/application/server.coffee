@@ -89,6 +89,7 @@ class Tower.Application extends Tower.Class
       
       paths = File.files("#{Tower.root}/app/helpers")
       paths = paths.concat File.files("#{Tower.root}/app/models")
+      paths = paths.concat ["#{Tower.root}/app/controllers/applicationController"]
       paths = paths.concat File.files("#{Tower.root}/app/controllers")
       
       for path in paths

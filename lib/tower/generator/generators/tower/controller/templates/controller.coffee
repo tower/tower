@@ -1,4 +1,4 @@
-class <%= project.className %>.<%= model.pluralClassName %>Controller extends Tower.Controller<% for (var i = 0; i < model.attributes.length; i++) { %>
+class <%= project.className %>.<%= model.pluralClassName %>Controller extends <%= project.className %>.ApplicationController<% for (var i = 0; i < model.attributes.length; i++) { %>
   @param "<%= model.attributes[i].name %>"<% } %>
   
   new: ->

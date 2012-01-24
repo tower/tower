@@ -17,4 +17,4 @@ class <%= project.className %> extends Tower.Application
     
     @use Tower.Middleware.Router
 
-module.exports = global.<%= project.className %> = <%= project.className %>
+module.exports = global.<%= project.className %> = new <%= project.className %>

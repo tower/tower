@@ -4111,10 +4111,12 @@
           if (!!source.match(/^(http|\/{2})/)) {
             result.push(source);
           } else {
-            paths = Tower.assets[namespace][source];
-            for (_n = 0, _len6 = paths.length; _n < _len6; _n++) {
-              path = paths[_n];
-              result.push("/" + namespace + path + "." + extension);
+            paths = Tower.config.assets[namespace][source];
+            if (paths) {
+              for (_n = 0, _len6 = paths.length; _n < _len6; _n++) {
+                path = paths[_n];
+                result.push("/" + namespace + path + "." + extension);
+              }
             }
           }
         }
@@ -5280,7 +5282,6 @@
   Tower.Controller.Events = {
     ClassMethods: {
       DOM_EVENTS: ["click", "dblclick", "blur", "error", "focus", "focusIn", "focusOut", "hover", "keydown", "keypress", "keyup", "load", "mousedown", "mouseenter", "mouseleave", "mousemove", "mouseout", "mouseover", "mouseup", "mousewheel", "ready", "resize", "scroll", "select", "submit", "tap", "taphold", "swipe", "swipeleft", "swiperight"],
-      DOM_EVENT_PATTERN: new RegExp("^(" + (this.DOM_EVENTS.join("|")) + ")"),
       dispatcher: global,
       addEventHandler: function(name, handler, options) {
         if (options.type === "socket" || !eventType.match(this.DOM_EVENT_PATTERN)) {
@@ -5334,6 +5335,8 @@
       }
     }
   };
+
+  Tower.Controller.Events.ClassMethods.DOM_EVENT_PATTERN = new RegExp("^(" + (Tower.Controller.Events.ClassMethods.DOM_EVENTS.join("|")) + ")");
 
   Tower.Controller.include(Tower.Controller.Elements);
 

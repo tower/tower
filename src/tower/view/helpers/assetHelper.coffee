@@ -41,8 +41,9 @@ Tower.View.AssetHelper =
           result.push(source)
         else
           paths   = Tower.config.assets[namespace][source]
-          for path in paths
-            result.push("/#{namespace}#{path}.#{extension}")
+          if paths
+            for path in paths
+              result.push("/#{namespace}#{path}.#{extension}")
     
     result
       

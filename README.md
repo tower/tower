@@ -17,8 +17,8 @@ npm install tower -g
 ## Generator
 
 ``` bash
-tower new my-app
-cd my-app
+tower new app
+cd app
 tower generate scaffold Post title:string body:text belongsTo:user
 tower generate scaffold User email:string firstName:string lastName:string hasMany:posts
 ```

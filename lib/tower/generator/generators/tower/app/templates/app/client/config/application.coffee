@@ -4,4 +4,4 @@ class <%= project.className %> extends Tower.Application
     @use Tower.Middleware.Location
     @use Tower.Middleware.Router
 
-window.<%= project.className %> = <%= project.className %>
+window.<%= project.className %> = new <%= project.className %>
