@@ -6,7 +6,7 @@ Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built 
 
 Includes a database-agnostic ORM with browser (memory) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.  If not, let me know!
 
-More docs in the docs section on http://towerjs.org.  Docs are a work in progress.
+More docs in the docs section on [towerjs.org](http://towerjs.org).  Docs are a work in progress.
 
 ## Install
 
@@ -517,6 +517,10 @@ cake spec
 cake coffee
 cake minify
 ```
+
+## Examples
+
+- [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
 
 ## License
 
