@@ -1,3 +1,4 @@
+###
 require '../../config'
 
 controller  = null
@@ -95,3 +96,4 @@ describe 'Tower.Controller.Rendering', ->
       expect(@body).toEqual JSON.stringify(hello: "world")
       expect(@contentType).toEqual "application/json"
       expect(@status).toEqual 401
+###

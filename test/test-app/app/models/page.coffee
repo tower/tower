@@ -1,8 +1,9 @@
-class TowerSpecApp.Page extends Tower.Model
+class App.Page extends Tower.Model
   @field "id"
   @field "title"
   @field "rating"#, min: 0, max: 1
   @field "type"
+  @field "tags", type: ["String"], default: []
   
   @validates "rating", min: 0, max: 10
   
@@ -12,4 +13,4 @@ class TowerSpecApp.Page extends Tower.Model
   
   @timestamps()
   
-global.Page = TowerSpecApp.Page
+global.Page = App.Page

@@ -14,7 +14,7 @@ class Tower.View.Form extends Tower.View.Component
     @tag "form", @attributes, =>
       @tag "input", type: "hidden", name: "_method", value: @attributes["data-method"]
       if callback
-        builder    = new Tower.View.Form.Builder(
+        builder    = new Tower.View.Form.Builder([], 
           template:   @template
           tabindex:   1
           accessKeys: {}
@@ -42,7 +42,9 @@ class Tower.View.Form extends Tower.View.Component
         method                 = "post"
     
     attributes["data-method"] = method
-    attributes.method        = if method == "get" then "get" else "post"    
+    attributes.method        = if method == "get" then "get" else "post" 
+    
+    attributes   
 
 require './form/builder'
 require './form/fieldset'

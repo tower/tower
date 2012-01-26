@@ -36,5 +36,10 @@ Tower.Store.MongoDB.Finders =
     @collection().count query, (error, result) ->
       callback.call @, error, result if callback
     @
+    
+  exists: (query, options, callback) ->
+    @collection().count query, (error, result) ->
+      callback.call @, error, result if callback
+    @
 
 module.exports = Tower.Store.MongoDB.Finders

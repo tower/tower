@@ -13,7 +13,9 @@ class Tower.Store.Memory extends Tower.Store
   
   constructor: (options) ->
     super(options)
+    @initialize()
     
+  initialize: ->
     @constructor.stores().push @
     
     @records  = {}

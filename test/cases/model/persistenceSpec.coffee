@@ -26,6 +26,38 @@ describe 'Tower.Model.Persistence', ->
     #  User.create attributes, (error, records) ->
     #    expect(records.length).toEqual 2
     #    expect(User.count()).toEqual 2
+    
+  describe 'update', ->
+    beforeEach ->
+      user = User.create(id: 1, firstName: "Lance")
+      User.create(id: 2, firstName: "Dane")
+      
+    test 'update string property', ->
+      User.update firstName: "John", instantiate: false, (error) =>
+        User.all (error, users) =>
+          expect(users.length).toEqual 2
+          for user in users
+            expect(user.get("firstName")).toEqual "John"
+      
+    test 'update matching string property', ->
+      User.where(firstName: "Lance").update firstName: "John", instantiate: false, (error) =>
+        expect(User.where(firstName: "John").count()).toEqual 1
+        
+  describe '#update', ->
+    beforeEach ->
+      user = User.create(id: 1, firstName: "Lance")
+      User.create(id: 2, firstName: "Dane")
+      
+    test 'update string property with updateAttributes', ->
+      user.updateAttributes firstName: "John", (error) =>
+        expect(user.get("firstName")).toEqual "John"
+        expect(user.changes).toEqual {}
+    
+    test 'update string property with save', ->
+      user.set "firstName", "John"
+      user.save (error) =>
+        expect(user.get("firstName")).toEqual "John"
+        expect(user.changes).toEqual {}
   
   describe 'destroy', ->
     beforeEach ->

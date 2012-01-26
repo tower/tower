@@ -1,2 +1,2 @@
-class TowerSpecApp.PostsController extends Tower.Controller
+class App.PostsController extends Tower.Controller
   @param "likeCount"

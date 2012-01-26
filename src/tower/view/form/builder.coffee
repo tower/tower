@@ -21,7 +21,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
     options                 = @defaultOptions(Tower.Support.Array.extractOptions(args))
     options.label           ||= args.shift()
     
-    new Tower.View.Form.Fieldset(options).render(block)
+    new Tower.View.Form.Fieldset([], options).render(block)
     
   fields: ->
     options           = args.extractOptions
@@ -94,7 +94,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
       errorHtml:   options.errorHtml || {}
       hintHtml:    options.hintHtml  || {}
     
-    new Tower.View.Form.Field(_.extend(defaults, options)).render(block)
+    new Tower.View.Form.Field([], _.extend(defaults, options)).render(block)
 
   button: ->
     options = args.extractOptions

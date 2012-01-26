@@ -39,6 +39,15 @@ Tower.Store.Memory.Finders =
       
     result
     
+  exists: (query, options, callback) ->
+    result = false
+    
+    @count query, options, (error, record) =>
+      result = !!record
+      callback.call(@, error, result) if callback
+    
+    result
+    
   # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
   sort: (records, sortings) ->
     Tower.Support.Array.sortBy(records, sortings...)

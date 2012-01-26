@@ -1,4 +1,4 @@
-class TowerSpecApp.User extends Tower.Model
+class App.User extends Tower.Model
   @field "id"
   @field "firstName"
   @field "createdAt", type: "Time", default: -> new Date()
@@ -15,4 +15,4 @@ class TowerSpecApp.User extends Tower.Model
   
   @timestamps()
 
-global.User = TowerSpecApp.User
+global.User = App.User

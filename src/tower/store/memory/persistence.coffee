@@ -3,7 +3,7 @@ Tower.Store.Memory.Persistence =
     records = Tower.Support.Object.toArray(records)
     for record in records
       record = @serializeModel(record)
-      @records[record.get("id")] = record
+      @_setRecord(record)
     records
     
   create: (attributes, options, callback) ->
@@ -33,17 +33,27 @@ Tower.Store.Memory.Persistence =
       
   destroy: (query, options, callback) ->
     if Tower.Support.Object.isBlank(query)
-      @records = {}
-      callback.call(@, null) if callback
-      null
+      @clear(callback)
     else
-      _records = @records
       @find query, options, (error, records) ->
         return callback(error) if error
         for record in records
           #_records.splice(_records.indexOf(record), 1)
-          delete _records[record.id]
+          @_removeRecord(record)
         callback.call(@, error, records) if callback
         records
-
+        
+  clear: (callback) ->
+    @records = {}
+    callback.call(@, null) if callback
+    null
+    
+  _setRecord: (record) ->
+    @records[record.get("id")] = record
+    
+  _getRecord: (key) ->
+    
+  _removeRecord: (record) ->
+    delete @records[record.id]
+    
 module.exports = Tower.Store.Memory.Persistence

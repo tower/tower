@@ -40,18 +40,19 @@ describe 'Tower.View', ->
             fields.field "firstName"
       
       view.render template: template, locals: user: user, (error, result) ->
-        console.log error
         expect(result).toEqual '''
-<form class="post">
-  <input type="hidden" name="_method" />
+<form role="form" novalidate="true" data-method="post" method="post">
+  <input type="hidden" name="_method" value="post" />
   <fieldset>
     <ol class="fields">
-      <li>
-        <input type="email" />
+      <li class="field string">
+        <label class="label" for="user-first-name-input">First name</label>
+        <input class="input" id="user-first-name-input" type="text" />
       </li>
     </ol>
   </fieldset>
 </form>
 
 '''
+
 ###

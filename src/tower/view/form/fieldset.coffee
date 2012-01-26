@@ -14,7 +14,7 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
     delete attributes.parentIndex
     delete attributes.label
     
-    @builder     = new Tower.View.Form.Builder(
+    @builder     = new Tower.View.Form.Builder([], 
       template:     @template
       model:        @model
       attribute:    @attribute

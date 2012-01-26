@@ -23,7 +23,7 @@ class Tower.View extends Tower.Class
     defaultTextAreaWidth:                       300
     allFieldsRequiredByDefault:                 true
     fieldListTag:                               "ol"
-    fieldListClass:                             "field-list"
+    fieldListClass:                             "fields"
     fieldTag:                                   "li"
     separator:                                  "-"
     breadcrumb:                                 " - "

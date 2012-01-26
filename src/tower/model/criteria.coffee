@@ -15,6 +15,15 @@ class Tower.Model.Criteria
   desc: (attributes...) ->
     @order(attribute, "desc") for attribute in attributes
     
+  allIn: (attributes) ->
+    @_whereOperator "$all", attributes
+    
+  anyIn: (attributes) ->
+    @_whereOperator "$any", attributes
+    
+  notIn: (attributes) ->
+    @_whereOperator "$nin", attributes
+    
   offset: (number) ->
     @_mergeOptions offset: number
     
@@ -54,5 +63,12 @@ class Tower.Model.Criteria
 
   _mergeOptions: (options = {}) ->
     Tower.Support.Object.deepMergeWithArrays(@options, options)
+    
+  _whereOperator: (operator, attributes) ->
+    query = {}
+    for key, value of attributes
+      query[key] = {}
+      query[key][operator] = value
+    @where query
 
 module.exports = Tower.Model.Criteria

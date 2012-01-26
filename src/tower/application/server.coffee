@@ -7,7 +7,11 @@ io      = require('socket.io').listen(server)
 class Tower.Application extends Tower.Class
   @include Tower.Support.Callbacks
   
-  @autoloadPaths: ["app/helpers", "app/models", "app/controllers"]
+  @autoloadPaths: [
+    "app/helpers", 
+    "app/models", 
+    "app/controllers"
+  ]
   
   @use: ->
     @middleware ||= []

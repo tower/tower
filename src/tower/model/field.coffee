@@ -2,7 +2,9 @@ class Tower.Model.Field
   constructor: (owner, name, options = {}) ->
     @owner    = owner
     @name     = key = name
-    @type     = options.type || "string"
+    @type     = options.type || "String"
+    if typeof @type != "string"
+      @type   = "Array"
     @_default = options.default
     @_encode  = options.encode
     @_decode  = options.decode

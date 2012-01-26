@@ -12,4 +12,3 @@ class Tower.View.Component
     
   tag: (key, args...) ->
     @template.tag key, args
-    

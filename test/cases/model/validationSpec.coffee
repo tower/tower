@@ -35,3 +35,5 @@ describe 'Tower.Model.Validation', ->
     
     expect(page.validate()).toEqual true
     expect(page.errors).toEqual []
+
+  describe 'length, min, max', ->

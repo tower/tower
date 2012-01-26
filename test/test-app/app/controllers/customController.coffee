@@ -1,4 +1,4 @@
-class TowerSpecApp.CustomController extends Tower.Controller
+class App.CustomController extends Tower.Controller
   @respondTo "html", "json", "yaml"
   
   @before "setCurrentUser"

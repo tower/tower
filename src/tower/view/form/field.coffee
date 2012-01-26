@@ -1,48 +1,46 @@
 class Tower.View.Form.Field extends Tower.View.Component
   constructor: (args, options) ->
     super
+    
     # input type
-    #options.as    ||= attribute.inputType(options)
-    @inputType     = options.as
+    options.as    ||= attribute.inputType(options)
+    @inputType      = inputType = options.as
     @inputs         = []
     
     # class
+    classes = [Tower.View.fieldClass, inputType]
     
-    #classes = [config.fieldClass, inputType]
-    #
-    #unless ["submit", "fieldset"].include?(inputType)
-    #  classes += [
-    #    attribute.required? ? config.requiredClass : config.optionalClass, 
-    #    attribute.errors? ? config.errorClass : config.validClass,
-    #  ]
-    #  if options.validate != false && attribute.validations.present?
-    #    classes << config.validateClass
-    #
-    #mergeClass! attributes, *classes.compact.uniq.map(&"toS")
-    #
-    ## id
-    #if attributes.id.blank? && config.idEnabledOn.include?("field")
-    #  attributes.id = attribute.toId(type: "field", index: index, parentIndex: parentIndex)
-    #
-    #unless ["hidden", "submit"].include?(inputType)
-    #  # errors
-    #  @errors           = Storefront:"Components":"Form":"Errors".new(options.slice("richInput", "errorHtml", "error", "model", "index", "parentIndex", "attribute", "template"))
-    #
-    #  # label
-    #  @label            = Storefront:"Components":"Form":"Label".new(options.slice("richInput", "labelHtml", "label", "model", "index", "parentIndex", "attribute", "template"))
-    #
-    #  # hint
-    #  @hints            = Storefront:"Components":"Form":"Hint".new(options.slice("richInput", "hintHtml", "hint", "model", "index", "parentIndex", "attribute", "template"))
-    #
-    #unless inputType == "fieldset"
-    #  # inputs
-    #  @inputAttributes = defaultOptions!.merge(attributes.except("id", "class", "fieldHtml", "attributes", "errorHtml", "labelHtml", "hintHtml"))
-    #
-    #mergeClass! options.fieldHtml, attributes.class
-    #
-    #@attributes       = options.fieldHtml.merge(id: attributes.id)
-    @attributes = {}
-
+    unless ["submit", "fieldset"].indexOf(inputType) > -1
+      classes.push if attribute.required then Tower.View.requiredClass else Tower.View.optionalClass
+      classes.push if attribute.errors then Tower.View.errorClass else Tower.View.validClass
+      
+      if options.validate != false && attribute.validations.present?
+        classes.push Tower.View.validateClass
+    
+    attributes.class = @addClass attributes.class, classes
+    
+    # id
+    if attributes.id? && Tower.View.idEnabledOn.indexOf("field") > -1
+      attributes.id = attribute.toId(type: "field", index: index, parentIndex: parentIndex)
+    
+    unless ["hidden", "submit"].indexOf(inputType) > -1
+      # errors
+      @errors           = options.slice("richInput", "errorHtml", "error", "model", "index", "parentIndex", "attribute", "template")
+    
+      # label
+      @label            = options.slice("richInput", "labelHtml", "label", "model", "index", "parentIndex", "attribute", "template")
+    
+      # hint
+      @hints            = options.slice("richInput", "hintHtml", "hint", "model", "index", "parentIndex", "attribute", "template")
+    
+    unless inputType == "fieldset"
+      # inputs
+      @inputAttributes = defaultOptions.merge(attributes.except("id", "class", "fieldHtml", "attributes", "errorHtml", "labelHtml", "hintHtml"))
+    
+    mergeClass options.fieldHtml.class, attributes.class
+    
+    @attributes       = options.fieldHtml.merge(id: attributes.id)
+  
   input: (args...) ->
     options = args.extractOptions
     key     = args.shift || attribute.name

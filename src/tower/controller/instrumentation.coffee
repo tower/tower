@@ -16,9 +16,10 @@ Tower.Controller.Instrumentation =
     @processQuery()
     
     # hacking in logging for now
-    console.log "  Processing by #{@constructor.name}##{@action} as #{@format.toUpperCase()}"
-    console.log "  Parameters:"
-    console.log @params
+    unless Tower.env.match(/(test|production)/)
+      console.log "  Processing by #{@constructor.name}##{@action} as #{@format.toUpperCase()}"
+      console.log "  Parameters:"
+      console.log @params
     
     @runCallbacks "action", (callback) =>
       @[@action].call @, callback

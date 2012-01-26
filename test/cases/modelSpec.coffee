@@ -7,7 +7,7 @@ criteria  = null
 
 describe 'Tower.Model', ->
   beforeEach ->
-    User.store(new Tower.Store.Memory(name: "users", className: "TowerSpecApp.User"))
+    User.store(new Tower.Store.Memory(name: "users", className: "App.User"))
 
 describe 'Tower.Model.Callbacks', ->
   beforeEach ->
@@ -191,7 +191,7 @@ describe 'Tower.Model.Relation', ->
         relation = Post.relations().comments
         expect(relation.polymorphic).toBeTruthy()
         expect(relation.as).toEqual "commentable"
-        expect(relation.type).toEqual "TowerSpecApp.Comment"
+        expect(relation.type).toEqual "App.Comment"
         
 describe 'Tower.Model.Persistence', ->
   describe 'updating', ->

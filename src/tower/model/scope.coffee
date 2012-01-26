@@ -26,7 +26,8 @@ class Tower.Model.Scope extends Tower.Class
     "all", 
     "first", 
     "last", 
-    "count"
+    "count",
+    "exists"
   ]
   
   @builders: [
@@ -71,6 +72,10 @@ class Tower.Model.Scope extends Tower.Class
   count: (callback) ->
     criteria  = @criteria
     @store.count criteria.query, criteria.options, callback
+    
+  exists: (callback) ->
+    criteria  = @criteria
+    @store.exists criteria.query, criteria.options, callback
     
   batch: ->
     

@@ -10,11 +10,12 @@ describe 'Tower.Controller', ->
       @match "/custom",  to: "custom#index"
       @match "/custom/:id",  to: "custom#show"
     
-    controller  = new TowerSpecApp.CustomController()
+    controller  = new App.CustomController()
     
   test 'resource', ->
-    controller = new TowerSpecApp.PostsController
+    controller = new App.PostsController
     expect(controller.resourceName).toEqual "post"
     expect(controller.collectionName).toEqual "posts"
     expect(controller.resourceType).toEqual "Post"
+    
     

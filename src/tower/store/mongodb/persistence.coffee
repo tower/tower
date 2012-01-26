@@ -28,7 +28,7 @@ Tower.Store.MongoDB.Persistence =
       
     @
 
-  delete: (query, options, callback) ->
+  destroy: (query, options, callback) ->
     query           = @serializeQuery(query)
     options         = @serializeOptions(options)
     

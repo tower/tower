@@ -6,7 +6,7 @@ Tower.Store.Memory.Serialization =
     
     for key, value of query
       continue if !!Tower.Store.reservedOperators[key]
-      recordValue = record[key]
+      recordValue = record.get(key)
       if Tower.Support.Object.isRegExp(value)
         success = recordValue.match(value)
       else if typeof value == "object"
@@ -58,6 +58,8 @@ Tower.Store.Memory.Serialization =
         switch operator
           when "$in", "$any"
             success = self._anyIn(recordValue, value)
+          when "$nin"
+            success = self._notIn(recordValue, value)
           when "$gt"
             success = self._isGreaterThan(recordValue, value)
           when "$gte"
@@ -115,9 +117,22 @@ Tower.Store.Memory.Serialization =
         return true if recordValue == value
     false
     
-  _allIn: (recordValue, value) ->
-    for value in array
-      return false if recordValue.indexOf(value) == -1
+  _notIn: (recordValue, array) ->
+    if _.isArray(recordValue)
+      for value in array
+        return false if recordValue.indexOf(value) > -1
+    else
+      for value in array
+        return false if recordValue == value
+    true
+    
+  _allIn: (recordValue, array) ->
+    if _.isArray(recordValue)
+      for value in array
+        return false if recordValue.indexOf(value) == -1
+    else
+      for value in array
+        return false if recordValue != value
     true
   
 module.exports = Tower.Store.Memory.Serialization
