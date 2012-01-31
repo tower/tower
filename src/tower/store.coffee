@@ -8,6 +8,8 @@ class Tower.Store extends Tower.Class
     "$pushAll": "$pushAll"
     "$pull":    "$pull"
     "$pullAll": "$pullAll"
+    "$inc":     "$inc"
+    "$pop":     "$pop"
     
   @reservedOperators:
     "_sort":    "_sort"

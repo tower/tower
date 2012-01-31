@@ -133,7 +133,10 @@ Tower.Controller.Resourceful =
       param       = association.param || "#{association.key}Id"
       parentClass = Tower.constant(association.type)
       parentClass.find @params[param], (error, parent) =>
-        @parent = @[association.key] = parent
+        throw error if error && !callback
+        unless error
+          @parent = @[association.key] = parent
+        callback.call @, error, parent if callback
     else
       callback.call @, null, false if callback
       false
@@ -144,7 +147,7 @@ Tower.Controller.Resourceful =
     
     if @hasParent
       @findParent (error, parent) =>
-        callbackWithScope(error, parent[@collectionName])
+        callbackWithScope(error, parent[@collectionName]())
     else
       callbackWithScope null, Tower.constant(@resourceType)
 

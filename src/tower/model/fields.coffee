@@ -20,5 +20,9 @@ Tower.Model.Fields =
     
   has: (name) ->
     @attributes.hasOwnProperty(name)
+    
+  assignAttributes: (attributes) ->
+    @set(name, value) for key, value of attributes
+    @
   
 module.exports = Tower.Model.Fields

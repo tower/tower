@@ -9,6 +9,7 @@ Tower.Support.Object.extend Tower,
   namespace:  null
   accessors:  typeof(window) == "undefined"
   logger:     if typeof(_console) != 'undefined' then _console else console
+  structure:  "standard"
   config:     {}
   
   get: ->

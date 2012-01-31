@@ -4,10 +4,10 @@ class Tower.Model.Criteria
     @options    = options
   
   where: (conditions) ->
-    @_mergeQuery conditions
+    @mergeQuery conditions
     
   order: (attribute, direction = "asc") ->
-    @_mergeOptions sort: [[attribute, direction]]
+    @mergeOptions sort: [[attribute, direction]]
     
   asc: (attributes...) ->
     @order(attribute) for attribute in attributes
@@ -25,19 +25,19 @@ class Tower.Model.Criteria
     @_whereOperator "$nin", attributes
     
   offset: (number) ->
-    @_mergeOptions offset: number
+    @mergeOptions offset: number
     
   limit: (number) ->
-    @_mergeOptions limit: number
+    @mergeOptions limit: number
     
   select: ->
-    @_mergeOptions fields: Tower.Support.Array.args(arguments)
+    @mergeOptions fields: Tower.Support.Array.args(arguments)
     
   joins: ->
-    @_mergeOptions joins: Tower.Support.Array.args(arguments)
+    @mergeOptions joins: Tower.Support.Array.args(arguments)
     
   includes: ->
-    @_mergeOptions includes: Tower.Support.Array.args(arguments)
+    @mergeOptions includes: Tower.Support.Array.args(arguments)
     
   page: (number) ->
     @offset(number)
@@ -55,14 +55,25 @@ class Tower.Model.Criteria
     new @constructor(Tower.Support.Object.cloneHash(@query), Tower.Support.Object.cloneHash(@options))
     
   merge: (criteria) ->
-    @_mergeQuery(criteria.query)
-    @_mergeOptions(criteria.options)
+    @mergeQuery(criteria.query)
+    @mergeOptions(criteria.options)
   
-  _mergeQuery: (conditions = {}) ->
+  mergeQuery: (conditions = {}) ->
     Tower.Support.Object.deepMergeWithArrays(@query, conditions)
 
-  _mergeOptions: (options = {}) ->
+  mergeOptions: (options = {}) ->
     Tower.Support.Object.deepMergeWithArrays(@options, options)
+    
+  mergeUpdates: ->
+    
+  mergeAttributes: ->
+    
+  toUpdate: ->
+    
+  toCreate: ->
+    
+  toFind: ->
+    @query
     
   _whereOperator: (operator, attributes) ->
     query = {}

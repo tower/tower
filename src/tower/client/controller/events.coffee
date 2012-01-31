@@ -12,7 +12,7 @@ Tower.Controller.Events =
       "keydown", 
       "keypress", 
       "keyup", 
-      "load",
+      "load", 
       "mousedown", 
       "mouseenter",
       "mouseleave",

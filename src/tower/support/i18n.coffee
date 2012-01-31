@@ -1,13 +1,12 @@
 Tower.Support.I18n =
-  PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g
+  PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g  
+  defaultLanguage: "en"
   
   load: (pathOrObject, language = @defaultLanguage) ->
     store     = @store()
     language  = store[language] ||= {}
     Tower.Support.Object.deepMerge(language, if typeof(pathOrObject) == "string" then require(pathOrObject) else pathOrObject)
     @
-  
-  defaultLanguage: "en"
   
   translate: (key, options = {}) ->
     if options.hasOwnProperty("tense")

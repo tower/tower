@@ -48,6 +48,12 @@ Tower.Store.Memory.Serialization =
           _attributeValue.splice _attributeValue.indexOf(item), 1
     attributes
     
+  _incAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      attributes[_key] ||= 0
+      attributes[_key] += _value
+    attributes
+    
   _matchesOperators: (record, recordValue, operators) ->
     success = true
     self    = @

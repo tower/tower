@@ -15,7 +15,7 @@ Tower.Model.Relations =
         relationClass = Tower.Model.Relation.HasMany
         
       @relations()[name]  = new relationClass(@, name, options)
-    
+      
     belongsTo: (name, options) ->
       @relations()[name]  = new Tower.Model.Relation.BelongsTo(@, name, options)
     

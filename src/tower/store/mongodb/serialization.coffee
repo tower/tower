@@ -78,7 +78,7 @@ Tower.Store.MongoDB.Serialization =
     value
   
   encodeString: (value) ->
-    value.toString()
+    if value then value.toString() else value
    
   encodeOrder: (value) ->
     
@@ -88,10 +88,8 @@ Tower.Store.MongoDB.Serialization =
     switch typeof(value)
       when "string"
         time.parse(value)
-      when DateTime
-        time.local(value.year, value.month, value.day, value.hour, value.min, value.sec)
       when Date
-        time.local(value.year, value.month, value.day)
+        time.local(value.year, value.month, value.day, value.hour, value.min, value.sec)
       when Array
         time.local(value)
       else
