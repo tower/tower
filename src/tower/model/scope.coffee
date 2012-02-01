@@ -50,66 +50,69 @@ class Tower.Model.Scope extends Tower.Class
         clone
   
   find: ->
-    {query, options, callback} = @_extractArgs(arguments, ids: true)
-    @_find query, options, callback
+    {criteria, options, callback} = @_extractArgs(arguments, ids: true)
+    {conditions, options} = criteria.toQuery()
+    @_find conditions, options, callback
     
-  _find: (query, options, callback) ->
-    if query.id && query.id.hasOwnProperty("$in") && query.id.$in.length == 1
-      @store.findOne query, options, callback
+  _find: (conditions, options, callback) ->
+    if conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
+      @store.findOne conditions, options, callback
     else
-      @store.find query, options, callback
+      @store.find conditions, options, callback
     
   first: (callback) ->
-    criteria = @toQuery("asc")
-    @store.findOne criteria.query, criteria.options, callback
+    {conditions, options} = @toQuery("asc")
+    @store.findOne conditions, options, callback
     
   last: (callback) ->
-    criteria = @toQuery("desc")
-    @store.findOne criteria.query, criteria.options, callback
+    {conditions, options} = @toQuery("desc")
+    @store.findOne conditions, options, callback
   
   all: (callback) ->
-    criteria  = @toQuery()
-    @store.find criteria.query, criteria.options, callback
+    {conditions, options} = @toQuery()
+    @store.find conditions, options, callback
     
   count: (callback) ->
-    criteria  = @toQuery()
-    @store.count criteria.query, criteria.options, callback
+    {conditions, options} = @toQuery()
+    @store.count conditions, options, callback
     
   exists: (callback) ->
-    criteria  = @toQuery()
-    @store.exists criteria.query, criteria.options, callback
+    {conditions, options} = @toQuery()
+    @store.exists conditions, options, callback
     
   batch: ->
     
   build: (attributes, options) ->
-    criteria = @toCreate()
-    @_build attributes, criteria.query, criteria.options
+    {conditions, options} = @toCreate()
+    @_build attributes, conditions, options
     
   create: ->
     {criteria, attributes, options, callback} = @_extractArgs(arguments, attributes: true)
-    criteria.mergeAttributes(attributes)
+    criteria.where(attributes)
     criteria.mergeOptions(options)
-    @_create criteria, callback
+    @_create criteria.toCreate().attributes, options, callback
   
   update: ->
     {criteria, attributes, options, callback} = @_extractArgs(arguments, ids: true, attributes: true)
-    criteria.mergeUpdates(attributes)
     criteria.mergeOptions(options)
-    @_update criteria, callback
+    @_update criteria, attributes, options, callback
     
   destroy: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true)
     criteria.mergeOptions(options)
-    @_destroy criteria, callback
+    @_destroy criteria, options, callback
   
   delete: @::destroy
   
   transaction: ->
     
   toQuery: (sortDirection) ->
+    @toCriteria(sortDirection).toQuery()
+    
+  toCriteria: (sortDirection) ->
     criteria = @criteria.clone()
     
-    if sortDirection || !criteria.options.hasOwnProperty("sort")
+    if sortDirection || !criteria._order.length > 0
       sort      = @model.defaultSort()
       criteria[sortDirection || sort.direction](sort.name) if sort
     
@@ -129,17 +132,16 @@ class Tower.Model.Scope extends Tower.Class
   clone: ->
     new @constructor(model: @model, criteria: @criteria.clone())
     
-  _build: (attributes, query, options) ->
+  _build: (attributes, conditions, options) ->
     if Tower.Support.Object.isArray(attributes)
       result  = []
       for object in attributes
-        result.push @store.serializeModel(Tower.Support.Object.extend({}, query, object))
+        result.push @store.serializeModel(Tower.Support.Object.extend({}, conditions, object))
       result
     else
-      @store.serializeModel(Tower.Support.Object.extend({}, query, attributes))
-      
-  _create: (criteria, callback) ->
-    
+      @store.serializeModel(Tower.Support.Object.extend({}, conditions, attributes))
+
+  _create: (attributes, options, callback) ->
     if options.instantiate
       isArray = Tower.Support.Object.isArray(attributes)
       records = Tower.Support.Object.toArray(@build(attributes, options))
@@ -159,25 +161,29 @@ class Tower.Model.Scope extends Tower.Class
             callback(error, records)
           else
             callback(error, records[0])
-    else  
+    else
       @store.create attributes, options, callback
       
-  _update: (criteria, callback) ->
-    if options.instantiate
-      iterator = (record, next) -> record.updateAttributes(attributes, next)
-      @_each criteria.query, criteria.options, iterator, callback
-    else
-      @store.update attributes, criteria.query, criteria.options, callback
-  
-  _destroy: (criteria, callback) ->
-    if options.instantiate
-      iterator = (record, next) -> record.destroy(next)
-      @_each criteria.query, criteria.options, iterator, callback
-    else
-      @store.destroy criteria.query, criteria.options, callback
+  _update: (criteria, attributes, opts, callback) ->    
+    {conditions, options} = criteria.toQuery()
     
-  _each: (query, options, iterator, callback) ->
-    @store.find query, options, (error, records) =>
+    if opts.instantiate
+      iterator = (record, next) -> record.updateAttributes(attributes, next)
+      @_each conditions, options, iterator, callback
+    else
+      @store.update attributes, conditions, options, callback
+  
+  _destroy: (criteria, opts, callback) ->
+    {conditions, options} = criteria.toQuery()
+    
+    if opts.instantiate
+      iterator = (record, next) -> record.destroy(next)
+      @_each conditions, options, iterator, callback
+    else
+      @store.destroy conditions, options, callback
+    
+  _each: (conditions, options, iterator, callback) ->
+    @store.find conditions, options, (error, records) =>
       if error
         callback.call @, error, records
       else
@@ -211,7 +217,6 @@ class Tower.Model.Scope extends Tower.Class
     ids             = _.flatten(args) if opts.ids && args.length > 0
     
     if ids && ids.length > 0
-      delete criteria.query.id
       criteria.where id: $in: ids
     
     criteria: criteria, attributes: attributes, callback: callback, options: options

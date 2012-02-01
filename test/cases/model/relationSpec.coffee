@@ -36,13 +36,13 @@ describe 'Tower.Model.Relation', ->
       
       child = Child.last()
       
-      expect(child.parentsCount).toEqual 2
-      expect(child.parents().toCriteria().query).toEqual { childIds: { $in: [9] } }
+      expect(child.parentCount).toEqual 2
+      expect(child.parents().toQuery().conditions).toEqual { childIds: { $in: [9] } }
       
       expect(child.parents().count()).toEqual 2
       
       parent = Parent.first()
       
-      expect(parent.child().toCriteria().query).toEqual { parentIds: { $in: [1] } }
+      expect(parent.child().toQuery().conditions).toEqual { parentIds: { $in: [1] } }
       
       expect(parent.child().count()).toEqual 2

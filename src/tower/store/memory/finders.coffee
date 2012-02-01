@@ -1,14 +1,14 @@
 Tower.Store.Memory.Finders =
-  find: (query, options, callback) ->
+  find: (conditions, options, callback) ->
     result  = []
     records = @records
     
-    if Tower.Support.Object.isPresent(query)
+    if Tower.Support.Object.isPresent(conditions)
       sort    = options.sort
       limit   = options.limit || Tower.Store.defaultLimit
       
       for key, record of records
-        result.push(record) if @matches(record, query)
+        result.push(record) if @matches(record, conditions)
         # break if result.length >= limit
       
       result = @sort(result, sort) if sort
@@ -22,27 +22,27 @@ Tower.Store.Memory.Finders =
     
     result
     
-  findOne: (query, options, callback) ->
+  findOne: (conditions, options, callback) ->
     record = null
     options.limit = 1
-    @find query, options, (error, records) -> 
+    @find conditions, options, (error, records) -> 
       record = records[0]
       callback.call(@, error, record) if callback
     record
   
-  count: (query, options, callback) ->
+  count: (conditions, options, callback) ->
     result = 0
     
-    @find query, options, (error, records) -> 
+    @find conditions, options, (error, records) -> 
       result = records.length
       callback.call(@, error, result) if callback
       
     result
     
-  exists: (query, options, callback) ->
+  exists: (conditions, options, callback) ->
     result = false
     
-    @count query, options, (error, record) =>
+    @count conditions, options, (error, record) =>
       result = !!record
       callback.call(@, error, result) if callback
     

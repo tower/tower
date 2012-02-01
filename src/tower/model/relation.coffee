@@ -47,6 +47,7 @@ class Tower.Model.Relation extends Tower.Class
     @owner            = owner
     @name             = name
     @type             = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
+    @ownerType        = Tower.namespaced(owner.name)
     @dependent      ||= false
     @counterCache   ||= false
     @cache            = false unless @hasOwnProperty("cache")
@@ -57,11 +58,11 @@ class Tower.Model.Relation extends Tower.Class
     @inverseOf      ||= undefined
     @polymorphic      = options.hasOwnProperty("as") || !!options.polymorphic
     @default          = false unless @hasOwnProperty("default")
-    @singularName       = Tower.Support.String.singularize(owner.name)
+    @singularName       = Tower.Support.String.camelize(owner.name, true)
     @pluralName         = Tower.Support.String.pluralize(owner.name) # collectionName?
     @singularTargetName = Tower.Support.String.singularize(name)
-    @pluralTargetName   = Tower.Support.String.singularize(name)
-    @targetType         = Tower.Support.String.pluralize(name)
+    @pluralTargetName   = Tower.Support.String.pluralize(name)
+    @targetType         = @type
     
     # hasMany "posts", foreignKey: "postId", cacheKey: "postIds"
     unless @foreignKey
@@ -77,7 +78,7 @@ class Tower.Model.Relation extends Tower.Class
         @cacheKey = @cache
         @cache    = true
       else
-        @cacheKey = Tower.Support.String.pluralize(@foreignKey)
+        @cacheKey = @singularTargetName + "Ids"
       
       @owner.field @cacheKey, type: "Array", default: []
       
@@ -86,7 +87,7 @@ class Tower.Model.Relation extends Tower.Class
         @counterCacheKey  = @counterCache
         @counterCache     = true
       else
-        @counterCacheKey  = "#{@singularName}Count"
+        @counterCacheKey  = "#{@singularTargetName}Count"
       
       @owner.field @counterCacheKey, type: "Integer", default: 0
       
@@ -105,11 +106,10 @@ class Tower.Model.Relation extends Tower.Class
   inverse: ->
     return @_inverse if @_inverse
     relations = @targetKlass().relations()
-    for name, relation in relations
-      inverseName = relation.inverseOf || name
+    for name, relation of relations
       # need a way to check if class extends another class in coffeescript...
-      if inverseName == @name && relation.targetKlass == @klass()
-        return @_inverse = relation
+      return relation if relation.inverseOf == @name
+      return relation if relation.targetType == @ownerType
     null
   
   class @Scope extends Tower.Model.Scope
@@ -137,8 +137,6 @@ class Tower.Model.Relation extends Tower.Class
   
 require './relation/belongsTo'
 require './relation/hasMany'
-require './relation/hasManyThrough'
 require './relation/hasOne'
-require './relation/hasOneThrough'
 
 module.exports = Tower.Model.Relation

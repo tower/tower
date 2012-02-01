@@ -5,7 +5,6 @@ Tower.Store.Memory.Serialization =
     schema  = @schema()
     
     for key, value of query
-      continue if !!Tower.Store.reservedOperators[key]
       recordValue = record.get(key)
       if Tower.Support.Object.isRegExp(value)
         success = recordValue.match(value)

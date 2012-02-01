@@ -43,13 +43,13 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "find"
       scope.find 1, 2, 3
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, undefined
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, null
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3]
       
-      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, undefined
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, null
       
     test '`[1, 2, 3], callback`', ->
       callback = ->
@@ -63,39 +63,39 @@ describe 'Tower.Model.Scope', ->
     #  spyOn scope.store, "find"
     #  scope.where(id: $in: [1, 2, 3]).find(1)
     #  
-    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, {  }, undefined
+    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, {  }, null
       
   describe '#update', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "update"
       scope.update 1, 2, 3, {firstName: "Lance"}, instantiate: false
       
-      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
+      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "update"
       scope.update 1, 2, 3, {firstName: "Lance"}, instantiate: false
 
-      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
+      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
   describe '#destroy', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "destroy"
       scope.destroy 1, 2, 3, instantiate: false
       
-      expect(scope.store.destroy).toHaveBeenCalledWith { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
+      expect(scope.store.destroy).toHaveBeenCalledWith { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "destroy"
       scope.destroy 1, 2, 3, instantiate: false
       
-      expect(scope.store.destroy).toHaveBeenCalledWith  { id : { $in : [ 1, 2, 3 ] } }, {  }, undefined 
+      expect(scope.store.destroy).toHaveBeenCalledWith  { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
     test 'query + ids', ->
       spyOn scope.store, "destroy"
       scope.where(firstName: "John").destroy 1, 2, 3, instantiate: false
       
-      expect(scope.store.destroy).toHaveBeenCalledWith  { firstName: "John", id : { $in : [ 1, 2, 3 ] } }, {  }, undefined
+      expect(scope.store.destroy).toHaveBeenCalledWith  { firstName: "John", id : { $in : [ 1, 2, 3 ] } }, {  }, null
       
   describe '#create', ->
     test 'build(firstName: "Lance!")', ->
@@ -115,7 +115,7 @@ describe 'Tower.Model.Scope', ->
       
       args = scope.store.create.argsForCall[0]
       
-      expect(args[0]).toEqual { firstName: "Lantial", createdAt: new Date, updatedAt: new Date, likes: 0, tags: [], postIds: [] }
+      expect(args[0]).toEqual { firstName : 'Lantial', createdAt : new Date, updatedAt : new Date, likes : 0, tags : [  ], postIds : [  ] }
       expect(args[1]).toEqual { instantiate: false }
       
     test 'create(firstName: "Lantial")', ->
@@ -127,7 +127,7 @@ describe 'Tower.Model.Scope', ->
     clone = scope.where(firstName: "Lance")
     clone2 = clone.where(email: "example@gmail.com")
     
-    expect(clone.criteria.query).toNotEqual scope.criteria.query
-    expect(clone2.criteria.query).toEqual firstName: "Lance", email: "example@gmail.com"
-    expect(clone.criteria.query).toEqual firstName: "Lance"
-    expect(scope.criteria.query).toEqual {}
+    expect(clone.criteria.conditions()).toNotEqual scope.criteria.query
+    expect(clone2.criteria.conditions()).toEqual firstName: "Lance", email: "example@gmail.com"
+    expect(clone.criteria.conditions()).toEqual firstName: "Lance"
+    expect(scope.criteria.conditions()).toEqual {}

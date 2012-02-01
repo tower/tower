@@ -28,16 +28,16 @@ class Tower.Dispatch.Param
     criteria  = new Tower.Model.Criteria
     for set in nodes
       for node in set
-        attribute = node.attribute
-        operator  = node.operators[0]
-        query = {}
+        attribute   = node.attribute
+        operator    = node.operators[0]
+        conditions  = {}
         if operator == "$eq"
-          query[attribute] = node.value
+          conditions[attribute] = node.value
         else
-          query[attribute] = {}
-          query[attribute][operator] = node.value
+          conditions[attribute] = {}
+          conditions[attribute][operator] = node.value
           
-        criteria.where(query)
+        criteria.where(conditions)
     criteria
   
   parseValue: (value, operators) ->

@@ -1,5 +1,5 @@
 Tower.View.ElementHelper =
-  addClass: (string, parts...)
+  addClass: (string, parts...) ->
     classes = string.split(/\ +/)
     for part in parts
       classes.push(part) if classes.indexOf(part) > -1

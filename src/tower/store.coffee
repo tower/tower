@@ -1,6 +1,14 @@
 class Tower.Store extends Tower.Class
   @defaultLimit: 100
   
+  @isKeyword: (key) ->
+    @queryOperators.hasOwnProperty(key) || @atomicModifiers.hasOwnProperty(key)
+    
+  @hasKeyword: (object) ->
+    return true if object.hasOwnProperty(key) for key, value of @queryOperators
+    return true if object.hasOwnProperty(key) for key, value of @atomicModifiers
+    false
+  
   @atomicModifiers:
     "$set":     "$set"
     "$unset":   "$unset"
@@ -10,10 +18,6 @@ class Tower.Store extends Tower.Class
     "$pullAll": "$pullAll"
     "$inc":     "$inc"
     "$pop":     "$pop"
-    
-  @reservedOperators:
-    "_sort":    "_sort"
-    "_limit":   "_limit"
   
   @queryOperators:
     ">=":       "$gte"

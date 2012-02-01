@@ -1,20 +1,10 @@
 Tower.Model.Relations =
   ClassMethods:
     hasOne: (name, options = {}) ->
-      if options.hasOwnProperty("through")
-        relationClass = Tower.Model.Relation.HasOneThrough
-      else
-        relationClass = Tower.Model.Relation.HasOne
-
-      @relations()[name]  = new relationClass(@, name, options)
+      @relations()[name]  = new Tower.Model.Relation.HasOne(@, name, options)
     
     hasMany: (name, options = {}) ->
-      if options.hasOwnProperty("through")
-        relationClass = Tower.Model.Relation.HasManyThrough
-      else
-        relationClass = Tower.Model.Relation.HasMany
-        
-      @relations()[name]  = new relationClass(@, name, options)
+      @relations()[name]  = new Tower.Model.Relation.HasMany(@, name, options)
       
     belongsTo: (name, options) ->
       @relations()[name]  = new Tower.Model.Relation.BelongsTo(@, name, options)
