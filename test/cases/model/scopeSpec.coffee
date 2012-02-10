@@ -104,8 +104,7 @@ describe 'Tower.Model.Scope', ->
       scope.create(firstName: "Lance!")
       
       expect(scope.build).toHaveBeenCalledWith(
-        { firstName: "Lance!" }, 
-        { instantiate: true }
+        { firstName: "Lance!" }
       )
       
     test 'create(firstName: "Lantial")', ->
@@ -115,7 +114,7 @@ describe 'Tower.Model.Scope', ->
       
       args = scope.store.create.argsForCall[0]
       
-      expect(args[0]).toEqual { firstName : 'Lantial', createdAt : new Date, updatedAt : new Date, likes : 0, tags : [  ], postIds : [  ] }
+      expect(args[0].attributes).toEqual { id: undefined, firstName : 'Lantial', createdAt : new Date, updatedAt : new Date, likes : 0, tags : [  ], postIds : [  ] }
       expect(args[1]).toEqual { instantiate: false }
       
     test 'create(firstName: "Lantial")', ->

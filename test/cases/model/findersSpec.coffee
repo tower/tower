@@ -154,6 +154,6 @@ describe 'Tower.Model.Finders', ->
   describe '$notNull', ->
   
   describe '$eq', ->
-    
+    #RW.Wall.where({title: /A wall/}).count() doesn't work
   
   describe '$neq', ->

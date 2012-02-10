@@ -3,8 +3,6 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     super(owner, name, options)
   
   class @Scope extends @Scope
-    # user.posts().create() # owner == user, foreignKey == userId, foreignKeys == userIds, foreignType == User
-    # need to handle if owner.type changes
     create: ->
       unless @owner.isPersisted()
         throw new Error("You cannot call create unless the parent is saved")
@@ -12,28 +10,28 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       relation        = @relation
       inverseRelation = relation.inverse()
       
-      {criteria, attributes, options, callback} = @_extractArgs(arguments, attributes: true)
+      {criteria, data, options, callback} = @_extractArgs(arguments, data: true)
       
       id = @owner.get("id")
       
       if inverseRelation && inverseRelation.cache
-        array = attributes[inverseRelation.cacheKey] || []
+        array = data[inverseRelation.cacheKey] || []
         array.push(id) if array.indexOf(id) == -1
-        attributes[inverseRelation.cacheKey] = array
+        data[inverseRelation.cacheKey] = array
       else if relation.foreignKey
-        attributes[relation.foreignKey]     = id if id != undefined
+        data[relation.foreignKey]     = id if id != undefined
         # must check here if owner is instance of foreignType
-        attributes[relation.foreignType]  ||= @owner.constructor.name if @relation.foreignType  
+        data[relation.foreignType]  ||= @owner.constructor.name if @relation.foreignType  
       
-      criteria.where(attributes)
+      criteria.where(data)
       criteria.mergeOptions(options)
       
       instantiate = options.instantiate != false
-      {attributes, options} = criteria.toCreate()
+      #{data, options} = criteria.toCreate()
       
       options.instantiate = true
       
-      @_create attributes, options, (error, record) =>
+      @_create criteria, data, options, (error, record) =>
         unless error
           # add the id to the array on the owner record after it's created
           if relation && (relation.cache || relation.counterCache)
@@ -41,6 +39,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
             push[relation.cacheKey] = record.get("id") if relation.cache
             inc   = {}
             inc[relation.counterCacheKey] = 1
+            console.log "UPDATE ATTR"
             @owner.updateAttributes "$push": push, "$inc": inc, callback
           else
             callback.call @, error, record if callback
@@ -48,19 +47,11 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
           callback.call @, error, record if callback
           
     update: ->
-      console.log arguments
       
     destroy: ->
       
     concat: ->
       
-    replace: (otherArray) ->
-      if @owner.isNew()
-        @replaceRecords(otherArray, originalTarget)
-      else
-        @transaction =>
-          @replaceRecords(otherArray, originalTarget)
-          
     _serializeAttributes: (attributes = {}) ->
       target = Tower.constant(@relation.targetClassName)
       

@@ -54,12 +54,6 @@ class Tower.Model.Scope extends Tower.Class
     {conditions, options} = criteria.toQuery()
     @_find conditions, options, callback
     
-  _find: (conditions, options, callback) ->
-    if conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
-      @store.findOne conditions, options, callback
-    else
-      @store.find conditions, options, callback
-    
   first: (callback) ->
     {conditions, options} = @toQuery("asc")
     @store.findOne conditions, options, callback
@@ -82,30 +76,42 @@ class Tower.Model.Scope extends Tower.Class
     
   batch: ->
     
+  fetch: ->
+    
+  sync: ->
+  
+  transaction: ->
+    
   build: (attributes, options) ->
     {conditions, options} = @toCreate()
     @_build attributes, conditions, options
-    
-  create: ->
-    {criteria, attributes, options, callback} = @_extractArgs(arguments, attributes: true)
-    criteria.where(attributes)
-    criteria.mergeOptions(options)
-    @_create criteria.toCreate().attributes, options, callback
   
-  update: ->
-    {criteria, attributes, options, callback} = @_extractArgs(arguments, ids: true, attributes: true)
+  # User.create(firstName: "Lance")
+  # User.where(firstName: "Lance").create()
+  # User.where(firstName: "Lance").create([{lastName: "Pollard"}, {lastName: "Smith"}])
+  # User.where(firstName: "Lance").create(new User(lastName: "Pollard"))
+  # create(attributes)
+  # create([attributes, attributes])
+  # create(attributes, options)
+  create: ->
+    {criteria, data, options, callback} = @_extractArgs(arguments, data: true)
     criteria.mergeOptions(options)
-    @_update criteria, attributes, options, callback
+    @_create criteria, data, options, callback
+  
+  # User.where(firstName: "Lance").update(1, 2, 3)
+  # User.update(User.first(), User.last(), firstName: "Lance")
+  # User.update([User.first(), User.last()], firstName: "Lance")
+  # User.update([1, 2], firstName: "Lance")
+  update: ->
+    {criteria, data, options, callback} = @_extractArgs(arguments, ids: true, data: true)
+    criteria.mergeOptions(options)
+    @_update criteria, data, options, callback
     
   destroy: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true)
     criteria.mergeOptions(options)
     @_destroy criteria, options, callback
   
-  delete: @::destroy
-  
-  transaction: ->
-    
   toQuery: (sortDirection) ->
     @toCriteria(sortDirection).toQuery()
     
@@ -132,6 +138,12 @@ class Tower.Model.Scope extends Tower.Class
   clone: ->
     new @constructor(model: @model, criteria: @criteria.clone())
     
+  _find: (conditions, options, callback) ->
+    if conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
+      @store.findOne conditions, options, callback
+    else
+      @store.find conditions, options, callback
+    
   _build: (attributes, conditions, options) ->
     if Tower.Support.Object.isArray(attributes)
       result  = []
@@ -140,11 +152,11 @@ class Tower.Model.Scope extends Tower.Class
       result
     else
       @store.serializeModel(Tower.Support.Object.extend({}, conditions, attributes))
-
-  _create: (attributes, options, callback) ->
-    if options.instantiate
-      isArray = Tower.Support.Object.isArray(attributes)
-      records = Tower.Support.Object.toArray(@build(attributes, options))
+  
+  _create: (criteria, data, opts, callback) ->
+    if opts.instantiate
+      isArray = Tower.Support.Object.isArray(data)
+      records = Tower.Support.Object.toArray(@build(data))
       
       iterator = (record, next) ->
         if record
@@ -162,16 +174,15 @@ class Tower.Model.Scope extends Tower.Class
           else
             callback(error, records[0])
     else
-      @store.create attributes, options, callback
+      @store.create data, opts, callback
       
-  _update: (criteria, attributes, opts, callback) ->    
+  _update: (criteria, data, opts, callback) ->    
     {conditions, options} = criteria.toQuery()
-    
     if opts.instantiate
-      iterator = (record, next) -> record.updateAttributes(attributes, next)
+      iterator = (record, next) -> record.updateAttributes(data, next)
       @_each conditions, options, iterator, callback
     else
-      @store.update attributes, conditions, options, callback
+      @store.update data, conditions, options, callback
   
   _destroy: (criteria, opts, callback) ->
     {conditions, options} = criteria.toQuery()
@@ -196,19 +207,20 @@ class Tower.Model.Scope extends Tower.Class
   _extractArgs: (args, opts = {}) ->
     args            = Tower.Support.Array.args(args)
     callback        = Tower.Support.Array.extractBlock(args)
+    last            = args[args.length - 1]
     
-    if opts.attributes && Tower.Support.Object.isHash(args[args.length - 1])
-      attributes    = args.pop()
+    if opts.data && (Tower.Support.Object.isHash(last) || Tower.Support.Object.isArray(last))
+      data    = args.pop()
       
     if Tower.Support.Object.isHash(args[args.length - 1])
-      if attributes
-        options     = attributes
-        attributes  = args.pop()
+      if data
+        options     = data
+        data  = args.pop()
       else
         options     = args.pop()
       
-    attributes      = {} unless opts.attributes
-    attributes    ||= {}
+    data      = {} unless opts.data
+    data    ||= {}
     criteria        = @criteria.clone()
     options       ||= {}
     
@@ -217,8 +229,8 @@ class Tower.Model.Scope extends Tower.Class
     ids             = _.flatten(args) if opts.ids && args.length > 0
     
     if ids && ids.length > 0
-      criteria.where id: $in: ids
+      criteria.where id: $in: _.map(ids, (idOrRecord) -> if idOrRecord instanceof Tower.Model then idOrRecord.get("id") else idOrRecord)
     
-    criteria: criteria, attributes: attributes, callback: callback, options: options
+    criteria: criteria, data: data, callback: callback, options: options
 
 module.exports = Tower.Model.Scope

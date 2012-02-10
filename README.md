@@ -4,9 +4,18 @@
 
 Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built for the client and server from the ground up.
 
-Includes a database-agnostic ORM with browser (memory) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.  If not, let me know!
+Includes a database-agnostic ORM with browser (memory) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.  If not, let me know! [@viatropos](http://twitter.com/viatropos)
 
 More docs in the docs section on [towerjs.org](http://towerjs.org).  Docs are a work in progress.
+
+## Default Development Stack
+
+- MongoDB (database)
+- Redis (background jobs)
+- CoffeeScript
+- Stylus
+- Jasmine (tests)
+- jQuery
 
 ## Install
 
@@ -30,6 +39,8 @@ Here's how you might organize a blog:
 ``` bash
 .
 |-- app
+|   |-- client
+|   |   |-- stylesheets
 |   |-- controllers
 |   |   |-- admin
 |   |   |   |-- postsController.coffee
@@ -39,6 +50,7 @@ Here's how you might organize a blog:
 |   |   |-- sessionsController.coffee
 |   |   `-- usersController.coffee
 |   |-- models
+|   |   |-- comment.coffee
 |   |   |-- post.coffee
 |   |   `-- user.coffee
 |   |-- views
@@ -58,18 +70,24 @@ Here's how you might organize a blog:
 |   `-- helpers
 |       |-- admin
 |       |   |-- postsHelper.coffee
-|       |   `-- tagsHelper.coffee
+|       |   `-- usersHelper.coffee
 |       `-- postsHelper.coffee
 `-- config
 |    |-- application.coffee
+|    |-- assets.coffee
+|    |-- databases.coffee
+|    |-- environments
+|       |-- development
+|       |-- production
+|       `-- test
 |    |-- locale
-|        `-- en.coffee
+|       `-- en.coffee
 |    |-- routes.coffee
-`-- spec
+`-- test
 |    |-- helper.coffee
 |    |-- models
-|    |   |-- postSpec.coffee
-|    |   |-- userSpec.coffee
+|    |   |-- postTest.coffee
+|    |   |-- userTest.coffee
 |    `-- acceptance
 |        |-- login.coffee
 |        |-- signup.coffee
@@ -102,6 +120,27 @@ module.exports = global.App = App
 ## Models
 
 ``` coffeescript
+class App.User extends Tower.Model
+  @field "firstName"
+  @field "lastName"
+  @field "email"
+  @field "activatedAt", type: "Date", default: -> new Date()
+  
+  @hasOne "address", embed: true
+  
+  @hasMany "posts"
+  @hasmany "comments"
+  
+  @scope "thisWeek", -> @where(createdAt: ">=": -> require('moment')().subtract('days', 7))
+  
+  @validates "firstName", presence: true
+  @validates "email", format: /\w+@\w+.com/
+  
+  @after "create", "welcome"
+  
+  welcome: ->
+    Tower.Mailer.welcome(@).deliver()
+
 class App.Post extends Tower.Model
   @field "title"
   @field "body"
@@ -113,38 +152,17 @@ class App.Post extends Tower.Model
   @belongsTo "author", type: "User"
   
   @hasMany "comments", as: "commentable"
-  @hasMany "commenters", through: "comments", source: "author"
   
   @before "validate", "slugify"
   
   slugify: ->
-    @slug = @title.replace(/^[a-z0-9]+/g, "-").toLowerCase()
+    @set "slug", @get("title").replace(/^[a-z0-9]+/g, "-").toLowerCase()
   
 class App.Comment extends Tower.Model
   @field "message"
   
   @belongsTo "author", type: "User"
   @belongsTo "commentable", polymorphic: true
-  
-class App.User extends Tower.Model
-  @field "firstName"
-  @field "lastName"
-  @field "email"
-  @field "activatedAt", type: "Date", default: -> new Date()
-  
-  @hasOne "address", embed: true
-  
-  @hasMany "posts"
-  @hasmany "comments", through: "posts"
-  
-  @scope "thisWeek", -> @where(createdAt: ">=": -> require('moment')().subtract('days', 7))
-  
-  @validate "firstName", presence: true
-  
-  @after "create", "welcome"
-  
-  welcome: ->
-    Tower.Mailer.welcome(@).deliver()
   
 class App.Address extends Tower.Model
   @field "street"
@@ -159,9 +177,8 @@ class App.Address extends Tower.Model
 ### Chainable Scopes, Queries, and Pagination
 
 ``` coffeescript
-User
+App.User
   .where(createdAt: ">=": _(2).days().ago(), "<=": new Date())
-  .within(radius: 2)
   .desc("createdAt")
   .asc("firstName")
   .paginate(page: 5)
@@ -171,7 +188,7 @@ User
 ### Associations
 
 ``` coffeescript
-user = User.first()
+user  = App.User.first()
 
 # hasMany "posts"
 posts = user.posts().where(title: "First Post").first()
@@ -179,13 +196,10 @@ post  = user.posts().build(title: "A Post!")
 post  = user.posts().create(title: "A Saved Post!")
 posts = user.posts().all()
 
-# hasMany "comments", through: "posts"
-comments  = user.comments().where(message: /(javascript)/).limit(10).all()
+post  = App.Post.first()
 
-# eager load associations
-Post.includes("author").where(author: firstName: "=~": "Baldwin").all()
-Post.includes("author").where("author.firstName": "=~": "Baldwin").all()
-User.includes("posts").where("posts.title": "Welcome").all()
+# belongsTo "author"
+user  = post.author()
 ```
 
 ### Validations
@@ -222,13 +236,9 @@ Tower.Route.draw ->
   @match "(/*path)", to: "application#index", via: "get"
 ```
 
-Routes are really just models, `Tower.Route`.  You can add and remove and search them however you like:
-
-``` coffeescript
-Tower.Route.where(pattern: "=~": "/posts").first()
-```
-
 ## Views
+
+Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
 
 ### Forms
 
@@ -261,9 +271,9 @@ tableFor "posts", (t) ->
         t.cell post.get("title")
         t.cell post.get("body")
         t.cell linkTo 'Show', post
-        t.cell linkTo 'Edit', editPostPath(post)
+        t.cell linkTo 'Edit', Tower.urlFor(post, action: "edit")
         t.cell linkTo 'Destroy', post, method: "delete"
-  linkTo 'New Post', newPostPath()
+  linkTo 'New Post', Tower.urlFor(App.Post, action: "new")
 ```
 
 ### Layouts
@@ -322,20 +332,26 @@ html ->
     yields "bottom"
 ```
 
-The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure coffeescript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
+The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
+
+## Styles
+
+It's all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
 
 ## Controllers
 
 ``` coffeescript
-class PostsController extends Tower.Controller
+class App.PostsController extends Tower.Controller
   index: ->
-    @posts = Post.all()
+    App.Post.all (error, posts) =>
+      @render "index", locals: posts: posts
     
   new: ->
-    @post = new Post
+    @post = new App.Post
+    @render "new"
     
   create: ->
-    @post = new Post(@params.post)
+    @post = new App.Post(@params.post)
     
     super (success, failure) ->
       @success.html -> @render "posts/edit"
@@ -344,19 +360,25 @@ class PostsController extends Tower.Controller
       @failure.json -> @render text: "Error", status: 404
     
   show: ->
-    @post = Post.find(@params.id)
+    App.Post.find @params.id, (error, post) =>
+      @render "show"
     
   edit: ->
-    @post = Post.find(@params.id)
+    App.Post.find @params.id, (error, post) =>
+      @render "edit"
     
   update: ->
-    @post = Post.find(@params.id)
+    App.Post.find @params.id, (error, post) =>
+      post.updateAttributes @params.post, (error) =>
+        @redirectTo action: "show"
     
   destroy: ->
-    @post = Post.find(@params.id)
+    App.Post.find @params.id, (error, post) =>
+      post.destroy (error) =>
+        @redirectTo action: "index"
 ```
 
-Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).
+Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).  The default implementation is actually a lot more robust than that, just wanted to show a simple example.
 
 ## Databases
 
@@ -432,7 +454,6 @@ Tower.get '/posts', createdAt: "2011-10-26..2011-10-31"
 
 # Dynamic
 Tower.urlFor(Post.first()) #=> "/posts/the-id"
-Tower.navigate Tower.urlFor(post)
 ```
 
 Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
@@ -475,6 +496,8 @@ module.exports =
 ```
 
 All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor`, and wherever else you might put things.  The default is to use stylus for css in `/app/assets/stylesheets`.
+
+By having this `assets.coffee` file, you can specify exactly how you want to compile your files for the client so it's as optimized and cacheable as possible in production.
 
 ### Minify and Gzip
 
@@ -521,6 +544,20 @@ cake minify
 ## Examples
 
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
+
+## Accent Libraries
+
+Tower.js is just the bare bones, so you're free to choose a date parsing library, a template engine, or a form validation library, whatever.
+
+Here's some of the libraries I recommend:
+
+- [moment.js](http://momentjs.com/) for date parsing
+- [underscore.js](http://documentcloud.github.com/underscore/)
+- [socket.io](http://socket.io/) for web sockets.
+- [async.js](https://github.com/caolan/async) for taming callback spaghetti
+- [geolib](https://github.com/manuelbieh/Geolib) for geo calculations
+- [tiny-require.js](https://github.com/viatropos/tiny-require.js) for using `require()` in the browser
+- [shift.js](https://github.com/viatropos/shift.js) for a generic interface to the JavaScript template engines
 
 ## License
 

@@ -1,4 +1,7 @@
 Tower.View.ElementHelper =
+  title: (value) ->
+    document.title = value
+    
   addClass: (string, parts...) ->
     classes = string.split(/\ +/)
     for part in parts

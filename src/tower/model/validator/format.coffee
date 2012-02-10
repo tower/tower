@@ -4,12 +4,18 @@ class Tower.Model.Validator.Format
     
     @value = if typeof(value) == 'string' then new RegExp(value) else value
   
-  validate: (record, attribute, errors) ->
-    value = record[attribute]
+  validate: (record, attribute, errors, callback) ->
+    value   = record.get(attribute)
+    
     unless !!@value.exec(value)
-      errors[attribute] ||= []
-      errors[attribute].push Tower.t("model.errors.format", attribute: attribute, value: @value.toString())
-      return false
-    true
+      return @failure(
+        record,
+        attribute,
+        errors,
+        Tower.t("model.errors.format", attribute: attribute, value: @value.toString())
+        callback
+      )
+    else
+      @success(callback)
     
 module.exports = Tower.Model.Validator.Format

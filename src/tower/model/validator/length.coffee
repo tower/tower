@@ -8,26 +8,40 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
       else
         @validateLength
   
-  validateMinimum: (record, attribute, errors) ->
-    value = record[attribute]
+  validateMinimum: (record, attribute, errors, callback) ->
+    value = record.get(attribute)
     unless typeof(value) == 'number' && value >= @value
-      return @error record, attribute, errors, Tower.t("model.errors.minimum", attribute: attribute, value: @value)
-    true
+      return @failure(
+        record, 
+        attribute, 
+        errors, 
+        Tower.t("model.errors.minimum", attribute: attribute, value: @value), 
+        callback
+      )
+    @success(callback)
   
-  validateMaximum: (record, attribute, errors) ->
-    value = record[attribute]
+  validateMaximum: (record, attribute, errors, callback) ->
+    value = record.get(attribute)
     unless typeof(value) == 'number' && value <= @value
-      errors[attribute] ||= []
-      errors[attribute].push Tower.t("model.errors.maximum", attribute: attribute, value: @value)
-      return false
-    true
+      return @failure(
+        record,
+        attribute,
+        errors,
+        Tower.t("model.errors.maximum", attribute: attribute, value: @value),
+        callback
+      )
+    @success(callback)
   
-  validateLength: (record, attribute, errors) ->
-    value = record[attribute]
+  validateLength: (record, attribute, errors, callback) ->
+    value = record.get(attribute)
     unless typeof(value) == 'number' && value == @value
-      errors[attribute] ||= []
-      errors[attribute].push Tower.t("model.errors.length", attribute: attribute, value: @value)
-      return false
-    true
+      return @failure(
+        record,
+        attribute,
+        errors,
+        Tower.t("model.errors.length", attribute: attribute, value: @value)
+        callback
+      )
+    @success(callback)
 
 module.exports = Tower.Model.Validator.Length

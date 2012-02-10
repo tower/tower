@@ -1,45 +1,4 @@
-class Tower.Model.Relation extends Tower.Class
-  @VALID_FIND_OPTIONS = [
-    "conditions", 
-    "include", 
-    "joins", 
-    "limit", 
-    "offset", 
-    "extend", 
-    "eagerLoad",
-    "order", 
-    "select", 
-    "readonly", 
-    "group", 
-    "having", 
-    "from", 
-    "lock"
-  ]
-  
-  @ASSOCIATION_METHODS = ["includes", 
-    "eagerLoad", 
-    "preload"
-  ]
-    
-  @MULTI_VALUE_METHODS = ["select", 
-    "group", 
-    "order", 
-    "joins", 
-    "where", 
-    "having", 
-    "bind"
-  ]
-    
-  @SINGLE_VALUE_METHODS = ["limit", 
-    "offset", 
-    "lock", 
-    "readonly", 
-    "from", 
-    "reordering", 
-    "reverseOrder", 
-    "uniq"
-  ]
-                         
+class Tower.Model.Relation extends Tower.Class           
   # hasMany "commenters", source: "person", sourceType: "User", foreignKey: "userId", type
   constructor: (owner, name, options = {}, callback) ->
     @[key] = value for key, value of options

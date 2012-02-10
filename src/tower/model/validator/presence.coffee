@@ -1,9 +1,13 @@
 class Tower.Model.Validator.Presence extends Tower.Model.Validator
-  validate: (record, attribute, errors) ->
-    unless Tower.Support.Object.isPresent(record[attribute])
-      errors[attribute] ||= []
-      errors[attribute].push Tower.t("model.errors.presence", attribute: attribute)
-      return false
-    true
+  validate: (record, attribute, errors, callback) ->
+    unless Tower.Support.Object.isPresent(record.get(attribute))
+      return @failure(
+        record,
+        attribute,
+        errors,
+        Tower.t("model.errors.presence", attribute: attribute),
+        callback
+      )
+    @success(callback)
 
 module.exports = Tower.Model.Validator.Presence

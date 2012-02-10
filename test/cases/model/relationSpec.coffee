@@ -25,6 +25,8 @@ describe 'Tower.Model.Relation', ->
     test 'create from parent', ->
       parent  = Parent.create(id: 1)
       child   = parent.child().create(id: 10)
+      console.log "CHILD?"
+      console.log child
       expect(child.parentIds).toEqual [1]
       expect(parent.childIds).toEqual [10]
       

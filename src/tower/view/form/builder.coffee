@@ -42,7 +42,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
     if options.as == "object"
       attrName = attribute.toS
     else
-      attrName = if config.renameNestedAttributes then "#{attribute}_attributes" else attribute.toS
+      attrName = if Tower.View.renameNestedAttributes then "#{attribute}_attributes" else attribute.toS
 
     # -> something here for counts
     subParent     = model.object
@@ -85,13 +85,13 @@ class Tower.View.Form.Builder extends Tower.View.Component
     defaults = 
       template:    @template
       model:       @model
-      #attribute:  attribute, 
+      attribute:   attributeName, 
       parentIndex: @parentIndex
       index:       @index
-      fieldHtml:   options.fieldHtml || {}
-      inputHtml:   options.inputHtml || {}
-      labelHtml:   options.labelHtml || {}
-      errorHtml:   options.errorHtml || {}
+      fieldHTML:   options.fieldHTML || {}
+      inputHTML:   options.inputHTML || {}
+      labelHTML:   options.labelHTML || {}
+      errorHTML:   options.errorHTML || {}
       hintHtml:    options.hintHtml  || {}
     
     new Tower.View.Form.Field([], _.extend(defaults, options)).render(block)
@@ -104,7 +104,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
 
   submit: ->
     template.captureHaml ->
-      result = fieldset class: config.submitFieldsetClass (fields) ->
+      result = fieldset class: Tower.View.submitFieldsetClass (fields) ->
         template.hamlConcat fields.button(args...).gsub(/\n$/, "")
         yield(fields) if block
       template.hamlConcat result.gsub(/\n$/, "")

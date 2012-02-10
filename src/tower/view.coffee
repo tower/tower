@@ -39,7 +39,7 @@ class Tower.View extends Tower.Class
     validateClass:                              "validate"
     legendClass:                                "legend"
     formClass:                                  "form"
-    idEnabledOn:                                ["input"] # %w(field label error hint)
+    idEnabledOn:                                ["input", "field"] # %w(field label error hint)
     widgetsPath:                                "shared/widgets"
     navClass:                                   "list-item"
     includeAria:                                true

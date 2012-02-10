@@ -22,5 +22,8 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
       
   class @Scope extends @Scope
     # need to do something here about Reflection
+    
+    create: ->
+      console.log "CREATE!"
   
 module.exports = Tower.Model.Relation.BelongsTo

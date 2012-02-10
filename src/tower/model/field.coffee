@@ -27,7 +27,7 @@ class Tower.Model.Field
       _default.call(record)
     else
       _default
-        
+    
   encode: (value, binding) ->
     @code @_encode, value, binding
     

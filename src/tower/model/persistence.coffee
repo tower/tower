@@ -5,7 +5,9 @@ Tower.Model.Persistence =
     store: (value) ->
       return @_store if !value && @_store
       
-      if typeof value == "object"
+      if typeof value == "function"
+        @_store = new value(name: @collectionName(), className: Tower.namespaced(@name))
+      else if typeof value == "object"
         @_store ||= new @defaultStore(name: @collectionName(), className: Tower.namespaced(@name))
         Tower.Support.Object.extend @_store, value
       else if value
@@ -15,8 +17,8 @@ Tower.Model.Persistence =
       
       @_store
     
-    load: (array) ->
-      @store().load(array)
+    load: (records) ->
+      @store().load(records)
       
     collectionName: ->
       Tower.Support.String.camelize(Tower.Support.String.pluralize(@name), true)
@@ -32,32 +34,26 @@ Tower.Model.Persistence =
         callback  = options
         options   = {}
       options ||= {}
-        
+      
       unless options.validate == false
-        @validate (error, success) =>
-          if success
-            @_save callback
-          else
+        @validate (error) =>
+          if error
             callback.call @, null, false if callback
+          else
+            @_save callback
       else
         @_save callback
         
       @
     
     updateAttributes: (attributes, callback) ->
-      @_update(attributes, callback)
+      @save(attributes, callback)
     
     destroy: (callback) ->
       if @isNew()
         callback.call @, null if callback
       else
-        @runCallbacks "destroy", =>
-          @constructor.destroy @id, instantiate: false, (error) =>
-            throw error if error && !callback
-            @persistent = false
-            delete @attributes.id unless error
-            callback.call(@, error) if callback
-      
+        @_destroy callback
       @
     
     delete: (callback) ->
@@ -75,35 +71,63 @@ Tower.Model.Persistence =
       @constructor.store()
       
     _save: (callback) ->
-      @runCallbacks "save", =>
+      @runCallbacks "save", (block) =>
+        complete = @_callback(block, callback)
+        
         if @isNew()
-          @_create(callback)
+          @_create(complete)
         else
-          @_update(@toUpdates(), callback)
-    
-    _update: (attributes, callback) ->
-      @runCallbacks "update", =>
-        @constructor.update @id, attributes, instantiate: false, (error) =>
-          throw error if error && !callback
-          @changes    = {} unless error
-          @persistent = true
-          callback.call(@, error) if callback
-      
-      @
+          @_update(@toUpdates(), complete)
       
     _create: (callback) ->
-      @runCallbacks "create", =>
-        #@store().create @attributes, instantiate: false, (error, docs) =>
-        @constructor.create @attributes, instantiate: false, (error, attributes) =>
+      @runCallbacks "create", (block) =>
+        complete = @_callback(block, callback)
+        
+        @constructor.create @, instantiate: false, (error) =>
           throw error if error && !callback
+          
           unless error
-            _.extend @attributes, attributes
             @changes    = {}
             @persistent = true
-            @store().load(@)
-            
-          callback.call(@, error) if callback
+            @updateSyncAction "create"
+          
+          complete.call(@, error)
       
       @
+      
+    _update: (updates, callback) ->
+      @runCallbacks "update", (block) =>
+        complete = @_callback(block, callback)
+        console.log updates
+        @constructor.update @, updates, instantiate: false, (error) =>
+          throw error if error && !callback
+          
+          unless error
+            @changes    = {}
+            @persistent = true
+            @updateSyncAction "update"
+          
+          complete.call(@, error)
+    
+      @
+      
+    _destroy: (callback) ->
+      @runCallbacks "destroy", (block) =>
+        complete = @_callback(block, callback)
+        
+        @constructor.destroy @, instantiate: false, (error) =>
+          throw error if error && !callback
+          
+          unless error
+            @persistent = false
+            @changes    = {}
+            delete @attributes.id
+            @updateSyncAction "destroy"
+            
+          complete.call(@, error)
+          
+      @
+      
+    updateSyncAction: ->
       
 module.exports = Tower.Model.Persistence

@@ -12,6 +12,9 @@ Tower.Support.Object.extend Tower,
   structure:  "standard"
   config:     {}
   
+  sync: (method, records, callback) ->
+    callback null, records if callback
+  
   get: ->
     Tower.request "get", arguments...
 
@@ -33,6 +36,7 @@ Tower.Support.Object.extend Tower,
     location        = new Tower.Dispatch.Url(url)
     request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
     response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+    request.query   = location.params
     Tower.Application.instance().handle request, response, ->
       callback.call @, @response
       

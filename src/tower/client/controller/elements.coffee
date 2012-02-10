@@ -28,7 +28,7 @@ Tower.Controller.Elements =
     
       elements  = _.extend {target: target, form: form}, @extractElements(target, options)
       
-      @_dispatch event, handler, elements: elements, params: params
+      @_dispatch handler, elements: elements, params: params
         
   invalidForm: ->
     element = $("##{@resourceName}-#{@elementName}")

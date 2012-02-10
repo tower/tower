@@ -36,7 +36,7 @@ Tower.Controller.Events =
     dispatcher: global
     
     addEventHandler: (name, handler, options) ->
-      if options.type == "socket" || !eventType.match(@DOM_EVENT_PATTERN)
+      if options.type == "socket" || !name.match(@DOM_EVENT_PATTERN)
         @addSocketEventHandler(name, handler, options)
       else
         @addDomEventHandler(name, handler, options)

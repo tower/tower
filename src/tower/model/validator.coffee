@@ -13,17 +13,22 @@ class Tower.Model.Validator
     @value      = value
     @attributes = attributes
   
-  validateEach: (record, errors) ->
-    success = true
+  validateEach: (record, errors, callback) ->
+    iterator  = (attribute, next) =>
+      @validate record, attribute, errors, (error) =>
+        next()
+      
+    Tower.async @attributes, iterator, (error) =>
+      callback.call(@, error) if callback
     
-    for attribute in @attributes
-      unless @validate(record, attribute, errors)
-        success = false
-    success
+  success: (callback) ->
+    callback.call @ if callback
+    true
     
-  error: (record, attribute, errors, message) ->
+  failure: (record, attribute, errors, message, callback) ->
     errors[attribute] ||= []
     errors[attribute].push message
+    callback.call @, message if callback
     false
     
 require './validator/format'
