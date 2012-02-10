@@ -142,7 +142,8 @@ class App.User extends Tower.Model
   
   welcome: ->
     Tower.Mailer.welcome(@).deliver()
-
+```
+``` coffeescript
 class App.Post extends Tower.Model
   @field "title"
   @field "body"
@@ -159,13 +160,15 @@ class App.Post extends Tower.Model
   
   slugify: ->
     @set "slug", @get("title").replace(/^[a-z0-9]+/g, "-").toLowerCase()
-  
+```
+``` coffeescript
 class App.Comment extends Tower.Model
   @field "message"
   
   @belongsTo "author", type: "User"
   @belongsTo "commentable", polymorphic: true
-  
+```
+``` coffeescript
 class App.Address extends Tower.Model
   @field "street"
   @field "city"
