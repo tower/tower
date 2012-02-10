@@ -1,4 +1,4 @@
-# Tower.js
+# Tower.js <img src="http://i.imgur.com/e3VLW.png"/>
 
 > Full Stack Web Framework for Node.js and the Browser.
 
