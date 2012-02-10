@@ -122,6 +122,7 @@ module.exports = global.App = App
 ## Models
 
 ``` coffeescript
+# app/models/user.coffee
 class App.User extends Tower.Model
   @field "firstName"
   @field "lastName"
@@ -144,6 +145,7 @@ class App.User extends Tower.Model
     Tower.Mailer.welcome(@).deliver()
 ```
 ``` coffeescript
+# app/models/post.coffee
 class App.Post extends Tower.Model
   @field "title"
   @field "body"
@@ -162,6 +164,7 @@ class App.Post extends Tower.Model
     @set "slug", @get("title").replace(/^[a-z0-9]+/g, "-").toLowerCase()
 ```
 ``` coffeescript
+# app/models/comment.coffee
 class App.Comment extends Tower.Model
   @field "message"
   
@@ -169,6 +172,7 @@ class App.Comment extends Tower.Model
   @belongsTo "commentable", polymorphic: true
 ```
 ``` coffeescript
+# app/models/address.coffee
 class App.Address extends Tower.Model
   @field "street"
   @field "city"
@@ -346,6 +350,7 @@ It's all using Twitter Bootstrap, so check out their docs.  http://twitter.githu
 ## Controllers
 
 ``` coffeescript
+# app/controllers/postsController.coffee
 class App.PostsController extends Tower.Controller
   index: ->
     App.Post.all (error, posts) =>
