@@ -152,8 +152,6 @@ class App.Post extends Tower.Model
   @field "tags", type: ["String"], default: []
   @field "slug"
   
-  @key "slug"
-  
   @belongsTo "author", type: "User"
   
   @hasMany "comments", as: "commentable"
