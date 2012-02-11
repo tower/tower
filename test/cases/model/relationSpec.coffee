@@ -25,13 +25,17 @@ describe 'Tower.Model.Relation', ->
     test 'create from parent', ->
       parent  = Parent.create(id: 1)
       child   = parent.child().create(id: 10)
-      console.log "CHILD?"
-      console.log child
+      
       expect(child.parentIds).toEqual [1]
       expect(parent.childIds).toEqual [10]
       
       child   = parent.child().create(id: 9)
       expect(parent.childIds).toEqual [10, 9]
+      
+    test 'create from child', ->    
+      parent  = Parent.create(id: 1)
+      parent.child().create(id: 10)
+      child   = parent.child().create(id: 9)
       
       child.parents().create(id: 20)
       expect(child.parentIds).toEqual [1, 20]
@@ -40,7 +44,6 @@ describe 'Tower.Model.Relation', ->
       
       expect(child.parentCount).toEqual 2
       expect(child.parents().toQuery().conditions).toEqual { childIds: { $in: [9] } }
-      
       expect(child.parents().count()).toEqual 2
       
       parent = Parent.first()

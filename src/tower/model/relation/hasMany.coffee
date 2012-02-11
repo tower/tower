@@ -1,7 +1,4 @@
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
-  constructor: (owner, name, options = {}) ->
-    super(owner, name, options)
-  
   class @Scope extends @Scope
     create: ->
       unless @owner.isPersisted()
@@ -26,21 +23,30 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       criteria.where(data)
       criteria.mergeOptions(options)
       
+      if inverseRelation && inverseRelation.counterCacheKey
+        defaults  = {}
+        defaults[inverseRelation.counterCacheKey] = 1
+        criteria.where(defaults)
+      
       instantiate = options.instantiate != false
-      #{data, options} = criteria.toCreate()
+      {attributes, options} = criteria.toCreate()
       
       options.instantiate = true
       
-      @_create criteria, data, options, (error, record) =>
+      @_create criteria, attributes, options, (error, record) =>
         unless error
           # add the id to the array on the owner record after it's created
           if relation && (relation.cache || relation.counterCache)
-            push  = {}
-            push[relation.cacheKey] = record.get("id") if relation.cache
-            inc   = {}
-            inc[relation.counterCacheKey] = 1
-            console.log "UPDATE ATTR"
-            @owner.updateAttributes "$push": push, "$inc": inc, callback
+            if relation.cache
+              push    = {}
+              push[relation.cacheKey] = record.get("id")
+            if relation.counterCacheKey
+              inc     = {}
+              inc[relation.counterCacheKey] = 1
+            updates   = {}
+            updates["$push"]  = push if push
+            updates["$inc"]   = inc if inc
+            @owner.updateAttributes updates, callback
           else
             callback.call @, error, record if callback
         else
@@ -68,11 +74,10 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     toCriteria: ->
       criteria  = super
       relation  = @relation
-      
       if relation.cache
-        defaults = {}
+        defaults  = {}
         defaults[relation.foreignKey + "s"] = $in: [@owner.get("id")]
-        criteria.where defaults
+        criteria.where(defaults)
       
       criteria
   

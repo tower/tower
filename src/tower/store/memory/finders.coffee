@@ -25,18 +25,16 @@ Tower.Store.Memory.Finders =
   findOne: (conditions, options, callback) ->
     record = null
     options.limit = 1
-    @find conditions, options, (error, records) -> 
+    @find conditions, options, (error, records) => 
       record = records[0]
       callback.call(@, error, record) if callback
     record
   
   count: (conditions, options, callback) ->
     result = 0
-    
-    @find conditions, options, (error, records) -> 
+    @find conditions, options, (error, records) =>
       result = records.length
       callback.call(@, error, result) if callback
-      
     result
     
   exists: (conditions, options, callback) ->

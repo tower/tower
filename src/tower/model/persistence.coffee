@@ -47,7 +47,7 @@ Tower.Model.Persistence =
       @
     
     updateAttributes: (attributes, callback) ->
-      @save(attributes, callback)
+      @_update(attributes, callback)
     
     destroy: (callback) ->
       if @isNew()
@@ -98,8 +98,7 @@ Tower.Model.Persistence =
     _update: (updates, callback) ->
       @runCallbacks "update", (block) =>
         complete = @_callback(block, callback)
-        console.log updates
-        @constructor.update @, updates, instantiate: false, (error) =>
+        @constructor.update @get("id"), updates, instantiate: false, (error) =>
           throw error if error && !callback
           
           unless error
