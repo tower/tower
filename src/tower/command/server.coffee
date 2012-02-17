@@ -1,4 +1,3 @@
-# https://github.com/remy/nodemon
 class Tower.Command.Server
   constructor: (argv) ->
     @program = program = require('commander')

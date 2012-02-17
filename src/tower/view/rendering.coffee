@@ -69,16 +69,22 @@ Tower.View.Rendering =
       engine.render(options.locals, callback)
   
   _renderingContext: (options) ->
-    locals  = @
-    for key, value of @_context
-      @[key] = value unless key.match(/^(constructor)/)
-    locals        = Tower.Support.Object.extend(locals, options.locals)
-    locals.pretty = true if @constructor.prettyPrint
+    locals = {}
+    _ref = @_context
+    for key of _ref
+      value = _ref[key]
+      locals[key] = value  unless key.match(/^(constructor|head)/)
+    newlocals = {}
+    newlocals.locals = locals
+    locals = newlocals
+    locals = Tower.Support.Object.extend(locals, options.locals)
+    locals.pretty = true  if @constructor.prettyPrint
     locals
     
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
-    result = @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
+    # tmp
+    result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
     throw new Error("Template '#{template}' was not found.") unless result
     result
     

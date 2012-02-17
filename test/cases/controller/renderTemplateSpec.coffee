@@ -1,4 +1,3 @@
-###
 require '../../config'
 
 controller  = null
@@ -9,7 +8,7 @@ describe 'Tower.Controller.Rendering', ->
   test 'renderCoffeeKupFromTemplate', ->
     Tower.get 'renderCoffeeKupFromTemplate', ->
       expect(@body).toEqual "<h1>Hello World</h1>\n"
-      expect(@contentType).toEqual "text/html"
+      expect(@headers["Content-Type"]).toEqual "text/html"
   
   test 'renderHelloWorldFromVariable', ->
     Tower.get 'renderHelloWorldFromVariable', ->
@@ -83,17 +82,16 @@ describe 'Tower.Controller.Rendering', ->
   test 'renderJsonHelloWorld', ->
     Tower.get 'renderJsonHelloWorld', ->
       expect(@body).toEqual JSON.stringify(hello: "world")
-      expect(@contentType).toEqual "application/json"
+      expect(@headers["Content-Type"]).toEqual "application/json"
       
   test 'renderJsonHelloWorldWithParams', ->
     Tower.get 'renderJsonHelloWorldWithParams', hello: "world", ->
       expect(@body).toEqual JSON.stringify(hello: "world")
-      expect(@contentType).toEqual "application/json"
+      expect(@headers["Content-Type"]).toEqual "application/json"
       expect(@status).toEqual 200
       
   test 'renderJsonHelloWorldWithStatus', ->
     Tower.get 'renderJsonHelloWorldWithStatus', ->
       expect(@body).toEqual JSON.stringify(hello: "world")
-      expect(@contentType).toEqual "application/json"
+      expect(@headers["Content-Type"]).toEqual "application/json"
       expect(@status).toEqual 401
-###

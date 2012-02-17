@@ -1,4 +1,3 @@
-###
 require '../../config'
 
 controller  = null
@@ -9,7 +8,7 @@ describe 'Tower.Controller.Resourceful', ->
   test '#index', ->
     Tower.get 'index', ->
       expect(@body).toEqual '<h1>Hello World</h1>\n'
-      expect(@contentType).toEqual "text/html"
+      expect(@headers["Content-Type"]).toEqual "text/html"
       
   #test '#new', ->
   #  Tower.get 'new', ->
@@ -42,5 +41,3 @@ describe 'Tower.Controller.Resourceful', ->
   #  Tower.destroy 'destroy', ->
   #    expect(@body).toEqual '<h1>New User</h1>\n'
   #    expect(@contentType).toEqual "text/html"
-
-###

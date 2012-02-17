@@ -33,7 +33,7 @@ Tower.Model.Metadata =
   
   toParam: ->
     id = @get("id")
-    if id then String(id) else null
+    if id? then String(id) else null
     
   toKey: ->
     @constructor.tokey()

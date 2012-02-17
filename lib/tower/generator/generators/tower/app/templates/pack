@@ -37,7 +37,13 @@
   "devDependencies": {
     "coffee-script":      ">= 1.1.3",
     "stylus":             ">= 0.17.0",
+    "less":               ">= 1.2.2",
     "uglify-js":          ">= 1.1.1",
-    "design.io":          ">= 0.1.0"
+    "shift":              ">= 0.0.1",
+    "pathfinder":         ">= 0.0.1",
+    "async":              ">= 0.0.1",
+    "design.io":          ">= 0.1.0",
+    "design.io-javascripts": ">= 0.0.1",
+    "design.io-stylesheets": ">= 0.0.1"
   }
 }

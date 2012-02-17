@@ -30,7 +30,9 @@ Tower.Model.Fields =
     @attributes.hasOwnProperty(name)
     
   assignAttributes: (attributes) ->
-    @attributes[key] = value for key, value of attributes
+    for key, value of attributes
+      delete @changes[key]
+      @attributes[key] = value
     @
   
 module.exports = Tower.Model.Fields

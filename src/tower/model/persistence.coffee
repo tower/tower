@@ -6,14 +6,14 @@ Tower.Model.Persistence =
       return @_store if !value && @_store
       
       if typeof value == "function"
-        @_store = new value(name: @collectionName(), className: Tower.namespaced(@name))
+        @_store = new value(name: @collectionName(), type: Tower.namespaced(@name))
       else if typeof value == "object"
-        @_store ||= new @defaultStore(name: @collectionName(), className: Tower.namespaced(@name))
+        @_store ||= new @defaultStore(name: @collectionName(), type: Tower.namespaced(@name))
         Tower.Support.Object.extend @_store, value
       else if value
         @_store = value
       
-      @_store ||= new @defaultStore(name: @collectionName(), className: Tower.namespaced(@name))
+      @_store ||= new @defaultStore(name: @collectionName(), type: Tower.namespaced(@name))
       
       @_store
     

@@ -10,7 +10,7 @@ class Tower.Dispatch.Cookies
       
       # quoted values
       value = value.slice(1, -1) if '"' == value[0]
-
+      
       # only assign once
       if result[key] == undefined
         value = value.replace(/\+/g, ' ')

@@ -2,7 +2,7 @@ class App.CustomController extends Tower.Controller
   @respondTo "html", "json", "yaml"
   
   @before "setCurrentUser"
-  @resource type: "TowerSpecApp.User"
+  @resource type: "App.User"
   
   @
   

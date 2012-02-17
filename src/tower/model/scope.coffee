@@ -33,7 +33,6 @@ class Tower.Model.Scope extends Tower.Class
   @builders: [
     "create", 
     "update", 
-    "delete", 
     "destroy"
   ]
   

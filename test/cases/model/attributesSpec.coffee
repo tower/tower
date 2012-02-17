@@ -4,12 +4,13 @@ class BaseModel extends Tower.Model
   @field "id", type: "Id"
   @field "likeCountWithoutDefault", type: "Integer"
   @field "likeCountWithDefault", type: "Integer", default: 0
+  @field "tags", type: "Array", default: []
+  @field "title"
   
 describe 'Tower.Model.Fields', ->
   describe 'class', ->
     test 'type: "Id"', ->
       field = BaseModel.fields().id
-      
       expect(field.owner).toEqual BaseModel
       expect(field.type).toEqual "Id"
       
@@ -22,6 +23,16 @@ describe 'Tower.Model.Fields', ->
       field = BaseModel.fields().likeCountWithDefault
       expect(field.type).toEqual "Integer"
       expect(field._default).toEqual 0
+      
+    test 'type: "Array", default: []', ->
+      field = BaseModel.fields().tags
+      expect(field.type).toEqual "Array"
+      expect(field._default).toEqual []
+      
+    test 'default type == "String"', ->
+      field = BaseModel.fields().title
+      expect(field.type).toEqual "String"
+      expect(field._default).toEqual undefined
       
   describe 'instance', ->
     model = null

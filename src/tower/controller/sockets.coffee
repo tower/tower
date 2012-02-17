@@ -4,6 +4,5 @@ Tower.Controller.Sockets =
   emit: ->
     
   connect: ->
-    
-  
+      
 module.exports = Tower.Controller.Sockets

@@ -6,7 +6,6 @@ class Tower.Application extends Tower.Class
     Tower.Application._instance = @
     
     @io       = global["io"]
-    
     @stack    = []
     
     @use(_middleware) for _middleware in middleware

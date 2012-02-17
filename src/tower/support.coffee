@@ -11,6 +11,7 @@ require './support/number'
 require './support/object'
 require './support/regexp'
 require './support/string'
+require './support/url'
 require './support/locale/en'
 
 module.exports = Tower.Support

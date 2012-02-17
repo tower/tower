@@ -3,7 +3,7 @@ Tower.View.AssetHelper =
     options = Tower.Support.Array.extractOptions(sources)
     options.namespace = "javascripts"
     options.extension = "js"
-    paths = @_extractAssetPaths sources, options
+    paths = _extractAssetPaths sources, options
     javascriptTag(path) for path in paths
     return null
     
@@ -14,7 +14,7 @@ Tower.View.AssetHelper =
     options = Tower.Support.Array.extractOptions(sources)
     options.namespace = "stylesheets"
     options.extension = "css"
-    paths = @_extractAssetPaths sources, options
+    paths = _extractAssetPaths sources, options
     stylesheetTag(path) for path in paths
     return null
       

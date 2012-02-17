@@ -21,11 +21,11 @@ describe 'Tower.Model.Persistence', ->
 
         expect(User.count()).toEqual 1
         
-    #test 'create multiple with valid attributes', ->
-    #  attributes = [{firstName: "Lance"}, {firstName: "Dane"}]
-    #  User.create attributes, (error, records) ->
-    #    expect(records.length).toEqual 2
-    #    expect(User.count()).toEqual 2
+    test 'create multiple with valid attributes', ->
+      attributes = [{firstName: "Lance"}, {firstName: "Dane"}]
+      User.create attributes, (error, records) ->
+        expect(records.length).toEqual 2
+        expect(User.count()).toEqual 2
     
   describe 'update', ->
     beforeEach ->

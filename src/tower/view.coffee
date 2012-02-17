@@ -1,5 +1,6 @@
 class Tower.View extends Tower.Class
   @extend
+    cache:                                      {}
     engine:                                     "coffee"
     prettyPrint:                                false
     loadPaths:                                  ["app/views"]
