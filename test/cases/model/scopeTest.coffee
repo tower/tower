@@ -15,41 +15,41 @@ describe 'Tower.Model.Scope', ->
     scope = null
     
   test 'should have a getter', ->
-    assert.deepEqual user.get('firstName'), "Lance"
+    expect(user.get('firstName')).toEqual "Lance"
     
   it 'should have where scope', ->
     user = User.where(firstName: "Lance").first()
     
-    assert.deepEqual user.firstName, "Lance"
+    expect(user.firstName).toEqual "Lance"
     users = User.where(firstName: "=~": "c").all()
-    assert.deepEqual users.length, 1
-    assert.deepEqual users[0].firstName, "Lance"
+    expect(users.length).toEqual 1
+    expect(users[0].firstName).toEqual "Lance"
     
     users = User.where(firstName: "=~": "a").order("firstName").all()
-    assert.deepEqual users.length, 2
-    assert.deepEqual users[0].firstName, "Dane"
+    expect(users.length).toEqual 2
+    expect(users[0].firstName).toEqual "Dane"
     
     users = User.where(firstName: "=~": "a").order("firstName", "desc").all()
-    assert.deepEqual users.length, 2
-    assert.deepEqual users[0].firstName, "Lance"
+    expect(users.length).toEqual 2
+    expect(users[0].firstName).toEqual "Lance"
   
   it 'should have named scopes', ->  
     User.create(id: 3, firstName: "Baldwin")
     
-    assert.deepEqual User.byBaldwin.first().firstName, "Baldwin"
+    expect(User.byBaldwin.first().firstName).toEqual "Baldwin"
 
   describe '#find', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "find"
       scope.find 1, 2, 3
       
-      assert.deepEqual scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, null
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, null
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3]
       
-      assert.deepEqual scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, null
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, null
       
     test '`[1, 2, 3], callback`', ->
       callback = ->
@@ -57,45 +57,45 @@ describe 'Tower.Model.Scope', ->
       spyOn scope.store, "find"
       scope.find [1, 2, 3], callback
       
-      assert.deepEqual scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, callback
+      expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1, 2, 3]}, {  }, callback
       
     #test 'where(id: $in: [1, 2, 3]).find(1) should only pass id: $in: [1]', ->
     #  spyOn scope.store, "find"
     #  scope.where(id: $in: [1, 2, 3]).find(1)
     #  
-    #  assert.deepEqual scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, {  }, null
+    #  expect(scope.store.find).toHaveBeenCalledWith {id: $in: [1]}, {  }, null
       
   describe '#update', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "update"
       scope.update 1, 2, 3, {firstName: "Lance"}, instantiate: false
       
-      assert.deepEqual scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
+      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "update"
       scope.update 1, 2, 3, {firstName: "Lance"}, instantiate: false
 
-      assert.deepEqual scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
+      expect(scope.store.update).toHaveBeenCalledWith { firstName : 'Lance' }, { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
   describe '#destroy', ->
     test '`1, 2, 3`', ->
       spyOn scope.store, "destroy"
       scope.destroy 1, 2, 3, instantiate: false
       
-      assert.deepEqual scope.store.destroy).toHaveBeenCalledWith { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
+      expect(scope.store.destroy).toHaveBeenCalledWith { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
     test '`[1, 2, 3]`', ->
       spyOn scope.store, "destroy"
       scope.destroy 1, 2, 3, instantiate: false
       
-      assert.deepEqual scope.store.destroy).toHaveBeenCalledWith  { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
+      expect(scope.store.destroy).toHaveBeenCalledWith  { id : { $in : [ 1, 2, 3 ] } }, {  }, null 
       
     test 'query + ids', ->
       spyOn scope.store, "destroy"
       scope.where(firstName: "John").destroy 1, 2, 3, instantiate: false
       
-      assert.deepEqual scope.store.destroy).toHaveBeenCalledWith  { firstName: "John", id : { $in : [ 1, 2, 3 ] } }, {  }, null
+      expect(scope.store.destroy).toHaveBeenCalledWith  { firstName: "John", id : { $in : [ 1, 2, 3 ] } }, {  }, null
       
   describe '#create', ->
     test 'build(firstName: "Lance!")', ->
@@ -103,7 +103,7 @@ describe 'Tower.Model.Scope', ->
       
       scope.create(firstName: "Lance!")
       
-      assert.deepEqual scope.build).toHaveBeenCalledWith(
+      expect(scope.build).toHaveBeenCalledWith(
         { firstName: "Lance!" }
       )
       
@@ -114,19 +114,19 @@ describe 'Tower.Model.Scope', ->
       
       args = scope.store.create.argsForCall[0]
       
-      assert.deepEqual args[0].attributes, { id: undefined, firstName : 'Lantial', createdAt : new Date, updatedAt : new Date, likes : 0, tags : [  ], postIds : [  ] }
-      assert.deepEqual args[1], { instantiate: false }
+      expect(args[0].attributes).toEqual { id: undefined, firstName : 'Lantial', createdAt : new Date, updatedAt : new Date, likes : 0, tags : [  ], postIds : [  ] }
+      expect(args[1]).toEqual { instantiate: false }
       
     test 'create(firstName: "Lantial")', ->
       scope.create(firstName: "Lantial")
       
-      assert.deepEqual User.count(), 3
+      expect(User.count()).toEqual 3
       
   test '#clone', ->
     clone = scope.where(firstName: "Lance")
     clone2 = clone.where(email: "example@gmail.com")
     
-    assert.deepEqual clone.criteria.conditions()).toNotEqual scope.criteria.query
-    assert.deepEqual clone2.criteria.conditions(), firstName: "Lance", email: "example@gmail.com"
-    assert.deepEqual clone.criteria.conditions(), firstName: "Lance"
-    assert.deepEqual scope.criteria.conditions(), {}
+    expect(clone.criteria.conditions()).toNotEqual scope.criteria.query
+    expect(clone2.criteria.conditions()).toEqual firstName: "Lance", email: "example@gmail.com"
+    expect(clone.criteria.conditions()).toEqual firstName: "Lance"
+    expect(scope.criteria.conditions()).toEqual {}
