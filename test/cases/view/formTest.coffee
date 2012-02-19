@@ -1,22 +1,12 @@
-require '../config'
+require '../../config'
 
 view = null
 user = null
 
-describe 'Tower.View', ->
+describe 'Tower.View.Form', ->
   beforeEach ->
     view = new Tower.View
     
-  describe 'meta tags', ->
-    test '#metaTag', ->
-      template = ->
-        metaTag "description", "A meta tag"
-      
-      view.render template: template, (error, result) ->
-        assert.equal result, """
-<meta name="description" content="A meta tag" />
-
-"""
   describe 'form', ->
     beforeEach ->
       user = new App.User(id: 1, firstName: "Lance")
@@ -89,4 +79,3 @@ describe 'Tower.View', ->
 </form>
 
 '''
-      

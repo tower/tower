@@ -50,7 +50,7 @@ Tower.View.Rendering =
         hardcode        = {}
         for helper in Tower.View.helpers
           hardcode      = _.extend(hardcode, helper)
-        hardcode        = _.extend(tags: require("coffeekup").tags)
+        hardcode        = _.extend(hardcode, tags: require("coffeekup").tags)
         locals.hardcode = hardcode
         locals._ = _
         result = require('coffeekup').render string, locals

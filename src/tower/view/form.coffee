@@ -1,8 +1,7 @@
 class Tower.View.Form extends Tower.View.Component
   constructor: (args, options) ->
     super
-    
-    @model      = args.shift()
+    @model      = args.shift() || new Tower.Model
     
     if typeof @model == "string"
       klass     = Tower.constant(Tower.Support.String.camelize(@model))
@@ -46,3 +45,9 @@ class Tower.View.Form extends Tower.View.Component
     attributes.method        = if method == "get" then "get" else "post" 
     
     attributes
+    
+require './form/builder'
+require './form/field'
+require './form/fieldset'
+
+module.exports = Tower.View.Form

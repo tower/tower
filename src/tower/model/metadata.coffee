@@ -7,6 +7,7 @@ Tower.Model.Metadata =
         @
       
     toParam: ->
+      return undefined if @ == Tower.Model
       Tower.Support.String.pluralize Tower.Support.String.parameterize(@name)
     
     toKey: ->
@@ -28,8 +29,10 @@ Tower.Model.Metadata =
   
   toPath: ->
     result  = @constructor.toParam()
+    return "/" if result == undefined
     param   = @toParam()
     result += "/#{param}" if param
+    result
   
   toParam: ->
     id = @get("id")

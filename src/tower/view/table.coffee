@@ -3,7 +3,6 @@ class Tower.View.Table extends Tower.View.Component
     super
     
     recordOrKey       = args.shift()
-    
     @key              = @recordKey(recordOrKey)
     @rowIndex         = 0
     @cellIndex        = 0
@@ -13,6 +12,7 @@ class Tower.View.Table extends Tower.View.Component
     options.summary ||= "Table for #{_.titleize(@key)}"
     #options.class     = ["data-table", options.class].compact.uniq.join(" ")
     options.role      = "grid"
+    options.class     = @addClass(options.class || "", ["table"])
     
     data              = options.data ||= {}
     
@@ -29,11 +29,16 @@ class Tower.View.Table extends Tower.View.Component
     
     options.id      ||= "#{recordOrKey}-table"
     
-    @options = options
+    @options =
+      summary:  options.summary
+      role:     options.role
+      data:     options.data
+      class:    options.class
    
   render: (block) ->
-    table @options, ->
-      block(@)
+    @tag "table", @options, =>
+      block(@) if block
+      null
       
   tableQueryRowClass: ->
     ["search-row", if queryParams.except("page", "sort").blank? then null else "search-results"].compact.join(" ")
@@ -80,7 +85,7 @@ class Tower.View.Table extends Tower.View.Component
     @rowIndex   = 0
     @scope      = scope
     
-    tag "t#{scope}", attributes, block
+    @tag "t#{scope}", attributes, block
     
     @rowIndex   = 0
     @scope      = "table"
@@ -91,13 +96,13 @@ class Tower.View.Table extends Tower.View.Component
     attributes.scope = "row"
     
     if @scope == "body"
-      attributes.class = [template.cycle("odd", "even"), attributes.class].compact.uniq.join(" ")
+      #attributes.class = [template.cycle("odd", "even"), attributes.class].compact.uniq.join(" ")
       attributes.role = "row"
     
     @rowIndex += 1
     @cellIndex = 0
     
-    tag "tr", attributes, block
+    @tag "tr", attributes, block
     
     @cellIndex = 0
     
@@ -105,7 +110,7 @@ class Tower.View.Table extends Tower.View.Component
     attributes        = Tower.Support.Array.extractOptions(args)
     value             = args.shift()
     
-    attributes.id   ||= @idFor("header", key, value, @rowIndex, @cellIndex) if config.idEnabledOn.include?("table")
+    attributes.id   ||= @idFor("header", key, value, @rowIndex, @cellIndex) if Tower.View.idEnabledOn.include?("table")
     
     attributes.width  = @pixelate(attributes.width) if attributes.hasOwnProperty("width")
     attributes.height = @pixelate(attributes.height) if attributes.hasOwnProperty("height")
@@ -119,13 +124,15 @@ class Tower.View.Table extends Tower.View.Component
   # direction => "ascending"
   # valid directions: ascending, descending, none, other
   # abbr is what the header controls (for sorting)
-  header: (args..., block) ->
+  header: ->
+    args              = Tower.Support.Array.args(arguments)
+    block             = Tower.Support.Array.extractBlock(args)
     attributes        = Tower.Support.Array.extractOptions(args)
     value             = args.shift()
     
     attributes.abbr ||= value
     attributes.role   = "columnheader"
-    attributes.id   ||= @idFor("header", key, value, @rowIndex, @cellIndex) if config.idEnabledOn.include?("table")
+    attributes.id   ||= @idFor("header", key, value, @rowIndex, @cellIndex) if Tower.View.idEnabledOn.include?("table")
     attributes.scope = "col"
     attributes.abbr ||= attributes.for if attributes.hasOwnProperty("for")
     attributes.abbr ||= value
@@ -139,8 +146,8 @@ class Tower.View.Table extends Tower.View.Component
     delete attributes.sort
     
     if sort
-      attributes.class        = [attributes.class, attributes.sortClass || "sortable"].compact.uniq.join(" ")
-      attributes.direction  ||= template.sortClass(value)
+      attributes.class        = @addClass attributes.class || "", [attributes.sortClass || "sortable"]
+      attributes.direction  ||= "asc"#@template.sortClass(value)
     
     delete attributes.sortClass
     
@@ -161,23 +168,28 @@ class Tower.View.Table extends Tower.View.Component
     @headers.push(attributes.id)
     
     if block
-      tag "th", attributes, block
+      @tag "th", attributes, block
     else
       if sort
-        tag "th", attributes ->
-          linkToSort(label, value)
+        @tag "th", attributes, =>
+          @linkToSort(label, value)
       else
-        tag "th", attributes ->
-          tag "span", label
+        @tag "th", attributes, =>
+          @tag "span", label
     
     @cellIndex += 1
+  
+  linkToSort: (label, value) ->
+    direction = "asc"
+    @tag "a", href: "?sort=#{direction}", =>
+      @tag "span", label
     
   cell: (args..., block) ->
     attributes        = Tower.Support.Array.extractOptions(args)
     value             = args.shift()
     
     attributes.role   = "gridcell"
-    attributes.id   ||= @idFor("cell", key, value, @rowIndex, @cellIndex) if config.idEnabledOn.include?("table")
+    attributes.id   ||= @idFor("cell", key, value, @rowIndex, @cellIndex) if Tower.View.idEnabledOn.include?("table")
     
     #attributes[:"aria-describedby"] = @headers[@cellIndex]
     attributes.headers            = @headers[@cellIndex]
@@ -186,9 +198,9 @@ class Tower.View.Table extends Tower.View.Component
     attributes.height = @pixelate(attributes.height) if attributes.hasOwnProperty("height")
     
     if block
-      tag "td", attributes, block
+      @tag "td", attributes, block
     else
-      tag "td", value, attributes
+      @tag "td", value, attributes
     
     @cellIndex                     += 1
       
