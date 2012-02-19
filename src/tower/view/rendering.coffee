@@ -47,13 +47,11 @@ Tower.View.Rendering =
         locals.renderWithEngine = @renderWithEngine
         locals.cache    = Tower.env != "development"
         locals.format   = true
-        locals.hardcode = _.extend {}, 
-          Tower.View.ComponentHelper
-          Tower.View.AssetHelper
-          Tower.View.HeadHelper
-          Tower.View.RenderingHelper
-          Tower.View.StringHelper
-          tags: require('coffeekup').tags
+        hardcode        = {}
+        for helper in Tower.View.helpers
+          hardcode      = _.extend(hardcode, helper)
+        hardcode        = _.extend(tags: require("coffeekup").tags)
+        locals.hardcode = hardcode
         locals._ = _
         result = require('coffeekup').render string, locals
       catch error

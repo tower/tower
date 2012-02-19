@@ -12,5 +12,3 @@ class App.Page extends Tower.Model
   @hasMany "commenters", through: "comments", type: "User"
   
   @timestamps()
-  
-global.Page = App.Page

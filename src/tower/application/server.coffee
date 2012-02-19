@@ -10,7 +10,10 @@ class Tower.Application extends Tower.Class
   @autoloadPaths: [
     "app/helpers", 
     "app/models", 
-    "app/controllers"
+    "app/controllers",
+    "app/presenters",
+    "app/mailers",
+    "app/middleware"
   ]
   
   @use: ->
@@ -51,6 +54,7 @@ class Tower.Application extends Tower.Class
     throw new Error("Already initialized application") if Tower.Application._instance
     Tower.Application.middleware ||= []
     Tower.Application._instance = @
+    global[@constructor.name] = @
     @server ||= server
     @io     ||= io
     
@@ -74,13 +78,13 @@ class Tower.Application extends Tower.Class
             Tower.config[key] = {}
         
         Tower.Application.Assets.loadManifest()
-      
+        
         require("#{Tower.root}/config/routes")
         
         paths = File.files("#{Tower.root}/config/locales")
         for path in paths
           Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
-      
+        
         # load initializers
         require "#{Tower.root}/config/environments/#{Tower.env}"
       
@@ -94,27 +98,18 @@ class Tower.Application extends Tower.Class
       config.call(@) for config in configs
       
       paths = File.files("#{Tower.root}/app/helpers")
-      #paths = paths.concat File.files("#{Tower.root}/app/models")
+      paths = paths.concat File.files("#{Tower.root}/app/models")
       paths = paths.concat ["#{Tower.root}/app/controllers/applicationController"]
-      paths = paths.concat File.files("#{Tower.root}/app/controllers")
+      for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
+        paths = paths.concat File.files("#{Tower.root}/app/#{path}")
       
       for path in paths
         require(path) if path.match(/\.(coffee|js)$/)
     
   teardown: ->
-    #Tower.Route.teardown()
+    @server.stack.length = 0 # remove middleware
     Tower.Route.clear()
-    delete require.cache[require.resolve("#{Tower.root}/config/locales/en")]
     delete require.cache[require.resolve("#{Tower.root}/config/routes")]
-    delete Tower.Route._store
-    #Tower.Model.teardown()
-    # Tower.Support.Dependencies.load("#{Tower.root}/app/models")
-    # delete @_store
-    #Tower.View.teardown()
-    #Tower.Controller.teardown()
-    delete Tower.Controller._helpers
-    delete Tower.Controller._layout
-    delete Tower.Controller._theme
     
   handle: ->
     @server.handle arguments...
@@ -144,6 +139,31 @@ class Tower.Application extends Tower.Class
     @initialize()
     @stack()
     @listen()
+    
+  watch: ->
+    forever = require("forever")
+    
+    child = new (forever.Monitor)("node_modules/design.io/bin/design.io",
+      max:    3
+      silent: true
+      options: []
+    )
+    
+    child.start()
+    
+    child.on "stdout", (data) ->
+      data = data.toString()
+      try
+        # [Sat, 18 Feb 2012 22:49:33 GMT] INFO updated public/stylesheets/vendor/stylesheets/bootstrap/reset.css
+        data.replace /\[([^\]]+)\] (\w+) (\w+) (.+)/, (_, date, type, action, path) ->
+          path  = path.split('\033')[0]
+          ext   = path.match(/\.(\w+)$/g)[1]
+          if ext.match(/(js|coffee)/) && action.match(/(updated|deleted)/)
+            delete require.cache[require.resolve(path)]
+          _
+      catch error
+        error
+    console.log("DONE")
     
 require './assets'
 

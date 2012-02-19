@@ -1,6 +1,17 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
 
 class Tower.Class
+  @global: (value) ->
+    @_global = value unless value == undefined
+    @_global = true if @_global == undefined
+    
+    if value == true
+      global[@name] = @
+    else if value == false
+      delete global[@name]
+    
+    @_global
+    
   @alias: (to, from) ->
     Tower.Support.Object.alias(@::, to, from)
   

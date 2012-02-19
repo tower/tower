@@ -6,5 +6,3 @@ class App.Category extends Tower.Model
   @belongsTo "categorizable", embed: true, polymorphic: true
   
   # @hierarchical "parent", "child"
-
-global.Category = App.Category

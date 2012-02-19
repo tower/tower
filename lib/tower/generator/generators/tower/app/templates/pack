@@ -29,21 +29,31 @@
     "url":                "https://github.com/<%= user.username %>/<%= project.name %>.git"
   },
   "engines": {
-    "node":               ">= 0.4.0"
+    "node":               ">= 0.4.0",
+    "npm":                "1"
   },
   "dependencies": {
-    "tower":              ">= 0.3.0"
+    "underscore",             ">= 0.0.1",
+    "underscore.string",      ">= 0.0.1",
+    "tower":                  ">= 0.3.0"
   },
   "devDependencies": {
-    "coffee-script":      ">= 1.1.3",
-    "stylus":             ">= 0.17.0",
-    "less":               ">= 1.2.2",
-    "uglify-js":          ">= 1.1.1",
-    "shift":              ">= 0.0.1",
-    "pathfinder":         ">= 0.0.1",
-    "async":              ">= 0.0.1",
-    "design.io":          ">= 0.1.0",
-    "design.io-javascripts": ">= 0.0.1",
-    "design.io-stylesheets": ">= 0.0.1"
+    "coffee-script":          ">= 1.1.3",
+    "stylus":                 ">= 0.17.0",
+    "less":                   ">= 1.2.2",
+    "uglify-js":              ">= 1.1.1",
+    "shift":                  ">= 0.0.1",
+    "pathfinder":             ">= 0.0.1",
+    "async":                  ">= 0.0.1",
+    "mocha":                  ">= 0.12.1",
+    "chai":                   ">= 0.3.3",
+    "design.io":              ">= 0.1.0",
+    "design.io-javascripts":  ">= 0.0.1",
+    "design.io-stylesheets":  ">= 0.0.1"
+  },
+  "scripts": {
+    "test":                   "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@",
+    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*"
+    "preinstall":             "npm install -g design.io mocha"
   }
 }

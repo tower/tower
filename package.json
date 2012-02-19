@@ -56,22 +56,20 @@
     "socket.io":          ">= 0.8.7",
     "coffee-script":      ">= 1.2.0",
     "coffeekup":          ">= 0.3.1",
-    "ejs":                ">= 0.6.1",
     "restler":            ">= 0.0.1",
-    "useragent":          ">= 1.0.5",
-    "stylus":             ">= 0.17.0"
+    "useragent":          ">= 1.0.5"
   },
   "devDependencies": {
     "coffee-script":      ">= 1.1.3",
     "stylus":             ">= 0.17.0",
-    "jade":               ">= 0.16.2",
-    "coffeekup":          ">= 0.3.1",
-    "mustache":           ">= 0.3.1-dev",
-    "markdown":           ">= 0.2.1",
+    "ejs":                ">= 0.6.1",
     "uglify-js":          ">= 1.1.1",
     "design.io":          ">= 0.1.0",
     "mocha":              ">= 0.8.1",
-    "gzip":               ">= 0.1.0",
-    "ejs":                ">= 0.6.1"
+    "chai":               ">= 0.3.3",
+    "gzip":               ">= 0.1.0"
+  },
+  "scripts": {
+    "test": "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@"
   }
 }
