@@ -33,8 +33,8 @@
     "npm":                "1"
   },
   "dependencies": {
-    "underscore",             ">= 0.0.1",
-    "underscore.string",      ">= 0.0.1",
+    "underscore":             ">= 0.0.1",
+    "underscore.string":      ">= 0.0.1",
     "tower":                  ">= 0.3.0"
   },
   "devDependencies": {
@@ -53,7 +53,7 @@
   },
   "scripts": {
     "test":                   "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@",
-    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*"
+    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*",
     "preinstall":             "npm install -g design.io mocha"
   }
 }

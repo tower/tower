@@ -7,6 +7,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
     project.title       = @program.title || Tower.Support.String.camelize(project.name)
     project.description = @program.description
     project.keywords    = @program.keywords
+    project.namespace   = @program.namespace
     
     project
   

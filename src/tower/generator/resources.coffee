@@ -99,14 +99,24 @@ Tower.Generator.Resources =
     cssName:        Tower.Support.String.parameterize(@program.namespace || name)
     pluralCssName:  Tower.Support.String.parameterize(Tower.Support.String.pluralize(@program.namespace || name))
     session:        @generateRandom("hex")
+    year:           (new Date).getFullYear()
     
   generateRandom: (code = "hex") ->
     crypto  = require('crypto')
     hash    = crypto.createHash("sha1")
     hash.update(crypto.randomBytes(64).toString())
     hash.digest(code)
-    
+  
   buildUser: (callback) ->
+    configFile = process.env.HOME + "/.tower.json";
+    user.username = "username"
+    user.email    = "email@example.com"
+    user.database = "mongodb"
+    user.name     = "A User"
+    callback(user)
+    user
+  
+  buildUserNew: (callback) ->
     configFile = process.env.HOME + "/.tower.json";
     
     unless File.exists(configFile)

@@ -16,6 +16,14 @@ class Tower.Application extends Tower.Class
     "app/middleware"
   ]
   
+  @configNames: [
+    "session"
+    "assets"
+    "credentials"
+    "databases"
+    "routes"
+  ]
+  
   @use: ->
     @middleware ||= []
     @middleware.push arguments
@@ -71,15 +79,17 @@ class Tower.Application extends Tower.Class
         require(path) if path.match(/\.(coffee|js)$/)
       
       @runCallbacks "configure", =>
-        for key in ["session", "assets", "credentials", "databases"]
+        for key in @constructor.configNames
+          config = null
+          
           try
-            Tower.config[key] = require("#{Tower.root}/config/#{key}")
+            config  = require("#{Tower.root}/config/#{key}")
           catch error
-            Tower.config[key] = {}
+            config  = {}
+          
+          Tower.config[key] = config if Tower.Support.Object.isPresent(config)
         
         Tower.Application.Assets.loadManifest()
-        
-        require("#{Tower.root}/config/routes")
         
         paths = File.files("#{Tower.root}/config/locales")
         for path in paths

@@ -10,25 +10,24 @@ html ->
     if hasContentFor "templates"
       yields "templates"
       
-    nav id: "navigation", role: "navigation", ->
-      div class: "frame", ->
-        partial "shared/navigation"
+    nav id: "navigation", class: "navbar navbar-fixed-top", role: "navigation", ->
+      div class: "navbar-inner", ->
+        div class: "container", ->
+          partial "shared/navigation"
         
-    header id: "header", role: "banner", ->
-      div class: "frame", ->
-        #if hasFlash()
-        #  renderFlash()
+    header id: "header", class: "header", role: "banner", ->
+      div class: "container", ->
         partial "shared/header"
         
-    section id: "body", role: "main", ->
-      div class: "frame", ->
+    section id: "content", role: "main", ->
+      div class: "container", ->
         yields "body"
         aside id: "sidebar", role: "complementary", ->
           if hasContentFor "sidebar"
             yields "sidebar"
             
-    footer id: "footer", role: "contentinfo", ->
-      div class: "frame", ->
+    footer id: "footer", class: "footer", role: "contentinfo", ->
+      div class: "container", ->
         partial "shared/footer"
         
   if hasContentFor "popups"
