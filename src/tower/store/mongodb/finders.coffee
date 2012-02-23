@@ -5,12 +5,12 @@ Tower.Store.MongoDB.Finders =
     delete attributes._id
     new klass(attributes)
   
-  find: (query, options, callback) ->
+  find: (conditions, options, callback) ->
     self          = @
-    query         = @serializeQuery(query)
+    conditions    = @serializeQuery(conditions)
     options       = @serializeOptions(options)
     
-    @collection().find(query, options).toArray (error, docs) ->
+    @collection().find(conditions, options).toArray (error, docs) ->
       unless error
         for doc in docs
           doc.id = doc["_id"]

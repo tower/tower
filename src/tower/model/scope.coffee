@@ -39,7 +39,9 @@ class Tower.Model.Scope extends Tower.Class
   constructor: (options = {}) ->
     @model    = options.model
     @criteria = options.criteria || new Tower.Model.Criteria
-    @store    = @model.store()
+    
+  store: ->
+    @model.store()
   
   find: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true)
@@ -48,23 +50,23 @@ class Tower.Model.Scope extends Tower.Class
     
   first: (callback) ->
     {conditions, options} = @toQuery("asc")
-    @store.findOne conditions, options, callback
+    @store().findOne conditions, options, callback
     
   last: (callback) ->
     {conditions, options} = @toQuery("desc")
-    @store.findOne conditions, options, callback
+    @store().findOne conditions, options, callback
   
   all: (callback) ->
     {conditions, options} = @toQuery()
-    @store.find conditions, options, callback
+    @store().find conditions, options, callback
     
   count: (callback) ->
     {conditions, options} = @toQuery()
-    @store.count conditions, options, callback
+    @store().count conditions, options, callback
     
   exists: (callback) ->
     {conditions, options} = @toQuery()
-    @store.exists conditions, options, callback
+    @store().exists conditions, options, callback
     
   batch: ->
     
@@ -132,18 +134,18 @@ class Tower.Model.Scope extends Tower.Class
     
   _find: (conditions, options, callback) ->
     if conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
-      @store.findOne conditions, options, callback
+      @store().findOne conditions, options, callback
     else
-      @store.find conditions, options, callback
+      @store().find conditions, options, callback
     
   _build: (attributes, conditions, options) ->
     if Tower.Support.Object.isArray(attributes)
       result  = []
       for object in attributes
-        result.push @store.serializeModel(Tower.Support.Object.extend({}, conditions, object))
+        result.push @store().serializeModel(Tower.Support.Object.extend({}, conditions, object))
       result
     else
-      @store.serializeModel(Tower.Support.Object.extend({}, conditions, attributes))
+      @store().serializeModel(Tower.Support.Object.extend({}, conditions, attributes))
   
   _create: (criteria, data, opts, callback) ->
     if opts.instantiate
@@ -166,27 +168,30 @@ class Tower.Model.Scope extends Tower.Class
           else
             callback(error, records[0])
     else
-      @store.create data, opts, callback
+      @store().create data, opts, callback
       
   _update: (criteria, data, opts, callback) ->    
     {conditions, options} = criteria.toQuery()
     if opts.instantiate
-      iterator = (record, next) -> record.updateAttributes(data, next)
+      iterator = (record, next) ->
+        record.updateAttributes(data, next)
+        
       @_each conditions, options, iterator, callback
     else
-      @store.update data, conditions, options, callback
+      @store().update data, conditions, options, callback
   
   _destroy: (criteria, opts, callback) ->
     {conditions, options} = criteria.toQuery()
-    
     if opts.instantiate
-      iterator = (record, next) -> record.destroy(next)
+      iterator = (record, next) ->
+        record.destroy(next)
+        
       @_each conditions, options, iterator, callback
     else
-      @store.destroy conditions, options, callback
+      @store().destroy conditions, options, callback
     
   _each: (conditions, options, iterator, callback) ->
-    @store.find conditions, options, (error, records) =>
+    @store().find conditions, options, (error, records) =>
       if error
         callback.call @, error, records
       else

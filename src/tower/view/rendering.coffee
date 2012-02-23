@@ -11,6 +11,7 @@ Tower.View.Rendering =
       self._renderLayout(body, options, callback)
   
   partial: (path, options, callback) ->
+    console.log "PARTIAL"
     if typeof options == "function"
       callback  = options
       options   = {}
@@ -89,6 +90,7 @@ Tower.View.Rendering =
     
   renderWithEngine: (template, engine) ->
     mint = require("mint")
-    mint[mint.engine(engine || "coffee")](template, {})
+    mint[mint.engine(engine || "coffee")] template, {}, (error, result) ->
+      console.log error if error
   
 module.exports = Tower.View.Rendering

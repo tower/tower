@@ -1,25 +1,32 @@
 Tower.View.RenderingHelper =
   partial: (path, options, callback) ->
-    if typeof options == "function"
-      callback  = options
-      options   = {}
-    options   ||= {}
-    path        = path.split("/")
-    path[path.length - 1] = "_#{path[path.length - 1]}"
-    path        = path.join("/")
-    prefixes    = options.prefixes
-    prefixes  ||= [@_context.collectionName] if @_context
-    template    = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
-    template    = @renderWithEngine(String(template))
-    tmpl        = "(function() {#{String(template)}})"
-    if options.collection
-      name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true)
-      for item in options.collection
-        @[name] = item
-        eval(tmpl).call(@)
-        delete @[name]
-    else
-      eval(tmpl).call(@)
+    try
+      if typeof options == "function"
+        callback  = options
+        options   = {}
+      options   ||= {}
+      options.locals ||= {}
+      locals      = options.locals
+      path        = path.split("/")
+      path[path.length - 1] = "_#{path[path.length - 1]}"
+      path        = path.join("/")
+      prefixes    = options.prefixes
+      prefixes  ||= [@_context.collectionName] if @_context
+      template    = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
+      template    = @renderWithEngine(String(template))
+      if options.collection
+        name      = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true)
+        tmpl      = eval "(function(data) { with(data) { this.#{name} = #{name}; #{String(template)} } })"
+        for item in options.collection
+          locals[name] = item
+          tmpl.call(@, locals)
+          delete @[name]
+      else
+        tmpl      = "(function(data) { with(data) { #{String(template)} } })"
+        eval(tmpl).call(@, locals)
+    catch error
+      console.log error
+      
     null
     
   page: ->

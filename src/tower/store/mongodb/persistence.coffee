@@ -29,9 +29,10 @@ Tower.Store.MongoDB.Persistence =
     @
 
   destroy: (query, options, callback) ->
+    console.log "DESTRO"
     query           = @serializeQuery(query)
     options         = @serializeOptions(options)
-    
+    console.log "DESTROY!"
     @collection().remove query, options, (error) ->
       callback.call(@, error) if callback
 

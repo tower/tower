@@ -6,6 +6,7 @@ global.chai   = require 'chai'
 global.assert = chai.assert
 global.expect = chai.expect
 global.test   = it
+global.sinon  = require 'sinon'
 
 global.spec =
   startDatabase: ->
@@ -54,6 +55,10 @@ require "#{Tower.root}/app/controllers/customController"
 # You must either "extends X" or create a constructor: -> super
 # so that coffeescript generates a callback to the parent class!
 i = 0
+before (done) ->
+  Tower.Store.MongoDB.initialize ->
+    done()
+    
 beforeEach ->
   #Tower.Application.instance().teardown()
   Tower.Application.instance().initialize()

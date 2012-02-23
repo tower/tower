@@ -18,11 +18,18 @@ describe 'Tower.Model.Relation', ->
     Parent.store(new Tower.Store.Memory(name: "parents", type: "Parent"))
     
   describe 'HasAndBelongsToMany', ->
-    test 'defaults to blank array', ->
-      parent = Parent.create(id: 1)
-      assert.deepEqual parent.child().all(), []
+    test 'defaults to blank array', (done) ->
+      sinon.spy Parent, "create"
       
-    test 'create from parent', ->
+      Parent.create id: 1, (error, parent) =>
+        assert.deepEqual {id: 1}, Parent.create.getCall(0).args[0]
+        
+        parent.child().all (error, children) =>
+          assert.deepEqual children, []
+          
+          done()
+      
+    test 'create from parent', (done) ->
       parent  = Parent.create(id: 1)
       child   = parent.child().create(id: 10)
       
@@ -31,6 +38,8 @@ describe 'Tower.Model.Relation', ->
       
       child   = parent.child().create(id: 9)
       assert.deepEqual parent.childIds, [10, 9]
+      
+      done()
       
     test 'create from child', ->    
       parent  = Parent.create(id: 1)

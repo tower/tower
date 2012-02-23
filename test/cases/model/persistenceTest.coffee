@@ -7,73 +7,96 @@ describe 'Tower.Model.Persistence', ->
     App.User.store(new Tower.Store.Memory(name: "users", type: "App.User"))
 
   describe 'create', ->
-    beforeEach ->
-    
-    test 'create with no attributes (missing required attributes)', ->
+    test 'create with no attributes (missing required attributes)', (done) ->
       App.User.create (error, record) ->
         assert.deepEqual record.errors, { "firstName": ["firstName can't be blank"] }
-        
         assert.equal App.User.count(), 0
         
-    test 'create with valid attributes', ->
+        done()
+        
+    test 'create with valid attributes', (done) ->
       App.User.create firstName: "Lance", (error, record) ->
         assert.deepEqual record.errors, {}
-
         assert.equal App.User.count(), 1
         
-    test 'create multiple with valid attributes', ->
+        done()
+        
+    test 'create multiple with valid attributes', (done) ->
       attributes = [{firstName: "Lance"}, {firstName: "Dane"}]
+      
       App.User.create attributes, (error, records) ->
         assert.equal records.length, 2
         assert.equal App.User.count(), 2
+        
+        done()
     
   describe 'update', ->
-    beforeEach ->
+    beforeEach (done) ->
       user = App.User.create(id: 1, firstName: "Lance")
       App.User.create(id: 2, firstName: "Dane")
       
-    test 'update string property', ->
+      done()
+      
+    test 'update string property', (done) ->
       App.User.update firstName: "John", instantiate: false, (error) =>
         App.User.all (error, users) =>
           assert.equal users.length, 2
           for user in users
             assert.equal user.get("firstName"), "John"
+            
+          done()
       
-    test 'update matching string property', ->
+    test 'update matching string property', (done) ->
       App.User.where(firstName: "Lance").update firstName: "John", instantiate: false, (error) =>
         assert.equal App.User.where(firstName: "John").count(), 1
         
+        done()
+        
   describe '#update', ->
-    beforeEach ->
+    beforeEach (done) ->
       user = App.User.create(id: 1, firstName: "Lance")
       App.User.create(id: 2, firstName: "Dane")
       
-    test 'update string property with updateAttributes', ->
+      done()
+      
+    test 'update string property with updateAttributes', (done) ->
       user.updateAttributes firstName: "John", (error) =>
         assert.equal user.get("firstName"), "John"
         assert.equal user.changes, {}
+        
+        done()
     
-    test 'update string property with save', ->
+    test 'update string property with save', (done) ->
       user.set "firstName", "John"
       user.save (error) =>
         assert.equal user.get("firstName"), "John"
         assert.equal user.changes, {}
+        
+        done()
   
   describe 'destroy', ->
-    beforeEach ->
+    beforeEach (done) ->
       user = App.User.create(id: 1, firstName: "Lance!!!")
       App.User.create(id: 2, firstName: "Dane")
       
-    test 'destroy all', ->
-      assert.equal App.User.count(), 2
+      done()
       
-      App.User.destroy()
-      
-      assert.equal App.User.count(), 0
-      
-    test 'destroy matching', ->
-      assert.equal App.User.count(), 2
-      
-      App.User.where(firstName: "Dane").destroy()
-      
-      assert.equal App.User.count(), 1
+    test 'destroy all', (done) ->
+      App.User.count (error, count) =>
+        assert.equal count, 2
+        
+        App.User.destroy (error) =>
+          App.User.count (error, count) =>
+            assert.equal count, 0
+            
+            done()
+    
+    test 'destroy matching', (done) ->
+      App.User.count (error, count) =>
+        assert.equal count, 2
+
+        App.User.where(firstName: "Dane").destroy (error) =>
+          App.User.count (error, count) =>
+            assert.equal count, 1
+
+            done()

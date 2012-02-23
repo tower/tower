@@ -101,25 +101,23 @@ Tower.View.HeadHelper =
     result.join()
   
   openGraphMetaTags: (options = {}) ->
-    result = []
+    openGraphMetaTag("og:title", options.title) if options.title
+    openGraphMetaTag("og:type", options.type) if options.type
+    openGraphMetaTag("og:image", options.image) if options.image
+    openGraphMetaTag("og:siteName", options.site) if options.site
+    openGraphMetaTag("og:description", options.description) if options.description
+    openGraphMetaTag("og:email", options.email) if options.email
+    openGraphMetaTag("og:phoneNumber", options.phone) if options.phone
+    openGraphMetaTag("og:faxNumber", options.fax) if options.fax
+    openGraphMetaTag("og:latitude", options.lat) if options.lat
+    openGraphMetaTag("og:longitude", options.lng) if options.lng
+    openGraphMetaTag("og:street-address", options.street) if options.street
+    openGraphMetaTag("og:locality", options.city) if options.city
+    openGraphMetaTag("og:region", options.state) if options.state
+    openGraphMetaTag("og:postal-code", options.zip) if options.zip
+    openGraphMetaTag("og:country-name", options.country) if options.country
     
-    result.push openGraphMetaTag("og:title", options.title) if options.title
-    result.push openGraphMetaTag("og:type", options.type) if options.type
-    result.push openGraphMetaTag("og:image", options.image) if options.image
-    result.push openGraphMetaTag("og:siteName", options.site) if options.site
-    result.push openGraphMetaTag("og:description", options.description) if options.description
-    result.push openGraphMetaTag("og:email", options.email) if options.email
-    result.push openGraphMetaTag("og:phoneNumber", options.phone) if options.phone
-    result.push openGraphMetaTag("og:faxNumber", options.fax) if options.fax
-    result.push openGraphMetaTag("og:latitude", options.lat) if options.lat
-    result.push openGraphMetaTag("og:longitude", options.lng) if options.lng
-    result.push openGraphMetaTag("og:street-address", options.street) if options.street
-    result.push openGraphMetaTag("og:locality", options.city) if options.city
-    result.push openGraphMetaTag("og:region", options.state) if options.state
-    result.push openGraphMetaTag("og:postal-code", options.zip) if options.zip
-    result.push openGraphMetaTag("og:country-name", options.country) if options.country
-    
-    result.join("\n")
+    null
   
   openGraphMetaTag: (property, content) ->
     meta property: property, content: content
