@@ -20,13 +20,12 @@ stylesheets "lib", "vendor", "application"
 #  yield "headStyleSheets"
 
 javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
-javascripts "vendor", "lib", "application"
-
-if Tower.env == "development"
-  javascripts "development"
   
 #if contentFor "headJavaScripts"
 #  yield "headJavaScripts"
 
-contentFor "bottom", ->
-  javascripts "bottom"
+contentFor "bottom", ->  
+  javascripts "vendor" 
+  if Tower.env == "development"
+    javascripts "development"
+  javascripts "lib", "application"

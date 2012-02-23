@@ -1,4 +1,4 @@
 cite class: "copyright", ->
-  text "&copy;"
-  linkTo("<%= user.name %>", "<%= user.email %>")
-  text "<%= project.year %>."
+  span "&copy;"
+  linkTo "<%= user.name %>", "<%= user.email %>"
+  span "<%= project.year %>."

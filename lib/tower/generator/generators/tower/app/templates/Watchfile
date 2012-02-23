@@ -2,12 +2,13 @@ require('design.io').extension('watchfile')
 
 async = require('async')
 File  = require('pathfinder').File
-Shift = require('shift')
+mint  = require('mint')
 
 require("design.io-stylesheets") /(app\/client|lib\/stylesheets)/
   compress: false
   debug:    false
   ignore:   /(public|node_modules)/
+  paths:    ["./app/client/stylesheets", "./vendor/stylesheets/bootstrap"]
   outputPath: (path) ->
     "public/stylesheets/#{path}".replace(/\.(sass|scss|stylus|styl|less|css)/, ".css")
 
@@ -40,8 +41,6 @@ watch /app\/views.*\.coffee$/
         
       template      = "Tower.View.cache =\n"
       
-      engine = new Shift.CoffeeScript
-      
       iterator = (item, next) =>
         template += "  '#{item[0]}': ->\n"
         lines = item[1].split(/\n/)
@@ -52,7 +51,7 @@ watch /app\/views.*\.coffee$/
         next()
         
       async.forEachSeries result, iterator, (error) =>
-        engine.render template, bare: true, (error, string) =>
+        mint.coffee template, bare: true, (error, string) =>
           if error
             console.log error
             return callback(error)

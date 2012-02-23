@@ -91,6 +91,8 @@ class Tower.Dispatch.Route extends Tower.Class
       else
         return false
     
+    return true
+    
   urlFor: (options = {}) ->
     result = @path
     result = result.replace(new RegExp(":#{key}\\??", "g"), value) for key, value of options

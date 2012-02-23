@@ -45,6 +45,7 @@ Tower.View.Rendering =
       try
         locals          = options.locals
         locals.renderWithEngine = @renderWithEngine
+        locals._readTemplate = @_readTemplate
         locals.cache    = Tower.env != "development"
         locals.format   = true
         hardcode        = {}
@@ -59,22 +60,22 @@ Tower.View.Rendering =
       
       callback e, result
     else if options.type
-      engine = require("shift").engine(options.type)
-      engine.render(string, options.locals, callback)
+      engine = require("mint").engine(options.type)
+      mint[engine](string, options.locals, callback)
     else
-      engine = require("shift")
+      engine = require("mint")
       options.locals.string = string
       engine.render(options.locals, callback)
   
   _renderingContext: (options) ->
-    locals = {}
+    locals = this
     _ref = @_context
     for key of _ref
       value = _ref[key]
       locals[key] = value  unless key.match(/^(constructor|head)/)
-    newlocals = {}
-    newlocals.locals = locals
-    locals = newlocals
+    #newlocals = {}
+    #newlocals.locals = locals
+    #locals = newlocals
     locals = Tower.Support.Object.extend(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
@@ -87,6 +88,7 @@ Tower.View.Rendering =
     result
     
   renderWithEngine: (template, engine) ->
-    require("shift").engine(engine || "coffee").render(template)
+    mint = require("mint")
+    mint[mint.engine(engine || "coffee")](template, {})
   
 module.exports = Tower.View.Rendering

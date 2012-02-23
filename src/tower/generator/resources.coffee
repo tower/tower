@@ -108,7 +108,7 @@ Tower.Generator.Resources =
     hash.digest(code)
   
   buildUser: (callback) ->
-    configFile = process.env.HOME + "/.tower.json";
+    user = {}
     user.username = "username"
     user.email    = "email@example.com"
     user.database = "mongodb"

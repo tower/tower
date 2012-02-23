@@ -149,6 +149,7 @@ class Tower.Application extends Tower.Class
     @initialize()
     @stack()
     @listen()
+    #@watch()
     
   watch: ->
     forever = require("forever")
@@ -167,13 +168,13 @@ class Tower.Application extends Tower.Class
         # [Sat, 18 Feb 2012 22:49:33 GMT] INFO updated public/stylesheets/vendor/stylesheets/bootstrap/reset.css
         data.replace /\[([^\]]+)\] (\w+) (\w+) (.+)/, (_, date, type, action, path) ->
           path  = path.split('\033')[0]
-          ext   = path.match(/\.(\w+)$/g)[1]
-          if ext.match(/(js|coffee)/) && action.match(/(updated|deleted)/)
+          ext   = path.match(/\.(\w+)$/g)
+          ext   = ext[0] if ext
+          if ext && ext.match(/(js|coffee)/) && action.match(/(updated|deleted)/)
             delete require.cache[require.resolve(path)]
           _
       catch error
-        error
-    console.log("DONE")
+        @
     
 require './assets'
 

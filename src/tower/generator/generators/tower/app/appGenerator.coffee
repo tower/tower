@@ -135,7 +135,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
             "bootstrap-typeahead.js"
           ]
         @inside "stylesheets", ->
-          @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css", "prettyify.css"
+          @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css", "prettify.css"
           @directory "bootstrap"
           @get "https://raw.github.com/twitter/bootstrap/master/less/#{stylesheet}.less", "bootstrap/#{stylesheet}.less" for stylesheet in [
             "accordion",

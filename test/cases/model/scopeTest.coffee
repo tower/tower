@@ -3,6 +3,7 @@ require '../../config'
 scope     = null
 criteria  = null
 user      = null
+User      = App.User
 
 describe 'Tower.Model.Scope', ->
   beforeEach ->
