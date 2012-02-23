@@ -1,59 +1,48 @@
 Tower.Store.Memory.Persistence =
-  load: (records) ->
-    records = Tower.Support.Object.toArray(records)
-    for record in records
-      record = @serializeModel(record)
-      @_setRecord(record)
+  load: (data) ->
+    records = Tower.Support.Object.toArray(data)
+    @loadOne(@serializeModel(record)) for record in records
     records
     
-  create: (attributes, options, callback) ->
-    result    = null
+  loadOne: (record) ->
+    @records[record.get("id")] = record
     
-    if Tower.Support.Object.isArray(attributes)
+  create: (data, options, callback) ->
+    result    = null
+    if Tower.Support.Object.isArray(data)
       result  = []
-      for object in attributes
-        object.id ?= @generateId()
-        result.push object
-      result
+      result.push @createOne(attributes) for attributes in data
     else
-      attributes.id ?= @generateId()
-      result  = attributes
+      result  = @createOne(data)
     
     callback.call @, null, result if callback
+    
     result
+    
+  createOne: (record) ->
+    attributes = @deserializeModel(record)
+    attributes.id ?= @generateId()
+    @loadOne(@serializeModel(record))
   
   update: (updates, query, options, callback) ->
     @find query, options, (error, records) =>
       return callback(error) if error
-      for record, i in records
-        for key, value of updates
-          @_updateAttribute(record.attributes, key, value)
-      callback.call(@, error, records) if callback
+      @updateOne(record, updates) for record in records
       records
       
+  updateOne: (record, updates) ->
+    for key, value of updates
+      @_updateAttribute(record.attributes, key, value)
+    record
+    
   destroy: (query, options, callback) ->
-    if Tower.Support.Object.isBlank(query)
-      @clear(callback)
-    else
-      @find query, options, (error, records) ->
-        return callback(error) if error
-        for record in records
-          #_records.splice(_records.indexOf(record), 1)
-          @_removeRecord(record)
-        callback.call(@, error, records) if callback
-        records
+    @find query, options, (error, records) ->
+      return callback(error) if error
+      @destroyOne(record) for record in records
+      callback.call(@, error, records) if callback
+      records
         
-  clear: (callback) ->
-    @records = {}
-    callback.call(@, null) if callback
-    null
-    
-  _setRecord: (record) ->
-    @records[record.get("id")] = record
-    
-  _getRecord: (key) ->
-    
-  _removeRecord: (record) ->
-    delete @records[record.id]
+  destroyOne: (record) ->
+    delete @records[record.get("id")]
     
 module.exports = Tower.Store.Memory.Persistence

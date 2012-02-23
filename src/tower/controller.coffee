@@ -2,8 +2,11 @@ class Tower.Controller extends Tower.Class
   @extend   Tower.Support.EventEmitter
   @include  Tower.Support.EventEmitter
   
+  @instance: ->
+    @_instance ||= new @
+  
   constructor: ->
-    @constructor.instance = @
+    @constructor._instance = @
     @headers              = {}
     @status               = 200
     @request              = null

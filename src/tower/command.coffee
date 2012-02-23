@@ -5,6 +5,7 @@ Tower.Command =
     command = new Tower.Command[Tower.Support.String.camelize(command)](argv)
     command.run()
 
+require './command/console'
 require './command/generate'
 require './command/new'
 require './command/server'

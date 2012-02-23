@@ -1,6 +1,6 @@
 Tower.Support.Object.extend Tower, 
   env:        "development"
-  port:       1597
+  port:       3000
   version:    "0.3.0"
   client:     typeof(window) != "undefined"
   root:       "/"
@@ -11,6 +11,10 @@ Tower.Support.Object.extend Tower,
   logger:     if typeof(_console) != 'undefined' then _console else console
   structure:  "standard"
   config:     {}
+  namespaces: {}
+  
+  sync: (method, records, callback) ->
+    callback null, records if callback
   
   get: ->
     Tower.request "get", arguments...
@@ -33,6 +37,7 @@ Tower.Support.Object.extend Tower,
     location        = new Tower.Dispatch.Url(url)
     request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
     response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+    request.query   = location.params
     Tower.Application.instance().handle request, response, ->
       callback.call @, @response
       
@@ -55,6 +60,17 @@ Tower.Support.Object.extend Tower,
         
   namespace:  ->
     Tower.Application.instance().constructor.name
+    
+  module: (namespace) ->
+    node    = Tower.namespaces[namespace]
+    return node if node
+    parts   = namespace.split(".")
+    node    = Tower
+    
+    for part in parts
+      node  = node[part] ||= {}
+    
+    Tower.namespaces[namespace] = node
   
   constant: (string) ->
     node  = global

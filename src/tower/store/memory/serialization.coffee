@@ -5,7 +5,6 @@ Tower.Store.Memory.Serialization =
     schema  = @schema()
     
     for key, value of query
-      continue if !!Tower.Store.reservedOperators[key]
       recordValue = record.get(key)
       if Tower.Support.Object.isRegExp(value)
         success = recordValue.match(value)
@@ -78,9 +77,9 @@ Tower.Store.Memory.Serialization =
             success = self._isEqualTo(recordValue, value)
           when "$neq"
             success = self._isNotEqualTo(recordValue, value)
-          when "$regex"
+          when "$regex", "$match"
             success = self._isMatchOf(recordValue, value)
-          when "$nm"
+          when "$notMatch"
             success = self._isNotMatchOf(recordValue, value)
           when "$all"
             success = self._allIn(recordValue, value)

@@ -18,6 +18,9 @@ Tower.Model.Dirty =
     change[0]
     
   resetAttribute: (name) ->
+    array = @changes[name]
+    @set(name, array[0]) if array
+    @
     
   toUpdates: ->
     result      = {}

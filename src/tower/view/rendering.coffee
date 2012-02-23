@@ -45,15 +45,14 @@ Tower.View.Rendering =
       try
         locals          = options.locals
         locals.renderWithEngine = @renderWithEngine
+        locals._readTemplate = @_readTemplate
         locals.cache    = Tower.env != "development"
         locals.format   = true
-        locals.hardcode = _.extend {}, 
-          Tower.View.ComponentHelper
-          Tower.View.AssetHelper
-          Tower.View.HeadHelper
-          Tower.View.RenderingHelper
-          Tower.View.StringHelper
-          tags: require('coffeekup').tags
+        hardcode        = {}
+        for helper in Tower.View.helpers
+          hardcode      = _.extend(hardcode, helper)
+        hardcode        = _.extend(hardcode, tags: require("coffeekup").tags)
+        locals.hardcode = hardcode
         locals._ = _
         result = require('coffeekup').render string, locals
       catch error
@@ -61,28 +60,35 @@ Tower.View.Rendering =
       
       callback e, result
     else if options.type
-      engine = require("shift").engine(options.type)
-      engine.render(string, options.locals, callback)
+      engine = require("mint").engine(options.type)
+      mint[engine](string, options.locals, callback)
     else
-      engine = require("shift")
+      engine = require("mint")
       options.locals.string = string
       engine.render(options.locals, callback)
   
   _renderingContext: (options) ->
-    locals  = @
-    for key, value of @_context
-      @[key] = value unless key.match(/^(constructor)/)
-    locals        = Tower.Support.Object.extend(locals, options.locals)
-    locals.pretty = true if @constructor.prettyPrint
+    locals = this
+    _ref = @_context
+    for key of _ref
+      value = _ref[key]
+      locals[key] = value  unless key.match(/^(constructor|head)/)
+    #newlocals = {}
+    #newlocals.locals = locals
+    #locals = newlocals
+    locals = Tower.Support.Object.extend(locals, options.locals)
+    locals.pretty = true  if @constructor.prettyPrint
     locals
     
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
-    result = @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
+    # tmp
+    result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
     throw new Error("Template '#{template}' was not found.") unless result
     result
     
   renderWithEngine: (template, engine) ->
-    require("shift").engine(engine || "coffee").render(template)
+    mint = require("mint")
+    mint[mint.engine(engine || "coffee")](template, {})
   
 module.exports = Tower.View.Rendering

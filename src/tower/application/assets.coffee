@@ -2,12 +2,14 @@
 async         = require 'async'
 fs            = require 'fs'
 path          = require 'path'
-Shift         = require 'shift'
+mint          = require 'mint'
 _path         = require 'path'
 Pathfinder    = require 'pathfinder'
 File          = Pathfinder.File
 puts          = require('util').puts
 print         = require('util').print
+
+# Tower.module "Application.Assets"
 
 Tower.Application.Assets =
   loadManifest: ->
@@ -38,14 +40,14 @@ Tower.Application.Assets =
             fs.writeFileSync "public/assets/#{name}#{extension}", content
 
             process.nextTick ->
-              compressor.render content, (error, result) ->
+              compressor content, (error, result) ->
                 if error
                   console.log error
                   return next(error)
                 digestPath  = File.digestFile("public/assets/#{name}#{extension}")
 
                 manifest["#{name}#{extension}"]  = File.basename(digestPath)
-
+                
                 gzip result, (error, result) ->
                   fs.writeFileSync digestPath, result
                   next()
@@ -62,8 +64,8 @@ Tower.Application.Assets =
           bundle data.type, data.extension, data.compressor, next
 
         bundles = [
-          {type: "stylesheets", extension: ".css", compressor: new Shift.YuiCompressor},
-          {type: "javascripts", extension: ".js", compressor: new Shift.UglifyJS}
+          {type: "stylesheets", extension: ".css", compressor: mint.yui},
+          {type: "javascripts", extension: ".js", compressor: mint.uglifyjs}
         ]
 
         process.nextTick ->
@@ -137,7 +139,7 @@ Tower.Application.Assets =
     
     Tower.async paths, upload, (error) ->
       console.log(error) if error
-    
+      
       File.write(cachePath, JSON.stringify(assetCache, null, 2))
       
   stats: ->

@@ -30,5 +30,5 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
           @tag "span", @label
       @tag Tower.View.fieldListTag, class: Tower.View.fieldListClass, =>
         @builder.render(block)
-    
+
 module.exports = Tower.View.Form.Fieldset

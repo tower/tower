@@ -14,5 +14,3 @@ class App.User extends Tower.Model
   @validates "firstName", presence: true
   
   @timestamps()
-
-global.User = App.User

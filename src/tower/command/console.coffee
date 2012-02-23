@@ -11,7 +11,12 @@ class Tower.Command.Console
     client = require("repl").start("tower> ").context
     
     client.reload = ->
-      client.Tower = Tower
+      app = Tower.Application.instance()
+      app.initialize()
+      app.stack()
+      client.Tower  = Tower
+      client._      = _
+      client[Tower.namespace()] = app
     
     client._c = ->
       l       = arguments.length

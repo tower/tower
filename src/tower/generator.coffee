@@ -1,9 +1,9 @@
-class Tower.Generator extends Tower.Class#Emergent.Generator
+class Tower.Generator extends Tower.Class
   sourceRoot: __dirname
   
   @run: (type, options) ->
     new Tower.Generator[Tower.Support.String.camelize(type)](options)
-    
+  
   constructor: (options = {}) ->
     _.extend @, options
     

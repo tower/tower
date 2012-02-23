@@ -1,6 +1,14 @@
 class Tower.Store extends Tower.Class
   @defaultLimit: 100
   
+  @isKeyword: (key) ->
+    @queryOperators.hasOwnProperty(key) || @atomicModifiers.hasOwnProperty(key)
+    
+  @hasKeyword: (object) ->
+    return true if object.hasOwnProperty(key) for key, value of @queryOperators
+    return true if object.hasOwnProperty(key) for key, value of @atomicModifiers
+    false
+  
   @atomicModifiers:
     "$set":     "$set"
     "$unset":   "$unset"
@@ -10,10 +18,6 @@ class Tower.Store extends Tower.Class
     "$pullAll": "$pullAll"
     "$inc":     "$inc"
     "$pop":     "$pop"
-    
-  @reservedOperators:
-    "_sort":    "_sort"
-    "_limit":   "_limit"
   
   @queryOperators:
     ">=":       "$gte"
@@ -31,6 +35,8 @@ class Tower.Store extends Tower.Class
     "=~":       "$regex"
     "$m":       "$regex"
     "$regex":   "$regex"
+    "$match":   "$match"
+    "$notMatch":   "$notMatch"
     "!~":       "$nm"
     "$nm":      "$nm"
     "=":        "$eq"
@@ -67,20 +73,24 @@ class Tower.Store extends Tower.Class
     klass = Tower.constant(@className)
     new klass(attributes)
     
-  deserializeModel: (model) ->
-    model.attributes
+  deserializeModel: (data) ->
+    if data instanceof Tower.Model then data.attributes else data
     
   constructor: (options = {}) ->
     @name       = options.name
     @className  = options.type || Tower.namespaced(Tower.Support.String.camelize(Tower.Support.String.singularize(@name)))
     
-  delete: (query, options, callback) ->
-    @destroy.apply @, arguments
+  _defaultOptions: (options) ->
+    options
     
   load: (records) ->
     
+  fetch: ->
+    
   schema: ->
     Tower.constant(@className).fields()
+      
+Tower.Store.include Tower.Support.Callbacks
 
 require './store/cassandra'
 require './store/couchdb'

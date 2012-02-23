@@ -8,6 +8,6 @@ Tower.View.ComponentHelper =
   widget: ->
     
   linkTo: (title, path, options = {}) ->
-    a _.extend(options, href: path, title: title), title
+    a _.extend(options, href: path, title: title), -> title
 
 module.exports = Tower.View.ComponentHelper

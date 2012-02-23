@@ -2,7 +2,10 @@ require '../lib/tower'
 File  = require('pathfinder').File
 # require './secrets'
 
-global.test = it
+global.chai   = require 'chai'
+global.assert = chai.assert
+global.expect = chai.expect
+global.test   = it
 
 global.spec =
   startDatabase: ->

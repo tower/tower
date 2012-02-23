@@ -1,55 +1,179 @@
 class Tower.View.Form.Field extends Tower.View.Component
+  addClass: (string, args) ->
+    result = if string then string.split(/\s+/g) else []
+    for arg in args
+      continue unless arg
+      result.push(arg) unless result.indexOf(arg) > -1
+    result.join(" ")
+    
+  toId: (options = {}) ->
+    result = Tower.Support.String.parameterize(@model.constructor.name)#@model.toKey()
+    result += "-#{options.parentIndex}" if options.parentIndex
+    result += "-#{@attribute}"
+    result += "-#{options.type || "field"}"
+    result += "-#{@index}" if @index?
+    result
+    
+  toParam: (options = {}) ->
+    result = Tower.Support.String.parameterize(@model.constructor.name)#@model.toKey()
+    result += "[#{options.parentIndex}]" if options.parentIndex
+    result += "[#{@attribute}]"
+    result += "[#{@index}]" if @index?
+    result
+    
   constructor: (args, options) ->
-    super
+    @labelValue = options.label
+    delete options.label
+    
+    super(args, options)
+    
+    @required ||= false
     
     # input type
-    options.as    ||= attribute.inputType(options)
+    field           = @model.constructor.fields()[@attribute]
+    options.as    ||= if field then Tower.Support.String.camelize(field.type, true) else "string"
     @inputType      = inputType = options.as
-    @inputs         = []
+    @required       = field.required == true
     
     # class
     classes = [Tower.View.fieldClass, inputType]
-    
     unless ["submit", "fieldset"].indexOf(inputType) > -1
-      classes.push if attribute.required then Tower.View.requiredClass else Tower.View.optionalClass
-      classes.push if attribute.errors then Tower.View.errorClass else Tower.View.validClass
+      classes.push if field.required then Tower.View.requiredClass else Tower.View.optionalClass
+      classes.push if field.errors then Tower.View.errorClass else Tower.View.validClass
       
-      if options.validate != false && attribute.validations.present?
+      if options.validate != false && field.validations
         classes.push Tower.View.validateClass
     
-    attributes.class = @addClass attributes.class, classes
+    @fieldHTML.class = @addClass @fieldHTML.class, classes
     
     # id
-    if attributes.id? && Tower.View.idEnabledOn.indexOf("field") > -1
-      attributes.id = attribute.toId(type: "field", index: index, parentIndex: parentIndex)
+    if !@fieldHTML.id && Tower.View.idEnabledOn.indexOf("field") > -1
+      @fieldHTML.id = @toId(type: "field", index: @index, parentIndex: @parentIndex)
     
-    unless ["hidden", "submit"].indexOf(inputType) > -1
-      # errors
-      @errors           = options.slice("richInput", "errorHtml", "error", "model", "index", "parentIndex", "attribute", "template")
+    @inputHTML.id = @toId(type: "input", index: @index, parentIndex: @parentIndex)
+    #unless ["hidden", "submit"].indexOf(inputType) > -1
+    #  # errors
+    #  @errors           = options.slice("richInput", "errorHTML", "error", "model", "index", "parentIndex", "attribute", "template")
+    #
+    #  # label
+    #  @label            = options.slice("richInput", "labelHTML", "label", "model", "index", "parentIndex", "attribute", "template")
+    #
+    #  # hint
+    #  @hints            = options.slice("richInput", "hintHtml", "hint", "model", "index", "parentIndex", "attribute", "template")
+    @labelHTML.for ||= @inputHTML.id
+    @labelHTML.class = @addClass @labelHTML.class, [Tower.View.labelClass]
     
-      # label
-      @label            = options.slice("richInput", "labelHtml", "label", "model", "index", "parentIndex", "attribute", "template")
+    unless @labelValue == false
+      @labelValue ||= Tower.Support.String.camelize(@attribute.toString())
     
-      # hint
-      @hints            = options.slice("richInput", "hintHtml", "hint", "model", "index", "parentIndex", "attribute", "template")
+    @attributes       = @fieldHTML
     
-    unless inputType == "fieldset"
-      # inputs
-      @inputAttributes = defaultOptions.merge(attributes.except("id", "class", "fieldHtml", "attributes", "errorHtml", "labelHtml", "hintHtml"))
+    unless options.hint == false
+      @errorHTML.class = @addClass @errorHTML.class, [Tower.View.errorClass]
+      if Tower.View.includeAria && Tower.View.hintIsPopup
+        @errorHTML.role ||= "tooltip"
     
-    mergeClass options.fieldHtml.class, attributes.class
+    @inputHTML.name ||= @toParam()
+    @value          = options.value
+    @dynamic        = options.dynamic == true
+    @richInput      = if options.hasOwnProperty("rich_input") then !!options.rich_input else Tower.View.richInput
+  
+    @validate       = options.validate != false
+  
+    classes         = [inputType, Tower.Support.String.parameterize(@attribute), @inputHTML.class]
     
-    @attributes       = options.fieldHtml.merge(id: attributes.id)
+    unless ["submit", "fieldset"].indexOf(inputType) > -1
+      classes.push if field.required then Tower.View.requiredClass else Tower.View.optionalClass
+      classes.push if field.errors then Tower.View.errorClass else Tower.View.validClass
+      classes.push "input"
+        
+      if options.validate != false && field.validations
+        classes.push Tower.View.validateClass
+    
+    # class
+    @inputHTML.class = @addClass @inputHTML.class, classes
+    @inputHTML.placeholder = options.placeholder if options.placeholder
+  
+    # value
+    @inputHTML.value  ||= options.value if options.hasOwnProperty("value")
+  
+    # @inputHTML[:tabindex]      = @tabindex
+    @inputHTML.maxlength    ||= options.max if options.hasOwnProperty("max")
+    
+    # expressions
+    pattern                       = options.match
+    pattern                       = pattern.toString() if _.isRegExp(pattern)
+    @inputHTML["data-match"]      = pattern if pattern?
+    @inputHTML["aria-required"]   = @required.toString()
+    
+    @inputHTML.required = "true" if @required == true
+    @inputHTML.disabled = "true" if @disabled
+    @inputHTML.autofocus = "true" if @autofocus == true
+    @inputHTML["data-dynamic"] = "true" if @dynamic
+    
+    @inputHTML.title ||= @inputHTML.placeholder if @inputHTML.placeholder
+    
+    @autocomplete = @inputHTML.autocomplete == true
+    
+    if @autocomplete && Tower.View.includeAria
+      @inputHTML["aria-autocomplete"] = switch @autocomplete
+        when "inline", "list", "both"
+          @autocomplete
+        else
+          "both"
   
   input: (args...) ->
-    options = args.extractOptions
-    key     = args.shift || attribute.name
-    @inputs.push inputFor(inputType, key, options)
+    options = _.extend @inputHTML, Tower.Support.Array.extractOptions(args)
+    key     = args.shift() || @attribute
+    @["#{@inputType}Input"](key, options)  
+  
+  checkboxInput: (key, options) ->
+    @tag "input", _.extend(type: "checkbox", options)
+    
+  stringInput: (key, options) ->
+    @tag "input", _.extend(type: "text", options)
+    
+  fileInput: (key, options) ->
+    @tag "input", _.extend(type: "file", options)
+    
+  textInput: (key, options) ->
+    @tag "textarea", options
+  
+  password_input: (key, options) ->
+    @tag "input", _.extend(type: "password", options)
+    
+  emailInput: (key, options) ->
+    @tag "input", _.extend(type: "email", options)
+    
+  urlInput: (key, options) ->
+    @tag "input", _.extend(type: "url", options)
+    
+  numberInput: (key, options) ->
+    @tag "input", _.extend(type: "string", "data-type": "numeric", options)
+    
+  searchInput: (key, options) ->
+    @tag "input", _.extend(type: "search", "data-type": "search", options)
+    
+  phoneInput: (key, options) ->
+    @tag "input", _.extend(type: "tel", "data-type": "phone", options)
+  
+  label: ->
+    return unless @labelValue
+    @tag "label", @labelHTML, =>
+      @tag "span", @labelValue
+      if @required
+        @tag "abbr", title: Tower.View.requiredTitle, class: Tower.View.requiredClass, -> Tower.View.requiredAbbr
+      else
+        @tag "abbr", title: Tower.View.optionalTitle, class: Tower.View.optionalClass, -> Tower.View.optionalAbbr
     
   render: (block) ->
     @tag Tower.View.fieldTag, @attributes, =>
-      #input(attribute.name) unless blockGiven?
-      @tag "input", type: "email"
+      if block
+        block.call @
+      else
+        @label()
+        @input()
+      
       #elements = extractElements!(attributes)
       #
       #result = elements.map do |element|
@@ -57,10 +181,7 @@ class Tower.View.Form.Field extends Tower.View.Component
       #template.hamlConcat result.flatten.join.gsub(/\n$/, "") if result.present?
       #
       #yield(self) if blockGiven? # template.captureHaml(self, block)
-
-  inputFor: (key, attribute, options = {}) ->
-    Tower.View.Form.Input.find(key).new(@inputAttributes.merge(options))
-  
+      
   extractElements: (options = {}) ->
     elements = []
     if ["hidden", "submit"].include?(inputType)

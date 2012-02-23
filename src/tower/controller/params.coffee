@@ -28,15 +28,5 @@ Tower.Controller.Params =
         criteria.where(parser.toCriteria(params[name]))
         
     criteria
-  
-  withParams: (path, newParams = {}) ->
-    params = Tower.Support.Object.extend @query, newParams
-    return path if Tower.Support.Object.blank(params)
-    queryString = @queryFor(params)
-    "#{path}?#{query_string}"
-    
-  queryFor: (params = {}) ->
-    
-  paramOperators: (key) ->
 
 module.exports = Tower.Controller.Params

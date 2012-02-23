@@ -3,9 +3,10 @@ class Tower.Store.Local extends Tower.Store.Memory
     @lastId   = 0
     
   _setRecord: (record) ->
-    record.get("id")] = record
+    #record.get("id")] = record
     
   _getRecord: (key) ->
+    @
     
   _removeRecord: (key) ->
     delete @records[record.id]

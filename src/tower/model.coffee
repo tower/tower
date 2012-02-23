@@ -12,8 +12,7 @@ class Tower.Model extends Tower.Class
     @readOnly     = if options.hasOwnProperty("readOnly") then options.readOnly else false
     @persistent   = if options.hasOwnProperty("persistent") then options.persisted else false
     
-    for key, value of attrs
-      @set key, value
+    @attributes[key] = value for key, value of attrs
   
 require './model/scope'
 require './model/criteria'

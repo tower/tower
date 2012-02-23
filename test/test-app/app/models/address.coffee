@@ -6,5 +6,3 @@ class App.Address extends Tower.Model
   @field "zip"
   
   @belongsTo "addressible", polymorphic: true
-
-global.Address = App.Address

@@ -1,1 +1,4 @@
-cite class: "copyright", -> "&copy; #{linkTo("<%= user.name %>", "<%= user.email %>")}. 2011."
+cite class: "copyright", ->
+  span "&copy;"
+  linkTo "<%= user.name %>", "<%= user.email %>"
+  span "<%= project.year %>."

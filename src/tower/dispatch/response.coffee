@@ -27,5 +27,8 @@ class Tower.Dispatch.Response
     @body       += body
     @sent       = true
     @headerSent = true
+    
+  redirect: (path, options = {}) ->
+    History.push options, null, path
 
 module.exports = Tower.Dispatch.Response

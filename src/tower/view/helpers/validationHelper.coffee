@@ -1,7 +1,6 @@
 Tower.View.ValidationHelper =    
   success: ->
-    @level 1, =>
-      @redirectTo @urlFor("admin", "categories")
+    @redirectTo @urlFor("admin", "categories")
     
   failure: (error) ->
     if error

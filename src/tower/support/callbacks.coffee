@@ -42,6 +42,11 @@ Tower.Support.Callbacks =
     else
       block.call @
       
+  _callback: (callbacks...) ->
+    (error) =>
+      for callback in callbacks
+        callback.call(@, error) if callback
+      
 class Tower.Support.Callbacks.Chain
   constructor: (options = {}) ->
     @[key] = value for key, value of options

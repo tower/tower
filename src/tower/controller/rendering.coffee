@@ -25,6 +25,7 @@ Tower.Controller.Rendering =
   sendData: (data, options = {}) ->
   
   _renderTemplate: (options) ->
+    _callback = options.callback
     callback = (error, body) =>
       if error
         @status ||= 404
@@ -32,6 +33,7 @@ Tower.Controller.Rendering =
       else
         @status ||= 200
         @body     = body
+      _callback.apply @, arguments if _callback
       @callback() if @callback
       
     return if @_handleRenderers(options, callback)
@@ -61,15 +63,19 @@ Tower.Controller.Rendering =
   _normalizeRender: ->
     @_normalizeOptions @_normalizeArgs(arguments...)
   
-  _normalizeArgs: (action, options = {}) ->
-    switch typeof(action)
-      when "undefined", "object"
-        options   = action || {}
-      when "string"
-        key = if !!action.match(/\//) then "file" else "action"
-        options[key] = action
-      else
-        options.partial = action
+  _normalizeArgs: ->
+    args = Tower.Support.Array.args(arguments)
+    if typeof args[0] == "string"
+      action    = args.shift()
+    if typeof args[0] == "object"
+      options   = args.shift()
+    if typeof args[0] == "function"
+      callback  = args.shift()
+    
+    options   ||= {}  
+    key         = if action && !!action.match(/\//) then "file" else "action"
+    options[key] = action
+    options.callback = callback if callback
     
     options
   

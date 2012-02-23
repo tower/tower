@@ -1,4 +1,4 @@
-tableFor "users", (t) ->
+tableFor "<%= model.pluralName %>", (t) ->
   t.head ->
     t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
       t.cell "<%= model.attributes[i].name %>", sort: true<% } %>

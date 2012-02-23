@@ -63,22 +63,23 @@ class Tower.Application extends Tower.Class
     @
     
   extractAgent: ->
-    Tower.cookies = Tower.Net.Cookies.parse()
-    Tower.agent   = new Tower.Net.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
+    Tower.cookies = Tower.Dispatch.Cookies.parse()
+    Tower.agent   = new Tower.Dispatch.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
     
   listen: ->
     self = @
     return if @listening
     @listening = true
-
+    
     if @History && @History.enabled
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
-        location  = new Tower.Net.Url(state.url)
-        request   = new Tower.Net.Request(url: state.url, location: location, params: Tower.Support.Object.extend(title: state.title, (state.data || {})))
-        response  = new Tower.Net.Response(url: state.url, location: location)
+        location  = new Tower.Dispatch.Url(state.url)
+        request   = new Tower.Dispatch.Request(url: state.url, location: location, params: Tower.Support.Object.extend(title: state.title, (state.data || {})))
+        response  = new Tower.Dispatch.Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response
+      #@History.Adapter.trigger global, "statechange"
     else
       _console.warn "History not enabled"
 

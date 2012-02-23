@@ -160,7 +160,7 @@ Tower.Support.Object =
     !!(object && object.test && object.exec && (object.ignoreCase || object.ignoreCase == false))
     
   isHash: (object) ->
-    @isObject(object) && !(@isFunction(object) || @isArray(object))
+    @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
     
   isArray: Array.isArray || (object) ->
     toString.call(object) == '[object Array]'

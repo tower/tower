@@ -22,7 +22,10 @@ Tower.Generator.Actions =
   get: (url, to) ->
     path  = @destinationPath(to)
     
-    rest.get(url).on 'complete', (data) =>
+    error = ->
+      console.log "Error downloading #{url}"
+    
+    rest.get(url).on('error', error).on 'complete', (data) =>
       @log "create", path
       File.write path, data
     

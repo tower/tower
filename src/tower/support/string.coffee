@@ -236,7 +236,7 @@ Tower.urlFor = ->
   result    = ""
   
   if options.controller && options.action
-    route   = Tower.Route.find(name: options.controller.replace(/(Controller)?$/, "Controller"), action: options.action)
+    route   = Tower.Route.find(name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
     if route
       result  = "/" + Tower.Support.String.parameterize(options.controller)
   else
@@ -245,8 +245,8 @@ Tower.urlFor = ->
       if typeof(item) == "string"
         result += item
       else if item instanceof Tower.Model
-        result += item.constructor.toParam() + "/" + item.toParam()
-      else if typeof(item) == "function"
+        result += item.toPath()
+      else if typeof(item) == "function" # need better, b/c i'm meaning constructor here
         result += item.toParam()
   
   result += switch options.action
@@ -255,6 +255,7 @@ Tower.urlFor = ->
     else
       ""
   
+  options.onlyPath = true unless options.hasOwnProperty("onlyPath")
   options.path = result
   
   Tower.Support.String.urlFor(options)

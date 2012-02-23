@@ -14,8 +14,8 @@ Tower.Controller.HTTP =
     #  @headers[key.dasherize.split('-').each { |v| v[0] = v[0].chr.upcase }.join('-')] = value.to_s
 
     @status       = status
-    @location     = urlFor(location) if location
-    @contentType  = Mime[formats.first] if formats
+    @location     = Tower.urlFor(location) if location
+    @headers["Content-Type"] = Mime[formats.first] if formats
     @body         = " "
     
 module.exports = Tower.Controller.HTTP
