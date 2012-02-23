@@ -41,13 +41,6 @@ class Tower.Model.Scope extends Tower.Class
     @criteria = options.criteria || new Tower.Model.Criteria
     @store    = @model.store()
   
-  for key in @scopes
-    do (key) =>
-      @::[key] = ->
-        clone = @clone()
-        clone.criteria[key](arguments...)
-        clone
-  
   find: ->
     {criteria, options, callback} = @_extractArgs(arguments, ids: true)
     {conditions, options} = criteria.toQuery()
@@ -231,5 +224,12 @@ class Tower.Model.Scope extends Tower.Class
       criteria.where id: $in: _.map(ids, (idOrRecord) -> if idOrRecord instanceof Tower.Model then idOrRecord.get("id") else idOrRecord)
     
     criteria: criteria, data: data, callback: callback, options: options
+    
+for key in Tower.Model.Scope.scopes
+  do (key) =>
+    Tower.Model.Scope::[key] = ->
+      clone = @clone()
+      clone.criteria[key](arguments...)
+      clone
 
 module.exports = Tower.Model.Scope

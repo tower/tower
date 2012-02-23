@@ -116,6 +116,7 @@ Tower.Generator.Resources =
     callback(user)
     user
   
+  # automatically parse this stuff out from ~/.gitconfig
   buildUserNew: (callback) ->
     configFile = process.env.HOME + "/.tower.json";
     

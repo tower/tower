@@ -9,6 +9,8 @@ File          = Pathfinder.File
 puts          = require('util').puts
 print         = require('util').print
 
+# Tower.module "Application.Assets"
+
 Tower.Application.Assets =
   loadManifest: ->
     try
@@ -137,7 +139,7 @@ Tower.Application.Assets =
     
     Tower.async paths, upload, (error) ->
       console.log(error) if error
-    
+      
       File.write(cachePath, JSON.stringify(assetCache, null, 2))
       
   stats: ->

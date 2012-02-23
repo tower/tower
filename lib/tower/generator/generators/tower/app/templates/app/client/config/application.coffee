@@ -1,3 +1,5 @@
+window.designer ||= new DesignIO("<%= project.name %>", port: 4181)
+
 class <%= project.className %> extends Tower.Application
   @configure ->
     @use Tower.Middleware.Agent

@@ -11,6 +11,7 @@ Tower.Support.Object.extend Tower,
   logger:     if typeof(_console) != 'undefined' then _console else console
   structure:  "standard"
   config:     {}
+  namespaces: {}
   
   sync: (method, records, callback) ->
     callback null, records if callback
@@ -59,6 +60,17 @@ Tower.Support.Object.extend Tower,
         
   namespace:  ->
     Tower.Application.instance().constructor.name
+    
+  module: (namespace) ->
+    node    = Tower.namespaces[namespace]
+    return node if node
+    parts   = namespace.split(".")
+    node    = Tower
+    
+    for part in parts
+      node  = node[part] ||= {}
+    
+    Tower.namespaces[namespace] = node
   
   constant: (string) ->
     node  = global
