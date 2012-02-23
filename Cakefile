@@ -1,15 +1,13 @@
 fs      = require 'fs'
 findit  = require './node_modules/findit'
 async   = require './node_modules/async'
-Shift   = require './node_modules/shift'
+mint    = require 'mint'
 gzip    = require 'gzip'
-engine  = new Shift.CoffeeScript
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
 require 'underscore.logger'
 
 #Tower   = require './lib/tower'
-compressor = new Shift.UglifyJS
 
 compileFile = (root, path, check) ->
   try
@@ -43,10 +41,10 @@ compileEach = (root, check, callback) ->
   result = compileDirectory root, check, callback
   
   #fs.writeFile "./dist/tower/#{root}.coffee", result
-  engine.render result, bare: false, (error, result) ->
+  mint.coffee result, bare: false, (error, result) ->
     fs.writeFile "./dist/tower/#{root}.js", result
     unless error
-      fs.writeFile "./dist/tower/#{root}.min.js", compressor.render(result)
+      fs.writeFile "./dist/tower/#{root}.min.js", mint.uglifyjs(result, {})
       
 obscurify = (content) ->
   replacements = {}
@@ -74,7 +72,7 @@ task 'to-underscore', ->
   
   result = obscurify(result)
   
-  engine.render result, (error, result) ->
+  mint.coffee result, {}, (error, result) ->
     return console.log(error) if error
     
     fs.writeFileSync(path, result)
@@ -129,14 +127,13 @@ window.Tower.logger = if this["_console"] then _console else console
                   result += code
                 
                   # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
-                  engine.render result, bare: false, (error, result) ->
+                  mint.coffee result, bare: false, (error, result) ->
                     _console.error error.stack if error
                     fs.writeFile "./dist/tower.js", result
                     unless error
-                      compressor = new Shift.UglifyJS
                       #result = obscurify(result)
                 
-                      compressor.render result, (error, result) ->
+                      mint.uglifyjs result, {}, (error, result) ->
                         fs.writeFileSync("./dist/tower.min.js", result)
                 
                         gzip result, (error, result) ->
@@ -145,7 +142,7 @@ window.Tower.logger = if this["_console"] then _console else console
                   
                           console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
                   
-                          fs.writeFile "./dist/tower.min.js.gz", compressor.render(result)
+                          fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
             
 task 'build-generic', ->
   paths   = findit.sync('./src')
@@ -165,12 +162,11 @@ task 'build-generic', ->
 
   async.forEachSeries paths, iterate, ->
     fs.writeFile './dist/tower.coffee', result
-    engine.render result, (error, result) ->
+    mint.coffee result, {}, (error, result) ->
       console.log error
       fs.writeFile './dist/tower.js', result
       unless error
-        compressor = new Shift.UglifyJS
-        fs.writeFile './dist/tower.min.js', compressor.render(result)
+        fs.writeFile './dist/tower.min.js', mint.uglifyjs(result, {})
         #compressor.render result, (error, result) ->
         #  console.log error
         #  fs.writeFile './dist/tower.min.js', result

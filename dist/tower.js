@@ -1,6 +1,10 @@
 (function() {
-  var Tower, key, module, specialProperties, _fn, _fn2, _fn3, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
-  var __slice = Array.prototype.slice, __hasProp = Object.prototype.hasOwnProperty, __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (__hasProp.call(this, i) && this[i] === item) return i; } return -1; }, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+  var Tower, key, module, specialProperties, _fn, _fn2, _fn3, _fn4, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4,
+    __slice = Array.prototype.slice,
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
+    _this = this;
 
   window.global || (window.global = window);
 
@@ -143,8 +147,8 @@
       }
     },
     _callback: function() {
-      var callbacks;
-      var _this = this;
+      var callbacks,
+        _this = this;
       callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return function(error) {
         var callback, _i, _len, _results;
@@ -176,8 +180,8 @@
     }
 
     Chain.prototype.run = function(binding, block) {
-      var runner;
-      var _this = this;
+      var runner,
+        _this = this;
       runner = function(callback, next) {
         return callback.run(binding, next);
       };
@@ -238,6 +242,17 @@
   specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods'];
 
   Tower.Class = (function() {
+
+    Class.global = function(value) {
+      if (value !== void 0) this._global = value;
+      if (this._global === void 0) this._global = true;
+      if (value === true) {
+        global[this.name] = this;
+      } else if (value === false) {
+        delete global[this.name];
+      }
+      return this._global;
+    };
 
     Class.alias = function(to, from) {
       return Tower.Support.Object.alias(this.prototype, to, from);
@@ -338,8 +353,6 @@
     return Class;
 
   })();
-
-  Tower.Support.DescendentsTracker = {};
 
   Tower.Support.EventEmitter = {
     isEventEmitter: true,
@@ -1036,6 +1049,8 @@
     return Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "-").replace(/^-+|-+$/g, '');
   };
 
+  Tower.Support.Url = {};
+
   Tower.Support.I18n.load({
     date: {
       formats: {
@@ -1048,7 +1063,10 @@
       monthNames: [null, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       abbrMonthNames: [null, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
       order: ["year", "month", "day"]
-    },
+    }
+  });
+
+  ({
     time: {
       formats: {
         "default": "%a, %d %b %Y %H:%M:%S %z",
@@ -1067,9 +1085,9 @@
     }
   });
 
-  Tower.Application = (function() {
+  Tower.Application = (function(_super) {
 
-    __extends(Application, Tower.Class);
+    __extends(Application, _super);
 
     Application.include(Tower.Support.Callbacks);
 
@@ -1256,11 +1274,11 @@
 
     return Application;
 
-  })();
+  })(Tower.Class);
 
   Tower.Support.Object.extend(Tower, {
     env: "development",
-    port: 1597,
+    port: 3000,
     version: "0.3.0",
     client: typeof window !== "undefined",
     root: "/",
@@ -1271,6 +1289,7 @@
     logger: typeof _console !== 'undefined' ? _console : console,
     structure: "standard",
     config: {},
+    namespaces: {},
     sync: function(method, records, callback) {
       if (callback) return callback(null, records);
     },
@@ -1334,6 +1353,18 @@
     namespace: function() {
       return Tower.Application.instance().constructor.name;
     },
+    module: function(namespace) {
+      var node, part, parts, _i, _len;
+      node = Tower.namespaces[namespace];
+      if (node) return node;
+      parts = namespace.split(".");
+      node = Tower;
+      for (_i = 0, _len = parts.length; _i < _len; _i++) {
+        part = parts[_i];
+        node = node[part] || (node[part] = {});
+      }
+      return Tower.namespaces[namespace] = node;
+    },
     constant: function(string) {
       var namespace, node, part, parts, _i, _len;
       node = global;
@@ -1388,9 +1419,9 @@
     }
   });
 
-  Tower.Store = (function() {
+  Tower.Store = (function(_super) {
 
-    __extends(Store, Tower.Class);
+    __extends(Store, _super);
 
     Store.defaultLimit = 100;
 
@@ -1534,13 +1565,13 @@
 
     return Store;
 
-  })();
+  })(Tower.Class);
 
   Tower.Store.include(Tower.Support.Callbacks);
 
-  Tower.Store.Memory = (function() {
+  Tower.Store.Memory = (function(_super) {
 
-    __extends(Memory, Tower.Store);
+    __extends(Memory, _super);
 
     Memory.stores = function() {
       return this._stores || (this._stores = []);
@@ -1570,7 +1601,7 @@
 
     return Memory;
 
-  })();
+  })(Tower.Store);
 
   Tower.Store.Memory.Finders = {
     find: function(conditions, options, callback) {
@@ -1596,8 +1627,8 @@
       return result;
     },
     findOne: function(conditions, options, callback) {
-      var record;
-      var _this = this;
+      var record,
+        _this = this;
       record = null;
       options.limit = 1;
       this.find(conditions, options, function(error, records) {
@@ -1607,8 +1638,8 @@
       return record;
     },
     count: function(conditions, options, callback) {
-      var result;
-      var _this = this;
+      var result,
+        _this = this;
       result = 0;
       this.find(conditions, options, function(error, records) {
         result = records.length;
@@ -1617,8 +1648,8 @@
       return result;
     },
     exists: function(conditions, options, callback) {
-      var result;
-      var _this = this;
+      var result,
+        _this = this;
       result = false;
       this.count(conditions, options, function(error, record) {
         result = !!record;
@@ -1661,9 +1692,9 @@
       return result;
     },
     createOne: function(record) {
-      var attributes, _ref;
+      var attributes;
       attributes = this.deserializeModel(record);
-      if ((_ref = attributes.id) == null) attributes.id = this.generateId();
+      if (attributes.id == null) attributes.id = this.generateId();
       return this.loadOne(this.serializeModel(record));
     },
     update: function(updates, query, options, callback) {
@@ -1902,9 +1933,9 @@
 
   Tower.Store.Memory.include(Tower.Store.Memory.Serialization);
 
-  Tower.Store.Local = (function() {
+  Tower.Store.Local = (function(_super) {
 
-    __extends(Local, Tower.Store.Memory);
+    __extends(Local, _super);
 
     function Local() {
       Local.__super__.constructor.apply(this, arguments);
@@ -1926,12 +1957,12 @@
 
     return Local;
 
-  })();
+  })(Tower.Store.Memory);
 
-  Tower.Store.Ajax = (function() {
+  Tower.Store.Ajax = (function(_super) {
     var sync;
 
-    __extends(Ajax, Tower.Store.Memory);
+    __extends(Ajax, _super);
 
     Ajax.requests = [];
 
@@ -2234,11 +2265,11 @@
 
     return Ajax;
 
-  })();
+  })(Tower.Store.Memory);
 
-  Tower.Model = (function() {
+  Tower.Model = (function(_super) {
 
-    __extends(Model, Tower.Class);
+    __extends(Model, _super);
 
     function Model(attrs, options) {
       var attributes, definition, definitions, key, name, value;
@@ -2265,19 +2296,17 @@
 
     return Model;
 
-  })();
+  })(Tower.Class);
 
-  Tower.Model.Scope = (function() {
-    var key, _fn, _i, _len, _ref;
-    var _this = this;
+  Tower.Model.Scope = (function(_super) {
 
-    __extends(Scope, Tower.Class);
+    __extends(Scope, _super);
 
     Scope.scopes = ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within", "allIn", "allOf", "alsoIn", "anyIn", "anyOf", "near", "notIn"];
 
     Scope.finders = ["find", "all", "first", "last", "count", "exists"];
 
-    Scope.builders = ["create", "update", "delete", "destroy"];
+    Scope.builders = ["create", "update", "destroy"];
 
     function Scope(options) {
       if (options == null) options = {};
@@ -2286,56 +2315,42 @@
       this.store = this.model.store();
     }
 
-    _ref = Scope.scopes;
-    _fn = function(key) {
-      return Scope.prototype[key] = function() {
-        var clone, _ref2;
-        clone = this.clone();
-        (_ref2 = clone.criteria)[key].apply(_ref2, arguments);
-        return clone;
-      };
-    };
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      key = _ref[_i];
-      _fn(key);
-    }
-
     Scope.prototype.find = function() {
-      var callback, conditions, criteria, options, _ref2, _ref3;
-      _ref2 = this._extractArgs(arguments, {
+      var callback, conditions, criteria, options, _ref, _ref2;
+      _ref = this._extractArgs(arguments, {
         ids: true
-      }), criteria = _ref2.criteria, options = _ref2.options, callback = _ref2.callback;
-      _ref3 = criteria.toQuery(), conditions = _ref3.conditions, options = _ref3.options;
+      }), criteria = _ref.criteria, options = _ref.options, callback = _ref.callback;
+      _ref2 = criteria.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
       return this._find(conditions, options, callback);
     };
 
     Scope.prototype.first = function(callback) {
-      var conditions, options, _ref2;
-      _ref2 = this.toQuery("asc"), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, options, _ref;
+      _ref = this.toQuery("asc"), conditions = _ref.conditions, options = _ref.options;
       return this.store.findOne(conditions, options, callback);
     };
 
     Scope.prototype.last = function(callback) {
-      var conditions, options, _ref2;
-      _ref2 = this.toQuery("desc"), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, options, _ref;
+      _ref = this.toQuery("desc"), conditions = _ref.conditions, options = _ref.options;
       return this.store.findOne(conditions, options, callback);
     };
 
     Scope.prototype.all = function(callback) {
-      var conditions, options, _ref2;
-      _ref2 = this.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, options, _ref;
+      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
       return this.store.find(conditions, options, callback);
     };
 
     Scope.prototype.count = function(callback) {
-      var conditions, options, _ref2;
-      _ref2 = this.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, options, _ref;
+      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
       return this.store.count(conditions, options, callback);
     };
 
     Scope.prototype.exists = function(callback) {
-      var conditions, options, _ref2;
-      _ref2 = this.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, options, _ref;
+      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
       return this.store.exists(conditions, options, callback);
     };
 
@@ -2348,35 +2363,35 @@
     Scope.prototype.transaction = function() {};
 
     Scope.prototype.build = function(attributes, options) {
-      var conditions, _ref2;
-      _ref2 = this.toCreate(), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, _ref;
+      _ref = this.toCreate(), conditions = _ref.conditions, options = _ref.options;
       return this._build(attributes, conditions, options);
     };
 
     Scope.prototype.create = function() {
-      var callback, criteria, data, options, _ref2;
-      _ref2 = this._extractArgs(arguments, {
+      var callback, criteria, data, options, _ref;
+      _ref = this._extractArgs(arguments, {
         data: true
-      }), criteria = _ref2.criteria, data = _ref2.data, options = _ref2.options, callback = _ref2.callback;
+      }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
       criteria.mergeOptions(options);
       return this._create(criteria, data, options, callback);
     };
 
     Scope.prototype.update = function() {
-      var callback, criteria, data, options, _ref2;
-      _ref2 = this._extractArgs(arguments, {
+      var callback, criteria, data, options, _ref;
+      _ref = this._extractArgs(arguments, {
         ids: true,
         data: true
-      }), criteria = _ref2.criteria, data = _ref2.data, options = _ref2.options, callback = _ref2.callback;
+      }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
       criteria.mergeOptions(options);
       return this._update(criteria, data, options, callback);
     };
 
     Scope.prototype.destroy = function() {
-      var callback, criteria, options, _ref2;
-      _ref2 = this._extractArgs(arguments, {
+      var callback, criteria, options, _ref;
+      _ref = this._extractArgs(arguments, {
         ids: true
-      }), criteria = _ref2.criteria, options = _ref2.options, callback = _ref2.callback;
+      }), criteria = _ref.criteria, options = _ref.options, callback = _ref.callback;
       criteria.mergeOptions(options);
       return this._destroy(criteria, options, callback);
     };
@@ -2425,11 +2440,11 @@
     };
 
     Scope.prototype._build = function(attributes, conditions, options) {
-      var object, result, _j, _len2;
+      var object, result, _i, _len;
       if (Tower.Support.Object.isArray(attributes)) {
         result = [];
-        for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
-          object = attributes[_j];
+        for (_i = 0, _len = attributes.length; _i < _len; _i++) {
+          object = attributes[_i];
           result.push(this.store.serializeModel(Tower.Support.Object.extend({}, conditions, object)));
         }
         return result;
@@ -2439,8 +2454,8 @@
     };
 
     Scope.prototype._create = function(criteria, data, opts, callback) {
-      var isArray, iterator, records;
-      var _this = this;
+      var isArray, iterator, records,
+        _this = this;
       if (opts.instantiate) {
         isArray = Tower.Support.Object.isArray(data);
         records = Tower.Support.Object.toArray(this.build(data));
@@ -2469,8 +2484,8 @@
     };
 
     Scope.prototype._update = function(criteria, data, opts, callback) {
-      var conditions, iterator, options, _ref2;
-      _ref2 = criteria.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, iterator, options, _ref;
+      _ref = criteria.toQuery(), conditions = _ref.conditions, options = _ref.options;
       if (opts.instantiate) {
         iterator = function(record, next) {
           return record.updateAttributes(data, next);
@@ -2482,8 +2497,8 @@
     };
 
     Scope.prototype._destroy = function(criteria, opts, callback) {
-      var conditions, iterator, options, _ref2;
-      _ref2 = criteria.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
+      var conditions, iterator, options, _ref;
+      _ref = criteria.toQuery(), conditions = _ref.conditions, options = _ref.options;
       if (opts.instantiate) {
         iterator = function(record, next) {
           return record.destroy(next);
@@ -2557,7 +2572,21 @@
 
     return Scope;
 
-  }).call(this);
+  })(Tower.Class);
+
+  _ref = Tower.Model.Scope.scopes;
+  _fn = function(key) {
+    return Tower.Model.Scope.prototype[key] = function() {
+      var clone, _ref2;
+      clone = this.clone();
+      (_ref2 = clone.criteria)[key].apply(_ref2, arguments);
+      return clone;
+    };
+  };
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    key = _ref[_i];
+    _fn(key);
+  }
 
   Tower.Model.Criteria = (function() {
 
@@ -2587,22 +2616,22 @@
     };
 
     Criteria.prototype.asc = function() {
-      var attribute, attributes, _i, _len, _results;
+      var attribute, attributes, _j, _len2, _results;
       attributes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       _results = [];
-      for (_i = 0, _len = attributes.length; _i < _len; _i++) {
-        attribute = attributes[_i];
+      for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+        attribute = attributes[_j];
         _results.push(this.order(attribute));
       }
       return _results;
     };
 
     Criteria.prototype.desc = function() {
-      var attribute, attributes, _i, _len, _results;
+      var attribute, attributes, _j, _len2, _results;
       attributes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       _results = [];
-      for (_i = 0, _len = attributes.length; _i < _len; _i++) {
-        attribute = attributes[_i];
+      for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+        attribute = attributes[_j];
         _results.push(this.order(attribute, "desc"));
       }
       return _results;
@@ -2682,11 +2711,11 @@
     };
 
     Criteria.prototype.conditions = function() {
-      var conditions, result, _i, _len, _ref;
+      var conditions, result, _j, _len2, _ref2;
       result = {};
-      _ref = this._where;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        conditions = _ref[_i];
+      _ref2 = this._where;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        conditions = _ref2[_j];
         Tower.Support.Object.deepMergeWithArrays(result, conditions);
       }
       return result;
@@ -2715,12 +2744,12 @@
     };
 
     Criteria.prototype.toCreate = function() {
-      var attributes, conditions, key, options, value, _i, _key, _len, _ref, _value;
+      var attributes, conditions, key, options, value, _j, _key, _len2, _ref2, _value;
       attributes = {};
       options = {};
-      _ref = this._where;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        conditions = _ref[_i];
+      _ref2 = this._where;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        conditions = _ref2[_j];
         for (key in conditions) {
           value = conditions[key];
           if (Tower.Store.isKeyword(key)) {
@@ -2789,14 +2818,19 @@
       if (!change) return;
       return change[0];
     },
-    resetAttribute: function(name) {},
+    resetAttribute: function(name) {
+      var array;
+      array = this.changes[name];
+      if (array) this.set(name, array[0]);
+      return this;
+    },
     toUpdates: function() {
-      var array, attributes, key, result, _ref;
+      var array, attributes, key, result, _ref2;
       result = {};
       attributes = this.attributes;
-      _ref = this.changes;
-      for (key in _ref) {
-        array = _ref[key];
+      _ref2 = this.changes;
+      for (key in _ref2) {
+        array = _ref2[key];
         result[key] = attributes[key];
       }
       result.updatedAt || (result.updatedAt = new Date);
@@ -2827,6 +2861,7 @@
         }
       },
       toParam: function() {
+        if (this === Tower.Model) return;
         return Tower.Support.String.pluralize(Tower.Support.String.parameterize(this.name));
       },
       toKey: function() {
@@ -2853,13 +2888,15 @@
     toPath: function() {
       var param, result;
       result = this.constructor.toParam();
+      if (result === void 0) return "/";
       param = this.toParam();
-      if (param) return result += "/" + param;
+      if (param) result += "/" + param;
+      return result;
     },
     toParam: function() {
       var id;
       id = this.get("id");
-      if (id) {
+      if (id != null) {
         return String(id);
       } else {
         return null;
@@ -2874,9 +2911,9 @@
     _computeType: function() {}
   };
 
-  Tower.Model.Relation = (function() {
+  Tower.Model.Relation = (function(_super) {
 
-    __extends(Relation, Tower.Class);
+    __extends(Relation, _super);
 
     function Relation(owner, name, options, callback) {
       var key, value;
@@ -2971,9 +3008,9 @@
       return null;
     };
 
-    Relation.Scope = (function() {
+    Relation.Scope = (function(_super2) {
 
-      __extends(Scope, Tower.Model.Scope);
+      __extends(Scope, _super2);
 
       Scope.prototype.isConstructable = function() {
         return !!!this.relation.polymorphic;
@@ -3011,15 +3048,15 @@
 
       return Scope;
 
-    })();
+    })(Tower.Model.Scope);
 
     return Relation;
 
-  })();
+  })(Tower.Class);
 
-  Tower.Model.Relation.BelongsTo = (function() {
+  Tower.Model.Relation.BelongsTo = (function(_super) {
 
-    __extends(BelongsTo, Tower.Model.Relation);
+    __extends(BelongsTo, _super);
 
     function BelongsTo(owner, name, options) {
       var self;
@@ -3047,9 +3084,9 @@
       };
     }
 
-    BelongsTo.Scope = (function() {
+    BelongsTo.Scope = (function(_super2) {
 
-      __extends(Scope, BelongsTo.Scope);
+      __extends(Scope, _super2);
 
       function Scope() {
         Scope.__super__.constructor.apply(this, arguments);
@@ -3057,39 +3094,39 @@
 
       return Scope;
 
-    })();
+    })(BelongsTo.Scope);
 
     return BelongsTo;
 
-  })();
+  })(Tower.Model.Relation);
 
-  Tower.Model.Relation.HasMany = (function() {
+  Tower.Model.Relation.HasMany = (function(_super) {
 
-    __extends(HasMany, Tower.Model.Relation);
+    __extends(HasMany, _super);
 
     function HasMany() {
       HasMany.__super__.constructor.apply(this, arguments);
     }
 
-    HasMany.Scope = (function() {
+    HasMany.Scope = (function(_super2) {
 
-      __extends(Scope, HasMany.Scope);
+      __extends(Scope, _super2);
 
       function Scope() {
         Scope.__super__.constructor.apply(this, arguments);
       }
 
       Scope.prototype.create = function() {
-        var array, attributes, callback, criteria, data, defaults, id, instantiate, inverseRelation, options, relation, _name, _ref, _ref2;
-        var _this = this;
+        var array, attributes, callback, criteria, data, defaults, id, instantiate, inverseRelation, options, relation, _name, _ref2, _ref3,
+          _this = this;
         if (!this.owner.isPersisted()) {
           throw new Error("You cannot call create unless the parent is saved");
         }
         relation = this.relation;
         inverseRelation = relation.inverse();
-        _ref = this._extractArgs(arguments, {
+        _ref2 = this._extractArgs(arguments, {
           data: true
-        }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
+        }), criteria = _ref2.criteria, data = _ref2.data, options = _ref2.options, callback = _ref2.callback;
         id = this.owner.get("id");
         if (inverseRelation && inverseRelation.cache) {
           array = data[inverseRelation.cacheKey] || [];
@@ -3109,7 +3146,7 @@
           criteria.where(defaults);
         }
         instantiate = options.instantiate !== false;
-        _ref2 = criteria.toCreate(), attributes = _ref2.attributes, options = _ref2.options;
+        _ref3 = criteria.toCreate(), attributes = _ref3.attributes, options = _ref3.options;
         options.instantiate = true;
         return this._create(criteria, attributes, options, function(error, record) {
           var inc, push, updates;
@@ -3143,12 +3180,12 @@
       Scope.prototype.concat = function() {};
 
       Scope.prototype._serializeAttributes = function(attributes) {
-        var name, relation, target, value, _ref;
+        var name, relation, target, value, _ref2;
         if (attributes == null) attributes = {};
         target = Tower.constant(this.relation.targetClassName);
-        _ref = target.relations();
-        for (name in _ref) {
-          relation = _ref[name];
+        _ref2 = target.relations();
+        for (name in _ref2) {
+          relation = _ref2[name];
           if (attributes.hasOwnProperty(name)) {
             value = attributes[name];
             delete attributes[name];
@@ -3179,15 +3216,15 @@
 
       return Scope;
 
-    })();
+    })(HasMany.Scope);
 
     return HasMany;
 
-  })();
+  })(Tower.Model.Relation);
 
-  Tower.Model.Relation.HasOne = (function() {
+  Tower.Model.Relation.HasOne = (function(_super) {
 
-    __extends(HasOne, Tower.Model.Relation);
+    __extends(HasOne, _super);
 
     function HasOne() {
       HasOne.__super__.constructor.apply(this, arguments);
@@ -3195,7 +3232,7 @@
 
     return HasOne;
 
-  })();
+  })(Tower.Model.Relation);
 
   Tower.Model.Relations = {
     ClassMethods: {
@@ -3239,7 +3276,6 @@
   Tower.Model.Field = (function() {
 
     function Field(owner, name, options) {
-      var key;
       if (options == null) options = {};
       this.owner = owner;
       this.name = key = name;
@@ -3341,6 +3377,7 @@
       var key, value;
       for (key in attributes) {
         value = attributes[key];
+        delete this.changes[key];
         this.attributes[key] = value;
       }
       return this;
@@ -3529,19 +3566,7 @@
     }
   };
 
-  _ref = Tower.Model.Scope.scopes;
-  _fn = function(key) {
-    return Tower.Model.Scopes.ClassMethods[key] = function() {
-      var _ref2;
-      return (_ref2 = this.scoped())[key].apply(_ref2, arguments);
-    };
-  };
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    key = _ref[_i];
-    _fn(key);
-  }
-
-  _ref2 = Tower.Model.Scope.finders;
+  _ref2 = Tower.Model.Scope.scopes;
   _fn2 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref3;
@@ -3553,7 +3578,7 @@
     _fn2(key);
   }
 
-  _ref3 = Tower.Model.Scope.builders;
+  _ref3 = Tower.Model.Scope.finders;
   _fn3 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref4;
@@ -3565,24 +3590,36 @@
     _fn3(key);
   }
 
+  _ref4 = Tower.Model.Scope.builders;
+  _fn4 = function(key) {
+    return Tower.Model.Scopes.ClassMethods[key] = function() {
+      var _ref5;
+      return (_ref5 = this.scoped())[key].apply(_ref5, arguments);
+    };
+  };
+  for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+    key = _ref4[_l];
+    _fn4(key);
+  }
+
   Tower.Model.Serialization = {
     ClassMethods: {
       fromJSON: function(data) {
-        var i, record, records, _len4;
+        var i, record, records, _len5;
         records = JSON.parse(data);
         if (!(records instanceof Array)) records = [records];
-        for (i = 0, _len4 = records.length; i < _len4; i++) {
+        for (i = 0, _len5 = records.length; i < _len5; i++) {
           record = records[i];
           records[i] = new this(record);
         }
         return records;
       },
       toJSON: function(records, options) {
-        var record, result, _l, _len4;
+        var record, result, _len5, _m;
         if (options == null) options = {};
         result = [];
-        for (_l = 0, _len4 = records.length; _l < _len4; _l++) {
-          record = records[_l];
+        for (_m = 0, _len5 = records.length; _m < _len5; _m++) {
+          record = records[_m];
           result.push(record.toJSON());
         }
         return result;
@@ -3595,7 +3632,7 @@
       return new this.constructor(Tower.Support.Object.clone(this.attributes));
     },
     _serializableHash: function(options) {
-      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _l, _len4, _len5, _len6, _len7, _m, _n;
+      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _len5, _len6, _len7, _len8, _m, _n, _o;
       if (options == null) options = {};
       result = {};
       attributeNames = Tower.Support.Object.keys(this.attributes);
@@ -3604,21 +3641,21 @@
       } else if (except = options.except) {
         attributeNames = _.difference(Tower.Support.Object.toArray(except), attributeNames);
       }
-      for (_l = 0, _len4 = attributeNames.length; _l < _len4; _l++) {
-        name = attributeNames[_l];
+      for (_m = 0, _len5 = attributeNames.length; _m < _len5; _m++) {
+        name = attributeNames[_m];
         result[name] = this._readAttributeForSerialization(name);
       }
       if (methods = options.methods) {
         methodNames = Tower.Support.Object.toArray(methods);
-        for (_m = 0, _len5 = methods.length; _m < _len5; _m++) {
-          name = methods[_m];
+        for (_n = 0, _len6 = methods.length; _n < _len6; _n++) {
+          name = methods[_n];
           result[name] = this[name]();
         }
       }
       if (includes = options.include) {
         includes = Tower.Support.Object.toArray(includes);
-        for (_n = 0, _len6 = includes.length; _n < _len6; _n++) {
-          include = includes[_n];
+        for (_o = 0, _len7 = includes.length; _o < _len7; _o++) {
+          include = includes[_o];
           if (!Tower.Support.Object.isHash(include)) {
             tmp = {};
             tmp[include] = {};
@@ -3628,7 +3665,7 @@
           for (name in include) {
             opts = include[name];
             records = this[name]().all();
-            for (i = 0, _len7 = records.length; i < _len7; i++) {
+            for (i = 0, _len8 = records.length; i < _len8; i++) {
               record = records[i];
               records[i] = record._serializableHash(opts);
             }
@@ -3667,8 +3704,8 @@
     }
 
     Validator.prototype.validateEach = function(record, errors, callback) {
-      var iterator;
-      var _this = this;
+      var iterator,
+        _this = this;
       iterator = function(attribute, next) {
         return _this.validate(record, attribute, errors, function(error) {
           return next();
@@ -3719,9 +3756,9 @@
 
   })();
 
-  Tower.Model.Validator.Length = (function() {
+  Tower.Model.Validator.Length = (function(_super) {
 
-    __extends(Length, Tower.Model.Validator);
+    __extends(Length, _super);
 
     function Length(name, value, attributes) {
       Length.__super__.constructor.apply(this, arguments);
@@ -3775,11 +3812,11 @@
 
     return Length;
 
-  })();
+  })(Tower.Model.Validator);
 
-  Tower.Model.Validator.Presence = (function() {
+  Tower.Model.Validator.Presence = (function(_super) {
 
-    __extends(Presence, Tower.Model.Validator);
+    __extends(Presence, _super);
 
     function Presence() {
       Presence.__super__.constructor.apply(this, arguments);
@@ -3796,19 +3833,19 @@
 
     return Presence;
 
-  })();
+  })(Tower.Model.Validator);
 
-  Tower.Model.Validator.Uniqueness = (function() {
+  Tower.Model.Validator.Uniqueness = (function(_super) {
 
-    __extends(Uniqueness, Tower.Model.Validator);
+    __extends(Uniqueness, _super);
 
     function Uniqueness() {
       Uniqueness.__super__.constructor.apply(this, arguments);
     }
 
     Uniqueness.prototype.validate = function(record, attribute, errors, callback) {
-      var conditions, value;
-      var _this = this;
+      var conditions, value,
+        _this = this;
       value = record.get(attribute);
       conditions = {};
       conditions[attribute] = value;
@@ -3826,7 +3863,7 @@
 
     return Uniqueness;
 
-  })();
+  })(Tower.Model.Validator);
 
   Tower.Model.Validations = {
     ClassMethods: {
@@ -3954,9 +3991,9 @@
 
   Tower.Model.include(Tower.Model.Timestamp);
 
-  Tower.View = (function() {
+  Tower.View = (function(_super) {
 
-    __extends(View, Tower.Class);
+    __extends(View, _super);
 
     View.extend({
       cache: {},
@@ -4034,6 +4071,7 @@
       localizeWithNestedModel: false,
       localizeWithInheritance: true,
       defaultComponentHeaderLevel: 3,
+      helpers: [],
       metaTags: ["description", "keywords", "author", "copyright", "category", "robots"],
       store: function(store) {
         if (store) this._store = store;
@@ -4050,7 +4088,7 @@
 
     return View;
 
-  })();
+  })(Tower.Class);
 
   Tower.View.Helpers = {
     titleTag: function(title) {
@@ -4129,7 +4167,7 @@
       }
     },
     _renderString: function(string, options, callback) {
-      var e, engine, locals, result;
+      var e, engine, hardcode, helper, locals, result, _len5, _m, _ref5;
       if (options == null) options = {};
       if (!!options.type.match(/coffee/)) {
         e = null;
@@ -4137,11 +4175,19 @@
         try {
           locals = options.locals;
           locals.renderWithEngine = this.renderWithEngine;
+          locals._readTemplate = this._readTemplate;
           locals.cache = Tower.env !== "development";
           locals.format = true;
-          locals.hardcode = _.extend({}, Tower.View.ComponentHelper, Tower.View.AssetHelper, Tower.View.HeadHelper, Tower.View.RenderingHelper, Tower.View.StringHelper, {
-            tags: require('coffeekup').tags
+          hardcode = {};
+          _ref5 = Tower.View.helpers;
+          for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+            helper = _ref5[_m];
+            hardcode = _.extend(hardcode, helper);
+          }
+          hardcode = _.extend(hardcode, {
+            tags: require("coffeekup").tags
           });
+          locals.hardcode = hardcode;
           locals._ = _;
           result = require('coffeekup').render(string, locals);
         } catch (error) {
@@ -4149,21 +4195,21 @@
         }
         return callback(e, result);
       } else if (options.type) {
-        engine = require("shift").engine(options.type);
-        return engine.render(string, options.locals, callback);
+        engine = require("mint").engine(options.type);
+        return mint[engine](string, options.locals, callback);
       } else {
-        engine = require("shift");
+        engine = require("mint");
         options.locals.string = string;
         return engine.render(options.locals, callback);
       }
     },
     _renderingContext: function(options) {
-      var key, locals, value, _ref4;
+      var key, locals, value;
       locals = this;
-      _ref4 = this._context;
-      for (key in _ref4) {
-        value = _ref4[key];
-        if (!key.match(/^(constructor)/)) this[key] = value;
+      _ref = this._context;
+      for (key in _ref) {
+        value = _ref[key];
+        if (!key.match(/^(constructor|head)/)) locals[key] = value;
       }
       locals = Tower.Support.Object.extend(locals, options.locals);
       if (this.constructor.prettyPrint) locals.pretty = true;
@@ -4181,7 +4227,9 @@
       return result;
     },
     renderWithEngine: function(template, engine) {
-      return require("shift").engine(engine || "coffee").render(template);
+      var mint;
+      mint = require("mint");
+      return mint[mint.engine(engine || "coffee")](template, {});
     }
   };
 
@@ -4192,7 +4240,10 @@
       args = Tower.Support.Array.args(arguments);
       template = args.shift();
       block = Tower.Support.Array.extractBlock(args);
-      options = Tower.Support.Array.extractOptions(args);
+      if (!(args[args.length - 1] instanceof Tower.Model || typeof args[args.length - 1] !== "object")) {
+        options = args.pop();
+      }
+      options || (options = {});
       options.template = template;
       return (new this(args, options)).render(block);
     };
@@ -4211,13 +4262,24 @@
       return this.template.tag(key, args);
     };
 
+    Component.prototype.addClass = function(string, args) {
+      var arg, result, _len5, _m;
+      result = string ? string.split(/\s+/g) : [];
+      for (_m = 0, _len5 = args.length; _m < _len5; _m++) {
+        arg = args[_m];
+        if (!arg) continue;
+        if (!(result.indexOf(arg) > -1)) result.push(arg);
+      }
+      return result.join(" ");
+    };
+
     return Component;
 
   })();
 
-  Tower.View.Table = (function() {
+  Tower.View.Table = (function(_super) {
 
-    __extends(Table, Tower.View.Component);
+    __extends(Table, _super);
 
     function Table(args, options) {
       var aria, data, recordOrKey;
@@ -4230,6 +4292,7 @@
       this.headers = [];
       options.summary || (options.summary = "Table for " + (_.titleize(this.key)));
       options.role = "grid";
+      options["class"] = this.addClass(options["class"] || "", ["table"]);
       data = options.data || (options.data = {});
       if (options.hasOwnProperty("total")) data.total = options.total;
       if (options.hasOwnProperty("page")) data.page = options.page;
@@ -4240,12 +4303,19 @@
         aria["aria-multiselectable"] = false;
       }
       options.id || (options.id = "" + recordOrKey + "-table");
-      this.options = options;
+      this.options = {
+        summary: options.summary,
+        role: options.role,
+        data: options.data,
+        "class": options["class"]
+      };
     }
 
     Table.prototype.render = function(block) {
-      return table(this.options, function() {
-        return block(this);
+      var _this = this;
+      return this.tag("table", this.options, function() {
+        if (block) block(_this);
+        return null;
       });
     };
 
@@ -4315,32 +4385,29 @@
     Table.prototype._section = function(scope, attributes, block) {
       this.rowIndex = 0;
       this.scope = scope;
-      tag("t" + scope, attributes, block);
+      this.tag("t" + scope, attributes, block);
       this.rowIndex = 0;
       return this.scope = "table";
     };
 
     Table.prototype.row = function() {
-      var args, attributes, block, _l;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _l = arguments.length - 1) : (_l = 0, []), block = arguments[_l++];
+      var args, attributes, block, _m;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _m = arguments.length - 1) : (_m = 0, []), block = arguments[_m++];
       attributes = Tower.Support.Array.extractOptions(args);
       attributes.scope = "row";
-      if (this.scope === "body") {
-        attributes["class"] = [template.cycle("odd", "even"), attributes["class"]].compact.uniq.join(" ");
-        attributes.role = "row";
-      }
+      if (this.scope === "body") attributes.role = "row";
       this.rowIndex += 1;
       this.cellIndex = 0;
-      tag("tr", attributes, block);
+      this.tag("tr", attributes, block);
       return this.cellIndex = 0;
     };
 
     Table.prototype.column = function() {
-      var args, attributes, block, value, _base, _l;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _l = arguments.length - 1) : (_l = 0, []), block = arguments[_l++];
+      var args, attributes, block, value, _base, _m;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _m = arguments.length - 1) : (_m = 0, []), block = arguments[_m++];
       attributes = Tower.Support.Array.extractOptions(args);
       value = args.shift();
-      if (typeof (_base = config.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
+      if (typeof (_base = Tower.View.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
         attributes.id || (attributes.id = this.idFor("header", key, value, this.rowIndex, this.cellIndex));
       }
       if (attributes.hasOwnProperty("width")) {
@@ -4355,13 +4422,15 @@
     };
 
     Table.prototype.header = function() {
-      var args, attributes, block, direction, label, sort, value, _base, _l;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _l = arguments.length - 1) : (_l = 0, []), block = arguments[_l++];
+      var args, attributes, block, direction, label, sort, value, _base,
+        _this = this;
+      args = Tower.Support.Array.args(arguments);
+      block = Tower.Support.Array.extractBlock(args);
       attributes = Tower.Support.Array.extractOptions(args);
       value = args.shift();
       attributes.abbr || (attributes.abbr = value);
       attributes.role = "columnheader";
-      if (typeof (_base = config.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
+      if (typeof (_base = Tower.View.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
         attributes.id || (attributes.id = this.idFor("header", key, value, this.rowIndex, this.cellIndex));
       }
       attributes.scope = "col";
@@ -4379,8 +4448,8 @@
       sort = attributes.sort === true;
       delete attributes.sort;
       if (sort) {
-        attributes["class"] = [attributes["class"], attributes.sortClass || "sortable"].compact.uniq.join(" ");
-        attributes.direction || (attributes.direction = template.sortClass(value));
+        attributes["class"] = this.addClass(attributes["class"] || "", [attributes.sortClass || "sortable"]);
+        attributes.direction || (attributes.direction = "asc");
       }
       delete attributes.sortClass;
       label = attributes.label || _.titleize(value.toString());
@@ -4397,28 +4466,39 @@
       }
       this.headers.push(attributes.id);
       if (block) {
-        tag("th", attributes, block);
+        this.tag("th", attributes, block);
       } else {
         if (sort) {
-          tag("th", attributes(function() {
-            return linkToSort(label, value);
-          }));
+          this.tag("th", attributes, function() {
+            return _this.linkToSort(label, value);
+          });
         } else {
-          tag("th", attributes(function() {
-            return tag("span", label);
-          }));
+          this.tag("th", attributes, function() {
+            return _this.tag("span", label);
+          });
         }
       }
       return this.cellIndex += 1;
     };
 
+    Table.prototype.linkToSort = function(label, value) {
+      var direction,
+        _this = this;
+      direction = "asc";
+      return this.tag("a", {
+        href: "?sort=" + direction
+      }, function() {
+        return _this.tag("span", label);
+      });
+    };
+
     Table.prototype.cell = function() {
-      var args, attributes, block, value, _base, _l;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _l = arguments.length - 1) : (_l = 0, []), block = arguments[_l++];
+      var args, attributes, block, value, _base, _m;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _m = arguments.length - 1) : (_m = 0, []), block = arguments[_m++];
       attributes = Tower.Support.Array.extractOptions(args);
       value = args.shift();
       attributes.role = "gridcell";
-      if (typeof (_base = config.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
+      if (typeof (_base = Tower.View.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
         attributes.id || (attributes.id = this.idFor("cell", key, value, this.rowIndex, this.cellIndex));
       }
       attributes.headers = this.headers[this.cellIndex];
@@ -4429,9 +4509,9 @@
         attributes.height = this.pixelate(attributes.height);
       }
       if (block) {
-        tag("td", attributes, block);
+        this.tag("td", attributes, block);
       } else {
-        tag("td", value, attributes);
+        this.tag("td", value, attributes);
       }
       return this.cellIndex += 1;
     };
@@ -4463,16 +4543,16 @@
 
     return Table;
 
-  })();
+  })(Tower.View.Component);
 
-  Tower.View.Form = (function() {
+  Tower.View.Form = (function(_super) {
 
-    __extends(Form, Tower.View.Component);
+    __extends(Form, _super);
 
     function Form(args, options) {
       var klass;
       Form.__super__.constructor.apply(this, arguments);
-      this.model = args.shift();
+      this.model = args.shift() || new Tower.Model;
       if (typeof this.model === "string") {
         klass = Tower.constant(Tower.Support.String.camelize(this.model));
         this.model = klass ? new klass : null;
@@ -4532,18 +4612,459 @@
 
     return Form;
 
-  })();
+  })(Tower.View.Component);
+
+  Tower.View.Form.Builder = (function(_super) {
+
+    __extends(Builder, _super);
+
+    function Builder(args, options) {
+      if (options == null) options = {};
+      this.template = options.template;
+      this.model = options.model;
+      this.attribute = options.attribute;
+      this.parentIndex = options.parentIndex;
+      this.index = options.index;
+      this.tabindex = options.tabindex;
+      this.accessKeys = options.accessKeys;
+    }
+
+    Builder.prototype.defaultOptions = function(options) {
+      if (options == null) options = {};
+      options.model || (options.model = this.model);
+      options.index || (options.index = this.index);
+      options.attribute || (options.attribute = this.attribute);
+      options.template || (options.template = this.template);
+      return options;
+    };
+
+    Builder.prototype.fieldset = function() {
+      var args, block, options;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      block = args.pop();
+      options = this.defaultOptions(Tower.Support.Array.extractOptions(args));
+      options.label || (options.label = args.shift());
+      return new Tower.View.Form.Fieldset([], options).render(block);
+    };
+
+    Builder.prototype.fields = function() {
+      var attrName, options;
+      options = args.extractOptions;
+      options.as = "fields";
+      options.label || (options.label = false);
+      attrName = args.shift() || attribute.name;
+      return template.captureHaml(function() {
+        var result;
+        result = field(attrName, options(function(_field) {
+          return template.hamlConcat(fieldset(block).gsub(/\n$/, ""));
+        }));
+        return template.hamlConcat(result.gsub(/\n$/, ""));
+      });
+    };
+
+    Builder.prototype.fieldsFor = function() {
+      var attrName, attribute, index, keys, macro, options, subObject, subParent;
+      options = args.extractOptions;
+      attribute = args.shift;
+      macro = model.macroFor(attribute);
+      attrName = nil;
+      if (options.as === "object") {
+        attrName = attribute.toS;
+      } else {
+        attrName = Tower.View.renameNestedAttributes ? "" + attribute + "_attributes" : attribute.toS;
+      }
+      subParent = model.object;
+      subObject = args.shift;
+      index = options["delete"]("index");
+      if (!((index.present != null) && typeof index === "string")) {
+        if ((subObject.blank != null) && (index.present != null)) {
+          subObject = subParent.send(attribute)[index];
+        } else if ((index.blank != null) && (subObject.present != null) && macro === "hasMany") {
+          index = subParent.send(attribute).index(subObject);
+        }
+      }
+      subObject || (subObject = model["default"](attribute) || model.toS.camelize.constantize["new"]);
+      keys = [model.keys, attrName];
+      options.merge({
+        template: template,
+        model: model,
+        parentIndex: index,
+        accessKeys: accessKeys,
+        tabindex: tabindex
+      });
+      return new Tower.View.Form.Builder(options).render(block);
+    };
+
+    Builder.prototype.field = function() {
+      var args, attributeName, block, defaults, options;
+      args = Tower.Support.Array.args(arguments);
+      block = Tower.Support.Array.extractBlock(args);
+      options = Tower.Support.Array.extractOptions(args);
+      attributeName = args.shift() || "attribute.name";
+      defaults = {
+        template: this.template,
+        model: this.model,
+        attribute: attributeName,
+        parentIndex: this.parentIndex,
+        index: this.index,
+        fieldHTML: options.fieldHTML || {},
+        inputHTML: options.inputHTML || {},
+        labelHTML: options.labelHTML || {},
+        errorHTML: options.errorHTML || {},
+        hintHtml: options.hintHtml || {}
+      };
+      return new Tower.View.Form.Field([], _.extend(defaults, options)).render(block);
+    };
+
+    Builder.prototype.button = function() {
+      var options;
+      options = args.extractOptions;
+      options.reverseMerge({
+        as: "submit"
+      });
+      options.value = args.shift || "Submit";
+      return field(options.value, options, block);
+    };
+
+    Builder.prototype.submit = function() {
+      return template.captureHaml(function() {
+        var result;
+        result = fieldset({
+          "class": Tower.View.submitFieldsetClass(function(fields) {
+            template.hamlConcat(fields.button.apply(fields, args).gsub(/\n$/, ""));
+            if (block) return yield(fields);
+          })
+        });
+        return template.hamlConcat(result.gsub(/\n$/, ""));
+      });
+    };
+
+    Builder.prototype.partial = function(path, options) {
+      if (options == null) options = {};
+      return this.template.render({
+        partial: path,
+        locals: options.merge({
+          fields: self
+        })
+      });
+    };
+
+    Builder.prototype.tag = function() {
+      var args, key;
+      key = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      return this.template.tag(key, args);
+    };
+
+    Builder.prototype.render = function(block) {
+      return block(this);
+    };
+
+    return Builder;
+
+  })(Tower.View.Component);
+
+  Tower.View.Form.Field = (function(_super) {
+
+    __extends(Field, _super);
+
+    Field.prototype.addClass = function(string, args) {
+      var arg, result, _len5, _m;
+      result = string ? string.split(/\s+/g) : [];
+      for (_m = 0, _len5 = args.length; _m < _len5; _m++) {
+        arg = args[_m];
+        if (!arg) continue;
+        if (!(result.indexOf(arg) > -1)) result.push(arg);
+      }
+      return result.join(" ");
+    };
+
+    Field.prototype.toId = function(options) {
+      var result;
+      if (options == null) options = {};
+      result = Tower.Support.String.parameterize(this.model.constructor.name);
+      if (options.parentIndex) result += "-" + options.parentIndex;
+      result += "-" + this.attribute;
+      result += "-" + (options.type || "field");
+      if (this.index != null) result += "-" + this.index;
+      return result;
+    };
+
+    Field.prototype.toParam = function(options) {
+      var result;
+      if (options == null) options = {};
+      result = Tower.Support.String.parameterize(this.model.constructor.name);
+      if (options.parentIndex) result += "[" + options.parentIndex + "]";
+      result += "[" + this.attribute + "]";
+      if (this.index != null) result += "[" + this.index + "]";
+      return result;
+    };
+
+    function Field(args, options) {
+      var classes, field, inputType, pattern, _base, _base2, _base3, _base4, _base5, _base6;
+      this.labelValue = options.label;
+      delete options.label;
+      Field.__super__.constructor.call(this, args, options);
+      this.required || (this.required = false);
+      field = this.model.constructor.fields()[this.attribute];
+      options.as || (options.as = field ? Tower.Support.String.camelize(field.type, true) : "string");
+      this.inputType = inputType = options.as;
+      this.required = field.required === true;
+      classes = [Tower.View.fieldClass, inputType];
+      if (!(["submit", "fieldset"].indexOf(inputType) > -1)) {
+        classes.push(field.required ? Tower.View.requiredClass : Tower.View.optionalClass);
+        classes.push(field.errors ? Tower.View.errorClass : Tower.View.validClass);
+        if (options.validate !== false && field.validations) {
+          classes.push(Tower.View.validateClass);
+        }
+      }
+      this.fieldHTML["class"] = this.addClass(this.fieldHTML["class"], classes);
+      if (!this.fieldHTML.id && Tower.View.idEnabledOn.indexOf("field") > -1) {
+        this.fieldHTML.id = this.toId({
+          type: "field",
+          index: this.index,
+          parentIndex: this.parentIndex
+        });
+      }
+      this.inputHTML.id = this.toId({
+        type: "input",
+        index: this.index,
+        parentIndex: this.parentIndex
+      });
+      (_base = this.labelHTML)["for"] || (_base["for"] = this.inputHTML.id);
+      this.labelHTML["class"] = this.addClass(this.labelHTML["class"], [Tower.View.labelClass]);
+      if (this.labelValue !== false) {
+        this.labelValue || (this.labelValue = Tower.Support.String.camelize(this.attribute.toString()));
+      }
+      this.attributes = this.fieldHTML;
+      if (options.hint !== false) {
+        this.errorHTML["class"] = this.addClass(this.errorHTML["class"], [Tower.View.errorClass]);
+        if (Tower.View.includeAria && Tower.View.hintIsPopup) {
+          (_base2 = this.errorHTML).role || (_base2.role = "tooltip");
+        }
+      }
+      (_base3 = this.inputHTML).name || (_base3.name = this.toParam());
+      this.value = options.value;
+      this.dynamic = options.dynamic === true;
+      this.richInput = options.hasOwnProperty("rich_input") ? !!options.rich_input : Tower.View.richInput;
+      this.validate = options.validate !== false;
+      classes = [inputType, Tower.Support.String.parameterize(this.attribute), this.inputHTML["class"]];
+      if (!(["submit", "fieldset"].indexOf(inputType) > -1)) {
+        classes.push(field.required ? Tower.View.requiredClass : Tower.View.optionalClass);
+        classes.push(field.errors ? Tower.View.errorClass : Tower.View.validClass);
+        classes.push("input");
+        if (options.validate !== false && field.validations) {
+          classes.push(Tower.View.validateClass);
+        }
+      }
+      this.inputHTML["class"] = this.addClass(this.inputHTML["class"], classes);
+      if (options.placeholder) this.inputHTML.placeholder = options.placeholder;
+      if (options.hasOwnProperty("value")) {
+        (_base4 = this.inputHTML).value || (_base4.value = options.value);
+      }
+      if (options.hasOwnProperty("max")) {
+        (_base5 = this.inputHTML).maxlength || (_base5.maxlength = options.max);
+      }
+      pattern = options.match;
+      if (_.isRegExp(pattern)) pattern = pattern.toString();
+      if (pattern != null) this.inputHTML["data-match"] = pattern;
+      this.inputHTML["aria-required"] = this.required.toString();
+      if (this.required === true) this.inputHTML.required = "true";
+      if (this.disabled) this.inputHTML.disabled = "true";
+      if (this.autofocus === true) this.inputHTML.autofocus = "true";
+      if (this.dynamic) this.inputHTML["data-dynamic"] = "true";
+      if (this.inputHTML.placeholder) {
+        (_base6 = this.inputHTML).title || (_base6.title = this.inputHTML.placeholder);
+      }
+      this.autocomplete = this.inputHTML.autocomplete === true;
+      if (this.autocomplete && Tower.View.includeAria) {
+        this.inputHTML["aria-autocomplete"] = (function() {
+          switch (this.autocomplete) {
+            case "inline":
+            case "list":
+            case "both":
+              return this.autocomplete;
+            default:
+              return "both";
+          }
+        }).call(this);
+      }
+    }
+
+    Field.prototype.input = function() {
+      var args, options;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      options = _.extend(this.inputHTML, Tower.Support.Array.extractOptions(args));
+      key = args.shift() || this.attribute;
+      return this["" + this.inputType + "Input"](key, options);
+    };
+
+    Field.prototype.checkboxInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "checkbox"
+      }, options));
+    };
+
+    Field.prototype.stringInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "text"
+      }, options));
+    };
+
+    Field.prototype.fileInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "file"
+      }, options));
+    };
+
+    Field.prototype.textInput = function(key, options) {
+      return this.tag("textarea", options);
+    };
+
+    Field.prototype.password_input = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "password"
+      }, options));
+    };
+
+    Field.prototype.emailInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "email"
+      }, options));
+    };
+
+    Field.prototype.urlInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "url"
+      }, options));
+    };
+
+    Field.prototype.numberInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "string",
+        "data-type": "numeric"
+      }, options));
+    };
+
+    Field.prototype.searchInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "search",
+        "data-type": "search"
+      }, options));
+    };
+
+    Field.prototype.phoneInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "tel",
+        "data-type": "phone"
+      }, options));
+    };
+
+    Field.prototype.label = function() {
+      var _this = this;
+      if (!this.labelValue) return;
+      return this.tag("label", this.labelHTML, function() {
+        _this.tag("span", _this.labelValue);
+        if (_this.required) {
+          return _this.tag("abbr", {
+            title: Tower.View.requiredTitle,
+            "class": Tower.View.requiredClass
+          }, function() {
+            return Tower.View.requiredAbbr;
+          });
+        } else {
+          return _this.tag("abbr", {
+            title: Tower.View.optionalTitle,
+            "class": Tower.View.optionalClass
+          }, function() {
+            return Tower.View.optionalAbbr;
+          });
+        }
+      });
+    };
+
+    Field.prototype.render = function(block) {
+      var _this = this;
+      return this.tag(Tower.View.fieldTag, this.attributes, function() {
+        if (block) {
+          return block.call(_this);
+        } else {
+          _this.label();
+          return _this.input();
+        }
+      });
+    };
+
+    Field.prototype.extractElements = function(options) {
+      var elements, _base;
+      if (options == null) options = {};
+      elements = [];
+      if (typeof (_base = ["hidden", "submit"]).include === "function" ? _base.include(inputType) : void 0) {
+        elements.push("inputs");
+      } else {
+        if ((this.label.present != null) && (this.label.value != null)) {
+          elements.push("label");
+        }
+        elements = elements.concat(["inputs", "hints", "errors"]);
+      }
+      return elements;
+    };
+
+    return Field;
+
+  })(Tower.View.Component);
+
+  Tower.View.Form.Fieldset = (function(_super) {
+
+    __extends(Fieldset, _super);
+
+    function Fieldset(args, options) {
+      var attributes;
+      Fieldset.__super__.constructor.apply(this, arguments);
+      this.attributes = attributes = {};
+      delete attributes.index;
+      delete attributes.parentIndex;
+      delete attributes.label;
+      this.builder = new Tower.View.Form.Builder([], {
+        template: this.template,
+        model: this.model,
+        attribute: this.attribute,
+        index: this.index,
+        parentIndex: this.parentIndex
+      });
+    }
+
+    Fieldset.prototype.render = function(block) {
+      var _this = this;
+      return this.tag("fieldset", this.attributes, function() {
+        if (_this.label) {
+          _this.tag("legend", {
+            "class": Tower.View.legendClass
+          }, function() {
+            return _this.tag("span", _this.label);
+          });
+        }
+        return _this.tag(Tower.View.fieldListTag, {
+          "class": Tower.View.fieldListClass
+        }, function() {
+          return _this.builder.render(block);
+        });
+      });
+    };
+
+    return Fieldset;
+
+  })(Tower.View.Component);
 
   Tower.View.AssetHelper = {
     javascripts: function() {
-      var options, path, paths, sources, _l, _len4;
+      var options, path, paths, sources, _len5, _m;
       sources = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       options = Tower.Support.Array.extractOptions(sources);
       options.namespace = "javascripts";
       options.extension = "js";
-      paths = this._extractAssetPaths(sources, options);
-      for (_l = 0, _len4 = paths.length; _l < _len4; _l++) {
-        path = paths[_l];
+      paths = _extractAssetPaths(sources, options);
+      for (_m = 0, _len5 = paths.length; _m < _len5; _m++) {
+        path = paths[_m];
         javascriptTag(path);
       }
       return null;
@@ -4552,14 +5073,14 @@
       return javascript.apply(this, arguments);
     },
     stylesheets: function() {
-      var options, path, paths, sources, _l, _len4;
+      var options, path, paths, sources, _len5, _m;
       sources = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       options = Tower.Support.Array.extractOptions(sources);
       options.namespace = "stylesheets";
       options.extension = "css";
-      paths = this._extractAssetPaths(sources, options);
-      for (_l = 0, _len4 = paths.length; _l < _len4; _l++) {
-        path = paths[_l];
+      paths = _extractAssetPaths(sources, options);
+      for (_m = 0, _len5 = paths.length; _m < _len5; _m++) {
+        path = paths[_m];
         stylesheetTag(path);
       }
       return null;
@@ -4568,15 +5089,15 @@
       return stylesheets.apply(this, arguments);
     },
     _extractAssetPaths: function(sources, options) {
-      var extension, manifest, namespace, path, paths, result, source, _l, _len4, _len5, _len6, _m, _n;
+      var extension, manifest, namespace, path, paths, result, source, _len5, _len6, _len7, _m, _n, _o;
       if (options == null) options = {};
       namespace = options.namespace;
       extension = options.extension;
       result = [];
       if (Tower.env === "production") {
         manifest = Tower.assetManifest;
-        for (_l = 0, _len4 = sources.length; _l < _len4; _l++) {
-          source = sources[_l];
+        for (_m = 0, _len5 = sources.length; _m < _len5; _m++) {
+          source = sources[_m];
           if (!source.match(/^(http|\/{2})/)) {
             source = "" + source + "." + extension;
             if (manifest[source]) source = manifest[source];
@@ -4586,15 +5107,15 @@
           result.push(source);
         }
       } else {
-        for (_m = 0, _len5 = sources.length; _m < _len5; _m++) {
-          source = sources[_m];
+        for (_n = 0, _len6 = sources.length; _n < _len6; _n++) {
+          source = sources[_n];
           if (!!source.match(/^(http|\/{2})/)) {
             result.push(source);
           } else {
             paths = Tower.config.assets[namespace][source];
             if (paths) {
-              for (_n = 0, _len6 = paths.length; _n < _len6; _n++) {
-                path = paths[_n];
+              for (_o = 0, _len7 = paths.length; _o < _len7; _o++) {
+                path = paths[_o];
                 result.push("/" + namespace + path + "." + extension);
               }
             }
@@ -4618,12 +5139,12 @@
 
   Tower.View.ComponentHelper = {
     formFor: function() {
-      var _ref4;
-      return (_ref4 = Tower.View.Form).render.apply(_ref4, [__ck].concat(__slice.call(arguments)));
+      var _ref5;
+      return (_ref5 = Tower.View.Form).render.apply(_ref5, [__ck].concat(__slice.call(arguments)));
     },
     tableFor: function() {
-      var _ref4;
-      return (_ref4 = Tower.View.Table).render.apply(_ref4, [__ck].concat(__slice.call(arguments)));
+      var _ref5;
+      return (_ref5 = Tower.View.Table).render.apply(_ref5, [__ck].concat(__slice.call(arguments)));
     },
     widget: function() {},
     linkTo: function(title, path, options) {
@@ -4631,7 +5152,9 @@
       return a(_.extend(options, {
         href: path,
         title: title
-      }), title);
+      }), function() {
+        return title;
+      });
     }
   };
 
@@ -4642,11 +5165,11 @@
       return document.title = value;
     },
     addClass: function() {
-      var classes, part, parts, string, _l, _len4;
+      var classes, part, parts, string, _len5, _m;
       string = arguments[0], parts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       classes = string.split(/\ +/);
-      for (_l = 0, _len4 = parts.length; _l < _len4; _l++) {
-        part = parts[_l];
+      for (_m = 0, _len5 = parts.length; _m < _len5; _m++) {
+        part = parts[_m];
         if (classes.indexOf(part) > -1) classes.push(part);
       }
       return classes.join(" ");
@@ -4661,21 +5184,21 @@
       return Tower.Support.String.parameterize(this.elementNameComponents.apply(this, arguments).join("-"));
     },
     elementName: function() {
-      var i, item, result, _len4;
+      var i, item, result, _len5;
       result = this.elementNameComponents.apply(this, arguments);
       i = 1;
-      for (i = 0, _len4 = result.length; i < _len4; i++) {
+      for (i = 0, _len5 = result.length; i < _len5; i++) {
         item = result[i];
         result[i] = "[" + item + "]";
       }
       return Tower.Support.String.parameterize(result.join(""));
     },
     elementNameComponents: function() {
-      var args, item, result, _l, _len4;
+      var args, item, result, _len5, _m;
       args = Tower.Support.Array.args(arguments);
       result = [];
-      for (_l = 0, _len4 = args.length; _l < _len4; _l++) {
-        item = args[_l];
+      for (_m = 0, _len5 = args.length; _m < _len5; _m++) {
+        item = args[_m];
         switch (typeof item) {
           case "function":
             result.push(item.constructor.name);
@@ -4829,7 +5352,7 @@
       });
     },
     appleTouchIconLinkTags: function() {
-      var options, path, result, size, sizes, _l, _len4;
+      var options, path, result, size, sizes, _len5, _m;
       path = arguments[0], sizes = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (typeof sizes[sizes.length - 1] === "object") {
         options = sizes.pop();
@@ -4837,8 +5360,8 @@
         options = {};
       }
       result = [];
-      for (_l = 0, _len4 = sizes.length; _l < _len4; _l++) {
-        size = sizes[_l];
+      for (_m = 0, _len5 = sizes.length; _m < _len5; _m++) {
+        size = sizes[_m];
         result.push(appleTouchIconLinkTag(path, _.extend({
           size: size
         }, options)));
@@ -4888,7 +5411,7 @@
 
   Tower.View.RenderingHelper = {
     partial: function(path, options, callback) {
-      var item, name, prefixes, template, tmpl, _l, _len4, _ref4;
+      var item, name, prefixes, template, tmpl, _len5, _m, _ref5;
       if (typeof options === "function") {
         callback = options;
         options = {};
@@ -4904,9 +5427,9 @@
       tmpl = "(function() {" + (String(template)) + "})";
       if (options.collection) {
         name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true);
-        _ref4 = options.collection;
-        for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-          item = _ref4[_l];
+        _ref5 = options.collection;
+        for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+          item = _ref5[_m];
           this[name] = item;
           eval(tmpl).call(this);
           delete this[name];
@@ -4946,6 +5469,22 @@
   };
 
   Tower.View.StringHelper = {
+    HTML_ESCAPE: {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    },
+    preserve: function(text) {
+      return text.replace(/\n/g, '&#x000A;').replace(/\r/g, '');
+    },
+    htmlEscape: function(text) {
+      var _this = this;
+      return text.replace(/[\"><&]/g, function(_) {
+        return _this.HTML_ESCAPE[_];
+      });
+    },
     t: function(string) {
       return Tower.Support.I18n.translate(string);
     },
@@ -4979,9 +5518,19 @@
 
   Tower.View.include(Tower.View.StringHelper);
 
-  Tower.Controller = (function() {
+  Tower.View.helpers.push(Tower.View.AssetHelper);
 
-    __extends(Controller, Tower.Class);
+  Tower.View.helpers.push(Tower.View.ComponentHelper);
+
+  Tower.View.helpers.push(Tower.View.HeadHelper);
+
+  Tower.View.helpers.push(Tower.View.RenderingHelper);
+
+  Tower.View.helpers.push(Tower.View.StringHelper);
+
+  Tower.Controller = (function(_super) {
+
+    __extends(Controller, _super);
 
     Controller.extend(Tower.Support.EventEmitter);
 
@@ -5013,7 +5562,7 @@
 
     return Controller;
 
-  })();
+  })(Tower.Class);
 
   Tower.Controller.Caching = {
     freshWhen: function() {},
@@ -5072,8 +5621,8 @@
       delete options.status;
       delete options.location;
       this.status = status;
-      if (location) this.location = urlFor(location);
-      if (formats) this.contentType = Mime[formats.first];
+      if (location) this.location = Tower.urlFor(location);
+      if (formats) this.headers["Content-Type"] = Mime[formats.first];
       return this.body = " ";
     }
   };
@@ -5144,19 +5693,7 @@
         }
       }
       return criteria;
-    },
-    withParams: function(path, newParams) {
-      var params, queryString;
-      if (newParams == null) newParams = {};
-      params = Tower.Support.Object.extend(this.query, newParams);
-      if (Tower.Support.Object.blank(params)) return path;
-      queryString = this.queryFor(params);
-      return "" + path + "?" + query_string;
-    },
-    queryFor: function(params) {
-      if (params == null) params = {};
-    },
-    paramOperators: function(key) {}
+    }
   };
 
   Tower.Controller.Redirecting = {
@@ -5164,8 +5701,8 @@
       return this.redirect.apply(this, arguments);
     },
     redirect: function() {
-      var _ref4;
-      return (_ref4 = this.response).redirect.apply(_ref4, arguments);
+      var _ref5;
+      return (_ref5 = this.response).redirect.apply(_ref5, arguments);
     }
   };
 
@@ -5204,8 +5741,8 @@
       if (options == null) options = {};
     },
     _renderTemplate: function(options) {
-      var callback, view, _base, _callback;
-      var _this = this;
+      var callback, view, _base, _callback,
+        _this = this;
       _callback = options.callback;
       callback = function(error, body) {
         if (error) {
@@ -5228,10 +5765,10 @@
       }
     },
     _handleRenderers: function(options, callback) {
-      var name, renderer, _ref4;
-      _ref4 = Tower.Controller.renderers();
-      for (name in _ref4) {
-        renderer = _ref4[name];
+      var name, renderer, _ref5;
+      _ref5 = Tower.Controller.renderers();
+      for (name in _ref5) {
+        renderer = _ref5[name];
         if (options.hasOwnProperty(name)) {
           renderer.call(this, options[name], options, callback);
           return true;
@@ -5302,7 +5839,7 @@
         return this._belongsTo = options;
       },
       actions: function() {
-        var action, actions, actionsToRemove, args, options, _l, _len4;
+        var action, actions, actionsToRemove, args, options, _len5, _m;
         args = Tower.Support.Array.args(arguments);
         if (typeof args[args.length - 1] === "object") {
           options = args.pop();
@@ -5311,8 +5848,8 @@
         }
         actions = ["index", "new", "create", "show", "edit", "update", "destroy"];
         actionsToRemove = _.difference(actions, args, options.except || []);
-        for (_l = 0, _len4 = actionsToRemove.length; _l < _len4; _l++) {
-          action = actionsToRemove[_l];
+        for (_m = 0, _len5 = actionsToRemove.length; _m < _len5; _m++) {
+          action = actionsToRemove[_m];
           this[action] = null;
           delete this[action];
         }
@@ -5439,8 +5976,8 @@
       });
     },
     findParent: function(callback) {
-      var association, param, parentClass;
-      var _this = this;
+      var association, param, parentClass,
+        _this = this;
       association = this.constructor._belongsTo;
       if (association) {
         param = association.param || ("" + association.key + "Id");
@@ -5456,8 +5993,8 @@
       }
     },
     scoped: function(callback) {
-      var callbackWithScope;
-      var _this = this;
+      var callbackWithScope,
+        _this = this;
       callbackWithScope = function(error, scope) {
         return callback.call(_this, error, scope.where(_this.criteria().query));
       };
@@ -5480,13 +6017,13 @@
     };
 
     function Responder(controller, options) {
-      var format, _l, _len4, _ref4;
+      var format, _len5, _m, _ref5;
       if (options == null) options = {};
       this.controller = controller;
       this.options = options;
-      _ref4 = this.controller.formats;
-      for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-        format = _ref4[_l];
+      _ref5 = this.controller.formats;
+      for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+        format = _ref5[_m];
         this.accept(format);
       }
     }
@@ -5613,7 +6150,7 @@
   Tower.Controller.Responding = {
     ClassMethods: {
       respondTo: function() {
-        var args, except, mimes, name, only, options, _l, _len4;
+        var args, except, mimes, name, only, options, _len5, _m;
         mimes = this.mimes();
         args = Tower.Support.Array.args(arguments);
         if (typeof args[args.length - 1] === "object") {
@@ -5623,8 +6160,8 @@
         }
         if (options.only) only = Tower.Support.Object.toArray(options.only);
         if (options.except) except = Tower.Support.Object.toArray(options.except);
-        for (_l = 0, _len4 = args.length; _l < _len4; _l++) {
-          name = args[_l];
+        for (_m = 0, _len5 = args.length; _m < _len5; _m++) {
+          name = args[_m];
           mimes[name] = {};
           if (only) mimes[name].only = only;
           if (except) mimes[name].except = except;
@@ -5717,64 +6254,66 @@
   });
 
   Tower.Controller.Elements = {
-    extractElements: function(target, options) {
-      var key, method, result, selector, selectors;
-      if (options == null) options = {};
-      result = {};
-      for (method in options) {
-        selectors = options[method];
-        for (key in selectors) {
-          selector = selectors[key];
-          result[key] = target[method](selector);
+    ClassMethods: {
+      extractElements: function(target, options) {
+        var key, method, result, selector, selectors;
+        if (options == null) options = {};
+        result = {};
+        for (method in options) {
+          selectors = options[method];
+          for (key in selectors) {
+            selector = selectors[key];
+            result[key] = target[method](selector);
+          }
         }
-      }
-      return result;
-    },
-    processElements: function(target, options) {
-      if (options == null) options = {};
-      return this.elements = this.extractElements(target, options);
-    },
-    clickHandler: function(name, handler, options) {
-      var _this = this;
-      return $(this.dispatcher).on(name, function(event) {});
-    },
-    submitHandler: function(name, handler, options) {
-      var _this = this;
-      return $(this.dispatcher).on(name, function(event) {
-        var action, elements, form, method, params, target;
-        target = $(event.target);
-        form = target.closest("form");
-        action = form.attr("action");
-        method = (form.attr("data-method") || form.attr("method")).toUpperCase();
-        params = form.serializeParams();
-        params.method = method;
-        params.action = action;
-        elements = _.extend({
-          target: target,
-          form: form
-        }, _this.extractElements(target, options));
-        return _this._dispatch(handler, {
-          elements: elements,
-          params: params
+        return result;
+      },
+      processElements: function(target, options) {
+        if (options == null) options = {};
+        return this.elements = this.extractElements(target, options);
+      },
+      clickHandler: function(name, handler, options) {
+        var _this = this;
+        return $(this.dispatcher).on(name, function(event) {});
+      },
+      submitHandler: function(name, handler, options) {
+        var _this = this;
+        return $(this.dispatcher).on(name, function(event) {
+          var action, elements, form, method, params, target;
+          target = $(event.target);
+          form = target.closest("form");
+          action = form.attr("action");
+          method = (form.attr("data-method") || form.attr("method")).toUpperCase();
+          params = form.serializeParams();
+          params.method = method;
+          params.action = action;
+          elements = _.extend({
+            target: target,
+            form: form
+          }, {});
+          return _this._dispatch(handler, {
+            elements: elements,
+            params: params
+          });
         });
-      });
-    },
-    invalidForm: function() {
-      var attribute, element, errors, field, _ref4, _results;
-      element = $("#" + this.resourceName + "-" + this.elementName);
-      _ref4 = this.resource.errors;
-      _results = [];
-      for (attribute in _ref4) {
-        errors = _ref4[attribute];
-        field = $("#" + this.resourceName + "-" + attribute + "-field");
-        if (field.length) {
-          field.css("background", "yellow");
-          _results.push($("input", field).after("<output class='error'>" + (errors.join("\n")) + "</output>"));
-        } else {
-          _results.push(void 0);
+      },
+      invalidForm: function() {
+        var attribute, element, errors, field, _ref5, _results;
+        element = $("#" + this.resourceName + "-" + this.elementName);
+        _ref5 = this.resource.errors;
+        _results = [];
+        for (attribute in _ref5) {
+          errors = _ref5[attribute];
+          field = $("#" + this.resourceName + "-" + attribute + "-field");
+          if (field.length) {
+            field.css("background", "yellow");
+            _results.push($("input", field).after("<output class='error'>" + (errors.join("\n")) + "</output>"));
+          } else {
+            _results.push(void 0);
+          }
         }
+        return _results;
       }
-      return _results;
     }
   };
 
@@ -5800,8 +6339,8 @@
         });
       },
       addDomEventHandler: function(name, handler, options) {
-        var eventType, method, parts, selector;
-        var _this = this;
+        var eventType, method, parts, selector,
+          _this = this;
         parts = name.split(/\ +/);
         name = parts.shift();
         selector = parts.join(" ");
@@ -5869,12 +6408,12 @@
   Tower.Dispatch.Cookies = (function() {
 
     Cookies.parse = function(string) {
-      var eqlIndex, pair, pairs, result, value, _l, _len4;
+      var eqlIndex, pair, pairs, result, value, _len5, _m;
       if (string == null) string = document.cookie;
       result = {};
       pairs = string.split(/[;,] */);
-      for (_l = 0, _len4 = pairs.length; _l < _len4; _l++) {
-        pair = pairs[_l];
+      for (_m = 0, _len5 = pairs.length; _m < _len5; _m++) {
+        pair = pairs[_m];
         eqlIndex = pair.indexOf('=');
         key = pair.substring(0, eqlIndex).trim().toLowerCase();
         value = pair.substring(++eqlIndex, pair.length).trim();
@@ -5949,13 +6488,13 @@
     };
 
     Param.prototype.toCriteria = function(value) {
-      var attribute, conditions, criteria, node, nodes, operator, set, _l, _len4, _len5, _m;
+      var attribute, conditions, criteria, node, nodes, operator, set, _len5, _len6, _m, _n;
       nodes = this.parse(value);
       criteria = new Tower.Model.Criteria;
-      for (_l = 0, _len4 = nodes.length; _l < _len4; _l++) {
-        set = nodes[_l];
-        for (_m = 0, _len5 = set.length; _m < _len5; _m++) {
-          node = set[_m];
+      for (_m = 0, _len5 = nodes.length; _m < _len5; _m++) {
+        set = nodes[_m];
+        for (_n = 0, _len6 = set.length; _n < _len6; _n++) {
+          node = set[_n];
           attribute = node.attribute;
           operator = node.operators[0];
           conditions = {};
@@ -5989,21 +6528,21 @@
 
   })();
 
-  Tower.Dispatch.Param.Array = (function() {
+  Tower.Dispatch.Param.Array = (function(_super) {
 
-    __extends(Array, Tower.Dispatch.Param);
+    __extends(Array, _super);
 
     function Array() {
       Array.__super__.constructor.apply(this, arguments);
     }
 
     Array.prototype.parse = function(value) {
-      var array, isRange, negation, string, values, _l, _len4;
-      var _this = this;
+      var array, isRange, negation, string, values, _len5, _m,
+        _this = this;
       values = [];
       array = value.toString().split(/[,\|]/);
-      for (_l = 0, _len4 = array.length; _l < _len4; _l++) {
-        string = array[_l];
+      for (_m = 0, _len5 = array.length; _m < _len5; _m++) {
+        string = array[_m];
         isRange = false;
         negation = !!string.match(/^\^/);
         string = string.replace(/^\^/, "");
@@ -6026,23 +6565,23 @@
 
     return Array;
 
-  })();
+  })(Tower.Dispatch.Param);
 
-  Tower.Dispatch.Param.Date = (function() {
+  Tower.Dispatch.Param.Date = (function(_super) {
 
-    __extends(Date, Tower.Dispatch.Param);
+    __extends(Date, _super);
 
     function Date() {
       Date.__super__.constructor.apply(this, arguments);
     }
 
     Date.prototype.parse = function(value) {
-      var array, isRange, string, values, _l, _len4;
-      var _this = this;
+      var array, isRange, string, values, _len5, _m,
+        _this = this;
       values = [];
       array = value.toString().split(/[\s,\+]/);
-      for (_l = 0, _len4 = array.length; _l < _len4; _l++) {
-        string = array[_l];
+      for (_m = 0, _len5 = array.length; _m < _len5; _m++) {
+        string = array[_m];
         isRange = false;
         string.replace(/([^\.]+)?(\.\.)([^\.]+)?/, function(_, startsOn, operator, endsOn) {
           var range;
@@ -6067,23 +6606,23 @@
 
     return Date;
 
-  })();
+  })(Tower.Dispatch.Param);
 
-  Tower.Dispatch.Param.Number = (function() {
+  Tower.Dispatch.Param.Number = (function(_super) {
 
-    __extends(Number, Tower.Dispatch.Param);
+    __extends(Number, _super);
 
     function Number() {
       Number.__super__.constructor.apply(this, arguments);
     }
 
     Number.prototype.parse = function(value) {
-      var array, isRange, negation, string, values, _l, _len4;
-      var _this = this;
+      var array, isRange, negation, string, values, _len5, _m,
+        _this = this;
       values = [];
       array = value.toString().split(/[,\|]/);
-      for (_l = 0, _len4 = array.length; _l < _len4; _l++) {
-        string = array[_l];
+      for (_m = 0, _len5 = array.length; _m < _len5; _m++) {
+        string = array[_m];
         isRange = false;
         negation = !!string.match(/^\^/);
         string = string.replace(/^\^/, "");
@@ -6110,21 +6649,21 @@
 
     return Number;
 
-  })();
+  })(Tower.Dispatch.Param);
 
-  Tower.Dispatch.Param.String = (function() {
+  Tower.Dispatch.Param.String = (function(_super) {
 
-    __extends(String, Tower.Dispatch.Param);
+    __extends(String, _super);
 
     function String() {
       String.__super__.constructor.apply(this, arguments);
     }
 
     String.prototype.parse = function(value) {
-      var arrays, i, node, values, _len4;
-      var _this = this;
+      var arrays, i, node, values, _len5,
+        _this = this;
       arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/);
-      for (i = 0, _len4 = arrays.length; i < _len4; i++) {
+      for (i = 0, _len5 = arrays.length; i < _len5; i++) {
         node = arrays[i];
         values = [];
         node.replace(/([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, function(_, token) {
@@ -6156,11 +6695,11 @@
 
     return String;
 
-  })();
+  })(Tower.Dispatch.Param);
 
-  Tower.Dispatch.Route = (function() {
+  Tower.Dispatch.Route = (function(_super) {
 
-    __extends(Route, Tower.Class);
+    __extends(Route, _super);
 
     Route.store = function() {
       return this._store || (this._store = []);
@@ -6183,10 +6722,10 @@
     };
 
     Route.findController = function(request, response, callback) {
-      var controller, route, routes, _l, _len4;
+      var controller, route, routes, _len5, _m;
       routes = Tower.Route.all();
-      for (_l = 0, _len4 = routes.length; _l < _len4; _l++) {
-        route = routes[_l];
+      for (_m = 0, _len5 = routes.length; _m < _len5; _m++) {
+        route = routes[_m];
         controller = route.toController(request);
         if (controller) break;
       }
@@ -6201,14 +6740,14 @@
     };
 
     Route.prototype.toController = function(request) {
-      var capture, controller, i, keys, match, method, params, _len4, _name;
+      var capture, controller, i, keys, match, method, params, _len5, _name;
       match = this.match(request);
       if (!match) return null;
       method = request.method.toLowerCase();
       keys = this.keys;
       params = Tower.Support.Object.extend({}, this.defaults, request.query || {}, request.body || {});
       match = match.slice(1);
-      for (i = 0, _len4 = match.length; i < _len4; i++) {
+      for (i = 0, _len5 = match.length; i < _len5; i++) {
         capture = match[i];
         params[_name = keys[i].name] || (params[_name] = capture ? decodeURIComponent(capture) : null);
       }
@@ -6253,41 +6792,29 @@
     };
 
     Route.prototype.matchConstraints = function(request) {
-      var constraints, key, value, _results;
+      var constraints, key, value;
       constraints = this.constraints;
       switch (typeof constraints) {
         case "object":
-          _results = [];
           for (key in constraints) {
             value = constraints[key];
             switch (typeof value) {
               case "string":
               case "number":
-                if (request[key] !== value) {
-                  return false;
-                } else {
-                  _results.push(void 0);
-                }
+                if (request[key] !== value) return false;
                 break;
               case "function":
               case "object":
-                if (!request.location[key].match(value)) {
-                  return false;
-                } else {
-                  _results.push(void 0);
-                }
-                break;
-              default:
-                _results.push(void 0);
+                if (!request.location[key].match(value)) return false;
             }
           }
-          return _results;
           break;
         case "function":
           return constraints.call(request, request);
         default:
           return false;
       }
+      return true;
     };
 
     Route.prototype.urlFor = function(options) {
@@ -6334,7 +6861,7 @@
 
     return Route;
 
-  })();
+  })(Tower.Class);
 
   Tower.Route = Tower.Dispatch.Route;
 
