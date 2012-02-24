@@ -73,7 +73,7 @@ class Tower.Model.Scope extends Tower.Class
   fetch: ->
     
   sync: ->
-  
+    
   transaction: ->
     
   build: (attributes, options) ->
@@ -184,7 +184,8 @@ class Tower.Model.Scope extends Tower.Class
     {conditions, options} = criteria.toQuery()
     if opts.instantiate
       iterator = (record, next) ->
-        record.destroy(next)
+        record.destroy ->
+          next()
         
       @_each conditions, options, iterator, callback
     else

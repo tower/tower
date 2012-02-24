@@ -114,7 +114,7 @@ Tower.Model.Persistence =
       @runCallbacks "destroy", (block) =>
         complete = @_callback(block, callback)
         
-        @constructor.destroy @, instantiate: false, (error) =>
+        @constructor.destroy @get("id"), instantiate: false, (error) =>
           throw error if error && !callback
           
           unless error

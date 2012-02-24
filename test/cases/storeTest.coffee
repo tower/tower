@@ -48,3 +48,31 @@ describe 'Tower.Store', ->
       
   test '.defaultLimit', ->
     assert.equal Tower.Store.defaultLimit, 100
+    
+  describe '#update', ->
+    test '{ $push : { field : value }', (done) ->
+      updates         = scope._store.serializeAttributesForUpdate($push: tags: ["a"])
+
+      expect(updates).toEqual $push: tags: ["a"]
+
+      done()
+
+    test '{ $inc : { field : value } }'
+
+    test '{ $set : { field : value } }'
+
+    test '{ $unset : { field : 1} }'
+
+    test '{ $push : { field : value } }'
+
+    test '{ $pushAll : { field : valueArray } }'
+
+    test '{ $addToSet : { field : value } }'
+
+    test '{ $pop : { field : 1  } }'
+
+    test '{ $pop : { field : -1  } }'
+
+    test '{ $pull : { field : _value } }'
+
+    test '{ $pullAll : { field : value_array } }'

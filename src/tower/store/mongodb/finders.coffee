@@ -3,7 +3,9 @@ Tower.Store.MongoDB.Finders =
     klass = Tower.constant(@className)
     attributes.id ||= attributes._id
     delete attributes._id
-    new klass(attributes)
+    model = new klass(attributes)
+    model.persistent = true
+    model
   
   find: (conditions, options, callback) ->
     self          = @

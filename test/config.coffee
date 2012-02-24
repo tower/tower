@@ -7,6 +7,7 @@ global.assert = chai.assert
 global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
+global.async  = require 'async'
 
 global.spec =
   startDatabase: ->

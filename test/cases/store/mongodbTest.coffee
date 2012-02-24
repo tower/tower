@@ -2,11 +2,8 @@ require '../../config'
 
 scope   = null
 user    = null
-
-quit = false
-ini  = false
-
-###
+quit    = false
+ini     = false
 
 describe 'Tower.Store.MongoDB', ->
   beforeEach ->
@@ -21,17 +18,12 @@ describe 'Tower.Store.MongoDB', ->
     scope = null
   
   describe '#create', ->
-    test 'with attributes', ->
-      waits 100
-      
-      runs ->
-        spyOn scope._store, "create"
-        scope.create name: "Lance"
-        expect(scope._store.create).toHaveBeenCalledWith {name: "Lance"}, {}, undefined
-      
-        quit = true
+    test 'with attributes', (done) ->
+      spyOn scope._store, "create"
+      scope.create name: "Lance"
+      expect(scope._store.create).toHaveBeenCalledWith {name: "Lance"}, {}, undefined
         
-    test '#serializeAttributesForCreate', ->
+    test '#serializeAttributesForCreate', (done) ->
       _attributes = name: "Joe"
       _options    = {}
       attributes  = scope._store.serializeAttributesForCreate(_attributes)
@@ -40,20 +32,21 @@ describe 'Tower.Store.MongoDB', ->
       expect(attributes).toEqual name: "Joe"
       
   describe '#update', ->
-    test '#serializing', ->
-      waits 100
+    test '#serializing', (done) ->
+      updates         = scope._store.serializeAttributesForUpdate(name: "John", $pushAll: tags: ["a", "b"])
+      query           = scope._store.serializeQuery(id: $in: [1, 2, 3])
       
-      runs ->
-        updates         = scope._store.serializeAttributesForUpdate(name: "John", $pushAll: tags: ["a", "b"])
-        query           = scope._store.serializeQuery(id: $in: [1, 2, 3])
-        
-        expect(updates).toEqual "$set": { name: "John" }, "$pushAll": { tags : [ 'a', 'b' ] }
-        expect(query).toEqual _id: $in: [1, 2, 3]
-    
-    test '{ $push : { field : value }', ->
+      expect(updates).toEqual "$set": { name: "John" }, "$pushAll": { tags : [ 'a', 'b' ] }
+      expect(query).toEqual _id: $in: [1, 2, 3]
+      
+      done()
+  
+    test '{ $push : { field : value }', (done) ->
       updates         = scope._store.serializeAttributesForUpdate($push: tags: ["a"])
       
       expect(updates).toEqual $push: tags: ["a"]
+      
+      done()
       
     test '{ $inc : { field : value } }'
     
@@ -75,4 +68,3 @@ describe 'Tower.Store.MongoDB', ->
     
     test '{ $pullAll : { field : value_array } }'
     
-###    

@@ -17,16 +17,15 @@ Tower.Model.Relations =
       throw new Error("Relation '#{name}' does not exist on '#{@name}'") unless relation
       relation
   
-  InstanceMethods:
-    relation: (name) ->
-      @constructor.relation(name).scoped(@)
-      
-    buildRelation: (name, attributes, callback) ->
-      @relation(name).build(attributes, callback)
+  relation: (name) ->
+    @constructor.relation(name).scoped(@)
     
-    createRelation: (name, attributes, callback) ->
-      @relation(name).create(attributes, callback)
-      
-    destroyRelations: ->
+  buildRelation: (name, attributes, callback) ->
+    @relation(name).build(attributes, callback)
+  
+  createRelation: (name, attributes, callback) ->
+    @relation(name).create(attributes, callback)
     
+  destroyRelations: ->
+  
 module.exports = Tower.Model.Relations

@@ -17,12 +17,12 @@ describeWith = (store) ->
       
       assert.deepEqual user.errors, { 'firstName' : ["firstName can't be blank"] }
     
-      user.firstName = "Joe"
+      user.set "firstName", "Joe"
     
       assert.deepEqual user.validate(), true
       assert.deepEqual user.errors, []
     
-      user.firstName = null
+      user.set "firstName", null
     
       assert.deepEqual user.validate(), false
     
@@ -34,7 +34,7 @@ describeWith = (store) ->
       assert.deepEqual page.validate(), false
       assert.deepEqual page.errors, { 'rating': ['rating must be a minimum of 0', 'rating must be a maximum of 10' ] }
     
-      page.rating = 10
+      page.set "rating", 10
     
       assert.deepEqual page.validate(), true
       assert.deepEqual page.errors, []

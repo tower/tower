@@ -11,6 +11,8 @@ Tower.Model.Scopes =
     defaultSort: (object) ->
       @_defaultSort = object if object
       @_defaultSort ||= {name: "createdAt", direction: "desc"}
+      
+    defaultScope: (objectOrScope) ->
 
 for key in Tower.Model.Scope.scopes
   do (key) ->
