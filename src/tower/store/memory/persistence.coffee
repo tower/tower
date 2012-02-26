@@ -28,6 +28,7 @@ Tower.Store.Memory.Persistence =
     @find query, options, (error, records) =>
       return callback(error) if error
       @updateOne(record, updates) for record in records
+      callback.call @, error, records
       records
       
   updateOne: (record, updates) ->

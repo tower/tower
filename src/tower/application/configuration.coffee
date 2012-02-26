@@ -12,6 +12,9 @@ Tower.Support.Object.extend Tower,
   structure:  "standard"
   config:     {}
   namespaces: {}
+  metadata:   {}
+  metadataFor: (name) ->
+    @metadata[name] ||= {}
   
   sync: (method, records, callback) ->
     callback null, records if callback

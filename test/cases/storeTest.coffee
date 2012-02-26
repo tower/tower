@@ -12,8 +12,8 @@ describe 'Tower.Store', ->
       "<":        "$lt"
       "$lt":      "$lt"
       "$in":      "$in"
+      "$any":     "$in"
       "$nin":     "$nin"
-      "$any":     "$any"
       "$all":     "$all"
       "=~":       "$regex"
       "$m":       "$regex"
@@ -50,12 +50,7 @@ describe 'Tower.Store', ->
     assert.equal Tower.Store.defaultLimit, 100
     
   describe '#update', ->
-    test '{ $push : { field : value }', (done) ->
-      updates         = scope._store.serializeAttributesForUpdate($push: tags: ["a"])
-
-      expect(updates).toEqual $push: tags: ["a"]
-
-      done()
+    test '{ $push : { field : value }'
 
     test '{ $inc : { field : value } }'
 

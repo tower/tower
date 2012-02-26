@@ -11,20 +11,18 @@ Tower.Model.Scopes =
     defaultSort: (object) ->
       @_defaultSort = object if object
       @_defaultSort ||= {name: "createdAt", direction: "desc"}
-      
-    defaultScope: (objectOrScope) ->
 
-for key in Tower.Model.Scope.scopes
+for key in Tower.Model.Scope.queryMethods
   do (key) ->
     Tower.Model.Scopes.ClassMethods[key] = ->
       @scoped()[key](arguments...)
 
-for key in Tower.Model.Scope.finders
+for key in Tower.Model.Scope.finderMethods
   do (key) ->
     Tower.Model.Scopes.ClassMethods[key] = ->
       @scoped()[key](arguments...)
 
-for key in Tower.Model.Scope.builders
+for key in Tower.Model.Scope.persistenceMethods
   do (key) ->
     Tower.Model.Scopes.ClassMethods[key] = ->
       @scoped()[key](arguments...)

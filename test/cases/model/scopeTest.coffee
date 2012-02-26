@@ -1,3 +1,4 @@
+###
 require '../../config'
 
 scope     = null
@@ -164,3 +165,5 @@ describeWith = (store) ->
 
 describeWith(new Tower.Store.Memory(firstName: "users", type: "App.User"))
 describeWith(new Tower.Store.MongoDB(firstName: "users", type: "App.User"))
+
+###

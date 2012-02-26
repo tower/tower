@@ -4,20 +4,20 @@ Tower.Store.MongoDB.Finders =
     attributes.id ||= attributes._id
     delete attributes._id
     model = new klass(attributes)
-    model.persistent = true
     model
   
   find: (conditions, options, callback) ->
-    self          = @
     conditions    = @serializeQuery(conditions)
     options       = @serializeOptions(options)
     
-    @collection().find(conditions, options).toArray (error, docs) ->
+    @collection().find(conditions, options).toArray (error, docs) =>
       unless error
         for doc in docs
           doc.id = doc["_id"]
           delete doc["_id"]
-        docs = self.serialize(docs)
+        docs = @serialize(docs)
+        for model in docs
+          model.persistent = true
       
       callback.call(@, error, docs) if callback
     
@@ -34,14 +34,24 @@ Tower.Store.MongoDB.Finders =
       callback.call(@, error, doc) if callback
     @
   
-  count: (query, options, callback) ->
-    @collection().count query, (error, result) ->
+  count: (conditions, options, callback) ->
+    result        = undefined
+    conditions    = @serializeQuery(conditions)
+    
+    @collection().count conditions, (error, count) =>
+      result      = count
       callback.call @, error, result if callback
-    @
+      
+    result
     
   exists: (query, options, callback) ->
-    @collection().count query, (error, result) ->
+    result        = undefined
+    conditions    = @serializeQuery(conditions)
+    
+    @collection().count query, (error, exists) ->
+      result      = exists
       callback.call @, error, result if callback
-    @
+    
+    result
 
 module.exports = Tower.Store.MongoDB.Finders

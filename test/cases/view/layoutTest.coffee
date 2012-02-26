@@ -21,12 +21,12 @@ describe 'Tower.View', ->
       assert.equal result, """
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
-</head>
-<body role="application">
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
+  </head>
+  <body role="application">
+  </body>
 </html>
 
 """

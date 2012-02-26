@@ -1,8 +1,6 @@
 Tower.Store.MongoDB.Database =
   ClassMethods:
     initialize: (callback) ->
-      self  = @
-    
       unless @database
         env   = @env()
         mongo = @lib()
@@ -15,19 +13,19 @@ Tower.Store.MongoDB.Database =
           env.username  = url.user
           env.password  = url.password
       
-        new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) ->
+        new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) =>
           throw error if error
           if env.username && env.password
-            client.authenticate env.username, env.password, (error) ->
+            client.authenticate env.username, env.password, (error) =>
               throw error if error
-              self.database = client
+              @database = client
               callback() if callback
           else
-            self.database = client
+            @database = client
             callback() if callback
         
-        process.on "exit", ->
-          self.database.close() if self.database
+        process.on "exit", =>
+          @database.close() if @database
         
       @database
     

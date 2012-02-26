@@ -541,12 +541,10 @@ watch /app\/views\/.+\.mustache/
     # do anything!
 ```
 
-## Test, Develop, Minify
+## Test
 
 ``` bash
-cake spec
-cake coffee
-cake minify
+npm test
 ```
 
 ## Examples

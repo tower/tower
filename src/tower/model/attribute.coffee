@@ -1,4 +1,4 @@
-class Tower.Model.Field
+class Tower.Model.Attribute
   constructor: (owner, name, options = {}) ->
     @owner    = owner
     @name     = key = name
@@ -43,4 +43,4 @@ class Tower.Model.Field
       else
         value
     
-module.exports = Tower.Model.Field
+module.exports = Tower.Model.Attribute

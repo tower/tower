@@ -21,9 +21,10 @@ Tower.Store.MongoDB.Persistence =
     
     options.safe    = true unless options.hasOwnProperty("safe")
     options.upsert  = false unless options.hasOwnProperty("upsert")
-    #options.multi   = true unless options.hasOwnProperty("multi")
+    # update multiple docs, b/c it defaults to false
+    options.multi   = true unless options.hasOwnProperty("multi")
     
-    @collection().update query, updates, options, (error) ->
+    @collection().update query, updates, options, (error) =>
       callback.call(@, error) if callback
       
     @

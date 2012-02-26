@@ -20,9 +20,10 @@ Tower.Store.MongoDB.Serialization =
     
     result
     
-  serializeAttributesForCreate: (attributes) ->
-    result  = {}
-    schema  = @schema()
+  serializeAttributesForCreate: (record) ->
+    result      = {}
+    schema      = @schema()
+    attributes  = @deserializeModel(record)
     
     for key, value of attributes
       continue if key == "id" && value == undefined || value == null
@@ -43,9 +44,10 @@ Tower.Store.MongoDB.Serialization =
   
   # title: "santa"  
   # createdAt: "<": new Date()
-  serializeQuery: (query) ->
+  serializeQuery: (record) ->
     schema  = @schema()
     result  = {}
+    query   = @deserializeModel(record)
     
     for key, value of query
       field = schema[key]
@@ -54,8 +56,11 @@ Tower.Store.MongoDB.Serialization =
         result[key] = {}
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]
-          _key      = operator if operator
-          result[key][_key] = @encode field, _value, _key
+          if operator == "$eq"
+            result[key] = @encode field, _value, _key
+          else
+            _key      = operator if operator
+            result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
     
@@ -140,13 +145,19 @@ Tower.Store.MongoDB.Serialization =
       result = []
       for item, i in value
         try
-          id        = @constructor.database.bson_serializer.ObjectID(value.toString())
+          id        = @_encodeId(item)
           result[i] = id
         catch error
           id
       return result
     else
+      @_encodeId(value)
+      
+  _encodeId: (value) ->
+    try
       @constructor.database.bson_serializer.ObjectID(value.toString())
+    catch error
+      value
   
   # from mongo
   decodeId: (value) ->

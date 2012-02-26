@@ -3,9 +3,9 @@ require '../../config'
 moment = require('moment')
 
 describeWith = (store) ->
-  describe "Tower.Model.Finders (Tower.Store.#{store.constructor.name})", ->
+  describe "Tower.Model.Finders (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
-      App.Post.store(store)
+      App.Post.store(new store(name: "posts", type: "App.Post"))
       App.Post.destroy(done)
       
     afterEach (done) ->
@@ -110,17 +110,17 @@ describeWith = (store) ->
         beforeEach (done) ->
           App.Post.create rating: 1, someDate: moment()._d, done
         
-        test 'where(someDate: "<": Dec 25, 2050', (done) ->
+        test 'where(someDate: "<": Dec 25, 2050)', (done) ->
           App.Post.where(someDate: "<": moment("Dec 25, 2050")._d).count (error, count) =>
             assert.equal count, 1
             done()
             
-        test 'where(createdAt: "<": Dec 25, 2050', (done) ->
+        test 'where(createdAt: "<": Dec 25, 2050)', (done) ->
           App.Post.where(createdAt: "<": moment("Dec 25, 2050")._d).count (error, count) =>
             assert.equal count, 1
             done()
             
-        test 'where(createdAt: "<": Dec 25, 1995', (done) ->
+        test 'where(createdAt: "<": Dec 25, 1995)', (done) ->
           App.Post.where(createdAt: "<": moment("Dec 25, 1995")._d).count (error, count) =>
             assert.equal count, 0
             done()
@@ -173,7 +173,7 @@ describeWith = (store) ->
             done()
   
     describe '$match', ->
-  
+    
     describe '$notMatch', ->
     
     describe '$in', ->
@@ -292,9 +292,29 @@ describeWith = (store) ->
     describe '$notNull', ->
   
     describe '$eq', ->
-      #RW.Wall.where({title: /A wall/}).count() doesn't work
+      describe 'string', ->
+        beforeEach (done) ->
+          attributes = []
+          attributes.push title: "Ruby", rating: 8
+          attributes.push title: "JavaScript", rating: 10
+          App.Post.create(attributes, done)
+          
+        test 'where(title: $eq: "Ruby")', (done) ->
+          App.Post.where(title: $eq: "Ruby").count (error, count) =>
+            assert.equal count, 1
+            done()
+            
+        test 'where(title: /R/)', (done) ->
+          App.Post.where(title: /R/).count (error, count) =>
+            assert.equal count, 1
+            done()
+            
+        test 'where(title: /[Rr]/)', (done) ->
+          App.Post.where(title: /[Rr]/).count (error, count) =>
+            assert.equal count, 2
+            done()
   
     describe '$neq', ->
 
-describeWith(new Tower.Store.Memory(name: "posts", type: "App.Post"))
-describeWith(new Tower.Store.MongoDB(name: "posts", type: "App.Post"))
+describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.MongoDB)

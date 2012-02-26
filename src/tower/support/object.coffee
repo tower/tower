@@ -164,14 +164,29 @@ Tower.Support.Object =
     
   isArray: Array.isArray || (object) ->
     toString.call(object) == '[object Array]'
-    
+  
   kind: (object) ->
-    return typeof(object) if typeof(object) != "object"
-    return "null" if object == null
-    return "array" if object.constructor == (new Array).constructor
-    return "date" if object.constructor == (new Date).constructor
-    return "regex" if object.constructor == (new RegExp).constructor
-    return "object"
+    type = typeof(object)
+    switch type
+      when "object"
+        return "array"      if _.isArray(object)
+        return "arguments"  if _.isArguments(object)
+        return "boolean"    if _.isBoolean(object)
+        return "date"       if _.isDate(object)
+        return "regex"      if _.isRegExp(object)
+        return "NaN"        if _.isNaN(object)
+        return "null"       if _.isNull(object)
+        return "undefined"  if _.isUndefined(object)
+        return "object"
+      when "number"
+        return "integer"    if object == +object && object == (object|0)
+        return "float"      if object == +object && object != (object|0)
+        return "number"
+      when "function"
+        return "regex"      if _.isRegExp(object)
+        return "function"
+      else
+        return type
     
   isObject: (object) ->
     return object == Object(object)

@@ -1,5 +1,5 @@
 class App.Page extends Tower.Model
-  @field "id"
+  @field "id", type: "Id"
   @field "title"
   @field "rating"#, min: 0, max: 1
   @field "type"
