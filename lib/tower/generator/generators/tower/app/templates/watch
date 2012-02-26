@@ -4,7 +4,7 @@ async = require('async')
 File  = require('pathfinder').File
 mint  = require('mint')
 
-require("design.io-stylesheets") /(app\/client|lib\/stylesheets)/
+require("design.io-stylesheets") /(app\/client|lib\/stylesheets|vendor\/stylesheets)/
   compress: false
   debug:    false
   ignore:   /(public|node_modules)/
