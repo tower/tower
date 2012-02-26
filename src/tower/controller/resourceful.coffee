@@ -46,8 +46,10 @@ Tower.Controller.Resourceful =
     @_new arguments...
 
   create: ->
-    @_create arguments...
-
+    @_create (format) =>
+      format.html => @redirectTo action: "show"
+      format.json => @render json: @resource, status: 200
+        
   show: ->
     @_show arguments...
 
@@ -55,10 +57,14 @@ Tower.Controller.Resourceful =
     @_edit arguments...
 
   update: ->
-    @_update arguments...
-
+    @_update (format) =>
+      format.html => @redirectTo action: "show"
+      format.json => @render json: @resource, status: 200
+      
   destroy: ->
-    @_destroy arguments...
+    @_destroy (format) =>
+      format.html => @redirectTo action: "index"
+      format.json => @render json: @resource, status: 200
   
   _index: (callback) ->
     @respondWithScoped callback
@@ -70,40 +76,42 @@ Tower.Controller.Resourceful =
 
   _create: (callback) ->
     @buildResource (error, resource) =>
-      return @failure(error) unless resource
+      return @failure(error, callback) unless resource
       resource.save (error, success) =>
-        @respondWithStatus success, (format) =>
-          format.html => @redirectTo "/"
-          format.json => @render json: resource, status: 200
-
+        @respondWithStatus success, callback
+  
   _show: (callback) ->
     @findResource (error, resource) =>
       @respondWith resource, callback
-
+      
+  _edit: (callback) ->
+    @findResource (error, resource) =>
+      @respondWith resource, callback
+  
   _update: (callback) ->
     @findResource (error, resource) =>
-      return @failure(error) unless resource
-      resource.updateAttribute @params[@resourceName], (error, success) =>
-        @respondWithStatus success, callback
-
+      return @failure(error, callback) unless resource
+      resource.updateAttributes @params[@resourceName], (error) =>
+        @respondWithStatus !!!error, callback
+  
   _destroy: (callback) ->
     @findResource (error, resource) =>
-      return @failure(error) unless resource
-      resource.destroy (error, success) =>
-        @respondWithStatus success, callback
+      return @failure(error, callback) unless resource
+      resource.destroy (error) =>
+        @respondWithStatus !!!error, callback
   
   respondWithScoped: (callback) ->
     @scoped (error, scope) =>
-      return @failure(error) if error
-      @respondWith(scope.build(), callback)
-
+      return @failure(error, callback) if error
+      @respondWith scope.build(), callback
+  
   respondWithStatus: (success, callback) ->
     options = records: @resource
     
     if callback && callback.length > 1
       successResponder = new Tower.Controller.Responder(@, options)
       failureResponder = new Tower.Controller.Responder(@, options)
-    
+      
       callback.call @, successResponder, failureResponder
     
       if success
@@ -150,5 +158,8 @@ Tower.Controller.Resourceful =
         callbackWithScope(error, parent[@collectionName]())
     else
       callbackWithScope null, Tower.constant(@resourceType)
+      
+  failure: (resource, callback) ->
+    callback()
 
 module.exports = Tower.Controller.Resourceful

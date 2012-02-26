@@ -48,6 +48,10 @@ Tower.request = (method, action, options, callback) ->
   #  console.log response.controller
   controller.call request, response, (error, result) ->
     callback.call @, @response
+    
+Tower.Controller::redirectTo = (options = {}) ->
+  Tower.get options.action, ->
+    @callback arguments...
 
 Tower.Application.instance().initialize()
 

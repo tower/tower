@@ -57,6 +57,6 @@
   },
   "scripts": {
     "test":                   "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@",
-    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*",
+    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*"
   }
 }

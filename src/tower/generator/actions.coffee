@@ -20,6 +20,7 @@ File.mkdirpSync = (dir) ->
 
 Tower.Generator.Actions =
   get: (url, to) ->
+    console.log "ACTION #{url}"
     path  = @destinationPath(to)
     
     error = ->
@@ -81,7 +82,7 @@ Tower.Generator.Actions =
   copyFile: (source) ->
     {args, options, block} = @_args(arguments, 1)
     destination = args[0] || source
-    source = File.expandFile(@findInSourcePaths(source))
+    source = File.expandPath(@findInSourcePaths(source))
     
     data = File.read(source)
     
@@ -90,7 +91,7 @@ Tower.Generator.Actions =
   linkFile: (source) ->
     {args, options, block} = @_args(arguments, 1)
     destination = args.first || source
-    source = File.expandFile(@findInSourcePaths(source))
+    source = File.expandPath(@findInSourcePaths(source))
 
     @createLink destination, source, options
   
@@ -98,7 +99,7 @@ Tower.Generator.Actions =
     {args, options, block} = @_args(arguments, 1)
     destination = args[0] || source.replace(/\.tt$/, '')
     
-    source  = File.expandFile(@findInSourcePaths(source))
+    source  = File.expandPath(@findInSourcePaths(source))
     
     data    = @render(File.read(source), @locals())
     
@@ -109,7 +110,7 @@ Tower.Generator.Actions =
   
   chmod: (path, mode, options = {}) ->
     return unless behavior == "invoke"
-    path = File.expandFile(path, destination_root)
+    path = File.expandPath(path, destination_root)
     @sayStatus "chmod", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
     FileUtils.chmod_R(mode, path) unless options.pretend
 
@@ -145,7 +146,7 @@ Tower.Generator.Actions =
     return unless behavior == "invoke"
     {args, options, block} = @_args(arguments, 2)
     
-    path = File.expandFile(path, destination_root)
+    path = File.expandPath(path, destination_root)
     @sayStatus "gsub", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
 
     unless options.pretend
@@ -167,7 +168,7 @@ Tower.Generator.Actions =
   
   removeFile: (path, options = {}) ->
     return unless behavior == "invoke"
-    path  = File.expandFile(path, destination_root)
+    path  = File.expandPath(path, destination_root)
     
     @sayStatus "remove", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
     FileUtils.rm_rf(path) if !options.pretend && File.exists?(path)
@@ -203,6 +204,6 @@ Tower.Generator.Actions =
     args: args, options: options, block: block
     
   findInSourcePaths: (path) ->
-    File.expandFile(File.join(@sourceRoot, "templates", @currentSourceDirectory, path))
+    File.expandPath(File.join(@sourceRoot, "templates", @currentSourceDirectory, path))
     
 module.exports = Tower.Generator.Actions

@@ -29,6 +29,6 @@ class Tower.Dispatch.Response
     @headerSent = true
     
   redirect: (path, options = {}) ->
-    History.push options, null, path
+    global.History.push options, null, path if global.History
 
 module.exports = Tower.Dispatch.Response

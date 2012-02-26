@@ -4,5 +4,6 @@ Tower.Controller.Redirecting =
     
   redirect: ->
     @response.redirect arguments...
+    @callback() if @callback
     
 module.exports = Tower.Controller.Redirecting
