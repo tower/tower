@@ -1,6 +1,6 @@
 {
   "name":                 "tower",
-  "version":              "0.3.9",
+  "version":              "0.3.9-2",
   "description":          "Full Stack Web Framework for Node.js and the Browser",
   "homepage":             "http://viatropos.github.com/tower",
   "main":                 "lib/tower.js",
@@ -50,6 +50,7 @@
     "lingo":              ">= 0.0.4",
     "underscore.logger":  ">= 0.3.1",
     "mint":               ">= 0.3.0",
+    "ejs":                ">= 0.6.1",
     "pathfinder":         ">= 0.1.5",
     "commander":          ">= 0.4.0",
     "express":            ">= 2.5.1",

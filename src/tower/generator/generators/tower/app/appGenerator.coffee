@@ -13,11 +13,11 @@ class Tower.Generator.AppGenerator extends Tower.Generator
   
   run: ->
     @inside @project.name, '.', ->
-      @template ".gitignore" unless @program.skipProcfile
-      @template ".npmignore"
-      @template ".slugignore" unless @program.skipProcfile
+      @template "gitignore", ".gitignore" unless @program.skipProcfile
+      @template "npmignore", ".npmignore"
+      @template "slugignore", ".slugignore" unless @program.skipProcfile
       
-      @template "Cakefile"
+      @template "cake", "Cakefile"
       
       @inside "app", ->
         @inside "client", ->
@@ -79,7 +79,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "public", ->
         @template "404.html"
         @template "500.html"
-        @template "favicon.ico"
+        @template "favicon", "favicon.ico"
         @template "crossdomain.xml"
         @template "humans.txt"
         @template "robots.txt"
@@ -182,6 +182,6 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMainInsecure.swf", "WebSocketMainInsecure.swf"
     
-      @template "Watchfile"
+      @template "watch", "Watchfile"
   
 module.exports = Tower.Generator.AppGenerator

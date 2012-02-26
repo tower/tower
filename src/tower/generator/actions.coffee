@@ -20,7 +20,6 @@ File.mkdirpSync = (dir) ->
 
 Tower.Generator.Actions =
   get: (url, to) ->
-    console.log "ACTION #{url}"
     path  = @destinationPath(to)
     
     error = ->

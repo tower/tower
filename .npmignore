@@ -1,12 +1,9 @@
-*.coffee
-*.html
 .DS_Store
 .git*
 Cakefile
 wiki/
 docs/
 src/
-spec/
 dist/
 examples/
 favicon.ico
