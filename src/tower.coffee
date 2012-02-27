@@ -14,6 +14,7 @@ require './tower/store'
 require './tower/model'
 require './tower/view'
 require './tower/controller'
+require './tower/server/controller'
 require './tower/dispatch'
 require './tower/middleware'
 require './tower/command'
@@ -26,7 +27,7 @@ Tower.View.store(new Tower.Store.FileSystem(["app/views"]))
 Tower.sessionSecret       = "tower-session-secret"
 Tower.cookieSecret        = "tower-cookie-secret"
 Tower.render              = (string, options = {}) ->
-  Shift.render(options.type, string, options)
+  require("mint").render(options.type, string, options)
   
 Tower.domain              = "localhost"
 

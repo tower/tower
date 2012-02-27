@@ -121,28 +121,30 @@ window.Tower.logger = if this["_console"] then _console else console
               result += code
               compileEach 'client/controller', null, (code) ->
                 result += code
-              compileEach 'dispatch', null, (code) ->
-                result += code
-                compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
+                compileEach 'client/view', null, (code) ->
                   result += code
+                  compileEach 'dispatch', null, (code) ->
+                    result += code
+                    compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
+                      result += code
                 
-                  # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
-                  mint.coffee result, bare: false, (error, result) ->
-                    _console.error error.stack if error
-                    fs.writeFile "./dist/tower.js", result
-                    unless error
-                      #result = obscurify(result)
+                      # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
+                      mint.coffee result, bare: false, (error, result) ->
+                        _console.error error.stack if error
+                        fs.writeFile "./dist/tower.js", result
+                        unless error
+                          #result = obscurify(result)
                 
-                      mint.uglifyjs result, {}, (error, result) ->
-                        fs.writeFileSync("./dist/tower.min.js", result)
+                          mint.uglifyjs result, {}, (error, result) ->
+                            fs.writeFileSync("./dist/tower.min.js", result)
                 
-                        gzip result, (error, result) ->
+                            gzip result, (error, result) ->
                   
-                          fs.writeFileSync("./dist/tower.min.js.gz", result)
+                              fs.writeFileSync("./dist/tower.min.js.gz", result)
                   
-                          console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
+                              console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
                   
-                          fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
+                              fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
             
 task 'build-generic', ->
   paths   = findit.sync('./src')

@@ -713,6 +713,9 @@
     isHash: function(object) {
       return this.isObject(object) && !(this.isFunction(object) || this.isArray(object) || _.isDate(object) || _.isRegExp(object));
     },
+    isBaseObject: function(object) {
+      return object && object.constructor && object.constructor.name === "Object";
+    },
     isArray: Array.isArray || function(object) {
       return toString.call(object) === '[object Array]';
     },
@@ -1654,7 +1657,7 @@
       record = null;
       options.limit = 1;
       this.find(conditions, options, function(error, records) {
-        record = records[0];
+        record = records[0] || null;
         if (callback) return callback.call(_this, error, record);
       });
       return record;
@@ -2402,7 +2405,9 @@
           options = data;
           data = args.pop();
         } else {
-          options = args.pop();
+          if (Tower.Support.Object.isBaseObject(args[args.length - 1])) {
+            options = args.pop();
+          }
         }
       }
       if (!opts.data) data = {};
@@ -2412,15 +2417,16 @@
       if (!options.hasOwnProperty("instantiate")) options.instantiate = true;
       if (opts.ids && args.length > 0) ids = _.flatten(args);
       if (ids && ids.length > 0) {
+        ids = _.map(ids, function(idOrRecord) {
+          if (idOrRecord instanceof Tower.Model) {
+            return idOrRecord.get("id");
+          } else {
+            return idOrRecord;
+          }
+        });
         criteria.where({
           id: {
-            $in: _.map(ids, function(idOrRecord) {
-              if (idOrRecord instanceof Tower.Model) {
-                return idOrRecord.get("id");
-              } else {
-                return idOrRecord;
-              }
-            })
+            $in: ids
           }
         });
       }
@@ -2477,6 +2483,11 @@
     fetch: function() {},
     _find: function(conditions, options, callback) {
       if (conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length === 1) {
+        return this.store.findOne(conditions, options, callback);
+      } else if (conditions.id && !conditions.id.hasOwnProperty("$in")) {
+        conditions.id = {
+          $in: Tower.Support.Object.toArray(conditions.id)
+        };
         return this.store.findOne(conditions, options, callback);
       } else {
         return this.store.find(conditions, options, callback);
@@ -3445,8 +3456,7 @@
         return this.fields()[name] = new Tower.Model.Attribute(this, name, options);
       },
       fields: function() {
-        var _base;
-        return (_base = Tower.metadataFor(this.name)).fields || (_base.fields = {});
+        return this._fields || (this._fields = {});
       }
     },
     get: function(name) {
@@ -4748,17 +4758,17 @@
     };
 
     Builder.prototype.fields = function() {
-      var attrName, options;
-      options = args.extractOptions;
+      var args, attribute, block, options,
+        _this = this;
+      args = Tower.Support.Array.args(arguments);
+      block = Tower.Support.Array.extractBlock(args);
+      options = Tower.Support.Array.extractOptions(args);
       options.as = "fields";
       options.label || (options.label = false);
-      attrName = args.shift() || attribute.name;
-      return template.captureHaml(function() {
-        var result;
-        result = field(attrName, options(function(_field) {
-          return template.hamlConcat(fieldset(block).gsub(/\n$/, ""));
-        }));
-        return template.hamlConcat(result.gsub(/\n$/, ""));
+      attribute = args.shift() || this.attribute;
+      console.log("FIELDS");
+      return this.field(attribute, options, function(_field) {
+        return _this.fieldset(block);
       });
     };
 
@@ -4796,8 +4806,10 @@
     };
 
     Builder.prototype.field = function() {
-      var args, attributeName, block, defaults, options;
+      var args, attributeName, block, defaults, last, options;
       args = Tower.Support.Array.args(arguments);
+      last = args[args.length - 1];
+      if (last === null || last === void 0) args.pop();
       block = Tower.Support.Array.extractBlock(args);
       options = Tower.Support.Array.extractOptions(args);
       attributeName = args.shift() || "attribute.name";
@@ -4817,27 +4829,19 @@
     };
 
     Builder.prototype.button = function() {
-      var options;
-      options = args.extractOptions;
-      options.reverseMerge({
-        as: "submit"
-      });
-      options.value = args.shift || "Submit";
-      return field(options.value, options, block);
+      var args, block, options;
+      args = Tower.Support.Array.args(arguments);
+      block = Tower.Support.Array.extractBlock(args);
+      options = Tower.Support.Array.extractOptions(args);
+      options.as || (options.as = "submit");
+      options.value = args.shift() || "Submit";
+      if (options.as === "submit") {
+        options["class"] = Tower.View.submitFieldsetClass;
+      }
+      return this.field(options.value, options, block);
     };
 
-    Builder.prototype.submit = function() {
-      return template.captureHaml(function() {
-        var result;
-        result = fieldset({
-          "class": Tower.View.submitFieldsetClass(function(fields) {
-            template.hamlConcat(fields.button.apply(fields, args).gsub(/\n$/, ""));
-            if (block) return yield(fields);
-          })
-        });
-        return template.hamlConcat(result.gsub(/\n$/, ""));
-      });
-    };
+    Builder.prototype.submit = Builder.prototype.button;
 
     Builder.prototype.partial = function(path, options) {
       if (options == null) options = {};
@@ -4883,7 +4887,7 @@
       if (options == null) options = {};
       result = Tower.Support.String.parameterize(this.model.constructor.name);
       if (options.parentIndex) result += "-" + options.parentIndex;
-      result += "-" + this.attribute;
+      result += "-" + (Tower.Support.String.parameterize(this.attribute));
       result += "-" + (options.type || "field");
       if (this.index != null) result += "-" + this.index;
       return result;
@@ -4908,7 +4912,7 @@
       field = this.model.constructor.fields()[this.attribute];
       options.as || (options.as = field ? Tower.Support.String.camelize(field.type, true) : "string");
       this.inputType = inputType = options.as;
-      this.required = field.required === true;
+      this.required = !!(field && field.required === true);
       classes = [Tower.View.fieldClass, inputType];
       if (!(["submit", "fieldset"].indexOf(inputType) > -1)) {
         classes.push(field.required ? Tower.View.requiredClass : Tower.View.optionalClass);
@@ -4930,19 +4934,23 @@
         index: this.index,
         parentIndex: this.parentIndex
       });
-      (_base = this.labelHTML)["for"] || (_base["for"] = this.inputHTML.id);
-      this.labelHTML["class"] = this.addClass(this.labelHTML["class"], [Tower.View.labelClass]);
-      if (this.labelValue !== false) {
-        this.labelValue || (this.labelValue = Tower.Support.String.camelize(this.attribute.toString()));
-      }
-      this.attributes = this.fieldHTML;
-      if (options.hint !== false) {
-        this.errorHTML["class"] = this.addClass(this.errorHTML["class"], [Tower.View.errorClass]);
-        if (Tower.View.includeAria && Tower.View.hintIsPopup) {
-          (_base2 = this.errorHTML).role || (_base2.role = "tooltip");
+      if (!(["hidden", "submit"].indexOf(inputType) > -1)) {
+        (_base = this.labelHTML)["for"] || (_base["for"] = this.inputHTML.id);
+        this.labelHTML["class"] = this.addClass(this.labelHTML["class"], [Tower.View.labelClass]);
+        if (this.labelValue !== false) {
+          this.labelValue || (this.labelValue = Tower.Support.String.camelize(this.attribute.toString()));
+        }
+        if (options.hint !== false) {
+          this.errorHTML["class"] = this.addClass(this.errorHTML["class"], [Tower.View.errorClass]);
+          if (Tower.View.includeAria && Tower.View.hintIsPopup) {
+            (_base2 = this.errorHTML).role || (_base2.role = "tooltip");
+          }
         }
       }
-      (_base3 = this.inputHTML).name || (_base3.name = this.toParam());
+      this.attributes = this.fieldHTML;
+      if (inputType !== "submit") {
+        (_base3 = this.inputHTML).name || (_base3.name = this.toParam());
+      }
       this.value = options.value;
       this.dynamic = options.dynamic === true;
       this.richInput = options.hasOwnProperty("rich_input") ? !!options.rich_input : Tower.View.richInput;
@@ -5007,6 +5015,12 @@
     Field.prototype.stringInput = function(key, options) {
       return this.tag("input", _.extend({
         type: "text"
+      }, options));
+    };
+
+    Field.prototype.submitInput = function(key, options) {
+      return this.tag("input", _.extend({
+        type: "submit"
       }, options));
     };
 
@@ -5252,9 +5266,7 @@
       return a(_.extend(options, {
         href: path,
         title: title
-      }), function() {
-        return title;
-      });
+      }), title.toString());
     }
   };
 
@@ -5544,6 +5556,9 @@
       return this.contentFor("title", function() {
         return title(browserTitle);
       });
+    },
+    urlFor: function() {
+      return Tower.urlFor.apply(Tower, arguments);
     },
     yields: function(key) {
       var ending, value;
@@ -6015,7 +6030,10 @@
       });
     },
     _index: function(callback) {
-      return this.respondWithScoped(callback);
+      var _this = this;
+      return this.findCollection(function(error, collection) {
+        return _this.respondWith(collection, callback);
+      });
     },
     _new: function(callback) {
       var _this = this;
@@ -6028,8 +6046,8 @@
       var _this = this;
       return this.buildResource(function(error, resource) {
         if (!resource) return _this.failure(error, callback);
-        return resource.save(function(error, success) {
-          return _this.respondWithStatus(success, callback);
+        return resource.save(function(error) {
+          return _this.respondWithStatus(!!!error, callback);
         });
       });
     },
@@ -6048,7 +6066,7 @@
     _update: function(callback) {
       var _this = this;
       return this.findResource(function(error, resource) {
-        if (!resource) return _this.failure(error, callback);
+        if (error) return _this.failure(error, callback);
         return resource.updateAttributes(_this.params[_this.resourceName], function(error) {
           return _this.respondWithStatus(!!!error, callback);
         });
@@ -6057,7 +6075,7 @@
     _destroy: function(callback) {
       var _this = this;
       return this.findResource(function(error, resource) {
-        if (!resource) return _this.failure(error, callback);
+        if (error) return _this.failure(error, callback);
         return resource.destroy(function(error) {
           return _this.respondWithStatus(!!!error, callback);
         });
@@ -6073,7 +6091,7 @@
     respondWithStatus: function(success, callback) {
       var failureResponder, options, successResponder;
       options = {
-        records: this.resource
+        records: this.resource || this.collection
       };
       if (callback && callback.length > 1) {
         successResponder = new Tower.Controller.Responder(this, options);
@@ -6108,6 +6126,16 @@
         });
       });
     },
+    findCollection: function(callback) {
+      var _this = this;
+      return this.scoped(function(error, scope) {
+        if (error) return callback.call(_this, error, null);
+        return scope.all(function(error, collection) {
+          _this[_this.collectionName] = _this.collection = collection;
+          if (callback) return callback.call(_this, error, collection);
+        });
+      });
+    },
     findParent: function(callback) {
       var association, param, parentClass,
         _this = this;
@@ -6129,7 +6157,7 @@
       var callbackWithScope,
         _this = this;
       callbackWithScope = function(error, scope) {
-        return callback.call(_this, error, scope.where(_this.criteria().query));
+        return callback.call(_this, error, scope.where(_this.criteria()));
       };
       if (this.hasParent) {
         return this.findParent(function(error, parent) {
@@ -6189,7 +6217,7 @@
 
     Responder.prototype._json = function() {
       return this.controller.render({
-        json: _.flatten(this.options.records)[0]
+        json: this.options.records
       });
     };
 
@@ -6324,7 +6352,7 @@
       } else {
         options = {};
       }
-      options.records = args;
+      options.records = args[0];
       return Tower.Controller.Responder.respond(this, options, callback);
     },
     _mimesForAction: function() {

@@ -53,6 +53,9 @@ Tower.View.RenderingHelper =
   hasContentFor: (key) ->
     !!(@hasOwnProperty(key) && @[key] && @[key] != "")
     
+  has: (key) ->
+    !!(@hasOwnProperty(key) && @[key] && @[key] != "")
+    
   contentFor: (key, block) ->
     @[key] = block
     null

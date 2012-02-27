@@ -4,6 +4,9 @@ class Tower.Controller extends Tower.Class
   
   @instance: ->
     @_instance ||= new @
+    
+  @metadata: ->
+    @_metadata ||= {}
   
   constructor: ->
     @constructor._instance = @
