@@ -19,7 +19,7 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
       model:        @model
       attribute:    @attribute
       index:        @index
-      parentIndex: @parentIndex
+      parentIndex:  @parentIndex
     )
   
   # form.inputs :basic_info, :locale_options => {:count => 1, :past => true}

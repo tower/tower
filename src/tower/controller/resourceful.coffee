@@ -49,7 +49,7 @@ Tower.Controller.Resourceful =
     @_create (format) =>
       format.html => @redirectTo action: "show"
       format.json => @render json: @resource, status: 200
-        
+      
   show: ->
     @_show arguments...
 
@@ -67,7 +67,8 @@ Tower.Controller.Resourceful =
       format.json => @render json: @resource, status: 200
   
   _index: (callback) ->
-    @respondWithScoped callback
+    @findCollection (error, collection) =>
+      @respondWith collection, callback
 
   _new: (callback) ->
     @buildResource (error, resource) =>
@@ -77,8 +78,8 @@ Tower.Controller.Resourceful =
   _create: (callback) ->
     @buildResource (error, resource) =>
       return @failure(error, callback) unless resource
-      resource.save (error, success) =>
-        @respondWithStatus success, callback
+      resource.save (error) =>
+        @respondWithStatus !!!error, callback
   
   _show: (callback) ->
     @findResource (error, resource) =>
@@ -90,13 +91,13 @@ Tower.Controller.Resourceful =
   
   _update: (callback) ->
     @findResource (error, resource) =>
-      return @failure(error, callback) unless resource
+      return @failure(error, callback) if error
       resource.updateAttributes @params[@resourceName], (error) =>
         @respondWithStatus !!!error, callback
   
   _destroy: (callback) ->
     @findResource (error, resource) =>
-      return @failure(error, callback) unless resource
+      return @failure(error, callback) if error
       resource.destroy (error) =>
         @respondWithStatus !!!error, callback
   
@@ -106,14 +107,14 @@ Tower.Controller.Resourceful =
       @respondWith scope.build(), callback
   
   respondWithStatus: (success, callback) ->
-    options = records: @resource
+    options = records: (@resource || @collection)
     
     if callback && callback.length > 1
       successResponder = new Tower.Controller.Responder(@, options)
       failureResponder = new Tower.Controller.Responder(@, options)
       
       callback.call @, successResponder, failureResponder
-    
+      
       if success
         successResponder[format].call @
       else
@@ -134,6 +135,13 @@ Tower.Controller.Resourceful =
       scope.find @params.id, (error, resource) =>
         @[@resourceName]  = @resource = resource
         callback.call @, error, resource
+        
+  findCollection: (callback) ->
+    @scoped (error, scope) =>
+      return callback.call @, error, null if error
+      scope.all (error, collection) =>
+        @[@collectionName]  = @collection = collection
+        callback.call @, error, collection if callback
       
   findParent: (callback) ->
     association = @constructor._belongsTo
@@ -151,7 +159,7 @@ Tower.Controller.Resourceful =
 
   scoped: (callback) ->
     callbackWithScope = (error, scope) =>
-      callback.call @, error, scope.where(@criteria().query)
+      callback.call @, error, scope.where(@criteria())
     
     if @hasParent
       @findParent (error, parent) =>

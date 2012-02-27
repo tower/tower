@@ -1,5 +1,6 @@
 Tower.Store.MongoDB.Finders =
   serializeModel: (attributes) ->
+    return attributes if attributes instanceof Tower.Model
     klass = Tower.constant(@className)
     attributes.id ||= attributes._id
     delete attributes._id
@@ -23,14 +24,15 @@ Tower.Store.MongoDB.Finders =
     
     @
     
-  findOne: (query, options, callback) ->
-    self          = @
-    query         = @serializeQuery(query)
+  findOne: (conditions, options, callback) ->
+    conditions    = @serializeQuery(conditions)
     options.limit = 1
     options       = @serializeOptions(options)
     
-    @collection().findOne query, (error, doc) ->
-      doc = self.serializeModel(doc) unless error || !doc
+    @collection().findOne conditions, (error, doc) =>
+      unless error || !doc
+        doc = @serializeModel(doc)
+        doc.persistent = true
       callback.call(@, error, doc) if callback
     @
   
@@ -44,11 +46,11 @@ Tower.Store.MongoDB.Finders =
       
     result
     
-  exists: (query, options, callback) ->
+  exists: (conditions, options, callback) ->
     result        = undefined
     conditions    = @serializeQuery(conditions)
     
-    @collection().count query, (error, exists) ->
+    @collection().count conditions, (error, exists) ->
       result      = exists
       callback.call @, error, result if callback
     

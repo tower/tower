@@ -717,12 +717,29 @@
       return toString.call(object) === '[object Array]';
     },
     kind: function(object) {
-      if (typeof object !== "object") return typeof object;
-      if (object === null) return "null";
-      if (object.constructor === (new Array).constructor) return "array";
-      if (object.constructor === (new Date).constructor) return "date";
-      if (object.constructor === (new RegExp).constructor) return "regex";
-      return "object";
+      var type;
+      type = typeof object;
+      switch (type) {
+        case "object":
+          if (_.isArray(object)) return "array";
+          if (_.isArguments(object)) return "arguments";
+          if (_.isBoolean(object)) return "boolean";
+          if (_.isDate(object)) return "date";
+          if (_.isRegExp(object)) return "regex";
+          if (_.isNaN(object)) return "NaN";
+          if (_.isNull(object)) return "null";
+          if (_.isUndefined(object)) return "undefined";
+          return "object";
+        case "number":
+          if (object === +object && object === (object | 0)) return "integer";
+          if (object === +object && object !== (object | 0)) return "float";
+          return "number";
+        case "function":
+          if (_.isRegExp(object)) return "regex";
+          return "function";
+        default:
+          return type;
+      }
     },
     isObject: function(object) {
       return object === Object(object);
@@ -1290,6 +1307,11 @@
     structure: "standard",
     config: {},
     namespaces: {},
+    metadata: {},
+    metadataFor: function(name) {
+      var _base;
+      return (_base = this.metadata)[name] || (_base[name] = {});
+    },
     sync: function(method, records, callback) {
       if (callback) return callback(null, records);
     },
@@ -1479,8 +1501,8 @@
       "<": "$lt",
       "$lt": "$lt",
       "$in": "$in",
+      "$any": "$in",
       "$nin": "$nin",
-      "$any": "$any",
       "$all": "$all",
       "=~": "$regex",
       "$m": "$regex",
@@ -1660,81 +1682,7 @@
     sort: function(records, sortings) {
       var _ref;
       return (_ref = Tower.Support.Array).sortBy.apply(_ref, [records].concat(__slice.call(sortings)));
-    }
-  };
-
-  Tower.Store.Memory.Persistence = {
-    load: function(data) {
-      var record, records, _i, _len;
-      records = Tower.Support.Object.toArray(data);
-      for (_i = 0, _len = records.length; _i < _len; _i++) {
-        record = records[_i];
-        this.loadOne(this.serializeModel(record));
-      }
-      return records;
     },
-    loadOne: function(record) {
-      return this.records[record.get("id")] = record;
-    },
-    create: function(data, options, callback) {
-      var attributes, result, _i, _len;
-      result = null;
-      if (Tower.Support.Object.isArray(data)) {
-        result = [];
-        for (_i = 0, _len = data.length; _i < _len; _i++) {
-          attributes = data[_i];
-          result.push(this.createOne(attributes));
-        }
-      } else {
-        result = this.createOne(data);
-      }
-      if (callback) callback.call(this, null, result);
-      return result;
-    },
-    createOne: function(record) {
-      var attributes;
-      attributes = this.deserializeModel(record);
-      if (attributes.id == null) attributes.id = this.generateId();
-      return this.loadOne(this.serializeModel(record));
-    },
-    update: function(updates, query, options, callback) {
-      var _this = this;
-      return this.find(query, options, function(error, records) {
-        var record, _i, _len;
-        if (error) return callback(error);
-        for (_i = 0, _len = records.length; _i < _len; _i++) {
-          record = records[_i];
-          _this.updateOne(record, updates);
-        }
-        return records;
-      });
-    },
-    updateOne: function(record, updates) {
-      var key, value;
-      for (key in updates) {
-        value = updates[key];
-        this._updateAttribute(record.attributes, key, value);
-      }
-      return record;
-    },
-    destroy: function(query, options, callback) {
-      return this.find(query, options, function(error, records) {
-        var record, _i, _len;
-        if (error) return callback(error);
-        for (_i = 0, _len = records.length; _i < _len; _i++) {
-          record = records[_i];
-          this.destroyOne(record);
-        }
-        if (callback) callback.call(this, error, records);
-        return records;
-      });
-    },
-    destroyOne: function(record) {
-      return delete this.records[record.get("id")];
-    }
-  };
-
-  Tower.Store.Memory.Serialization = {
     matches: function(record, query) {
       var key, recordValue, schema, self, success, value;
       self = this;
@@ -1755,56 +1703,6 @@
       }
       return true;
     },
-    generateId: function() {
-      return this.lastId++;
-    },
-    _updateAttribute: function(attributes, key, value) {
-      var field;
-      field = this.schema()[key];
-      if (field && field.type === "Array" && !Tower.Support.Object.isArray(value)) {
-        attributes[key] || (attributes[key] = []);
-        return attributes[key].push(value);
-      } else if (this._atomicModifier(key)) {
-        return this["_" + (key.replace("$", "")) + "AtomicUpdate"](attributes, value);
-      } else {
-        return attributes[key] = value;
-      }
-    },
-    _atomicModifier: function(key) {
-      return !!this.constructor.atomicModifiers[key];
-    },
-    _pushAtomicUpdate: function(attributes, value) {
-      var _key, _value;
-      for (_key in value) {
-        _value = value[_key];
-        attributes[_key] || (attributes[_key] = []);
-        attributes[_key].push(_value);
-      }
-      return attributes;
-    },
-    _pullAtomicUpdate: function(attributes, value) {
-      var item, _attributeValue, _i, _key, _len, _value;
-      for (_key in value) {
-        _value = value[_key];
-        _attributeValue = attributes[_key];
-        if (_attributeValue) {
-          for (_i = 0, _len = _value.length; _i < _len; _i++) {
-            item = _value[_i];
-            _attributeValue.splice(_attributeValue.indexOf(item), 1);
-          }
-        }
-      }
-      return attributes;
-    },
-    _incAtomicUpdate: function(attributes, value) {
-      var _key, _value;
-      for (_key in value) {
-        _value = value[_key];
-        attributes[_key] || (attributes[_key] = 0);
-        attributes[_key] += _value;
-      }
-      return attributes;
-    },
     _matchesOperators: function(record, recordValue, operators) {
       var key, operator, self, success, value;
       success = true;
@@ -1812,7 +1710,7 @@
       for (key in operators) {
         value = operators[key];
         if (operator = Tower.Store.queryOperators[key]) {
-          if (typeof value === "function") value = value.call(record);
+          if (_.isFunction(value)) value = value.call(record);
           switch (operator) {
             case "$in":
             case "$any":
@@ -1924,6 +1822,131 @@
         }
       }
       return true;
+    }
+  };
+
+  Tower.Store.Memory.Persistence = {
+    load: function(data) {
+      var record, records, _i, _len;
+      records = Tower.Support.Object.toArray(data);
+      for (_i = 0, _len = records.length; _i < _len; _i++) {
+        record = records[_i];
+        this.loadOne(this.serializeModel(record));
+      }
+      return records;
+    },
+    loadOne: function(record) {
+      return this.records[record.get("id")] = record;
+    },
+    create: function(data, options, callback) {
+      var attributes, result, _i, _len;
+      result = null;
+      if (Tower.Support.Object.isArray(data)) {
+        result = [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          attributes = data[_i];
+          result.push(this.createOne(attributes));
+        }
+      } else {
+        result = this.createOne(data);
+      }
+      if (callback) callback.call(this, null, result);
+      return result;
+    },
+    createOne: function(record) {
+      var attributes;
+      attributes = this.deserializeModel(record);
+      if (attributes.id == null) attributes.id = this.generateId();
+      return this.loadOne(this.serializeModel(record));
+    },
+    update: function(updates, query, options, callback) {
+      var _this = this;
+      return this.find(query, options, function(error, records) {
+        var record, _i, _len;
+        if (error) return callback(error);
+        for (_i = 0, _len = records.length; _i < _len; _i++) {
+          record = records[_i];
+          _this.updateOne(record, updates);
+        }
+        callback.call(_this, error, records);
+        return records;
+      });
+    },
+    updateOne: function(record, updates) {
+      var key, value;
+      for (key in updates) {
+        value = updates[key];
+        this._updateAttribute(record.attributes, key, value);
+      }
+      return record;
+    },
+    destroy: function(query, options, callback) {
+      return this.find(query, options, function(error, records) {
+        var record, _i, _len;
+        if (error) return callback(error);
+        for (_i = 0, _len = records.length; _i < _len; _i++) {
+          record = records[_i];
+          this.destroyOne(record);
+        }
+        if (callback) callback.call(this, error, records);
+        return records;
+      });
+    },
+    destroyOne: function(record) {
+      return delete this.records[record.get("id")];
+    }
+  };
+
+  Tower.Store.Memory.Serialization = {
+    generateId: function() {
+      return this.lastId++;
+    },
+    _updateAttribute: function(attributes, key, value) {
+      var field;
+      field = this.schema()[key];
+      if (field && field.type === "Array" && !Tower.Support.Object.isArray(value)) {
+        attributes[key] || (attributes[key] = []);
+        return attributes[key].push(value);
+      } else if (this._atomicModifier(key)) {
+        return this["_" + (key.replace("$", "")) + "AtomicUpdate"](attributes, value);
+      } else {
+        return attributes[key] = value;
+      }
+    },
+    _atomicModifier: function(key) {
+      return !!this.constructor.atomicModifiers[key];
+    },
+    _pushAtomicUpdate: function(attributes, value) {
+      var _key, _value;
+      for (_key in value) {
+        _value = value[_key];
+        attributes[_key] || (attributes[_key] = []);
+        attributes[_key].push(_value);
+      }
+      return attributes;
+    },
+    _pullAtomicUpdate: function(attributes, value) {
+      var item, _attributeValue, _i, _key, _len, _value;
+      for (_key in value) {
+        _value = value[_key];
+        _attributeValue = attributes[_key];
+        if (_attributeValue) {
+          for (_i = 0, _len = _value.length; _i < _len; _i++) {
+            item = _value[_i];
+            _attributeValue.splice(_attributeValue.indexOf(item), 1);
+          }
+        }
+      }
+      return attributes;
+    },
+    _incAtomicUpdate: function(attributes, value) {
+      var _key, _value;
+      for (_key in value) {
+        _value = value[_key];
+        attributes[_key] || (attributes[_key] = 0);
+        attributes[_key] += _value;
+      }
+      return attributes;
     }
   };
 
@@ -2271,6 +2294,27 @@
 
     __extends(Model, _super);
 
+    Model.configure = function(object) {
+      this.config || (this.config = {});
+      if (typeof object === "function") object = object.call(this);
+      _.extend(this.config, object);
+      return this;
+    };
+
+    Model.defaults = function(object) {
+      var key, value;
+      for (key in object) {
+        value = object[key];
+        this["default"](key, value);
+      }
+      return this._defaults;
+    };
+
+    Model["default"] = function(key, value) {
+      this._defaults || (this._defaults = {});
+      return this._defaults[key] = value;
+    };
+
     function Model(attrs, options) {
       var attributes, definition, definitions, key, name, value;
       if (attrs == null) attrs = {};
@@ -2302,99 +2346,12 @@
 
     __extends(Scope, _super);
 
-    Scope.scopes = ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within", "allIn", "allOf", "alsoIn", "anyIn", "anyOf", "near", "notIn"];
-
-    Scope.finders = ["find", "all", "first", "last", "count", "exists"];
-
-    Scope.builders = ["create", "update", "destroy"];
-
     function Scope(options) {
       if (options == null) options = {};
       this.model = options.model;
       this.criteria = options.criteria || new Tower.Model.Criteria;
       this.store = this.model.store();
     }
-
-    Scope.prototype.find = function() {
-      var callback, conditions, criteria, options, _ref, _ref2;
-      _ref = this._extractArgs(arguments, {
-        ids: true
-      }), criteria = _ref.criteria, options = _ref.options, callback = _ref.callback;
-      _ref2 = criteria.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
-      return this._find(conditions, options, callback);
-    };
-
-    Scope.prototype.first = function(callback) {
-      var conditions, options, _ref;
-      _ref = this.toQuery("asc"), conditions = _ref.conditions, options = _ref.options;
-      return this.store.findOne(conditions, options, callback);
-    };
-
-    Scope.prototype.last = function(callback) {
-      var conditions, options, _ref;
-      _ref = this.toQuery("desc"), conditions = _ref.conditions, options = _ref.options;
-      return this.store.findOne(conditions, options, callback);
-    };
-
-    Scope.prototype.all = function(callback) {
-      var conditions, options, _ref;
-      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
-      return this.store.find(conditions, options, callback);
-    };
-
-    Scope.prototype.count = function(callback) {
-      var conditions, options, _ref;
-      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
-      return this.store.count(conditions, options, callback);
-    };
-
-    Scope.prototype.exists = function(callback) {
-      var conditions, options, _ref;
-      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
-      return this.store.exists(conditions, options, callback);
-    };
-
-    Scope.prototype.batch = function() {};
-
-    Scope.prototype.fetch = function() {};
-
-    Scope.prototype.sync = function() {};
-
-    Scope.prototype.transaction = function() {};
-
-    Scope.prototype.build = function(attributes, options) {
-      var conditions, _ref;
-      _ref = this.toCreate(), conditions = _ref.conditions, options = _ref.options;
-      return this._build(attributes, conditions, options);
-    };
-
-    Scope.prototype.create = function() {
-      var callback, criteria, data, options, _ref;
-      _ref = this._extractArgs(arguments, {
-        data: true
-      }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
-      criteria.mergeOptions(options);
-      return this._create(criteria, data, options, callback);
-    };
-
-    Scope.prototype.update = function() {
-      var callback, criteria, data, options, _ref;
-      _ref = this._extractArgs(arguments, {
-        ids: true,
-        data: true
-      }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
-      criteria.mergeOptions(options);
-      return this._update(criteria, data, options, callback);
-    };
-
-    Scope.prototype.destroy = function() {
-      var callback, criteria, options, _ref;
-      _ref = this._extractArgs(arguments, {
-        ids: true
-      }), criteria = _ref.criteria, options = _ref.options, callback = _ref.callback;
-      criteria.mergeOptions(options);
-      return this._destroy(criteria, options, callback);
-    };
 
     Scope.prototype.toQuery = function(sortDirection) {
       return this.toCriteria(sortDirection).toQuery();
@@ -2428,101 +2385,6 @@
       return new this.constructor({
         model: this.model,
         criteria: this.criteria.clone()
-      });
-    };
-
-    Scope.prototype._find = function(conditions, options, callback) {
-      if (conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length === 1) {
-        return this.store.findOne(conditions, options, callback);
-      } else {
-        return this.store.find(conditions, options, callback);
-      }
-    };
-
-    Scope.prototype._build = function(attributes, conditions, options) {
-      var object, result, _i, _len;
-      if (Tower.Support.Object.isArray(attributes)) {
-        result = [];
-        for (_i = 0, _len = attributes.length; _i < _len; _i++) {
-          object = attributes[_i];
-          result.push(this.store.serializeModel(Tower.Support.Object.extend({}, conditions, object)));
-        }
-        return result;
-      } else {
-        return this.store.serializeModel(Tower.Support.Object.extend({}, conditions, attributes));
-      }
-    };
-
-    Scope.prototype._create = function(criteria, data, opts, callback) {
-      var isArray, iterator, records,
-        _this = this;
-      if (opts.instantiate) {
-        isArray = Tower.Support.Object.isArray(data);
-        records = Tower.Support.Object.toArray(this.build(data));
-        iterator = function(record, next) {
-          if (record) {
-            return record.save(next);
-          } else {
-            return next();
-          }
-        };
-        return Tower.async(records, iterator, function(error) {
-          if (!callback) {
-            if (error) throw error;
-          } else {
-            if (error) return callback(error);
-            if (isArray) {
-              return callback(error, records);
-            } else {
-              return callback(error, records[0]);
-            }
-          }
-        });
-      } else {
-        return this.store.create(data, opts, callback);
-      }
-    };
-
-    Scope.prototype._update = function(criteria, data, opts, callback) {
-      var conditions, iterator, options, _ref;
-      _ref = criteria.toQuery(), conditions = _ref.conditions, options = _ref.options;
-      if (opts.instantiate) {
-        iterator = function(record, next) {
-          return record.updateAttributes(data, next);
-        };
-        return this._each(conditions, options, iterator, callback);
-      } else {
-        return this.store.update(data, conditions, options, callback);
-      }
-    };
-
-    Scope.prototype._destroy = function(criteria, opts, callback) {
-      var conditions, iterator, options, _ref;
-      _ref = criteria.toQuery(), conditions = _ref.conditions, options = _ref.options;
-      if (opts.instantiate) {
-        iterator = function(record, next) {
-          return record.destroy(next);
-        };
-        return this._each(conditions, options, iterator, callback);
-      } else {
-        return this.store.destroy(conditions, options, callback);
-      }
-    };
-
-    Scope.prototype._each = function(conditions, options, iterator, callback) {
-      var _this = this;
-      return this.store.find(conditions, options, function(error, records) {
-        if (error) {
-          return callback.call(_this, error, records);
-        } else {
-          return Tower.async(records, iterator, function(error) {
-            if (!callback) {
-              if (error) throw error;
-            } else {
-              if (callback) return callback.call(_this, error, records);
-            }
-          });
-        }
       });
     };
 
@@ -2574,7 +2436,214 @@
 
   })(Tower.Class);
 
-  _ref = Tower.Model.Scope.scopes;
+  Tower.Model.Scope.Finders = {
+    ClassMethods: {
+      finderMethods: ["find", "all", "first", "last", "count", "exists"]
+    },
+    find: function() {
+      var callback, conditions, criteria, options, _ref, _ref2;
+      _ref = this._extractArgs(arguments, {
+        ids: true
+      }), criteria = _ref.criteria, options = _ref.options, callback = _ref.callback;
+      _ref2 = criteria.toQuery(), conditions = _ref2.conditions, options = _ref2.options;
+      return this._find(conditions, options, callback);
+    },
+    first: function(callback) {
+      var conditions, options, _ref;
+      _ref = this.toQuery("asc"), conditions = _ref.conditions, options = _ref.options;
+      return this.store.findOne(conditions, options, callback);
+    },
+    last: function(callback) {
+      var conditions, options, _ref;
+      _ref = this.toQuery("desc"), conditions = _ref.conditions, options = _ref.options;
+      return this.store.findOne(conditions, options, callback);
+    },
+    all: function(callback) {
+      var conditions, options, _ref;
+      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
+      return this.store.find(conditions, options, callback);
+    },
+    count: function(callback) {
+      var conditions, options, _ref;
+      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
+      return this.store.count(conditions, options, callback);
+    },
+    exists: function(callback) {
+      var conditions, options, _ref;
+      _ref = this.toQuery(), conditions = _ref.conditions, options = _ref.options;
+      return this.store.exists(conditions, options, callback);
+    },
+    batch: function() {},
+    fetch: function() {},
+    _find: function(conditions, options, callback) {
+      if (conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length === 1) {
+        return this.store.findOne(conditions, options, callback);
+      } else {
+        return this.store.find(conditions, options, callback);
+      }
+    }
+  };
+
+  Tower.Model.Scope.Persistence = {
+    ClassMethods: {
+      persistenceMethods: ["create", "update", "destroy"]
+    },
+    build: function(attributes, options) {
+      var conditions, _ref;
+      _ref = this.toCreate(), conditions = _ref.conditions, options = _ref.options;
+      return this._build(attributes, conditions, options);
+    },
+    create: function() {
+      var callback, criteria, data, options, _ref;
+      _ref = this._extractArgs(arguments, {
+        data: true
+      }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
+      criteria.mergeOptions(options);
+      return this._create(criteria, data, options, callback);
+    },
+    update: function() {
+      var callback, criteria, data, options, _ref;
+      _ref = this._extractArgs(arguments, {
+        ids: true,
+        data: true
+      }), criteria = _ref.criteria, data = _ref.data, options = _ref.options, callback = _ref.callback;
+      criteria.mergeOptions(options);
+      return this._update(criteria, data, options, callback);
+    },
+    destroy: function() {
+      var callback, criteria, options, _ref;
+      _ref = this._extractArgs(arguments, {
+        ids: true
+      }), criteria = _ref.criteria, options = _ref.options, callback = _ref.callback;
+      criteria.mergeOptions(options);
+      return this._destroy(criteria, options, callback);
+    },
+    sync: function() {},
+    transaction: function() {},
+    _build: function(attributes, conditions, options) {
+      var object, result, _i, _len;
+      if (Tower.Support.Object.isArray(attributes)) {
+        result = [];
+        for (_i = 0, _len = attributes.length; _i < _len; _i++) {
+          object = attributes[_i];
+          result.push(this.store.serializeModel(Tower.Support.Object.extend({}, conditions, object)));
+        }
+        return result;
+      } else {
+        return this.store.serializeModel(Tower.Support.Object.extend({}, conditions, attributes));
+      }
+    },
+    _create: function(criteria, data, opts, callback) {
+      var isArray, iterator, records,
+        _this = this;
+      if (opts.instantiate) {
+        isArray = Tower.Support.Object.isArray(data);
+        records = Tower.Support.Object.toArray(this.build(data));
+        iterator = function(record, next) {
+          if (record) {
+            return record.save(next);
+          } else {
+            return next();
+          }
+        };
+        return Tower.async(records, iterator, function(error) {
+          if (!callback) {
+            if (error) throw error;
+          } else {
+            if (error) return callback(error);
+            if (isArray) {
+              return callback(error, records);
+            } else {
+              return callback(error, records[0]);
+            }
+          }
+        });
+      } else {
+        return this.store.create(data, opts, callback);
+      }
+    },
+    _update: function(criteria, data, opts, callback) {
+      var conditions, iterator, options, _ref;
+      _ref = criteria.toQuery(), conditions = _ref.conditions, options = _ref.options;
+      if (opts.instantiate) {
+        iterator = function(record, next) {
+          return record.updateAttributes(data, next);
+        };
+        return this._each(conditions, options, iterator, callback);
+      } else {
+        return this.store.update(data, conditions, options, callback);
+      }
+    },
+    _destroy: function(criteria, opts, callback) {
+      var conditions, iterator, options, _ref;
+      _ref = criteria.toQuery(), conditions = _ref.conditions, options = _ref.options;
+      if (opts.instantiate) {
+        iterator = function(record, next) {
+          return record.destroy(next);
+        };
+        return this._each(conditions, options, iterator, callback);
+      } else {
+        return this.store.destroy(conditions, options, callback);
+      }
+    },
+    _each: function(conditions, options, iterator, callback) {
+      var _this = this;
+      return this.store.find(conditions, options, function(error, records) {
+        if (error) {
+          return callback.call(_this, error, records);
+        } else {
+          return Tower.async(records, iterator, function(error) {
+            if (!callback) {
+              if (error) throw error;
+            } else {
+              if (callback) return callback.call(_this, error, records);
+            }
+          });
+        }
+      });
+    }
+  };
+
+  Tower.Model.Scope.Queries = {
+    ClassMethods: {
+      queryMethods: ["where", "order", "asc", "desc", "limit", "offset", "select", "joins", "includes", "excludes", "paginate", "within", "allIn", "allOf", "alsoIn", "anyIn", "anyOf", "near", "notIn"],
+      queryOperators: {
+        ">=": "$gte",
+        "$gte": "$gte",
+        ">": "$gt",
+        "$gt": "$gt",
+        "<=": "$lte",
+        "$lte": "$lte",
+        "<": "$lt",
+        "$lt": "$lt",
+        "$in": "$in",
+        "$nin": "$nin",
+        "$any": "$any",
+        "$all": "$all",
+        "=~": "$regex",
+        "$m": "$regex",
+        "$regex": "$regex",
+        "$match": "$match",
+        "$notMatch": "$notMatch",
+        "!~": "$nm",
+        "$nm": "$nm",
+        "=": "$eq",
+        "$eq": "$eq",
+        "!=": "$neq",
+        "$neq": "$neq",
+        "$null": "$null",
+        "$notNull": "$notNull"
+      }
+    }
+  };
+
+  Tower.Model.Scope.include(Tower.Model.Scope.Finders);
+
+  Tower.Model.Scope.include(Tower.Model.Scope.Persistence);
+
+  Tower.Model.Scope.include(Tower.Model.Scope.Queries);
+
+  _ref = Tower.Model.Scope.queryMethods;
   _fn = function(key) {
     return Tower.Model.Scope.prototype[key] = function() {
       var clone, _ref2;
@@ -2851,7 +2920,7 @@
     }
   };
 
-  Tower.Model.Metadata = {
+  Tower.Model.Conversion = {
     ClassMethods: {
       baseClass: function() {
         if (this.__super__ && this.__super__.constructor.baseClass && this.__super__.constructor !== Tower.Model) {
@@ -2862,10 +2931,10 @@
       },
       toParam: function() {
         if (this === Tower.Model) return;
-        return Tower.Support.String.pluralize(Tower.Support.String.parameterize(this.name));
+        return this.metadata().paramNamePlural;
       },
       toKey: function() {
-        return Tower.Support.String.parameterize(this.name);
+        return this.metadata().paramName;
       },
       url: function(options) {
         var url;
@@ -2880,6 +2949,36 @@
               return options;
           }
         }).call(this);
+      },
+      collectionName: function() {
+        return Tower.Support.String.camelize(Tower.Support.String.pluralize(this.name), true);
+      },
+      resourceName: function() {
+        return Tower.Support.String.camelize(this.name, true);
+      },
+      metadata: function() {
+        var className, classNamePlural, controllerName, metadata, modelName, name, namePlural, namespace, paramName, paramNamePlural;
+        className = this.name;
+        metadata = this.metadata[className];
+        if (metadata) return metadata;
+        namespace = Tower.namespace();
+        name = Tower.Support.String.camelize(className, true);
+        namePlural = Tower.Support.String.pluralize(name);
+        classNamePlural = Tower.Support.String.pluralize(className);
+        paramName = Tower.Support.String.parameterize(name);
+        paramNamePlural = Tower.Support.String.parameterize(namePlural);
+        modelName = "" + namespace + "." + className;
+        controllerName = "" + namespace + "." + classNamePlural + "Controller";
+        return this.metadata[className] = {
+          name: name,
+          namePlural: namePlural,
+          className: className,
+          classNamePlural: classNamePlural,
+          paramName: paramName,
+          paramNamePlural: paramNamePlural,
+          modelName: modelName,
+          controllerName: controllerName
+        };
       }
     },
     toLabel: function() {
@@ -2904,6 +3003,13 @@
     },
     toKey: function() {
       return this.constructor.tokey();
+    },
+    toCacheKey: function() {},
+    toModel: function() {
+      return this;
+    },
+    metadata: function() {
+      return this.constructor.metadata();
     }
   };
 
@@ -3259,23 +3365,21 @@
         return relation;
       }
     },
-    InstanceMethods: {
-      relation: function(name) {
-        return this.constructor.relation(name).scoped(this);
-      },
-      buildRelation: function(name, attributes, callback) {
-        return this.relation(name).build(attributes, callback);
-      },
-      createRelation: function(name, attributes, callback) {
-        return this.relation(name).create(attributes, callback);
-      },
-      destroyRelations: function() {}
-    }
+    relation: function(name) {
+      return this.constructor.relation(name).scoped(this);
+    },
+    buildRelation: function(name, attributes, callback) {
+      return this.relation(name).build(attributes, callback);
+    },
+    createRelation: function(name, attributes, callback) {
+      return this.relation(name).create(attributes, callback);
+    },
+    destroyRelations: function() {}
   };
 
-  Tower.Model.Field = (function() {
+  Tower.Model.Attribute = (function() {
 
-    function Field(owner, name, options) {
+    function Attribute(owner, name, options) {
       if (options == null) options = {};
       this.owner = owner;
       this.name = key = name;
@@ -3298,7 +3402,7 @@
       }
     }
 
-    Field.prototype.defaultValue = function(record) {
+    Attribute.prototype.defaultValue = function(record) {
       var _default;
       _default = this._default;
       if (Tower.Support.Object.isArray(_default)) {
@@ -3312,15 +3416,15 @@
       }
     };
 
-    Field.prototype.encode = function(value, binding) {
+    Attribute.prototype.encode = function(value, binding) {
       return this.code(this._encode, value, binding);
     };
 
-    Field.prototype.decode = function(value, binding) {
+    Attribute.prototype.decode = function(value, binding) {
       return this.code(this._decode, value, binding);
     };
 
-    Field.prototype.code = function(type, value, binding) {
+    Attribute.prototype.code = function(type, value, binding) {
       switch (type) {
         case "string":
           return binding[type].call(binding[type], value);
@@ -3331,17 +3435,18 @@
       }
     };
 
-    return Field;
+    return Attribute;
 
   })();
 
-  Tower.Model.Fields = {
+  Tower.Model.Attributes = {
     ClassMethods: {
       field: function(name, options) {
-        return this.fields()[name] = new Tower.Model.Field(this, name, options);
+        return this.fields()[name] = new Tower.Model.Attribute(this, name, options);
       },
       fields: function() {
-        return this._fields || (this._fields = {});
+        var _base;
+        return (_base = Tower.metadataFor(this.name)).fields || (_base.fields = {});
       }
     },
     get: function(name) {
@@ -3352,26 +3457,24 @@
       }
       return this.attributes[name];
     },
-    set: function(name, value) {
-      var key;
-      if (typeof name === "object") {
-        for (key in name) {
-          value = name[key];
-          this._set(key, value);
-        }
+    set: function(key, value) {
+      var updates, _results;
+      if (typeof key === "object") {
+        updates = key;
       } else {
-        this._set(name, value);
+        updates = {};
+        updates[key] = value;
       }
-      return value;
+      _results = [];
+      for (key in updates) {
+        value = updates[key];
+        _results.push(this._set(key, value));
+      }
+      return _results;
     },
-    _set: function(name, value) {
-      var beforeValue;
-      beforeValue = this._attributeChange(name, value);
-      this.attributes[name] = value;
-      return value;
-    },
-    has: function(name) {
-      return this.attributes.hasOwnProperty(name);
+    _set: function(key, value) {
+      this._attributeChange(key, value);
+      return this.attributes[key] = value;
     },
     assignAttributes: function(attributes) {
       var key, value;
@@ -3381,6 +3484,9 @@
         this.attributes[key] = value;
       }
       return this;
+    },
+    has: function(key) {
+      return this.attributes.hasOwnProperty(key);
     }
   };
 
@@ -3411,12 +3517,6 @@
       },
       load: function(records) {
         return this.store().load(records);
-      },
-      collectionName: function() {
-        return Tower.Support.String.camelize(Tower.Support.String.pluralize(this.name), true);
-      },
-      resourceName: function() {
-        return Tower.Support.String.camelize(this.name, true);
       }
     },
     InstanceMethods: {
@@ -3442,6 +3542,7 @@
         return this;
       },
       updateAttributes: function(attributes, callback) {
+        this.set(attributes);
         return this._update(attributes, callback);
       },
       destroy: function(callback) {
@@ -3489,7 +3590,6 @@
             if (!error) {
               _this.changes = {};
               _this.persistent = true;
-              _this.updateSyncAction("create");
             }
             return complete.call(_this, error);
           });
@@ -3508,7 +3608,6 @@
             if (!error) {
               _this.changes = {};
               _this.persistent = true;
-              _this.updateSyncAction("update");
             }
             return complete.call(_this, error);
           });
@@ -3528,14 +3627,12 @@
               _this.persistent = false;
               _this.changes = {};
               delete _this.attributes.id;
-              _this.updateSyncAction("destroy");
             }
             return complete.call(_this, error);
           });
         });
         return this;
-      },
-      updateSyncAction: function() {}
+      }
     }
   };
 
@@ -3566,7 +3663,7 @@
     }
   };
 
-  _ref2 = Tower.Model.Scope.scopes;
+  _ref2 = Tower.Model.Scope.queryMethods;
   _fn2 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref3;
@@ -3578,7 +3675,7 @@
     _fn2(key);
   }
 
-  _ref3 = Tower.Model.Scope.finders;
+  _ref3 = Tower.Model.Scope.finderMethods;
   _fn3 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref4;
@@ -3590,7 +3687,7 @@
     _fn3(key);
   }
 
-  _ref4 = Tower.Model.Scope.builders;
+  _ref4 = Tower.Model.Scope.persistenceMethods;
   _fn4 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref5;
@@ -3969,7 +4066,7 @@
 
   Tower.Model.include(Tower.Support.Callbacks);
 
-  Tower.Model.include(Tower.Model.Metadata);
+  Tower.Model.include(Tower.Model.Conversion);
 
   Tower.Model.include(Tower.Model.Dirty);
 
@@ -3987,7 +4084,7 @@
 
   Tower.Model.include(Tower.Model.Validations);
 
-  Tower.Model.include(Tower.Model.Fields);
+  Tower.Model.include(Tower.Model.Attributes);
 
   Tower.Model.include(Tower.Model.Timestamp);
 
@@ -4134,6 +4231,7 @@
     },
     partial: function(path, options, callback) {
       var prefixes, template;
+      console.log("PARTIAL");
       if (typeof options === "function") {
         callback = options;
         options = {};
@@ -4229,7 +4327,9 @@
     renderWithEngine: function(template, engine) {
       var mint;
       mint = require("mint");
-      return mint[mint.engine(engine || "coffee")](template, {});
+      return mint[mint.engine(engine || "coffee")](template, {}, function(error, result) {
+        if (error) return console.log(error);
+      });
     }
   };
 
@@ -5369,35 +5469,25 @@
       return result.join();
     },
     openGraphMetaTags: function(options) {
-      var result;
       if (options == null) options = {};
-      result = [];
-      if (options.title) result.push(openGraphMetaTag("og:title", options.title));
-      if (options.type) result.push(openGraphMetaTag("og:type", options.type));
-      if (options.image) result.push(openGraphMetaTag("og:image", options.image));
-      if (options.site) result.push(openGraphMetaTag("og:siteName", options.site));
+      if (options.title) openGraphMetaTag("og:title", options.title);
+      if (options.type) openGraphMetaTag("og:type", options.type);
+      if (options.image) openGraphMetaTag("og:image", options.image);
+      if (options.site) openGraphMetaTag("og:siteName", options.site);
       if (options.description) {
-        result.push(openGraphMetaTag("og:description", options.description));
+        openGraphMetaTag("og:description", options.description);
       }
-      if (options.email) result.push(openGraphMetaTag("og:email", options.email));
-      if (options.phone) {
-        result.push(openGraphMetaTag("og:phoneNumber", options.phone));
-      }
-      if (options.fax) result.push(openGraphMetaTag("og:faxNumber", options.fax));
-      if (options.lat) result.push(openGraphMetaTag("og:latitude", options.lat));
-      if (options.lng) result.push(openGraphMetaTag("og:longitude", options.lng));
-      if (options.street) {
-        result.push(openGraphMetaTag("og:street-address", options.street));
-      }
-      if (options.city) result.push(openGraphMetaTag("og:locality", options.city));
-      if (options.state) result.push(openGraphMetaTag("og:region", options.state));
-      if (options.zip) {
-        result.push(openGraphMetaTag("og:postal-code", options.zip));
-      }
-      if (options.country) {
-        result.push(openGraphMetaTag("og:country-name", options.country));
-      }
-      return result.join("\n");
+      if (options.email) openGraphMetaTag("og:email", options.email);
+      if (options.phone) openGraphMetaTag("og:phoneNumber", options.phone);
+      if (options.fax) openGraphMetaTag("og:faxNumber", options.fax);
+      if (options.lat) openGraphMetaTag("og:latitude", options.lat);
+      if (options.lng) openGraphMetaTag("og:longitude", options.lng);
+      if (options.street) openGraphMetaTag("og:street-address", options.street);
+      if (options.city) openGraphMetaTag("og:locality", options.city);
+      if (options.state) openGraphMetaTag("og:region", options.state);
+      if (options.zip) openGraphMetaTag("og:postal-code", options.zip);
+      if (options.country) openGraphMetaTag("og:country-name", options.country);
+      return null;
     },
     openGraphMetaTag: function(property, content) {
       return meta({
@@ -5411,31 +5501,38 @@
 
   Tower.View.RenderingHelper = {
     partial: function(path, options, callback) {
-      var item, name, prefixes, template, tmpl, _len5, _m, _ref5;
-      if (typeof options === "function") {
-        callback = options;
-        options = {};
-      }
-      options || (options = {});
-      path = path.split("/");
-      path[path.length - 1] = "_" + path[path.length - 1];
-      path = path.join("/");
-      prefixes = options.prefixes;
-      if (this._context) prefixes || (prefixes = [this._context.collectionName]);
-      template = this._readTemplate(path, prefixes, options.type || Tower.View.engine);
-      template = this.renderWithEngine(String(template));
-      tmpl = "(function() {" + (String(template)) + "})";
-      if (options.collection) {
-        name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true);
-        _ref5 = options.collection;
-        for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
-          item = _ref5[_m];
-          this[name] = item;
-          eval(tmpl).call(this);
-          delete this[name];
+      var item, locals, name, prefixes, template, tmpl, _len5, _m, _ref5;
+      try {
+        if (typeof options === "function") {
+          callback = options;
+          options = {};
         }
-      } else {
-        eval(tmpl).call(this);
+        options || (options = {});
+        options.locals || (options.locals = {});
+        locals = options.locals;
+        path = path.split("/");
+        path[path.length - 1] = "_" + path[path.length - 1];
+        path = path.join("/");
+        prefixes = options.prefixes;
+        if (this._context) prefixes || (prefixes = [this._context.collectionName]);
+        template = this._readTemplate(path, prefixes, options.type || Tower.View.engine);
+        template = this.renderWithEngine(String(template));
+        if (options.collection) {
+          name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true);
+          tmpl = eval("(function(data) { with(data) { this." + name + " = " + name + "; " + (String(template)) + " } })");
+          _ref5 = options.collection;
+          for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+            item = _ref5[_m];
+            locals[name] = item;
+            tmpl.call(this, locals);
+            delete this[name];
+          }
+        } else {
+          tmpl = "(function(data) { with(data) { " + (String(template)) + " } })";
+          eval(tmpl).call(this, locals);
+        }
+      } catch (error) {
+        console.log(error);
       }
       return null;
     },
@@ -5702,7 +5799,8 @@
     },
     redirect: function() {
       var _ref5;
-      return (_ref5 = this.response).redirect.apply(_ref5, arguments);
+      (_ref5 = this.response).redirect.apply(_ref5, arguments);
+      if (this.callback) return this.callback();
     }
   };
 
@@ -5863,7 +5961,20 @@
       return this._new.apply(this, arguments);
     },
     create: function() {
-      return this._create.apply(this, arguments);
+      var _this = this;
+      return this._create(function(format) {
+        format.html(function() {
+          return _this.redirectTo({
+            action: "show"
+          });
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.resource,
+            status: 200
+          });
+        });
+      });
     },
     show: function() {
       return this._show.apply(this, arguments);
@@ -5872,10 +5983,36 @@
       return this._edit.apply(this, arguments);
     },
     update: function() {
-      return this._update.apply(this, arguments);
+      var _this = this;
+      return this._update(function(format) {
+        format.html(function() {
+          return _this.redirectTo({
+            action: "show"
+          });
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.resource,
+            status: 200
+          });
+        });
+      });
     },
     destroy: function() {
-      return this._destroy.apply(this, arguments);
+      var _this = this;
+      return this._destroy(function(format) {
+        format.html(function() {
+          return _this.redirectTo({
+            action: "index"
+          });
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.resource,
+            status: 200
+          });
+        });
+      });
     },
     _index: function(callback) {
       return this.respondWithScoped(callback);
@@ -5890,19 +6027,9 @@
     _create: function(callback) {
       var _this = this;
       return this.buildResource(function(error, resource) {
-        if (!resource) return _this.failure(error);
+        if (!resource) return _this.failure(error, callback);
         return resource.save(function(error, success) {
-          return _this.respondWithStatus(success, function(format) {
-            format.html(function() {
-              return _this.redirectTo("/");
-            });
-            return format.json(function() {
-              return _this.render({
-                json: resource,
-                status: 200
-              });
-            });
-          });
+          return _this.respondWithStatus(success, callback);
         });
       });
     },
@@ -5912,28 +6039,34 @@
         return _this.respondWith(resource, callback);
       });
     },
+    _edit: function(callback) {
+      var _this = this;
+      return this.findResource(function(error, resource) {
+        return _this.respondWith(resource, callback);
+      });
+    },
     _update: function(callback) {
       var _this = this;
       return this.findResource(function(error, resource) {
-        if (!resource) return _this.failure(error);
-        return resource.updateAttribute(_this.params[_this.resourceName], function(error, success) {
-          return _this.respondWithStatus(success, callback);
+        if (!resource) return _this.failure(error, callback);
+        return resource.updateAttributes(_this.params[_this.resourceName], function(error) {
+          return _this.respondWithStatus(!!!error, callback);
         });
       });
     },
     _destroy: function(callback) {
       var _this = this;
       return this.findResource(function(error, resource) {
-        if (!resource) return _this.failure(error);
-        return resource.destroy(function(error, success) {
-          return _this.respondWithStatus(success, callback);
+        if (!resource) return _this.failure(error, callback);
+        return resource.destroy(function(error) {
+          return _this.respondWithStatus(!!!error, callback);
         });
       });
     },
     respondWithScoped: function(callback) {
       var _this = this;
       return this.scoped(function(error, scope) {
-        if (error) return _this.failure(error);
+        if (error) return _this.failure(error, callback);
         return _this.respondWith(scope.build(), callback);
       });
     },
@@ -6005,6 +6138,9 @@
       } else {
         return callbackWithScope(null, Tower.constant(this.resourceType));
       }
+    },
+    failure: function(resource, callback) {
+      return callback();
     }
   };
 
@@ -7222,7 +7358,7 @@
 
     Response.prototype.redirect = function(path, options) {
       if (options == null) options = {};
-      return History.push(options, null, path);
+      if (global.History) return global.History.push(options, null, path);
     };
 
     return Response;

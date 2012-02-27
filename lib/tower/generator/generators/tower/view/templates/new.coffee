@@ -1,3 +1,3 @@
-title "New <%= model.className %>"
+contentFor "title", "New <%= model.className %>"
 
 partial "form"

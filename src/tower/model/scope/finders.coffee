@@ -41,6 +41,9 @@ Tower.Model.Scope.Finders =
   _find: (conditions, options, callback) ->
     if conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
       @store.findOne conditions, options, callback
+    else if conditions.id && !conditions.id.hasOwnProperty("$in")
+      conditions.id = {$in: Tower.Support.Object.toArray(conditions.id)}
+      @store.findOne conditions, options, callback
     else
       @store.find conditions, options, callback
     

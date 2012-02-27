@@ -21,7 +21,7 @@ class Tower.Controller.Responder
     @controller.render action: @controller.action
   
   _json: ->
-    @controller.render json: _.flatten(@options.records)[0]
+    @controller.render json: @options.records
   
   toFormat: ->
     try

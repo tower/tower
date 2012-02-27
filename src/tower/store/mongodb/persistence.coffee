@@ -1,22 +1,22 @@
 Tower.Store.MongoDB.Persistence =
   create: (attributes, options, callback) ->
-    self        = @
     record      = @serializeModel(attributes)
     attributes  = @serializeAttributesForCreate(attributes)
     options     = @serializeOptions(options)
     
-    @collection().insert attributes, options, (error, docs) ->
+    @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
-      record.id = doc["_id"]
+      record.set("id", doc["_id"])
+      record.persistent = !!!error
       callback.call(@, error, record.attributes) if callback
     
-    record.id   = attributes["_id"]
+    record.set("id", attributes["_id"])
     
     record
     
-  update: (updates, query, options, callback) ->  
+  update: (updates, conditions, options, callback) ->  
     updates         = @serializeAttributesForUpdate(updates)
-    query           = @serializeQuery(query)
+    conditions      = @serializeQuery(conditions)
     options         = @serializeOptions(options)
     
     options.safe    = true unless options.hasOwnProperty("safe")
@@ -24,16 +24,16 @@ Tower.Store.MongoDB.Persistence =
     # update multiple docs, b/c it defaults to false
     options.multi   = true unless options.hasOwnProperty("multi")
     
-    @collection().update query, updates, options, (error) =>
+    @collection().update conditions, updates, options, (error) =>
       callback.call(@, error) if callback
       
     @
     
-  destroy: (query, options, callback) ->
-    query           = @serializeQuery(query)
+  destroy: (conditions, options, callback) ->
+    conditions      = @serializeQuery(conditions)
     options         = @serializeOptions(options)
     
-    @collection().remove query, options, (error) =>
+    @collection().remove conditions, options, (error) =>
       callback.call(@, error) if callback
 
     @

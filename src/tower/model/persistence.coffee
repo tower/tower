@@ -84,10 +84,10 @@ Tower.Model.Persistence =
     _create: (callback) ->
       @runCallbacks "create", (block) =>
         complete = @_callback(block, callback)
-
+        
         @constructor.create @, instantiate: false, (error) =>
           throw error if error && !callback
-
+          
           unless error
             @changes    = {}
             @persistent = true
@@ -116,12 +116,12 @@ Tower.Model.Persistence =
 
         @constructor.destroy @, instantiate: false, (error) =>
           throw error if error && !callback
-
+          
           unless error
             @persistent = false
             @changes    = {}
             delete @attributes.id
-
+          
           complete.call(@, error)
 
       @

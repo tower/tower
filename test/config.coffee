@@ -39,7 +39,8 @@ Tower.request = (method, action, options, callback) ->
   params.action   = action
   url             = "http://example.com/#{action}"
   location        = new Tower.Dispatch.Url(url)
-  controller      = new App.CustomController()
+  controller      = options.controller || new App.CustomController()
+  delete options.controller
   request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
   response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
   request.params  = params
@@ -48,10 +49,36 @@ Tower.request = (method, action, options, callback) ->
   #  console.log response.controller
   controller.call request, response, (error, result) ->
     callback.call @, @response
-    
+
+# redirectTo action: "show"
 Tower.Controller::redirectTo = (options = {}) ->
-  Tower.get options.action, ->
-    @callback arguments...
+  callback  = @callback
+  
+  if typeof options == "string"
+    string  = options
+    options = {}
+    if string.match(/[\/:]/)
+      options.path    = string
+    else
+      options.action  = string
+      
+  if options.action
+    options.path = switch options.action
+      when "show"
+        "show"
+      else
+        options.action
+        
+  params = @params
+  params.id = @resource.get("id") if @resource
+  
+  process.nextTick =>
+    if params.hasOwnProperty("id")
+      params = {id: params.id}
+    else
+      params = {}
+      
+    Tower.get options.path, params, callback
 
 Tower.Application.instance().initialize()
 

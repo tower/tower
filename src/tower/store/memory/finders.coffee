@@ -26,7 +26,7 @@ Tower.Store.Memory.Finders =
     record = null
     options.limit = 1
     @find conditions, options, (error, records) => 
-      record = records[0]
+      record = records[0] || null
       callback.call(@, error, record) if callback
     record
   

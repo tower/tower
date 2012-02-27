@@ -24,15 +24,16 @@ class Tower.View.Form.Builder extends Tower.View.Component
     new Tower.View.Form.Fieldset([], options).render(block)
     
   fields: ->
-    options           = args.extractOptions
+    args              = Tower.Support.Array.args(arguments)
+    block             = Tower.Support.Array.extractBlock(args)
+    options           = Tower.Support.Array.extractOptions(args)
     options.as        = "fields"
     options.label   ||= false
-    attrName          = args.shift() || attribute.name
-    template.captureHaml ->
-      result          = field attrName, options (_field) ->
-        template.hamlConcat fieldset(block).gsub(/\n$/, "")
-      template.hamlConcat result.gsub(/\n$/, "")
-
+    attribute         = args.shift() || @attribute
+    console.log "FIELDS"
+    @field attribute, options, (_field) =>
+      @fieldset(block)
+      
   fieldsFor: ->
     options        = args.extractOptions
     attribute      = args.shift
@@ -71,6 +72,8 @@ class Tower.View.Form.Builder extends Tower.View.Component
 
   field: ->  
     args          = Tower.Support.Array.args(arguments)
+    last          = args[args.length - 1]
+    args.pop() if last == null || last == undefined
     block         = Tower.Support.Array.extractBlock(args)
     options       = Tower.Support.Array.extractOptions(args)
     attributeName = args.shift() || "attribute.name"
@@ -97,17 +100,15 @@ class Tower.View.Form.Builder extends Tower.View.Component
     new Tower.View.Form.Field([], _.extend(defaults, options)).render(block)
 
   button: ->
-    options = args.extractOptions
-    options.reverseMerge(as: "submit")
-    options.value = args.shift || "Submit"
-    field(options.value, options, block)
-
-  submit: ->
-    template.captureHaml ->
-      result = fieldset class: Tower.View.submitFieldsetClass (fields) ->
-        template.hamlConcat fields.button(args...).gsub(/\n$/, "")
-        yield(fields) if block
-      template.hamlConcat result.gsub(/\n$/, "")
+    args          = Tower.Support.Array.args(arguments)
+    block         = Tower.Support.Array.extractBlock(args)
+    options       = Tower.Support.Array.extractOptions(args)
+    options.as  ||= "submit"
+    options.value = args.shift() || "Submit"
+    options.class = Tower.View.submitFieldsetClass if options.as == "submit"
+    @field options.value, options, block
+  
+  submit: @::button
 
   partial: (path, options = {}) ->
     @template.render partial: path, locals: options.merge(fields: self)

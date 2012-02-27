@@ -4,7 +4,7 @@ Tower.Model.Attributes =
       @fields()[name] = new Tower.Model.Attribute(@, name, options)
     
     fields: ->
-      Tower.metadataFor(@name).fields   ||= {}
+      @_fields   ||= {}
       
   get: (name) ->
     unless @has(name)

@@ -37,7 +37,7 @@ Tower.Controller.Responding =
     else
       options   = {}
 
-    options.records = args
+    options.records = args[0]
     
     Tower.Controller.Responder.respond(@, options, callback)
     

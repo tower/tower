@@ -1,1 +1,1 @@
-h1 "Hello #{@resource.firstName}"
+h1 "Hello #{@resource.get("firstName")}"

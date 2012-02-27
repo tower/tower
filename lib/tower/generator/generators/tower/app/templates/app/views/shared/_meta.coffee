@@ -1,6 +1,9 @@
 meta charset: "utf-8"
 
-title t("title")
+if hasContentFor "title"
+  title @title
+else
+  title t("title")
 
 meta name: "description", content: t("description")
 meta name: "keywords", content: t("keywords")

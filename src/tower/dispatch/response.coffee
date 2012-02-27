@@ -15,7 +15,7 @@ class Tower.Dispatch.Response
   writeHead: (statusCode, headers) ->
     @statusCode = statusCode
     @headers    = headers
-
+  
   setHeader: (key, value) ->
     throw new Error("Headers already sent") if @headerSent
     @headers[key] = value

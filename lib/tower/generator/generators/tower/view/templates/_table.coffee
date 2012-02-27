@@ -8,8 +8,8 @@ tableFor "<%= model.pluralName %>", (t) ->
   t.body ->
     for <%= model.name %> in @<%= model.pluralName %>
       t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
-        t.cell <%= model.name %>.get("<%= model.attributes[i].name %>")<% } %>
-        t.cell linkTo 'Show', <%= model.name %>
-        t.cell linkTo 'Edit', edit<%= model.className %>Path(<%= model.name %>)
-        t.cell linkTo 'Destroy', <%= model.name %>, method: "delete"
-  linkTo 'New <%= model.className %>', new<%= model.className %>Path()
+        t.cell -> <%= model.name %>.get("<%= model.attributes[i].name %>")<% } %>
+        t.cell -> linkTo 'Show', urlFor(<%= model.name %>)
+        t.cell -> linkTo 'Edit', urlFor(<%= model.name %>, action: "edit")
+        t.cell -> linkTo 'Destroy', urlFor(<%= model.name %>), method: "delete"
+  linkTo 'New <%= model.className %>', urlFor(<%= model.namespacedClassName %>, action: "new")

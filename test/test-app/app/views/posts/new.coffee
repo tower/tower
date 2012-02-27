@@ -1,2 +1,3 @@
-formFor @post, ->
-  li "Hll"
+contentFor "title", "New Post"
+
+partial "form"

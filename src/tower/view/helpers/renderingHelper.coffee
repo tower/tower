@@ -36,6 +36,9 @@ Tower.View.RenderingHelper =
     
     @contentFor "title", ->
       title browserTitle
+      
+  urlFor: ->
+    Tower.urlFor(arguments...)
     
   yields: (key) ->
     value = @[key]

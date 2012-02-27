@@ -162,6 +162,9 @@ Tower.Support.Object =
   isHash: (object) ->
     @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
     
+  isBaseObject: (object) ->
+    object && object.constructor && object.constructor.name == "Object"
+    
   isArray: Array.isArray || (object) ->
     toString.call(object) == '[object Array]'
   

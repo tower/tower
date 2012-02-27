@@ -9,7 +9,7 @@ class Tower.View.Form.Field extends Tower.View.Component
   toId: (options = {}) ->
     result = Tower.Support.String.parameterize(@model.constructor.name)#@model.toKey()
     result += "-#{options.parentIndex}" if options.parentIndex
-    result += "-#{@attribute}"
+    result += "-#{Tower.Support.String.parameterize(@attribute)}"
     result += "-#{options.type || "field"}"
     result += "-#{@index}" if @index?
     result
@@ -31,9 +31,10 @@ class Tower.View.Form.Field extends Tower.View.Component
     
     # input type
     field           = @model.constructor.fields()[@attribute]
+    
     options.as    ||= if field then Tower.Support.String.camelize(field.type, true) else "string"
     @inputType      = inputType = options.as
-    @required       = field.required == true
+    @required       = !!(field && field.required == true)
     
     # class
     classes = [Tower.View.fieldClass, inputType]
@@ -51,29 +52,22 @@ class Tower.View.Form.Field extends Tower.View.Component
       @fieldHTML.id = @toId(type: "field", index: @index, parentIndex: @parentIndex)
     
     @inputHTML.id = @toId(type: "input", index: @index, parentIndex: @parentIndex)
-    #unless ["hidden", "submit"].indexOf(inputType) > -1
-    #  # errors
-    #  @errors           = options.slice("richInput", "errorHTML", "error", "model", "index", "parentIndex", "attribute", "template")
-    #
-    #  # label
-    #  @label            = options.slice("richInput", "labelHTML", "label", "model", "index", "parentIndex", "attribute", "template")
-    #
-    #  # hint
-    #  @hints            = options.slice("richInput", "hintHtml", "hint", "model", "index", "parentIndex", "attribute", "template")
-    @labelHTML.for ||= @inputHTML.id
-    @labelHTML.class = @addClass @labelHTML.class, [Tower.View.labelClass]
+    unless ["hidden", "submit"].indexOf(inputType) > -1
+      @labelHTML.for ||= @inputHTML.id
+      @labelHTML.class = @addClass @labelHTML.class, [Tower.View.labelClass]
     
-    unless @labelValue == false
-      @labelValue ||= Tower.Support.String.camelize(@attribute.toString())
-    
+      unless @labelValue == false
+        @labelValue ||= Tower.Support.String.camelize(@attribute.toString())
+      
+      unless options.hint == false
+        @errorHTML.class = @addClass @errorHTML.class, [Tower.View.errorClass]
+        if Tower.View.includeAria && Tower.View.hintIsPopup
+          @errorHTML.role ||= "tooltip"
+
     @attributes       = @fieldHTML
     
-    unless options.hint == false
-      @errorHTML.class = @addClass @errorHTML.class, [Tower.View.errorClass]
-      if Tower.View.includeAria && Tower.View.hintIsPopup
-        @errorHTML.role ||= "tooltip"
+    @inputHTML.name ||= @toParam() unless inputType == "submit"
     
-    @inputHTML.name ||= @toParam()
     @value          = options.value
     @dynamic        = options.dynamic == true
     @richInput      = if options.hasOwnProperty("rich_input") then !!options.rich_input else Tower.View.richInput
@@ -132,6 +126,9 @@ class Tower.View.Form.Field extends Tower.View.Component
     
   stringInput: (key, options) ->
     @tag "input", _.extend(type: "text", options)
+    
+  submitInput: (key, options) ->
+    @tag "input", _.extend(type: "submit", options)
     
   fileInput: (key, options) ->
     @tag "input", _.extend(type: "file", options)
