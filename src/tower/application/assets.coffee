@@ -26,7 +26,7 @@ Tower.Application.Assets =
         manifest = {}
 
         bundle = (type, extension, compressor, callback) ->
-          assets      = Tower.assets[type]
+          assets      = Tower.config.assets[type]
 
           compile = (data, next) ->
             {name, paths} = data
@@ -40,7 +40,7 @@ Tower.Application.Assets =
             fs.writeFileSync "public/assets/#{name}#{extension}", content
 
             process.nextTick ->
-              compressor content, (error, result) ->
+              compressor content, {}, (error, result) ->
                 if error
                   console.log error
                   return next(error)

@@ -43,7 +43,7 @@ Tower.Support.Object.extend Tower,
     request.query   = location.params
     Tower.Application.instance().handle request, response, ->
       callback.call @, @response
-      
+  
   raise: ->
     throw new Error(Tower.t(arguments...))
   
@@ -117,3 +117,11 @@ Tower.Support.Object.extend Tower,
 
     iterate()
 
+if Tower.client
+  Tower.request = (method, path, options, callback) ->
+    if typeof options == "function"
+      callback      = options
+      options       = {}
+    options       ||= {}
+    url             = path
+    History.pushState(null, null, url)

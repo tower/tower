@@ -4,6 +4,8 @@
 
 Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built for the client and server from the ground up.
 
+[![Build Status](https://secure.travis-ci.org/viatropos/tower.png)](http://travis-ci.org/viatropos/tower)
+
 Follow me [@viatropos](http://twitter.com/viatropos).
 
 More docs in the docs section on [towerjs.org](http://towerjs.org).  Docs are a work in progress.
@@ -133,7 +135,7 @@ class App.User extends Tower.Model
   @hasOne "address", embed: true
   
   @hasMany "posts"
-  @hasmany "comments"
+  @hasMany "comments"
   
   @scope "thisWeek", -> @where(createdAt: ">=": -> require('moment')().subtract('days', 7))
   

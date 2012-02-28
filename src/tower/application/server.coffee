@@ -179,8 +179,6 @@ class Tower.Application extends Tower.Class
   fileChanged: (path) ->
     delete require.cache[require.resolve(path)]
     
-    if path.match
-    
 require './assets'
 
 module.exports = Tower.Application

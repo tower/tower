@@ -81,7 +81,7 @@ class Tower.Application extends Tower.Class
         self.handle request, response
       #@History.Adapter.trigger global, "statechange"
     else
-      _console.warn "History not enabled"
+      console.warn "History not enabled"
 
     # History.pushState state: 1, "State 1", "?state=1"
     # History.back()

@@ -100,15 +100,17 @@ class Tower.Store.Ajax extends Tower.Store.Memory
       super
   
   createRequest: (records, options = {}) ->
+    json = @toJSON(records)
+    Tower.urlFor(records.constructor)
     @queue =>
       params =
-        url:  Tower.urlFor(records)
+        url:  url
         type: "POST"
-        data: @toJSON(records)
+        data: json
         
       @ajax(options, params)
-        .success(@createSuccess(record))
-        .error(@createFailure(record))
+        .success(@createSuccess(records))
+        .error(@createFailure(records))
       
   createSuccess: (record) ->
     (data, status, xhr) =>

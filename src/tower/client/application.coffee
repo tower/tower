@@ -1,4 +1,7 @@
 class Tower.Application extends Tower.Class
+  @dispatcher:  global
+  dispatcher:   global
+  
   @instance: ->
     @_instance
 
@@ -51,8 +54,9 @@ class Tower.Application extends Tower.Class
         response  = new Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response
+      @dispatcher.trigger "statechange"
     else
-      _console.warn "History not enabled"
+      console.warn "History not enabled"
 
     # History.pushState state: 1, "State 1", "?state=1"
     # History.back()
@@ -62,7 +66,8 @@ class Tower.Application extends Tower.Class
     @listen()
     
   handle: (request, response, out) ->
-    env   = Tower.env
+    env     = Tower.env
+    removed = ""
     
     next  = (err) ->
       layer               = undefined

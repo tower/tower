@@ -18,4 +18,4 @@ module.exports =
   s3:
     key:    ""
     secret: ""
-    bucket: "cloud.<%= project.paramName %>.com"
+    bucket: "cloud.<%= project.cssName %>.com"

@@ -16,7 +16,7 @@ Tower.View.Helpers =
   
   contentTypeTag: (type = "UTF-8") ->
     "<meta charset=\"#{type}\" />"
-
+    
   javascriptTag: (path) ->
     "<script type=\"text/javascript\" src=\"#{path}\" ></script>"
 

@@ -30,7 +30,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
     options.as        = "fields"
     options.label   ||= false
     attribute         = args.shift() || @attribute
-    console.log "FIELDS"
+    
     @field attribute, options, (_field) =>
       @fieldset(block)
       
