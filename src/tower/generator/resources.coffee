@@ -103,8 +103,9 @@ Tower.Generator.Resources =
     
   generateRandom: (code = "hex") ->
     crypto  = require('crypto')
+    uuid    = require('node-uuid')
     hash    = crypto.createHash("sha1")
-    hash.update(crypto.randomBytes(64).toString())
+    hash.update(uuid.v4())
     hash.digest(code)
   
   buildUser: (callback) ->
