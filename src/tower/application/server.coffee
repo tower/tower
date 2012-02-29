@@ -147,12 +147,12 @@ class Tower.Application extends Tower.Class
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, ->
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
+        @watch()
   
   run: ->
     @initialize()
     @stack()
     @listen()
-    #@watch()
     
   watch: ->
     forever = require("forever")
