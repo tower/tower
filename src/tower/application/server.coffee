@@ -1,8 +1,7 @@
 connect = require('express')
 File    = require('pathfinder').File
-
-server  = require('express').createServer()
-io      = require('socket.io').listen(server)
+server  = null
+io      = null
 
 class Tower.Application extends Tower.Class
   @include Tower.Support.Callbacks
@@ -60,11 +59,10 @@ class Tower.Application extends Tower.Class
   
   constructor: ->  
     throw new Error("Already initialized application") if Tower.Application._instance
+    @server ||= require('express').createServer()
     Tower.Application.middleware ||= []
     Tower.Application._instance = @
     global[@constructor.name] = @
-    @server ||= server
-    @io     ||= io
     
   use: ->
     @constructor.use arguments...
@@ -142,21 +140,26 @@ class Tower.Application extends Tower.Class
     
   listen: ->
     unless Tower.env == "test"
-      @server.listen(Tower.port)
-      _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
+      @server.on "error", (error) ->
+        if error.errno == "EADDRINUSE"
+          console.log("   Try using a different port: `node server -p 3001`")
+        #console.log(error.stack)
+      @io     ||= require('socket.io').listen(@server)
+      @server.listen Tower.port, =>
+        _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
+        @watch()
   
   run: ->
     @initialize()
     @stack()
     @listen()
-    #@watch()
     
   watch: ->
     forever = require("forever")
     
     child = new (forever.Monitor)("node_modules/design.io/bin/design.io",
-      max:    3
-      silent: true
+      max:    1
+      silent: false
       options: []
     )
     
@@ -175,11 +178,14 @@ class Tower.Application extends Tower.Class
           _
       catch error
         @
+    
+    child.on "error", (error) =>
+      console.log error
+        
+    forever.startServer(child);
         
   fileChanged: (path) ->
     delete require.cache[require.resolve(path)]
-    
-    if path.match
     
 require './assets'
 

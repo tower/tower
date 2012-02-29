@@ -1,3 +1,4 @@
+require './page'
 class App.Post extends App.Page
   @hasMany "categories", embed: true, as: "categorizable"
   

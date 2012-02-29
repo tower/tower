@@ -5,7 +5,7 @@ Tower.Store.Memory.Persistence =
     records
     
   loadOne: (record) ->
-    @records[record.get("id")] = record
+    @records[record.get("id").toString()] = record
     
   create: (data, options, callback) ->
     result    = null
@@ -21,7 +21,7 @@ Tower.Store.Memory.Persistence =
     
   createOne: (record) ->
     attributes = @deserializeModel(record)
-    attributes.id ?= @generateId()
+    attributes.id ?= @generateId().toString()
     @loadOne(@serializeModel(record))
   
   update: (updates, query, options, callback) ->
@@ -44,6 +44,6 @@ Tower.Store.Memory.Persistence =
       records
         
   destroyOne: (record) ->
-    delete @records[record.get("id")]
+    delete @records[record.get("id").toString()]
     
 module.exports = Tower.Store.Memory.Persistence

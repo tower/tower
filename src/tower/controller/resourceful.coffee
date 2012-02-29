@@ -79,7 +79,7 @@ Tower.Controller.Resourceful =
     @buildResource (error, resource) =>
       return @failure(error, callback) unless resource
       resource.save (error) =>
-        @respondWithStatus !!!error, callback
+        @respondWithStatus Tower.Support.Object.isBlank(resource.errors), callback
   
   _show: (callback) ->
     @findResource (error, resource) =>
@@ -93,7 +93,7 @@ Tower.Controller.Resourceful =
     @findResource (error, resource) =>
       return @failure(error, callback) if error
       resource.updateAttributes @params[@resourceName], (error) =>
-        @respondWithStatus !!!error, callback
+        @respondWithStatus !!!error && Tower.Support.Object.isBlank(resource.errors), callback
   
   _destroy: (callback) ->
     @findResource (error, resource) =>

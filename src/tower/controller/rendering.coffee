@@ -72,10 +72,13 @@ Tower.Controller.Rendering =
     if typeof args[0] == "function"
       callback  = args.shift()
     
-    options   ||= {}  
-    key         = if action && !!action.match(/\//) then "file" else "action"
-    options[key] = action
-    options.callback = callback if callback
+    options         ||= {}
+    
+    if action
+      key             = if !!action.match(/\//) then "file" else "action"
+      options[key]    = action
+      
+    options.callback  = callback if callback
     
     options
   

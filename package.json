@@ -59,14 +59,14 @@
     "coffeekup":          ">= 0.3.1",
     "restler":            ">= 0.0.1",
     "useragent":          ">= 1.0.5",
-    "URIjs":              ">= 1.4.2"
+    "URIjs":              ">= 1.4.2",
+    "moment":             ">= 1.4.0"
   },
   "devDependencies": {
     "coffee-script":      ">= 1.2.0",
     "stylus":             ">= 0.17.0",
     "ejs":                ">= 0.6.1",
     "uglify-js":          ">= 1.1.1",
-    "design.io":          ">= 0.3.0",
     "mocha":              ">= 0.8.1",
     "chai":               ">= 0.3.3",
     "sinon":              ">= 1.3.1",

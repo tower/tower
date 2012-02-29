@@ -20,7 +20,7 @@ describeWith = (store) ->
       assert.equal controller.resourceName, "post"
       assert.equal controller.collectionName, "posts"
       assert.equal controller.resourceType, "Post"
-    
+###    
     describe 'GET actions', ->
       beforeEach (done) ->
         Tower.Route.clear()
@@ -79,6 +79,7 @@ describeWith = (store) ->
 
 """
         Tower.get "index", controller: controller, ->
+          console.log @body
           assert.equal output, @body
           assert.equal @headers["Content-Type"], "text/html"
     
@@ -155,5 +156,6 @@ describeWith = (store) ->
         Tower.get "show", id: 1, controller: controller, ->
           assert.equal output, @body
           assert.equal @headers["Content-Type"], "text/html"
-
+###
 describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.MongoDB)

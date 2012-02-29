@@ -35,10 +35,14 @@ describe 'Tower.Controller.Rendering', ->
   #  Tower.get 'renderActionHelloWorld', ->
   #    assert.equal @body, "Hello world!"
   #    
-  #test 'renderActionUpcasedHelloWorld', ->
-  #  Tower.get 'renderActionUpcasedHelloWorld', ->
-  #    assert.equal @body, "Hello world!"
-  #    
+  test 'renderActionUpcasedHelloWorld', ->
+    Tower.get 'renderActionUpcasedHelloWorld', ->
+      assert.equal @body, "<h1>renderActionUpcasedHelloWorld</h1>\n"
+      
+  test 'renderActionUpcasedHelloWorldAsString', ->
+    Tower.get 'renderActionUpcasedHelloWorldAsString', ->
+      assert.equal @body, "<h1>renderActionUpcasedHelloWorld</h1>\n"
+  
   #test 'renderActionHelloWorldAsString', ->
   #  Tower.get 'renderActionUpcasedHelloWorld', ->
   #    assert.equal @body, "Hello world!"

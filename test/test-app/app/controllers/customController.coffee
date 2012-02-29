@@ -108,6 +108,9 @@ class App.CustomController extends Tower.Controller
   
   renderActionHelloWorldAsString: ->
     @render "helloWorld"
+    
+  renderActionUpcasedHelloWorldAsString: ->
+    @render "HelloWorld"
   
   renderActionHelloWorldWithSymbol: ->
     @render action: "helloWorld"

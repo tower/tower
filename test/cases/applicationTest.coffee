@@ -4,8 +4,8 @@ describe "Tower.Application", ->
   beforeEach ->
     @application = Tower.Application.instance().initialize()
     
-  it "should load routes", ->
-    assert.equal Tower.Route.all().length, 1
+  #it "should load routes", ->
+  #  assert.equal Tower.Route.all().length, 1
     
   it "should load models", ->
     assert.ok App.Post

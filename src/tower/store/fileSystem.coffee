@@ -17,15 +17,15 @@ class Tower.Store.FileSystem extends Tower.Store
     if typeof(path) == "string"
       for loadPath in loadPaths
         for prefix in prefixes
-          patterns.push new RegExp("#{loadPath}/#{prefix}/#{path}\\.#{ext}", "i")
-        patterns.push new RegExp("#{loadPath}/#{path}\\.#{ext}", "i")
+          patterns.push new RegExp("#{loadPath}/#{prefix}/#{path}\\.#{ext}")
+        patterns.push new RegExp("#{loadPath}/#{path}\\.#{ext}")
     else
       patterns.push path
-    
+      
     templatePaths = File.files.apply(File, loadPaths)
     
-    for templatePath in templatePaths
-      for pattern in patterns
+    for pattern in patterns
+      for templatePath in templatePaths
         if !!templatePath.match(pattern)
           callback(null, templatePath) if callback
           return templatePath
