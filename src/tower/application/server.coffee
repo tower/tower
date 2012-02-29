@@ -145,7 +145,7 @@ class Tower.Application extends Tower.Class
           console.log("   Try using a different port: `node server -p 3001`")
         #console.log(error.stack)
       @io     ||= require('socket.io').listen(@server)
-      @server.listen Tower.port, ->
+      @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         @watch()
   
