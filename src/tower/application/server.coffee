@@ -152,7 +152,7 @@ class Tower.Application extends Tower.Class
     @initialize()
     @stack()
     @listen()
-    @watch()
+    #@watch()
     
   watch: ->
     forever = require("forever")
