@@ -1,13 +1,32 @@
 # http://nodejs.org/docs/v0.6.1/api/repl.html
 class Tower.Command.Console
   constructor: (argv) ->
-    @program = require('commander')
+    @program = program = require('commander')
     
-    @program
-      .option('-e, --environment [value]', 'output parsed comments for debugging')
-      .parse(argv)
+    program
+      .version(Tower.version)
+      .option('-e, --environment [value]')
+      .option '-h, --help', '''
+\ \ Usage: 
+\ \   tower console [options]
+\ \ 
+\ \ Options:
+\ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
+\ \   -h, --help                        output usage information
+\ \   -v, --version                     output version number
+\ \   
+'''
+    program.parse(argv)
+    
+    program.environment ||= "development"
+    
+    if program.help
+      console.log program.options[program.options.length - 1].description
+      process.exit()
   
   run: ->
+    Tower.env = @program.environment
+    
     client = require("repl").start("tower> ").context
     
     client.reload = ->

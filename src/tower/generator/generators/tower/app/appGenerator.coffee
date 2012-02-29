@@ -79,7 +79,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "public", ->
         @template "404.html"
         @template "500.html"
-        @template "favicon", "favicon.ico"
+        @template "favicon.png", "favicon.png"
         @template "crossdomain.xml"
         @template "humans.txt"
         @template "robots.txt"

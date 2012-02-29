@@ -16,6 +16,8 @@ appleViewportMetaTag width: "device-width", max: 1, scalable: false
 
 stylesheets "lib", "vendor", "application"
 
+link href: "/favicon.png", rel: "icon shortcut-icon favicon"
+
 #if browserIs("firefox")
 #  stylesheets "font"
 
