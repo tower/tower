@@ -116,6 +116,7 @@ describe 'Tower.Model.Criteria', ->
       criteria.order "name", "asc"
       criteria.paginate perPage: 20, page: 2
       
+      # this doesn't work in node 0.4 b/c regular expressions aren't "equal" so to speak
       #assert.deepEqual criteria.conditions(), { id: { '$in': [1, 2, 3, 4, 5, 6] }, name: { '!~': /[a-z]/, '=~': /[0-9]/ } }
       assert.deepEqual criteria.options(), { limit : 20, offset : 20, sort: [["name", "asc"]] }
       
