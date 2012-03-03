@@ -162,7 +162,7 @@ class App.Post extends Tower.Model
   @before "validate", "slugify"
   
   slugify: ->
-    @set "slug", @get("title").replace(/^[a-z0-9]+/g, "-").toLowerCase()
+    @set "slug", @get("title").replace(/[^a-z0-9]+/g, "-").toLowerCase()
 ```
 ``` coffeescript
 # app/models/comment.coffee
