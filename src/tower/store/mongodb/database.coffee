@@ -2,9 +2,10 @@ Tower.Store.MongoDB.Database =
   ClassMethods:
     initialize: (callback) ->
       unless @database
+        try @configure Tower.config.databases.mongodb
         env   = @env()
         mongo = @lib()
-      
+        
         if env.url
           url = new Tower.Dispatch.Url(env.url)
           env.name      = url.segments[0] || url.user
