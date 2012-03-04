@@ -1,6 +1,6 @@
-class <%= project.className %> extends Tower.Application
+class <%= app.namespace %> extends Tower.Application
   @configure ->
-    @use "favicon", Tower.publicPath + "/favicon.ico"
+    @use "favicon", Tower.publicPath + "/favicon.png"
     @use "static",  Tower.publicPath, maxAge: Tower.publicCacheDuration
     @use "profiler" if Tower.env != "production"
     @use "logger"
@@ -8,7 +8,7 @@ class <%= project.className %> extends Tower.Application
     @use "cookieParser", Tower.cookieSecret
     @use "session", secret: Tower.sessionSecret, cookie: {domain: ".#{Tower.cookieDomain}"}
     @use "bodyParser"
-    @use "csrf"
+    #@use "csrf"
     @use "methodOverride", "_method"
     @use Tower.Middleware.Agent
     @use Tower.Middleware.Location
@@ -17,4 +17,4 @@ class <%= project.className %> extends Tower.Application
     
     @use Tower.Middleware.Router
 
-module.exports = global.<%= project.className %> = new <%= project.className %>
+module.exports = global.<%= app.namespace %> = new <%= app.namespace %>

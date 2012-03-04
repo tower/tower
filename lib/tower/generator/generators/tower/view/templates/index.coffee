@@ -1,3 +1,3 @@
-contentFor "title", "Listing <%= model.pluralName %>"
+@title = "Listing <%= model.pluralName %>"
 
 partial "table"

@@ -22,14 +22,14 @@ class Tower.Command.Generate
 \ \   tower generate model Post title:string body:text belongsTo:user
 \ \   
 '''
-      program.parse(argv)
-      
-      program.help ||= program.rawArgs.length == 3
-      
-      if program.help
-        console.log program.options[program.options.length - 1].description
-        process.exit()
-  
+    program.parse(argv)
+    
+    program.help ||= program.rawArgs.length == 3
+    
+    if program.help
+      console.log program.options[program.options.length - 1].description
+      process.exit()
+
   run: ->
     Tower.Generator.run("#{@program.args[1]}Generator", program: @program, modelName: @program.args[2])
   

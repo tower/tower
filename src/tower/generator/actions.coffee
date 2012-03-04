@@ -33,14 +33,35 @@ Tower.Generator.Actions =
     return if action == "create" && File.exists(path)
     
     key = switch action
-      when "create"
-        '   \x1b[36mcreate\x1b[0m'
       when "destroy"
         '   \x1b[36mremove\x1b[0m'
+      else
+        '   \x1b[36m' + action + '\x1b[0m'
     
     console.log("#{key} : #{File.relativePath(path)}")
     
-  injectIntoFile: (file, options, callback) ->
+  injectIntoFile: (path, options, callback) ->
+    if typeof options == "string"
+      string    = options
+      options   = callback
+      callback  = undefined
+    if typeof options == "function"
+      callback  = options
+      options   = {}
+      
+    path    = @destinationPath(path)
+    data    = File.read(path)
+    
+    if typeof callback == "function"
+      data = callback.call @, data
+    else if options.after
+      data = data.replace options.after, (_) -> "#{_}#{string}"
+    else if options.before
+      data = data.replace options.before, (_) -> "#{string}#{_}"
+    
+    @log "update", path
+    
+    fs.writeFileSync path, data
     
   readFile: (file) ->
   
@@ -50,7 +71,7 @@ Tower.Generator.Actions =
     File.write path, data
   
   destinationPath: (path) ->
-    File.join(@destinationRoot, @currentDestinationDirectory, path)
+    _path.normalize File.join(@destinationRoot, @currentDestinationDirectory, path)
   
   file: (file, data) ->
     @createFile(file, data)
@@ -111,7 +132,7 @@ Tower.Generator.Actions =
     return unless behavior == "invoke"
     path = File.expandPath(path, destination_root)
     @sayStatus "chmod", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
-    FileUtils.chmod_R(mode, path) unless options.pretend
+    File.chmod(mode, path) unless options.pretend
 
   prependToFile: (path) ->
     {args, options, block} = @_args(arguments, 1)
@@ -170,7 +191,7 @@ Tower.Generator.Actions =
     path  = File.expandPath(path, destination_root)
     
     @sayStatus "remove", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
-    FileUtils.rm_rf(path) if !options.pretend && File.exists?(path)
+    File.removeRecursively(path) if !options.pretend && File.exists?(path)
   
   removeDir: ->
     @removeFile arguments...

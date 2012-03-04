@@ -1,8 +1,8 @@
 {
-  "name":                 "<%= project.name %>",
+  "name":                 "<%= app.name %>",
   "version":              "0.0.1",
-  "description":          "<%= project.description %>",
-  "homepage":             "http://<%= user.username %>.github.com/<%= project.name %>",
+  "description":          "<%= app.description %>",
+  "homepage":             "http://<%= user.username %>.github.com/<%= app.name %>",
   "main":                 "./server.js",
   "author":               "<%= user.name %> <<%= user.email %>>",
   "keywords": [
@@ -22,11 +22,11 @@
     }
   ],
   "bugs": {
-    "url":                "https://github.com/<%= user.username %>/<%= project.name %>/issues"
+    "url":                "https://github.com/<%= user.username %>/<%= app.name %>/issues"
   },
   "repository": {
     "type":               "git",
-    "url":                "https://github.com/<%= user.username %>/<%= project.name %>.git"
+    "url":                "https://github.com/<%= user.username %>/<%= app.name %>.git"
   },
   "engines": {
     "node":               ">= 0.4.0",

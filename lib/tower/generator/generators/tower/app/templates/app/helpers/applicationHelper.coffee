@@ -1,1 +1,1 @@
-<%= project.className %>.ApplicationHelper = {}
+<%= app.namespace %>.ApplicationHelper = {}

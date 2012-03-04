@@ -1,4 +1,4 @@
 module.exports =
-  secret: "<%= project.session %>"
+  secret: "<%= app.session %>"
   cookie:
     domain: ".localhost"

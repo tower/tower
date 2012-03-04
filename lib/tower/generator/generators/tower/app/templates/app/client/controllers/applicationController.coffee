@@ -1,3 +1,2 @@
-class <%= project.className %>.ApplicationController extends Tower.Controller
-  ready: ->
-    
+class <%= app.namespace %>.ApplicationController extends Tower.Controller
+  

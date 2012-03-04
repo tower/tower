@@ -1,2 +1,2 @@
-class <%= model.namespacedClassName %>Mailer extends Tower.Mailer
+class <%= app.namespace %>.<%= model.className %>Mailer extends Tower.Mailer
   

@@ -12,4 +12,5 @@ tableFor "<%= model.pluralName %>", (t) ->
         t.cell -> linkTo 'Show', urlFor(<%= model.name %>)
         t.cell -> linkTo 'Edit', urlFor(<%= model.name %>, action: "edit")
         t.cell -> linkTo 'Destroy', urlFor(<%= model.name %>), method: "delete"
-  linkTo 'New <%= model.className %>', urlFor(<%= model.namespacedClassName %>, action: "new")
+  t.foot ->
+    linkTo 'New <%= model.className %>', urlFor(<%= model.namespacedClassName %>, action: "new")

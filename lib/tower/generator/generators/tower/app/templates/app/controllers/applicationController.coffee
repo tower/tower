@@ -1,5 +1,5 @@
-class <%= project.className %>.ApplicationController extends Tower.Controller
+class <%= app.namespace %>.ApplicationController extends Tower.Controller
   @layout "application"
   
-  index: ->
-    @render template: "index"
+  welcome: ->
+    @render "welcome"

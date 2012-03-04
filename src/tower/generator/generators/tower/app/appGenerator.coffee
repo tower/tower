@@ -1,19 +1,18 @@
 class Tower.Generator.AppGenerator extends Tower.Generator
   sourceRoot: __dirname
   
-  buildProject: (name = @projectName) ->
-    project = super(name)
+  buildApp: (name = @appName) ->
+    app = super(name)
     
-    project.title       = @program.title || Tower.Support.String.camelize(project.name)
-    project.description = @program.description
-    project.keywords    = @program.keywords
-    project.namespace   = @program.namespace
+    app.title       = @program.title || Tower.Support.String.camelize(app.name)
+    app.description = @program.description
+    app.keywords    = @program.keywords
     
-    project
+    app
   
   run: ->
-    @inside @project.name, '.', ->
-      @template "gitignore", ".gitignore" unless @program.skipProcfile
+    @inside @app.name, '.', ->
+      @template "gitignore", ".gitignore" unless @program.skipGitfile
       @template "npmignore", ".npmignore"
       @template "slugignore", ".slugignore" unless @program.skipProcfile
       
@@ -40,7 +39,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @directory "models"
       
         @inside "views", ->
-          @template "index.coffee"
+          @template "welcome.coffee"
           @inside "layouts", ->
             @template "application.coffee"
           @inside "shared", ->

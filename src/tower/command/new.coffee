@@ -39,6 +39,6 @@ class Tower.Command.New
       process.exit()
   
   run: ->
-    Tower.Generator.run("appGenerator", program: @program, projectName: @program.args[1])
+    Tower.Generator.run("appGenerator", program: @program, appName: @program.args[1])
 
 module.exports = Tower.Command.New

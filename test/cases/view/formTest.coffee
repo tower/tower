@@ -42,7 +42,7 @@ describe 'Tower.View.Form', ->
             
           </abbr>
         </label>
-        <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" aria-required="false" />
+        <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" value="Lance" aria-required="false" />
       </li>
     </ol>
   </fieldset>

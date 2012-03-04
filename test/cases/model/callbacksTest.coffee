@@ -9,8 +9,8 @@ describeWith = (store) ->
       
       done()
 
-    describe 'create', ->
-      test 'should have callback if instantiate: false', (done) ->
-        done()
+    #describe 'create', ->
+    #  test 'should have callback if instantiate: false', (done) ->
+    #    done()
       
 describeWith Tower.Store.Memory

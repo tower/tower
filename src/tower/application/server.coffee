@@ -71,10 +71,12 @@ class Tower.Application extends Tower.Class
     #Tower.Route.initialize()
     require "#{Tower.root}/config/application"
     
-    @runCallbacks "initialize", =>
-      paths = File.files("#{Tower.root}/config/preinitializers")
+    requirePaths = (paths) ->
       for path in paths
         require(path) if path.match(/\.(coffee|js)$/)
+    
+    @runCallbacks "initialize", =>
+      requirePaths File.files("#{Tower.root}/config/preinitializers")
       
       @runCallbacks "configure", =>
         for key in @constructor.configNames
@@ -96,24 +98,18 @@ class Tower.Application extends Tower.Class
         # load initializers
         require "#{Tower.root}/config/environments/#{Tower.env}"
       
-      paths = File.files("#{Tower.root}/config/initializers")
+      requirePaths File.files("#{Tower.root}/config/initializers")
       
-      for path in paths
-        require(path) if path.match(/\.(coffee|js)$/)
-    
       configs = @constructor.initializers()
       
       config.call(@) for config in configs
       
-      paths = File.files("#{Tower.root}/app/helpers")
-      paths = paths.concat File.files("#{Tower.root}/app/models")
-      paths = paths.concat ["#{Tower.root}/app/controllers/applicationController"]
+      requirePaths File.files("#{Tower.root}/app/helpers")
+      requirePaths File.files("#{Tower.root}/app/models")
+      require "#{Tower.root}/app/controllers/applicationController"
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
-        paths = paths.concat File.files("#{Tower.root}/app/#{path}")
+        requirePaths File.files("#{Tower.root}/app/#{path}")
       
-      for path in paths
-        require(path) if path.match(/\.(coffee|js)$/)
-    
   teardown: ->
     @server.stack.length = 0 # remove middleware
     Tower.Route.clear()
@@ -183,8 +179,10 @@ class Tower.Application extends Tower.Class
       console.log error
         
     forever.startServer(child);
-        
+      
   fileChanged: (path) ->
+    #name = File.basename(path, File.extname(path))
+    
     delete require.cache[require.resolve(path)]
     
 require './assets'

@@ -1,2 +1,2 @@
-# <%= project.title %>
+# <%= app.title %>
 

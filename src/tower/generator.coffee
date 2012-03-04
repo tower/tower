@@ -7,21 +7,23 @@ class Tower.Generator extends Tower.Class
   constructor: (options = {}) ->
     _.extend @, options
     
-    unless @projectName
+    unless @appName
       name = process.cwd().split("/")
-      @projectName = name[name.length - 1]
+      @appName = name[name.length - 1]
       
     @destinationRoot  ||= process.cwd()
     
     @currentSourceDirectory = @currentDestinationDirectory = "."
     
-    unless @project
-      @project          = @buildProject()
+    unless @app
+      @app          = @buildApp()
       @user             = {}
       @buildUser (user) =>
         @user   = user
-        @model  = @buildModel(@modelName, @project.className, @program.args) if @modelName
-        
+        @model  = @buildModel(@modelName, @app.className, @program.args) if @modelName
+        if @model
+          @view       = @buildView(@modelName)
+          @controller = @buildController(@modelName)
         @run()
 
 require './generator/actions'

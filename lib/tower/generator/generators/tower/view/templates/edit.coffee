@@ -1,3 +1,3 @@
-contentFor "title", "Editing <%= model.className %>"
+@title = "Editing <%= model.className %>"
 
 partial "form"

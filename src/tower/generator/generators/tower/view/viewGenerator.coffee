@@ -2,9 +2,7 @@ class Tower.Generator.ViewGenerator extends Tower.Generator
   sourceRoot: __dirname
   
   run: ->
-    @inside "app", ->
-      @inside "views", ->
-        @directory "#{@model.pluralName}"
+    @directory "app/views/#{@view.directory}"
     
     views = [
       "_form",
@@ -18,6 +16,6 @@ class Tower.Generator.ViewGenerator extends Tower.Generator
     ]
     
     for view in views
-      @template "#{view}.coffee", "app/views/#{@model.pluralName}/#{view}.coffee"
+      @template "#{view}.coffee", "app/views/#{@view.directory}/#{view}.coffee"
 
 module.exports = Tower.Generator.ViewGenerator

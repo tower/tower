@@ -1,36 +1,36 @@
 module.exports =
   mongodb:
     development:
-      name: "<%= project.cssName %>-development"
+      name: "<%= app.paramName %>-development"
       port: 27017
       host: "127.0.0.1"
     test:
-      name: "<%= project.cssName %>-test"
+      name: "<%= app.paramName %>-test"
       port: 27017
       host: "127.0.0.1"
     staging:
-      name: "<%= project.cssName %>-staging"
+      name: "<%= app.paramName %>-staging"
       port: 27017
       host: "127.0.0.1"
     production:
-      name: "<%= project.cssName %>-production"
+      name: "<%= app.paramName %>-production"
       port: 27017
       host: "127.0.0.1"
     
   redis:
     development:
-      name: "<%= project.cssName %>-development"
+      name: "<%= app.paramName %>-development"
       port: 6397
       host: "127.0.0.1"
     test:
-      name: "<%= project.cssName %>-test"
+      name: "<%= app.paramName %>-test"
       port: 6397
       host: "127.0.0.1"
     staging:
-      name: "<%= project.cssName %>-staging"
+      name: "<%= app.paramName %>-staging"
       port: 6397
       host: "127.0.0.1"
     production:
-      name: "<%= project.cssName %>-production"
+      name: "<%= app.paramName %>-production"
       port: 6397
       host: "127.0.0.1"

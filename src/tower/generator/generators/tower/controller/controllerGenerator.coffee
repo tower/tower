@@ -2,13 +2,10 @@ class Tower.Generator.ControllerGenerator extends Tower.Generator
   sourceRoot: __dirname
   
   run: ->
-    @inside "app", '.', ->
-      @inside "controllers", '.', ->
-        @template "controller.coffee", "#{@model.pluralName}Controller.coffee"
-      @inside "client", ->
-        @inside "controllers", '.', ->
-          @template "controller.coffee", "#{@model.pluralName}Controller.coffee"
-        
-    @route '@resources "' + @model.pluralName + '"'
+    @directory "app/controllers/#{@controller.directory}"
+    @template "controller.coffee", "app/controllers/#{@controller.directory}/#{@controller.name}.coffee"
+    @template "client/controller.coffee", "app/controllers/client/#{@controller.directory}/#{@controller.name}.coffee".replace(/\/+/g, "/")
+    @route '@resources "' + @model.namePlural + '"'
+    @asset "/app/controllers/client/#{@controller.directory}/#{@controller.name}".replace(/\/+/g, "/")
   
 module.exports = Tower.Generator.ControllerGenerator

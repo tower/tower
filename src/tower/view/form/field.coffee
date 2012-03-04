@@ -89,7 +89,12 @@ class Tower.View.Form.Field extends Tower.View.Component
     @inputHTML.placeholder = options.placeholder if options.placeholder
   
     # value
-    @inputHTML.value  ||= options.value if options.hasOwnProperty("value")
+    unless @inputHTML.value?
+      if options.hasOwnProperty("value")
+        @inputHTML.value = options.value
+      unless @inputHTML.value?
+        value = @model.get(@attribute)
+        @inputHTML.value = value if value
   
     # @inputHTML[:tabindex]      = @tabindex
     @inputHTML.maxlength    ||= options.max if options.hasOwnProperty("max")

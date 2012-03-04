@@ -2,9 +2,8 @@ class Tower.Generator.ModelGenerator extends Tower.Generator
   sourceRoot: __dirname
   
   run: ->
-    @inside "app", ->
-      @directory "models"
-      
-    @template "model.coffee", "app/models/#{@model.name}.coffee", ->
+    @directory "app/models"
+    @template "model.coffee", "app/models/#{@model.name}.coffee"
+    @asset "/app/models/#{@model.name}"
   
 module.exports = Tower.Generator.ModelGenerator

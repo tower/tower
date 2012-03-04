@@ -8,6 +8,8 @@ global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
 global.async  = require 'async'
+global.Browser  = require 'zombie'
+global.browser  = new Browser
 
 global.spec =
   startDatabase: ->
@@ -88,7 +90,17 @@ require "#{Tower.root}/app/controllers/customController"
 # so that coffeescript generates a callback to the parent class!
 i = 0
 before (done) ->
+  #Tower.env = "development"
+  #Tower.Application.instance().run()
   Tower.Store.MongoDB.initialize ->
+    #load = ->
+    #  browser.visit "http://localhost:3000", (error, browser) ->
+    #    console.log browser.html()
+    #    throw new Error
+    #    done()
+    #
+    #setTimeout load, 1000
+    
     done()
     
 beforeEach ->

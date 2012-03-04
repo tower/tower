@@ -1,3 +1,12 @@
+# include underscore.string mixins
+_.mixin(_.string.exports())
+
+# tmp hack, make all links run through history.pushState
+$("a").click ->
+  History.pushState null, null, $(this).attr("href")
+  #Tower.get($(this).attr("href"))
+  false
+
 class Tower.Application extends Tower.Class
   @include Tower.Support.Callbacks
   
@@ -80,6 +89,7 @@ class Tower.Application extends Tower.Class
         # History.log State.data, State.title, State.url
         self.handle request, response
       #@History.Adapter.trigger global, "statechange"
+      $(window).trigger "statechange"
     else
       console.warn "History not enabled"
 

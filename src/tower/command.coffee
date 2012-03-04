@@ -1,7 +1,4 @@
-Tower.Command = 
-  # tower -v
-  # tower --help
-  # tower
+Tower.Command =
   run: (argv) ->
     command = argv[2]
     command = "info" if !command || !!command.match(/^-/)
@@ -9,6 +6,7 @@ Tower.Command =
     command = new Tower.Command[Tower.Support.String.camelize(command)](argv)
     command.run()
 
+require './command/config'
 require './command/console'
 require './command/generate'
 require './command/info'

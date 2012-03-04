@@ -1,2 +1,2 @@
-class <%= project.className %>.<%= model.pluralClassName %>Controller extends Tower.Controller
+class <%= controller.namespace %>.<%= controller.className %> extends Tower.Controller
   
