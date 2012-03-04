@@ -8,8 +8,8 @@ global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
 global.async  = require 'async'
-global.Browser  = require 'zombie'
-global.browser  = new Browser
+#global.Browser  = require 'zombie'
+#global.browser  = new Browser
 
 global.spec =
   startDatabase: ->
