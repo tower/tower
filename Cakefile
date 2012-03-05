@@ -5,6 +5,7 @@ mint    = require 'mint'
 gzip    = require 'gzip'
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
+{print}       = require 'util'
 require 'underscore.logger'
 
 #Tower   = require './lib/tower'
@@ -174,6 +175,17 @@ task 'build-generic', ->
         #  fs.writeFile './dist/tower.min.js', result
 
 task 'clean', 'Remove built files in ./dist', ->
+
+stream = (command, options, callback) ->
+  sub = spawn command, options
+  sub.stdout.on 'data', (data) -> print data.toString()
+  sub.stderr.on 'data', (data) -> print data.toString()
+  sub.on 'exit', (status) -> callback?() if status is 0
+  sub
+
+task 'test', 'Run Mocha specs', ->
+  options = ['-c','--require', 'should', '--reporter', 'landing']
+  test = stream './node_modules/.bin/mocha', options
 
 task 'spec', 'Run jasmine specs', ->
   spec = spawn './node_modules/jasmine-node/bin/jasmine-node', ['--coffee', './test']
