@@ -1,0 +1,77 @@
+gradient($first, $second)
+  background: $second
+  //filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$first', endColorstr='$second') /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from($first), to($second)) /* for webkit browsers */
+  background: -moz-linear-gradient(top,  $first,  $second) /* for firefox 3.6+ */
+
+opacity($value)
+  opacity:        #{"." + $value}
+  filter:         alpha(opacity=$value)
+  -ms-filter:     "alpha(opacity=#{$value})"
+  -khtml-opacity: #{"." + $value}
+  -moz-opacity:   #{"." + $value}
+  zoom:           1
+
+rotate($degrees)
+   -moz-transform: rotate($degrees)
+     -o-transform: rotate($degrees)
+-webkit-transform: rotate($degrees)
+           filter:  progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=#{cos($degrees)}, M12=-#{sin($degrees)}, M21=#{sin($degrees)}, M22=#{cos($degrees)})
+       -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=#{cos($degrees)}, M12=-#{sin($degrees)}, M21=#{sin($degrees)}, M22=#{cos($degrees)})"
+             zoom: 1
+
+shadow($x: 0px, $y: 1px, $blur: 2px, $color: #333333)
+  -moz-box-shadow:    $x $y $blur $color 
+  -webkit-box-shadow: $x $y $blur $color
+  box-shadow:         $x $y $blur $color
+  /* behavior: url(/stylesheets/ie-css3.htc) */  
+
+no-shadow
+  -moz-box-shadow:    none 
+  -webkit-box-shadow: none
+  box-shadow:         none
+  /* behavior: url(/stylesheets/ie-css3.htc) */
+
+clearfix()
+  &:after
+    content: "."
+    display: block
+    height: 0
+    clear: both
+    visibility: hidden
+
+force-clearfix()
+  &:after
+    content: "."
+    display: block !important
+    height: 0 !important
+    clear: both !important
+    visibility: hidden !important
+  clear: both
+
+circle($radius)
+  @include border-radius(#{$radius}px)
+  width: #{$radius * 2}px
+  height: #{$radius * 2}px
+
+border-radius($radius)
+  -webkit-border-radius: $radius !important
+  -moz-border-radius: $radius !important
+  border-radius: $radius !important
+
+word-wrap()
+  white-space:  pre-wrap /* css-3 */
+  white-space:  -moz-pre-wrap /* Mozilla, since 1999 */
+  white-space:  -pre-wrap /* Opera 4-6 */
+  white-space:  -o-pre-wrap /* Opera 7 */
+  word-wrap:    break-word /* Internet Explorer 5.5+ */
+
+/* http://www.brunildo.org/test/img_center.html */
+vertical-align()
+  display: block
+  text-align: center !important
+  vertical-align: middle !important
+  *
+    display: inline-block
+    height: 100%
+    vertical-align: middle
