@@ -1,4 +1,6 @@
 class Tower.Store extends Tower.Class
+  @include Tower.Support.Callbacks
+  
   @defaultLimit: 100
   
   @isKeyword: (key) ->
@@ -89,18 +91,7 @@ class Tower.Store extends Tower.Class
     
   schema: ->
     Tower.constant(@className).fields()
-      
-Tower.Store.include Tower.Support.Callbacks
 
-require './store/cassandra'
-require './store/couchdb'
-require './store/fileSystem'
 require './store/memory'
-require './store/local'
-require './store/mongodb'
-require './store/neo4j'
-require './store/postgresql'
-require './store/riak'
-require './store/redis'
 
 module.exports = Tower.Store

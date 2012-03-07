@@ -8,24 +8,7 @@ global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
 global.async  = require 'async'
-#global.Browser  = require 'zombie'
-#global.browser  = new Browser
-
-global.spec =
-  startDatabase: ->
-  
-  cleanDatabase: ->
-    
-  closeDatabase: ->
-    
-  clearMemoryDatabase: ->
-    User
-    
-  resetUserStore: (type = "memory") ->
-    type = Tower.Support.String.camelize(type)
-    
-    User.delete()
-    User.store(new Tower.Store[type](name: "users", type: "User"))
+global.cb     = true
 
 Tower.root            = process.cwd() + "/test/test-app"
 Tower.publicPath      = Tower.root + "/public"
@@ -40,11 +23,11 @@ Tower.request = (method, action, options, callback) ->
   params          = _.extend {}, options
   params.action   = action
   url             = "http://example.com/#{action}"
-  location        = new Tower.Dispatch.Url(url)
+  location        = new Tower.HTTP.Url(url)
   controller      = options.controller || new App.CustomController()
   delete options.controller
-  request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
-  response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+  request         = new Tower.HTTP.Request(url: url, location: location, method: method)
+  response        = new Tower.HTTP.Response(url: url, location: location, method: method)
   request.params  = params
   # extend actual http request to make this fully realistic!
   #Tower.Application.instance().handle request, response, ->
@@ -84,41 +67,26 @@ Tower.Controller::redirectTo = (options = {}) ->
 
 Tower.Application.instance().initialize()
 
-require "#{Tower.root}/app/controllers/customController"
-#Tower.Store.MongoDB.initialize()
-# You must either "extends X" or create a constructor: -> super
-# so that coffeescript generates a callback to the parent class!
-i = 0
-before (done) ->
-  #Tower.env = "development"
-  #Tower.Application.instance().run()
-  Tower.Store.MongoDB.initialize ->
-    #load = ->
-    #  browser.visit "http://localhost:3000", (error, browser) ->
-    #    console.log browser.html()
-    #    throw new Error
-    #    done()
-    #
-    #setTimeout load, 1000
-    
-    done()
-    
-beforeEach ->
+beforeEach (done) ->
   #Tower.Application.instance().teardown()
-  Tower.Application.instance().initialize()
   Tower.root          = process.cwd() + "/test/test-app"
   Tower.publicPath    = Tower.root + "/public"
   Tower.View.engine = "coffee"
   Tower.View.store().loadPaths = ["test/test-app/app/views"]
   
-  models = File.files("#{Tower.root}/app/models")
-  for model in models
-    require(model) if File.exists(model)
+  Tower.Application.instance().initialize ->
+    require "#{Tower.root}/app/controllers/customController"
     
-  controllers = File.files("#{Tower.root}/app/controllers")
-  for controller in controllers
-    require(controller) if File.exists(controller)
-
+    models = File.files("#{Tower.root}/app/models")
+    
+    for model in models
+      require(model) if File.exists(model)
+    
+    controllers = File.files("#{Tower.root}/app/controllers")
+    for controller in controllers
+      require(controller) if File.exists(controller)
+      
+    done()
 ###
 
 test 'where(firstName: "=~": "L")'

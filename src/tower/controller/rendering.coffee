@@ -9,7 +9,7 @@ Tower.Controller.Rendering =
       
     renderers: ->
       @_renderers ||= {}
-          
+      
   render: ->
     @renderToBody @_normalizeRender(arguments...)
     

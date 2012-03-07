@@ -21,7 +21,7 @@ describeWith = (store) ->
     
       assert.deepEqual user.validate(), true
       assert.deepEqual user.errors, []
-    
+      
       user.set "firstName", null
     
       assert.deepEqual user.validate(), false

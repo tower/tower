@@ -112,10 +112,10 @@ Tower.View.include Tower.View.HeadHelper
 Tower.View.include Tower.View.RenderingHelper
 Tower.View.include Tower.View.StringHelper
 
-Tower.View.helpers.push(Tower.View.AssetHelper)
-Tower.View.helpers.push(Tower.View.ComponentHelper)
-Tower.View.helpers.push(Tower.View.HeadHelper)
-Tower.View.helpers.push(Tower.View.RenderingHelper)
-Tower.View.helpers.push(Tower.View.StringHelper)
+Tower.View.helpers.push Tower.View.AssetHelper
+Tower.View.helpers.push Tower.View.ComponentHelper
+Tower.View.helpers.push Tower.View.HeadHelper
+Tower.View.helpers.push Tower.View.RenderingHelper
+Tower.View.helpers.push Tower.View.StringHelper
 
 module.exports = Tower.View
