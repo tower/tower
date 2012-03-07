@@ -12,9 +12,18 @@ require 'underscore.logger'
 compileFile = (root, path, check) ->
   try
     data = fs.readFileSync path, 'utf-8'
+    # total hack, built 10 minutes at a time over a few months, needs to be rethought, but works
     data = data.replace /require '([^']+)'\n/g, (_, _path) ->
       #_path = "#{root}/#{_path.toString().split("/")[2]}.coffee"
-      _path = "#{root}/#{_path.toString().split("/")[2..-1].join("/")}.coffee"
+      parts = _path.toString().split("/")
+      if parts.length > 2
+        if parts[1] == "client"
+          parts = parts[1..-1]
+        else
+          parts = parts[2..-1]
+      else
+        parts = parts[1..-1]
+      _path = "#{root}/#{parts.join("/")}.coffee"
       if !check || check(_path)
         #fs.readFileSync _path, 'utf-8'
         _root = _path.split(".")[-3..-2].join(".")
@@ -30,6 +39,7 @@ compileFile = (root, path, check) ->
     data = data.replace(/module\.exports\s*=.*\s*/g, "")
     data + "\n\n"
   catch error
+    console.log error
     ""
   
 compileDirectory = (root, check, callback) ->
@@ -94,57 +104,23 @@ task 'to-underscore', ->
       #  
       #  console.log sizes.join("\n")
 
-task 'build', ->
-  result = """
-window.global ||= window
-module = window.module || {}
-Tower = window.Tower = new (class Tower)
-window.Tower.logger = if this["_console"] then _console else console
+task 'build', ->  
+  mint.coffee compileFile("./src/tower", "./src/tower/client.coffee"), bare: false, (error, result) ->
+    _console.error error.stack if error
+    fs.writeFile "./dist/tower.js", result
+    unless error
+      #result = obscurify(result)
 
-"""
-  compileEach 'support', ((path) -> !!!path.match(/(dependencies)/)), (code) ->
-    result += code
-    
-    result += fs.readFileSync("./src/tower/application/client.coffee", "utf-8") + "\n"
-    
-    result += fs.readFileSync("./src/tower/application/configuration.coffee", "utf-8") + "\n"
-    
-    compileEach 'store', ((path) -> !!path.match(/(memory|local)/)), (code) ->
-      result += code
-      compileEach 'client/store', null, (code) ->
-        result += code
-        compileEach 'model', null, (code) ->
-          result += code
-          compileEach 'view', null, (code) ->
-            result += code
-            compileEach 'controller', null, (code) ->
-              result += code
-              compileEach 'client/controller', null, (code) ->
-                result += code
-                compileEach 'client/view', null, (code) ->
-                  result += code
-                  compileEach 'dispatch', null, (code) ->
-                    result += code
-                    compileEach 'middleware', ((path) -> !!path.match(/(location|route)/)), (code) ->
-                      result += code
-                
-                      # result += fs.readFileSync("./src/tower/middleware/router.coffee", "utf-8").replace(/module\.exports\s*=.*\s*/g, "") + "\n"
-                      mint.coffee result, bare: false, (error, result) ->
-                        _console.error error.stack if error
-                        fs.writeFile "./dist/tower.js", result
-                        unless error
-                          #result = obscurify(result)
-                
-                          mint.uglifyjs result, {}, (error, result) ->
-                            fs.writeFileSync("./dist/tower.min.js", result)
-                
-                            gzip result, (error, result) ->
-                  
-                              fs.writeFileSync("./dist/tower.min.js.gz", result)
-                  
-                              console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
-                  
-                              fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
+      mint.uglifyjs result, {}, (error, result) ->
+        fs.writeFileSync("./dist/tower.min.js", result)
+
+        gzip result, (error, result) ->
+
+          fs.writeFileSync("./dist/tower.min.js.gz", result)
+
+          console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
+
+          fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
             
 task 'build-generic', ->
   paths   = findit.sync('./src')
@@ -185,11 +161,6 @@ task 'spec', 'Run jasmine specs', ->
       data = "\n#{data}" if data.match(/Finished/)
       console.log data
   spec.stderr.on 'data', (data) -> console.log data.toString().trim()
-
-task 'coffee', 'Auto compile src/**/*.coffee files into lib/**/*.js', ->
-  coffee = spawn './node_modules/coffee-script/bin/coffee', ['-o', 'lib', '-w', 'src']
-  coffee.stdout.on 'data', (data) -> console.log data.toString().trim()
-  coffee.stderr.on 'data', (data) -> console.log data.toString().trim()
   
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->

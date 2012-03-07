@@ -8,17 +8,11 @@
 
   window.global || (window.global = window);
 
-  module = window.module || {};
+  module = global.module || {};
 
-  Tower = window.Tower = new (Tower = (function() {
+  global.Tower = Tower = {};
 
-    function Tower() {}
-
-    return Tower;
-
-  })());
-
-  window.Tower.logger = this["_console"] ? _console : console;
+  Tower.logger = console;
 
   Tower.Support = {};
 
@@ -109,7 +103,12 @@
         return this.appendCallback.apply(this, ["after"].concat(__slice.call(arguments)));
       },
       callback: function() {
-        return this.appendCallback.apply(this, arguments);
+        var args;
+        args = Tower.Support.Array.args(arguments);
+        if (!args[0].match(/^(?:before|around|after)$/)) {
+          args = ["after"].concat(args);
+        }
+        return this.appendCallback.apply(this, args);
       },
       removeCallback: function(action, phase, run) {
         return this;
@@ -137,13 +136,20 @@
         return this._callbacks || (this._callbacks = {});
       }
     },
-    runCallbacks: function(kind, block) {
+    runCallbacks: function(kind, options, block, complete) {
       var chain;
+      if (typeof options === "function") {
+        complete = block;
+        block = options;
+        options = {};
+      }
+      options || (options = {});
       chain = this.constructor.callbacks()[kind];
       if (chain) {
-        return chain.run(this, block);
+        return chain.run(this, options, block, complete);
       } else {
-        return block.call(this);
+        block.call(this);
+        if (complete) return complete.call(this);
       }
     },
     _callback: function() {
@@ -179,28 +185,37 @@
       this.after || (this.after = []);
     }
 
-    Chain.prototype.run = function(binding, block) {
+    Chain.prototype.run = function(binding, options, block, complete) {
       var runner,
         _this = this;
       runner = function(callback, next) {
-        return callback.run(binding, next);
+        return callback.run(binding, options, next);
       };
       return Tower.async(this.before, runner, function(error) {
         if (!error) {
-          switch (block.length) {
-            case 0:
-              block.call(binding);
-              return Tower.async(_this.after, runner, function(error) {
-                return binding;
-              });
-            default:
-              return block.call(binding, function(error) {
-                if (!error) {
-                  return Tower.async(_this.after, runner, function(error) {
-                    return binding;
-                  });
-                }
-              });
+          if (block) {
+            switch (block.length) {
+              case 0:
+                block.call(binding);
+                return Tower.async(_this.after, runner, function(error) {
+                  if (complete) complete.call(binding);
+                  return binding;
+                });
+              default:
+                return block.call(binding, function(error) {
+                  if (!error) {
+                    return Tower.async(_this.after, runner, function(error) {
+                      if (complete) complete.call(binding);
+                      return binding;
+                    });
+                  }
+                });
+            }
+          } else {
+            return Tower.async(_this.after, runner, function(error) {
+              if (complete) complete.call(binding);
+              return binding;
+            });
           }
         }
       });
@@ -216,14 +231,28 @@
 
   Tower.Support.Callback = (function() {
 
-    function Callback(method, options) {
-      if (options == null) options = {};
+    function Callback(method, conditions) {
+      if (conditions == null) conditions = {};
       this.method = method;
-      this.options = options;
+      this.conditions = conditions;
+      if (conditions.hasOwnProperty("only")) {
+        conditions.only = Tower.Support.Object.toArray(conditions.only);
+      }
+      if (conditions.hasOwnProperty("except")) {
+        conditions.except = Tower.Support.Object.toArray(conditions.except);
+      }
     }
 
-    Callback.prototype.run = function(binding, next) {
-      var method, result;
+    Callback.prototype.run = function(binding, options, next) {
+      var conditions, method, result;
+      conditions = this.conditions;
+      if (options && options.hasOwnProperty("name")) {
+        if (conditions.hasOwnProperty("only")) {
+          if (_.indexOf(conditions.only, options.name) === -1) return next();
+        } else if (conditions.hasOwnProperty("except")) {
+          if (_.indexOf(conditions.except, options.name) !== -1) return next();
+        }
+      }
       method = this.method;
       if (typeof method === "string") method = binding[method];
       switch (method.length) {
@@ -1105,196 +1134,31 @@
     }
   });
 
-  Tower.Application = (function(_super) {
+  Tower.Hook = (function(_super) {
 
-    __extends(Application, _super);
+    __extends(Hook, _super);
 
-    Application.include(Tower.Support.Callbacks);
-
-    Application.configure = function(block) {
-      return this.initializers().push(block);
-    };
-
-    Application.initializers = function() {
-      return this._initializers || (this._initializers = []);
-    };
-
-    Application.instance = function() {
-      return this._instance;
-    };
-
-    Application.defaultStack = function() {
-      this.use(Tower.Middleware.Location);
-      this.use(Tower.Middleware.Router);
-      return this.middleware;
-    };
-
-    Application.use = function() {
-      this.middleware || (this.middleware = []);
-      return this.middleware.push(arguments);
-    };
-
-    Application.prototype.use = function() {
-      var _ref;
-      return (_ref = this.constructor).use.apply(_ref, arguments);
-    };
-
-    function Application(middlewares) {
-      var middleware, _base, _i, _len;
-      if (middlewares == null) middlewares = [];
-      if (Tower.Application._instance) {
-        throw new Error("Already initialized application");
-      }
-      Tower.Application._instance = this;
-      (_base = Tower.Application).middleware || (_base.middleware = []);
-      this.io = global["io"];
-      this.History = global["History"];
-      this.stack = [];
-      for (_i = 0, _len = middlewares.length; _i < _len; _i++) {
-        middleware = middlewares[_i];
-        this.use(middleware);
-      }
+    function Hook() {
+      Hook.__super__.constructor.apply(this, arguments);
     }
 
-    Application.prototype.initialize = function() {
-      this.extractAgent();
-      this.applyMiddleware();
-      return this;
-    };
+    Hook.include(Tower.Support.Callbacks);
 
-    Application.prototype.applyMiddleware = function() {
-      var middleware, middlewares, _i, _len, _results;
-      middlewares = this.constructor.middleware;
-      if (!(middlewares && middlewares.length > 0)) {
-        middlewares = this.constructor.defaultStack();
-      }
-      _results = [];
-      for (_i = 0, _len = middlewares.length; _i < _len; _i++) {
-        middleware = middlewares[_i];
-        _results.push(this.middleware.apply(this, middleware));
-      }
-      return _results;
-    };
-
-    Application.prototype.middleware = function() {
-      var args, handle, route;
-      args = Tower.Support.Array.args(arguments);
-      route = "/";
-      handle = args.pop();
-      if (typeof route !== "string") {
-        handle = route;
-        route = "/";
-      }
-      if ("/" === route[route.length - 1]) {
-        route = route.substr(0, route.length - 1);
-      }
-      this.stack.push({
-        route: route,
-        handle: handle
-      });
-      return this;
-    };
-
-    Application.prototype.extractAgent = function() {
-      Tower.cookies = Tower.Dispatch.Cookies.parse();
-      return Tower.agent = new Tower.Dispatch.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'));
-    };
-
-    Application.prototype.listen = function() {
-      var self;
-      self = this;
-      if (this.listening) return;
-      this.listening = true;
-      if (this.History && this.History.enabled) {
-        return this.History.Adapter.bind(global, "statechange", function() {
-          var location, request, response, state;
-          state = History.getState();
-          location = new Tower.Dispatch.Url(state.url);
-          request = new Tower.Dispatch.Request({
-            url: state.url,
-            location: location,
-            params: Tower.Support.Object.extend({
-              title: state.title
-            }, state.data || {})
-          });
-          response = new Tower.Dispatch.Response({
-            url: state.url,
-            location: location
-          });
-          return self.handle(request, response);
-        });
-      } else {
-        return _console.warn("History not enabled");
-      }
-    };
-
-    Application.prototype.run = function() {
-      return this.listen();
-    };
-
-    Application.prototype.handle = function(request, response, out) {
-      var env, index, next, removed, stack, writeHead;
-      env = Tower.env;
-      next = function(err) {
-        var arity, c, layer, msg, path, removed;
-        layer = void 0;
-        path = void 0;
-        c = void 0;
-        request.url = removed + request.url;
-        request.originalUrl = request.originalUrl || request.url;
-        removed = "";
-        layer = stack[index++];
-        if (!layer || response.headerSent) {
-          if (out) return out(err);
-          if (err) {
-            msg = ("production" === env ? "Internal Server Error" : err.stack || err.toString());
-            if ("test" !== env) console.error(err.stack || err.toString());
-            if (response.headerSent) return request.socket.destroy();
-            response.statusCode = 500;
-            response.setHeader("Content-Type", "text/plain");
-            response.end(msg);
-          } else {
-            response.statusCode = 404;
-            response.setHeader("Content-Type", "text/plain");
-            response.end("Cannot " + request.method + " " + request.url);
-          }
-          return;
-        }
-        try {
-          path = request.location.path;
-          if (undefined === path) path = "/";
-          if (0 !== path.indexOf(layer.route)) return next(err);
-          c = path[layer.route.length];
-          if (c && "/" !== c && "." !== c) return next(err);
-          removed = layer.route;
-          request.url = request.url.substr(removed.length);
-          if ("/" !== request.url[0]) request.url = "/" + request.url;
-          arity = layer.handle.length;
-          if (err) {
-            if (arity === 4) {
-              return layer.handle(err, request, response, next);
-            } else {
-              return next(err);
-            }
-          } else if (arity < 4) {
-            return layer.handle(request, response, next);
-          } else {
-            return next();
-          }
-        } catch (e) {
-          return next(e);
-        }
-      };
-      writeHead = response.writeHead;
-      stack = this.stack;
-      removed = "";
-      index = 0;
-      return next();
-    };
-
-    return Application;
+    return Hook;
 
   })(Tower.Class);
+
+  Tower.Engine = (function(_super) {
+
+    __extends(Engine, _super);
+
+    function Engine() {
+      Engine.__super__.constructor.apply(this, arguments);
+    }
+
+    return Engine;
+
+  })(Tower.Hook);
 
   Tower.Support.Object.extend(Tower, {
     env: "development",
@@ -1314,6 +1178,14 @@
     metadataFor: function(name) {
       var _base;
       return (_base = this.metadata)[name] || (_base[name] = {});
+    },
+    callback: function() {
+      var _ref;
+      return (_ref = Tower.Application).callback.apply(_ref, arguments);
+    },
+    runCallbacks: function() {
+      var _ref;
+      return (_ref = Tower.Application.instance()).runCallbacks.apply(_ref, arguments);
     },
     sync: function(method, records, callback) {
       if (callback) return callback(null, records);
@@ -1444,9 +1316,221 @@
     }
   });
 
+  if (Tower.client) {
+    Tower.request = function(method, path, options, callback) {
+      var url;
+      if (typeof options === "function") {
+        callback = options;
+        options = {};
+      }
+      options || (options = {});
+      url = path;
+      return History.pushState(null, null, url);
+    };
+  }
+
+  _.mixin(_.string.exports());
+
+  $("a").click(function() {
+    History.pushState(null, null, $(this).attr("href"));
+    return false;
+  });
+
+  Tower.Application = (function(_super) {
+
+    __extends(Application, _super);
+
+    Application.configure = function(block) {
+      return this.initializers().push(block);
+    };
+
+    Application.initializers = function() {
+      return this._initializers || (this._initializers = []);
+    };
+
+    Application.instance = function() {
+      return this._instance;
+    };
+
+    Application.defaultStack = function() {
+      this.use(Tower.Middleware.Location);
+      this.use(Tower.Middleware.Router);
+      return this.middleware;
+    };
+
+    Application.use = function() {
+      this.middleware || (this.middleware = []);
+      return this.middleware.push(arguments);
+    };
+
+    Application.prototype.use = function() {
+      var _ref;
+      return (_ref = this.constructor).use.apply(_ref, arguments);
+    };
+
+    function Application(middlewares) {
+      var middleware, _base, _i, _len;
+      if (middlewares == null) middlewares = [];
+      if (Tower.Application._instance) {
+        throw new Error("Already initialized application");
+      }
+      Tower.Application._instance = this;
+      (_base = Tower.Application).middleware || (_base.middleware = []);
+      this.io = global["io"];
+      this.History = global["History"];
+      this.stack = [];
+      for (_i = 0, _len = middlewares.length; _i < _len; _i++) {
+        middleware = middlewares[_i];
+        this.use(middleware);
+      }
+    }
+
+    Application.prototype.initialize = function() {
+      this.extractAgent();
+      this.applyMiddleware();
+      return this;
+    };
+
+    Application.prototype.applyMiddleware = function() {
+      var middleware, middlewares, _i, _len, _results;
+      middlewares = this.constructor.middleware;
+      if (!(middlewares && middlewares.length > 0)) {
+        middlewares = this.constructor.defaultStack();
+      }
+      _results = [];
+      for (_i = 0, _len = middlewares.length; _i < _len; _i++) {
+        middleware = middlewares[_i];
+        _results.push(this.middleware.apply(this, middleware));
+      }
+      return _results;
+    };
+
+    Application.prototype.middleware = function() {
+      var args, handle, route;
+      args = Tower.Support.Array.args(arguments);
+      route = "/";
+      handle = args.pop();
+      if (typeof route !== "string") {
+        handle = route;
+        route = "/";
+      }
+      if ("/" === route[route.length - 1]) {
+        route = route.substr(0, route.length - 1);
+      }
+      this.stack.push({
+        route: route,
+        handle: handle
+      });
+      return this;
+    };
+
+    Application.prototype.extractAgent = function() {
+      Tower.cookies = Tower.Dispatch.Cookies.parse();
+      return Tower.agent = new Tower.Dispatch.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'));
+    };
+
+    Application.prototype.listen = function() {
+      var self;
+      self = this;
+      if (this.listening) return;
+      this.listening = true;
+      if (this.History && this.History.enabled) {
+        this.History.Adapter.bind(global, "statechange", function() {
+          var location, request, response, state;
+          state = History.getState();
+          location = new Tower.Dispatch.Url(state.url);
+          request = new Tower.Dispatch.Request({
+            url: state.url,
+            location: location,
+            params: Tower.Support.Object.extend({
+              title: state.title
+            }, state.data || {})
+          });
+          response = new Tower.Dispatch.Response({
+            url: state.url,
+            location: location
+          });
+          return self.handle(request, response);
+        });
+        return $(global).trigger("statechange");
+      } else {
+        return console.warn("History not enabled");
+      }
+    };
+
+    Application.prototype.run = function() {
+      return this.listen();
+    };
+
+    Application.prototype.handle = function(request, response, out) {
+      var env, index, next, removed, stack, writeHead;
+      env = Tower.env;
+      next = function(err) {
+        var arity, c, layer, msg, path, removed;
+        layer = void 0;
+        path = void 0;
+        c = void 0;
+        request.url = removed + request.url;
+        request.originalUrl = request.originalUrl || request.url;
+        removed = "";
+        layer = stack[index++];
+        if (!layer || response.headerSent) {
+          if (out) return out(err);
+          if (err) {
+            msg = ("production" === env ? "Internal Server Error" : err.stack || err.toString());
+            if ("test" !== env) console.error(err.stack || err.toString());
+            if (response.headerSent) return request.socket.destroy();
+            response.statusCode = 500;
+            response.setHeader("Content-Type", "text/plain");
+            response.end(msg);
+          } else {
+            response.statusCode = 404;
+            response.setHeader("Content-Type", "text/plain");
+            response.end("Cannot " + request.method + " " + request.url);
+          }
+          return;
+        }
+        try {
+          path = request.location.path;
+          if (undefined === path) path = "/";
+          if (0 !== path.indexOf(layer.route)) return next(err);
+          c = path[layer.route.length];
+          if (c && "/" !== c && "." !== c) return next(err);
+          removed = layer.route;
+          request.url = request.url.substr(removed.length);
+          if ("/" !== request.url[0]) request.url = "/" + request.url;
+          arity = layer.handle.length;
+          if (err) {
+            if (arity === 4) {
+              return layer.handle(err, request, response, next);
+            } else {
+              return next(err);
+            }
+          } else if (arity < 4) {
+            return layer.handle(request, response, next);
+          } else {
+            return next();
+          }
+        } catch (e) {
+          return next(e);
+        }
+      };
+      writeHead = response.writeHead;
+      stack = this.stack;
+      removed = "";
+      index = 0;
+      return next();
+    };
+
+    return Application;
+
+  })(Tower.Engine);
+
   Tower.Store = (function(_super) {
 
     __extends(Store, _super);
+
+    Store.include(Tower.Support.Callbacks);
 
     Store.defaultLimit = 100;
 
@@ -1591,8 +1675,6 @@
     return Store;
 
   })(Tower.Class);
-
-  Tower.Store.include(Tower.Support.Callbacks);
 
   Tower.Store.Memory = (function(_super) {
 
@@ -1839,7 +1921,7 @@
       return records;
     },
     loadOne: function(record) {
-      return this.records[record.get("id")] = record;
+      return this.records[record.get("id").toString()] = record;
     },
     create: function(data, options, callback) {
       var attributes, result, _i, _len;
@@ -1859,7 +1941,7 @@
     createOne: function(record) {
       var attributes;
       attributes = this.deserializeModel(record);
-      if (attributes.id == null) attributes.id = this.generateId();
+      if (attributes.id == null) attributes.id = this.generateId().toString();
       return this.loadOne(this.serializeModel(record));
     },
     update: function(updates, query, options, callback) {
@@ -1896,7 +1978,7 @@
       });
     },
     destroyOne: function(record) {
-      return delete this.records[record.get("id")];
+      return delete this.records[record.get("id").toString()];
     }
   };
 
@@ -1958,32 +2040,6 @@
   Tower.Store.Memory.include(Tower.Store.Memory.Persistence);
 
   Tower.Store.Memory.include(Tower.Store.Memory.Serialization);
-
-  Tower.Store.Local = (function(_super) {
-
-    __extends(Local, _super);
-
-    function Local() {
-      Local.__super__.constructor.apply(this, arguments);
-    }
-
-    Local.prototype.initialize = function() {
-      return this.lastId = 0;
-    };
-
-    Local.prototype._setRecord = function(record) {};
-
-    Local.prototype._getRecord = function(key) {
-      return this;
-    };
-
-    Local.prototype._removeRecord = function(key) {
-      return delete this.records[record.id];
-    };
-
-    return Local;
-
-  })(Tower.Store.Memory);
 
   Tower.Store.Ajax = (function(_super) {
     var sync;
@@ -2141,16 +2197,19 @@
     };
 
     Ajax.prototype.createRequest = function(records, options) {
-      var _this = this;
+      var json,
+        _this = this;
       if (options == null) options = {};
+      json = this.toJSON(records);
+      Tower.urlFor(records.constructor);
       return this.queue(function() {
         var params;
         params = {
-          url: Tower.urlFor(records),
+          url: url,
           type: "POST",
-          data: _this.toJSON(records)
+          data: json
         };
-        return _this.ajax(options, params).success(_this.createSuccess(record)).error(_this.createFailure(record));
+        return _this.ajax(options, params).success(_this.createSuccess(records)).error(_this.createFailure(records));
       });
     };
 
@@ -2293,6 +2352,32 @@
 
   })(Tower.Store.Memory);
 
+  Tower.Store.Local = (function(_super) {
+
+    __extends(Local, _super);
+
+    function Local() {
+      Local.__super__.constructor.apply(this, arguments);
+    }
+
+    Local.prototype.initialize = function() {
+      return this.lastId = 0;
+    };
+
+    Local.prototype._setRecord = function(record) {};
+
+    Local.prototype._getRecord = function(key) {
+      return this;
+    };
+
+    Local.prototype._removeRecord = function(key) {
+      return delete this.records[record.id];
+    };
+
+    return Local;
+
+  })(Tower.Store.Memory);
+
   Tower.Model = (function(_super) {
 
     __extends(Model, _super);
@@ -2319,7 +2404,11 @@
     };
 
     function Model(attrs, options) {
-      var attributes, definition, definitions, key, name, value;
+      this.initialize(attrs, options);
+    }
+
+    Model.prototype.initialize = function(attrs, options) {
+      var attributes, definition, definitions, key, name, value, _results;
       if (attrs == null) attrs = {};
       if (options == null) options = {};
       definitions = this.constructor.fields();
@@ -2335,11 +2424,13 @@
       this.errors = {};
       this.readOnly = options.hasOwnProperty("readOnly") ? options.readOnly : false;
       this.persistent = options.hasOwnProperty("persistent") ? options.persisted : false;
+      _results = [];
       for (key in attrs) {
         value = attrs[key];
-        this.attributes[key] = value;
+        _results.push(this.attributes[key] = value);
       }
-    }
+      return _results;
+    };
 
     return Model;
 
@@ -3502,7 +3593,7 @@
 
   Tower.Model.Persistence = {
     ClassMethods: {
-      defaultStore: Tower.Store.Memory,
+      defaultStore: Tower.client ? Tower.Store.Memory : Tower.Store.MongoDB,
       store: function(value) {
         if (!value && this._store) return this._store;
         if (typeof value === "function") {
@@ -3991,13 +4082,14 @@
       }
     },
     validate: function(callback) {
-      var _this = this;
-      return this.runCallbacks("validate", function(block) {
-        var complete, errors, iterator, success, validators;
+      var success,
+        _this = this;
+      success = false;
+      this.runCallbacks("validate", function(block) {
+        var complete, errors, iterator, validators;
         complete = _this._callback(block, callback);
         validators = _this.constructor.validators();
         errors = _this.errors = {};
-        success = false;
         iterator = function(validator, next) {
           return validator.validateEach(_this, errors, next);
         };
@@ -4007,6 +4099,7 @@
         });
         return success;
       });
+      return success;
     }
   };
 
@@ -4185,7 +4278,8 @@
         return this._store || (this._store = new Tower.Store.Memory({
           name: "view"
         }));
-      }
+      },
+      renderers: {}
     });
 
     function View(context) {
@@ -4227,21 +4321,19 @@
 
   Tower.View.Rendering = {
     render: function(options, callback) {
-      var self;
+      var _this = this;
       options.type || (options.type = this.constructor.engine);
       if (!options.hasOwnProperty("layout") && this._context.layout) {
         options.layout = this._context.layout();
       }
       options.locals = this._renderingContext(options);
-      self = this;
       return this._renderBody(options, function(error, body) {
         if (error) return callback(error, body);
-        return self._renderLayout(body, options, callback);
+        return _this._renderLayout(body, options, callback);
       });
     },
     partial: function(path, options, callback) {
       var prefixes, template;
-      console.log("PARTIAL");
       if (typeof options === "function") {
         callback = options;
         options = {};
@@ -4275,11 +4367,12 @@
       }
     },
     _renderString: function(string, options, callback) {
-      var e, engine, hardcode, helper, locals, result, _len5, _m, _ref5;
+      var coffeekup, e, engine, hardcode, helper, locals, result, _len5, _m, _ref5;
       if (options == null) options = {};
       if (!!options.type.match(/coffee/)) {
         e = null;
         result = null;
+        coffeekup = Tower.client ? global.CoffeeKup : require("coffeekup");
         try {
           locals = options.locals;
           locals.renderWithEngine = this.renderWithEngine;
@@ -4293,11 +4386,11 @@
             hardcode = _.extend(hardcode, helper);
           }
           hardcode = _.extend(hardcode, {
-            tags: require("coffeekup").tags
+            tags: coffeekup.tags
           });
           locals.hardcode = hardcode;
           locals._ = _;
-          result = require('coffeekup').render(string, locals);
+          result = coffeekup.render(string, locals);
         } catch (error) {
           e = error;
         }
@@ -4336,10 +4429,14 @@
     },
     renderWithEngine: function(template, engine) {
       var mint;
-      mint = require("mint");
-      return mint[mint.engine(engine || "coffee")](template, {}, function(error, result) {
-        if (error) return console.log(error);
-      });
+      if (Tower.client) {
+        return "(" + template + ").call(this);";
+      } else {
+        mint = require("mint");
+        return mint[mint.engine(engine || "coffee")](template, {}, function(error, result) {
+          if (error) return console.log(error);
+        });
+      }
     }
   };
 
@@ -4766,7 +4863,6 @@
       options.as = "fields";
       options.label || (options.label = false);
       attribute = args.shift() || this.attribute;
-      console.log("FIELDS");
       return this.field(attribute, options, function(_field) {
         return _this.fieldset(block);
       });
@@ -4904,7 +5000,7 @@
     };
 
     function Field(args, options) {
-      var classes, field, inputType, pattern, _base, _base2, _base3, _base4, _base5, _base6;
+      var classes, field, inputType, pattern, value, _base, _base2, _base3, _base4, _base5;
       this.labelValue = options.label;
       delete options.label;
       Field.__super__.constructor.call(this, args, options);
@@ -4966,11 +5062,15 @@
       }
       this.inputHTML["class"] = this.addClass(this.inputHTML["class"], classes);
       if (options.placeholder) this.inputHTML.placeholder = options.placeholder;
-      if (options.hasOwnProperty("value")) {
-        (_base4 = this.inputHTML).value || (_base4.value = options.value);
+      if (this.inputHTML.value == null) {
+        if (options.hasOwnProperty("value")) this.inputHTML.value = options.value;
+        if (this.inputHTML.value == null) {
+          value = this.model.get(this.attribute);
+          if (value) this.inputHTML.value = value;
+        }
       }
       if (options.hasOwnProperty("max")) {
-        (_base5 = this.inputHTML).maxlength || (_base5.maxlength = options.max);
+        (_base4 = this.inputHTML).maxlength || (_base4.maxlength = options.max);
       }
       pattern = options.match;
       if (_.isRegExp(pattern)) pattern = pattern.toString();
@@ -4981,7 +5081,7 @@
       if (this.autofocus === true) this.inputHTML.autofocus = "true";
       if (this.dynamic) this.inputHTML["data-dynamic"] = "true";
       if (this.inputHTML.placeholder) {
-        (_base6 = this.inputHTML).title || (_base6.title = this.inputHTML.placeholder);
+        (_base5 = this.inputHTML).title || (_base5.title = this.inputHTML.placeholder);
       }
       this.autocomplete = this.inputHTML.autocomplete === true;
       if (this.autocomplete && Tower.View.includeAria) {
@@ -5270,8 +5370,6 @@
     }
   };
 
-  Tower.View.DateHelper = {};
-
   Tower.View.ElementHelper = {
     title: function(value) {
       return document.title = value;
@@ -5509,8 +5607,6 @@
     }
   };
 
-  Tower.View.NumberHelper = {};
-
   Tower.View.RenderingHelper = {
     partial: function(path, options, callback) {
       var item, locals, name, prefixes, template, tmpl, _len5, _m, _ref5;
@@ -5544,7 +5640,7 @@
           eval(tmpl).call(this, locals);
         }
       } catch (error) {
-        console.log(error);
+        console.log(error.stack || error);
       }
       return null;
     },
@@ -5572,6 +5668,9 @@
       return null;
     },
     hasContentFor: function(key) {
+      return !!(this.hasOwnProperty(key) && this[key] && this[key] !== "");
+    },
+    has: function(key) {
       return !!(this.hasOwnProperty(key) && this[key] && this[key] !== "");
     },
     contentFor: function(key, block) {
@@ -5620,11 +5719,7 @@
 
   Tower.View.include(Tower.View.ComponentHelper);
 
-  Tower.View.include(Tower.View.DateHelper);
-
   Tower.View.include(Tower.View.HeadHelper);
-
-  Tower.View.include(Tower.View.NumberHelper);
 
   Tower.View.include(Tower.View.RenderingHelper);
 
@@ -5640,9 +5735,103 @@
 
   Tower.View.helpers.push(Tower.View.StringHelper);
 
+  $.fn.serializeParams = function(coerce) {
+    return $.serializeParams($(this).serialize(), coerce);
+  };
+
+  $.serializeParams = function(params, coerce) {
+    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len5;
+    obj = {};
+    coerce_types = {
+      "true": !0,
+      "false": !1,
+      "null": null
+    };
+    array = params.replace(/\+/g, " ").split("&");
+    for (index = 0, _len5 = array.length; index < _len5; index++) {
+      item = array[index];
+      param = item.split("=");
+      key = decodeURIComponent(param[0]);
+      val = void 0;
+      cur = obj;
+      i = 0;
+      keys = key.split("][");
+      keys_last = keys.length - 1;
+      if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+        keys[keys_last] = keys[keys_last].replace(/\]$/, "");
+        keys = keys.shift().split("[").concat(keys);
+        keys_last = keys.length - 1;
+      } else {
+        keys_last = 0;
+      }
+      if (param.length === 2) {
+        val = decodeURIComponent(param[1]);
+        if (coerce) {
+          val = (val && !isNaN(val) ? +val : (val === "undefined" ? undefined : (coerce_types[val] !== undefined ? coerce_types[val] : val)));
+        }
+        if (keys_last) {
+          while (i <= keys_last) {
+            key = (keys[i] === "" ? cur.length : keys[i]);
+            cur = cur[key] = (i < keys_last ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : []) : val);
+            i++;
+          }
+        } else {
+          if ($.isArray(obj[key])) {
+            obj[key].push(val);
+          } else if (obj[key] !== undefined) {
+            obj[key] = [obj[key], val];
+          } else {
+            obj[key] = val;
+          }
+        }
+      } else {
+        if (key) obj[key] = (coerce ? undefined : "");
+      }
+    }
+    return obj;
+  };
+
+  Tower.View.MetaHelper = {
+    title: function(string) {
+      return document.title = string;
+    }
+  };
+
+  Tower.View.ValidationHelper = {
+    success: function() {
+      return this.redirectTo("/");
+    },
+    failure: function(error) {
+      if (error) {
+        return this.flashError(error);
+      } else {
+        return this.invalidate();
+      }
+    },
+    invalidate: function() {
+      var attribute, element, errors, field, _ref5, _results;
+      element = $("#" + this.resourceName + "-" + this.elementName);
+      _ref5 = this.resource.errors;
+      _results = [];
+      for (attribute in _ref5) {
+        errors = _ref5[attribute];
+        field = $("#" + this.resourceName + "-" + attribute + "-field");
+        if (field.length) {
+          field.css("background", "yellow");
+          _results.push($("input", field).after("<output class='error'>" + (errors.join("\n")) + "</output>"));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    }
+  };
+
   Tower.Controller = (function(_super) {
 
     __extends(Controller, _super);
+
+    Controller.include(Tower.Support.Callbacks);
 
     Controller.extend(Tower.Support.EventEmitter);
 
@@ -5652,13 +5841,16 @@
       return this._instance || (this._instance = new this);
     };
 
+    Controller.metadata = function() {
+      return this._metadata || (this._metadata = {});
+    };
+
     function Controller() {
       this.constructor._instance = this;
       this.headers = {};
       this.status = 200;
       this.request = null;
       this.response = null;
-      this.contentType = null;
       this.params = {};
       this.query = {};
       this.resourceName = this.constructor.resourceName();
@@ -5676,24 +5868,12 @@
 
   })(Tower.Class);
 
-  Tower.Controller.Caching = {
-    freshWhen: function() {},
-    stale: function() {},
-    expiresIn: function() {}
-  };
-
   Tower.Controller.Callbacks = {
     ClassMethods: {
       beforeAction: function() {
         return this.before.apply(this, ["action"].concat(__slice.call(arguments)));
       },
-      beforeFilter: function() {
-        return this.before.apply(this, ["action"].concat(__slice.call(arguments)));
-      },
       afterAction: function() {
-        return this.after.apply(this, ["action"].concat(__slice.call(arguments)));
-      },
-      afterFilter: function() {
         return this.after.apply(this, ["action"].concat(__slice.call(arguments)));
       }
     }
@@ -5713,29 +5893,10 @@
       var layout;
       layout = this.constructor._layout;
       if (typeof layout === "function") {
-        return layout.apply(this);
+        return layout.call(this);
       } else {
         return layout;
       }
-    }
-  };
-
-  Tower.Controller.HTTP = {
-    head: function(status, options) {
-      var location;
-      if (options == null) options = {};
-      if (typeof status === "object") {
-        options = status;
-        status = null;
-      }
-      status || (status = options.status || "ok");
-      location = options.location;
-      delete options.status;
-      delete options.location;
-      this.status = status;
-      if (location) this.location = Tower.urlFor(location);
-      if (formats) this.headers["Content-Type"] = Mime[formats.first];
-      return this.body = " ";
     }
   };
 
@@ -5761,7 +5922,9 @@
         console.log("  Parameters:");
         console.log(this.params);
       }
-      return this.runCallbacks("action", function(callback) {
+      return this.runCallbacks("action", {
+        name: this.action
+      }, function(callback) {
         return _this[_this.action].call(_this, callback);
       });
     },
@@ -5789,7 +5952,7 @@
       param: function(key, options) {
         if (options == null) options = {};
         this._params || (this._params = {});
-        return this._params[key] = Tower.Dispatch.Param.create(key, Tower.Support.Object.extend({}, this._paramsOptions || {}, options));
+        return this._params[key] = Tower.HTTP.Param.create(key, Tower.Support.Object.extend({}, this._paramsOptions || {}, options));
       }
     },
     criteria: function() {
@@ -5908,8 +6071,10 @@
       if (typeof args[0] === "object") options = args.shift();
       if (typeof args[0] === "function") callback = args.shift();
       options || (options = {});
-      key = action && !!action.match(/\//) ? "file" : "action";
-      options[key] = action;
+      if (action) {
+        key = !!action.match(/\//) ? "file" : "action";
+        options[key] = action;
+      }
       if (callback) options.callback = callback;
       return options;
     },
@@ -5970,10 +6135,32 @@
       }
     },
     index: function() {
-      return this._index.apply(this, arguments);
+      var _this = this;
+      return this._index(function(format) {
+        format.html(function() {
+          return _this.render("index");
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.collection,
+            status: 200
+          });
+        });
+      });
     },
     "new": function() {
-      return this._new.apply(this, arguments);
+      var _this = this;
+      return this._new(function(format) {
+        format.html(function() {
+          return _this.render("new");
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.resource,
+            status: 200
+          });
+        });
+      });
     },
     create: function() {
       var _this = this;
@@ -5992,10 +6179,32 @@
       });
     },
     show: function() {
-      return this._show.apply(this, arguments);
+      var _this = this;
+      return this._show(function(format) {
+        format.html(function() {
+          return _this.render("show");
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.resource,
+            status: 200
+          });
+        });
+      });
     },
     edit: function() {
-      return this._edit.apply(this, arguments);
+      var _this = this;
+      return this._edit(function(format) {
+        format.html(function() {
+          return _this.render("edit");
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.resource,
+            status: 200
+          });
+        });
+      });
     },
     update: function() {
       var _this = this;
@@ -6047,7 +6256,7 @@
       return this.buildResource(function(error, resource) {
         if (!resource) return _this.failure(error, callback);
         return resource.save(function(error) {
-          return _this.respondWithStatus(!!!error, callback);
+          return _this.respondWithStatus(Tower.Support.Object.isBlank(resource.errors), callback);
         });
       });
     },
@@ -6068,7 +6277,7 @@
       return this.findResource(function(error, resource) {
         if (error) return _this.failure(error, callback);
         return resource.updateAttributes(_this.params[_this.resourceName], function(error) {
-          return _this.respondWithStatus(!!!error, callback);
+          return _this.respondWithStatus(!!!error && Tower.Support.Object.isBlank(resource.errors), callback);
         });
       });
     },
@@ -6352,6 +6561,7 @@
       } else {
         options = {};
       }
+      options || (options = {});
       options.records = args[0];
       return Tower.Controller.Responder.respond(this, options, callback);
     },
@@ -6376,21 +6586,9 @@
     }
   };
 
-  Tower.Controller.Sockets = {
-    broadcast: function() {},
-    emit: function() {},
-    connect: function() {}
-  };
-
-  Tower.Controller.include(Tower.Support.Callbacks);
-
-  Tower.Controller.include(Tower.Controller.Caching);
-
   Tower.Controller.include(Tower.Controller.Callbacks);
 
   Tower.Controller.include(Tower.Controller.Helpers);
-
-  Tower.Controller.include(Tower.Controller.HTTP);
 
   Tower.Controller.include(Tower.Controller.Instrumentation);
 
@@ -6403,19 +6601,6 @@
   Tower.Controller.include(Tower.Controller.Resourceful);
 
   Tower.Controller.include(Tower.Controller.Responding);
-
-  Tower.Controller.include(Tower.Controller.Sockets);
-
-  Tower.Controller.addRenderers({
-    json: function(json, options, callback) {
-      var _base;
-      if (typeof json !== "string") json = JSON.stringify(json);
-      if (options.callback) json = "" + options.callback + "(" + json + ")";
-      (_base = this.headers)["Content-Type"] || (_base["Content-Type"] = require("mime").lookup("json"));
-      if (callback) callback(null, json);
-      return json;
-    }
-  });
 
   Tower.Controller.Elements = {
     ClassMethods: {
@@ -6444,21 +6629,26 @@
         var _this = this;
         return $(this.dispatcher).on(name, function(event) {
           var action, elements, form, method, params, target;
-          target = $(event.target);
-          form = target.closest("form");
-          action = form.attr("action");
-          method = (form.attr("data-method") || form.attr("method")).toUpperCase();
-          params = form.serializeParams();
-          params.method = method;
-          params.action = action;
-          elements = _.extend({
-            target: target,
-            form: form
-          }, {});
-          return _this._dispatch(handler, {
-            elements: elements,
-            params: params
-          });
+          try {
+            target = $(event.target);
+            form = target.closest("form");
+            action = form.attr("action");
+            method = (form.attr("data-method") || form.attr("method")).toUpperCase();
+            params = form.serializeParams();
+            params.method = method;
+            params.action = action;
+            elements = _.extend({
+              target: target,
+              form: form
+            }, {});
+            _this._dispatch(handler, {
+              elements: elements,
+              params: params
+            });
+          } catch (error) {
+            console.log(error);
+          }
+          return false;
         });
       },
       invalidForm: function() {
@@ -6540,13 +6730,97 @@
 
   Tower.Controller.Events.ClassMethods.DOM_EVENT_PATTERN = new RegExp("^(" + (Tower.Controller.Events.ClassMethods.DOM_EVENTS.join("|")) + ")");
 
+  Tower.Controller.Handlers = {
+    ClassMethods: {
+      submitHandler: function(name, handler, options) {
+        var _this = this;
+        return $(this.dispatcher).on(name, function(event) {
+          var action, elements, form, method, params, target;
+          target = $(event.target);
+          form = target.closest("form");
+          action = form.attr("action");
+          method = (form.attr("data-method") || form.attr("method")).toUpperCase();
+          params = form.serializeParams();
+          params.method = method;
+          params.action = action;
+          elements = _.extend({
+            target: target,
+            form: form
+          }, {});
+          return _this._dispatch(handler, {
+            elements: elements,
+            params: params
+          });
+        });
+      }
+    }
+  };
+
   Tower.Controller.include(Tower.Controller.Elements);
 
   Tower.Controller.include(Tower.Controller.Events);
 
-  Tower.Dispatch = {};
+  Tower.Controller.include(Tower.Controller.Handlers);
 
-  Tower.Dispatch.Agent = (function() {
+  $.fn.serializeParams = function(coerce) {
+    return $.serializeParams($(this).serialize(), coerce);
+  };
+
+  $.serializeParams = function(params, coerce) {
+    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len5;
+    obj = {};
+    coerce_types = {
+      "true": !0,
+      "false": !1,
+      "null": null
+    };
+    array = params.replace(/\+/g, " ").split("&");
+    for (index = 0, _len5 = array.length; index < _len5; index++) {
+      item = array[index];
+      param = item.split("=");
+      key = decodeURIComponent(param[0]);
+      val = void 0;
+      cur = obj;
+      i = 0;
+      keys = key.split("][");
+      keys_last = keys.length - 1;
+      if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+        keys[keys_last] = keys[keys_last].replace(/\]$/, "");
+        keys = keys.shift().split("[").concat(keys);
+        keys_last = keys.length - 1;
+      } else {
+        keys_last = 0;
+      }
+      if (param.length === 2) {
+        val = decodeURIComponent(param[1]);
+        if (coerce) {
+          val = (val && !isNaN(val) ? +val : (val === "undefined" ? undefined : (coerce_types[val] !== undefined ? coerce_types[val] : val)));
+        }
+        if (keys_last) {
+          while (i <= keys_last) {
+            key = (keys[i] === "" ? cur.length : keys[i]);
+            cur = cur[key] = (i < keys_last ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : []) : val);
+            i++;
+          }
+        } else {
+          if ($.isArray(obj[key])) {
+            obj[key].push(val);
+          } else if (obj[key] !== undefined) {
+            obj[key] = [obj[key], val];
+          } else {
+            obj[key] = val;
+          }
+        }
+      } else {
+        if (key) obj[key] = (coerce ? undefined : "");
+      }
+    }
+    return obj;
+  };
+
+  Tower.HTTP = {};
+
+  Tower.HTTP.Agent = (function() {
 
     function Agent(attributes) {
       if (attributes == null) attributes = {};
@@ -6569,7 +6843,7 @@
 
   })();
 
-  Tower.Dispatch.Cookies = (function() {
+  Tower.HTTP.Cookies = (function() {
 
     Cookies.parse = function(string) {
       var eqlIndex, pair, pairs, result, value, _len5, _m;
@@ -6611,7 +6885,7 @@
 
   })();
 
-  Tower.Dispatch.Param = (function() {
+  Tower.HTTP.Param = (function() {
 
     Param.perPage = 20;
 
@@ -6627,7 +6901,7 @@
 
     Param.create = function(key, options) {
       options.type || (options.type = "String");
-      return new Tower.Dispatch.Param[options.type](key, options);
+      return new Tower.HTTP.Param[options.type](key, options);
     };
 
     function Param(key, options) {
@@ -6692,7 +6966,7 @@
 
   })();
 
-  Tower.Dispatch.Param.Array = (function(_super) {
+  Tower.HTTP.Param.Array = (function(_super) {
 
     __extends(Array, _super);
 
@@ -6729,9 +7003,9 @@
 
     return Array;
 
-  })(Tower.Dispatch.Param);
+  })(Tower.HTTP.Param);
 
-  Tower.Dispatch.Param.Date = (function(_super) {
+  Tower.HTTP.Param.Date = (function(_super) {
 
     __extends(Date, _super);
 
@@ -6770,9 +7044,9 @@
 
     return Date;
 
-  })(Tower.Dispatch.Param);
+  })(Tower.HTTP.Param);
 
-  Tower.Dispatch.Param.Number = (function(_super) {
+  Tower.HTTP.Param.Number = (function(_super) {
 
     __extends(Number, _super);
 
@@ -6813,9 +7087,9 @@
 
     return Number;
 
-  })(Tower.Dispatch.Param);
+  })(Tower.HTTP.Param);
 
-  Tower.Dispatch.Param.String = (function(_super) {
+  Tower.HTTP.Param.String = (function(_super) {
 
     __extends(String, _super);
 
@@ -6859,9 +7133,9 @@
 
     return String;
 
-  })(Tower.Dispatch.Param);
+  })(Tower.HTTP.Param);
 
-  Tower.Dispatch.Route = (function(_super) {
+  Tower.HTTP.Route = (function(_super) {
 
     __extends(Route, _super);
 
@@ -6882,7 +7156,7 @@
     };
 
     Route.draw = function(callback) {
-      return callback.apply(new Tower.Dispatch.Route.DSL(this));
+      return callback.apply(new Tower.HTTP.Route.DSL(this));
     };
 
     Route.findController = function(request, response, callback) {
@@ -7027,9 +7301,9 @@
 
   })(Tower.Class);
 
-  Tower.Route = Tower.Dispatch.Route;
+  Tower.Route = Tower.HTTP.Route;
 
-  Tower.Dispatch.Route.DSL = (function() {
+  Tower.HTTP.Route.DSL = (function() {
 
     function DSL() {
       this._scope = {};
@@ -7037,7 +7311,7 @@
 
     DSL.prototype.match = function() {
       this.scope || (this.scope = {});
-      return Tower.Dispatch.Route.create(new Tower.Dispatch.Route(this._extractOptions.apply(this, arguments)));
+      return Tower.HTTP.Route.create(new Tower.HTTP.Route(this._extractOptions.apply(this, arguments)));
     };
 
     DSL.prototype.get = function() {
@@ -7302,7 +7576,7 @@
 
   })();
 
-  Tower.Dispatch.Route.Urls = {
+  Tower.HTTP.Route.Urls = {
     ClassMethods: {
       urlFor: function(options) {
         var action, anchor, controller, host, port;
@@ -7316,17 +7590,17 @@
     }
   };
 
-  Tower.Dispatch.Route.PolymorphicUrls = {
+  Tower.HTTP.Route.PolymorphicUrls = {
     ClassMethods: {
       polymorphicUrl: function() {}
     }
   };
 
-  Tower.Dispatch.Route.include(Tower.Dispatch.Route.Urls);
+  Tower.HTTP.Route.include(Tower.HTTP.Route.Urls);
 
-  Tower.Dispatch.Route.include(Tower.Dispatch.Route.PolymorphicUrls);
+  Tower.HTTP.Route.include(Tower.HTTP.Route.PolymorphicUrls);
 
-  Tower.Dispatch.Request = (function() {
+  Tower.HTTP.Request = (function() {
 
     function Request(data) {
       if (data == null) data = {};
@@ -7345,7 +7619,7 @@
 
   })();
 
-  Tower.Dispatch.Response = (function() {
+  Tower.HTTP.Response = (function() {
 
     function Response(data) {
       if (data == null) data = {};
@@ -7393,7 +7667,7 @@
 
   })();
 
-  Tower.Dispatch.Url = (function() {
+  Tower.HTTP.Url = (function() {
 
     Url.key = ["source", "protocol", "host", "userInfo", "user", "password", "hostname", "port", "relative", "path", "directory", "file", "query", "fragment"];
 
@@ -7462,6 +7736,29 @@
 
   Tower.Middleware = {};
 
+  Tower.Middleware.Agent = function(request, response, next) {
+    var agent, attributes;
+    agent = require('useragent').parse(request.headers['user-agent']);
+    attributes = Tower.Support.Object.extend(require('useragent').is(request.headers['user-agent']), {
+      family: agent.family,
+      major: agent.major,
+      minor: agent.minor,
+      patch: agent.patch,
+      version: agent.toVersion(),
+      os: agent.os,
+      name: agent.toAgent(),
+      mac: !!agent.os.match(/mac/i),
+      windows: !!agent.os.match(/win/i),
+      linux: !!agent.os.match(/linux/i)
+    });
+    request.agent = new Tower.HTTP.Agent(attributes);
+    if (next) return next();
+  };
+
+  Tower.Middleware.Cookies = function(request, response, next) {
+    return request._cookies || (request._cookies = Tower.HTTP.Cookies.parse());
+  };
+
   Tower.Middleware.Location = function(request, response, next) {
     var url;
     if (!request.location) {
@@ -7470,7 +7767,7 @@
       } else {
         url = "http://" + request.headers.host + request.url;
       }
-      request.location = new Tower.Dispatch.Url(url);
+      request.location = new Tower.HTTP.Url(url);
     }
     return next();
   };
@@ -7494,10 +7791,10 @@
     find: function(request, response, callback) {
       this.processHost(request, response);
       this.processAgent(request, response);
-      return Tower.Dispatch.Route.findController(request, response, callback);
+      return Tower.HTTP.Route.findController(request, response, callback);
     },
     processHost: function(request, response) {
-      return request.location || (request.location = new Tower.Dispatch.Url(request.url));
+      return request.location || (request.location = new Tower.HTTP.Url(request.url));
     },
     processAgent: function(request, response) {
       if (request.headers) {
