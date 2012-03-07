@@ -59,6 +59,9 @@ class Tower.Command.Console
     process.nextTick client.reload
     
   runCoffee: ->
+    app = Tower.Application.instance()
+    app.initialize()
+    app.stack()
     # Copied from coffee-script/lib/coffee-script/repl.coffee
     # 
     # A very simple Read-Eval-Print-Loop. Compiles one line at a time to JavaScript
