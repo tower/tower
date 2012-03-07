@@ -3,11 +3,21 @@ Tower.Support.Callbacks =
     before: ->
       @appendCallback "before", arguments...
       
+    # @example
+    #   class App.User extends Tower.Model
+    #     @before "save", "beforeSave"
+    #     
+    #     beforeSave: (callback) ->
+    #       # before
+    #       callback.call @
+    #       # after
     after: ->
       @appendCallback "after", arguments...
       
     callback: ->
-      @appendCallback arguments...
+      args = Tower.Support.Array.args(arguments)
+      args = ["after"].concat args unless args[0].match(/^(?:before|around|after)$/)
+      @appendCallback args...
       
     removeCallback: (action, phase, run) ->
       @
@@ -35,12 +45,19 @@ Tower.Support.Callbacks =
     callbacks: ->
       @_callbacks ||= {}
       
-  runCallbacks: (kind, block) ->
+  runCallbacks: (kind, options, block, complete) ->
+    if typeof options == "function"
+      complete  = block
+      block     = options
+      options   = {}
+    options   ||= {}
+    
     chain = @constructor.callbacks()[kind]
     if chain
-      chain.run(@, block)
+      chain.run(@, options, block, complete)
     else
       block.call @
+      complete.call @ if complete
       
   _callback: (callbacks...) ->
     (error) =>
@@ -54,33 +71,52 @@ class Tower.Support.Callbacks.Chain
     @before ||= []
     @after  ||= []
 
-  run: (binding, block) ->
-    runner    = (callback, next) => callback.run(binding, next)
+  run: (binding, options, block, complete) ->
+    runner    = (callback, next) =>
+      callback.run(binding, options, next)
     
     Tower.async @before, runner, (error) =>
       unless error
-        switch block.length
-          when 0
-            block.call(binding)
-            Tower.async @after, runner, (error) =>
-              binding
-          else
-            block.call binding, (error) =>
-              unless error
-                Tower.async @after, runner, (error) =>
-                  binding
+        if block
+          switch block.length
+            when 0
+              block.call(binding)
+              Tower.async @after, runner, (error) =>
+                complete.call binding if complete
+                binding
+            else
+              block.call binding, (error) =>
+                unless error
+                  Tower.async @after, runner, (error) =>
+                    complete.call binding if complete
+                    binding
+        else
+          Tower.async @after, runner, (error) =>
+            complete.call binding if complete
+            binding
     
   push: (phase, method, filters, options) ->
     @[phase].push new Tower.Support.Callback(method, filters, options)
     
 class Tower.Support.Callback
-  constructor: (method, options = {}) ->
-    @method   = method
-    @options  = options
+  constructor: (method, conditions = {}) ->
+    @method       = method
+    @conditions   = conditions
     
-  run: (binding, next) ->
-    method  = @method
-    method  = binding[method] if typeof method == "string"
+    conditions.only   = Tower.Support.Object.toArray(conditions.only) if conditions.hasOwnProperty("only")
+    conditions.except = Tower.Support.Object.toArray(conditions.except) if conditions.hasOwnProperty("except")
+    
+  run: (binding, options, next) ->
+    conditions  = @conditions
+    
+    if options && options.hasOwnProperty("name")
+      if conditions.hasOwnProperty("only")
+        return next() if _.indexOf(conditions.only, options.name) == -1
+      else if conditions.hasOwnProperty("except")
+        return next() if _.indexOf(conditions.except, options.name) != -1
+        
+    method      = @method
+    method      = binding[method] if typeof method == "string"
     
     switch method.length
       when 0

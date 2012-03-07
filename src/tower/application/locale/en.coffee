@@ -1,4 +1,4 @@
-module.exports = en =
+module.exports =
   errors:
     missingCallback: "You must pass a callback to %s."
     missingOption: "You must pass in the '%s' option to %s."

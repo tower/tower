@@ -21,7 +21,7 @@ Tower.Controller.Instrumentation =
       console.log "  Parameters:"
       console.log @params
     
-    @runCallbacks "action", (callback) =>
+    @runCallbacks "action", name: @action, (callback) =>
       @[@action].call @, callback
     
   processQuery: ->

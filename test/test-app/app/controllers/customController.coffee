@@ -1,10 +1,25 @@
 class App.CustomController extends Tower.Controller
   @respondTo "html", "json", "yaml"
   
-  @before "setCurrentUser"
-  @resource type: "App.User"
+  @before("setCurrentUser")
+  @resource(type: "App.User")
   
-  @
+  @beforeAction("testCallback", only: ['testCreateCallback', 'testUpdateCallback'])
+  
+  testCallback: ->
+    @testCallbackCalled = true
+    
+  testCreateCallback: ->
+    @testCreateCallbackCalled = true
+    @render action: 'helloWorld'
+    
+  testUpdateCallback: ->
+    @testUpdateCallbackCalled = true
+    @render action: 'helloWorld'
+    
+  testNoCallback: ->
+    @testNoCallbackCalled = true
+    @render action: 'helloWorld'
   
   renderUser: ->
     

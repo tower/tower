@@ -36,6 +36,8 @@ Tower.Controller.Responding =
       options   = args.pop()
     else
       options   = {}
+    
+    options ||= {}
 
     options.records = args[0]
     
