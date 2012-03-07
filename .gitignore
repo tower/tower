@@ -27,6 +27,7 @@ spec/secrets.coffee
 inspiration.md
 favicon.png
 dist/*.gz
+dist/*.min
 wiki
 docs
 spec/tmp
