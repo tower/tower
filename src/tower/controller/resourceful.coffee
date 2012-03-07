@@ -40,10 +40,10 @@ Tower.Controller.Resourceful =
       @
 
   index: ->
-    @_index arguments...
-    #@_index (format) =>
-    #  format.html => @render "index"
-    #  format.json => @render json: @collection, status: 200
+    #@_index arguments...
+    @_index (format) =>
+      format.html => @render "index"
+      format.json => @render json: @collection, status: 200
 
   new: ->
     @_new (format) =>
