@@ -115,8 +115,8 @@ Tower.Generator.Resources =
     @program.namespace ||= Tower.namespace()
     name:             name
     namespace:        Tower.Support.String.camelize(@program.namespace)
-    paramName:        Tower.Support.String.parameterize(@program.namespace)
-    paramNamePlural:  Tower.Support.String.parameterize(Tower.Support.String.pluralize(@program.namespace))
+    paramName:        Tower.Support.String.parameterize(name)
+    paramNamePlural:  Tower.Support.String.parameterize(Tower.Support.String.pluralize(name))
     session:          @generateRandom("hex")
     year:             (new Date).getFullYear()
     directory:        name

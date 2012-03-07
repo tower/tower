@@ -1,4 +1,4 @@
-li class: "<%= model.cssName %>", ->
+li class: "<%= model.paramName %>", ->
   header class: "header", ->
     h3 @<%= model.name %>.toLabel()
   dl class: "content", -><% for (var i = 0; i < model.attributes.length; i++) { %>
