@@ -50,7 +50,7 @@ Tower.Controller.Resourceful =
       format.html => @render "new"
       format.json => @render json: @resource, status: 200
   
-  create: ->
+  create: (callback) ->
     @_create (format) =>
       format.html => @redirectTo action: "show"
       format.json => @render json: @resource, status: 200

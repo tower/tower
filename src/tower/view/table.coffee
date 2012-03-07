@@ -180,7 +180,7 @@ class Tower.View.Table extends Tower.View.Component
     @cellIndex += 1
   
   linkToSort: (label, value) ->
-    direction = "asc"
+    direction = "+"
     @tag "a", href: "?sort=#{direction}", =>
       @tag "span", label
     

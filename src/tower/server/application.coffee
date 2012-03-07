@@ -106,7 +106,7 @@ class Tower.Application extends Tower.Engine
         require(path) if path.match(/\.(coffee|js)$/)
       
       done()
-    console.log "RUN INITIALIZER"
+    
     @runCallbacks "initialize", initializer, complete
     
   teardown: ->
@@ -142,7 +142,7 @@ class Tower.Application extends Tower.Engine
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
-        #@watch()
+        @watch()
   
   run: ->
     @initialize()
