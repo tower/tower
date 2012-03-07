@@ -13,8 +13,6 @@ Tower.Controller.Elements =
     processElements: (target, options = {}) ->
       @elements = @extractElements(target, options)
     
-<<<<<<< HEAD
-=======
     clickHandler: (name, handler, options) ->
       $(@dispatcher).on name, (event) =>
     
@@ -38,7 +36,6 @@ Tower.Controller.Elements =
           
         return false
         
->>>>>>> development
     invalidForm: ->
       element = $("##{@resourceName}-#{@elementName}")
     

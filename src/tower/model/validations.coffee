@@ -12,11 +12,11 @@ Tower.Model.Validations =
       @_validators ||= []
   
   validate: (callback) ->
+    success         = false
     @runCallbacks "validate", (block) =>
       complete        = @_callback(block, callback)
       validators      = @constructor.validators()
       errors          = @errors = {}
-      success         = false
       
       iterator        = (validator, next) =>
         validator.validateEach @, errors, next
@@ -26,5 +26,7 @@ Tower.Model.Validations =
         complete.call(@, !success)
       
       success
+    
+    success
   
 module.exports = Tower.Model.Validations

@@ -4,9 +4,7 @@ require './controller/handlers'
 
 Tower.Controller.include Tower.Controller.Elements
 Tower.Controller.include Tower.Controller.Events
-<<<<<<< HEAD
 Tower.Controller.include Tower.Controller.Handlers
-=======
 
 $.fn.serializeParams = (coerce) ->
   $.serializeParams($(this).serialize(), coerce)
@@ -52,4 +50,3 @@ $.serializeParams = (params, coerce) ->
     else obj[key] = (if coerce then `undefined` else "")  if key
 
   obj
->>>>>>> development

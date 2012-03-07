@@ -40,22 +40,31 @@ Tower.Controller.Resourceful =
       @
 
   index: ->
-    @_index arguments...
+    #@_index arguments...
+    @_index (format) =>
+      format.html => @render "index"
+      format.json => @render json: @collection, status: 200
 
   new: ->
-    @_new arguments...
-
-  create: ->
+    @_new (format) =>
+      format.html => @render "new"
+      format.json => @render json: @resource, status: 200
+  
+  create: (callback) ->
     @_create (format) =>
       format.html => @redirectTo action: "show"
       format.json => @render json: @resource, status: 200
       
   show: ->
-    @_show arguments...
+    @_show (format) =>
+      format.html => @render "show"
+      format.json => @render json: @resource, status: 200
 
   edit: ->
-    @_edit arguments...
-
+    @_edit (format) =>
+      format.html => @render "edit"
+      format.json => @render json: @resource, status: 200
+      
   update: ->
     @_update (format) =>
       format.html => @redirectTo action: "show"

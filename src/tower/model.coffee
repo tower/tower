@@ -7,7 +7,6 @@ class Tower.Model extends Tower.Class
   #   class App.User extends Tower.Model
   #     @configure ->
   #       defaultStore: Tower.Store.Memory
-  #       default
   @configure: (object) ->
     @config ||= {}
     object = object.call @ if typeof object == "function"
@@ -29,19 +28,22 @@ class Tower.Model extends Tower.Class
     @_defaults ||= {}
     @_defaults[key] = value
     
-  constructor: (attrs = {}, options = {}) ->
+  constructor: (attrs, options) ->
+    @initialize attrs, options
+    
+  initialize: (attrs = {}, options = {}) ->  
     definitions = @constructor.fields()
     attributes  = {}
     
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@) unless attrs.hasOwnProperty(name)
-    
+
     @attributes   = attributes
     @changes      = {}
     @errors       = {}
     @readOnly     = if options.hasOwnProperty("readOnly") then options.readOnly else false
     @persistent   = if options.hasOwnProperty("persistent") then options.persisted else false
-    
+
     @attributes[key] = value for key, value of attrs
   
 require './model/scope'

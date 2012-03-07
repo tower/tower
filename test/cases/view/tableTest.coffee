@@ -75,7 +75,7 @@ describe 'Tower.View.Table', ->
   <thead>
     <tr scope="row">
       <th abbr="Header A" role="columnheader" scope="col" class="sortable asc" aria-sort="asc" aria-selected="aria-selected">
-        <a href="?sort=asc">
+        <a href="?sort=+">
           <span>Header A</span>
         </a>
       </th>

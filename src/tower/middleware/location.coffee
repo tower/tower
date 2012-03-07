@@ -5,7 +5,7 @@ Tower.Middleware.Location = (request, response, next) ->
     else
       url = "http://#{request.headers.host}#{request.url}"
       
-    request.location = new Tower.Dispatch.Url(url)
+    request.location = new Tower.HTTP.Url(url)
     
   next()
   

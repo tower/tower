@@ -25,7 +25,7 @@ Tower.View.RenderingHelper =
         tmpl      = "(function(data) { with(data) { #{String(template)} } })"
         eval(tmpl).call(@, locals)
     catch error
-      console.log error
+      console.log error.stack || error
       
     null
     

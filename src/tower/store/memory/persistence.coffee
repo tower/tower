@@ -5,6 +5,7 @@ Tower.Store.Memory.Persistence =
     records
     
   loadOne: (record) ->
+    record.persistent = true
     @records[record.get("id").toString()] = record
     
   create: (data, options, callback) ->

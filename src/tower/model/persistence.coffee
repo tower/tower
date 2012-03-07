@@ -1,6 +1,6 @@
 Tower.Model.Persistence =
   ClassMethods:
-    defaultStore: Tower.Store.Memory
+    defaultStore: if Tower.client then Tower.Store.Memory else Tower.Store.MongoDB
     
     store: (value) ->
       return @_store if !value && @_store

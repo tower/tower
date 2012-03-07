@@ -1,73 +1,100 @@
-class Tower.Application extends Tower.Class
-  @dispatcher:  global
-  dispatcher:   global
+# include underscore.string mixins
+_.mixin(_.string.exports())
+
+# tmp hack, make all links run through history.pushState
+$("a").click ->
+  History.pushState null, null, $(this).attr("href")
+  #Tower.get($(this).attr("href"))
+  false
+
+class Tower.Application extends Tower.Engine
+  @configure: (block) ->
+    @initializers().push block
+  
+  @initializers: ->
+    @_initializers ||= []
   
   @instance: ->
     @_instance
+    
+  @defaultStack: ->
+    @use Tower.Middleware.Location
+    #@use Tower.Middleware.Cookies
+    @use Tower.Middleware.Router
+    @middleware
+    
+  @use: ->
+    @middleware ||= []
+    @middleware.push arguments
+    
+  #use: (route, handle) ->
+  use: ->
+    @constructor.use arguments...
 
-  constructor: (middleware = []) ->
+  constructor: (middlewares = []) ->
+    throw new Error("Already initialized application") if Tower.Application._instance
     Tower.Application._instance = @
+    Tower.Application.middleware ||= []
     
     @io       = global["io"]
+    @History  = global["History"]
     @stack    = []
     
-    @use(_middleware) for _middleware in middleware
-    
-    @History  = global.History
+    @use(middleware) for middleware in middlewares
     
   initialize: ->
     @extractAgent()
-    @use Tower.Middleware.Location
-    @use Tower.Middleware.Routes
+    @applyMiddleware()
     @
+  
+  applyMiddleware: ->  
+    middlewares = @constructor.middleware
     
-  extractAgent: ->
-    Tower.agent = new Tower.Net.Agent
-      os:       navigator
-      ip:       navigator
-      browser:  navigator
-      language: navigator
+    unless middlewares && middlewares.length > 0
+      middlewares = @constructor.defaultStack()
+      
+    @middleware(middleware...) for middleware in middlewares
     
-  use: (route, handle) ->
-    @route = "/"
-    
-    unless "string" is typeof route
+  middleware: ->
+    args    = Tower.Support.Array.args(arguments)
+    route   = "/"
+    handle  = args.pop()
+    unless typeof route == "string"
       handle = route
       route = "/"
 
     route = route.substr(0, route.length - 1) if "/" is route[route.length - 1]
-
+    
     @stack.push route: route, handle: handle
-
+    
     @
-
+    
+  extractAgent: ->
+    Tower.cookies = Tower.Dispatch.Cookies.parse()
+    Tower.agent   = new Tower.Dispatch.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
+    
   listen: ->
     self = @
     return if @listening
     @listening = true
-
+    
     if @History && @History.enabled
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
-        location  = new Tower.Route.Url(state.url)
-        request   = new Request(url: state.url, location: location, params: Tower.Support.Object.extend(title: state.title, (state.data || {})))
-        response  = new Response(url: state.url, location: location)
+        location  = new Tower.Dispatch.Url(state.url)
+        request   = new Tower.Dispatch.Request(url: state.url, location: location, params: Tower.Support.Object.extend(title: state.title, (state.data || {})))
+        response  = new Tower.Dispatch.Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response
-      @dispatcher.trigger "statechange"
+      $(global).trigger "statechange"
     else
       console.warn "History not enabled"
-
-    # History.pushState state: 1, "State 1", "?state=1"
-    # History.back()
-    # History.go 2
 
   run: ->
     @listen()
     
   handle: (request, response, out) ->
-    env     = Tower.env
-    removed = ""
+    env   = Tower.env
     
     next  = (err) ->
       layer               = undefined
@@ -119,3 +146,5 @@ class Tower.Application extends Tower.Class
     index     = 0
     
     next()
+
+module.exports = Tower.Application

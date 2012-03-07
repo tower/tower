@@ -8,7 +8,7 @@ Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built 
 
 Follow me [@viatropos](http://twitter.com/viatropos).
 
-More docs in the docs section on [towerjs.org](http://towerjs.org).  Docs are a work in progress.
+Docs are a work in progress.
 
 ## Default Development Stack
 
@@ -28,13 +28,14 @@ npm install tower -g
 npm install design.io -g
 ```
 
-## Generator
+## Generate
 
 ``` bash
 tower new app
 cd app
-tower generate scaffold Post title:string body:text belongsTo:user
-tower generate scaffold User email:string firstName:string lastName:string hasMany:posts
+npm install
+tower generate scaffold Post title:string body:text
+node server
 ```
 
 ## Structure
@@ -342,7 +343,7 @@ html ->
     yields "bottom"
 ```
 
-The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Shift.js](http://github.com/viatropos/shift.js), which is a normalized interface to most of the Node.js templating languages.
+The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
 
 ## Styles
 
@@ -558,7 +559,7 @@ npm test
 
 Tower.js is just the bare bones, so you're free to choose a date parsing library, a template engine, or a form validation library, whatever.
 
-Here's some of the libraries I recommend:
+Here's some other useful libraries:
 
 - [moment.js](http://momentjs.com/) for date parsing
 - [underscore.js](http://documentcloud.github.com/underscore/)
@@ -566,7 +567,7 @@ Here's some of the libraries I recommend:
 - [async.js](https://github.com/caolan/async) for taming callback spaghetti
 - [geolib](https://github.com/manuelbieh/Geolib) for geo calculations
 - [tiny-require.js](https://github.com/viatropos/tiny-require.js) for using `require()` in the browser
-- [shift.js](https://github.com/viatropos/shift.js) for a generic interface to the JavaScript template engines
+- [mint.js](https://github.com/viatropos/mint.js) for a generic interface to the JavaScript template engines
 
 ## License
 
