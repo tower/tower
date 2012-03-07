@@ -104,8 +104,13 @@ task 'to-underscore', ->
       #  
       #  console.log sizes.join("\n")
 
-task 'build', ->  
-  mint.coffee compileFile("./src/tower", "./src/tower/client.coffee"), bare: false, (error, result) ->
+task 'build', ->
+  content = compileFile("./src/tower", "./src/tower/client.coffee").replace /Tower\.version *= *.+\n/g, (_) ->
+    version = """
+Tower.version = "#{JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/package.json"))).version}"
+
+"""
+  mint.coffee content, bare: false, (error, result) ->
     _console.error error.stack if error
     fs.writeFile "./dist/tower.js", result
     unless error

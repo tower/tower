@@ -1,7 +1,6 @@
 Tower.Support.Object.extend Tower, 
   env:        "development"
   port:       3000
-  version:    "0.3.0"
   client:     typeof(window) != "undefined"
   root:       "/"
   publicPath: "/"

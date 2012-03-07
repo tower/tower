@@ -1,6 +1,7 @@
 window.global       ||= window
 module                = global.module || {}
 global.Tower = Tower  = {}
+Tower.version         = "0.3.0"
 Tower.logger          = console
 
 require './support'

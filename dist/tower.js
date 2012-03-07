@@ -12,6 +12,8 @@
 
   global.Tower = Tower = {};
 
+  Tower.version = "0.3.9-7";
+
   Tower.logger = console;
 
   Tower.Support = {};
@@ -1163,7 +1165,6 @@
   Tower.Support.Object.extend(Tower, {
     env: "development",
     port: 3000,
-    version: "0.3.0",
     client: typeof window !== "undefined",
     root: "/",
     publicPath: "/",

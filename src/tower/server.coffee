@@ -5,6 +5,8 @@ _.mixin(require('underscore.string'))
 
 module.exports  = global.Tower = Tower = {}
 
+Tower.version = JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/../../package.json"))).version
+
 Tower.logger    = _console
 
 require './support'
