@@ -12,7 +12,7 @@
 
   global.Tower = Tower = {};
 
-  Tower.version = "0.3.9-7";
+  Tower.version = "0.3.9-8";
 
   Tower.logger = console;
 
@@ -1922,6 +1922,7 @@
       return records;
     },
     loadOne: function(record) {
+      record.persistent = true;
       return this.records[record.get("id").toString()] = record;
     },
     create: function(data, options, callback) {
@@ -4692,7 +4693,7 @@
     Table.prototype.linkToSort = function(label, value) {
       var direction,
         _this = this;
-      direction = "asc";
+      direction = "+";
       return this.tag("a", {
         href: "?sort=" + direction
       }, function() {
@@ -5977,8 +5978,37 @@
       return this.redirect.apply(this, arguments);
     },
     redirect: function() {
-      var _ref5;
-      (_ref5 = this.response).redirect.apply(_ref5, arguments);
+      var args, options, url;
+      try {
+        args = Tower.Support.Array.args(arguments);
+        console.log("redirect");
+        console.log(this.resourceType);
+        console.log(args);
+        options = Tower.Support.Array.extractOptions(args);
+        console.log(options);
+        url = args.shift();
+        if (!url && options.hasOwnProperty("action")) {
+          url = (function() {
+            switch (options.action) {
+              case "index":
+              case "new":
+                return Tower.urlFor(this.resourceType, {
+                  action: options.action
+                });
+              case "edit":
+              case "show":
+                return Tower.urlFor(this.resource, {
+                  action: options.action
+                });
+            }
+          }).call(this);
+        }
+        url || (url = "/");
+        console.log(url);
+        this.response.redirect(url);
+      } catch (error) {
+        console.log(error);
+      }
       if (this.callback) return this.callback();
     }
   };
@@ -6136,18 +6166,7 @@
       }
     },
     index: function() {
-      var _this = this;
-      return this._index(function(format) {
-        format.html(function() {
-          return _this.render("index");
-        });
-        return format.json(function() {
-          return _this.render({
-            json: _this.collection,
-            status: 200
-          });
-        });
-      });
+      return this._index.apply(this, arguments);
     },
     "new": function() {
       var _this = this;
@@ -6163,7 +6182,7 @@
         });
       });
     },
-    create: function() {
+    create: function(callback) {
       var _this = this;
       return this._create(function(format) {
         format.html(function() {
@@ -7776,10 +7795,12 @@
   Tower.Middleware.Router = function(request, response, callback) {
     Tower.Middleware.Router.find(request, response, function(controller) {
       if (controller) {
-        response.controller = controller;
-        response.writeHead(controller.status, controller.headers);
-        response.write(controller.body);
-        response.end();
+        if (response.statusCode !== 302) {
+          response.controller = controller;
+          response.writeHead(controller.status, controller.headers);
+          response.write(controller.body);
+          response.end();
+        }
         return controller.clear();
       } else {
         return Tower.Middleware.Router.error(request, response);
