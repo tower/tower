@@ -36,26 +36,13 @@ describe 'Tower.View', ->
 describe 'Tower.View eco template', ->
   beforeEach ->
     view = new Tower.View
-    # Tower.View.engine = "eco"
 
   test 'eco layout', ->
-    eco_template = -> """
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
-  </head>
-  <body role="application">
-    <% div = (contents) => %>
-      <div><%- contents %></div>
-    <% end %>
-    <%= div "Hello" %>
-  </body>
-</html>
-"""
+    eco = require "eco"
+    fs  = require "fs"
 
-    view.render {template: eco_template, type: "eco"}, (error, result) ->
-      assert.equal result, """
+    eco_template = ->
+      """
 <!DOCTYPE html>
 <html>
   <head>
@@ -63,7 +50,10 @@ describe 'Tower.View eco template', ->
     <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
   </head>
   <body role="application">
+  <%= yield "body" %>
   </body>
 </html>
-
 """
+    out_put = fs.readFileSync __dirname + "/out_put.html", "utf-8"
+    view.render {type: "eco", template: "eco_layout", }, (error, result) ->
+      assert.equal result, out_put
