@@ -60,9 +60,11 @@ Tower.View.Rendering =
       
       callback e, result
     else if options.type
+      mint = require "mint"
       engine = require("mint").engine(options.type)
       mint[engine](string, options.locals, callback)
     else
+      mint = require "mint"
       engine = require("mint")
       options.locals.string = string
       engine.render(options.locals, callback)

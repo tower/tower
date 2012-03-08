@@ -35,18 +35,35 @@ describe 'Tower.View', ->
 
 describe 'Tower.View eco template', ->
   beforeEach ->
-    Tower.View.engine = "eco"
     view = new Tower.View
+    # Tower.View.engine = "eco"
 
   test 'eco layout', ->
-    template = -> """
-      <% div = (contents) => %>
-        <div><%- contents %></div>
-      <% end %>
-      <%= div "Hello" %>
+    eco_template = -> """
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
+  </head>
+  <body role="application">
+    <% div = (contents) => %>
+      <div><%- contents %></div>
+    <% end %>
+    <%= div "Hello" %>
+  </body>
+</html>
 """
-    view.render template: template, (error, result) ->
+
+    view.render {template: eco_template, type: "eco"}, (error, result) ->
       assert.equal result, """
-<div>Hello</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
+  </head>
+  <body role="application">
+  </body>
+</html>
 
 """
