@@ -12,7 +12,7 @@
 
   global.Tower = Tower = {};
 
-  Tower.version = "0.3.9-8";
+  Tower.version = "0.3.9-9";
 
   Tower.logger = console;
 
@@ -1331,11 +1331,6 @@
   }
 
   _.mixin(_.string.exports());
-
-  $("a").click(function() {
-    History.pushState(null, null, $(this).attr("href"));
-    return false;
-  });
 
   Tower.Application = (function(_super) {
 
@@ -6166,7 +6161,18 @@
       }
     },
     index: function() {
-      return this._index.apply(this, arguments);
+      var _this = this;
+      return this._index(function(format) {
+        format.html(function() {
+          return _this.render("index");
+        });
+        return format.json(function() {
+          return _this.render({
+            json: _this.collection,
+            status: 200
+          });
+        });
+      });
     },
     "new": function() {
       var _this = this;

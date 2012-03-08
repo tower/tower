@@ -2,10 +2,10 @@
 _.mixin(_.string.exports())
 
 # tmp hack, make all links run through history.pushState
-$("a").click ->
-  History.pushState null, null, $(this).attr("href")
-  #Tower.get($(this).attr("href"))
-  false
+# $("a").click ->
+#  History.pushState null, null, $(this).attr("href")
+#  #Tower.get($(this).attr("href"))
+#  false
 
 class Tower.Application extends Tower.Engine
   @configure: (block) ->
