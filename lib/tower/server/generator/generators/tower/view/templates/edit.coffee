@@ -1,4 +1,4 @@
-@title = t("headers.edit", name: "<%= model.className %>")
+@title = "Editing <%= model.className %>"
 
 partial "form"
 

@@ -119,6 +119,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "http://sinonjs.org/releases/sinon-1.3.1.js", "sinon.js"
           @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js", "prettify.js"
+          @get "https://raw.github.com/Marak/Faker.js/master/Faker.js", "faker.js"
+          @get "https://raw.github.com/viatropos/factory.js/master/lib/factory.js", "factory.js"
           @get "http://html5shiv.googlecode.com/svn/trunk/html5.js", "html5.js"
           @directory "bootstrap"
           @get "https://raw.github.com/twitter/bootstrap/master/js/#{javascript}", "bootstrap/#{javascript}" for javascript in [

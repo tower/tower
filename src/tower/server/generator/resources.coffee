@@ -18,10 +18,8 @@ Tower.Generator.Resources =
       @injectIntoFile "config/assets.coffee", "      \"#{path}\"\n", after: /javascripts:\s*application: *\[[^\]]+\n/g
       
   navigation: (key, path) ->
-    pattern = /div *class: *"nav-collapse" *, *->\s+ul *class: *"nav", *->\s*/
-    content = """
-    navItem t("links.#{key}"), #{path}
-
+    pattern = /div *class: *"nav-collapse" *, *->\s+ul *class: *"nav", *-> */
+    content = """\n    navItem t("links.#{key}"), #{path}
 """
     
     @inRoot =>
