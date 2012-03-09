@@ -13,3 +13,4 @@ tableFor "<%= model.namePlural %>", (t) ->
     t.row ->
       t.cell colspan: <%= model.attributes.length + 3 %>, ->
         linkTo 'New <%= model.className %>', urlFor(<%= app.namespace %>.<%= model.className %>, action: "new")
+

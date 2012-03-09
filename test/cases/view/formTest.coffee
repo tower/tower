@@ -35,14 +35,16 @@ describe 'Tower.View.Form', ->
   <input type="hidden" name="_method" value="put" />
   <fieldset>
     <ol class="fields">
-      <li class="field string optional" id="user-first-name-field">
-        <label for="user-first-name-input" class="label">
+      <li class="field control-group string optional" id="user-first-name-field">
+        <label for="user-first-name-input" class="control-label">
           <span>FirstName</span>
           <abbr title="Optional" class="optional">
             
           </abbr>
         </label>
-        <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" value="Lance" aria-required="false" />
+        <div class="controls">
+          <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" value="Lance" aria-required="false" />
+        </div>
       </li>
     </ol>
   </fieldset>
@@ -65,14 +67,16 @@ describe 'Tower.View.Form', ->
   <input type="hidden" name="_method" value="put" />
   <fieldset>
     <ol class="fields">
-      <li class="field string optional" id="user-first-name-field">
-        <label for="user-first-name-input" class="label">
+      <li class="field control-group string optional" id="user-first-name-field">
+        <label for="user-first-name-input" class="control-label">
           <span>FirstName</span>
           <abbr title="Optional" class="optional">
             
           </abbr>
         </label>
-        <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" aria-required="false" />
+        <div class="controls">
+          <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" aria-required="false" />
+        </div>
       </li>
     </ol>
   </fieldset>

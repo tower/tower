@@ -7,7 +7,7 @@ class Tower.HTTP.Param.Number extends Tower.HTTP.Param
       isRange   = false
       negation  = !!string.match(/^\^/)
       string    = string.replace(/^\^/, "")
-
+      
       string.replace /([^\.]+)?(\.{2})([^\.]+)?/, (_, startsOn, operator, endsOn) =>
         isRange = true
         range   = []
