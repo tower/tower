@@ -37,7 +37,7 @@ class Tower.Store extends Tower.Class
     "=~":       "$regex"
     "$m":       "$regex"
     "$regex":   "$regex"
-    "$match":   "$match"
+    "$match":   "$regex"
     "$notMatch":   "$notMatch"
     "!~":       "$nm"
     "$nm":      "$nm"

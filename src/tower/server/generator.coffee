@@ -2,7 +2,16 @@ class Tower.Generator extends Tower.Class
   sourceRoot: __dirname
   
   @run: (type, options) ->
-    new Tower.Generator[Tower.Support.String.camelize(type)](options)
+    klass   = Tower.Generator
+    # tower generate model
+    # tower generate mocha:model
+    nodes   = type.split(":")
+    nodes[nodes.length - 1] += "Generator"
+    
+    for node, i in nodes
+      klass = klass[Tower.Support.String.camelize(node)]
+    
+    new klass(options)
   
   constructor: (options = {}) ->
     _.extend @, options

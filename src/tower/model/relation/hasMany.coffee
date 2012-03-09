@@ -46,7 +46,8 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
             updates   = {}
             updates["$push"]  = push if push
             updates["$inc"]   = inc if inc
-            @owner.updateAttributes updates, callback
+            @owner.updateAttributes updates, (error) =>
+              callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
         else

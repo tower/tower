@@ -133,7 +133,9 @@ class Tower.View.Form.Field extends Tower.View.Component
     @tag "input", _.extend(type: "text", options)
     
   submitInput: (key, options) ->
-    @tag "input", _.extend(type: "submit", options)
+    value = options.value
+    delete options.value
+    @tag "button", _.extend(type: "submit", options), value
     
   fileInput: (key, options) ->
     @tag "input", _.extend(type: "file", options)
@@ -174,7 +176,11 @@ class Tower.View.Form.Field extends Tower.View.Component
         block.call @
       else
         @label()
-        @input()
+        if @inputType == "submit"
+          @input()
+        else
+          @tag "div", class: "controls", =>
+            @input()
       
       #elements = extractElements!(attributes)
       #

@@ -41,6 +41,6 @@ class Tower.Command.New
     program.namespace ||= "App"
   
   run: ->
-    Tower.Generator.run("appGenerator", program: @program, appName: @program.args[1])
+    Tower.Generator.run("app", program: @program, appName: @program.args[1])
 
 module.exports = Tower.Command.New
