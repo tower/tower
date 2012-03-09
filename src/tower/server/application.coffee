@@ -180,6 +180,6 @@ class Tower.Application extends Tower.Engine
   fileChanged: (path) ->
     delete require.cache[require.resolve(path)]
     
-require './assets'
+require './application/assets'
 
 module.exports = Tower.Application

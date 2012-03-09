@@ -1,6 +1,6 @@
 class Tower.HTTP.Param.String extends Tower.HTTP.Param
   parse: (value) ->
-    arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/)
+    arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/g)
     
     for node, i in arrays
       values = []
