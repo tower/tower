@@ -41,67 +41,67 @@ compileFile = (root, path, check) ->
   catch error
     console.log error
     ""
-  
+
 compileDirectory = (root, check, callback) ->
   code = compileFile("./src/tower/#{root}", "./src/tower/#{root}.coffee", check)
   callback(code) if callback
   code
-  
+
 compileEach = (root, check, callback) ->
   result = compileDirectory root, check, callback
-  
+
   #fs.writeFile "./dist/tower/#{root}.coffee", result
   mint.coffee result, bare: false, (error, result) ->
     fs.writeFile "./dist/tower/#{root}.js", result
     unless error
       fs.writeFile "./dist/tower/#{root}.min.js", mint.uglifyjs(result, {})
-      
+
 obscurify = (content) ->
   replacements = {}
   replacements[process.env.NS || "Tower"] = "Tower" # use "M" for ultimate compression
   replacements["_C"]  = "ClassMethods"
   replacements["_I"]  = "InstanceMethods"
   replacements["_"]   = /Tower\.Support\.(String|Object|Number|Array|RegExp)/
-  
+
   for replacement, lookup of replacements
     content = content.replace(lookup, replacement)
-    
+
   content
-    
+
 task 'to-underscore', ->
   _modules  = ["string", "object", "number", "array", "regexp"]
   result    = "_.mixin\n"
-  
+
   for _module in _modules
     content = fs.readFileSync("./src/tower/support/#{_module}.coffee", "utf-8") + "\n"
     content = content.replace(/Tower\.Support\.\w+\ *=\ */g, "")
     result += content
-    
-  path  = "dist/tower.support.underscore.js"  
+
+  path  = "dist/tower.support.underscore.js"
   sizes = []
-  
+
   result = obscurify(result)
-  
+
   mint.coffee result, {}, (error, result) ->
     return console.log(error) if error
-    
+
     fs.writeFileSync(path, result)
-    
+
     sizes.push "Normal: #{fs.statSync(path).size}"
     exec "mate #{path}"
     #compressor = new Shift.UglifyJS
     #
     #compressor.render result, (error, result) ->
     #  fs.writeFileSync(path, result)
-    #  
+    #
     #  sizes.push "Minfied: #{fs.statSync(path).size}"
-      
+
       #gzip result, (error, result) ->
-      #  
+      #
       #  fs.writeFileSync(path, result)
-      #  
+      #
       #  sizes.push "Minified & Gzipped: #{fs.statSync(path).size}"
-      #  
+      #
       #  console.log sizes.join("\n")
 
 task 'build', ->
@@ -126,11 +126,11 @@ Tower.version = "#{JSON.parse(require("fs").readFileSync(require("path").normali
           console.log "Minified & Gzipped: #{fs.statSync("./dist/tower.min.js.gz").size}"
 
           fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
-            
+
 task 'build-generic', ->
   paths   = findit.sync('./src')
   result  = ''
-  
+
   iterate = (path, next) ->
     if path.match(/\.coffee$/) && !path.match(/(middleware|application|generator|asset|command|spec|store|path)/)
       fs.readFile path, 'utf-8', (error, data) ->
@@ -166,7 +166,7 @@ task 'spec', 'Run jasmine specs', ->
       data = "\n#{data}" if data.match(/Finished/)
       console.log data
   spec.stderr.on 'data', (data) -> console.log data.toString().trim()
-  
+
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->
     throw err if err
@@ -181,7 +181,7 @@ task 'stats', 'Build files and report on their sizes', ->
   table = new Table
     head:       ['Path', 'Size (kb)', 'Compression (%)']
     colWidths:  [50, 15, 20]
-  
+
   for path, i in paths
     if path.match(/\.(js|coffee)$/)
       stat = fs.statSync(path)
@@ -193,5 +193,5 @@ task 'stats', 'Build files and report on their sizes', ->
       else
         table.push [path, size, "-"]
       prev = size
-      
+
   console.log table.toString()
