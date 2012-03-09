@@ -78,6 +78,6 @@
     "mongodb":            ">= 0.9.9"
   },
   "scripts": {
-    "test": "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@"
+    "test": "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\") -r coffee-script $@"
   }
 }
