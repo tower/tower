@@ -36,9 +36,8 @@ describe 'Tower.View', ->
 describe 'Tower.View eco template', ->
   beforeEach ->
     view = new Tower.View
-
   test 'eco layout', ->
     fs  = require "fs"
     out_put = fs.readFileSync __dirname + "/out_put.html", "utf-8"
-    view.render {type: "eco", template: "eco_layout", }, (error, result) ->
+    view.render {type: "eco", template: "eco_layout"}, (error, result) ->
       assert.equal result, out_put
