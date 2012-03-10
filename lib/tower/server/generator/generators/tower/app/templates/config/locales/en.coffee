@@ -9,6 +9,17 @@ module.exports =
   github:       "<%= user.username %>"
   email:        "<%= user.email %>"
   
+  titles:
+    index: "%{name}"
+    show: "%{name} overview"
+    new: "Create a new %{name}"
+    edit: "Editing %{name}"
+  
+  links:
+    default: "%{name}"
+    home: "Home"
+    docs: "Docs"
+  
   openGraph:
     siteName:       "<%= app.title %>"
     title:          "<%= app.title %>"

@@ -65,7 +65,10 @@ Tower.Controller::redirectTo = (options = {}) ->
       
     Tower.get options.path, params, callback
 
-Tower.Application.instance().initialize()
+app = Tower.Application.instance()
+
+before (done) ->
+  app.initialize(done)
 
 beforeEach (done) ->
   #Tower.Application.instance().teardown()

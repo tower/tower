@@ -9,5 +9,9 @@ Tower.View.ComponentHelper =
     
   linkTo: (title, path, options = {}) ->
     a _.extend(options, href: path, title: title), title.toString()
+    
+  navItem: (title, path, options = {}) ->
+    li ->
+      linkTo title, path, options
 
 module.exports = Tower.View.ComponentHelper

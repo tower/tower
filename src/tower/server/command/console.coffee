@@ -13,8 +13,8 @@ class Tower.Command.Console
 \ \ 
 \ \ Options:
 \ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
-\ \   -h, --help                        output usage information
 \ \   -c, --coffee                      run in coffeescript mode!
+\ \   -h, --help                        output usage information
 \ \   -v, --version                     output version number
 \ \   
 '''

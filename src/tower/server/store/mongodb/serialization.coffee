@@ -13,7 +13,7 @@ Tower.Store.MongoDB.Serialization =
         key                 = operator
         result[key]       ||= {}
         for _key, _value of value
-          result[key][_key] = @encode schema[_key], _value
+          result[key][_key] = @encode schema[_key], _value, operator
       else
         result["$set"]    ||= {}
         result["$set"][key] = @encode schema[key], value
@@ -27,10 +27,10 @@ Tower.Store.MongoDB.Serialization =
     
     for key, value of attributes
       continue if key == "id" && value == undefined || value == null
-      key   = "_id" if key == "id"
+      realKey = if key == "id" then "_id" else key
       operator              = @constructor.atomicModifiers[key]
       unless operator
-        result[key]         = @encode schema[key], value
+        result[realKey]     = @encode schema[key], value
     
     result
     
@@ -75,7 +75,7 @@ Tower.Store.MongoDB.Serialization =
   encode: (field, value, operation) ->
     return value unless field
     method = @["encode#{field.type}"]
-    value = method.call(@, value) if method
+    value = method.call(@, value, operation) if method
     value = [value] if operation == "$in" && !Tower.Support.Object.isArray(value)
     value
     
@@ -112,8 +112,8 @@ Tower.Store.MongoDB.Serialization =
     else
       throw new Error("#{value.toString()} is not a boolean")
       
-  encodeArray: (value) ->
-    unless value == null || Tower.Support.Object.isArray(value)
+  encodeArray: (value, operation) ->
+    unless operation || value == null || Tower.Support.Object.isArray(value)
       throw new Error("Value is not Array")
     value
     

@@ -17,6 +17,18 @@ Tower.Generator.Resources =
     @inRoot =>
       @injectIntoFile "config/assets.coffee", "      \"#{path}\"\n", after: /javascripts:\s*application: *\[[^\]]+\n/g
       
+  navigation: (key, path) ->
+    pattern = /div *class: *"nav-collapse" *, *->\s+ul *class: *"nav", *-> */
+    content = """\n    navItem t("links.#{key}"), #{path}
+"""
+    
+    @inRoot =>
+      @injectIntoFile "app/views/shared/_navigation.coffee", content, after: pattern
+      
+  locale: (pattern, content) ->
+    @inRoot =>
+      @injectIntoFile "config/locales/en.coffee", content, after: pattern
+      
   inRoot: (block) ->
     @inside ".", block
     

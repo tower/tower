@@ -18,7 +18,7 @@ describe 'Tower.Store', ->
       "=~":       "$regex"
       "$m":       "$regex"
       "$regex":   "$regex"
-      "$match":   "$match"
+      "$match":   "$regex"
       "$notMatch":   "$notMatch"
       "!~":       "$nm"
       "$nm":      "$nm"

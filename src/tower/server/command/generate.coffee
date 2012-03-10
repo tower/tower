@@ -31,6 +31,6 @@ class Tower.Command.Generate
       process.exit()
 
   run: ->
-    Tower.Generator.run("#{@program.args[1]}Generator", program: @program, modelName: @program.args[2])
+    Tower.Generator.run(@program.args[1], program: @program, modelName: @program.args[2])
   
 module.exports = Tower.Command.Generate

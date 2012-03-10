@@ -7,7 +7,7 @@ class Tower.View extends Tower.Class
     componentSuffix:                            "widget"
     hintClass:                                  "hint"
     hintTag:                                    "figure"
-    labelClass:                                 "label"
+    labelClass:                                 "control-label"
     requiredClass:                              "required"
     requiredAbbr:                               "*"
     requiredTitle:                              "Required"
@@ -36,7 +36,7 @@ class Tower.View extends Tower.Class
     inlineValidations:                          true
     autoIdForm:                                 true
     fieldsetClass:                              "fieldset"
-    fieldClass:                                 "field"
+    fieldClass:                                 "field control-group"
     validateClass:                              "validate"
     legendClass:                                "legend"
     formClass:                                  "form"
