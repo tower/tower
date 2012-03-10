@@ -83,3 +83,146 @@ describe 'Tower.View.Form', ->
 </form>
 
 '''
+    
+    describe 'fields', ->
+      test 'string', ->
+        user = new App.User(firstName: "Lance")
+        
+        template = ->
+          formFor @user, (form) ->
+            form.fieldset (fields) ->
+              fields.field "firstName", as: "string"
+        
+        view.render template: template, locals: user: user, (error, result) ->
+          throw error if error
+          assert.equal result, '''
+<form action="/users" id="user-form" role="form" novalidate="true" data-method="post" method="post">
+  <input type="hidden" name="_method" value="post" />
+  <fieldset>
+    <ol class="fields">
+      <li class="field control-group string optional" id="user-first-name-field">
+        <label for="user-first-name-input" class="control-label">
+          <span>FirstName</span>
+          <abbr title="Optional" class="optional">
+            
+          </abbr>
+        </label>
+        <div class="controls">
+          <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" value="Lance" aria-required="false" />
+        </div>
+      </li>
+    </ol>
+  </fieldset>
+</form>
+
+'''
+
+      test 'text', ->
+        user = new App.User(firstName: "Lance")
+        
+        template = ->
+          formFor @user, (form) ->
+            form.fieldset (fields) ->
+              fields.field "firstName", as: "text"
+        
+        view.render template: template, locals: user: user, (error, result) ->
+          throw error if error
+          assert.equal result, '''
+<form action="/users" id="user-form" role="form" novalidate="true" data-method="post" method="post">
+  <input type="hidden" name="_method" value="post" />
+  <fieldset>
+    <ol class="fields">
+      <li class="field control-group text optional" id="user-first-name-field">
+        <label for="user-first-name-input" class="control-label">
+          <span>FirstName</span>
+          <abbr title="Optional" class="optional">
+            
+          </abbr>
+        </label>
+        <div class="controls">
+          <textarea id="user-first-name-input" name="user[firstName]" class="text first-name optional input" aria-required="false">Lance</textarea>
+        </div>
+      </li>
+    </ol>
+  </fieldset>
+</form>
+
+'''
+
+      test 'array', ->
+        post = new App.Post(tags: ["ruby", "javascript"])
+        
+        template = ->
+          formFor @post, (form) ->
+            form.fieldset (fields) ->
+              fields.field "tags", as: "array"
+        
+        view.render template: template, locals: post: post, (error, result) ->
+          throw error if error
+          assert.equal result, '''
+<form action="/posts" id="post-form" role="form" novalidate="true" data-method="post" method="post">
+  <input type="hidden" name="_method" value="post" />
+  <fieldset>
+    <ol class="fields">
+      <li class="field control-group array optional" id="post-tags-field">
+        <label for="post-tags-input" class="control-label">
+          <span>Tags</span>
+          <abbr title="Optional" class="optional">
+            
+          </abbr>
+        </label>
+        <div class="controls">
+          <input data-type="array" id="post-tags-input" name="post[tags]" class="array tags optional input" value="ruby, javascript" aria-required="false" />
+        </div>
+      </li>
+    </ol>
+  </fieldset>
+</form>
+
+'''
+###
+      test 'date', ->
+        post = new App.Post(createdAt: new Date())
+        
+        template = ->
+          formFor @post, (form) ->
+            form.fieldset (fields) ->
+              fields.field "createdAt", as: "date"
+        
+        view.render template: template, locals: post: post, (error, result) ->
+          console.log result
+          throw error if error
+          assert.equal result, '''
+
+'''
+
+      test 'time', ->
+        post = new App.Post(createdAt: new Date())
+        
+        template = ->
+          formFor @post, (form) ->
+            form.fieldset (fields) ->
+              fields.field "createdAt", as: "time"
+        
+        view.render template: template, locals: post: post, (error, result) ->
+          console.log result
+          throw error if error
+          assert.equal result, '''
+
+'''
+
+      test 'datetime', ->
+        post = new App.Post(createdAt: new Date())
+        
+        template = ->
+          formFor @post, (form) ->
+            form.fieldset (fields) ->
+              fields.field "createdAt", as: "datetime"
+        
+        view.render template: template, locals: post: post, (error, result) ->
+          console.log result
+          throw error if error
+          assert.equal result, '''
+
+'''
+###

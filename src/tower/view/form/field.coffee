@@ -141,9 +141,11 @@ class Tower.View.Form.Field extends Tower.View.Component
     @tag "input", _.extend(type: "file", options)
     
   textInput: (key, options) ->
-    @tag "textarea", options
+    value = options.value
+    delete options.value
+    @tag "textarea", options, value
   
-  password_input: (key, options) ->
+  passwordInput: (key, options) ->
     @tag "input", _.extend(type: "password", options)
     
   emailInput: (key, options) ->
@@ -160,6 +162,11 @@ class Tower.View.Form.Field extends Tower.View.Component
     
   phoneInput: (key, options) ->
     @tag "input", _.extend(type: "tel", "data-type": "phone", options)
+    
+  arrayInput: (key, options) ->
+    if options.value
+      options.value = Tower.Support.Object.toArray(options.value).join(", ")
+    @tag "input", _.extend("data-type": "array", options)
   
   label: ->
     return unless @labelValue
