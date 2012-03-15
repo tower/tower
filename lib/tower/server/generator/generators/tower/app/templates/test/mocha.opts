@@ -1,0 +1,4 @@
+--require coffee-script
+--reporter spec
+--ui bdd
+--timeout 2000

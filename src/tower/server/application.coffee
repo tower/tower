@@ -68,12 +68,15 @@ class Tower.Application extends Tower.Engine
   initialize: (complete) ->
     require "#{Tower.root}/config/application"
     #@runCallbacks "initialize", null, complete
+    configNames = @constructor.configNames
+    configs     = @constructor.initializers()
+    self        = @
     initializer = (done) =>
       requirePaths = (paths) ->
         for path in paths
           require(path) if path.match(/\.(coffee|js)$/)
           
-      for key in @constructor.configNames
+      for key in configNames
         config = null
 
         try
@@ -94,9 +97,7 @@ class Tower.Application extends Tower.Engine
 
       requirePaths File.files("#{Tower.root}/config/initializers")
       
-      configs = @constructor.initializers()
-      
-      config.call(@) for config in configs
+      config.call(self) for config in configs
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
       require "#{Tower.root}/app/controllers/applicationController"

@@ -110,6 +110,16 @@ Tower.Support.Object.extend Tower,
       string
       
   async: (array, iterator, callback) ->
+    @series array, iterator, callback
+    
+  each: (array, iterator) ->
+    if array.forEach
+      array.forEach iterator
+    else
+      for item, index in array
+        iterator(item, index, array)
+    
+  series: (array, iterator, callback = ->) ->
     return callback() unless array.length
     completed = 0
     iterate = ->
@@ -125,6 +135,20 @@ Tower.Support.Object.extend Tower,
             iterate()
 
     iterate()
+    
+  parallel: (array, iterator, callback = ->) ->
+    return callback() unless array.length
+    completed = 0
+    iterate = ->
+    Tower.each array, (x) ->
+      iterator x, (error) ->
+        if error
+          callback error
+          callback = ->
+        else
+          completed += 1
+          if completed == array.length
+            callback()
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->

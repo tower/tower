@@ -50,6 +50,7 @@ Tower.Support.Callbacks =
       complete  = block
       block     = options
       options   = {}
+      
     options   ||= {}
     
     chain = @constructor.callbacks()[kind]
@@ -78,6 +79,8 @@ class Tower.Support.Callbacks.Chain
     Tower.async @before, runner, (error) =>
       unless error
         if block
+          # this won't work with coffee-scripts __bind method!
+          # it wraps the function with 0 arguments, when yours might have the callback
           switch block.length
             when 0
               block.call(binding)
@@ -116,7 +119,9 @@ class Tower.Support.Callback
         return next() if _.indexOf(conditions.except, options.name) != -1
         
     method      = @method
-    method      = binding[method] if typeof method == "string"
+    if typeof method == "string"
+      throw new Error("The method `#{method}` doesn't exist") unless binding[method]
+      method      = binding[method] 
     
     switch method.length
       when 0

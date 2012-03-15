@@ -100,6 +100,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @directory "features"
         @directory "models"
         @template "config.coffee"
+        @template "mocha.opts"
     
       @directory "tmp"
     

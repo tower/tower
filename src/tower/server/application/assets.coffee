@@ -48,9 +48,9 @@ Tower.Application.Assets =
 
                 manifest["#{name}#{extension}"]  = File.basename(digestPath)
                 
-                gzip result, (error, result) ->
-                  fs.writeFileSync digestPath, result
-                  next()
+                #gzip result, (error, result) ->
+                fs.writeFileSync digestPath, result
+                next()
 
           assetBlocks = []
 
