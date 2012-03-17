@@ -17,7 +17,16 @@ Tower.View.Rendering =
     prefixes ||= [@_context.collectionName] if @_context
     template = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
     @_renderString(template, options, callback)
-    
+  
+  renderWithEngine: (template, engine) ->
+    if Tower.client
+      "(#{template}).call(this);"
+    else
+      mint = require("mint")
+      mint[mint.engine(engine || "coffee")] template, {}, (error, result) ->
+        console.log error if error
+  
+  # @private
   _renderBody: (options, callback) ->
     if options.text
       callback(null, options.text)
@@ -28,6 +37,7 @@ Tower.View.Rendering =
         options.template = @_readTemplate(options.template, options.prefixes, options.type)
       @_renderString(options.template, options, callback)
   
+  # @private
   _renderLayout: (body, options, callback) ->
     if options.layout
       layout  = @_readTemplate("layouts/#{options.layout}", [], options.type)
@@ -35,7 +45,8 @@ Tower.View.Rendering =
       @_renderString(layout, options, callback)
     else
       callback(null, body)
-      
+  
+  # @private
   _renderString: (string, options = {}, callback) ->
     if !!options.type.match(/coffee/)
       e       = null
@@ -69,6 +80,7 @@ Tower.View.Rendering =
       options.locals.string = string
       engine.render(options.locals, callback)
   
+  # @private
   _renderingContext: (options) ->
     locals  = this
     _ref    = @_context
@@ -81,20 +93,13 @@ Tower.View.Rendering =
     locals = Tower.Support.Object.extend(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
-    
+  
+  # @private
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
     # tmp
     result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
     throw new Error("Template '#{template}' was not found.") unless result
     result
-    
-  renderWithEngine: (template, engine) ->
-    if Tower.client
-      "(#{template}).call(this);"
-    else
-      mint = require("mint")
-      mint[mint.engine(engine || "coffee")] template, {}, (error, result) ->
-        console.log error if error
   
 module.exports = Tower.View.Rendering

@@ -366,10 +366,10 @@ class App.PostsController extends Tower.Controller
     @post = new App.Post(@params.post)
     
     super (success, failure) ->
-      @success.html -> @render "posts/edit"
-      @success.json -> @render text: "success!"
-      @failure.html -> @render text: "Error", status: 404
-      @failure.json -> @render text: "Error", status: 404
+      @success.html => @render "posts/edit"
+      @success.json => @render text: "success!"
+      @failure.html => @render text: "Error", status: 404
+      @failure.json => @render text: "Error", status: 404
     
   show: ->
     App.Post.find @params.id, (error, post) =>

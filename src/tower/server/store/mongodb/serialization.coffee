@@ -1,4 +1,7 @@
 Tower.Store.MongoDB.Serialization =
+  generateId: ->
+    new @constructor.database.bson_serializer.ObjectID()
+    
   # tags: [1, 2] == $set: tags: [1, 2]
   # createdAt: Date == $set: createdAt: mongodate
   serializeAttributesForUpdate: (attributes) ->

@@ -18,7 +18,7 @@ Tower.Controller.Events =
                   @_dispatch undefined, handler, data
       
       @_socketHandlers[name] = handler
-      
+    
     _dispatch: (event, handler, locals = {}) ->
       controller = new @
       

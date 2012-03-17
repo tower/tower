@@ -18,7 +18,7 @@ class Tower.Model.Validator
       @validate record, attribute, errors, (error) =>
         next()
       
-    Tower.async @attributes, iterator, (error) =>
+    Tower.parallel @attributes, iterator, (error) =>
       callback.call(@, error) if callback
     
   success: (callback) ->

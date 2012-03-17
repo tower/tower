@@ -1,5 +1,8 @@
 Tower.Store.MongoDB.Configuration =
   ClassMethods:
+    supports:
+      embed: true
+      
     config:
       development:
         name: "tower-development"

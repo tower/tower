@@ -7,7 +7,7 @@ Tower.Controller.Params =
       
       if options
         @_paramsOptions = Tower.Support.Object.extend(@_paramsOptions || {}, options)
-        callback.call(@)
+        callback.call @ if callback
         
       @_params ||= {}
       

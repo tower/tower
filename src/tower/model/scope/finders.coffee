@@ -37,7 +37,8 @@ Tower.Model.Scope.Finders =
   batch: ->
     
   fetch: ->
-    
+  
+  # @private
   _find: (conditions, options, callback) ->
     if conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
       @store.findOne conditions, options, callback

@@ -1,4 +1,5 @@
 # https://github.com/mranney/node_redis
+# @todo
 class Tower.Store.Redis extends Tower.Store
   @lib: ->
     require("redis")

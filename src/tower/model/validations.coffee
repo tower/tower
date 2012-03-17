@@ -13,6 +13,7 @@ Tower.Model.Validations =
   
   validate: (callback) ->
     success         = false
+    
     @runCallbacks "validate", (block) =>
       complete        = @_callback(block, callback)
       validators      = @constructor.validators()

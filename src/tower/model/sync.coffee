@@ -1,3 +1,4 @@
+# @todo
 Tower.Model.Sync =  
   sync: ->
     syncAction = @syncAction

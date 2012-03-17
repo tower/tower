@@ -1,3 +1,4 @@
+# Tower's MongoDB datastore
 class Tower.Store.MongoDB extends Tower.Store
 
 require './mongodb/configuration'

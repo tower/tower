@@ -5,6 +5,7 @@ _.mixin(require('underscore.string'))
 
 module.exports  = global.Tower = Tower = {}
 
+# reads and sets the latest version on startup
 Tower.version = JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/../../package.json"))).version
 
 Tower.logger    = _console
@@ -29,8 +30,6 @@ Tower.View.store(new Tower.Store.FileSystem(["app/views"]))
 Tower.root                = process.cwd()
 Tower.publicPath          = process.cwd() + "/public"
 Tower.publicCacheDuration = 60 * 1000
-Tower.sessionSecret       = "tower-session-secret"
-Tower.cookieSecret        = "tower-cookie-secret"
 Tower.render              = (string, options = {}) ->
   require("mint").render(options.type, string, options)
   

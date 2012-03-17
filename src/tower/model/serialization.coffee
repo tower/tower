@@ -19,7 +19,8 @@ Tower.Model.Serialization =
   
   clone: ->
     new @constructor(Tower.Support.Object.clone(@attributes))
-    
+  
+  # @private
   _serializableHash: (options = {}) ->  
     result = {}
     
@@ -55,7 +56,8 @@ Tower.Model.Serialization =
           result[name] = records
         
     result
-    
+  
+  # @private
   _readAttributeForSerialization: (name, type = "json") ->
     @attributes[name]
   

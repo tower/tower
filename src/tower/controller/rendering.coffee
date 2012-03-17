@@ -24,6 +24,7 @@ Tower.Controller.Rendering =
   
   sendData: (data, options = {}) ->
   
+  # @private
   _renderTemplate: (options) ->
     _callback = options.callback
     callback = (error, body) =>
@@ -46,23 +47,27 @@ Tower.Controller.Rendering =
       view.render.call view, options, callback
     catch error
       callback error
-    
+  
+  # @private
   _handleRenderers: (options, callback) ->
     for name, renderer of Tower.Controller.renderers()
       if options.hasOwnProperty(name)
         renderer.call @, options[name], options, callback
         return true
     false
-    
+  
+  # @private
   _processRenderOptions: (options = {}) ->
     @status                   = options.status if options.status
     @headers["Content-Type"]  = options.contentType if options.contentType
     @headers["Location"]      = @urlFor(options.location) if options.location
     @
-    
+  
+  # @private
   _normalizeRender: ->
     @_normalizeOptions @_normalizeArgs(arguments...)
   
+  # @private
   _normalizeArgs: ->
     args = Tower.Support.Array.args(arguments)
     if typeof args[0] == "string"
@@ -82,6 +87,7 @@ Tower.Controller.Rendering =
     
     options
   
+  # @private
   _normalizeOptions: (options = {}) ->
     options.partial     = @action if options.partial == true
     options.prefixes  ||= [] 

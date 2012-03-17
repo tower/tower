@@ -34,11 +34,7 @@ Tower.Model.Attributes =
       updates[key] = value
     
     @_set(key, value) for key, value of updates
-    
-  _set: (key, value) ->
-    @_attributeChange(key, value)
-    @attributes[key] = value
-    
+  
   assignAttributes: (attributes) ->
     for key, value of attributes
       delete @changes[key]
@@ -47,5 +43,11 @@ Tower.Model.Attributes =
     
   has: (key) ->
     @attributes.hasOwnProperty(key)
+  
+  # @private
+  _set: (key, value) ->
+    @_attributeChange(key, value)
+    @attributes[key] = value
+
     
 module.exports = Tower.Model.Attributes

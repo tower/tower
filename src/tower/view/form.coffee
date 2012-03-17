@@ -21,6 +21,7 @@ class Tower.View.Form extends Tower.View.Component
         )
         builder.render(callback)
   
+  # @private
   _extractAttributes: (options = {}) ->
     attributes                  = options.html || {}
     attributes.action           = options.url || Tower.urlFor(@model)

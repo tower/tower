@@ -30,6 +30,7 @@ class Tower.Model.Scope extends Tower.Class
   clone: ->
     new @constructor(model: @model, criteria: @criteria.clone())
     
+  # @private
   _extractArgs: (args, opts = {}) ->
     args            = Tower.Support.Array.args(args)
     callback        = Tower.Support.Array.extractBlock(args)

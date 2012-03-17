@@ -72,6 +72,7 @@ Tower.Model.Persistence =
     store: ->
       @constructor.store()
 
+    # @private
     _save: (callback) ->
       @runCallbacks "save", (block) =>
         complete = @_callback(block, callback)
@@ -80,7 +81,8 @@ Tower.Model.Persistence =
           @_create(complete)
         else
           @_update(@toUpdates(), complete)
-
+    
+    # @private
     _create: (callback) ->
       @runCallbacks "create", (block) =>
         complete = @_callback(block, callback)
@@ -95,7 +97,8 @@ Tower.Model.Persistence =
           complete.call(@, error)
 
       @
-
+    
+    # @private
     _update: (updates, callback) ->
       @runCallbacks "update", (block) =>
         complete = @_callback(block, callback)
@@ -110,6 +113,7 @@ Tower.Model.Persistence =
 
       @
 
+    # @private
     _destroy: (callback) ->
       @runCallbacks "destroy", (block) =>
         complete = @_callback(block, callback)

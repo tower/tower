@@ -28,9 +28,11 @@ Tower.Store.MongoDB.Finders =
     conditions    = @serializeQuery(conditions)
     options.limit = 1
     options       = @serializeOptions(options)
+    raw           = options.raw == true
+    delete options.raw
     
     @collection().findOne conditions, (error, doc) =>
-      unless error || !doc
+      unless raw || error || !doc
         doc = @serializeModel(doc)
         doc.persistent = true
       callback.call(@, error, doc) if callback

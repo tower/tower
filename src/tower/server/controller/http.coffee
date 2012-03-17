@@ -1,4 +1,5 @@
 Tower.Controller.HTTP =
+  # @todo
   head: (status, options = {}) ->
     if typeof status == "object"
       options = status

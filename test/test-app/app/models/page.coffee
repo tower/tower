@@ -4,6 +4,9 @@ class App.Page extends Tower.Model
   @field "rating", type: "Integer"#, min: 0, max: 1
   @field "type"
   @field "tags", type: ["String"], default: []
+  # nested fields
+  @field "meta", ->
+    @field "priority": 1
   
   @validates "rating", min: 0, max: 10
   

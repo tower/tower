@@ -61,6 +61,8 @@ class Tower.Store extends Tower.Class
     "0":     false
     0:       false
     0.0:     false
+    
+  supports: {}
   
   serialize: (data) ->
     data[i] = @serializeModel(item) for item, i in data
@@ -91,6 +93,9 @@ class Tower.Store extends Tower.Class
     
   schema: ->
     Tower.constant(@className).fields()
+      
+  supports: (key) ->
+    @constructor.supports[key] == true
 
 require './store/memory'
 

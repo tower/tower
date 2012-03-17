@@ -35,11 +35,14 @@ Tower.Model.Scope.Persistence =
     {criteria, options, callback} = @_extractArgs(arguments, ids: true)
     criteria.mergeOptions(options)
     @_destroy criteria, options, callback
-    
+  
+  # @todo
   sync: ->
   
+  # @todo
   transaction: ->
-    
+  
+  # @private
   _build: (attributes, conditions, options) ->
     if Tower.Support.Object.isArray(attributes)
       result  = []
@@ -49,6 +52,7 @@ Tower.Model.Scope.Persistence =
     else
       @store.serializeModel(Tower.Support.Object.extend({}, conditions, attributes))
   
+  # @private
   _create: (criteria, data, opts, callback) ->
     if opts.instantiate
       isArray = Tower.Support.Object.isArray(data)
@@ -71,7 +75,8 @@ Tower.Model.Scope.Persistence =
             callback(error, records[0])
     else
       @store.create data, opts, callback
-      
+  
+  # @private
   _update: (criteria, data, opts, callback) ->    
     {conditions, options} = criteria.toQuery()
     if opts.instantiate
@@ -82,6 +87,7 @@ Tower.Model.Scope.Persistence =
     else
       @store.update data, conditions, options, callback
   
+  # @private
   _destroy: (criteria, opts, callback) ->
     {conditions, options} = criteria.toQuery()
     
@@ -93,12 +99,13 @@ Tower.Model.Scope.Persistence =
     else
       @store.destroy conditions, options, callback
     
+  # @private
   _each: (conditions, options, iterator, callback) ->
     @store.find conditions, options, (error, records) =>
       if error
         callback.call @, error, records
       else
-        Tower.async records, iterator, (error) =>
+        Tower.parallel records, iterator, (error) =>
           unless callback
             throw error if error
           else

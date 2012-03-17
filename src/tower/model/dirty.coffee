@@ -32,7 +32,8 @@ Tower.Model.Dirty =
     result.updatedAt ||= new Date
     
     result
-
+  
+  # @private
   _attributeChange: (attribute, value) ->
     array       = @changes[attribute] ||= []
     beforeValue = array[0] ||= @attributes[attribute]

@@ -1,3 +1,4 @@
+# This class has plenty of room for optimization
 class Tower.Model.Criteria
   constructor: (args = {}) ->
     @[key] = value for key, value of args
@@ -121,7 +122,8 @@ class Tower.Model.Criteria
     
   mergeOptions: (options) ->
     options
-    
+  
+  # @private
   _whereOperator: (operator, attributes) ->
     query = {}
     for key, value of attributes

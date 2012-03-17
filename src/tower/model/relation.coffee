@@ -65,10 +65,14 @@ class Tower.Model.Relation extends Tower.Class
   inverse: ->
     return @_inverse if @_inverse
     relations = @targetKlass().relations()
-    for name, relation of relations
-      # need a way to check if class extends another class in coffeescript...
-      return relation if relation.inverseOf == @name
-      return relation if relation.targetType == @ownerType
+    if @inverseOf
+      return relations[@inverseOf]
+    else
+      for name, relation of relations
+        # need a way to check if class extends another class in coffeescript...
+        return relation if relation.inverseOf == @name
+      for name, relation of relations
+        return relation if relation.targetType == @ownerType
     null
   
   class @Scope extends Tower.Model.Scope
