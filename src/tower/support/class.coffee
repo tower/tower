@@ -1,6 +1,9 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
+require('ember-metal')
+require('ember-runtime')
+Base = Ember.Object.extend({})
 
-class Tower.Class
+class Tower.Class extends Base
   @global: (value) ->
     @_global = value unless value == undefined
     @_global = true if @_global == undefined
