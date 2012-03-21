@@ -1,8 +1,8 @@
 class Tower.Model extends Tower.Class
   # @example All configuration options
   #   class App.User extends Tower.Model
-  #     @configure 
-  # 
+  #     @configure
+  #
   # @example Configure using a function
   #   class App.User extends Tower.Model
   #     @configure ->
@@ -12,40 +12,45 @@ class Tower.Model extends Tower.Class
     object = object.call @ if typeof object == "function"
     _.extend @config, object
     @
-  
+
   # @example All default options
   #   class App.User extends Tower.Model
   #     @defaults store: Tower.Store.Memory, scope: @desc("createdAt")
   @defaults: (object) ->
     @default(key, value) for key, value of object
     @_defaults
-    
-  # @example All default options 
+
+  # @example All default options
   #   class App.User extends Tower.Model
   #     @default "store", Tower.Store.Memory
   #     @default "scope", @desc("createdAt")
   @default: (key, value) ->
     @_defaults ||= {}
     @_defaults[key] = value
-    
+
   constructor: (attrs, options) ->
     @initialize attrs, options
-    
-  initialize: (attrs = {}, options = {}) ->  
+
+  initialize: (attrs = {}, options = {}) ->
     definitions = @constructor.fields()
     attributes  = {}
-    
+
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@) unless attrs.hasOwnProperty(name)
 
-    @attributes   = attributes
-    @changes      = {}
-    @errors       = {}
-    @readOnly     = if options.hasOwnProperty("readOnly") then options.readOnly else false
-    @persistent   = if options.hasOwnProperty("persistent") then options.persisted else false
+    @attributes     = attributes
+    @relations      = {}
+    @changes        =
+      before:       {}
+      after:        {}
+    @errors         = {}
+    @operations     = []
+    @operationIndex = -1
+    @readOnly       = if options.hasOwnProperty("readOnly") then options.readOnly else false
+    @persistent     = if options.hasOwnProperty("persistent") then options.persisted else false
 
     @attributes[key] = value for key, value of attrs
-  
+
 require './model/scope'
 require './model/criteria'
 require './model/dirty'

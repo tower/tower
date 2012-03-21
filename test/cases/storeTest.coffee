@@ -71,3 +71,15 @@ describe 'Tower.Store', ->
     test '{ $pull : { field : _value } }'
 
     test '{ $pullAll : { field : value_array } }'
+   
+  test 'stores are unique per subclass', ->
+    class A extends Tower.Model
+    class B extends A
+    class X extends Tower.Model
+      @store()
+    class Y extends X
+    
+    assert.equal A.store().className, "App.A"
+    assert.equal B.store().className, "App.B"
+    assert.equal X.store().className, "App.X"
+    assert.equal Y.store().className, "App.Y"

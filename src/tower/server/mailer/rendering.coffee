@@ -1,5 +1,5 @@
-Tower.Mailer.Rendering =  
-  ClassMethods:    
+Tower.Mailer.Rendering =
+  ClassMethods:
     mail: (options = {}, callback) ->
       @host     = options.host
       @port     = options.port
@@ -9,11 +9,11 @@ Tower.Mailer.Rendering =
       @subject  = options.subject
       @locals   = options.locals || {}
       @template = options.template
-  
+
   deliver: ->
     email = @constructor.lib()
     self  = @
-    
+
     Shift.render path: @template, @locals, (error, body) ->
       options =
         host:           self.host
@@ -22,7 +22,7 @@ Tower.Mailer.Rendering =
         to:             self.to
         from:           self.from
         subject:        self.subject
-        body:           body  
+        body:           body
         authentication: self.login
         username:       self.username
         password:       self.password

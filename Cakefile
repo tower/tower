@@ -3,6 +3,8 @@ findit  = require './node_modules/findit'
 async   = require './node_modules/async'
 mint    = require 'mint'
 gzip    = require 'gzip'
+_path   = require 'path'
+File    = require('pathfinder').File
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
 require 'underscore.logger'
@@ -154,8 +156,6 @@ task 'build-generic', ->
         #  console.log error
         #  fs.writeFile './dist/tower.min.js', result
 
-task 'clean', 'Remove built files in ./dist', ->
-
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->
     throw err if err
@@ -184,3 +184,8 @@ task 'stats', 'Build files and report on their sizes', ->
       prev = size
 
   console.log table.toString()
+
+task 'clean', 'remove trailing whitespace', ->
+  findit.find "./src", (file) ->
+    if File.isFile(file)
+      fs.writeFileSync(file, fs.readFileSync(file, "utf-8").toString().replace(/[ \t]+$/mg, ""))

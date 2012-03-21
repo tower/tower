@@ -3,5 +3,5 @@
 Tower.Model.Queue =
   ClassMethods:
     enqueue: ->
-      
+
 module.exports = Tower.Model.Queue

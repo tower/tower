@@ -47,7 +47,7 @@ class Tower.HTTP.Route.DSL
   controller: (controller, options, block) ->
     options.controller = controller
     @scope(options, block)
-  
+
   namespace: (path, options, block) ->
     if typeof options == 'function'
       block     = options
@@ -61,13 +61,13 @@ class Tower.HTTP.Route.DSL
       options.name = @_scope.name + Tower.Support.String.camelize(options.name)
 
     @scope(options, block)
-  
+
   constraints: (options, block) ->
     @scope(constraints: options, block)
-  
+
   defaults: (options, block) ->
     @scope(defaults: options, block)
-  
+
   resource: (name, options = {}) ->
     options.controller = name
     @match "#{name}/new", Tower.Support.Object.extend({action: "new"}, options)
@@ -76,7 +76,7 @@ class Tower.HTTP.Route.DSL
     @match "#{name}/edit", Tower.Support.Object.extend({action: "edit"}, options)
     @match "#{name}", Tower.Support.Object.extend({action: "update", method: "PUT"}, options)
     @match "#{name}", Tower.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
-  
+
   resources: (name, options, callback) ->
     if typeof options == 'function'
       callback = options
@@ -106,9 +106,9 @@ class Tower.HTTP.Route.DSL
     if callback
       @scope Tower.Support.Object.extend({path: "#{path}/:#{Tower.Support.String.singularize(name)}Id", name: one}, options), callback
     @
-  
+
   collection: ->
-  
+
   member: ->
 
   root: (options) ->
@@ -185,5 +185,5 @@ class Tower.HTTP.Route.DSL
     #action      = action.toLowerCase()
 
     name: controller, action: action, className: Tower.Support.String.camelize("#{controller}")
-      
+
 module.exports = Tower.Route.DSL

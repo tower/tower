@@ -1,7 +1,7 @@
 Tower.Controller.Redirecting =
   redirectTo: ->
     @redirect arguments...
-  
+
   # @todo, better url extraction
   redirect: ->
     try
@@ -19,5 +19,5 @@ Tower.Controller.Redirecting =
     catch error
       console.log error
     @callback() if @callback
-    
+
 module.exports = Tower.Controller.Redirecting

@@ -5,7 +5,7 @@ Tower.Store.MongoDB.Database =
         @initialized = true
         env   = @env()
         mongo = @lib()
-        
+
         if env.url
           url = new Tower.Dispatch.Url(env.url)
           env.name      = url.segments[0] || url.user
@@ -13,7 +13,7 @@ Tower.Store.MongoDB.Database =
           env.port      = url.port
           env.username  = url.user
           env.password  = url.password
-      
+
         new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) =>
           throw error if error
           if env.username && env.password
@@ -24,19 +24,19 @@ Tower.Store.MongoDB.Database =
           else
             @database = client
             callback() if callback
-        
+
         process.on "exit", =>
           @database.close() if @database
       else
         callback() if callback
       @database
-      
-    
+
+
   collection: ->
     unless @_collection
       lib = @constructor.lib()
       @_collection = new lib.Collection(@constructor.database, @name)
-    
+
     @_collection
-    
+
 module.exports = Tower.Store.MongoDB.Database

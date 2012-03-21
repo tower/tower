@@ -1,27 +1,27 @@
 Tower.Model.Scope.Queries =
   ClassMethods:
     queryMethods: [
-      "where", 
-      "order", 
-      "asc", 
-      "desc", 
-      "limit", 
-      "offset", 
-      "select", 
-      "joins", 
-      "includes", 
-      "excludes", 
-      "paginate", 
-      "within", 
-      "allIn", 
-      "allOf", 
-      "alsoIn", 
-      "anyIn", 
-      "anyOf", 
-      "near", 
+      "where",
+      "order",
+      "asc",
+      "desc",
+      "limit",
+      "offset",
+      "select",
+      "joins",
+      "includes",
+      "excludes",
+      "paginate",
+      "within",
+      "allIn",
+      "allOf",
+      "alsoIn",
+      "anyIn",
+      "anyOf",
+      "near",
       "notIn"
     ]
-  
+
     queryOperators:
       ">=":       "$gte"
       "$gte":     "$gte"
@@ -48,5 +48,5 @@ Tower.Model.Scope.Queries =
       "$neq":     "$neq"
       "$null":    "$null"
       "$notNull": "$notNull"
-      
+
 module.exports = Tower.Model.Scope.Queries

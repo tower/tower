@@ -8,13 +8,13 @@ class Tower.View.Component
     options         ||= {}
     options.template  = template
     (new @(args, options)).render(block)
-    
+
   constructor: (args, options) ->
     @[key] = value for key, value of options
-    
+
   tag: (key, args...) ->
     @template.tag key, args
-    
+
   addClass: (string, args) ->
     result = if string then string.split(/\s+/g) else []
     for arg in args

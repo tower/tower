@@ -5,7 +5,7 @@
 # between Relationship and Node, and so modify Tower.Model accordingly.  Need to think about...
 # @todo
 class Tower.Store.Neo4j extends Tower.Store
-  
+
 require './neo4j/configuration'
 require './neo4j/database'
 require './neo4j/persistence'

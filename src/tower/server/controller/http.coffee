@@ -4,10 +4,10 @@ Tower.Controller.HTTP =
     if typeof status == "object"
       options = status
       status  = null
-      
+
     status  ||= options.status || "ok"
     location  = options.location
-    
+
     delete options.status
     delete options.location
 
@@ -18,5 +18,5 @@ Tower.Controller.HTTP =
     @location     = Tower.urlFor(location) if location
     @headers["Content-Type"] = Mime[formats.first] if formats
     @body         = " "
-    
+
 module.exports = Tower.Controller.HTTP

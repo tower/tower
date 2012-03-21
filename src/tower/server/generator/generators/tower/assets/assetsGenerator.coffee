@@ -1,6 +1,6 @@
 class Tower.Generator.AssetsGenerator extends Tower.Generator
   sourceRoot: __dirname
-  
+
   run: ->
     @inside "app", '.', ->
       @inside "client", '.', ->
@@ -8,5 +8,5 @@ class Tower.Generator.AssetsGenerator extends Tower.Generator
           #@template "stylesheet.css", "#{@model.pluralName}.styl"
         #@inside "controllers", '.', ->
         #  @template "controller.coffee", "#{@model.pluralName}Controller.coffee"
-  
+
 module.exports = Tower.Generator.AssetsGenerator

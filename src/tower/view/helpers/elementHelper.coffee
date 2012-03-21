@@ -1,13 +1,13 @@
 Tower.View.ElementHelper =
   title: (value) ->
     document.title = value
-    
+
   addClass: (string, parts...) ->
     classes = string.split(/\ +/)
     for part in parts
       classes.push(part) if classes.indexOf(part) > -1
     classes.join(" ")
-    
+
   # @elementId @user, "form"
   #   #=> "#user-form"
   #
@@ -15,13 +15,13 @@ Tower.View.ElementHelper =
   #   #=> "#user-first-name-field"
   elementId: ->
     "##{@elementKey(arguments...)}"
-    
+
   elementClass: ->
     ".#{@elementKey(arguments...)}"
-    
+
   elementKey: ->
     Tower.Support.String.parameterize(@elementNameComponents(arguments...).join("-"))
-  
+
   # @elementName @user, "firstName"
   #   #=> "user[firstName]"
   #
@@ -30,16 +30,16 @@ Tower.View.ElementHelper =
   elementName: ->
     result  = @elementNameComponents(arguments...)
     i       = 1
-    
+
     for item, i in result
       result[i] = "[#{item}]"
-      
+
     Tower.Support.String.parameterize(result.join(""))
-    
+
   elementNameComponents: ->
     args    = Tower.Support.Array.args(arguments)
     result  = []
-    
+
     for item in args
       switch typeof item
         when "function"
@@ -48,7 +48,7 @@ Tower.View.ElementHelper =
           result.push item
         else
           result.push item.toString()
-          
+
     result
-    
+
 module.exports = Tower.View.ElementHelper

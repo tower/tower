@@ -5,14 +5,14 @@ Tower.Model.Conversion =
         @__super__.constructor.baseClass()
       else
         @
-      
+
     toParam: ->
       return undefined if @ == Tower.Model
       @metadata().paramNamePlural
-    
+
     toKey: ->
       @metadata().paramName
-    
+
     # @url "/posts/:postId/comment"
     # @url parent: "post"
     # @url (model) -> return "/something"
@@ -29,7 +29,7 @@ Tower.Model.Conversion =
 
     resourceName: ->
       Tower.Support.String.camelize(@name, true)
-    
+
     # inheritance_column
     metadata: ->
       className               = @name
@@ -43,7 +43,7 @@ Tower.Model.Conversion =
       paramNamePlural         = Tower.Support.String.parameterize(namePlural)
       modelName               = "#{namespace}.#{className}"
       controllerName          = "#{namespace}.#{classNamePlural}Controller"
-      
+
       @metadata[className]    =
         name:                 name
         namePlural:           namePlural
@@ -53,29 +53,29 @@ Tower.Model.Conversion =
         paramNamePlural:      paramNamePlural
         modelName:            modelName
         controllerName:       controllerName
-  
+
   toLabel: ->
     @className()
-  
+
   toPath: ->
     result  = @constructor.toParam()
     return "/" if result == undefined
     param   = @toParam()
     result += "/#{param}" if param
     result
-  
+
   toParam: ->
     id = @get("id")
     if id? then String(id) else null
-    
+
   toKey: ->
     @constructor.tokey()
-    
+
   toCacheKey: ->
-  
+
   toModel: ->
     @
-    
+
   metadata: ->
     @constructor.metadata()
 

@@ -13,6 +13,19 @@ describeWith = (store) ->
     afterEach ->
       try App.Parent.create.restore()
     
+    describe 'inverseOf', ->
+      test 'noInverse_noInverse', ->
+        assert.notEqual "noInverse_noInverse", App.Parent.relation("noInverse_noInverse").inverse().name
+        
+      test 'parent: noInverse_withInverse, child: withInverse_noInverse', ->
+        assert.equal "withInverse_noInverse", App.Parent.relation("noInverse_withInverse").inverse().name
+        
+      test 'withInverse_withInverse', ->
+        assert.equal "withInverse_withInverse", App.Parent.relation("withInverse_withInverse").inverse().name
+        
+      test 'parent: withInverse_noInverse, child: noInverse_withInverse', ->
+        assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
+    
     describe 'HasAndBelongsToMany', ->
       test 'defaults to blank array', (done) ->
         sinon.spy App.Parent, "create"

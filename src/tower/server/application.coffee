@@ -5,14 +5,14 @@ io      = null
 
 class Tower.Application extends Tower.Engine
   @autoloadPaths: [
-    "app/helpers", 
-    "app/models", 
+    "app/helpers",
+    "app/models",
     "app/controllers",
     "app/presenters",
     "app/mailers",
     "app/middleware"
   ]
-  
+
   @configNames: [
     "session"
     "assets"
@@ -20,11 +20,11 @@ class Tower.Application extends Tower.Engine
     "databases"
     "routes"
   ]
-  
+
   @use: ->
     @middleware ||= []
     @middleware.push arguments
-  
+
   @defaultStack: ->
     @use connect.favicon(Tower.publicPath + "/favicon.ico")
     @use connect.static(Tower.publicPath, maxAge: Tower.publicCacheDuration)
@@ -48,23 +48,23 @@ class Tower.Application extends Tower.Engine
       ref = require "#{Tower.root}/config/application"
       @_instance ||= new ref
     @_instance
-    
+
   @configure: (block) ->
     @initializers().push block
-  
+
   @initializers: ->
     @_initializers ||= []
-  
-  constructor: ->  
+
+  constructor: ->
     throw new Error("Already initialized application") if Tower.Application._instance
     @server ||= require('express').createServer()
     Tower.Application.middleware ||= []
     Tower.Application._instance = @
     global[@constructor.name] = @
-    
+
   use: ->
     @constructor.use arguments...
-  
+
   initialize: (complete) ->
     require "#{Tower.root}/config/application"
     #@runCallbacks "initialize", null, complete
@@ -75,7 +75,7 @@ class Tower.Application extends Tower.Engine
       requirePaths = (paths) ->
         for path in paths
           require(path) if path.match(/\.(coffee|js)$/)
-          
+
       for key in configNames
         config = null
 
@@ -96,42 +96,42 @@ class Tower.Application extends Tower.Engine
       require "#{Tower.root}/config/environments/#{Tower.env}"
 
       requirePaths File.files("#{Tower.root}/config/initializers")
-      
+
       config.call(self) for config in configs
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
       require "#{Tower.root}/app/controllers/applicationController"
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
         requirePaths File.files("#{Tower.root}/app/#{path}")
-      
+
       done()
-    
+
     @runCallbacks "initialize", initializer, complete
-    
+
   teardown: ->
     @server.stack.length = 0 # remove middleware
     Tower.Route.clear()
     delete require.cache[require.resolve("#{Tower.root}/config/routes")]
-    
+
   handle: ->
     @server.handle arguments...
-  
+
   stack: ->
     middlewares = @constructor.middleware
-    
+
     unless middlewares && middlewares.length > 0
       middlewares = @constructor.defaultStack()
-      
+
     for middleware in middlewares
       args        = Tower.Support.Array.args(middleware)
       if typeof args[0] == "string"
         middleware  = args.shift()
-        @server.use connect[middleware].apply(connect, args) 
+        @server.use connect[middleware].apply(connect, args)
       else
         @server.use args...
-    
+
     @
-    
+
   listen: ->
     unless Tower.env == "test"
       @server.on "error", (error) ->
@@ -142,23 +142,23 @@ class Tower.Application extends Tower.Engine
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         @watch()
-  
+
   run: ->
     @initialize()
     @stack()
     @listen()
-    
+
   watch: ->
     forever = require("forever")
-    
+
     child = new (forever.Monitor)("node_modules/design.io/bin/design.io",
       max:    1
       silent: false
       options: []
     )
-    
+
     child.start()
-    
+
     child.on "stdout", (data) =>
       data = data.toString()
       try
@@ -172,15 +172,15 @@ class Tower.Application extends Tower.Engine
           _
       catch error
         @
-    
+
     child.on "error", (error) =>
       console.log error
-        
+
     forever.startServer(child);
-        
+
   fileChanged: (path) ->
     delete require.cache[require.resolve(path)]
-    
+
 require './application/assets'
 
 module.exports = Tower.Application

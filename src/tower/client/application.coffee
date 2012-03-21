@@ -10,23 +10,23 @@ _.mixin(_.string.exports())
 class Tower.Application extends Tower.Engine
   @configure: (block) ->
     @initializers().push block
-  
+
   @initializers: ->
     @_initializers ||= []
-  
+
   @instance: ->
     @_instance
-    
+
   @defaultStack: ->
     @use Tower.Middleware.Location
     #@use Tower.Middleware.Cookies
     @use Tower.Middleware.Router
     @middleware
-    
+
   @use: ->
     @middleware ||= []
     @middleware.push arguments
-    
+
   #use: (route, handle) ->
   use: ->
     @constructor.use arguments...
@@ -35,26 +35,26 @@ class Tower.Application extends Tower.Engine
     throw new Error("Already initialized application") if Tower.Application._instance
     Tower.Application._instance = @
     Tower.Application.middleware ||= []
-    
+
     @io       = global["io"]
     @History  = global["History"]
     @stack    = []
-    
+
     @use(middleware) for middleware in middlewares
-    
+
   initialize: ->
     @extractAgent()
     @applyMiddleware()
     @
-  
-  applyMiddleware: ->  
+
+  applyMiddleware: ->
     middlewares = @constructor.middleware
-    
+
     unless middlewares && middlewares.length > 0
       middlewares = @constructor.defaultStack()
-      
+
     @middleware(middleware...) for middleware in middlewares
-    
+
   middleware: ->
     args    = Tower.Support.Array.args(arguments)
     route   = "/"
@@ -64,20 +64,20 @@ class Tower.Application extends Tower.Engine
       route = "/"
 
     route = route.substr(0, route.length - 1) if "/" is route[route.length - 1]
-    
+
     @stack.push route: route, handle: handle
-    
+
     @
-    
+
   extractAgent: ->
     Tower.cookies = Tower.Dispatch.Cookies.parse()
     Tower.agent   = new Tower.Dispatch.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
-    
+
   listen: ->
     self = @
     return if @listening
     @listening = true
-    
+
     if @History && @History.enabled
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
@@ -92,10 +92,10 @@ class Tower.Application extends Tower.Engine
 
   run: ->
     @listen()
-    
+
   handle: (request, response, out) ->
     env   = Tower.env
-    
+
     next  = (err) ->
       layer               = undefined
       path                = undefined
@@ -139,12 +139,12 @@ class Tower.Application extends Tower.Engine
           next()
       catch e
         next e
-        
+
     writeHead = response.writeHead
     stack     = @stack
     removed   = ""
     index     = 0
-    
+
     next()
 
 module.exports = Tower.Application

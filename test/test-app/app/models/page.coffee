@@ -14,4 +14,7 @@ class App.Page extends Tower.Model
   @hasMany "comments", as: "commentable", type: "Comment"
   @hasMany "commenters", through: "comments", type: "User"
   
+  @hasMany "embeddedComments", as: "commentable", type: "Comment", embed: true
+  @hasMany "referencedComments", as: "commentable", type: "Comment"
+  
   @timestamps()

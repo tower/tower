@@ -1,9 +1,9 @@
 class Tower.Generator.ViewGenerator extends Tower.Generator
   sourceRoot: __dirname
-  
+
   run: ->
     @directory "app/views/#{@view.directory}"
-    
+
     views = [
       "_form",
       "_item",
@@ -14,7 +14,7 @@ class Tower.Generator.ViewGenerator extends Tower.Generator
       "new",
       "show"
     ]
-    
+
     for view in views
       @template "#{view}.coffee", "app/views/#{@view.directory}/#{view}.coffee"
 

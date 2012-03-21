@@ -2,13 +2,13 @@ class Tower.Controller extends Tower.Class
   @include  Tower.Support.Callbacks
   @extend   Tower.Support.EventEmitter
   @include  Tower.Support.EventEmitter
-  
+
   @instance: ->
     @_instance ||= new @
-    
+
   @metadata: ->
     @_metadata ||= {}
-  
+
   constructor: ->
     @constructor._instance = @
     @headers              = {}
@@ -21,7 +21,7 @@ class Tower.Controller extends Tower.Class
     @resourceType         = @constructor.resourceType()
     @collectionName       = @constructor.collectionName()
     @formats              = _.keys(@constructor.mimes())
-    
+
     if @constructor._belongsTo
       @hasParent          = true
     else

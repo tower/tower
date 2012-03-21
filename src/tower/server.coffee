@@ -32,7 +32,7 @@ Tower.publicPath          = process.cwd() + "/public"
 Tower.publicCacheDuration = 60 * 1000
 Tower.render              = (string, options = {}) ->
   require("mint").render(options.type, string, options)
-  
+
 Tower.domain              = "localhost"
 
 Tower.date = ->

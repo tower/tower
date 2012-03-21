@@ -3,11 +3,11 @@ Tower.View.Rendering =
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
-    
+
     @_renderBody options, (error, body) =>
       return callback(error, body) if error
       @_renderLayout(body, options, callback)
-  
+
   partial: (path, options, callback) ->
     if typeof options == "function"
       callback  = options
@@ -17,7 +17,7 @@ Tower.View.Rendering =
     prefixes ||= [@_context.collectionName] if @_context
     template = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
     @_renderString(template, options, callback)
-  
+
   renderWithEngine: (template, engine) ->
     if Tower.client
       "(#{template}).call(this);"
@@ -25,7 +25,7 @@ Tower.View.Rendering =
       mint = require("mint")
       mint[mint.engine(engine || "coffee")] template, {}, (error, result) ->
         console.log error if error
-  
+
   # @private
   _renderBody: (options, callback) ->
     if options.text
@@ -36,7 +36,7 @@ Tower.View.Rendering =
       unless options.inline
         options.template = @_readTemplate(options.template, options.prefixes, options.type)
       @_renderString(options.template, options, callback)
-  
+
   # @private
   _renderLayout: (body, options, callback) ->
     if options.layout
@@ -45,7 +45,7 @@ Tower.View.Rendering =
       @_renderString(layout, options, callback)
     else
       callback(null, body)
-  
+
   # @private
   _renderString: (string, options = {}, callback) ->
     if !!options.type.match(/coffee/)
@@ -68,7 +68,7 @@ Tower.View.Rendering =
         result = coffeekup.render string, locals
       catch error
         e = error
-      
+
       callback e, result
     else if options.type
       mint = require "mint"
@@ -79,7 +79,7 @@ Tower.View.Rendering =
       engine = require("mint")
       options.locals.string = string
       engine.render(options.locals, callback)
-  
+
   # @private
   _renderingContext: (options) ->
     locals  = this
@@ -93,7 +93,7 @@ Tower.View.Rendering =
     locals = Tower.Support.Object.extend(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
-  
+
   # @private
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
@@ -101,5 +101,5 @@ Tower.View.Rendering =
     result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
     throw new Error("Template '#{template}' was not found.") unless result
     result
-  
+
 module.exports = Tower.View.Rendering

@@ -4,59 +4,59 @@ class Tower.Model.Criteria
     @[key] = value for key, value of args
     @_where ||= []
     @_order ||= []
-  
+
   where: (conditions) ->
     if conditions instanceof Tower.Model.Criteria
       @merge(conditions)
     else
       @_where.push(conditions)
-    
+
   order: (attribute, direction = "asc") ->
     @_order ||= []
     @_order.push [attribute, direction]
     #@mergeOptions sort: [[attribute, direction]]
-    
+
   asc: (attributes...) ->
     @order(attribute) for attribute in attributes
-    
+
   desc: (attributes...) ->
     @order(attribute, "desc") for attribute in attributes
-    
+
   allIn: (attributes) ->
     @_whereOperator "$all", attributes
-    
+
   anyIn: (attributes) ->
     @_whereOperator "$any", attributes
-    
+
   notIn: (attributes) ->
     @_whereOperator "$nin", attributes
-    
+
   offset: (number) ->
     @_offset = number
     #@mergeOptions offset: number
-    
+
   limit: (number) ->
     @_limit = number
     @mergeOptions limit: number
-    
+
   select: ->
     @_fields = Tower.Support.Array.args(arguments)
-    
+
   includes: ->
     @_includes = Tower.Support.Array.args(arguments)
-    
+
   page: (number) ->
     @offset(number)
-  
+
   paginate: (options) ->
     limit   = options.perPage || options.limit
     page    = options.page || 1
     @limit(limit)
     @offset((page - 1) * limit)
-  
+
   clone: ->
     new @constructor(@attributes())
-    
+
   merge: (criteria) ->
     attributes = criteria.attributes()
     @_where = @_where.concat attributes._where if attributes._where.length > 0
@@ -66,7 +66,7 @@ class Tower.Model.Criteria
     @_fields = attributes._fields if attributes._fields
     @_offset = attributes._offset if attributes._offset?
     @
-    
+
   options: ->
     options = {}
     options.offset  = @_offset  if @_offset?
@@ -74,15 +74,15 @@ class Tower.Model.Criteria
     options.fields  = @_fields  if @_fields
     options.sort    = @_order   if @_order.length > 0
     options
-    
+
   conditions: ->
     result = {}
-    
+
     for conditions in @_where
       Tower.Support.Object.deepMergeWithArrays(result, conditions)
-    
+
     result
-    
+
   attributes: (to = {}) ->
     to._where     = @_where.concat()
     to._order     = @_order.concat()
@@ -91,17 +91,17 @@ class Tower.Model.Criteria
     to._fields    = @_fields  if @_fields
     to._includes  = @_includes if @_includes
     to
-  
+
   toQuery: ->
     conditions: @conditions(), options: @options()
-    
+
   toUpdate: ->
     @toQuery()
-    
+
   toCreate: ->
     attributes  = {}
     options     = {}
-    
+
     for conditions in @_where
       # tags: $in: ["a", "b"]
       # $push: tags: ["c"]
@@ -114,15 +114,15 @@ class Tower.Model.Criteria
             attributes[key] = _value
         else
           attributes[key] = value
-    
+
     for key, value of attributes
       delete attributes[key] if value == undefined
-    
+
     attributes: attributes, options: options
-    
+
   mergeOptions: (options) ->
     options
-  
+
   # @private
   _whereOperator: (operator, attributes) ->
     query = {}

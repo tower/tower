@@ -3,7 +3,7 @@ Tower.Command =
     c: "console"
     g: "generate"
     s: "server"
-    
+
   run: (argv) ->
     command = argv[2]
     command = "info" if !command || !!command.match(/^-/)
