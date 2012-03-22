@@ -74,16 +74,12 @@ class Tower.HTTP.Route.DSL
     path = @_scope.path + path if @_scope.path
 
     if @_scope.name
-      many = @_scope.name + Tower.Support.String.camelize(name)
-    else
-      many = name
+      name = @_scope.name + Tower.Support.String.camelize(name)
 
-    one = Tower.Support.String.singularize(many)
-
-    @match "#{path}/new", Tower.Support.Object.extend({name: "new#{Tower.Support.String.camelize(one)}", action: "new"}, options)
+    @match "#{path}/new", Tower.Support.Object.extend({name: "new#{Tower.Support.String.camelize(name)}", action: "new"}, options)
     @match "#{path}", Tower.Support.Object.extend({action: "create", method: "POST"}, options)
-    @match "#{path}", Tower.Support.Object.extend({name:one, action: "show"}, options)
-    @match "#{path}/edit", Tower.Support.Object.extend({name:"edit#{Tower.Support.String.camelize(one)}", action: "edit"}, options)
+    @match "#{path}", Tower.Support.Object.extend({name:name, action: "show"}, options)
+    @match "#{path}/edit", Tower.Support.Object.extend({name:"edit#{Tower.Support.String.camelize(name)}", action: "edit"}, options)
     @match "#{path}", Tower.Support.Object.extend({action: "update", method: "PUT"}, options)
     @match "#{path}", Tower.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
   
