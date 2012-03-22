@@ -8,7 +8,7 @@ Tower.Controller.Helpers =
       @_layout = layout
       
   layout: ->
-    layout = @constructor._layout
+    layout = @constructor._layout || "application"
     if typeof(layout) == "function" then layout.call(@) else layout
 
 module.exports = Tower.Controller.Helpers
