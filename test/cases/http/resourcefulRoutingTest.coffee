@@ -22,6 +22,7 @@ describe 'Tower.Dispatch.Route', ->
             # /admin/posts/dashboard
             @collection ->
               @get "dashboard"
+            @resource "description"
     
     it 'should have single resource routes', ->
       routes = Tower.Route.all()[0..5]
@@ -53,7 +54,7 @@ describe 'Tower.Dispatch.Route', ->
       assert.equal routes[6].method, "DELETE"
       
     it 'should have nested routes', ->
-      routes = Tower.Route.all()[13..20]
+      routes = Tower.Route.all()[13..21]
       
       # index
       route = routes[0]
@@ -122,7 +123,25 @@ describe 'Tower.Dispatch.Route', ->
       assert.equal route.method, "GET"
       
       assert.equal route.urlFor(postId: 8), "/admin/posts/8/comments/new"
-      
+ 
+    it "should allow singleton resources to be nested", ->
+      routes = Tower.Route.all()
+
+      newRoute = routes[routes.length - 6]
+      assert.equal newRoute.name, "newAdminPostDescription"
+      assert.equal newRoute.path, "/admin/posts/:postId/description/new.:format?"
+      assert.equal newRoute.method, "GET"
+
+      showRoute = routes[routes.length - 4]
+      assert.equal showRoute.name, "adminPostDescription"
+      assert.equal showRoute.path, "/admin/posts/:postId/description.:format?"
+      assert.equal showRoute.method, "GET"
+
+      editRoute = routes[routes.length - 3]
+      assert.equal editRoute.name, "editAdminPostDescription"
+      assert.equal editRoute.path, "/admin/posts/:postId/description/edit.:format?"
+      assert.equal editRoute.method, "GET"
+
   describe 'url builder', ->
     it 'should build a url from a model class', ->
       url = Tower.urlFor
