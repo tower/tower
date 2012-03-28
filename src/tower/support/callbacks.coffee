@@ -42,6 +42,7 @@ Tower.Support.Callbacks =
     prependCallback: (action, phase, run, options = {}) ->
       @
 
+    # @todo need to apply metadata here
     callbacks: ->
       @_callbacks ||= {}
 

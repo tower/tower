@@ -41,6 +41,7 @@ Tower.Model.Persistence =
       unless options.validate == false
         @validate (error) =>
           if error
+            # something is wrong here...
             callback.call @, null, false if callback
           else
             @_save callback
@@ -70,7 +71,7 @@ Tower.Model.Persistence =
 
     store: ->
       @constructor.store()
-
+    
     # @private
     _save: (callback) ->
       @runCallbacks "save", (block) =>

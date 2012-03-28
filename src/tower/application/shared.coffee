@@ -161,6 +161,9 @@ Tower.Support.Object.extend Tower,
       
   args: (args) ->
     Tower.Support.Array.args(args)
+    
+  clone: (object) ->
+    _.extend({}, object)
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->

@@ -35,6 +35,7 @@ Tower.Model.Scope.Finders =
     @store.exists conditions, options, callback
 
   batch: ->
+    @
 
   fetch: ->
 

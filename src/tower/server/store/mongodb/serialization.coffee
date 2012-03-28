@@ -52,7 +52,7 @@ Tower.Store.MongoDB.Serialization =
     schema  = @schema()
     result  = {}
     query   = @deserializeModel(record)
-
+    
     for key, value of query
       field = schema[key]
       key   = "_id" if key == "id"
@@ -66,6 +66,8 @@ Tower.Store.MongoDB.Serialization =
             result[key] = @encode field, _value, _key
           else
             _key      = operator if operator
+            if _key == "$in"
+              _value = Tower.Support.Object.toArray(_value)
             result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
@@ -73,6 +75,10 @@ Tower.Store.MongoDB.Serialization =
     result
 
   serializeOptions: (options = {}) ->
+    delete options.joins
+    delete options.through
+    delete options.raw
+    delete options.limit if options.hasOwnProperty("limit") && options.limit <= 0
     options
 
   encode: (field, value, operation) ->

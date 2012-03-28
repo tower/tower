@@ -4,6 +4,19 @@ class Tower.Model.Criteria
     @[key] = value for key, value of args
     @_where ||= []
     @_order ||= []
+    
+  joins: (object) ->
+    joins = @_joins ||= {}
+    if Tower.Support.Object.isArray(object)
+      joins[key] = true for key in object
+    else if typeof object == "string"
+      joins[object] = true
+    else
+      Tower.Support.Object.extend joins, object
+    @
+    
+  through: (scope) ->
+    @_through = scope
 
   where: (conditions) ->
     if conditions instanceof Tower.Model.Criteria
@@ -65,6 +78,8 @@ class Tower.Model.Criteria
     @_limit = attributes._limit if attributes._limit?
     @_fields = attributes._fields if attributes._fields
     @_offset = attributes._offset if attributes._offset?
+    @_joins = attributes._joins if attributes._joins?
+    @_through = attributes._through if attributes._through?
     @
 
   options: ->
@@ -73,8 +88,10 @@ class Tower.Model.Criteria
     options.limit   = @_limit   if @_limit?
     options.fields  = @_fields  if @_fields
     options.sort    = @_order   if @_order.length > 0
+    options.joins   = @_joins   if @_joins?
+    options.through   = @_through   if @_through?
     options
-
+    
   conditions: ->
     result = {}
 
@@ -90,6 +107,8 @@ class Tower.Model.Criteria
     to._limit     = @_limit   if @_limit?
     to._fields    = @_fields  if @_fields
     to._includes  = @_includes if @_includes
+    to._joins     = @_joins if @_joins?
+    to._through   = @_through if @_through?
     to
 
   toQuery: ->
@@ -101,7 +120,7 @@ class Tower.Model.Criteria
   toCreate: ->
     attributes  = {}
     options     = {}
-
+    
     for conditions in @_where
       # tags: $in: ["a", "b"]
       # $push: tags: ["c"]
@@ -109,7 +128,8 @@ class Tower.Model.Criteria
         if Tower.Store.isKeyword(key)
           for _key, _value of value
             attributes[_key] = _value
-        else if Tower.Support.Object.isHash(value) && Tower.Store.hasKeyword(value)
+        # this check needs to be better
+        else if Tower.Support.Object.isHash(value) && value.constructor.name == "Object" && Tower.Store.hasKeyword(value)
           for _key, _value of value
             attributes[key] = _value
         else

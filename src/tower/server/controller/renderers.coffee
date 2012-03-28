@@ -1,6 +1,10 @@
 Tower.Controller.addRenderers
   json: (json, options, callback) ->
-    json = JSON.stringify(json) unless typeof(json) == "string"
+    unless typeof(json) == "string"
+      if @params.prettify && @params.prettify.toString() == "true"
+        json = JSON.stringify(json, null, 2)
+      else
+        json = JSON.stringify(json)
     json = "#{options.callback}(#{json})" if options.callback
     @headers["Content-Type"] ||= require("mime").lookup("json")
     callback null, json if callback

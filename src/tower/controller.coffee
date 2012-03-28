@@ -21,11 +21,7 @@ class Tower.Controller extends Tower.Class
     @resourceType         = @constructor.resourceType()
     @collectionName       = @constructor.collectionName()
     @formats              = _.keys(@constructor.mimes())
-
-    if @constructor._belongsTo
-      @hasParent          = true
-    else
-      @hasParent          = false
+    @hasParent            = @constructor.hasParent()
 
 require './controller/callbacks'
 require './controller/helpers'

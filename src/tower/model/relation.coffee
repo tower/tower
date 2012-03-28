@@ -1,11 +1,18 @@
 class Tower.Model.Relation extends Tower.Class
   # hasMany "commenters", source: "person", sourceType: "User", foreignKey: "userId", type
-  constructor: (owner, name, options = {}, callback) ->
+  constructor: (owner, name, options = {}) ->
     @[key] = value for key, value of options
-
+    
     @owner              = owner
     @name               = name
-    @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
+    
+    @initialize(options)
+    
+  initialize: (options) ->  
+    owner               = @owner
+    name                = @name
+    # @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
+    @type               = options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name))
     @ownerType          = Tower.namespaced(owner.name)
     @dependent        ||= false
     @counterCache     ||= false
@@ -22,7 +29,7 @@ class Tower.Model.Relation extends Tower.Class
     @singularTargetName = Tower.Support.String.singularize(name)
     @pluralTargetName   = Tower.Support.String.pluralize(name)
     @targetType         = @type
-
+    
     # hasMany "posts", foreignKey: "postId", cacheKey: "postIds"
     unless @foreignKey
       if @as
@@ -38,7 +45,7 @@ class Tower.Model.Relation extends Tower.Class
         @cache    = true
       else
         @cacheKey = @singularTargetName + "Ids"
-
+      
       @owner.field @cacheKey, type: "Array", default: []
 
     if @counterCache

@@ -77,7 +77,7 @@ class Tower.Model.Attribute
     @_default = options.default
     @get      = options.get || (serializer.from if serializer)
     @set      = options.set || (serializer.to if serializer)
-
+    
     if Tower.accessors
       Object.defineProperty @owner.prototype, name,
         enumerable: true

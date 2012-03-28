@@ -7,7 +7,7 @@ Tower.Model.Scope.Persistence =
     ]
 
   build: (attributes, options) ->
-    {conditions, options} = @toCreate()
+    {conditions, options} = @_extractArgs(arguments, data: true)#@toCreate()
     @_build attributes, conditions, options
 
   # User.create(firstName: "Lance")

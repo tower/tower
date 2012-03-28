@@ -55,8 +55,8 @@ class Tower.Model.Scope extends Tower.Class
     options.instantiate = true unless options.hasOwnProperty("instantiate")
 
     ids             = _.flatten(args) if opts.ids && args.length > 0
-
-    if ids && ids.length > 0
+    
+    if opts.ids && ids && ids.length > 0
       ids = _.map(ids, (idOrRecord) -> if idOrRecord instanceof Tower.Model then idOrRecord.get("id") else idOrRecord)
       criteria.where id: $in: ids
 

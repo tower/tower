@@ -6,31 +6,81 @@ Tower.Store.MongoDB.Finders =
     delete attributes._id
     model = new klass(attributes)
     model
-
+  
   find: (conditions, options, callback) ->
+    through       = options.through
+    raw           = options.raw
     conditions    = @serializeQuery(conditions)
     options       = @serializeOptions(options)
-
-    @collection().find(conditions, options).toArray (error, docs) =>
-      unless error
-        for doc in docs
-          doc.id = doc["_id"]
-          delete doc["_id"]
-        docs = @serialize(docs)
-        for model in docs
-          model.persistent = true
-
-      callback.call(@, error, docs) if callback
+    
+    @through through, (error, throughConditions) =>
+      conditions = _.extend conditions, throughConditions
+      @collection().find(conditions, options).toArray (error, docs) =>
+        unless error
+          unless raw
+            for doc in docs
+              doc.id = doc["_id"]
+              delete doc["_id"]
+            docs = @serialize(docs)
+            for model in docs
+              model.persistent = true
+        callback.call(@, error, docs) if callback
+      
+    @
+  
+  # find conditions: {title: "=~": "Lance"}, options
+  findNew: (conditions, options, callback) ->
+    conditions                    = @serializeQuery(conditions)
+    {joins, eagerLoad, options}   = @serializeOptions(options)
+    
+    @joins joins, (error, joinConditions) =>
+      @collection().find(conditions, options).toArray (error, docs) =>
+        unless error
+          unless raw
+            for doc in docs
+              doc.id = doc["_id"]
+              delete doc["_id"]
+            docs = @serialize(docs)
+            for model in docs
+              model.persistent = true
+            @eagerLoad docs, eagerLoad, callback
+        callback.call(@, error, docs) if callback
+      
+    @
+    
+  joins: (conditions, options, callback) ->
+    through       = options.through
+    eagerLoad     = options.eagerLoad
+    raw           = options.raw
+    conditions    = @serializeQuery(conditions)
+    options       = @serializeOptions(options)
+    
+    return callback.call @, null, {} unless through
+    
+    through.scope.select(through.key).all (error, records) =>
+      conditions = {}
+      conditions._id = $in: _.map(records, (record) -> record.get(through.key))
+      callback.call @, null, conditions
 
     @
+    
+  eagerLoad: (records, eagerLoadScopes, callback) ->
+    ids = _.map records, (record) -> record.get('id')
+    
+    eagerLoad = (eagerLoadScope, next) =>
+      query = {}
+      query[eagerLoadScope.foreignKey] = $in: ids
+      eagerLoadScope.where(query).all (error, children) =>
+        
+    
+    Tower.parallel eagerLoadScopes, eagerLoad, callback
 
   findOne: (conditions, options, callback) ->
     conditions    = @serializeQuery(conditions)
     options.limit = 1
-    options       = @serializeOptions(options)
     raw           = options.raw == true
-    delete options.raw
-
+    options       = @serializeOptions(options)
+    
     @collection().findOne conditions, (error, doc) =>
       unless raw || error || !doc
         doc = @serializeModel(doc)
@@ -39,13 +89,14 @@ Tower.Store.MongoDB.Finders =
     @
 
   count: (conditions, options, callback) ->
-    result        = undefined
+    result        = 0
     conditions    = @serializeQuery(conditions)
-
+    options       = @serializeOptions(options)
+    
     @collection().count conditions, (error, count) =>
-      result      = count
+      result      = count || 0
       callback.call @, error, result if callback
-
+    
     result
 
   exists: (conditions, options, callback) ->
@@ -57,5 +108,13 @@ Tower.Store.MongoDB.Finders =
       callback.call @, error, result if callback
 
     result
+    
+  through: (through, callback) ->
+    return callback.call @, null, {} unless through
+    
+    through.scope.select(through.key).all (error, records) =>
+      conditions = {}
+      conditions._id = $in: _.map(records, (record) -> record.get(through.key))
+      callback.call @, null, conditions
 
 module.exports = Tower.Store.MongoDB.Finders

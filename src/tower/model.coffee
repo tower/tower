@@ -1,4 +1,10 @@
 class Tower.Model extends Tower.Class
+  @_relationship: false
+  
+  # for now, just for neo4j
+  @relationship: (value = true) ->
+    @_relationship = value
+  
   # @example All configuration options
   #   class App.User extends Tower.Model
   #     @configure

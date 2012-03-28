@@ -96,7 +96,7 @@ class Tower.Application extends Tower.Engine
       require "#{Tower.root}/config/environments/#{Tower.env}"
 
       requirePaths File.files("#{Tower.root}/config/initializers")
-
+      
       config.call(self) for config in configs
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
@@ -121,7 +121,7 @@ class Tower.Application extends Tower.Engine
 
     unless middlewares && middlewares.length > 0
       middlewares = @constructor.defaultStack()
-
+      
     for middleware in middlewares
       args        = Tower.Support.Array.args(middleware)
       if typeof args[0] == "string"

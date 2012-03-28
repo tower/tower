@@ -18,9 +18,20 @@ Tower.Controller.Resourceful =
       @_collectionName ||= Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
 
     belongsTo: (key, options = {}) ->
+      if @_belongsTo
+        @_belongsTo = @_belongsTo.concat()
+      else
+        @_belongsTo = []
+        
+      return @_belongsTo unless key
+        
       options.key = key
       options.type ||= Tower.Support.String.camelize(options.key)
-      @_belongsTo = options
+      @_belongsTo.push(options)
+      
+    hasParent: ->
+      belongsTo = @belongsTo()
+      belongsTo.length > 0
 
     actions: ->
       args = Tower.Support.Array.args(arguments)
@@ -151,20 +162,34 @@ Tower.Controller.Resourceful =
       scope.all (error, collection) =>
         @[@collectionName]  = @collection = collection
         callback.call @, error, collection if callback
-
+  
   findParent: (callback) ->
-    association = @constructor._belongsTo
-    if association
-      param       = association.param || "#{association.key}Id"
-      parentClass = Tower.constant(association.type)
-      parentClass.find @params[param], (error, parent) =>
+    relation = @findParentRelation()
+    if relation
+      parentClass = Tower.constant(relation.type)
+      parentClass.find @params[relation.param], (error, parent) =>
         throw error if error && !callback
         unless error
-          @parent = @[association.key] = parent
+          @parent = @[relation.key] = parent
         callback.call @, error, parent if callback
     else
       callback.call @, null, false if callback
       false
+      
+  findParentRelation: ->
+    belongsTo = @constructor.belongsTo()
+    params    = @params
+    
+    if belongsTo.length > 0
+      for relation in belongsTo
+        param         = relation.param || "#{relation.key}Id"
+        if params.hasOwnProperty(param)
+          relation = Tower.Support.Object.extend({}, relation)
+          relation.param = param
+          return relation
+      return null
+    else
+      null
 
   scoped: (callback) ->
     callbackWithScope = (error, scope) =>
@@ -172,7 +197,10 @@ Tower.Controller.Resourceful =
 
     if @hasParent
       @findParent (error, parent) =>
-        callbackWithScope(error, parent[@collectionName]())
+        if error || !parent
+          callback.call @, error || true if callback
+        else
+          callbackWithScope(error, parent[@collectionName]())
     else
       callbackWithScope null, Tower.constant(@resourceType)
 

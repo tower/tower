@@ -1,4 +1,10 @@
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
+  initialize: (options) ->
+    if @through && !options.type
+      options.type ||= @owner.relation(@through).ownerType
+      
+    super
+    
   class @Scope extends @Scope
     # atomically add these to the database
     # @todo
@@ -36,10 +42,17 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     toCriteria: ->
       criteria  = super
       relation  = @relation
-
-      if relation.cache
-        defaults  = {}
-        defaults[relation.foreignKey + "s"] = $in: [@owner.get("id")]
+      
+      defaults  = {}
+      
+      if relation.through
+        criteria.through(scope: @owner[relation.through](), key: "wallId")
+      else if relation.cache
+        #defaults[relation.cacheKey] = $in: [@owner.get("id")]
+        defaults.id = $in: @owner.get(relation.cacheKey)
+        criteria.where(defaults)
+      else
+        defaults[relation.foreignKey] = $in: @owner.get('id')
         criteria.where(defaults)
 
       criteria
@@ -88,6 +101,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       inverseRelation = relation.inverse()
       
       id = owner.get("id")
+      
       data = {}
       
       if inverseRelation && inverseRelation.cache
@@ -108,6 +122,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
         criteria.where(defaults)
       
       instantiate = options.instantiate != false
+      
       {attributes, options} = criteria.toCreate()
       
       attributes = @_build args, attributes, options

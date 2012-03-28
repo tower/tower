@@ -16,9 +16,11 @@ Tower.Model.Serialization =
 
   toJSON: (options) ->
     @_serializableHash(options)
-
+  
   clone: ->
-    new @constructor(Tower.Support.Object.clone(@attributes))
+    attributes = Tower.clone(@attributes)
+    delete attributes.id
+    new @constructor(attributes)
 
   # @private
   _serializableHash: (options = {}) ->

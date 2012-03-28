@@ -21,5 +21,14 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
 
   class @Scope extends @Scope
     # need to do something here about Reflection
+    
+    toCriteria: ->
+      criteria  = super
+      relation  = @relation
+      
+      # @todo shouldn't have to do $in here...
+      criteria.where(id: $in: [@owner.get(relation.foreignKey)])
+
+      criteria
 
 module.exports = Tower.Model.Relation.BelongsTo
