@@ -7,33 +7,11 @@ Tower.Store.MongoDB.Finders =
     model = new klass(attributes)
     model
   
-  find: (conditions, options, callback) ->
-    through       = options.through
-    raw           = options.raw
-    conditions    = @serializeQuery(conditions)
-    options       = @serializeOptions(options)
-    
-    @through through, (error, throughConditions) =>
-      conditions = _.extend conditions, throughConditions
-      @collection().find(conditions, options).toArray (error, docs) =>
-        unless error
-          unless raw
-            for doc in docs
-              doc.id = doc["_id"]
-              delete doc["_id"]
-            docs = @serialize(docs)
-            for model in docs
-              model.persistent = true
-        callback.call(@, error, docs) if callback
-      
-    @
-  
   # find conditions: {title: "=~": "Lance"}, options
-  findNew: (conditions, options, callback) ->
-    conditions                    = @serializeQuery(conditions)
-    {joins, eagerLoad, options}   = @serializeOptions(options)
+  find: (criteria, callback) ->
+    @serializeCriteria(criteria)
     
-    @joins joins, (error, joinConditions) =>
+    @joins criteria, (error, joinConditions) =>
       @collection().find(conditions, options).toArray (error, docs) =>
         unless error
           unless raw
@@ -48,7 +26,7 @@ Tower.Store.MongoDB.Finders =
       
     @
     
-  joins: (conditions, options, callback) ->
+  joins: (criteria, callback) ->
     through       = options.through
     eagerLoad     = options.eagerLoad
     raw           = options.raw
@@ -71,7 +49,7 @@ Tower.Store.MongoDB.Finders =
       query = {}
       query[eagerLoadScope.foreignKey] = $in: ids
       eagerLoadScope.where(query).all (error, children) =>
-        
+      
     
     Tower.parallel eagerLoadScopes, eagerLoad, callback
 

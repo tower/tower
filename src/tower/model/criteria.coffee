@@ -1,10 +1,5 @@
-# This class has plenty of room for optimization
 class Tower.Model.Criteria
-  constructor: (args = {}) ->
-    @[key] = value for key, value of args
-    @_where ||= []
-    @_order ||= []
-    
+  
   joins: (object) ->
     joins = @_joins ||= {}
     if Tower.Support.Object.isArray(object)
@@ -14,6 +9,8 @@ class Tower.Model.Criteria
     else
       Tower.Support.Object.extend joins, object
     @
+    
+  embeds: ->
     
   through: (scope) ->
     @_through = scope
@@ -27,6 +24,7 @@ class Tower.Model.Criteria
   order: (attribute, direction = "asc") ->
     @_order ||= []
     @_order.push [attribute, direction]
+    @
     #@mergeOptions sort: [[attribute, direction]]
 
   asc: (attributes...) ->
@@ -150,5 +148,5 @@ class Tower.Model.Criteria
       query[key] = {}
       query[key][operator] = value
     @where query
-
+  
 module.exports = Tower.Model.Criteria

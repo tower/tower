@@ -6,42 +6,18 @@ Tower.Model.Scope.Persistence =
       "destroy"
     ]
 
-  build: (attributes, options) ->
-    {conditions, options} = @_extractArgs(arguments, data: true)#@toCreate()
-    @_build attributes, conditions, options
-
-  # User.create(firstName: "Lance")
-  # User.where(firstName: "Lance").create()
-  # User.where(firstName: "Lance").create([{lastName: "Pollard"}, {lastName: "Smith"}])
-  # User.where(firstName: "Lance").create(new User(lastName: "Pollard"))
-  # create(attributes)
-  # create([attributes, attributes])
-  # create(attributes, options)
+  build: ->
+    @_build.apply @, @toCriteria(arguments, data: true)
+    
   create: ->
-    {criteria, data, options, callback} = @_extractArgs(arguments, data: true)
-    criteria.mergeOptions(options)
-    @_create criteria, data, options, callback
-
-  # User.where(firstName: "Lance").update(1, 2, 3)
-  # User.update(User.first(), User.last(), firstName: "Lance")
-  # User.update([User.first(), User.last()], firstName: "Lance")
-  # User.update([1, 2], firstName: "Lance")
+    @_create.apply @, @toCriteria(arguments, data: true)
+    
   update: ->
-    {criteria, data, options, callback} = @_extractArgs(arguments, ids: true, data: true)
-    criteria.mergeOptions(options)
-    @_update criteria, data, options, callback
-
+    @_update.apply @, @toCriteria(arguments, ids: true, data: true)
+  
   destroy: ->
-    {criteria, options, callback} = @_extractArgs(arguments, ids: true)
-    criteria.mergeOptions(options)
-    @_destroy criteria, options, callback
-
-  # @todo
-  sync: ->
-
-  # @todo
-  transaction: ->
-
+    @_destroy.apply @, @toCriteria(arguments, ids: true)
+    
   # @private
   _build: (attributes, conditions, options) ->
     store = @store
@@ -65,11 +41,10 @@ Tower.Model.Scope.Persistence =
       attributes
 
   # @private
-  _create: (criteria, data, opts, callback) ->
-    if opts.instantiate
-      isArray = Tower.Support.Object.isArray(data)
-      records = Tower.Support.Object.toArray(@build(data))
-
+  _create: (criteria, callback) ->
+    if criteria.instantiate
+      records = Tower.Support.Object.toArray(@build(criteria.records))
+      
       iterator = (record, next) ->
         if record
           record.save(next)
@@ -86,34 +61,31 @@ Tower.Model.Scope.Persistence =
           else
             callback(error, records[0])
     else
-      @store.create data, opts, callback
+      @store.create criteria
 
   # @private
-  _update: (criteria, data, opts, callback) ->
-    {conditions, options} = criteria.toQuery()
-    if opts.instantiate
+  _update: (criteria, callback) ->
+    if criteria.instantiate
       iterator = (record, next) ->
-        record.updateAttributes(data, next)
+        record.updateAttributes(criteria.args, next)
 
-      @_each conditions, options, iterator, callback
+      @_each criteria, iterator, callback
     else
-      @store.update data, conditions, options, callback
+      @store.update criteria, callback
 
   # @private
-  _destroy: (criteria, opts, callback) ->
-    {conditions, options} = criteria.toQuery()
-
-    if opts.instantiate
+  _destroy: (criteria) ->
+    if criteria.instantiate
       iterator = (record, next) ->
         record.destroy(next)
-
-      @_each conditions, options, iterator, callback
+        
+      @_each criteria, iterator, callback
     else
-      @store.destroy conditions, options, callback
+      @store.destroy criteria, callback
 
   # @private
-  _each: (conditions, options, iterator, callback) ->
-    @store.find conditions, options, (error, records) =>
+  _each: (criteria, iterator, callback) ->
+    @store.find criteria, (error, records) =>
       if error
         callback.call @, error, records
       else

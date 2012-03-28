@@ -6,24 +6,6 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     super
     
   class @Scope extends @Scope
-    # atomically add these to the database
-    # @todo
-    push: ->
-      {criteria, data, options, callback} = @_extractArgs(arguments, data: true)
-
-    # atomically remove these from the database
-    # @todo
-    pull: ->
-      {criteria, data, options, callback} = @_extractArgs(arguments, data: true)
-    
-    # @todo
-    concat: ->
-
-    # existingRecord.posts().build()
-    # existingRecord.posts().create()
-    # existingRecord.posts().create([{}, {}])
-    # newRecord.posts().create([{}, {}])
-    # newRecord.posts().create([{}, {}])
     create: ->
       unless @owner.isPersisted()
         throw new Error("You cannot call create unless the parent is saved")
