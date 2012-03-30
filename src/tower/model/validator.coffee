@@ -22,6 +22,13 @@ class Tower.Model.Validator
     @value      = value
     @attributes = Tower.Support.Object.toArray(attributes)
   
+  # Given a record, validate each attribute defined for this validator.
+  # 
+  # @param [Tower.Model] record
+  # @param [Object] errors
+  # @param [Function] callback
+  #
+  # @return [void] Requires a callback.
   validateEach: (record, errors, callback) ->
     iterator  = (attribute, next) =>
       @validate record, attribute, errors, (error) =>
@@ -29,11 +36,26 @@ class Tower.Model.Validator
 
     Tower.parallel @attributes, iterator, (error) =>
       callback.call(@, error) if callback
-
+      
+    undefined
+  
+  # @abstract Implement in subclasses
+  # validate: ->
+  
+  # Default implementation of success for this validator.
+  # 
+  # @param [Function] callback
+  # 
+  # @return [Boolean]
   success: (callback) ->
     callback.call @ if callback
     true
-
+  
+  # Default implementation of handling failure for this validator.
+  # 
+  # @param [Function] callback
+  # 
+  # @return [Boolean]
   failure: (record, attribute, errors, message, callback) ->
     errors[attribute] ||= []
     errors[attribute].push message

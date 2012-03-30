@@ -1,5 +1,17 @@
 class Tower.Model.Relation extends Tower.Class
-  # hasMany "commenters", source: "person", sourceType: "User", foreignKey: "userId", type
+  
+  # Construct a new relation.
+  # 
+  # @param [Function] owner Tower.Model class this relation is defined on.
+  # @param [String] name name of the relation.
+  # @param [Object] options options hash.
+  # @option options [String] type name of the associated class.
+  # @option options [Boolean] dependent (false) if true, relationship records
+  #   will be destroyed if the owner record is destroyed.
+  # @option options [Boolean] counterCache (false) if true, will increment `relationshipCount` variable
+  #   when relationship is created/destroyed.
+  # 
+  # @see Tower.Model.Relations.ClassMethods#hasMany
   constructor: (owner, name, options = {}) ->
     @[key] = value for key, value of options
     
@@ -60,15 +72,23 @@ class Tower.Model.Relation extends Tower.Class
     @owner.prototype[name] = ->
       @relation(name)
 
+  # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
     new @constructor.Scope(model: @klass(), owner: record, relation: @)
-
+  
+  # @return [Function]
   targetKlass: ->
     Tower.constant(@targetType)
-
+  
+  # Class for model on the other side of this relationship.
+  # 
+  # @return [Function]
   klass: ->
     Tower.constant(@type)
-
+  
+  # Relation on the associated object that maps back to this relation.
+  # 
+  # @return [Tower.Model.Relation]
   inverse: ->
     return @_inverse if @_inverse
 

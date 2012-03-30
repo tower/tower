@@ -1,3 +1,4 @@
+# @module
 Tower.Model.Dirty =
   # @example simple sequence of operations
   #   post.set title: "A Post!"
@@ -58,9 +59,12 @@ Tower.Model.Dirty =
         @attributes[key] = value
     @
 
+  # Check if the model has any attributes that have been changed.
+  # 
+  # @return [Boolean]
   isDirty: ->
     Tower.Support.Object.isPresent(@changes)
-
+  
   attributeChanged: (name) ->
     {before, after} = @changes
     return false if Tower.Support.Object.isBlank(before)
@@ -110,7 +114,8 @@ Tower.Model.Dirty =
     if array then @changes[attribute] = array else delete @changes[attribute]
 
     beforeValue
-    
+  
+  # @private
   _resetChanges: ->
     @changes =
       before: {}

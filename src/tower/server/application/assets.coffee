@@ -9,15 +9,22 @@ File          = Pathfinder.File
 puts          = require('util').puts
 print         = require('util').print
 
+# @module
 # Tower.module "Application.Assets"
 # https://github.com/tomgallacher/gzippo
 Tower.Application.Assets =
+  # Loads "public/assets/manifest.json".
+  # 
+  # @return [Object] the JSON contained in that file.
   loadManifest: ->
     try
       Tower.assetManifest = JSON.parse(require('fs').readFileSync('public/assets/manifest.json', 'utf-8'))
     catch error
       Tower.assetManifest = {}
 
+  # Minify and gzip assets for production.
+  # 
+  # @return [void]
   bundle: ->
     gzip          = require 'gzip'
 
@@ -76,7 +83,10 @@ Tower.Application.Assets =
             process.exit()
             #process.nextTick ->
             #  invoke 'stats'
-
+  
+  # Upload assets to Amazon S3
+  # 
+  # @return [void]
   upload: (block) ->
     gzip          = require 'gzip'
 

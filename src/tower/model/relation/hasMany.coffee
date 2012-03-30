@@ -6,6 +6,8 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     super
     
   class @Scope extends @Scope
+    isHasMany: true
+    
     create: ->
       unless @owner.isPersisted()
         throw new Error("You cannot call create unless the parent is saved")
@@ -21,7 +23,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
 
     destroy: ->
 
-    toCriteria: ->
+    compile: ->
       criteria  = super
       relation  = @relation
       

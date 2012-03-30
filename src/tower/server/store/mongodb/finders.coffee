@@ -1,98 +1,94 @@
+# @module
 Tower.Store.MongoDB.Finders =
-  serializeModel: (attributes) ->
-    return attributes if attributes instanceof Tower.Model
-    klass = Tower.constant(@className)
-    attributes.id ||= attributes._id
-    delete attributes._id
-    model = new klass(attributes)
-    model
-  
-  # find conditions: {title: "=~": "Lance"}, options
-  find: (criteria, callback) ->
-    @serializeCriteria(criteria)
+  # Find and return an array of documents.
+  # 
+  # @param [Tower.Model.Scope] scope A scope object with all of the query information.
+  # 
+  # @return undefined Requires a callback to get the value.
+  find: (scope, callback) ->
+    scope = @serializeScope(scope)
     
-    @joins criteria, (error, joinConditions) =>
-      @collection().find(conditions, options).toArray (error, docs) =>
-        unless error
-          unless raw
-            for doc in docs
-              doc.id = doc["_id"]
-              delete doc["_id"]
-            docs = @serialize(docs)
-            for model in docs
-              model.persistent = true
-            @eagerLoad docs, eagerLoad, callback
-        callback.call(@, error, docs) if callback
+    @transaction =>
+      @joins scope, =>
+        @collection().find(conditions, options).toArray (error, docs) =>
+          unless error
+            unless raw
+              for doc in docs
+                doc.id = doc["_id"]
+                delete doc["_id"]
+              docs = @serialize(docs)
+              for model in docs
+                model.persistent = true
+              @eagerLoad scope, docs, callback
+          callback.call(@, error, docs) if callback
       
-    @
+    undefined
+  
+  # @return undefined Requires a callback to get the value.
+  findOne: (scope, callback) ->
+    scope     = @serializeScope(scope)
+    scope.criteria.limit(1)
     
-  joins: (criteria, callback) ->
-    through       = options.through
+    @transaction =>
+      @joins scope, =>
+        @collection().findOne scope.criteria.compileConditions(), (error, doc) =>
+          unless raw || error || !doc
+            doc = @serializeModel(doc)
+            doc.persistent = true
+          
+          callback.call(@, error, doc) if callback
+        
+    undefined
+  
+  # @return undefined Requires a callback to get the value.
+  count: (scope, callback) ->
+    scope         = @serializeScope(scope)
+    
+    @transaction =>
+      @joins scope, =>
+        @collection().count scope.criteria.compileConditions(), (error, count) =>
+          callback.call @, error, count || 0 if callback
+    
+    undefined
+  
+  # @return undefined Requires a callback to get the value.
+  exists: (conditions, options, callback) ->
+    conditions    = @serializeQuery(conditions)
+    
+    @joins scope, =>
+      @collection().count scope.criteria.compileConditions(), (error, exists) =>
+        callback.call @, error, exists if callback
+      
+    undefined
+  
+  joins: (scope, callback) ->
+    throughScope  = scope.throughScope() if scope.throughScope
+    return callback.call @, null unless throughScope
+    
+    throughKey    = scope.throughKey
     eagerLoad     = options.eagerLoad
     raw           = options.raw
     conditions    = @serializeQuery(conditions)
     options       = @serializeOptions(options)
     
-    return callback.call @, null, {} unless through
-    
-    through.scope.select(through.key).all (error, records) =>
+    throughScope.select(throughKey).all (error, records) =>
       conditions = {}
-      conditions._id = $in: _.map(records, (record) -> record.get(through.key))
-      callback.call @, null, conditions
+      conditions._id = $in: @_mapKey(throughKey, records)
+      
+      scope.criteria.where(conditions)
+      
+      callback.call @, null
 
-    @
+    undefined
     
-  eagerLoad: (records, eagerLoadScopes, callback) ->
-    ids = _.map records, (record) -> record.get('id')
+  eagerLoad: (scope, records, callback) ->
+    ids = @_mapKeys('id', records)
     
     eagerLoad = (eagerLoadScope, next) =>
       query = {}
       query[eagerLoadScope.foreignKey] = $in: ids
       eagerLoadScope.where(query).all (error, children) =>
-      
     
-    Tower.parallel eagerLoadScopes, eagerLoad, callback
-
-  findOne: (conditions, options, callback) ->
-    conditions    = @serializeQuery(conditions)
-    options.limit = 1
-    raw           = options.raw == true
-    options       = @serializeOptions(options)
-    
-    @collection().findOne conditions, (error, doc) =>
-      unless raw || error || !doc
-        doc = @serializeModel(doc)
-        doc.persistent = true
-      callback.call(@, error, doc) if callback
-    @
-
-  count: (conditions, options, callback) ->
-    result        = 0
-    conditions    = @serializeQuery(conditions)
-    options       = @serializeOptions(options)
-    
-    @collection().count conditions, (error, count) =>
-      result      = count || 0
-      callback.call @, error, result if callback
-    
-    result
-
-  exists: (conditions, options, callback) ->
-    result        = undefined
-    conditions    = @serializeQuery(conditions)
-
-    @collection().count conditions, (error, exists) ->
-      result      = exists
-      callback.call @, error, result if callback
-
-    result
-    
-  through: (through, callback) ->
-    return callback.call @, null, {} unless through
-    
-    through.scope.select(through.key).all (error, records) =>
-      conditions = {}
-      conditions._id = $in: _.map(records, (record) -> record.get(through.key))
-      callback.call @, null, conditions
+    Tower.parallel scope.eagerLoadScopes, eagerLoad, callback
 
 module.exports = Tower.Store.MongoDB.Finders

@@ -1,3 +1,4 @@
+# @module
 Tower.View.Rendering =
   render: (options, callback) ->
     options.type        ||= @constructor.engine

@@ -1,3 +1,4 @@
+# @module
 Tower.Support.Callbacks =
   ClassMethods:
     before: ->

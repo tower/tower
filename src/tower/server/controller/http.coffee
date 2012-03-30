@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.HTTP =
   # @todo
   head: (status, options = {}) ->

@@ -8,9 +8,7 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     if @polymorphic
       @foreignType = "#{name}Type"
       owner.field @foreignType, type: "String"
-
-    #owner.prototype[name] = (callback) ->
-    #  @relation(name).first(callback)
+    
     owner.prototype[name] = -> @relation(name)
     
     owner.prototype["build#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
@@ -20,6 +18,7 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
       @createRelation(name, attributes, callback)
 
   class @Scope extends @Scope
+    isBelongsTo: true
     # need to do something here about Reflection
     
     toCriteria: ->

@@ -9,6 +9,22 @@ File    = require('pathfinder').File
 sys     = require 'util'
 require 'underscore.logger'
 
+VERSION       = JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/package.json"))).version
+DATE          = (new Date).toUTCString()
+JS_COPYRIGHT  = """
+/*!
+ * Tower.js v#{VERSION}
+ * http://towerjs.org/
+ *
+ * Copyright 2012, Lance Pollard
+ * MIT License.
+ * http://towerjs.org/license
+ *
+ * Date: #{DATE}
+ */
+
+"""
+
 #Tower   = require './lib/tower'
 
 compileFile = (root, path, check) ->
@@ -109,10 +125,11 @@ task 'to-underscore', ->
 task 'build', ->
   content = compileFile("./src/tower", "./src/tower/client.coffee").replace /Tower\.version *= *.+\n/g, (_) ->
     version = """
-Tower.version = "#{JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/package.json"))).version}"
+Tower.version = "#{VERSION}"
 
 """
   mint.coffee content, bare: false, (error, result) ->
+    result = JS_COPYRIGHT + result
     _console.error error.stack if error
     fs.writeFile "./dist/tower.js", result
     unless error

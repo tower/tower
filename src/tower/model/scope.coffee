@@ -1,3 +1,8 @@
+# Class used to build a database query or operation.
+# 
+# @include Tower.Model.Scope.Finders
+# @include Tower.Model.Scope.Persistence
+# @include Tower.Model.Scope.Queries
 class Tower.Model.Scope extends Tower.Class
   constructor: (options = {}) ->
     @model    = options.model
@@ -7,60 +12,96 @@ class Tower.Model.Scope extends Tower.Class
   toQuery: (sortDirection) ->
     @toCriteria(sortDirection).toQuery()
 
-  toCriteria: (sortDirection) ->
+  compile: (sortDirection) ->
     criteria = @criteria.clone()
-
+    
     if sortDirection || !criteria._order.length > 0
       sort      = @model.defaultSort()
       criteria[sortDirection || sort.direction](sort.name) if sort
 
     criteria
-
-  toCreate: ->
-    @toQuery()
-
-  toUpdate: ->
-    @toQuery()
-
-  toDestroy: ->
-
+    
+  toCriteria: @::compile
+  
+  # Merge another scope with this one.
+  # 
+  # @param [Tower.Model.Scope] scope
+  # @return [Tower.Model.Scope]
   merge: (scope) ->
     @criteria.merge(scope.criteria)
 
+  # Clone this scope (and the critera attached to it).
+  # 
+  # @return [Tower.Model.Scope]
   clone: ->
     new @constructor(model: @model, criteria: @criteria.clone())
-
-  # @private
-  _extractArgs: (args, opts = {}) ->
+  
+  # Builds a criteria object out of dynamic arguments for the {Tower.Model.Scope.Persistence#build} method.
+  # 
+  # @return [Array] {Tower.Model.Criteria}, callback ({Tower.Model.Scope.Persistence#build})
+  _extractArgsForBuild: (args) ->
+    criteria        = @criteria.clone()
     args            = Tower.Support.Array.args(args)
     callback        = Tower.Support.Array.extractBlock(args)
-    last            = args[args.length - 1]
-
-    if opts.data && (Tower.Support.Object.isHash(last) || Tower.Support.Object.isArray(last))
-      data    = args.pop()
-
-    if Tower.Support.Object.isHash(args[args.length - 1])
-      if data
-        options = data
-        data    = args.pop()
-      else
-        if Tower.Support.Object.isBaseObject(args[args.length - 1])
-          options     = args.pop()
-
-    data      = {} unless opts.data
-    data    ||= {}
-    criteria        = @criteria.clone()
-    options       ||= {}
-
-    options.instantiate = true unless options.hasOwnProperty("instantiate")
-
-    ids             = _.flatten(args) if opts.ids && args.length > 0
+    # for `create`, the rest of the arguments must be records
     
-    if opts.ids && ids && ids.length > 0
-      ids = _.map(ids, (idOrRecord) -> if idOrRecord instanceof Tower.Model then idOrRecord.get("id") else idOrRecord)
-      criteria.where id: $in: ids
+    criteria.addData(args)
+    
+    [criteria, callback]
+    
+  # Builds a criteria object out of dynamic arguments for the {#create} method.
+  # 
+  # @private
+  _extractArgsForCreate: (args) ->
+    @_extractArgsForBuild(args)
 
-    criteria: criteria, data: data, callback: callback, options: options
+  # Builds a criteria object out of dynamic arguments for the {#update} method.
+  # 
+  # @private
+  _extractArgsForUpdate: (args) ->
+    criteria        = @criteria.clone()
+    args            = _.flatten Tower.Support.Array.args(args)
+    callback        = Tower.Support.Array.extractBlock(args)
+    # for `update`, the last argument before the callback must be the updates you're making
+    updates         = args.pop()
+    
+    throw new Error("Must pass in updates hash") unless updates && typeof updates == "object"
+    
+    if args.length
+      ids = []
+      
+      for object in args
+        continue unless object?
+        ids.push if object instanceof Tower.Model then object.get('id') else object
+      
+      criteria.where(id: $in: ids)
+      
+    [criteria, callback]
+  
+  # Builds a criteria object out of dynamic arguments for the {#destroy} method.
+  # 
+  # @private
+  _extractArgsForDestroy: (args) ->
+    @_extractArgsForFind(args)
+  
+  # Builds a criteria object out of dynamic arguments for the {#find} method.
+  # 
+  # @private
+  _extractArgsForFind: (args) ->
+    criteria        = @criteria.clone()
+    args            = _.flatten Tower.Support.Array.args(args)
+    callback        = Tower.Support.Array.extractBlock(args)
+    
+    if args.length
+      ids = []
+      
+      for object in args
+        continue unless object?
+        ids.push if object instanceof Tower.Model then object.get('id') else object
+      
+      criteria.where(id: $in: ids)
+      
+    [criteria, callback]
 
 require './scope/finders'
 require './scope/persistence'

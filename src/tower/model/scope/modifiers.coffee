@@ -1,3 +1,4 @@
+# @module
 # @todo
 Tower.Model.Scope.Modifiers =
   ClassMethods:

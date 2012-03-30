@@ -1,3 +1,4 @@
+# @module
 # @todo
 # copied this from acts_as_nested_set, haven't messed with it yet.
 Tower.Model.Hierarchical =

@@ -34,13 +34,18 @@ class Tower.Model extends Tower.Class
     @_defaults ||= {}
     @_defaults[key] = value
 
-  constructor: (attrs, options) ->
-    @initialize attrs, options
+  # Construct a new Tower.Model
+  # 
+  # @param [Object] attributes a hash of attributes
+  # @param [Object] options a hash of options
+  # @option options [Boolean] persistent whether or not this object is from the database
+  constructor: (attributes, options) ->
+    @initialize attributes, options
 
   initialize: (attrs = {}, options = {}) ->
     definitions = @constructor.fields()
     attributes  = {}
-
+    
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@) unless attrs.hasOwnProperty(name)
 
@@ -61,6 +66,7 @@ require './model/scope'
 require './model/criteria'
 require './model/dirty'
 require './model/conversion'
+require './model/indexing'
 require './model/inheritance'
 require './model/relation'
 require './model/relations'
@@ -78,6 +84,7 @@ Tower.Model.include Tower.Support.Callbacks
 Tower.Model.include Tower.Model.Conversion
 Tower.Model.include Tower.Model.Dirty
 Tower.Model.include Tower.Model.Criteria
+Tower.Model.include Tower.Model.Indexing
 Tower.Model.include Tower.Model.Scopes
 Tower.Model.include Tower.Model.Persistence
 Tower.Model.include Tower.Model.Inheritance

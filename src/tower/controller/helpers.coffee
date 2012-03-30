@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Helpers =
   ClassMethods:
     helper: (object) ->

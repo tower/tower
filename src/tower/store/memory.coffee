@@ -1,4 +1,3 @@
-# Tower's Memory Store
 class Tower.Store.Memory extends Tower.Store
   @stores: ->
     @_stores ||= []

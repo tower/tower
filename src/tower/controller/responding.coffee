@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Responding =
   ClassMethods:
     respondTo: ->
@@ -22,9 +23,15 @@ Tower.Controller.Responding =
     mimes: ->
       @_mimes ||= {json: {}, html: {}}
 
+  # Build a responder.
+  # 
+  # @param [Function] block
+  # 
+  # @return [void] Requires a block.
   respondTo: (block) ->
     Tower.Controller.Responder.respond(@, {}, block)
 
+  # A more robust responder.
   respondWith: ->
     args      = Tower.Support.Array.args(arguments)
     callback  = null
@@ -43,6 +50,7 @@ Tower.Controller.Responding =
 
     Tower.Controller.Responder.respond(@, options, callback)
 
+  # @private
   _mimesForAction: ->
     action  = @action
 

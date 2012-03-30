@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Callbacks =
   ClassMethods:
     beforeAction: ->

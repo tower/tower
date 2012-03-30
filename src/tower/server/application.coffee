@@ -3,6 +3,7 @@ File    = require('pathfinder').File
 server  = null
 io      = null
 
+# Entry point to your application.
 class Tower.Application extends Tower.Engine
   @autoloadPaths: [
     "app/helpers",

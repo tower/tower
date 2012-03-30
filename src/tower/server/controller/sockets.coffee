@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Sockets =
   # @todo
   broadcast: ->

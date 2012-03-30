@@ -96,6 +96,9 @@ class Tower.Store extends Tower.Class
 
   supports: (key) ->
     @constructor.supports[key] == true
+    
+  _mapKeys: (key, records) ->
+    _.map(records, (record) -> record.get(key))
 
 require './store/memory'
 

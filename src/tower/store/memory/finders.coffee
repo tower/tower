@@ -1,4 +1,7 @@
+# @module
 Tower.Store.Memory.Finders =
+  
+  # @see Tower.Store#find
   find: (conditions, options, callback) ->
     result  = []
     records = @records
@@ -22,6 +25,7 @@ Tower.Store.Memory.Finders =
 
     result
 
+  # @see Tower.Store#findOne
   findOne: (conditions, options, callback) ->
     record = null
     options.limit = 1
@@ -29,7 +33,8 @@ Tower.Store.Memory.Finders =
       record = records[0] || null
       callback.call(@, error, record) if callback
     record
-
+  
+  # @see Tower.Store#count
   count: (conditions, options, callback) ->
     result = 0
     @find conditions, options, (error, records) =>
@@ -37,6 +42,7 @@ Tower.Store.Memory.Finders =
       callback.call(@, error, result) if callback
     result
 
+  # @see Tower.Store#exists
   exists: (conditions, options, callback) ->
     result = false
 

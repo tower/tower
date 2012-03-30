@@ -1,3 +1,4 @@
+# @module
 Tower.Support.EventEmitter =
   #included: ->
   #  @events = {}

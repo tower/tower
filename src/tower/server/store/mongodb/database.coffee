@@ -38,5 +38,10 @@ Tower.Store.MongoDB.Database =
       @_collection = new lib.Collection(@constructor.database, @name)
 
     @_collection
+    
+  transaction: (callback) ->
+    @_transaction = true
+    callback.call @
+    @_transaction = false
 
 module.exports = Tower.Store.MongoDB.Database

@@ -21,8 +21,7 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
       index:        @index
       parentIndex:  @parentIndex
     )
-
-  # form.inputs :basic_info, :locale_options => {:count => 1, :past => true}
+  
   render: (block) ->
     @tag "fieldset", @attributes, =>
       if @label

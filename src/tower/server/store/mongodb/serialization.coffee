@@ -1,4 +1,13 @@
+# @module
 Tower.Store.MongoDB.Serialization =
+  serializeModel: (attributes) ->
+    return attributes if attributes instanceof Tower.Model
+    klass = Tower.constant(@className)
+    attributes.id ||= attributes._id
+    delete attributes._id
+    model = new klass(attributes)
+    model
+  
   generateId: ->
     new @constructor.database.bson_serializer.ObjectID()
 

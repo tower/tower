@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Params =
   ClassMethods:
     params: (options, callback) ->
@@ -10,11 +11,27 @@ Tower.Controller.Params =
         callback.call @ if callback
 
       @_params ||= {}
-
+    
+    # Define a parameter that should be parsed into criteria for a model query.
+    # 
+    # @example
+    #   class App.UsersController extends App.ApplicationController
+    #     @param "email"
+    # 
+    # @param [String] key
+    # @param [Object] options
+    # @option options [String] type
+    # 
+    # @return [Tower.HTTP.Param]
     param: (key, options = {}) ->
       @_params      ||= {}
       @_params[key] = Tower.HTTP.Param.create(key, Tower.Support.Object.extend({}, @_paramsOptions || {}, options))
-
+  
+  # Compile the params defined for this controller into a criteria for querying the database.
+  # 
+  # @note The criteria is memoized.
+  # 
+  # @return [Tower.Model.Criteria]
   criteria: ->
     return @_criteria if @_criteria
 

@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Resourceful =
   ClassMethods:
     resource: (options) ->
@@ -50,71 +51,85 @@ Tower.Controller.Resourceful =
 
       @
 
+  # Default implementation for the "index" action.
   index: ->
     #@_index arguments...
     @_index (format) =>
       format.html => @render "index"
       format.json => @render json: @collection, status: 200
 
+  # Default implementation for the "new" action.
   new: ->
     @_new (format) =>
       format.html => @render "new"
       format.json => @render json: @resource, status: 200
 
+  # Default implementation for the "create" action.
   create: (callback) ->
     @_create (format) =>
       format.html => @redirectTo action: "show"
       format.json => @render json: @resource, status: 200
 
+  # Default implementation for the "show" action.
   show: ->
     @_show (format) =>
       format.html => @render "show"
       format.json => @render json: @resource, status: 200
 
+  # Default implementation for the "edit" action.
   edit: ->
     @_edit (format) =>
       format.html => @render "edit"
       format.json => @render json: @resource, status: 200
 
+  # Default implementation for the "update" action.
   update: ->
     @_update (format) =>
       format.html => @redirectTo action: "show"
       format.json => @render json: @resource, status: 200
 
+  # Default implementation for the "destroy" action.
   destroy: ->
     @_destroy (format) =>
       format.html => @redirectTo action: "index"
       format.json => @render json: @resource, status: 200
 
+  # @private
   _index: (callback) ->
     @findCollection (error, collection) =>
       @respondWith collection, callback
-
+  
+  # @private
   _new: (callback) ->
     @buildResource (error, resource) =>
       return @failure(error) unless resource
       @respondWith(resource, callback)
 
+  # @private
   _create: (callback) ->
     @buildResource (error, resource) =>
       return @failure(error, callback) unless resource
       resource.save (error) =>
         @respondWithStatus Tower.Support.Object.isBlank(resource.errors), callback
 
+  # @private
   _show: (callback) ->
     @findResource (error, resource) =>
       @respondWith resource, callback
 
+  # @private
   _edit: (callback) ->
     @findResource (error, resource) =>
       @respondWith resource, callback
 
+  # @private
   _update: (callback) ->
     @findResource (error, resource) =>
       return @failure(error, callback) if error
       resource.updateAttributes @params[@resourceName], (error) =>
         @respondWithStatus !!!error && Tower.Support.Object.isBlank(resource.errors), callback
 
+  # @private
   _destroy: (callback) ->
     @findResource (error, resource) =>
       return @failure(error, callback) if error
@@ -163,6 +178,12 @@ Tower.Controller.Resourceful =
         @[@collectionName]  = @collection = collection
         callback.call @, error, collection if callback
   
+  # Finds the parent if `belongsTo` was defined for this controller.
+  # 
+  # It does this by looking through the parameters for keys defined
+  # by the relations in `belongsTo`.
+  # 
+  # @param [Function] callback
   findParent: (callback) ->
     relation = @findParentRelation()
     if relation
@@ -191,6 +212,9 @@ Tower.Controller.Resourceful =
     else
       null
 
+  # Builds the scope for the current action, based on the resource defined for this controller.
+  # 
+  # @param [Function] callback
   scoped: (callback) ->
     callbackWithScope = (error, scope) =>
       callback.call @, error, scope.where(@criteria())
@@ -204,6 +228,10 @@ Tower.Controller.Resourceful =
     else
       callbackWithScope null, Tower.constant(@resourceType)
 
+  # @todo Default failure implemtation for create, update, and destory.
+  # 
+  # @param [Tower.Model] resource
+  # @param [Function] callback
   failure: (resource, callback) ->
     callback()
 

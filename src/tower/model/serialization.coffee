@@ -1,3 +1,4 @@
+# @module
 Tower.Model.Serialization =
   ClassMethods:
     fromJSON: (data) ->
@@ -14,14 +15,27 @@ Tower.Model.Serialization =
       result.push(record.toJSON()) for record in records
       result
 
+  # Compile the model instance into a hash.
+  # 
+  # @param [Object] options
+  # @option options [Array] only the only properties you want in the JSON object.
+  # @option options [Array] except the properties you don't want in the JSON object.
+  # @option options [Array] methods the methods you want called and added to the JSON object.
+  # 
+  # @return [Object]
   toJSON: (options) ->
     @_serializableHash(options)
   
+  # Return a copy of this model with the same attributes, except for the id.
+  # 
+  # @return [Tower.Model]
   clone: ->
     attributes = Tower.clone(@attributes)
     delete attributes.id
     new @constructor(attributes)
-
+  
+  # Implementation of the {#toJSON} method.
+  # 
   # @private
   _serializableHash: (options = {}) ->
     result = {}

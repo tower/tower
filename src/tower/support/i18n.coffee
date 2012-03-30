@@ -1,3 +1,4 @@
+# @module
 Tower.Support.I18n =
   PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g
   defaultLanguage: "en"

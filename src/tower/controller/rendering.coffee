@@ -1,3 +1,4 @@
+# @module
 Tower.Controller.Rendering =
   ClassMethods:
     addRenderer: (key, block) ->
@@ -9,7 +10,24 @@ Tower.Controller.Rendering =
 
     renderers: ->
       @_renderers ||= {}
-
+  
+  # Render a view (a content-type) for the current controller action.
+  # 
+  # @example Render HTML for the index action on the users controller.
+  #   # full path
+  #   @render "users/index"
+  #   # action
+  #   @render "index"
+  #   # with variables for the template
+  #   @render "index", locals: {hello: "world"}
+  # 
+  # @example Render JSON
+  #   @render json: user.toJSON()
+  # 
+  # @example Custom status
+  #   @render json: user.toJSON(), status: 404
+  # 
+  # @return [void] Requires a callback.
   render: ->
     @renderToBody @_normalizeRender(arguments...)
 
@@ -20,8 +38,10 @@ Tower.Controller.Rendering =
   renderToString: ->
     @renderToBody @_normalizeRender(arguments...)
 
+  # @todo implement
   sendFile: (path, options = {}) ->
-
+  
+  # @todo implement
   sendData: (data, options = {}) ->
 
   # @private

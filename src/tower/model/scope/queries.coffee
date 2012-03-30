@@ -1,5 +1,6 @@
 Tower.Model.Scope.Queries =
   ClassMethods:
+    # These methods are added to {Tower.Model}.
     queryMethods: [
       "where",
       "order",
@@ -22,6 +23,8 @@ Tower.Model.Scope.Queries =
       "notIn"
     ]
 
+    # Map of human readable query operators to
+    # normalized query operators to pass to a {Tower.Store}.
     queryOperators:
       ">=":       "$gte"
       "$gte":     "$gte"

@@ -1,12 +1,36 @@
 # @module
 Tower.Model.Attributes =
   ClassMethods:
+    # Define a database field on your model.
+    # 
+    # The field can have one of several types.
+    # 
+    # @example String field
+    #   class App.User extends Tower.Model
+    #     @field "email"
+    # 
+    # @param [String] name
+    # @param [Object] options
+    # @option options [String] type the data type for this field
+    # @option option [Object] default default value
+    # 
+    # @return [Tower.Model.Attribute]
     field: (name, options) ->
       @fields()[name] = new Tower.Model.Attribute(@, name, options)
-
+    
+    # The set of fields for the model.
+    # 
+    # @return [Object]
     fields: ->
       @_fields   ||= {}
 
+  # Get a value defined by a {Tower.Model.field}.
+  # 
+  # @note It will try to get a default value for you the first time it is retrieved.
+  # 
+  # @param [name]
+  # 
+  # @return [Object]
   get: (name) ->
     field = @constructor.fields()[name]
     
@@ -23,10 +47,15 @@ Tower.Model.Attributes =
       delete @changes[key]
       @attributes[key] = value
     @
-
+  
+  # Check if an attribute is defined.
+  # 
+  # @return [Boolean]
   has: (key) ->
     @attributes.hasOwnProperty(key)
 
+  # Set values on the {Tower.Model#attributes} hash.
+  # 
   # @example
   #   post.set $pushAll: tags: ["ruby"]
   #   post.set $pushAll: tags: ["javascript"]
@@ -153,7 +182,8 @@ Tower.Model.Attributes =
       operation.$after[key] = inc[key]
     
     @attributes[key]  = inc[key]
-    
+  
+  # @private
   _addToSet: (key, value) ->
     fields            = @constructor.fields()
     value             = fields[key].encode(value) if key in fields

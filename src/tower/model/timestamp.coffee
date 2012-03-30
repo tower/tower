@@ -1,3 +1,4 @@
+# @module
 Tower.Model.Timestamp =
   ClassMethods:
     timestamps: ->
@@ -11,14 +12,10 @@ Tower.Model.Timestamp =
       @before "save", "setUpdatedAt"
 
   CreatedAt:
-    ClassMethods: {}
-
     setCreatedAt: ->
       @set "createdAt", new Date
 
   UpdatedAt:
-    ClassMethods: {}
-
     setUpdatedAt: ->
       @set "updatedAt", new Date
 

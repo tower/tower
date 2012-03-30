@@ -1,8 +1,9 @@
+# @module
 Tower.Controller.Redirecting =
   redirectTo: ->
     @redirect arguments...
 
-  # @todo, better url extraction
+  # @todo Make this more robust.
   redirect: ->
     try
       args      = Tower.Support.Array.args(arguments)

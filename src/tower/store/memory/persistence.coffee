@@ -1,3 +1,4 @@
+# @module
 Tower.Store.Memory.Persistence =
   load: (data) ->
     records = Tower.Support.Object.toArray(data)
