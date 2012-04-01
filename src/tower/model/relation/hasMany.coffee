@@ -54,7 +54,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
       updates   = {$pushAll: {}}
       
-      if Tower.Support.Object.isArray(records)
+      if _.isArray(records)
         attributes = []
         for record in records
           record.attributes._id  ?= relation.klass().store().generateId()
@@ -69,7 +69,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       # update: (updates, conditions, options, callback) ->
       owner.store().update updates, {id: owner.get('id')}, {}, (error) =>
         unless error
-          if Tower.Support.Object.isArray(records)
+          if _.isArray(records)
             @owner.relation(@relation.name).records = @records.concat(records)
           else
             @owner.relation(@relation.name).records.push(records)
@@ -115,7 +115,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
       @_create criteria, attributes, options, (error, record) =>
         unless error
-          if Tower.Support.Object.isArray(record)
+          if _.isArray(record)
             @owner.relation(@relation.name).records = @records.concat(record)
           else
             @owner.relation(@relation.name).records.push(record)

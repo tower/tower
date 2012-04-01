@@ -30,7 +30,7 @@ Tower.Model.Validations =
     # 
     # @return [Array] Return the set of newly created validators.
     validates: ->
-      attributes = Tower.Support.Array.args(arguments)
+      attributes = _.args(arguments)
       options    = attributes.pop()
       validators = @validators()
 
@@ -60,7 +60,7 @@ Tower.Model.Validations =
         validator.validateEach @, errors, next
 
       Tower.async validators, iterator, (error) =>
-        success = true unless error || Tower.Support.Object.isPresent(errors)
+        success = true unless error || _.isPresent(errors)
         complete.call(@, !success)
 
       success

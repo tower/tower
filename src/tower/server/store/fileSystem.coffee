@@ -38,7 +38,7 @@ class Tower.Store.FileSystem extends Tower.Store
     return (File.read(path) || "") if path
     null
 
-  @alias "select", "find"
+  @select: @find
 
   first: (query, callback) ->
 
@@ -48,7 +48,7 @@ class Tower.Store.FileSystem extends Tower.Store
 
   length: (query, callback) ->
 
-  @alias "count", "length"
+  @count: @length
 
   remove: (query, callback) ->
 

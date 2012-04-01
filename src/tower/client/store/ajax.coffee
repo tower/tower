@@ -54,7 +54,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   success: (record, options = {}) ->
     (data, status, xhr) =>
       Ajax.disable =>
-        if data && !Tower.Support.Object.isBlank(data)
+        if data && !_.isBlank(data)
           record.updateAttributes(data, sync: false)
 
       #@record.trigger('ajaxSuccess', data, status, xhr)
@@ -171,7 +171,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   findSuccess: (options) ->
     (data, status, xhr) =>
-      if Tower.Support.Object.isPresent(data)
+      if _.isPresent(data)
         @load(data)
 
   findFailure: (record) ->

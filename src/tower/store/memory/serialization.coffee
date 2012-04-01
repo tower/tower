@@ -1,10 +1,10 @@
 Tower.Store.Memory.Serialization =
   generateId: ->
-    @lastId++
+    (@lastId++).toString()
 
   _updateAttribute: (attributes, key, value) ->
     field       = @schema()[key]
-    if field && field.type == "Array" && !Tower.Support.Object.isArray(value)
+    if field && field.type == "Array" && !_.isArray(value)
       attributes[key] ||= []
       attributes[key].push value
     else if @_atomicModifier(key)

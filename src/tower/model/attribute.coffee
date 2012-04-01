@@ -52,7 +52,7 @@ class Tower.Model.Attribute
         
   @array:
     from: (serialized) ->
-      if Tower.none(serialized) then null else Tower.Support.Object.toArray(serialized)
+      if Tower.none(serialized) then null else _.toArray(serialized)
       
     to: (deserialized) ->
       Tower.Model.Attribute.array.from(deserialized)
@@ -88,10 +88,10 @@ class Tower.Model.Attribute
   defaultValue: (record) ->
     _default = @_default
 
-    if Tower.Support.Object.isArray(_default)
+    if _.isArray(_default)
       _default.concat()
-    else if Tower.Support.Object.isHash(_default)
-      Tower.Support.Object.extend({}, _default)
+    else if _.isHash(_default)
+      _.extend({}, _default)
     else if typeof(_default) == "function"
       _default.call(record)
     else

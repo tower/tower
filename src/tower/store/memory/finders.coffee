@@ -2,14 +2,17 @@
 Tower.Store.Memory.Finders =
   
   # @see Tower.Store#find
-  find: (conditions, options, callback) ->
-    result  = []
-    records = @records
-
-    if Tower.Support.Object.isPresent(conditions)
+  find: (scope, callback) ->
+    result      = []
+    records     = @records
+    criteria    = scope.criteria
+    conditions  = criteria.conditions()
+    options     = criteria.options()
+    
+    if _.isPresent(conditions)
       sort    = options.sort
       limit   = options.limit || Tower.Store.defaultLimit
-
+      
       for key, record of records
         result.push(record) if @matches(record, conditions)
         # break if result.length >= limit
@@ -54,7 +57,7 @@ Tower.Store.Memory.Finders =
 
   # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
   sort: (records, sortings) ->
-    Tower.Support.Array.sortBy(records, sortings...)
+    _.sortBy(records, sortings...)
 
   matches: (record, query) ->
     self    = @
@@ -63,7 +66,7 @@ Tower.Store.Memory.Finders =
 
     for key, value of query
       recordValue = record.get(key)
-      if Tower.Support.Object.isRegExp(value)
+      if _.isRegExp(value)
         success = recordValue.match(value)
       else if typeof value == "object"
         success = self._matchesOperators(record, recordValue, value)

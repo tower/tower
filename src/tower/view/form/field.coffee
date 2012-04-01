@@ -122,7 +122,7 @@ class Tower.View.Form.Field extends Tower.View.Component
           "both"
 
   input: (args...) ->
-    options = _.extend @inputHTML, Tower.Support.Array.extractOptions(args)
+    options = _.extend @inputHTML, _.extractOptions(args)
     key     = args.shift() || @attribute
     @["#{@inputType}Input"](key, options)
 
@@ -165,7 +165,7 @@ class Tower.View.Form.Field extends Tower.View.Component
 
   arrayInput: (key, options) ->
     if options.value
-      options.value = Tower.Support.Object.toArray(options.value).join(", ")
+      options.value = _.castArray(options.value).join(", ")
     @tag "input", _.extend("data-type": "array", options)
 
   label: ->

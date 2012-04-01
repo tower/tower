@@ -85,7 +85,7 @@ class Tower.Application extends Tower.Engine
         catch error
           config  = {}
 
-        Tower.config[key] = config if Tower.Support.Object.isPresent(config)
+        Tower.config[key] = config if _.isPresent(config)
 
       Tower.Application.Assets.loadManifest()
 
@@ -124,7 +124,7 @@ class Tower.Application extends Tower.Engine
       middlewares = @constructor.defaultStack()
       
     for middleware in middlewares
-      args        = Tower.Support.Array.args(middleware)
+      args        = _.args(middleware)
       if typeof args[0] == "string"
         middleware  = args.shift()
         @server.use connect[middleware].apply(connect, args)

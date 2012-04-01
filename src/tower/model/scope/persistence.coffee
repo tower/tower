@@ -108,10 +108,11 @@ Tower.Model.Scope.Persistence =
     @_destroy.apply @, @_extractArgsForDestroy(arguments)
   
   # @private
-  _build: (criteria, callback) ->
+  _build: (scope, callback) ->
+    criteria    = scope.criteria
     store       = @store
-    attributes  = criteria.build()
-    data        = criteria.data
+    attributes  = {}#criteria.build()
+    data        = criteria.values.data
     result      = []
     
     for item in data
@@ -125,11 +126,13 @@ Tower.Model.Scope.Persistence =
     if criteria.returnArray then result else result[0]
   
   # @private
-  _create: (criteria, callback) ->
-    if criteria.instantiate
+  _create: (scope, callback) ->
+    criteria = scope.criteria
+    
+    if criteria.values.options.instantiate
       returnArray = criteria.returnArray
       criteria.returnArray = true
-      records     = @build(criteria)
+      records     = @build(scope)
       criteria.returnArray = returnArray
       
       iterator = (record, next) ->
@@ -161,7 +164,7 @@ Tower.Model.Scope.Persistence =
       @store.update criteria, callback
 
   # @private
-  _destroy: (criteria) ->
+  _destroy: (criteria, callback) ->
     if criteria.instantiate
       iterator = (record, next) ->
         record.destroy(next)

@@ -36,7 +36,7 @@ class Tower.HTTP.Route extends Tower.Class
 
     method  = request.method.toLowerCase()
     keys    = @keys
-    params  = Tower.Support.Object.extend({}, @defaults, request.query || {}, request.body || {})
+    params  = _.extend({}, @defaults, request.query || {}, request.body || {})
     match   = match[1..-1]
 
     for capture, i in match

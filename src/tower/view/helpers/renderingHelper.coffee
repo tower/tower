@@ -30,8 +30,8 @@ Tower.View.RenderingHelper =
     null
 
   page: ->
-    args          = Tower.Support.Array.args(arguments)
-    options       = Tower.Support.Array.extractOptions(args)
+    args          = _.args(arguments)
+    options       = _.extractOptions(args)
     browserTitle  = args.shift() || options.title
 
     @contentFor "title", ->

@@ -13,7 +13,7 @@ Tower.Middleware.Router = (request, response, callback) ->
 
   response
 
-Tower.Support.Object.extend Tower.Middleware.Router,
+_.extend Tower.Middleware.Router,
   find: (request, response, callback) ->
     @processHost  request, response
     @processAgent request, response

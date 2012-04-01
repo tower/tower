@@ -35,7 +35,7 @@ Tower.Controller.Resourceful =
       belongsTo.length > 0
 
     actions: ->
-      args = Tower.Support.Array.args(arguments)
+      args = _.args(arguments)
 
       if typeof args[args.length - 1] == "object"
         options = args.pop()
@@ -183,7 +183,7 @@ Tower.Controller.Resourceful =
       for relation in belongsTo
         param         = relation.param || "#{relation.key}Id"
         if params.hasOwnProperty(param)
-          relation = Tower.Support.Object.extend({}, relation)
+          relation = _.extend({}, relation)
           relation.param = param
           return relation
       return null
@@ -237,7 +237,7 @@ Tower.Controller.Resourceful =
     @buildResource (error, resource) =>
       return @failure(error, callback) unless resource
       resource.save (error) =>
-        @respondWithStatus Tower.Support.Object.isBlank(resource.errors), callback
+        @respondWithStatus _.isBlank(resource.errors), callback
 
   # @private
   _show: (callback) ->
@@ -254,7 +254,7 @@ Tower.Controller.Resourceful =
     @findResource (error, resource) =>
       return @failure(error, callback) if error
       resource.updateAttributes @params[@resourceName], (error) =>
-        @respondWithStatus !!!error && Tower.Support.Object.isBlank(resource.errors), callback
+        @respondWithStatus !!!error && _.isBlank(resource.errors), callback
 
   # @private
   _destroy: (callback) ->

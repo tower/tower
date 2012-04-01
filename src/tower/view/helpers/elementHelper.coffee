@@ -37,7 +37,7 @@ Tower.View.ElementHelper =
     Tower.Support.String.parameterize(result.join(""))
 
   elementNameComponents: ->
-    args    = Tower.Support.Array.args(arguments)
+    args    = _.args(arguments)
     result  = []
 
     for item in args

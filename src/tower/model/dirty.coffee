@@ -63,11 +63,11 @@ Tower.Model.Dirty =
   # 
   # @return [Boolean]
   isDirty: ->
-    Tower.Support.Object.isPresent(@changes)
+    _.isPresent(@changes)
   
   attributeChanged: (name) ->
     {before, after} = @changes
-    return false if Tower.Support.Object.isBlank(before)
+    return false if _.isBlank(before)
     before  = before[name]
     
     for key, value of after

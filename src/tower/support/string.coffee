@@ -58,13 +58,20 @@ Tower.Support.String =
     for key, value of keys
       string = string.replace(new RegExp("%\\{#{key}\\}", "g"), value)
     string
+    
+  grep: (object, regex, iterator, context) ->
+    regex = if _.isRegExp(regex) then regex else RegExp(String(regex).replace(/([{.(|}:)$+?=^*!\/[\]\\])/g, "\\$1"))
+    found = _.select(object, (s) ->
+      regex.test(s)
+    , context)
+    return _.map(found, iterator, context) if iterator
+    found
 
 module.exports = Tower.Support.String
 
-
 # use single quotes, otherwise they're escaped
 Tower.Support.String.toQueryValue = (value, negate = "") ->
-  if Tower.Support.Object.isArray(value)
+  if _.isArray(value)
     items = []
     for item in value
       result  = negate
@@ -93,7 +100,7 @@ Tower.Support.String.toQuery = (object, schema = {}) ->
     param   = "#{key}="
     type    = schema[key] || "string"
     negate  = if type == "string" then "-" else "^"
-    if Tower.Support.Object.isHash(value)
+    if _.isHash(value)
       data          = {}
       data.min      = value[">="] if value.hasOwnProperty(">=")
       data.min      = value[">"]  if value.hasOwnProperty(">")
@@ -215,14 +222,14 @@ Tower.Support.String.urlFor = (options) ->
   else
     result += path
 
-  result += "?#{Tower.Support.String.toQuery(params, schema)}" unless Tower.Support.Object.isBlank(params)
+  result += "?#{Tower.Support.String.toQuery(params, schema)}" unless _.isBlank(params)
   result += "##{Tower.Support.String.toQuery(options.anchor)}" if options.anchor
   result
 
 # Tower.urlFor(RW.MongoUser.first(), {onlyPath: false, params: {likes: {">=": -10, "<=": 20, "!=": [13, 15]}, tags: {"==": ["ruby", /javascript#/i], "!=": ["java"]}}, trailingSlash: true, host: "rituwall.com", user: "lance", password: "pollard", anchor: {likes: 10}})
 # "http://lance:pollard@rituwall.com/mongo-users/1?likes=-10..20,-13,-15&tags=ruby,/javascript%23/i,-java#likes=10"
 Tower.urlFor = ->
-  args = Tower.Support.Array.args(arguments)
+  args = _.args(arguments)
   return null unless args[0]
   if args[0] instanceof Tower.Model || (typeof(args[0])).match(/(string|function)/)
     last = args[args.length - 1]

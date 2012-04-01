@@ -1,8 +1,9 @@
 # @example
+#   async = require('async')
 #   admin = null
 #   user  = null
 #   
-#   Tower.series [
+#   async.series [
 #     (callback) => App.User.destroy(callback)
 #     (callback) => App.Post.destroy(callback)
 #     (callback) => App.User.create
@@ -20,3 +21,15 @@
 #         user = record
 #         callback()
 #   ]
+
+async = require('async')
+
+async.series [
+  
+], (error) =>
+  if error
+    console.log "Something went wrong creating seed data... Try changing something and running again."
+  else
+    console.log "Successfully created seed data!"
+    
+  process.exit() # close task

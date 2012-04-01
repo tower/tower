@@ -29,14 +29,14 @@ Tower.Model.Persistence =
       return store if !value && store
       
       if typeof value == "function"
-        store   = new value(name: @collectionName(), type: Tower.namespaced(@name))
+        store   = new value(name: @metadata().namePlural, type: Tower.namespaced(@name))
       else if typeof value == "object"
-        store ||= new @defaultStore(name: @collectionName(), type: Tower.namespaced(@name))
-        Tower.Support.Object.extend store, value
+        store ||= new @defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
+        _.extend store, value
       else if value
         store   = value
 
-      store ||= new @defaultStore(name: @collectionName(), type: Tower.namespaced(@name))
+      store ||= new @defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
 
       metadata.store = store
 
@@ -149,7 +149,7 @@ Tower.Model.Persistence =
     @runCallbacks "create", (block) =>
       complete = @_callback(block, callback)
       
-      @constructor.create @, instantiate: false, (error) =>
+      @constructor.instantiate(false).create @, (error) =>
         throw error if error && !callback
 
         unless error
@@ -172,7 +172,7 @@ Tower.Model.Persistence =
     @runCallbacks "update", (block) =>
       complete = @_callback(block, callback)
 
-      @constructor.update @get("id"), updates, instantiate: false, (error) =>
+      @constructor.instantiate(false).update @get("id"), updates, (error) =>
         throw error if error && !callback
 
         unless error
@@ -194,7 +194,7 @@ Tower.Model.Persistence =
     @runCallbacks "destroy", (block) =>
       complete = @_callback(block, callback)
 
-      @constructor.destroy @, instantiate: false, (error) =>
+      @constructor.instantiate(false).destroy @, (error) =>
         throw error if error && !callback
 
         unless error

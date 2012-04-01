@@ -1,6 +1,6 @@
 Tower.View.AssetHelper =
   javascripts: (sources...) ->
-    options = Tower.Support.Array.extractOptions(sources)
+    options = _.extractOptions(sources)
     options.namespace = "javascripts"
     options.extension = "js"
     paths = _extractAssetPaths sources, options
@@ -11,7 +11,7 @@ Tower.View.AssetHelper =
     javascript.apply @, arguments
 
   stylesheets: (sources...) ->
-    options = Tower.Support.Array.extractOptions(sources)
+    options = _.extractOptions(sources)
     options.namespace = "stylesheets"
     options.extension = "css"
     paths = _extractAssetPaths sources, options

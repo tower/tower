@@ -6,8 +6,8 @@ Tower.Controller.Redirecting =
   # @todo Make this more robust.
   redirect: ->
     try
-      args      = Tower.Support.Array.args(arguments)
-      options   = Tower.Support.Array.extractOptions(args)
+      args      = _.args(arguments)
+      options   = _.extractOptions(args)
       url       = args.shift()
       if !url && options.hasOwnProperty("action")
         url = switch options.action

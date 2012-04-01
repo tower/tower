@@ -91,7 +91,7 @@ Tower.View.Rendering =
     #newlocals = {}
     #newlocals.locals = locals
     #locals = newlocals
-    locals = Tower.Support.Object.extend(locals, options.locals)
+    locals = _.modules(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
 

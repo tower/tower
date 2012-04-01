@@ -1,8 +1,8 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
 
 Tower.Support.Object =
-  extend: (object) ->
-    args = Tower.Support.Array.args(arguments, 1)
+  modules: (object) ->
+    args = _.args(arguments, 1)
 
     for node in args
       for key, value of node when key not in specialProperties
@@ -35,7 +35,7 @@ Tower.Support.Object =
     result
 
   deepMerge: (object) ->
-    args = Tower.Support.Array.args(arguments, 1)
+    args = _.args(arguments, 1)
     for node in args
       for key, value of node when key not in specialProperties
         if object[key] && typeof value == 'object'
@@ -45,7 +45,7 @@ Tower.Support.Object =
     object
 
   deepMergeWithArrays: (object) ->
-    args = Tower.Support.Array.args(arguments, 1)
+    args = _.args(arguments, 1)
 
     for node in args
       for key, value of node when key not in specialProperties
@@ -69,105 +69,29 @@ Tower.Support.Object =
     return fn.__name__ if fn.__name__
     return fn.name if fn.name
     fn.toString().match(/\W*function\s+([\w\$]+)\(/)?[1]
-
-  alias: (object, to, from) ->
-    object[to] = object[from]
-
-  accessor: (object, key, callback) ->
-    object._accessors ||= []
-    object._accessors.push(key)
-    @getter(key, object, callback)
-    @setter(key, object)
-
-    @
-
-  setter: (object, key) ->
-    unless object.hasOwnProperty("_setAttribute")
-      @defineProperty object, "_setAttribute",
-        enumerable: false,
-        configurable: true,
-        value: (key, value) ->
-          @["_#{key}"] = value
-
-    object._setters ||= []
-    object._setters.push(key)
-
-    @defineProperty object, key,
-      enumerable: true,
-      configurable: true,
-      set: (value) ->
-        @["_setAttribute"](key, value)
-
-    @
-
-  getter: (object, key, callback) ->
-    unless object.hasOwnProperty("_getAttribute")
-      @defineProperty object, "_getAttribute",
-        enumerable: false,
-        configurable: true,
-        value: (key) ->
-          @["_#{key}"]
-
-    object._getters ||= []
-    object._getters.push(key)
-
-    @defineProperty object, key,
-      enumerable: true,
-      configurable: true,
-      get: ->
-        @["_getAttribute"](key) || (@["_#{key}"] = callback.apply(@) if callback)
-
-    @
-
-  variables: (object) ->
-
-  accessors: (object) ->
-
-  methods: (object) ->
-    result = []
-    for key, value of object
-      result.push(key) if @isFunction(value)
-    result
-
-  delegate: (object, keys..., options = {}) ->
-    to          = options.to
-    isFunction  = @isFunction(object)
-
-    for key in keys
-      if isFunction
-        object[key] = ->
-          @[to]()[key](arguments...)
-      else
-        @defineProperty object, key,
-          enumerable: true,
-          configurable: true,
-          get: -> @[to]()[key]
-
-    object
-
-  isFunction: (object) ->
-    !!(object && object.constructor && object.call && object.apply)
-
-  toArray: (object) ->
+    
+  castArray: (object) ->
     if @isArray(object) then object else [object]
-
-  keys: (object) ->
-    Object.keys(object)
-
+  
+  # @todo
   isA: (object, isa) ->
-
-  isRegExp: (object) ->
-    !!(object && object.test && object.exec && (object.ignoreCase || object.ignoreCase == false))
-
+  
   isHash: (object) ->
     @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
-
+  
+  # If the class is a direct instance of Object,
+  # and not an instance of a subclass of Object, then this is true.
+  # 
+  # @return [Boolean]
   isBaseObject: (object) ->
     object && object.constructor && object.constructor.name == "Object"
-
-  isArray: Array.isArray || (object) ->
-    toString.call(object) == '[object Array]'
-
+  
+  # A more robust implementation of `typeof`.
+  # 
+  # Returns a string of the object type. This makes it so you don't have to
+  # manually check `if _.isFunction || _.isArray`, etc.
+  # 
+  # @return [String]
   kind: (object) ->
     type = typeof(object)
     switch type
@@ -190,19 +114,56 @@ Tower.Support.Object =
         return "function"
       else
         return type
-
+  
   isObject: (object) ->
     return object == Object(object)
-
+  
+  # Checks if the object is "present", defined below.
+  # 
+  # If the object is a String, make sure it's not `""`.
+  # If the object is an Object, make sure it has at least one property.
+  # If the object is an Array, make sure length > 0.
+  # If it's null or undefined, it's blank.
+  # Otherwise, it's present.
+  # 
+  # @return [Boolean]
   isPresent: (object) ->
     !@isBlank(object)
 
+  # Checks if the object is "blank", defined below.
+  # 
+  # If the object is a String, make sure it is `""`.
+  # If the object is an Object, make sure it doesn't have any properties.
+  # If the object is an Array, make sure length == 0.
+  # If it's null or undefined, it's blank.
+  # Otherwise, it's not blank.
+  # 
+  # @return [Boolean]
   isBlank: (object) ->
     return (object == "") if typeof object == "string"
     return false for key, value of object
-    return true
+    return true if object == null || object == undefined
+    return false
+  
+  # @return [Boolean]
+  none: (value) ->
+    return value == null || value == undefined
 
   has: (object, key) ->
     object.hasOwnProperty(key)
+  
+  # If you pass in (key, value) or (key: value), it will handle them.
+  oneOrMany: (binding, method, key, value, args...) ->
+    if typeof key == "object"
+      method.call(binding, _key, value, args...) for _key, value of key
+    else
+      method.call binding, key, value, args...
+      
+  error: (error, callback) ->
+    if error
+      if callback
+        return callback(error)
+      else
+        throw error
 
 module.exports = Tower.Support.Object

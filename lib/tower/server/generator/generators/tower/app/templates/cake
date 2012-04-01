@@ -1,18 +1,6 @@
 require 'tower'
 knox  = require 'knox'
 
-task 'environment', ->
-  Tower.env = 'production'
-  Tower.Application.instance().initialize()
-  
-task 'routes', ->
-  invoke 'environment'
-
-  result  = []
-  routes  = Tower.Route.all()
-
-  result
-
 task 'assets:upload', ->
   invoke 'assets:upload:s3'
 
@@ -31,3 +19,19 @@ task 'assets:bundle', ->
 task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset sizes', ->
   invoke 'environment'
   Tower.Application.Assets.stats()
+
+task 'db:seed', ->
+  require('tower').Application.instance().initialize =>
+    require './db/seeds'
+
+task 'environment', ->
+  Tower.env = 'production'
+  Tower.Application.instance().initialize()
+  
+task 'routes', ->
+  invoke 'environment'
+
+  result  = []
+  routes  = Tower.Route.all()
+
+  result

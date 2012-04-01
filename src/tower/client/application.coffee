@@ -56,7 +56,7 @@ class Tower.Application extends Tower.Engine
     @middleware(middleware...) for middleware in middlewares
 
   middleware: ->
-    args    = Tower.Support.Array.args(arguments)
+    args    = _.args(arguments)
     route   = "/"
     handle  = args.pop()
     unless typeof route == "string"
@@ -82,7 +82,7 @@ class Tower.Application extends Tower.Engine
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
         location  = new Tower.Dispatch.Url(state.url)
-        request   = new Tower.Dispatch.Request(url: state.url, location: location, params: Tower.Support.Object.extend(title: state.title, (state.data || {})))
+        request   = new Tower.Dispatch.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
         response  = new Tower.Dispatch.Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response

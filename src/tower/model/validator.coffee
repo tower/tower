@@ -20,7 +20,7 @@ class Tower.Model.Validator
   constructor: (name, value, attributes) ->
     @name       = name
     @value      = value
-    @attributes = Tower.Support.Object.toArray(attributes)
+    @attributes = _.castArray(attributes)
   
   # Given a record, validate each attribute defined for this validator.
   # 

@@ -16,7 +16,7 @@ Tower.Support.Callbacks =
       @appendCallback "after", arguments...
 
     callback: ->
-      args = Tower.Support.Array.args(arguments)
+      args = _.args(arguments)
       args = ["after"].concat args unless args[0].match(/^(?:before|around|after)$/)
       @appendCallback args...
 
@@ -24,7 +24,7 @@ Tower.Support.Callbacks =
       @
 
     appendCallback: (phase) ->
-      args = Tower.Support.Array.args(arguments, 1)
+      args = _.args(arguments, 1)
       if typeof args[args.length - 1] != "object"
         method    = args.pop()
       if typeof args[args.length - 1] == "object"
@@ -108,8 +108,8 @@ class Tower.Support.Callback
     @method       = method
     @conditions   = conditions
 
-    conditions.only   = Tower.Support.Object.toArray(conditions.only) if conditions.hasOwnProperty("only")
-    conditions.except = Tower.Support.Object.toArray(conditions.except) if conditions.hasOwnProperty("except")
+    conditions.only   = _.castArray(conditions.only) if conditions.hasOwnProperty("only")
+    conditions.except = _.castArray(conditions.except) if conditions.hasOwnProperty("except")
 
   run: (binding, options, next) ->
     conditions  = @conditions

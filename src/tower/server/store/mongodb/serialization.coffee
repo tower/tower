@@ -67,7 +67,7 @@ Tower.Store.MongoDB.Serialization =
       key   = "_id" if key == "id"
       if _.isRegExp(value)
         result[key] = value
-      else if Tower.Support.Object.isHash(value)
+      else if _.isHash(value)
         result[key] = {}
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]
@@ -76,7 +76,7 @@ Tower.Store.MongoDB.Serialization =
           else
             _key      = operator if operator
             if _key == "$in"
-              _value = Tower.Support.Object.toArray(_value)
+              _value = _.castArray(_value)
             result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
@@ -94,7 +94,7 @@ Tower.Store.MongoDB.Serialization =
     return value unless field
     method = @["encode#{field.encodingType}"]
     value = method.call(@, value, operation) if method
-    value = [value] if operation == "$in" && !Tower.Support.Object.isArray(value)
+    value = [value] if operation == "$in" && !_.isArray(value)
     value
 
   decode: (field, value, operation) ->
@@ -131,12 +131,12 @@ Tower.Store.MongoDB.Serialization =
       throw new Error("#{value.toString()} is not a boolean")
 
   encodeArray: (value, operation) ->
-    unless operation || value == null || Tower.Support.Object.isArray(value)
+    unless operation || value == null || _.isArray(value)
       throw new Error("Value is not Array")
     value
 
   encodeFloat: (value) ->
-    return null if Tower.Support.Object.isBlank(value)
+    return null if _.isBlank(value)
     try
       parseFloat(value)
     catch error

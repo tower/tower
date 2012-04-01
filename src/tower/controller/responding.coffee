@@ -3,15 +3,15 @@ Tower.Controller.Responding =
   ClassMethods:
     respondTo: ->
       mimes     = @mimes()
-      args      = Tower.Support.Array.args(arguments)
+      args      = _.args(arguments)
 
       if typeof args[args.length - 1] == "object"
         options = args.pop()
       else
         options = {}
 
-      only      = Tower.Support.Object.toArray(options.only) if options.only
-      except    = Tower.Support.Object.toArray(options.except) if options.except
+      only      = _.toArray(options.only) if options.only
+      except    = _.toArray(options.except) if options.except
 
       for name in args
         mimes[name]         = {}
@@ -33,7 +33,7 @@ Tower.Controller.Responding =
 
   # A more robust responder.
   respondWith: ->
-    args      = Tower.Support.Array.args(arguments)
+    args      = _.args(arguments)
     callback  = null
 
     if typeof(args[args.length - 1]) == "function"

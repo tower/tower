@@ -7,7 +7,8 @@ Tower.Model.Scope.Finders =
       "first",
       "last",
       "count",
-      "exists"
+      "exists",
+      "instantiate"
     ]
 
   # Updates one or many records based on the scope's criteria.

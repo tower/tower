@@ -1,4 +1,4 @@
-Tower.Support.Object.extend Tower,
+_.extend Tower,
   env:        "development"
   port:       3000
   client:     typeof(window) != "undefined"
@@ -63,7 +63,7 @@ Tower.Support.Object.extend Tower,
     Tower.Support.I18n.localize(arguments...)
 
   stringify: ->
-    string = Tower.Support.Array.args(arguments).join("_")
+    string = _.args(arguments).join("_")
     switch Tower.case
       when "snakecase"
         Tower.Support.String.underscore(string)
@@ -151,16 +151,13 @@ Tower.Support.Object.extend Tower,
             callback()
 
   none: (value) ->
-    return value == null || value == undefined
+    _.none value
     
-  oneOrMany: (binding, method, key, value, args...) ->
-    if typeof key == "object"
-      method.call(binding, _key, value, args...) for _key, value of key
-    else
-      method.call binding, key, value, args...
+  oneOrMany: ->
+    _.oneOrMany arguments...
       
   args: (args) ->
-    Tower.Support.Array.args(args)
+    _.args(args)
     
   clone: (object) ->
     _.extend({}, object)

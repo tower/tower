@@ -23,6 +23,10 @@ class Tower.Model.Scope extends Tower.Class
     
   toCriteria: @::compile
   
+  instantiate: (value = true) ->
+    @criteria.value.options.instantiate = value
+    @
+  
   # Merge another scope with this one.
   # 
   # @param [Tower.Model.Scope] scope
@@ -40,14 +44,15 @@ class Tower.Model.Scope extends Tower.Class
   # 
   # @return [Array] {Tower.Model.Criteria}, callback ({Tower.Model.Scope.Persistence#build})
   _extractArgsForBuild: (args) ->
-    criteria        = @criteria.clone()
-    args            = Tower.Support.Array.args(args)
-    callback        = Tower.Support.Array.extractBlock(args)
+    scope           = @clone()
+    criteria        = scope.criteria
+    args            = _.args(args)
+    callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
     
     criteria.addData(args)
     
-    [criteria, callback]
+    [scope, callback]
     
   # Builds a criteria object out of dynamic arguments for the {#create} method.
   # 
@@ -59,9 +64,10 @@ class Tower.Model.Scope extends Tower.Class
   # 
   # @private
   _extractArgsForUpdate: (args) ->
-    criteria        = @criteria.clone()
-    args            = _.flatten Tower.Support.Array.args(args)
-    callback        = Tower.Support.Array.extractBlock(args)
+    scope           = @clone()
+    criteria        = scope.criteria
+    args            = _.flatten _.args(args)
+    callback        = _.extractBlock(args)
     # for `update`, the last argument before the callback must be the updates you're making
     updates         = args.pop()
     
@@ -76,7 +82,7 @@ class Tower.Model.Scope extends Tower.Class
       
       criteria.where(id: $in: ids)
       
-    [criteria, callback]
+    [scope, callback]
   
   # Builds a criteria object out of dynamic arguments for the {#destroy} method.
   # 
@@ -88,9 +94,10 @@ class Tower.Model.Scope extends Tower.Class
   # 
   # @private
   _extractArgsForFind: (args) ->
-    criteria        = @criteria.clone()
-    args            = _.flatten Tower.Support.Array.args(args)
-    callback        = Tower.Support.Array.extractBlock(args)
+    scope           = @clone()
+    criteria        = scope.criteria
+    args            = _.flatten _.args(args)
+    callback        = _.extractBlock(args)
     
     if args.length
       ids = []
@@ -101,7 +108,7 @@ class Tower.Model.Scope extends Tower.Class
       
       criteria.where(id: $in: ids)
       
-    [criteria, callback]
+    [scope, callback]
 
 require './scope/finders'
 require './scope/persistence'

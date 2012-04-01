@@ -22,7 +22,7 @@ Tower.Store.MongoDB.Configuration =
         host: "127.0.0.1"
 
     configure: (options) ->
-      Tower.Support.Object.deepMerge(@config, options)
+      _.deepMerge(@config, options)
 
     env: ->
       @config[Tower.env]

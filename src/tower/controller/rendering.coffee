@@ -130,7 +130,7 @@ Tower.Controller.Rendering =
 
   # @private
   _normalizeArgs: ->
-    args = Tower.Support.Array.args(arguments)
+    args = _.args(arguments)
     if typeof args[0] == "string"
       action    = args.shift()
     if typeof args[0] == "object"

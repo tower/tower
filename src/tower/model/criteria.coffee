@@ -10,12 +10,20 @@ class Tower.Model.Criteria
     @values       = args
     # options.findOne = conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
     
+  # Must pass in array, and it will give you either an array or object back,
+  # depending on what was passed into the scope.
+  export: (result) ->
+    result = result[0] unless @values.returnArray
+    delete @values.data
+    delete @values.returnArray
+    result
+    
   addData: (args) ->
     if args.length > 1 || _.isArray(args[0])
       @values.data = _.flatten(args)
       @values.returnArray = true
     else
-      @values.data = [args[0]]
+      @values.data = if args[0]? then [args[0]] else []
       @values.returnArray = false
   
   # Metadata.
@@ -40,12 +48,12 @@ class Tower.Model.Criteria
   joins: (object) ->
     joins = @values.joins
     
-    if Tower.Support.Object.isArray(object)
+    if _.isArray(object)
       joins[key] = true for key in object
     else if typeof object == "string"
       joins[object] = true
     else
-      Tower.Support.Object.extend joins, object
+      _.extend joins, object
       
     joins
   
@@ -148,7 +156,7 @@ class Tower.Model.Criteria
     @values.fields = fields
 
   includes: ->
-    @values.includes = Tower.Support.Array.args(arguments)
+    @values.includes = _.args(arguments)
     
   uniq: (value) ->
     @values.uniq = value
@@ -195,7 +203,7 @@ class Tower.Model.Criteria
     result = {}
 
     for conditions in @values.where
-      Tower.Support.Object.deepMergeWithArrays(result, conditions)
+      _.deepMergeWithArrays(result, conditions)
 
     result
 
@@ -227,7 +235,7 @@ class Tower.Model.Criteria
         if Tower.Store.isKeyword(key)
           for _key, _value of value
             attributes[_key] = _value
-        else if Tower.Support.Object.isHash(value) && value.constructor.name == "Object" && Tower.Store.hasKeyword(value)
+        else if _.isHash(value) && value.constructor.name == "Object" && Tower.Store.hasKeyword(value)
           for _key, _value of value
             attributes[key] = _value
         else

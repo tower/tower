@@ -18,15 +18,15 @@ class Tower.View.Form.Builder extends Tower.View.Component
 
   fieldset: (args...) ->
     block                   = args.pop()
-    options                 = @defaultOptions(Tower.Support.Array.extractOptions(args))
+    options                 = @defaultOptions(_.extractOptions(args))
     options.label           ||= args.shift()
 
     new Tower.View.Form.Fieldset([], options).render(block)
 
   fields: ->
-    args              = Tower.Support.Array.args(arguments)
-    block             = Tower.Support.Array.extractBlock(args)
-    options           = Tower.Support.Array.extractOptions(args)
+    args              = _.args(arguments)
+    block             = _.extractBlock(args)
+    options           = _.extractOptions(args)
     options.as        = "fields"
     options.label   ||= false
     attribute         = args.shift() || @attribute
@@ -71,11 +71,11 @@ class Tower.View.Form.Builder extends Tower.View.Component
     new Tower.View.Form.Builder(options).render(block)
 
   field: ->
-    args          = Tower.Support.Array.args(arguments)
+    args          = _.args(arguments)
     last          = args[args.length - 1]
     args.pop() if last == null || last == undefined
-    block         = Tower.Support.Array.extractBlock(args)
-    options       = Tower.Support.Array.extractOptions(args)
+    block         = _.extractBlock(args)
+    options       = _.extractOptions(args)
     attributeName = args.shift() || "attribute.name"
     #attribute      = Storefront:"Attribute".new(
     #  name:     attributeName,
@@ -100,9 +100,9 @@ class Tower.View.Form.Builder extends Tower.View.Component
     new Tower.View.Form.Field([], _.extend(defaults, options)).render(block)
 
   button: ->
-    args          = Tower.Support.Array.args(arguments)
-    block         = Tower.Support.Array.extractBlock(args)
-    options       = Tower.Support.Array.extractOptions(args)
+    args          = _.args(arguments)
+    block         = _.extractBlock(args)
+    options       = _.extractOptions(args)
     options.as  ||= "submit"
     options.value = args.shift() || "Submit"
     options.class = Tower.View.submitFieldsetClass if options.as == "submit"

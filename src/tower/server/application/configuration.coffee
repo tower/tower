@@ -20,7 +20,7 @@ class Tower.Application.Configuration extends Tower.Class
       catch error
         config  = {}
 
-      Tower.config[key] = config if Tower.Support.Object.isPresent(config)
+      Tower.config[key] = config if _.isPresent(config)
 
     Tower.Application.Assets.loadManifest()
 

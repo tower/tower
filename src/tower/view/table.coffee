@@ -91,7 +91,7 @@ class Tower.View.Table extends Tower.View.Component
     @scope      = "table"
 
   row: (args..., block) ->
-    attributes = Tower.Support.Array.extractOptions(args)
+    attributes = _.extractOptions(args)
 
     attributes.scope = "row"
 
@@ -107,7 +107,7 @@ class Tower.View.Table extends Tower.View.Component
     @cellIndex = 0
 
   column: (args..., block) ->
-    attributes        = Tower.Support.Array.extractOptions(args)
+    attributes        = _.extractOptions(args)
     value             = args.shift()
 
     attributes.id   ||= @idFor("header", key, value, @rowIndex, @cellIndex) if Tower.View.idEnabledOn.include?("table")
@@ -125,9 +125,9 @@ class Tower.View.Table extends Tower.View.Component
   # valid directions: ascending, descending, none, other
   # abbr is what the header controls (for sorting)
   header: ->
-    args              = Tower.Support.Array.args(arguments)
-    block             = Tower.Support.Array.extractBlock(args)
-    attributes        = Tower.Support.Array.extractOptions(args)
+    args              = _.args(arguments)
+    block             = _.extractBlock(args)
+    attributes        = _.extractOptions(args)
     value             = args.shift()
 
     attributes.abbr ||= value
@@ -185,7 +185,7 @@ class Tower.View.Table extends Tower.View.Component
       @tag "span", label
 
   cell: (args..., block) ->
-    attributes        = Tower.Support.Array.extractOptions(args)
+    attributes        = _.extractOptions(args)
     value             = args.shift()
 
     attributes.role   = "gridcell"
