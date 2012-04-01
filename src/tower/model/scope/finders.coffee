@@ -50,6 +50,15 @@ Tower.Model.Scope.Finders =
   # @param [Function] callback
   all: (callback) ->
     @store.find @compile(), callback
+    
+  # Returns an array of column values directly from the underlying table/collection.
+  # This also works with serialized attributes.
+  # @todo
+  pluck: (attributes...) ->
+    
+  # Show query that will be used for the datastore.
+  # @todo
+  explain: ->
 
   # Count the number of records matching this scope's criteria.
   # 

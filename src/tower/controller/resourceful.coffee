@@ -93,49 +93,12 @@ Tower.Controller.Resourceful =
     @_destroy (format) =>
       format.html => @redirectTo action: "index"
       format.json => @render json: @resource, status: 200
-
-  # @private
-  _index: (callback) ->
-    @findCollection (error, collection) =>
-      @respondWith collection, callback
   
-  # @private
-  _new: (callback) ->
-    @buildResource (error, resource) =>
-      return @failure(error) unless resource
-      @respondWith(resource, callback)
-
-  # @private
-  _create: (callback) ->
-    @buildResource (error, resource) =>
-      return @failure(error, callback) unless resource
-      resource.save (error) =>
-        @respondWithStatus Tower.Support.Object.isBlank(resource.errors), callback
-
-  # @private
-  _show: (callback) ->
-    @findResource (error, resource) =>
-      @respondWith resource, callback
-
-  # @private
-  _edit: (callback) ->
-    @findResource (error, resource) =>
-      @respondWith resource, callback
-
-  # @private
-  _update: (callback) ->
-    @findResource (error, resource) =>
-      return @failure(error, callback) if error
-      resource.updateAttributes @params[@resourceName], (error) =>
-        @respondWithStatus !!!error && Tower.Support.Object.isBlank(resource.errors), callback
-
-  # @private
-  _destroy: (callback) ->
-    @findResource (error, resource) =>
-      return @failure(error, callback) if error
-      resource.destroy (error) =>
-        @respondWithStatus !!!error, callback
-
+  # Helper method to give you the {Tower.Model.Scope} and a new record.
+  # 
+  # @param [Function] callback
+  # 
+  # @return [void] Requires a callback
   respondWithScoped: (callback) ->
     @scoped (error, scope) =>
       return @failure(error, callback) if error
@@ -157,6 +120,11 @@ Tower.Controller.Resourceful =
     else
       Tower.Controller.Responder.respond(@, options, callback)
 
+  # Returns a new record for the scope.
+  # 
+  # @param [Function] callback
+  # 
+  # @return [void] Requires a callback.
   buildResource: (callback) ->
     @scoped (error, scope) =>
       return callback.call @, error, null if error
@@ -164,13 +132,23 @@ Tower.Controller.Resourceful =
       callback.call @, null, resource if callback
       resource
 
+  # Returns the single record for the scope.
+  # 
+  # @param [Function] callback
+  # 
+  # @return [void] Requires a callback.
   findResource: (callback) ->
     @scoped (error, scope) =>
       return callback.call @, error, null if error
       scope.find @params.id, (error, resource) =>
         @[@resourceName]  = @resource = resource
         callback.call @, error, resource
-
+  
+  # Returns the set of records for the scope.
+  # 
+  # @param [Function] callback
+  # 
+  # @return [void] Requires a callback.
   findCollection: (callback) ->
     @scoped (error, scope) =>
       return callback.call @, error, null if error
@@ -215,6 +193,8 @@ Tower.Controller.Resourceful =
   # Builds the scope for the current action, based on the resource defined for this controller.
   # 
   # @param [Function] callback
+  # 
+  # @return [void] Requires a callback.
   scoped: (callback) ->
     callbackWithScope = (error, scope) =>
       callback.call @, error, scope.where(@criteria())
@@ -227,12 +207,60 @@ Tower.Controller.Resourceful =
           callbackWithScope(error, parent[@collectionName]())
     else
       callbackWithScope null, Tower.constant(@resourceType)
+      
+    undefined
 
   # @todo Default failure implemtation for create, update, and destory.
   # 
   # @param [Tower.Model] resource
   # @param [Function] callback
+  # 
+  # @return [void] Requires a callback.
   failure: (resource, callback) ->
     callback()
+    
+    undefined
+
+  # @private
+  _index: (callback) ->
+    @findCollection (error, collection) =>
+      @respondWith collection, callback
+  
+  # @private
+  _new: (callback) ->
+    @buildResource (error, resource) =>
+      return @failure(error) unless resource
+      @respondWith(resource, callback)
+
+  # @private
+  _create: (callback) ->
+    @buildResource (error, resource) =>
+      return @failure(error, callback) unless resource
+      resource.save (error) =>
+        @respondWithStatus Tower.Support.Object.isBlank(resource.errors), callback
+
+  # @private
+  _show: (callback) ->
+    @findResource (error, resource) =>
+      @respondWith resource, callback
+
+  # @private
+  _edit: (callback) ->
+    @findResource (error, resource) =>
+      @respondWith resource, callback
+
+  # @private
+  _update: (callback) ->
+    @findResource (error, resource) =>
+      return @failure(error, callback) if error
+      resource.updateAttributes @params[@resourceName], (error) =>
+        @respondWithStatus !!!error && Tower.Support.Object.isBlank(resource.errors), callback
+
+  # @private
+  _destroy: (callback) ->
+    @findResource (error, resource) =>
+      return @failure(error, callback) if error
+      resource.destroy (error) =>
+        @respondWithStatus !!!error, callback
 
 module.exports = Tower.Controller.Resourceful

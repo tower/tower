@@ -1,17 +1,6 @@
 # @module
 Tower.Controller.Params =
   ClassMethods:
-    params: (options, callback) ->
-      if typeof options == 'function'
-        callback  =  options
-        options   = {}
-
-      if options
-        @_paramsOptions = Tower.Support.Object.extend(@_paramsOptions || {}, options)
-        callback.call @ if callback
-
-      @_params ||= {}
-    
     # Define a parameter that should be parsed into criteria for a model query.
     # 
     # @example
@@ -25,7 +14,7 @@ Tower.Controller.Params =
     # @return [Tower.HTTP.Param]
     param: (key, options = {}) ->
       @_params      ||= {}
-      @_params[key] = Tower.HTTP.Param.create(key, Tower.Support.Object.extend({}, @_paramsOptions || {}, options))
+      @_params[key] = Tower.HTTP.Param.create(key, options)
   
   # Compile the params defined for this controller into a criteria for querying the database.
   # 

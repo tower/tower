@@ -1,3 +1,13 @@
+# @include Tower.Support.Callbacks
+# @include Tower.Support.EventEmitter
+# @include Tower.Controller.Callbacks
+# @include Tower.Controller.Helpers
+# @include Tower.Controller.Instrumentation
+# @include Tower.Controller.Params
+# @include Tower.Controller.Redirecting
+# @include Tower.Controller.Rendering
+# @include Tower.Controller.Resourceful
+# @include Tower.Controller.Responding
 class Tower.Controller extends Tower.Class
   @include  Tower.Support.Callbacks
   @extend   Tower.Support.EventEmitter

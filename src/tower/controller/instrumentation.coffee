@@ -1,6 +1,5 @@
 # @module
 Tower.Controller.Instrumentation =
-  
   # Called when the route for this controller is found.
   call: (request, response, next) ->
     @request  = request

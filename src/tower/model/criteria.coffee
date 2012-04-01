@@ -203,12 +203,12 @@ class Tower.Model.Criteria
     values        = @values
     to.where      = values.where.concat()
     to.order      = values.order.concat()
-    to.offset     = values.offset  if @values.offset?
-    to.limit      = values.limit   if @values.limit?
-    to.fields     = values.fields  if @values.fields
-    to.includes   = values.includes if @values.includes
-    to.joins      = values.joins if @values.joins?
-    to.through    = values.through if @values.through?
+    to.offset     = values.offset   if values.offset?
+    to.limit      = values.limit    if values.limit?
+    to.fields     = values.fields   if values.fields
+    to.includes   = values.includes if values.includes
+    to.joins      = values.joins    if values.joins?
+    to.through    = values.through  if values.through?
     to
 
   # Compiled result from the {#where} arguments, but formatted for creating a model.

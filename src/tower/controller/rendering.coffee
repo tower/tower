@@ -1,13 +1,54 @@
 # @module
 Tower.Controller.Rendering =
   ClassMethods:
+    # Add a render for a specific mime type.
+    # 
+    # @example Add a json renderer
+    #   Tower.Controller.addRenderer "json", (json, options, callback) ->
+    #     unless typeof(json) == "string"
+    #       if @params.prettify && @params.prettify.toString() == "true"
+    #         json = JSON.stringify(json, null, 2)
+    #       else
+    #         json = JSON.stringify(json)
+    #     json = "#{options.callback}(#{json})" if options.callback
+    #     @headers["Content-Type"] ||= require("mime").lookup("json")
+    #     callback null, json if callback
+    #     json
+    # 
+    # @param [String] key key to be used in the controller's {#render} method.
+    # @param [Function] block function to conver the data to appropriate format.
+    # 
+    # @return [Function] Returns the block added.
     addRenderer: (key, block) ->
       @renderers()[key] = block
-
+    
+    # Add multiple renders at once.
+    # 
+    # @see {#addRenderer}
+    # 
+    # @example Add a json renderer
+    #   Tower.Controller.addRenderer
+    #     json: (json, options, callback) ->
+    #       unless typeof(json) == "string"
+    #         if @params.prettify && @params.prettify.toString() == "true"
+    #           json = JSON.stringify(json, null, 2)
+    #         else
+    #           json = JSON.stringify(json)
+    #       json = "#{options.callback}(#{json})" if options.callback
+    #       @headers["Content-Type"] ||= require("mime").lookup("json")
+    #       callback null, json if callback
+    #       json
+    # 
+    # @param [Object] renderers hash of `{format: function}` pairs.
+    # 
+    # @return [Function] Returns the controller instance.
     addRenderers: (renderers = {}) ->
       @addRenderer(key, block) for key, block of renderers
       @
-
+    
+    # Set of renderers defined for this controller.
+    # 
+    # @return [Object]
     renderers: ->
       @_renderers ||= {}
   
