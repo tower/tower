@@ -4,10 +4,10 @@ user = null
 
 describe 'Tower.Model.Metadata', ->
   test '.resourceName', ->
-    assert.equal App.User.resourceName(), "user"
+    assert.equal App.User.metadata().name, "user"
     
   test '.collectionName', ->
-    assert.equal App.User.collectionName(), "users"
+    assert.equal App.User.metadata().namePlural, "users"
     
   test '.baseClass', ->
     assert.equal App.User.baseClass(), App.User

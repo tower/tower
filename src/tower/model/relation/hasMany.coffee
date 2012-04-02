@@ -5,88 +5,79 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
     super
     
-  class @Scope extends @Scope
+  class @Criteria extends @Criteria
     isHasMany: true
     
-    create: ->
+    validate: ->
       unless @owner.isPersisted()
         throw new Error("You cannot call create unless the parent is saved")
+    
+    create: (callback) ->
+      console.log "CRITER"
+      @validate()
       
-      {criteria, data, options, callback} = @_extractArgs(arguments, data: true)
-      
-      if @relation.embed && @owner.store().supports("embed")
-        @_createEmbedded criteria, data, options, callback
-      else
-        @_createReferenced criteria, data, options, callback
+      #if @relation.embed && @owner.store().supports("embed")
+      #  @_createEmbedded
+      #else
+      @_createReferenced(callback)
 
     update: ->
+      @validate()
 
     destroy: ->
-
+      @validate()
+      
+    # for update, destroy, and find
     compile: ->
-      criteria  = super
-      relation  = @relation
-      
-      defaults  = {}
-      
-      if relation.through
-        criteria.through(scope: @owner[relation.through](), key: "wallId")
-      else if relation.cache
-        #defaults[relation.cacheKey] = $in: [@owner.get("id")]
-        defaults.id = $in: @owner.get(relation.cacheKey)
-        criteria.where(defaults)
-      else
-        defaults[relation.foreignKey] = $in: @owner.get('id')
-        criteria.where(defaults)
-
-      criteria
       
     # @private
-    _createEmbedded: (criteria, args, options, callback) ->
-      owner           = @owner
-      relation        = @relation
-      
-      criteria.mergeOptions(options)
-      
-      {attributes, options} = criteria.toCreate()
-      
-      records = @_build args, attributes, options
-      
-      updates   = {$pushAll: {}}
-      
-      if _.isArray(records)
-        attributes = []
-        for record in records
-          record.attributes._id  ?= relation.klass().store().generateId()
-          delete record.attributes.id
-          attributes.push record.attributes
-        updates["$pushAll"][relation.name]  = attributes
-      else
-        records.attributes._id  ?= relation.klass().store().generateId()
-        delete records.attributes.id
-        updates["$pushAll"][relation.name]  = [records.attributes]
+    _createEmbedded: (callback) ->
+      updates = @_compileForCreateEmbedded()
       
       # update: (updates, conditions, options, callback) ->
-      owner.store().update updates, {id: owner.get('id')}, {}, (error) =>
+      @owner.updateAttributes updates, (error) =>
         unless error
-          if _.isArray(records)
-            @owner.relation(@relation.name).records = @records.concat(records)
-          else
-            @owner.relation(@relation.name).records.push(records)
-            
-          #record = relation.klass().store().serializeModel(attributes)
-          #@owner.relation(@relation.name).records.push(record)
           callback.call @, error, records if callback
     
     # @private
-    _createReferenced: (criteria, args, options, callback) ->
+    _createReferenced: (callback) ->
+      @_compileForCreate()
+      
+      @_create (error, record) =>
+        unless error
+          @_cacheRecords(record)
+          
+          # add the id to the array on the owner record after it's created
+          if @updateOwnerRecord()
+            @owner.updateAttributes @ownerAttributes(record), (error) =>
+              callback.call @, error, record if callback
+          else
+            callback.call @, error, record if callback
+        else
+          callback.call @, error, record if callback
+    
+    # @private
+    _cacheRecords: (records) ->
+      rootRelation = @owner.relation(@relation.name)
+      rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
+      
+    # @private
+    _compileForCreate: ->
       owner           = @owner
       relation        = @relation
       inverseRelation = relation.inverse()
       
-      id = owner.get("id")
+      id              = owner.get("id")
       
-      data = {}
+      data            = {}
+      
+      #if relation.cache
+      #  #defaults[relation.cacheKey] = $in: [@owner.get("id")]
+      #  defaults.id = $in: @owner.get(relation.cacheKey)
+      #  criteria.where(defaults)
+      #else
+      #  defaults[relation.foreignKey] = $in: @owner.get('id')
+      #  criteria.where(defaults)
       
       if inverseRelation && inverseRelation.cache
         array = data[inverseRelation.cacheKey] || []
@@ -95,61 +86,50 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       else if relation.foreignKey
         data[relation.foreignKey]     = id if id != undefined
         # must check here if owner is instance of foreignType
-        data[relation.foreignType]  ||= owner.constructor.name if @relation.foreignType
+        data[relation.foreignType]  ||= owner.constructor.name if relation.foreignType
         
-      criteria.where(data)
-      criteria.mergeOptions(options)
-
       if inverseRelation && inverseRelation.counterCacheKey
-        defaults  = {}
-        defaults[inverseRelation.counterCacheKey] = 1
-        criteria.where(defaults)
+        data[inverseRelation.counterCacheKey] = 1
       
-      instantiate = options.instantiate != false
+      @where(data)
       
-      {attributes, options} = criteria.toCreate()
+    updateOwnerRecord: ->
+      relation = @relation
+      !!(relation && (relation.cache || relation.counterCache))
       
-      attributes = @_build args, attributes, options
+    ownerAttributes: (record) ->
+      relation = @relation
       
-      options.instantiate = true
+      if relation.cache
+        push    = {}
+        push[relation.cacheKey] = record.get("id")
+      if relation.counterCacheKey
+        inc     = {}
+        inc[relation.counterCacheKey] = 1
+        
+      updates   = {}
+      updates["$push"]  = push if push
+      updates["$inc"]   = inc if inc
       
-      @_create criteria, attributes, options, (error, record) =>
-        unless error
-          if _.isArray(record)
-            @owner.relation(@relation.name).records = @records.concat(record)
-          else
-            @owner.relation(@relation.name).records.push(record)
-          # add the id to the array on the owner record after it's created
-          if relation && (relation.cache || relation.counterCache)
-            if relation.cache
-              push    = {}
-              push[relation.cacheKey] = record.get("id")
-            if relation.counterCacheKey
-              inc     = {}
-              inc[relation.counterCacheKey] = 1
-            updates   = {}
-            updates["$push"]  = push if push
-            updates["$inc"]   = inc if inc
-            owner.updateAttributes updates, (error) =>
-              callback.call @, error, record if callback
-          else
-            callback.call @, error, record if callback
-        else
-          callback.call @, error, record if callback
-
-    # @private
-    _serializeAttributes: (attributes = {}) ->
-      target    = Tower.constant(@relation.targetClassName)
-      relations = target.relations()
-
-      for name, relation of relations
-        if attributes.hasOwnProperty(name)
-          value = attributes[name]
-          delete attributes[name]
-          if relation instanceof Tower.Model.Relation.BelongsTo
-            attributes[relation.foreignKey] = value.id
-            attributes[relation.foreignType] = value.type if relation.polymorphic
-
-      attributes
+      updates
+      
+    _compileForCreateEmbedded: ->
+      owner           = @owner
+      relation        = @relation
+      returnArray     = @returnArray
+      @returnArray    = true
+      records         = @build()
+      @returnArray    = returnArray
+      updates         = $pushAll: {}
+      
+      attributes = []
+      for record in records
+        record.attributes._id  ?= relation.klass().store().generateId()
+        delete record.attributes.id
+        attributes.push record.attributes
+        
+      updates["$pushAll"][relation.name]  = attributes
+      
+      updates
 
 module.exports = Tower.Model.Relation.HasMany

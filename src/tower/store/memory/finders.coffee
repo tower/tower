@@ -1,16 +1,14 @@
 # @module
 Tower.Store.Memory.Finders =
-  
   # @see Tower.Store#find
-  find: (scope, callback) ->
+  find: (criteria, callback) ->
     result      = []
     records     = @records
-    criteria    = scope.criteria
     conditions  = criteria.conditions()
-    options     = criteria.options()
+    options     = criteria
     
     if _.isPresent(conditions)
-      sort    = options.sort
+      sort    = options.get('order')
       limit   = options.limit || Tower.Store.defaultLimit
       
       for key, record of records
@@ -23,36 +21,43 @@ Tower.Store.Memory.Finders =
     else
       for key, record of records
         result.push(record)
-
+    
+    result = criteria.export(result) if result.length
+    
     callback.call(@, null, result) if callback
-
+    
     result
 
   # @see Tower.Store#findOne
-  findOne: (conditions, options, callback) ->
-    record = null
-    options.limit = 1
-    @find conditions, options, (error, records) =>
+  findOne: (criteria, callback) ->
+    record = undefined
+    
+    criteria.limit(1)
+    
+    @find criteria, (error, records) =>
       record = records[0] || null
       callback.call(@, error, record) if callback
+      
     record
   
   # @see Tower.Store#count
-  count: (conditions, options, callback) ->
-    result = 0
-    @find conditions, options, (error, records) =>
+  count: (criteria, callback) ->
+    result = undefined
+    
+    @find criteria, (error, records) =>
       result = records.length
       callback.call(@, error, result) if callback
+      
     result
 
   # @see Tower.Store#exists
-  exists: (conditions, options, callback) ->
-    result = false
+  exists: (criteria, callback) ->
+    result = undefined
 
-    @count conditions, options, (error, record) =>
+    @count criteria, (error, record) =>
       result = !!record
       callback.call(@, error, result) if callback
-
+    
     result
 
   # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]

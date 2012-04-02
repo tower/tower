@@ -12,10 +12,9 @@ Tower.Store.Memory.Persistence =
     record.persistent = true
     @records[record.get("id").toString()] = record
   
-  create: (scope, callback) ->
+  create: (criteria, callback) ->
     result    = []
-    criteria  = scope.criteria
-    console.log "CREATE"
+    
     result.push @createOne(object) for object in criteria.data
     
     result    = criteria.export(result)
@@ -29,8 +28,8 @@ Tower.Store.Memory.Persistence =
     attributes.id ?= @generateId()
     @loadOne(@serializeModel(record))
   
-  update: (updates, scope, callback) ->
-    @find scope, (error, records) =>
+  update: (updates, criteria, callback) ->
+    @find criteria, (error, records) =>
       return _.error(error, callback) if error
       @updateOne(record, updates) for record in records
       callback.call(@, error, records) if callback
@@ -41,8 +40,8 @@ Tower.Store.Memory.Persistence =
       @_updateAttribute(record.attributes, key, value)
     record
 
-  destroy: (scope, callback) ->
-    @find scope, (error, records) ->
+  destroy: (criteria, callback) ->
+    @find criteria, (error, records) ->
       return _.error(error, callback) if error
       @destroyOne(record) for record in records
       callback.call(@, error, records) if callback

@@ -140,8 +140,11 @@ Tower.Support.Object =
   # 
   # @return [Boolean]
   isBlank: (object) ->
-    return (object == "") if typeof object == "string"
-    return false for key, value of object
+    type = typeof(object)
+    return (object == "") if type == "string"
+    if type == "object"
+      return false for key, value of object
+      return true
     return true if object == null || object == undefined
     return false
   
@@ -165,5 +168,13 @@ Tower.Support.Object =
         return callback(error)
       else
         throw error
+        
+  teardown: (object, variables...) ->
+    variables = _.flatten variables
+    for variable in variables
+      object[variable] = null
+      delete object[variable]
+    
+    object
 
 module.exports = Tower.Support.Object

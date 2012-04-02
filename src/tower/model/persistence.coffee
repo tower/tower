@@ -149,7 +149,7 @@ Tower.Model.Persistence =
     @runCallbacks "create", (block) =>
       complete = @_callback(block, callback)
       
-      @constructor.instantiate(false).create @, (error) =>
+      @constructor.scoped(instantiate: false).create @, (error) =>
         throw error if error && !callback
 
         unless error
@@ -172,7 +172,7 @@ Tower.Model.Persistence =
     @runCallbacks "update", (block) =>
       complete = @_callback(block, callback)
 
-      @constructor.instantiate(false).update @get("id"), updates, (error) =>
+      @constructor.scoped(instantiate: false).update @get("id"), updates, (error) =>
         throw error if error && !callback
 
         unless error
@@ -194,7 +194,7 @@ Tower.Model.Persistence =
     @runCallbacks "destroy", (block) =>
       complete = @_callback(block, callback)
 
-      @constructor.instantiate(false).destroy @, (error) =>
+      @constructor.scoped(instantiate: false).destroy @, (error) =>
         throw error if error && !callback
 
         unless error

@@ -1,6 +1,6 @@
 class App.Child extends Tower.Model
   @field "id", type: "Id"
-  @hasMany "parents", cache: true, counterCache: true
+  @hasMany "parents"#, cache: true, counterCache: true
   
   # embed tests
   @belongsTo "embeddableParent", embed: true, type: "Parent", inverseOf: "embeddedChildren"

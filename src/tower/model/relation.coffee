@@ -74,7 +74,7 @@ class Tower.Model.Relation extends Tower.Class
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
-    new @constructor.Scope(model: @klass(), owner: record, relation: @)
+    new Tower.Model.Scope(new @constructor.Criteria(model: @klass(), owner: record, relation: @))
   
   # @return [Function]
   targetKlass: ->
@@ -91,9 +91,9 @@ class Tower.Model.Relation extends Tower.Class
   # @return [Tower.Model.Relation]
   inverse: ->
     return @_inverse if @_inverse
-
+    
     relations = @targetKlass().relations()
-
+    
     if @inverseOf
       return relations[@inverseOf]
     else
@@ -102,21 +102,22 @@ class Tower.Model.Relation extends Tower.Class
         return relation if relation.inverseOf == @name
       for name, relation of relations
         return relation if relation.targetType == @ownerType
+        
     null
-
-  class @Scope extends Tower.Model.Scope
+  
+  class @Criteria extends Tower.Model.Criteria
     isConstructable: ->
       !!!@relation.polymorphic
-
+    
     constructor: (options = {}) ->
       super(options)
       @owner        = options.owner
       @relation     = options.relation
       @records      = []
-
+    
     clone: ->
-      new @constructor(model: @model, criteria: @criteria.clone(), owner: @owner, relation: @relation)
-
+      (new @constructor(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)).merge(@)
+    
     setInverseInstance: (record) ->
       if record && @invertibleFor(record)
         inverse = record.relation(@inverseReflectionFor(record).name)
@@ -127,6 +128,8 @@ class Tower.Model.Relation extends Tower.Class
 
     inverse: (record) ->
 
+    _teardown: ->
+      _.teardown(@, "relation", "records", "owner", "model", "criteria")
 
 require './relation/belongsTo'
 require './relation/hasMany'

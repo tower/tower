@@ -8,7 +8,7 @@ Tower.Model.Scopes =
     #     @field "firstName"
     #     @scope "letterA", @where(firstName: /^a/)
     #   
-    #   App.User.a().all()
+    #   App.User.letterA().all()
     # 
     # @param [String] name
     # @param [Object] scope you can pass in conditions for the `where` method, or an actual scope instance.
@@ -20,10 +20,14 @@ Tower.Model.Scopes =
     # Returns a scope with default criteria for the model class.
     # 
     # @return [Tower.Model.Scope]
-    scoped: ->
-      scope = new Tower.Model.Scope(model: @)
-      scope.where(type: @name) if @baseClass().name != @name
-      scope
+    scoped: (options) ->
+      new Tower.Model.Scope(@criteria(options))
+      
+    criteria: (options = {}) ->
+      options.model = @
+      criteria = new Tower.Model.Criteria(options)
+      criteria.where(type: @name) if @baseClass().name != @name
+      criteria
 
     defaultSort: (object) ->
       @_defaultSort = object if object

@@ -173,4 +173,4 @@ describe 'Tower.Model.Fields', ->
         assert.equal model.get("likeCount"), 2
         model.inc likeCount: -1
         assert.equal model.get("likeCount"), 1
-      
+

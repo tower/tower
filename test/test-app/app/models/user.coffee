@@ -11,6 +11,9 @@ class App.User extends Tower.Model
   @hasMany "posts", type: "Page", cache: true # postIds
   @hasMany "comments", source: "commenter"
   
+  @hasMany "memberships"
+  @hasMany "groups", through: "memberships"
+  
   @validates "firstName", presence: true
   
   @timestamps()

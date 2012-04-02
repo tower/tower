@@ -1,38 +1,47 @@
-# This class has plenty of room for optimization
-class Tower.Model.Criteria
-  constructor: (args = {}) ->
-    args.where    ||= []
-    args.joins    ||= {}
-    args.order    ||= []
-    args.data     ||= [] # records or updates
-    args.options  ||= {}
-    args.options.instantiate = true unless args.options.hasOwnProperty("instantiate")
-    @values       = args
+# This class has plenty of room for optimization,
+# but it's now into a form I'm starting to like.
+class Tower.Model.Criteria  
+  constructor: (options = {}) ->
+    @model        = options.model
+    @store        = @model.store()
+    
+    @instantiate  = options.instantiate != false
+    
+    @_where       = options.where || []
+    @_joins       = options.joins || {}
+    @_order       = @_array(options.order)
+    @_data        = @_array(options.data)
+    @_except      = @_array(options.except, true)
+    @_includes    = @_array(options.except, true)
+    @_offset      = options.offset
+    @_limit       = options.limit
+    @_fields      = options.fields
+    @_uniq        = options.uniq
+    @_eagerLoad   = options.eagerLoad || {}
     # options.findOne = conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
     
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.
   export: (result) ->
-    result = result[0] unless @values.returnArray
-    delete @values.data
-    delete @values.returnArray
+    result = result[0] unless @returnArray
+    delete @data
+    delete @returnArray
     result
+  
+  # Get the conditions, order, limit, fields, offset, or other private variables.
+  get: (key) ->
+    @["_#{key}"] || @[key]
     
   addData: (args) ->
-    if args.length > 1 || _.isArray(args[0])
-      @values.data = _.flatten(args)
-      @values.returnArray = true
+    if args.length && args.length > 1 || _.isArray(args[0])
+      @data = _.flatten(args)
+      @returnArray = true
     else
-      @values.data = if args[0]? then [args[0]] else []
-      @values.returnArray = false
-  
-  # Metadata.
-  # 
-  # @param [Object] options
-  # 
-  # @return [Object] returns all of the options.
-  options: (options) ->
-    @values.options = _.extend @values.options, options
+      @data = _.flatten [args]#if args[0]? then [args[0]] else []
+      @returnArray = false
+      
+  eagerLoad: (object) ->
+    @_eagerLoad = _.extend @_eagerLoad, object
   
   # Join commands.
   # 
@@ -46,7 +55,7 @@ class Tower.Model.Criteria
   # 
   # @return [Object] the resulting set of joins.
   joins: (object) ->
-    joins = @values.joins
+    joins = @_joins
     
     if _.isArray(object)
       joins[key] = true for key in object
@@ -58,8 +67,10 @@ class Tower.Model.Criteria
     joins
   
   # Methods to remove from the scope.
-  except: (keys...) ->
-    @values.except = keys
+  # 
+  # @param [Arguments] keys
+  except: ->
+    @_except = _.flatten _.args(arguments)
   
   # Set of conditions the database fields must satisfy.
   #
@@ -71,7 +82,7 @@ class Tower.Model.Criteria
     if conditions instanceof Tower.Model.Criteria
       @merge(conditions)
     else
-      @values.where.push(conditions)
+      @_where.push(conditions)
   
   # Attribute and direction used for ordering the datastore's result set.
   # 
@@ -83,8 +94,7 @@ class Tower.Model.Criteria
   # 
   # @return [Array] returns the full set of order commands for this criteria.
   order: (attribute, direction = "asc") ->
-    @values.order ||= []
-    @values.order.push [attribute, direction]
+    @_order.push [attribute, direction]
   
   # Alias for {#order}.
   sort: @::order
@@ -102,7 +112,7 @@ class Tower.Model.Criteria
   # @return [Array] returns the full set of order commands for this criteria.
   asc: (attributes...) ->
     @order(attribute) for attribute in attributes
-    @values.order
+    @_order
     
   # Set of attributes to sort by, descending.
   # 
@@ -114,6 +124,7 @@ class Tower.Model.Criteria
   # @return [Array] returns the full set of order commands for this criteria.
   desc: (attributes...) ->
     @order(attribute, "desc") for attribute in attributes
+    @_order
   
   # Records must match all values in the array.
   # 
@@ -124,25 +135,25 @@ class Tower.Model.Criteria
   # 
   # @return [Object] the final set of conditions for this criteria.
   allIn: (attributes) ->
-    @values.whereOperator "$all", attributes
+    @_whereOperator "$all", attributes
 
   # @example  
   #   App.Post.anyIn(tags: ["ruby", "javascript"]).all()
   anyIn: (attributes) ->
-    @values.whereOperator "$any", attributes
+    @_whereOperator "$any", attributes
 
   # @example  
   #   App.Post.notIn(tags: [".net"]).all()
   notIn: (attributes) ->
-    @values.whereOperator "$nin", attributes
+    @_whereOperator "$nin", attributes
 
   # @example  
   #   App.Post.offset(20).all()
   offset: (number) ->
-    @values.offset = number
+    @_offset = number
 
   limit: (number) ->
-    @values.limit = number
+    @_limit = number
   
   # The set of fields we want the database to return, no more.
   # 
@@ -152,31 +163,124 @@ class Tower.Model.Criteria
   # @param [Arguments] fields
   # 
   # @return [Array] returns the fields for this criteria.
-  select: (fields...) ->
-    @values.fields = fields
+  select: ->
+    @_fields = _.flatten _.args(fields)
 
   includes: ->
-    @values.includes = _.args(arguments)
+    @_includes = _.flatten _.args(arguments)
     
   uniq: (value) ->
-    @values.uniq = value
+    @_uniq = value
   
   # @example  
   #   App.Post.page(2).all()
   page: (page) ->
-    @offset((page - 1) * @values.limit || 20)
+    @offset((page - 1) * @_limit || 20)
     
   paginate: (options) ->
     limit   = options.perPage || options.limit
     page    = options.page || 1
     @limit(limit)
     @offset((page - 1) * limit)
+    
+  build: (callback) ->
+    store       = @store
+    attributes  = @attributes()
+    
+    data        = @data
+    data.push({}) unless data.length
+    
+    result      = []
+    
+    for item in data
+      if item instanceof Tower.Model
+        _.extend(item.attributes, attributes, item.attributes)
+      else
+        object = store.serializeModel(_.extend({}, attributes, item))
+        
+      result.push(object)
+      
+    result = if @returnArray then result else result[0]
+    
+    callback.call(@, null, result) if callback
+    
+    result
+    
+  create: (callback) ->
+    @_create(callback)
+    
+  _create: (callback) ->
+    records = undefined
+    
+    if @instantiate
+      returnArray   = @returnArray
+      @returnArray  = true
+      records       = @build()
+      @returnArray  = returnArray
+      
+      iterator = (record, next) ->
+        if record
+          record.save(next)
+        else
+          next()
+      
+      Tower.async records, iterator, (error) =>
+        unless callback
+          throw error if error
+          records = records[0] if !returnArray
+        else
+          return callback(error) if error
+          records = records[0] if !returnArray
+          callback(error, records)
+    else
+      @store.create @, callback
+    
+    records
+  
+  update: (callback) ->
+    updates = @data[0]
+    
+    if @instantiate
+      iterator = (record, next) =>
+        record.updateAttributes(updates, next)
+      
+      @_each @, iterator, callback
+    else
+      @store.update updates, @, callback
+    
+  destroy: (callback) ->
+    if @instantiate
+      iterator = (record, next) ->
+        record.destroy(next)
+        
+      @_each @, iterator, callback
+    else
+      @store.destroy @, callback
+    
+  find: (callback) ->
+    if @one
+      @store.findOne @, callback
+    else
+      @store.find @, callback
+    
+  findOne: (callback) ->
+    @store.findOne @, callback
+    
+  count: (callback) ->
+    @store.count @, callback
+    
+  exists: (callback) ->
+    @store.exists @, callback
+    
+  # Show query that will be used for the datastore.
+  # @todo
+  explain: (callback) ->
 
   # Clone this criteria.
   # 
   # @return [Tower.Model.Criteria]
   clone: ->
-    new @constructor(@attributes())
+    (new @constructor(model: @model, instantiate: @instantiate)).merge(@)
   
   # Merge this criteria with another criteria.
   # 
@@ -184,17 +288,27 @@ class Tower.Model.Criteria
   # 
   # @return [Tower.Model.Criteria] returns this criteria.
   merge: (criteria) ->
-    attributes  = criteria.attributes()
-    values      = @values
-    values.where = values.where.concat attributes._where if attributes._where.length > 0
-    values.order = values.order.concat attributes._order if attributes._order.length > 0
-    values.offset = attributes._offset if attributes._offset?
-    values.limit = attributes._limit if attributes._limit?
-    values.fields = attributes._fields if attributes._fields
-    values.offset = attributes._offset if attributes._offset?
-    values.joins = attributes._joins if attributes._joins?
-    values.through = attributes._through if attributes._through?
+    @_where     = @_where.concat criteria._where
+    @_order     = @_order.concat criteria._order
+    @_offset    = criteria._offset
+    @_limit     = criteria._limit
+    @_fields    = criteria._fields
+    @_except    = criteria._except
+    @_includes  = criteria._includes
+    @_joins     = _.extend {}, criteria._joins
+    @_eagerLoad = _.extend {}, criteria._eagerLoad
     @
+    
+  toJSON: ->
+    where: @_where
+    order: @_order
+    offset: @_offset
+    limit: @_limit
+    fields: @_fields
+    except: @_except
+    includes: @_includes
+    joins: @_joins
+    eagerLoad: @_eagerLoad
     
   # Compiled result from the {#where} arguments.
   # 
@@ -202,32 +316,20 @@ class Tower.Model.Criteria
   conditions: ->
     result = {}
 
-    for conditions in @values.where
+    for conditions in @_where
       _.deepMergeWithArrays(result, conditions)
 
     result
-
-  attributes: (to = {}) ->
-    values        = @values
-    to.where      = values.where.concat()
-    to.order      = values.order.concat()
-    to.offset     = values.offset   if values.offset?
-    to.limit      = values.limit    if values.limit?
-    to.fields     = values.fields   if values.fields
-    to.includes   = values.includes if values.includes
-    to.joins      = values.joins    if values.joins?
-    to.through    = values.through  if values.through?
-    to
-
+  
   # Compiled result from the {#where} arguments, but formatted for creating a model.
   # 
   # This means converting operators such as `$in` into an array, etc.
   # 
   # @return [Object]
-  build: ->
+  attributes: ->
     attributes  = {}
     
-    for conditions in @values.where
+    for conditions in @_where
       ## tags: $in: ["a", "b"]
       ## $push: tags: ["c"]
       for key, value of conditions
@@ -243,7 +345,7 @@ class Tower.Model.Criteria
 
     for key, value of attributes
       delete attributes[key] if value == undefined
-
+    
     attributes
   
   # @private
@@ -253,5 +355,20 @@ class Tower.Model.Criteria
       query[key] = {}
       query[key][operator] = value
     @where query
+    
+  # @private
+  _each: (criteria, iterator, callback) ->
+    @store.find criteria, (error, records) =>
+      if error
+        callback.call @, error, records
+      else
+        Tower.parallel records, iterator, (error) =>
+          unless callback
+            throw error if error
+          else
+            callback.call @, error, records if callback
+  
+  _array: (existing, orNull) ->
+    if existing && existing.length then existing.concat() else (if orNull then null else [])
 
 module.exports = Tower.Model.Criteria

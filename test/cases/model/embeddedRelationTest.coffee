@@ -21,7 +21,7 @@ describeWith = (store) ->
               assert.equal post.embeddedComments().records.length, 1
               assert.equal post.embeddedComments().records[0], comment
               assert.equal comment.constructor.name, "Comment"
-            
+              
               # test embedded document is actually stored in the post document
               App.Post.store().findOne {id: 10}, {raw: true}, (error, doc) =>
                 assert.equal doc.embeddedComments.length, 1
