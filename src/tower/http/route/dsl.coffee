@@ -70,12 +70,19 @@ class Tower.HTTP.Route.DSL
   
   resource: (name, options = {}) ->
     options.controller = name
-    @match "#{name}/new", Tower.Support.Object.extend({action: "new"}, options)
-    @match "#{name}", Tower.Support.Object.extend({action: "create", method: "POST"}, options)
-    @match "#{name}/", Tower.Support.Object.extend({action: "show"}, options)
-    @match "#{name}/edit", Tower.Support.Object.extend({action: "edit"}, options)
-    @match "#{name}", Tower.Support.Object.extend({action: "update", method: "PUT"}, options)
-    @match "#{name}", Tower.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
+    path = "/#{name}"
+    path = @_scope.path + path if @_scope.path
+
+    if @_scope.name
+      name = @_scope.name + Tower.Support.String.camelize(name)
+
+    @match "#{path}/new", Tower.Support.Object.extend({name: "new#{Tower.Support.String.camelize(name)}", action: "new"}, options)
+    @match "#{path}", Tower.Support.Object.extend({action: "create", method: "POST"}, options)
+    @match "#{path}", Tower.Support.Object.extend({name:name, action: "show"}, options)
+    @match "#{path}/edit", Tower.Support.Object.extend({name:"edit#{Tower.Support.String.camelize(name)}", action: "edit"}, options)
+    @match "#{path}", Tower.Support.Object.extend({action: "update", method: "PUT"}, options)
+    @match "#{path}", Tower.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
+
   
   resources: (name, options, callback) ->
     if typeof options == 'function'
