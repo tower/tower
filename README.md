@@ -24,8 +24,8 @@ Includes a database-agnostic ORM with browser (memory) and MongoDB support, mode
 ## Install
 
 ``` bash
+sudo npm install design.io -g
 npm install tower -g
-npm install design.io -g
 ```
 
 ## Generate
