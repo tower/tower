@@ -1,5 +1,5 @@
+# @module
 Tower.Middleware = {}
-# ns("Tower.Middleware", {})
 
 require './middleware/agent'
 require './middleware/cookies'

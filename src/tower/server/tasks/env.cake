@@ -5,4 +5,3 @@ task 'environment', ->
   Tower.Application.instance().initialize()
 
 task 'tower:initializers', ->
-  

@@ -26,20 +26,20 @@ Tower.View.RenderingHelper =
         eval(tmpl).call(@, locals)
     catch error
       console.log error.stack || error
-      
+
     null
-    
+
   page: ->
-    args          = Tower.Support.Array.args(arguments)
-    options       = Tower.Support.Array.extractOptions(args)
+    args          = _.args(arguments)
+    options       = _.extractOptions(args)
     browserTitle  = args.shift() || options.title
-    
+
     @contentFor "title", ->
       title browserTitle
-      
+
   urlFor: ->
     Tower.urlFor(arguments...)
-    
+
   yields: (key) ->
     value = @[key]
     if typeof value == "function"
@@ -49,13 +49,13 @@ Tower.View.RenderingHelper =
       ending = if value.match(/\n$/) then "\n" else ""
       text(value.replace(/\n$/, "").replace(/^(?!\s+$)/mg, __ck.repeat('  ', __ck.tabs)) + ending)
     null
-  
+
   hasContentFor: (key) ->
     !!(@hasOwnProperty(key) && @[key] && @[key] != "")
-    
+
   has: (key) ->
     !!(@hasOwnProperty(key) && @[key] && @[key] != "")
-    
+
   contentFor: (key, block) ->
     @[key] = block
     null

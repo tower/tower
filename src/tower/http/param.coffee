@@ -5,11 +5,11 @@ class Tower.HTTP.Param
   @limitKey:      "limit"                # or "perPage", etc.
   @pageKey:       "page"
   @separator:     "_"                    # or "-"
-  
+
   @create: (key, options) ->
     options.type ||= "String"
     new Tower.HTTP.Param[options.type](key, options)
-    
+
   constructor: (key, options = {}) ->
     @controller = options.controller
     @key        = key
@@ -18,11 +18,11 @@ class Tower.HTTP.Param
     @namespace  = Tower.Support.String.pluralize(@modelName) if modelName?
     @exact      = options.exact || false
     @default    = options.default
-  
+
   parse: (value) -> value
-  
+
   render: (value) -> value
-  
+
   toCriteria: (value) ->
     nodes     = @parse(value)
     criteria  = new Tower.Model.Criteria
@@ -36,13 +36,13 @@ class Tower.HTTP.Param
         else
           conditions[attribute] = {}
           conditions[attribute][operator] = node.value
-          
+
         criteria.where(conditions)
     criteria
-  
+
   parseValue: (value, operators) ->
     namespace: @namespace, key: @key, operators: operators, value: value, attribute: @attribute
-  
+
   _clean: (string) ->
     string.replace(/^-/, "").replace(/^\+-/, "").replace(/^'|'$/, "").replace("+", " ").replace(/^\^/, "").replace(/\$$/, "").replace(/^\s+|\s+$/, "")
 

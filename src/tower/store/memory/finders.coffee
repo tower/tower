@@ -1,63 +1,81 @@
+# @module
 Tower.Store.Memory.Finders =
-  find: (conditions, options, callback) ->
-    result  = []
-    records = @records
+
+  # @see Tower.Store#find
+  find: (criteria, callback) ->
+    result      = []
+    records     = @records
+    conditions  = criteria.conditions()
+    options     = criteria
     
-    if Tower.Support.Object.isPresent(conditions)
-      sort    = options.sort
-      limit   = options.limit || Tower.Store.defaultLimit
+    if _.isPresent(conditions)
+      sort        = options.get('order')
+      limit       = options.get('limit')# || Tower.Store.defaultLimit
+      startIndex  = options.get('offset') || 0
       
       for key, record of records
         result.push(record) if @matches(record, conditions)
         # break if result.length >= limit
+
+      result  = @sort(result, sort) if sort.length
       
-      result = @sort(result, sort) if sort
+      endIndex   = startIndex + (limit || result.length) - 1
       
-      result = result[0..limit - 1] if limit
+      result  = result[startIndex..endIndex]
     else
       for key, record of records
         result.push(record)
     
+    #result = criteria.export(result) if result.length
+    
     callback.call(@, null, result) if callback
     
     result
+
+  # @see Tower.Store#findOne
+  findOne: (criteria, callback) ->
+    record = undefined
     
-  findOne: (conditions, options, callback) ->
-    record = null
-    options.limit = 1
-    @find conditions, options, (error, records) => 
+    criteria.limit(1)
+    
+    @find criteria, (error, records) =>
       record = records[0] || null
       callback.call(@, error, record) if callback
+      
     record
   
-  count: (conditions, options, callback) ->
-    result = 0
-    @find conditions, options, (error, records) =>
+  # @see Tower.Store#count
+  count: (criteria, callback) ->
+    result = undefined
+    
+    @find criteria, (error, records) =>
       result = records.length
       callback.call(@, error, result) if callback
+      
     result
-    
-  exists: (conditions, options, callback) ->
-    result = false
-    
-    @count conditions, options, (error, record) =>
+
+  # @see Tower.Store#exists
+  exists: (criteria, callback) ->
+    result = undefined
+
+    @count criteria, (error, record) =>
       result = !!record
       callback.call(@, error, result) if callback
     
     result
-    
+
   # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
   sort: (records, sortings) ->
-    Tower.Support.Array.sortBy(records, sortings...)
-  
+    _.sortBy(records, sortings...)
+
   matches: (record, query) ->
     self    = @
     success = true
     schema  = @schema()
-    
+
     for key, value of query
       recordValue = record.get(key)
-      if Tower.Support.Object.isRegExp(value)
+      if _.isRegExp(value)
         success = recordValue.match(value)
       else if typeof value == "object"
         success = self._matchesOperators(record, recordValue, value)
@@ -65,13 +83,13 @@ Tower.Store.Memory.Finders =
         value = value.call(record) if typeof(value) == "function"
         success = recordValue == value
       return false unless success
-    
+
     true
-  
+
   _matchesOperators: (record, recordValue, operators) ->
     success = true
     self    = @
-    
+
     for key, value of operators
       if operator = Tower.Store.queryOperators[key]
         value = value.call(record) if _.isFunction(value)
@@ -101,33 +119,33 @@ Tower.Store.Memory.Finders =
         return false unless success
       else
         return recordValue == operators
-    
+
     true
-  
+
   _isGreaterThan: (recordValue, value) ->
     recordValue && recordValue > value
-    
+
   _isGreaterThanOrEqualTo: (recordValue, value) ->
     recordValue && recordValue >= value
-    
+
   _isLessThan: (recordValue, value) ->
     recordValue && recordValue < value
-    
+
   _isLessThanOrEqualTo: (recordValue, value) ->
     recordValue && recordValue <= value
-    
+
   _isEqualTo: (recordValue, value) ->
     recordValue == value
-    
+
   _isNotEqualTo: (recordValue, value) ->
     recordValue != value
-  
+
   _isMatchOf: (recordValue, value) ->
     !!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
-    
+
   _isNotMatchOf: (recordValue, value) ->
     !!!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
-    
+
   _anyIn: (recordValue, array) ->
     if _.isArray(recordValue)
       for value in array
@@ -136,7 +154,7 @@ Tower.Store.Memory.Finders =
       for value in array
         return true if recordValue == value
     false
-    
+
   _notIn: (recordValue, array) ->
     if _.isArray(recordValue)
       for value in array
@@ -145,7 +163,7 @@ Tower.Store.Memory.Finders =
       for value in array
         return false if recordValue == value
     true
-    
+
   _allIn: (recordValue, array) ->
     if _.isArray(recordValue)
       for value in array
@@ -154,5 +172,5 @@ Tower.Store.Memory.Finders =
       for value in array
         return false if recordValue != value
     true
-    
+
 module.exports = Tower.Store.Memory.Finders

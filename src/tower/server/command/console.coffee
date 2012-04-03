@@ -2,13 +2,13 @@
 class Tower.Command.Console
   constructor: (argv) ->
     @program = program = require('commander')
-    
+
     program
       .version(Tower.version)
       .option('-e, --environment [value]')
       .option('-c, --coffee')
       .option '-h, --help', '''
-\ \ Usage: 
+\ \ Usage:
 \ \   tower console [options]
 \ \ 
 \ \ Options:
@@ -16,21 +16,21 @@ class Tower.Command.Console
 \ \   -c, --coffee                      run in coffeescript mode!
 \ \   -h, --help                        output usage information
 \ \   -v, --version                     output version number
-\ \   
+\ \ 
 '''
     program.parse(argv)
-    
+
     program.environment ||= "development"
-    
+
     if program.help
       console.log program.options[program.options.length - 1].description
       process.exit()
     Tower.env = @program.environment
-  
+
   run: ->
     return @runCoffee() if @program.coffee
     client = require("repl").start("tower> ").context
-    
+
     client.reload = ->
       app = Tower.Application.instance()
       app.initialize()
@@ -38,12 +38,12 @@ class Tower.Command.Console
       client.Tower  = Tower
       client._      = _
       client[Tower.namespace()] = app
-    
+
     client._c = ->
       l       = arguments.length
       message = "Callback called with " + l + " argument" + (if l is 1 then "" else "s") + (if l > 0 then ":\n" else "")
       i       = 0
-      
+
       while i < 10
         if i < arguments.length
           client["_" + i] = arguments[i]
@@ -57,13 +57,13 @@ class Tower.Command.Console
       process.exit 0
 
     process.nextTick client.reload
-    
+
   runCoffee: ->
     app = Tower.Application.instance()
     app.initialize()
     app.stack()
     # Copied from coffee-script/lib/coffee-script/repl.coffee
-    # 
+    #
     # A very simple Read-Eval-Print-Loop. Compiles one line at a time to JavaScript
     # and evaluates it. Good for simple tests, or poking around the **Node.js** API.
     # Using it looks like this:
@@ -188,5 +188,5 @@ class Tower.Command.Console
     repl.setPrompt REPL_PROMPT
     repl.prompt()
 
-  
+
 module.exports = Tower.Command.Console

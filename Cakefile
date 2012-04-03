@@ -3,9 +3,27 @@ findit  = require './node_modules/findit'
 async   = require './node_modules/async'
 mint    = require 'mint'
 gzip    = require 'gzip'
+_path   = require 'path'
+File    = require('pathfinder').File
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
 require 'underscore.logger'
+
+VERSION       = JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/package.json"))).version
+DATE          = (new Date).toUTCString()
+JS_COPYRIGHT  = """
+/*!
+ * Tower.js v#{VERSION}
+ * http://towerjs.org/
+ *
+ * Copyright 2012, Lance Pollard
+ * MIT License.
+ * http://towerjs.org/license
+ *
+ * Date: #{DATE}
+ */
+
+"""
 
 #Tower   = require './lib/tower'
 
@@ -107,10 +125,11 @@ task 'to-underscore', ->
 task 'build', ->
   content = compileFile("./src/tower", "./src/tower/client.coffee").replace /Tower\.version *= *.+\n/g, (_) ->
     version = """
-Tower.version = "#{JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/package.json"))).version}"
+Tower.version = "#{VERSION}"
 
 """
   mint.coffee content, bare: false, (error, result) ->
+    result = JS_COPYRIGHT + result
     _console.error error.stack if error
     fs.writeFile "./dist/tower.js", result
     unless error
@@ -154,8 +173,6 @@ task 'build-generic', ->
         #  console.log error
         #  fs.writeFile './dist/tower.min.js', result
 
-task 'clean', 'Remove built files in ./dist', ->
-
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->
     throw err if err
@@ -184,3 +201,8 @@ task 'stats', 'Build files and report on their sizes', ->
       prev = size
 
   console.log table.toString()
+
+task 'clean', 'remove trailing whitespace', ->
+  findit.find "./src", (file) ->
+    if File.isFile(file)
+      fs.writeFileSync(file, fs.readFileSync(file, "utf-8").toString().replace(/[ \t]+$/mg, ""))

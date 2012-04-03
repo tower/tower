@@ -3,11 +3,11 @@ require '../../config'
 user = null
 
 describe 'Tower.Model.Metadata', ->
-  test '.resourceName', ->
-    assert.equal App.User.resourceName(), "user"
+  test '.name', ->
+    assert.equal App.User.metadata().name, "user"
     
-  test '.collectionName', ->
-    assert.equal App.User.collectionName(), "users"
+  test '.namePlural', ->
+    assert.equal App.User.metadata().namePlural, "users"
     
   test '.baseClass', ->
     assert.equal App.User.baseClass(), App.User
@@ -20,7 +20,9 @@ describe 'Tower.Model.Metadata', ->
     assert.equal App.User.toKey(), "user"
     
   test '.metadata', ->
-    assert.deepEqual App.User.metadata(),
+    metadata = _.extend {}, App.User.metadata()
+    delete metadata.store
+    assert.deepEqual metadata,
       name:                 'user'
       namePlural:           'users'
       className:            'User'
@@ -34,14 +36,13 @@ describe 'Tower.Model.Metadata', ->
     beforeEach ->
       user = new App.User
     
-    test '#className', ->
-      assert.equal user.className(), "User"
-      
     test '#toLabel', ->
       assert.equal user.toLabel(), "User"
       
     test '#metadata', ->
-      assert.deepEqual user.metadata(),
+      metadata = _.extend {}, user.metadata()
+      delete metadata.store
+      assert.deepEqual metadata,
         name:                 'user'
         namePlural:           'users'
         className:            'User'

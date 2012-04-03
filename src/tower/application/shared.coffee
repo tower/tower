@@ -1,4 +1,4 @@
-Tower.Support.Object.extend Tower, 
+_.extend Tower,
   env:        "development"
   port:       3000
   client:     typeof(window) != "undefined"
@@ -14,20 +14,20 @@ Tower.Support.Object.extend Tower,
   metadata:   {}
   metadataFor: (name) ->
     @metadata[name] ||= {}
-  
+
   # @example
   #     Tower.hook "Tower.Store.MongoDB.load", after: "config.locales"
   #     Tower.callback "initialize", name: "addRoutingPaths", after: "config.locales"
   # Uses Tower.Support.Callback internally
   callback: ->
     Tower.Application.callback arguments...
-    
+
   runCallbacks: ->
     Tower.Application.instance().runCallbacks arguments...
-  
+
   sync: (method, records, callback) ->
     callback null, records if callback
-  
+
   get: ->
     Tower.request "get", arguments...
 
@@ -39,7 +39,7 @@ Tower.Support.Object.extend Tower,
 
   destroy: ->
     Tower.request "delete", arguments...
-  
+
   request: (method, path, options, callback) ->
     if typeof options == "function"
       callback      = options
@@ -52,42 +52,42 @@ Tower.Support.Object.extend Tower,
     request.query   = location.params
     Tower.Application.instance().handle request, response, ->
       callback.call @, @response
-  
+
   raise: ->
     throw new Error(Tower.t(arguments...))
-  
+
   t: ->
     Tower.Support.I18n.translate(arguments...)
-    
+
   l: ->
     Tower.Support.I18n.localize(arguments...)
-  
+
   stringify: ->
-    string = Tower.Support.Array.args(arguments).join("_")
+    string = _.args(arguments).join("_")
     switch Tower.case
       when "snakecase"
         Tower.Support.String.underscore(string)
       else
         Tower.Support.String.camelcase(string)
-        
+
   namespace:  ->
     Tower.Application.instance().constructor.name
-    
+
   module: (namespace) ->
     node    = Tower.namespaces[namespace]
     return node if node
     parts   = namespace.split(".")
     node    = Tower
-    
+
     for part in parts
       node  = node[part] ||= {}
-    
+
     Tower.namespaces[namespace] = node
-  
+
   constant: (string) ->
     node  = global
     parts = string.split(".")
-    
+
     try
       for part in parts
         node = node[part]
@@ -101,15 +101,25 @@ Tower.Support.Object.extend Tower,
       else
         throw new Error("Constant '#{string}' wasn't found")
     node
-    
+
   namespaced: (string) ->
     namespace = Tower.namespace()
     if namespace
       "#{namespace}.#{string}"
     else
       string
-      
+
   async: (array, iterator, callback) ->
+    @series array, iterator, callback
+
+  each: (array, iterator) ->
+    if array.forEach
+      array.forEach iterator
+    else
+      for item, index in array
+        iterator(item, index, array)
+
+  series: (array, iterator, callback = ->) ->
     return callback() unless array.length
     completed = 0
     iterate = ->
@@ -125,6 +135,32 @@ Tower.Support.Object.extend Tower,
             iterate()
 
     iterate()
+
+  parallel: (array, iterator, callback = ->) ->
+    return callback() unless array.length
+    completed = 0
+    iterate = ->
+    Tower.each array, (x) ->
+      iterator x, (error) ->
+        if error
+          callback error
+          callback = ->
+        else
+          completed += 1
+          if completed == array.length
+            callback()
+
+  none: (value) ->
+    _.none value
+    
+  oneOrMany: ->
+    _.oneOrMany arguments...
+      
+  args: (args) ->
+    _.args(args)
+    
+  clone: (object) ->
+    _.extend({}, object)
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->

@@ -17,3 +17,4 @@ describe 'Tower.Model.Serialization', ->
       postIds:   [],
       updatedAt: undefined,
       firstName: 'Lance'
+      cachedMembershipIds: []

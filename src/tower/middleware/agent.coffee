@@ -1,7 +1,7 @@
 Tower.Middleware.Agent = (request, response, next) ->
   agent = require('useragent').parse(request.headers['user-agent'])
-  
-  attributes = Tower.Support.Object.extend require('useragent').is(request.headers['user-agent']),
+
+  attributes = _.extend require('useragent').is(request.headers['user-agent']),
     family:   agent.family
     major:    agent.major
     minor:    agent.minor
@@ -14,10 +14,10 @@ Tower.Middleware.Agent = (request, response, next) ->
     linux:    !!agent.os.match(/linux/i)
 
   request.agent = new Tower.HTTP.Agent(attributes)
-  
+
   # so we can easily parse it out
   # response.cookie("user-agent", JSON.stringify(attributes))
-  
+
   next() if next
 
 module.exports = Tower.Middleware.Agent

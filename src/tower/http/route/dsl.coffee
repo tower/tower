@@ -7,16 +7,16 @@ class Tower.HTTP.Route.DSL
     Tower.HTTP.Route.create(new Tower.HTTP.Route(@_extractOptions(arguments...)))
 
   get: ->
-    @matchMethod("get", Tower.Support.Array.args(arguments))
+    @matchMethod("get", _.args(arguments))
 
   post: ->
-    @matchMethod("post", Tower.Support.Array.args(arguments))
+    @matchMethod("post", _.args(arguments))
 
   put: ->
-    @matchMethod("put", Tower.Support.Array.args(arguments))
+    @matchMethod("put", _.args(arguments))
 
   delete: ->
-    @matchMethod("delete", Tower.Support.Array.args(arguments))
+    @matchMethod("delete", _.args(arguments))
 
   matchMethod: (method, args) ->
     if typeof args[args.length - 1] == "object"
@@ -39,7 +39,7 @@ class Tower.HTTP.Route.DSL
 
   scope: (options = {}, block) ->
     originalScope = @_scope ||= {}
-    @_scope = Tower.Support.Object.extend {}, originalScope, options
+    @_scope = _.extend {}, originalScope, options
     block.call(@)
     @_scope = originalScope
     @
@@ -47,7 +47,7 @@ class Tower.HTTP.Route.DSL
   controller: (controller, options, block) ->
     options.controller = controller
     @scope(options, block)
-  
+
   namespace: (path, options, block) ->
     if typeof options == 'function'
       block     = options
@@ -55,19 +55,19 @@ class Tower.HTTP.Route.DSL
     else
       options   = {}
 
-    options = Tower.Support.Object.extend(name: path, path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
+    options = _.extend(name: path, path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
 
     if options.name && @_scope.name
       options.name = @_scope.name + Tower.Support.String.camelize(options.name)
 
     @scope(options, block)
-  
+
   constraints: (options, block) ->
     @scope(constraints: options, block)
-  
+
   defaults: (options, block) ->
     @scope(defaults: options, block)
-  
+
   resource: (name, options = {}) ->
     options.controller = name
     path = "/#{name}"
@@ -76,14 +76,13 @@ class Tower.HTTP.Route.DSL
     if @_scope.name
       name = @_scope.name + Tower.Support.String.camelize(name)
 
-    @match "#{path}/new", Tower.Support.Object.extend({name: "new#{Tower.Support.String.camelize(name)}", action: "new"}, options)
-    @match "#{path}", Tower.Support.Object.extend({action: "create", method: "POST"}, options)
-    @match "#{path}", Tower.Support.Object.extend({name:name, action: "show"}, options)
-    @match "#{path}/edit", Tower.Support.Object.extend({name:"edit#{Tower.Support.String.camelize(name)}", action: "edit"}, options)
-    @match "#{path}", Tower.Support.Object.extend({action: "update", method: "PUT"}, options)
-    @match "#{path}", Tower.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
+    @match "#{path}/new", _.extend({name: "new#{Tower.Support.String.camelize(name)}", action: "new"}, options)
+    @match "#{path}", _.extend({action: "create", method: "POST"}, options)
+    @match "#{path}", _.extend({name:name, action: "show"}, options)
+    @match "#{path}/edit", _.extend({name:"edit#{Tower.Support.String.camelize(name)}", action: "edit"}, options)
+    @match "#{path}", _.extend({action: "update", method: "PUT"}, options)
+    @match "#{path}", _.extend({action: "destroy", method: "DELETE"}, options)
 
-  
   resources: (name, options, callback) ->
     if typeof options == 'function'
       callback = options
@@ -102,27 +101,27 @@ class Tower.HTTP.Route.DSL
 
     one   = Tower.Support.String.singularize(many)
 
-    @match "#{path}", Tower.Support.Object.extend({name: "#{many}", action: "index"}, options)
-    @match "#{path}/new", Tower.Support.Object.extend({name: "new#{Tower.Support.String.camelize(one)}", action: "new"}, options)
-    @match "#{path}", Tower.Support.Object.extend({action: "create", method: "POST"}, options)
-    @match "#{path}/:id", Tower.Support.Object.extend({name: "#{one}", action: "show"}, options)
-    @match "#{path}/:id/edit", Tower.Support.Object.extend({name: "edit#{Tower.Support.String.camelize(one)}", action: "edit"}, options)
-    @match "#{path}/:id", Tower.Support.Object.extend({action: "update", method: "PUT"}, options)
-    @match "#{path}/:id", Tower.Support.Object.extend({action: "destroy", method: "DELETE"}, options)
+    @match "#{path}", _.extend({name: "#{many}", action: "index"}, options)
+    @match "#{path}/new", _.extend({name: "new#{Tower.Support.String.camelize(one)}", action: "new"}, options)
+    @match "#{path}", _.extend({action: "create", method: "POST"}, options)
+    @match "#{path}/:id", _.extend({name: "#{one}", action: "show"}, options)
+    @match "#{path}/:id/edit", _.extend({name: "edit#{Tower.Support.String.camelize(one)}", action: "edit"}, options)
+    @match "#{path}/:id", _.extend({action: "update", method: "PUT"}, options)
+    @match "#{path}/:id", _.extend({action: "destroy", method: "DELETE"}, options)
 
     if callback
-      @scope Tower.Support.Object.extend({path: "#{path}/:#{Tower.Support.String.singularize(name)}Id", name: one}, options), callback
+      @scope _.extend({path: "#{path}/:#{Tower.Support.String.singularize(name)}Id", name: one}, options), callback
     @
-  
+
   collection: ->
-  
+
   member: ->
 
   root: (options) ->
-    @match '/', Tower.Support.Object.extend(as: "root", options)
+    @match '/', _.extend(as: "root", options)
 
   _extractOptions: ->
-    args            = Tower.Support.Array.args(arguments)
+    args            = _.args(arguments)
     path            = "/" + args.shift().replace(/^\/|\/$/, "")
 
     if typeof args[args.length - 1] == "object"
@@ -141,7 +140,7 @@ class Tower.HTTP.Route.DSL
     anchor          = @_extractAnchor(options)
     name            = @_extractName(options)
 
-    options         = Tower.Support.Object.extend options,
+    options         = _.extend options,
       method:         method
       constraints:    constraints
       defaults:       defaults
@@ -159,7 +158,7 @@ class Tower.HTTP.Route.DSL
     options.as || options.name
 
   _extractConstraints: (options) ->
-    Tower.Support.Object.extend(@_scope.constraints || {}, options.constraints || {})
+    _.extend(@_scope.constraints || {}, options.constraints || {})
 
   _extractDefaults: (options) ->
     options.defaults || {}
@@ -192,5 +191,5 @@ class Tower.HTTP.Route.DSL
     #action      = action.toLowerCase()
 
     name: controller, action: action, className: Tower.Support.String.camelize("#{controller}")
-      
+
 module.exports = Tower.Route.DSL

@@ -1,15 +1,15 @@
 $.fn.serializeParams = (coerce) ->
   $.serializeParams($(this).serialize(), coerce)
-  
+
 $.serializeParams = (params, coerce) ->
   obj = {}
   coerce_types =
     true: not 0
     false: not 1
     null: null
-  
+
   array = params.replace(/\+/g, " ").split("&")
-  
+
   for item, index in array
     param = item.split("=")
     key = decodeURIComponent(param[0])

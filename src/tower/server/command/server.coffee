@@ -8,7 +8,7 @@ class Tower.Command.Server
       .option('-p, --port <n>', 'port for the application')
       .option('-v, --version')
       .option '-h, --help', '''
-\ \ Usage: 
+\ \ Usage:
 \ \   tower server [options]
 \ \ 
 \ \ Options:
@@ -20,7 +20,7 @@ class Tower.Command.Server
 \ \ Examples:
 \ \   tower generate scaffold Post title:string body:text belongsTo:user
 \ \   tower generate model Post title:string body:text belongsTo:user
-\ \   
+\ \ 
 '''
       program.parse(argv)
 
@@ -34,7 +34,7 @@ class Tower.Command.Server
     program     = @program
     Tower.env   = program.environment || "development"
     Tower.port  = program.port      = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
-    
+
     Tower.Application.instance().run()
-  
+
 module.exports = Tower.Command.Server

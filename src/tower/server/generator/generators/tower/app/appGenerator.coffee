@@ -1,23 +1,23 @@
 class Tower.Generator.AppGenerator extends Tower.Generator
   sourceRoot: __dirname
-  
+
   buildApp: (name = @appName) ->
     app = super(name)
-    
+
     app.title       = @program.title || Tower.Support.String.camelize(app.name)
     app.description = @program.description
     app.keywords    = @program.keywords
-    
+
     app
-  
+
   run: ->
     @inside @app.name, '.', ->
       @template "gitignore", ".gitignore" unless @program.skipGitfile
       @template "npmignore", ".npmignore"
       @template "slugignore", ".slugignore" unless @program.skipProcfile
-      
+
       @template "cake", "Cakefile"
-      
+
       @inside "app", ->
         @inside "client", ->
           @inside "config", ->
@@ -27,17 +27,17 @@ class Tower.Generator.AppGenerator extends Tower.Generator
             @template "application.styl"
           @inside "controllers", ->
             @template "applicationController.coffee"
-          
+
         @inside "controllers", ->
           @template "applicationController.coffee"
-        
+
         @inside "helpers", ->
           @template "applicationHelper.coffee"
-          
+
         @directory "mailers"
-        
+
         @directory "models"
-      
+
         @inside "views", ->
           @template "welcome.coffee"
           @inside "layouts", ->
@@ -48,7 +48,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
             @template "_meta.coffee"
             @template "_navigation.coffee"
             @template "_sidebar.coffee"
-    
+
       @inside "config", ->
         @template "application.coffee"
         @template "assets.coffee"
@@ -56,25 +56,28 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @template "databases.coffee"
         @template "routes.coffee"
         @template "session.coffee"
-        
+
         @inside "environments", ->
           @template "development.coffee"
           @template "production.coffee"
           @template "test.coffee"
-        
+
         @directory "initializers"
-        
+
         @inside "locales", ->
           @template "en.coffee"
-        
+    
+      @inside "db", ->
+        @template "seeds.coffee"
+
       @inside "lib", ->
         @directory "tasks"
-      
+
       @directory "log"
-    
+
       @template "pack", "package.json"
       @template "Procfile" unless @program.skipProcfile
-      
+
       @inside "public", ->
         @template "404.html"
         @template "500.html"
@@ -89,20 +92,21 @@ class Tower.Generator.AppGenerator extends Tower.Generator
               @createFile "templates.js", ""
         @directory "stylesheets"
         @directory "swfs"
-      
+
       @template "README.md"
-      
+
       @template "server.js"
-      
+
       @inside "test", ->
         @directory "controllers"
         @directory "factories"
         @directory "features"
         @directory "models"
         @template "config.coffee"
-    
+        @template "mocha.opts"
+
       @directory "tmp"
-    
+
       @inside "vendor", ->
         @inside "javascripts", ->
           @get "https://raw.github.com/documentcloud/underscore/master/underscore.js", "underscore.js"
@@ -181,11 +185,11 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "public/images", ->
         @get "https://github.com/twitter/bootstrap/blob/master/img/glyphicons-halflings.png", "glyphicons-halflings.png"
         @get "https://github.com/twitter/bootstrap/blob/master/img/glyphicons-halflings-white.png", "glyphicons-halflings-white.png"
-        
+
       @inside "public/swfs", ->
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMainInsecure.swf", "WebSocketMainInsecure.swf"
-    
+
       @template "watch", "Watchfile"
-  
+
 module.exports = Tower.Generator.AppGenerator

@@ -1,79 +1,100 @@
+# @module
 # @todo
 # copied this from acts_as_nested_set, haven't messed with it yet.
 Tower.Model.Hierarchical =
   ClassMethods:
-    hierarchical: ->
-      @field "lft", type: "Integer"
-      @field "rgt", type: "Integer"
-      @field "parentId", type: "Integer"
+    hierarchical: (options = {}) ->
+      @metadata().lft       = options.lft ||= "lft"
+      @metadata().rgt       = options.rgt ||= "rgt"
+      @metadata().parentId  = options.parentId ||= "parentId"
       
+      @field options.lft, type: "Integer"
+      @field options.rgt, type: "Integer"
+      @field options.parentId, type: "Integer"
+
     root: (callback) ->
       @roots.first(callback)
-      
+
     roots: ->
-      @where(parentColumnName: null).order(@quotedLeftColumnName())
+      metadata    = @metadata()
+      conditions  = {}
+      conditions[metadata.parentId] = null
       
+      @where(conditions).asc(metadata.lft)
+    
     leaves: ->
-      @where("#{@quotedRightColumnName()} - #{@quotedLeftColumnName()} = 1").order(@quotedLeftColumnName())
+      metadata    = @metadata()
+      @where("#{metadata.rgt} - #{metadata.lft} = 1").asc(metadata.lft)
   
   isRoot: ->
-    !!!@get("parentId")
-    
+    !!!@get(@metadata().parentId)
+  
   root: (callback) ->
-    @selfAndAncestors.where(parentColumnName: null).first(callback)
-    
+    metadata    = @metadata()
+    conditions  = {}
+    conditions[metadata.parentId] = null
+    @selfAndAncestors.where(conditions).first(callback)
+
   selfAndAncestors: ->
-    @nestedSetScope().where([
-      "#{self.class.quotedTableName}.#{quotedLeftColumnName} <= ? AND #{self.class.quotedTableName}.#{quotedRightColumnName} >= ?", left, right
-    ])
+    @nestedSetScope().where(
+      lft: "<=": @get("lft")
+      rgt: ">=": @get("rgt")
+    )
   
   ancestors: ->
     @withoutSelf @selfAndAncestors
 
   selfAndSiblings: ->
-    @nestedSetScope().where(parentColumnName: parentId)
+    metadata    = @metadata()
+    conditions  = {}
+    conditions[metadata.parentId] = @get(metadata.parentId)
+    
+    @nestedSetScope().where(conditions)
   
   siblings: ->
     @withoutSelf @selfAndSiblings()
 
-  leaves: ->
-    @descendants().where("#{self.class.quotedTableName}.#{quotedRightColumnName} - #{self.class.quotedTableName}.#{quotedLeftColumnName} = 1")
-  
+  leaves: ->  
+    metadata = @metadata()
+    @descendants().where("#{metadata.rgt} - #{metadata.lft} = 1").asc(metadata.lft)
+
   level: (callback) ->
-    if get('parentId') == null then 0 else ancestors().count(callback)
-  
+    metadata = @metadata()
+    if @get(metadata.parentId) == null then 0 else @ancestors().count(callback)
+
   selfAndDescendants: ->
-    @nestedSetScope().where([
-      "#{self.class.quotedTableName}.#{quotedLeftColumnName} >= ? AND #{self.class.quotedTableName}.#{quotedRightColumnName} <= ?", left, right
-    ])
-  
+    @nestedSetScope().where(
+      lft: ">=": @get("lft")
+      rgt: "<=": @get("rgt")
+    )
+
   descendants: ->
     @withoutSelf @selfAndDescendants()
 
   isDescendantOf: (other) ->
-    other.left < self.left && self.left < other.right && sameScope?(other)
-    
+    other.get("left") < @get("left") && @get("left") < @get("right") && @sameScope?(other)
+
   moveLeft: ->
     @moveToLeftOf @leftSibling()
-  
+
   moveRight: ->
     @moveToRightOf @rightSibling()
-  
+
   moveToLeftOf: (node) ->
     @moveTo node, "left"
-  
+
   moveToRightOf: (node) ->
     @moveTo node, "right"
-  
+
   moveToChildOf: (node) ->
     @moveTo node, "child"
-  
+
   moveToRoot: ->
     @moveTo null, "root"
-    
+
   moveTo: (target, position) ->
     @runCallbacks "move", ->
-  
+
   isOrIsDescendantOf: (other) ->
     other.left <= self.left && self.left < other.right && sameScope?(other)
 
@@ -82,15 +103,15 @@ Tower.Model.Hierarchical =
 
   isOrIsAncestorOf: (other) ->
     self.left <= other.left && other.left < self.right && sameScope?(other)
-    
+
   sameScope: (other) ->
     Array(actsAsNestedSetOptions.scope).all (attr) ->
       self.send(attr) == other.send(attr)
-  
+
   leftSibling: ->
     siblings.where(["#{self.class.quotedTableName}.#{quotedLeftColumnName} < ?", left]).
             order("#{self.class.quotedTableName}.#{quotedLeftColumnName} DESC").last
-  
+
   rightSibling: ->
     siblings.where(["#{self.class.quotedTableName}.#{quotedLeftColumnName} > ?", left]).first
 

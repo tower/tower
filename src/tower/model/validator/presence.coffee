@@ -1,6 +1,6 @@
 class Tower.Model.Validator.Presence extends Tower.Model.Validator
   validate: (record, attribute, errors, callback) ->
-    unless Tower.Support.Object.isPresent(record.get(attribute))
+    unless _.isPresent(record.get(attribute))
       return @failure(
         record,
         attribute,

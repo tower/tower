@@ -1,7 +1,7 @@
 class Tower.HTTP.Agent
   constructor: (attributes = {}) ->
     _.extend @, attributes
-    
+
   toJSON: ->
     family:   @family
     major:    @major
@@ -10,5 +10,5 @@ class Tower.HTTP.Agent
     version:  @version
     os:       @os
     name:     @name
-    
+
 module.exports = Tower.HTTP.Agent

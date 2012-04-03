@@ -2,25 +2,26 @@ class Tower.View.Form extends Tower.View.Component
   constructor: (args, options) ->
     super
     @model      = args.shift() || new Tower.Model
-    
+
     if typeof @model == "string"
       klass     = Tower.constant(Tower.Support.String.camelize(@model))
       @model    = if klass then new klass else null
-    
+
     @attributes = @_extractAttributes(options)
   
   render: (callback) ->
     @tag "form", @attributes, =>
       @tag "input", type: "hidden", name: "_method", value: @attributes["data-method"]
       if callback
-        builder    = new Tower.View.Form.Builder([], 
+        builder    = new Tower.View.Form.Builder([],
           template:   @template
           tabindex:   1
           accessKeys: {}
           model:      @model
         )
         builder.render(callback)
-  
+
+  # @private
   _extractAttributes: (options = {}) ->
     attributes                  = options.html || {}
     attributes.action           = options.url || Tower.urlFor(@model)
@@ -32,20 +33,20 @@ class Tower.View.Form extends Tower.View.Component
     attributes.role             = "form"
     attributes.novalidate       = "true" # needs to be true b/c the error popups are horribly ugly!# if options.validate == false
     attributes["data-validate"] = options.validate.toString() if options.hasOwnProperty("validate")
-    
+
     method                      = attributes.method || options.method
-    
+
     if !method || method == ""
       if @model && @model.get("id")
         method                 = "put"
       else
         method                 = "post"
-    
+
     attributes["data-method"] = method
-    attributes.method        = if method == "get" then "get" else "post" 
-    
+    attributes.method        = if method == "get" then "get" else "post"
+
     attributes
-    
+
 require './form/builder'
 require './form/field'
 require './form/fieldset'

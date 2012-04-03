@@ -10,7 +10,7 @@ describeWith = (store) ->
       
     afterEach (done) ->
       App.Post.destroy(done)
-    
+
     #test 'exists', ->
     #  App.Post.exists 1, (error, result) -> assert.equal result, true
     #  App.Post.exists "1", (error, result) -> assert.equal result, true
@@ -19,6 +19,35 @@ describeWith = (store) ->
     #  App.Post.exists 45, (error, result) -> assert.equal result, false
     #  App.Post.exists (error, result) -> assert.equal result, true
     #  App.Post.exists null, (error, result) -> assert.equal result, false
+    
+    describe 'basics', ->
+      beforeEach (done) ->
+        App.Post.create [{rating: 8}, {rating: 10}], done
+      
+      test 'all', (done) ->
+        App.Post.all (error, records) =>
+          assert.equal records.length, 2
+          done()
+      
+      test 'first', (done) ->
+        App.Post.asc("rating").first (error, record) =>
+          assert.equal record.get('rating'), 8
+          done()
+          
+      test 'last', (done) ->
+        App.Post.asc("rating").last (error, record) =>
+          assert.equal record.get('rating'), 10
+          done()
+          
+      test 'count', (done) ->
+        App.Post.count (error, count) =>
+          assert.equal count, 2
+          done()
+
+      test 'exists', (done) ->
+        App.Post.exists (error, value) =>
+          assert.equal value, true
+          done()
     
     describe '$gt', ->
       describe 'integer > value (8, 10)', ->
@@ -40,7 +69,7 @@ describeWith = (store) ->
           App.Post.where(rating: ">": 7).count (error, count) =>
             assert.equal count, 2
             done()
-      
+
       describe 'date > value (' + moment().format('MMM D, YYYY') + ')', ->
         beforeEach (done) ->
           App.Post.create rating: 1, someDate: moment()._d, done
@@ -59,7 +88,7 @@ describeWith = (store) ->
           App.Post.where(createdAt: ">": moment("Dec 25, 2050")._d).count (error, count) =>
             assert.equal count, 0
             done()
-    
+
     describe '$gte', ->
       describe 'integer >= value (8, 10)', ->
         beforeEach (done) ->
@@ -315,6 +344,65 @@ describeWith = (store) ->
             done()
   
     describe '$neq', ->
+
+    describe 'pagination', ->
+      beforeEach (done) ->
+        Tower.Model.Criteria::defaultLimit = 5
+        
+        callbacks = []
+        i = 0
+        while i < 18
+          i++
+          do (i) ->
+            callbacks.push (callback) => App.Post.create(id: i, title: (new Array(i + 1)).join("a"), rating: 8, callback)
+        
+        async.series callbacks, =>
+          process.nextTick(done)
+        
+      afterEach ->
+        Tower.Model.Criteria::defaultLimit = 20
+      
+      test 'limit(1)', (done) ->
+        App.Post.limit(1).all (error, posts) =>
+          assert.equal posts.length, 1
+          done()
+          
+      test 'limit(0) should not do anything', (done) ->
+        App.Post.limit(0).all (error, posts) =>
+          assert.equal posts.length, 18
+          done()
+      
+      test 'page(2) middle of set', (done) ->
+        App.Post.page(2).asc("id").all (error, posts) =>
+          assert.equal posts.length, 5
+          assert.equal posts[0].get('id'), 6
+          assert.equal posts[4].get('id'), 10
+          done()
+      
+      test 'page(4) end of set', (done) ->
+        App.Post.page(4).asc("id").all (error, posts) =>
+          assert.equal posts.length, 3
+          done()
+          
+      test 'page(20) if page is greater than count, should return 0', (done) ->
+        App.Post.page(20).all (error, posts) =>
+          assert.equal posts.length, 0
+          done()
+          
+      test 'paginate(page: 4, perPage: 5) end of set', (done) ->
+        App.Post.paginate(page: 4, perPage: 5).asc("id").all (error, posts) =>
+          assert.equal posts.length, 3
+          done()
+
+      test 'desc', (done) ->
+        App.Post.page(2).desc('id').all (error, posts) =>
+          assert.equal posts[0].id, 13
+          done()
+      
+      test 'asc', (done) ->
+        App.Post.page(2).asc('id').all (error, posts) =>
+          assert.equal posts[0].id, 6
+          done()
 
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)

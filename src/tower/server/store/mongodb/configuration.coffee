@@ -1,5 +1,8 @@
 Tower.Store.MongoDB.Configuration =
   ClassMethods:
+    supports:
+      embed: true
+
     config:
       development:
         name: "tower-development"
@@ -17,14 +20,14 @@ Tower.Store.MongoDB.Configuration =
         name: "tower-production"
         port: 27017
         host: "127.0.0.1"
-    
+
     configure: (options) ->
-      Tower.Support.Object.deepMerge(@config, options)
-    
+      _.deepMerge(@config, options)
+
     env: ->
       @config[Tower.env]
-    
+
     lib: ->
       require 'mongodb'
-      
+
 module.exports = Tower.Store.MongoDB.Configuration

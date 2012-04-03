@@ -15,7 +15,7 @@ class Tower.HTTP.Response
   writeHead: (statusCode, headers) ->
     @statusCode = statusCode
     @headers    = headers
-  
+
   setHeader: (key, value) ->
     throw new Error("Headers already sent") if @headerSent
     @headers[key] = value
@@ -27,7 +27,7 @@ class Tower.HTTP.Response
     @body       += body
     @sent       = true
     @headerSent = true
-    
+
   redirect: (path, options = {}) ->
     global.History.push options, null, path if global.History
 

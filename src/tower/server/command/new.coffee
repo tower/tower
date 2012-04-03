@@ -1,7 +1,7 @@
-class Tower.Command.New  
+class Tower.Command.New
   constructor: (argv) ->
     @program = program = require('commander')
-    
+
     program
       .version(Tower.version)
       .option('-t, --template <template>', 'Path to an application template (can be a filesystem path or URL)')
@@ -27,19 +27,19 @@ class Tower.Command.New
 \ \   -v, --version                     output version number
 \ \   --skip-procfile                   skip creating a Procfile (for deploying to Heroku)
 \ \   --skip-git                        Skip Git ignores and keeps
-\ \   
+\ \ 
 '''
-    
+
     program.parse(argv)
-    
+
     program.help ||= program.rawArgs.length == 3
-    
+
     if program.help
       console.log program.options[program.options.length - 1].description
       process.exit()
-      
+
     program.namespace ||= "App"
-  
+
   run: ->
     Tower.Generator.run("app", program: @program, appName: @program.args[1])
 

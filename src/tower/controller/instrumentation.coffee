@@ -1,4 +1,6 @@
+# @module
 Tower.Controller.Instrumentation =
+  # Called when the route for this controller is found.
   call: (request, response, next) ->
     @request  = request
     @response = response
@@ -11,21 +13,21 @@ Tower.Controller.Instrumentation =
     @headers  = {}
     @callback = next
     @process()
-    
+
   process: ->
     @processQuery()
-    
+
     # hacking in logging for now
     unless Tower.env.match(/(test|production)/)
       console.log "  Processing by #{@constructor.name}##{@action} as #{@format.toUpperCase()}"
       console.log "  Parameters:"
       console.log @params
-    
+
     @runCallbacks "action", name: @action, (callback) =>
       @[@action].call @, callback
-    
+
   processQuery: ->
-  
+
   clear: ->
     @request  = null
     @response = null

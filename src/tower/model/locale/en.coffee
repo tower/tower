@@ -27,6 +27,6 @@ Tower.Support.I18n.load module.exports =
       even:                 "%{attribute} must be even"
       recordInvalid:        "Validation failed: %{errors}"
       # Append your own errors here or at the model/attributes scope.
-    fullMessages:           
+    fullMessages:
       format:               "%{message}"
       #format:              "%{attribute} %{message}"

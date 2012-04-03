@@ -88,7 +88,7 @@ class Tower.View extends Tower.Class
       @_store = store if store
       @_store ||= new Tower.Store.Memory(name: "view")
     renderers: {}
-  
+
   constructor: (context = {}) ->
     @_context = context
 

@@ -1,9 +1,16 @@
+# @module
 Tower.Command =
+  # Short names to invoke commands.
   aliases:
     c: "console"
     g: "generate"
     s: "server"
-    
+  
+  # Figure out the command you want to run, then run it.
+  # 
+  # @param [Array] argv
+  # 
+  # @return [void]
   run: (argv) ->
     command = argv[2]
     command = "info" if !command || !!command.match(/^-/)

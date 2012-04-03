@@ -59,7 +59,7 @@ describeWith = (store) ->
             App.User.count (error, count) =>
               assert.equal count, 1
               done()
-            
+    
         test '#edit', (done) ->
           Tower.get 'edit', id: 1, format: "json", ->
             resource = JSON.parse(@body)
@@ -170,6 +170,6 @@ describeWith = (store) ->
             App.User.count (error, count) =>
               assert.equal count, 0
               done()
-
+              
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.Store.MongoDB)

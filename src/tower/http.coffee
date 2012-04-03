@@ -1,3 +1,4 @@
+# @module
 Tower.HTTP = {}
 
 require './http/agent'

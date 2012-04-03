@@ -1,6 +1,6 @@
 class Tower.Generator.ControllerGenerator extends Tower.Generator
   sourceRoot: __dirname
-  
+
   run: ->
     @directory "app/controllers/#{@controller.directory}"
     @template "controller.coffee", "app/controllers/#{@controller.directory}/#{@controller.name}.coffee"
@@ -10,5 +10,5 @@ class Tower.Generator.ControllerGenerator extends Tower.Generator
     @locale /links: */, """\n    #{@model.namePlural}: "#{@model.humanName}"
 """
     @asset "/app/client/controllers/#{@controller.directory}/#{@controller.name}".replace(/\/+/g, "/")
-  
+
 module.exports = Tower.Generator.ControllerGenerator
