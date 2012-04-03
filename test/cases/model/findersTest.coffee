@@ -40,7 +40,7 @@ describeWith = (store) ->
           App.Post.where(rating: ">": 7).count (error, count) =>
             assert.equal count, 2
             done()
-      
+
       describe 'date > value (' + moment().format('MMM D, YYYY') + ')', ->
         beforeEach (done) ->
           App.Post.create rating: 1, someDate: moment()._d, done
@@ -59,7 +59,7 @@ describeWith = (store) ->
           App.Post.where(createdAt: ">": moment("Dec 25, 2050")._d).count (error, count) =>
             assert.equal count, 0
             done()
-    
+
     describe '$gte', ->
       describe 'integer >= value (8, 10)', ->
         beforeEach (done) ->
@@ -317,4 +317,4 @@ describeWith = (store) ->
     describe '$neq', ->
 
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+describeWith(Tower.Store.MongoDB)

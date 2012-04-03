@@ -32,6 +32,10 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       @validate (error) =>
         @destroyReferenced(callback)
         
+    find: (callback) ->
+      @validate (error) =>
+        @findReferenced(callback)
+        
     #find: (callback) ->
     #  @validate (error) =>
     #    @findReferenced(callback)

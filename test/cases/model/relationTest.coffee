@@ -4,6 +4,22 @@ membership  = null
 group       = null
 user        = null
 
+__destroyAll = (done) ->
+  async.series [
+    (callback) => App.Child.destroy(callback)
+    (callback) => App.Parent.destroy(callback)
+    (callback) => App.DependentMembership.destroy(callback)
+    (callback) => App.Membership.destroy(callback)
+    (callback) => App.Group.destroy(callback)
+    (callback) => App.User.destroy(callback)
+    (callback) => App.User.create firstName: "Lance", id: 10, (error, record) =>
+      user = record
+      callback()
+    (callback) => App.Group.create id: 10, (error, record) =>
+      group = record
+      callback()
+  ], done
+
 describeWith = (store) ->
   describe 'Tower.Model.Relation', ->
     beforeEach (done) ->
@@ -13,10 +29,7 @@ describeWith = (store) ->
       App.Membership.store(store)
       App.DependentMembership.store(store)
       App.Group.store(store)
-      async.parallel [
-        (callback) => App.Child.destroy(callback)
-        (callback) => App.Parent.destroy(callback)
-      ], done
+      __destroyAll(done)
       
     afterEach ->
       try App.Parent.create.restore()
@@ -38,16 +51,8 @@ describeWith = (store) ->
         
     describe 'HasMany', ->
       beforeEach (done) ->
-        App.DependentMembership.destroy =>
-          App.Membership.destroy =>
-            App.User.destroy =>
-              App.Group.destroy =>
-                App.User.create firstName: "Lance", id: 10, (error, record) =>
-                  user = record
-                  App.Group.create id: 10, (error, record) =>
-                    group = record
-                    done()
-            
+        __destroyAll(done)
+        
       describe '.create', ->
         test 'compileForCreate', ->
           criteria = user.memberships().criteria
@@ -128,6 +133,9 @@ describeWith = (store) ->
         #          done()
               
     describe 'HasMany(through: true)', ->
+      beforeEach (done) ->
+        __destroyAll(done)
+        
       describe '.create', ->
         # don't want it to have any data b/c all that data is stored on the relationship model.
         test 'compileForCreate', ->
@@ -164,30 +172,36 @@ describeWith = (store) ->
             done()
             
         test 'all together now, create through model', (done) ->
-          user.groups().create id: 2, (error, group) =>
-            assert.equal group.get('id'), 2
-            user.memberships().all (error, memberships) =>
-              assert.equal memberships.length, 1
-              record = memberships[0]
-              assert.equal record.get('groupId').toString(), group.get('id').toString()
-              assert.equal record.get('userId').toString(), user.get('id').toString()
+          App.Membership.all (e, g) =>
+            console.log g
+            user.groups().create id: 2, (error, group) =>
+              assert.equal group.get('id'), 2
+              user.memberships().all (error, memberships) =>
+                #console.log memberships
+                assert.equal memberships.length, 1
+                record = memberships[0]
+                assert.equal record.get('groupId').toString(), group.get('id').toString()
+                assert.equal record.get('userId').toString(), user.get('id').toString()
               
-              user.groups().all (error, groups) =>
-                assert.equal groups.length, 1
+                user.groups().all (error, groups) =>
+                  assert.equal groups.length, 1
                 
-                done()
+                  done()
                 
         test 'create 2 models and 2 through models as Arguments', (done) ->
           user.groups().create {id: 2}, {id: 3}, (error, groups) =>
             assert.equal groups.length, 2
             
-            user.memberships().count (error, count) =>
-              assert.equal count, 2
-              
-              user.groups().count (error, count) =>
+            App.Group.count (error, count) =>
+              assert.equal count, 3
+            
+              user.memberships().count (error, count) =>
                 assert.equal count, 2
+              
+                user.groups().count (error, count) =>
+                  assert.equal count, 2
                 
-                done()
+                  done()
       
       describe '.update', ->
         beforeEach (done) ->
@@ -290,4 +304,4 @@ describeWith = (store) ->
       #                  done()
 
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+describeWith(Tower.Store.MongoDB)

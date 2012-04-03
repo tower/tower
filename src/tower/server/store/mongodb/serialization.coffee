@@ -57,10 +57,10 @@ Tower.Store.MongoDB.Serialization =
 
   # title: "santa"
   # createdAt: "<": new Date()
-  serializeQuery: (record) ->
+  serializeConditions: (criteria) ->
     schema  = @schema()
     result  = {}
-    query   = @deserializeModel(record)
+    query   = @deserializeModel(criteria.conditions())
     
     for key, value of query
       field = schema[key]
@@ -83,11 +83,12 @@ Tower.Store.MongoDB.Serialization =
 
     result
 
-  serializeOptions: (options = {}) ->
-    delete options.joins
-    delete options.through
-    delete options.raw
-    delete options.limit if options.hasOwnProperty("limit") && options.limit <= 0
+  serializeOptions: (criteria) ->
+    limit         = criteria.get('limit')
+    sort          = criteria.get('order')
+    options       = {}
+    options.limit = limit if limit
+    options.sort  = sort if sort
     options
 
   encode: (field, value, operation) ->

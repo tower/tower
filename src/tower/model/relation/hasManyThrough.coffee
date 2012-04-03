@@ -52,9 +52,11 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
             
     appendThroughConditions: (callback) ->
       # @inverseRelation.foreignKey
+      
       @owner[@relation.through]().all (error, records) =>
         ids = @store._mapKeys(@inverseRelation.foreignKey, records)
         
+        # @addIds ???
         @where('id': $in: ids)
         
         callback()
