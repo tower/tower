@@ -344,7 +344,7 @@ describeWith = (store) ->
             done()
   
     describe '$neq', ->
-    
+
     describe 'pagination', ->
       beforeEach (done) ->
         Tower.Model.Criteria::defaultLimit = 5
@@ -392,6 +392,16 @@ describeWith = (store) ->
       test 'paginate(page: 4, perPage: 5) end of set', (done) ->
         App.Post.paginate(page: 4, perPage: 5).asc("id").all (error, posts) =>
           assert.equal posts.length, 3
+          done()
+
+      test 'desc', (done) ->
+        App.Post.page(2).desc('id').all (error, posts) =>
+          assert.equal posts[0].id, 13
+          done()
+      
+      test 'asc', (done) ->
+        App.Post.page(2).asc('id').all (error, posts) =>
+          assert.equal posts[0].id, 6
           done()
 
 describeWith(Tower.Store.Memory)

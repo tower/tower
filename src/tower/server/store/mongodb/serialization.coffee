@@ -89,8 +89,13 @@ Tower.Store.MongoDB.Serialization =
     offset        = criteria.get('offset')
     options       = {}
     options.limit = limit if limit
-    options.sort  = sort if sort.length
-    options.skip  = offset if offset
+    if sort.length
+      options.sort  = _.map sort, (set) ->
+        [
+          if set[0] == "id" then "_id" else set[0], 
+          if set[1] == 'asc' then 1 else -1
+        ]
+    options.skip  = offset if offset  
     options
 
   encode: (field, value, operation) ->
