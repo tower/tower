@@ -66,6 +66,7 @@ Tower.View.Rendering =
         hardcode        = _.extend(hardcode, tags: coffeekup.tags)
         locals.hardcode = hardcode
         locals._ = _
+        
         result = coffeekup.render string, locals
       catch error
         e = error
@@ -100,6 +101,7 @@ Tower.View.Rendering =
     return template unless typeof template == "string"
     # tmp
     result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
+    #result = @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
     throw new Error("Template '#{template}' was not found.") unless result
     result
 

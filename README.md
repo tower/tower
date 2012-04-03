@@ -38,6 +38,13 @@ tower generate scaffold Post title:string body:text
 node server
 ```
 
+To restart your server automatically if it crashes, run with forever:
+
+```
+npm install forever -g
+forever server.js
+```
+
 ## Structure
 
 Here's how you might organize a blog:

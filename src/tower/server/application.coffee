@@ -197,9 +197,10 @@ class Tower.Application extends Tower.Engine
     #  if map.pattern.match(path)
     #    map.paths.push("#{Tower.root}/#{key}")
     #    break
+    
+    return unless path.match(/app\/(models|controllers)/)
     path = require.resolve("#{Tower.root}/#{path}")
     delete require.cache[path]
-    
     process.nextTick -> require(path)
 
 require './application/assets'
