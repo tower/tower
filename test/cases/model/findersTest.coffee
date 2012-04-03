@@ -20,6 +20,35 @@ describeWith = (store) ->
     #  App.Post.exists (error, result) -> assert.equal result, true
     #  App.Post.exists null, (error, result) -> assert.equal result, false
     
+    describe 'basics', ->
+      beforeEach (done) ->
+        App.Post.create [{rating: 8}, {rating: 10}], done
+      
+      test 'all', (done) ->
+        App.Post.all (error, records) =>
+          assert.equal records.length, 2
+          done()
+      
+      test 'first', (done) ->
+        App.Post.asc("rating").first (error, record) =>
+          assert.equal record.get('rating'), 8
+          done()
+          
+      test 'last', (done) ->
+        App.Post.asc("rating").last (error, record) =>
+          assert.equal record.get('rating'), 10
+          done()
+          
+      test 'count', (done) ->
+        App.Post.count (error, count) =>
+          assert.equal count, 2
+          done()
+
+      test 'exists', (done) ->
+        App.Post.exists (error, value) =>
+          assert.equal value, true
+          done()
+    
     describe '$gt', ->
       describe 'integer > value (8, 10)', ->
         beforeEach (done) ->

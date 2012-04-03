@@ -236,7 +236,6 @@ class Tower.Model.Scope extends Tower.Class
   # @param [Function] callback
   first: (callback) ->
     criteria = @compile()
-    criteria.defaultSort("asc")
     criteria.findOne(callback)
 
   # Find the last record matching this scope's criteria.
@@ -244,7 +243,7 @@ class Tower.Model.Scope extends Tower.Class
   # @param [Function] callback
   last: (callback) ->
     criteria = @compile()
-    criteria.defaultSort("desc")
+    criteria.reverseSort()
     criteria.findOne(callback)
 
   # Find all the records matching this scope's criteria.

@@ -135,7 +135,7 @@ describeWith = (store) ->
     describe 'HasMany(through: true)', ->
       beforeEach (done) ->
         __destroyAll(done)
-      
+
       describe '.create', ->
         # don't want it to have any data b/c all that data is stored on the relationship model.
         test 'compileForCreate', ->
@@ -250,6 +250,64 @@ describeWith = (store) ->
           criteria.appendThroughConditions =>
             assert.deepEqual criteria.conditions(), { id: $in: [10] }
             done()
+
+      describe 'finders', ->
+        beforeEach (done) ->
+          App.Group.create id: 100, =>
+            App.Membership.create id: 200, =>
+              user.groups().create {id: 20, name: "A"}, {id: 30, name: "B"}, {id: 40, name: "C"}, done
+        
+        describe 'relation (groups)', ->
+          test 'all', (done) ->
+            user.groups().all (error, records) =>
+              assert.equal records.length, 3
+              done()
+
+          test 'first', (done) ->
+            user.groups().desc("name").first (error, record) =>
+              assert.equal record.get('name'), "C"
+              done()
+
+          test 'last', (done) ->
+            user.groups().desc("name").last (error, record) =>
+              assert.equal record.get('name'), "A"
+              done()
+
+          test 'count', (done) ->
+            user.groups().count (error, count) =>
+              assert.equal count, 3
+              done()
+
+          test 'exists', (done) ->
+            user.groups().exists (error, value) =>
+              assert.equal value, true
+              done()
+              
+        describe 'through relation (memberships)', ->
+          test 'all', (done) ->
+            user.memberships().all (error, records) =>
+              assert.equal records.length, 3
+              done()
+
+          test 'first', (done) ->
+            user.memberships().first (error, record) =>
+              assert.ok record
+              done()
+
+          test 'last', (done) ->
+            user.memberships().last (error, record) =>
+              assert.ok record
+              done()
+
+          test 'count', (done) ->
+            user.memberships().count (error, count) =>
+              assert.equal count, 3
+              done()
+
+          test 'exists', (done) ->
+            user.memberships().exists (error, value) =>
+              assert.equal value, true
+              done()
 
     #describe 'HasAndBelongs', ->
     #  test 'defaults to blank array', (done) ->

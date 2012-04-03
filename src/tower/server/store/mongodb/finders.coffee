@@ -50,11 +50,11 @@ Tower.Store.MongoDB.Finders =
     undefined
   
   # @return undefined Requires a callback to get the value.
-  exists: (conditions, options, callback) ->
+  exists: (criteria, callback) ->
     conditions = @serializeConditions(criteria)
     
-    @collection().count conditions, (error, exists) =>
-      callback.call @, error, exists if callback
+    @collection().count conditions, (error, count) =>
+      callback.call(@, error, count > 0) if callback
     
     undefined
 

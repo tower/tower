@@ -115,8 +115,12 @@ class Tower.Model.Criteria extends Tower.Class
   # Alias for {#order}.
   sort: @::order
   
-  defaultSort: (direction) ->
-    @
+  # Reverses the query so it can find the last one.
+  reverseSort: ->
+    order = @get('order')
+    for set, i in order
+      set[1] = if set[1] == "asc" then "desc" else "asc"
+    order
   
   # Set of attributes to sort by, ascending.
   # 
@@ -289,6 +293,12 @@ class Tower.Model.Criteria extends Tower.Class
       @store.find @, (error, records) =>
         records = @export(records) if !error && records.length
         callback.call @, error, records
+  
+  # hack
+  findOne: (callback) ->
+    @limit(1)
+    @returnArray = false
+    @find callback
     
   count: (callback) ->
     @_count callback

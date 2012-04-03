@@ -36,6 +36,30 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       @validate (error) =>
         @findReferenced(callback)
         
+    count: (callback) ->
+      @validate (error) =>
+        @compileForFind()
+        
+        @_runBeforeFindCallbacksOnStore =>
+          @_count (error, record) =>
+            unless error
+              @_runAfterFindCallbacksOnStore =>
+                callback.call @, error, record if callback
+            else
+              callback.call @, error, record if callback
+              
+    exists: (callback) ->
+      @validate (error) =>
+        @compileForFind()
+
+        @_runBeforeFindCallbacksOnStore =>
+          @_exists (error, record) =>
+            unless error
+              @_runAfterFindCallbacksOnStore =>
+                callback.call @, error, record if callback
+            else
+              callback.call @, error, record if callback
+        
     #find: (callback) ->
     #  @validate (error) =>
     #    @findReferenced(callback)
