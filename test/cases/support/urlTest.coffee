@@ -36,3 +36,12 @@ describe 'Tower.Support.Url', ->
   test 'urlFor(post, comment, action: "edit")', ->
     url = Tower.urlFor(new App.Post(id: 10), new App.Comment(id: 20), action: "edit")
     assert.equal url, "/posts/10/comments/20/edit"
+    
+  describe 'named routes', ->
+    test 'find route', ->
+      route = Tower.Route.find('login')
+      assert.equal route.name, 'login'
+      
+    test 'urlFor(route: "login")', ->
+      url = Tower.urlFor(route: 'login')
+      assert.equal url, "/sign-in"

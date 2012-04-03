@@ -1,2 +1,2 @@
 Tower.Route.draw ->
-  @match "/login",          to: "sessions#new", via: "get", as: "login"
+  @match "/sign-in",          to: "sessions#new", via: "get", as: "login"
