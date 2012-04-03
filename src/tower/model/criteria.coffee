@@ -1,6 +1,8 @@
 # This class has plenty of room for optimization,
 # but it's now into a form I'm starting to like.
-class Tower.Model.Criteria  
+class Tower.Model.Criteria extends Tower.Class
+  @include Tower.Support.Callbacks
+  
   constructor: (options = {}) ->
     @model        = options.model
     @store        = @model.store()
@@ -23,7 +25,7 @@ class Tower.Model.Criteria
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.
   export: (result) ->
-    result = result[0] unless @returnArray
+    result = result[0] if @returnArray == false
     delete @data
     delete @returnArray
     result
@@ -238,6 +240,9 @@ class Tower.Model.Criteria
     records
   
   update: (callback) ->
+    @_update callback
+    
+  _update: (callback) ->
     updates = @data[0]
     
     if @instantiate
@@ -249,6 +254,9 @@ class Tower.Model.Criteria
       @store.update updates, @, callback
     
   destroy: (callback) ->
+    @_destroy callback
+    
+  _destroy: (callback) ->
     if @instantiate
       iterator = (record, next) ->
         record.destroy(next)
@@ -258,13 +266,15 @@ class Tower.Model.Criteria
       @store.destroy @, callback
     
   find: (callback) ->
+    @_find callback
+    
+  _find: (callback) ->
     if @one
       @store.findOne @, callback
     else
-      @store.find @, callback
-    
-  findOne: (callback) ->
-    @store.findOne @, callback
+      @store.find @, (error, records) =>
+        records = @export(records) if !error && records.length
+        callback.call @, error, records
     
   count: (callback) ->
     @store.count @, callback
@@ -358,6 +368,7 @@ class Tower.Model.Criteria
     
   # @private
   _each: (criteria, iterator, callback) ->
+    data = !!criteria.data
     @store.find criteria, (error, records) =>
       if error
         callback.call @, error, records

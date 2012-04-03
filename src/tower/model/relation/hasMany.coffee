@@ -1,68 +1,93 @@
+# Right now this is only going to work on "referenced" associations.
+# 
+# @note Thinking about making ./referenced and ./embedded copies,
+#   similar to how Mongoid does it.
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
-  initialize: (options) ->
-    if @through && !options.type
-      options.type ||= @owner.relation(@through).ownerType
-      
-    super
-    
+  # @option options [String|Function] beforeAdd Callback before an item is added.
+  # @option options [String|Function] afterAdd Callback after an item is added.
+  
   class @Criteria extends @Criteria
     isHasMany: true
     
-    validate: ->
+    # @before "create", "compileForCreate"
+    # @before "update", "compileForUpdate"
+    # @before "destroy", "compileForDestroy"
+    # @before "find", "compileForFind"
+    
+    validate: (callback) ->
       unless @owner.isPersisted()
         throw new Error("You cannot call create unless the parent is saved")
+        
+      callback.call @
     
     create: (callback) ->
-      console.log "CRITER"
-      @validate()
-      
-      #if @relation.embed && @owner.store().supports("embed")
-      #  @_createEmbedded
-      #else
-      @_createReferenced(callback)
+      @validate (error) =>
+        @createReferenced(callback)
 
-    update: ->
-      @validate()
+    update: (callback) ->
+      @validate (error) =>
+        @updateReferenced(callback)
 
-    destroy: ->
-      @validate()
-      
-    # for update, destroy, and find
-    compile: ->
-      
-    # @private
-    _createEmbedded: (callback) ->
-      updates = @_compileForCreateEmbedded()
-      
-      # update: (updates, conditions, options, callback) ->
-      @owner.updateAttributes updates, (error) =>
-        unless error
-          callback.call @, error, records if callback
+    destroy: (callback) ->
+      @validate (error) =>
+        @destroyReferenced(callback)
+        
+    #find: (callback) ->
+    #  @validate (error) =>
+    #    @findReferenced(callback)
     
-    # @private
-    _createReferenced: (callback) ->
-      @_compileForCreate()
+    createReferenced: (callback) ->
+      @compileForCreate()
       
-      @_create (error, record) =>
-        unless error
-          @_cacheRecords(record)
-          
-          # add the id to the array on the owner record after it's created
-          if @updateOwnerRecord()
-            @owner.updateAttributes @ownerAttributes(record), (error) =>
+      @_runBeforeCreateCallbacksOnStore =>
+        @_create (error, record) =>
+          unless error
+            #@_cacheRecords(record)
+            
+            @_runAfterCreateCallbacksOnStore =>
+              # add the id to the array on the owner record after it's created
+              if @updateOwnerRecord()
+                @owner.updateAttributes @ownerAttributes(record), (error) =>
+                  callback.call @, error, record if callback
+              else
+                callback.call @, error, record if callback
+          else
+            callback.call @, error, record if callback
+            
+    updateReferenced: (callback) ->
+      @compileForUpdate()
+      
+      @_runBeforeUpdateCallbacksOnStore =>
+        @_update (error, record) =>
+          unless error
+            @_runAfterUpdateCallbacksOnStore =>
               callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
-        else
-          callback.call @, error, record if callback
-    
-    # @private
-    _cacheRecords: (records) ->
-      rootRelation = @owner.relation(@relation.name)
-      rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
+            
+    destroyReferenced: (callback) ->
+      @compileForDestroy()
       
-    # @private
-    _compileForCreate: ->
+      @_runBeforeDestroyCallbacksOnStore =>
+        @_destroy (error, record) =>
+          unless error
+            @_runAfterDestroyCallbacksOnStore =>
+              callback.call @, error, record if callback
+          else
+            callback.call @, error, record if callback
+            
+    findReferenced: (callback) ->
+      @compileForFind()
+      
+      @_runBeforeFindCallbacksOnStore =>
+        @_find (error, record) =>
+          unless error
+            @_runAfterFindCallbacksOnStore =>
+              callback.call @, error, record if callback
+          else
+            callback.call @, error, record if callback
+    
+    compile: ->
       owner           = @owner
       relation        = @relation
       inverseRelation = relation.inverse()
@@ -93,6 +118,18 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
       @where(data)
       
+    compileForCreate: ->
+      @compile()
+    
+    compileForUpdate: ->
+      @compile()
+      
+    compileForDestroy: ->
+      @compile()
+      
+    compileForFind: ->
+      @compile()
+      
     updateOwnerRecord: ->
       relation = @relation
       !!(relation && (relation.cache || relation.counterCache))
@@ -113,23 +150,10 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
       updates
       
-    _compileForCreateEmbedded: ->
-      owner           = @owner
-      relation        = @relation
-      returnArray     = @returnArray
-      @returnArray    = true
-      records         = @build()
-      @returnArray    = returnArray
-      updates         = $pushAll: {}
-      
-      attributes = []
-      for record in records
-        record.attributes._id  ?= relation.klass().store().generateId()
-        delete record.attributes.id
-        attributes.push record.attributes
-        
-      updates["$pushAll"][relation.name]  = attributes
-      
-      updates
+    # @private
+    _cacheRecords: (records) ->
+      rootRelation = @owner.relation(@relation.name)
+      rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
+
 
 module.exports = Tower.Model.Relation.HasMany

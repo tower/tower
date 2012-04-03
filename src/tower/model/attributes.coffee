@@ -1,5 +1,6 @@
 # @module
 Tower.Model.Attributes =
+  # @module
   ClassMethods:
     # Define a database field on your model.
     # 

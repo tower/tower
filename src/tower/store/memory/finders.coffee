@@ -1,5 +1,6 @@
 # @module
 Tower.Store.Memory.Finders =
+
   # @see Tower.Store#find
   find: (criteria, callback) ->
     result      = []
@@ -22,7 +23,7 @@ Tower.Store.Memory.Finders =
       for key, record of records
         result.push(record)
     
-    result = criteria.export(result) if result.length
+    #result = criteria.export(result) if result.length
     
     callback.call(@, null, result) if callback
     

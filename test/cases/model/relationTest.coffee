@@ -19,20 +19,22 @@ describeWith = (store) ->
       
     afterEach ->
       try App.Parent.create.restore()
+      try App.Group.create.restore()
+      try App.Membership.create.restore()
     
-    #describe 'inverseOf', ->
-    #  test 'noInverse_noInverse', ->
-    #    assert.notEqual "noInverse_noInverse", try App.Parent.relation("noInverse_noInverse").inverse().name
-    #    
-    #  test 'parent: noInverse_withInverse, child: withInverse_noInverse', ->
-    #    assert.equal "withInverse_noInverse", App.Parent.relation("noInverse_withInverse").inverse().name
-    #    
-    #  test 'withInverse_withInverse', ->
-    #    assert.equal "withInverse_withInverse", App.Parent.relation("withInverse_withInverse").inverse().name
-    #    
-    #  test 'parent: withInverse_noInverse, child: noInverse_withInverse', ->
-    #    assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
-    #    
+    describe 'inverseOf', ->
+      test 'noInverse_noInverse', ->
+        assert.notEqual "noInverse_noInverse", try App.Parent.relation("noInverse_noInverse").inverse().name
+        
+      test 'parent: noInverse_withInverse, child: withInverse_noInverse', ->
+        assert.equal "withInverse_noInverse", App.Parent.relation("noInverse_withInverse").inverse().name
+        
+      test 'withInverse_withInverse', ->
+        assert.equal "withInverse_withInverse", App.Parent.relation("withInverse_withInverse").inverse().name
+        
+      test 'parent: withInverse_noInverse, child: noInverse_withInverse', ->
+        assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
+        
     describe 'HasMany', ->
       beforeEach (done) ->
         App.Membership.destroy =>
@@ -45,28 +47,142 @@ describeWith = (store) ->
                   done()
             
       describe '.create', ->
-        #test 'create relationship model', (done) ->
-        #  user.memberships().create groupId: group.get('id'), (error, membership) =>
-        #    assert.equal membership.get('userId').toString(), user.get('id').toString()
-        #    assert.equal membership.get('groupId').toString(), group.get('id').toString()
-        #    done()
-            
-        test 'create through model automatically', (done) ->
-          user.groups().create (error, group) =>
-            console.log group
+        test 'compileForCreate', ->
+          criteria = user.memberships().criteria
+          criteria.compileForCreate()
+          
+          assert.deepEqual criteria.conditions(), { userId: 10 }
+          
+        test 'compileForCreate with cache: true', ->
+          criteria = user.cachedMemberships().criteria
+          criteria.compileForCreate()
+
+          assert.deepEqual criteria.conditions(), { userId: 10 }
+          
+        test 'compileForCreate on polymorphic record', ->
+          criteria = user.polymorphicMemberships().criteria
+          criteria.compileForCreate()
+          
+          assert.deepEqual criteria.conditions(), { joinableId: 10, joinableType: "User" }
+          
+        test 'create relationship model', (done) ->
+          user.memberships().create groupId: group.get('id'), (error, membership) =>
+            assert.equal membership.get('userId').toString(), user.get('id').toString()
+            assert.equal membership.get('groupId').toString(), group.get('id').toString()
             done()
+            
+        #test 'create through model automatically', (done) ->
+        #  sinon.spy App.Group.store(), "create"
+        #  sinon.spy App.Membership.store(), "create"
+        #  
+        #  user.groups().create (error, group) =>
+        #    #console.log App.Membership.store().create
+        #    done()
+      
+      describe '.update', ->
+        beforeEach (done) ->
+          App.Membership.create groupId: group.get('id'), =>
+            user.memberships().create groupId: group.get('id'), done
+        
+        test 'compileForUpdate', ->
+          criteria = user.memberships().criteria
+          criteria.compileForUpdate()
+          
+          assert.deepEqual criteria.conditions(), { userId: 10 }
+          
+        test 'update relationship model', (done) ->
+          user.memberships().update kind: "guest", (error, memberships) =>
+            assert.equal memberships.length, 1
+            assert.equal memberships[0].get('kind'), 'guest'
+            App.Membership.count (error, count) =>
+              assert.equal count, 2
+              done()
+      
+      describe '.destroy', ->
+        beforeEach (done) ->
+          App.Membership.create groupId: group.get('id'), =>
+            user.memberships().create groupId: group.get('id'), done
+            
+        test 'compileForDestroy', ->
+          criteria = user.memberships().criteria
+          criteria.compileForDestroy()
+
+          assert.deepEqual criteria.conditions(), { userId: 10 }
+          
+        test 'destroy relationship model', (done) ->
+          user.memberships().destroy (error, memberships) =>
+            assert.equal memberships.length, 1
+            App.Membership.count (error, count) =>
+              assert.equal count, 1
+              done()
+              
+    describe 'HasMany(through: true)', ->
+      describe '.create', ->
+        # don't want it to have any data b/c all that data is stored on the relationship model.
+        test 'compileForCreate', ->
+          criteria = user.groups().criteria
+          criteria.compileForCreate()
+          
+          assert.deepEqual criteria.conditions(), { }
+          
+        test 'throughRelation', ->
+          criteria        = user.groups().criteria
+          relation        = criteria.relation
+          throughRelation = criteria.throughRelation
+          
+          assert.equal throughRelation.type, "Membership"
+          assert.equal throughRelation.targetType, "Membership"
+          assert.equal throughRelation.name, "memberships"
+          assert.equal throughRelation.ownerType, "App.User"
+          assert.equal throughRelation.foreignKey, "userId"
+          
+          
+          inverseRelation = relation.inverseThrough(throughRelation)
+          
+          assert.equal inverseRelation.name, "group"
+          assert.equal inverseRelation.type, "Group"
+          assert.equal inverseRelation.foreignKey, "groupId"
+          
+        test 'createThroughRelation', (done) ->
+          criteria        = user.groups().criteria
+          
+          criteria.createThroughRelation group, (error, record) =>
+            assert.equal record.constructor.name, "Membership"
+            assert.equal record.get('groupId').toString(), group.get('id').toString()
+            assert.equal record.get('userId').toString(), user.get('id').toString()
+            done()
+            
+        test 'all together now, create through model', (done) ->
+          user.groups().create id: 2, (error, group) =>
+            assert.equal group.get('id'), 2
+            user.memberships().all (error, memberships) =>
+              assert.equal memberships.length, 1
+              record = memberships[0]
+              assert.equal record.get('groupId').toString(), group.get('id').toString()
+              assert.equal record.get('userId').toString(), user.get('id').toString()
+              
+              user.groups().all (error, groups) =>
+                assert.equal groups.length, 1
+                
+                done()
       
       describe '.update', ->
       
       describe '.destroy', ->
       
-    #describe 'HasMany(through: true)', ->
-    #  describe '.create', ->
-    #  
-    #  describe '.update', ->
-    #  
-    #  describe '.destroy', ->
-    #
+      describe '.find', ->
+        beforeEach (done) ->
+          user.memberships().create id: 10, groupId: group.get('id'), done
+          
+        test 'appendThroughConditions', (done) ->
+          criteria        = user.groups().criteria
+          
+          assert.deepEqual criteria.conditions(), { }
+          
+          criteria.appendThroughConditions =>
+            assert.deepEqual criteria.conditions(), { id: $in: [10] }
+            done()
+    
     #describe 'HasAndBelongs', ->
     #  test 'defaults to blank array', (done) ->
     #    sinon.spy App.Parent, "create"
@@ -95,7 +211,7 @@ describeWith = (store) ->
     #              assert.deepEqual parent.get("childIds"), [10, 9]
     #              
     #              done()
-    #
+
       #test 'create from child', (done) ->    
       #  App.Parent.create id: 1, (error, parent) =>
       #    parent.child().create id: 10, =>

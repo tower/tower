@@ -17,12 +17,15 @@ Tower.Model.Scopes =
     scope: (name, scope) ->
       @[name] = if scope instanceof Tower.Model.Scope then scope else @where(scope)
 
-    # Returns a scope with default criteria for the model class.
+    # Returns a {Tower.Model.Scope} with default criteria for the model class.
     # 
     # @return [Tower.Model.Scope]
     scoped: (options) ->
       new Tower.Model.Scope(@criteria(options))
-      
+    
+    # Return a {Tower.Model.Criteria} to be used in building a query.
+    # 
+    # @return [Tower.Model.Criteria]
     criteria: (options = {}) ->
       options.model = @
       criteria = new Tower.Model.Criteria(options)

@@ -5,11 +5,25 @@ class Tower.Model.Relation extends Tower.Class
   # @param [Function] owner Tower.Model class this relation is defined on.
   # @param [String] name name of the relation.
   # @param [Object] options options hash.
+  # 
   # @option options [String] type name of the associated class.
+  # @option options [Boolean] readonly (false)
+  # @option options [Boolean] validate (false)
+  # @option options [Boolean] autosave (false)
+  # @option options [Boolean] touch (false)
   # @option options [Boolean] dependent (false) if true, relationship records
   #   will be destroyed if the owner record is destroyed.
+  # @option options [String] inverseOf (undefined)
+  # @option options [Boolean] polymorphic (false)
+  # @option options [String] foreignKey Defaults to "#{as}Id" if polymorphic, else "#{singularName}Id"
+  # @option options [String] foreignType Defaults to "#{as}Type" if polymorphic, otherwise it's undefined
+  # @option options [Boolean|String] cache (false)
+  # @option options [String] cacheKey Set to the value of the `cache` option if it's a string,
+  #   otherwise it's `"#{singularTargetName}Ids"`.
   # @option options [Boolean] counterCache (false) if true, will increment `relationshipCount` variable
   #   when relationship is created/destroyed.
+  # @option options [String] counterCacheKey Set to the value of the `counterCache` option if it's a string,
+  #   otherwise it's `"#{singularTargetName}Count"`.
   # 
   # @see Tower.Model.Relations.ClassMethods#hasMany
   constructor: (owner, name, options = {}) ->
@@ -29,9 +43,9 @@ class Tower.Model.Relation extends Tower.Class
     @dependent        ||= false
     @counterCache     ||= false
     @cache              = false unless @hasOwnProperty("cache")
-    @readOnly           = false unless @hasOwnProperty("readOnly")
+    @readonly           = false unless @hasOwnProperty("readonly")
     @validate           = false unless @hasOwnProperty("validate")
-    @autoSave           = false unless @hasOwnProperty("autoSave")
+    @autosave           = false unless @hasOwnProperty("autosave")
     @touch              = false unless @hasOwnProperty("touch")
     @inverseOf        ||= undefined
     @polymorphic        = options.hasOwnProperty("as") || !!options.polymorphic
@@ -56,7 +70,7 @@ class Tower.Model.Relation extends Tower.Class
         @cacheKey = @cache
         @cache    = true
       else
-        @cacheKey = @singularTargetName + "Ids"
+        @cacheKey = "#{@singularTargetName}Ids"
       
       @owner.field @cacheKey, type: "Array", default: []
 
@@ -89,7 +103,7 @@ class Tower.Model.Relation extends Tower.Class
   # Relation on the associated object that maps back to this relation.
   # 
   # @return [Tower.Model.Relation]
-  inverse: ->
+  inverse: (type) ->
     return @_inverse if @_inverse
     
     relations = @targetKlass().relations()
@@ -104,7 +118,7 @@ class Tower.Model.Relation extends Tower.Class
         return relation if relation.targetType == @ownerType
         
     null
-  
+
   class @Criteria extends Tower.Model.Criteria
     isConstructable: ->
       !!!@relation.polymorphic
@@ -130,9 +144,16 @@ class Tower.Model.Relation extends Tower.Class
 
     _teardown: ->
       _.teardown(@, "relation", "records", "owner", "model", "criteria")
+      
+for phase in ["Before", "After"]
+  for action in ["Create", "Update", "Destroy", "Find"]
+    do (phase, action) =>
+      Tower.Model.Relation.Criteria::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
+        @store["run#{phase}#{action}"](@, done)
 
 require './relation/belongsTo'
 require './relation/hasMany'
+require './relation/hasManyThrough'
 require './relation/hasOne'
 
 module.exports = Tower.Model.Relation

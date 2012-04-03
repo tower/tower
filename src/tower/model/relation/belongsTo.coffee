@@ -9,7 +9,8 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
       @foreignType = "#{name}Type"
       owner.field @foreignType, type: "String"
     
-    owner.prototype[name] = -> @relation(name)
+    owner.prototype[name] = ->
+      @relation(name)
     
     owner.prototype["build#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
       @buildRelation(name, attributes, callback)
