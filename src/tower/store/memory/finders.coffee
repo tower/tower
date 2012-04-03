@@ -9,16 +9,19 @@ Tower.Store.Memory.Finders =
     options     = criteria
     
     if _.isPresent(conditions)
-      sort    = options.get('order')
-      limit   = options.limit || Tower.Store.defaultLimit
+      sort        = options.get('order')
+      limit       = options.get('limit')# || Tower.Store.defaultLimit
+      startIndex  = options.get('offset') || 0
       
       for key, record of records
         result.push(record) if @matches(record, conditions)
         # break if result.length >= limit
 
-      result = @sort(result, sort) if sort
-
-      result = result[0..limit - 1] if limit
+      result  = @sort(result, sort) if sort.length
+      
+      endIndex   = startIndex + (limit || result.length) - 1
+      
+      result  = result[startIndex..endIndex]
     else
       for key, record of records
         result.push(record)

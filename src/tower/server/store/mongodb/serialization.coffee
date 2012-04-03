@@ -86,9 +86,11 @@ Tower.Store.MongoDB.Serialization =
   serializeOptions: (criteria) ->
     limit         = criteria.get('limit')
     sort          = criteria.get('order')
+    offset        = criteria.get('offset')
     options       = {}
     options.limit = limit if limit
-    options.sort  = sort if sort
+    options.sort  = sort if sort.length
+    options.skip  = offset if offset
     options
 
   encode: (field, value, operation) ->

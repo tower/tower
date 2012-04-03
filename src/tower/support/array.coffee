@@ -33,8 +33,8 @@ Tower.Support.Array =
       sortings.forEach (sorting) ->
         attribute = sorting[0]
         direction = sorting[1]
-        aValue    = a[attribute]
-        bValue    = b[attribute]
+        aValue    = a.get(attribute) # a[attribute]
+        bValue    = b.get(attribute) # b[attribute]
 
         unless typeof callbacks[attribute] is "undefined"
           aValue  = callbacks[attribute](aValue)

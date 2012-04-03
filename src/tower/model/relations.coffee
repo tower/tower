@@ -1,6 +1,5 @@
-# @module
+# @mixin
 Tower.Model.Relations =
-  # @module
   ClassMethods:    
     # One-to-one association, where the id is stored on the associated object.
     #
@@ -80,27 +79,28 @@ Tower.Model.Relations =
       relation = @relations()[name]
       throw new Error("Relation '#{name}' does not exist on '#{@name}'") unless relation
       relation
-      
-  relation: (name) ->
-    @relations[name] ||= @constructor.relation(name).scoped(@)
+  
+  InstanceMethods:
+    relation: (name) ->
+      @relations[name] ||= @constructor.relation(name).scoped(@)
 
-  buildRelation: (name, attributes, callback) ->
-    @relation(name).build(attributes, callback)
+    buildRelation: (name, attributes, callback) ->
+      @relation(name).build(attributes, callback)
 
-  createRelation: (name, attributes, callback) ->
-    @relation(name).create(attributes, callback)
+    createRelation: (name, attributes, callback) ->
+      @relation(name).create(attributes, callback)
 
-  destroyRelations: (callback) ->
-    relations   = @constructor.relations()
-    dependents  = []
+    destroyRelations: (callback) ->
+      relations   = @constructor.relations()
+      dependents  = []
     
-    for name, relation of relations
-      if relation.dependent == true || relation.dependent == "destroy"
-        dependents.push(name)
+      for name, relation of relations
+        if relation.dependent == true || relation.dependent == "destroy"
+          dependents.push(name)
         
-    iterator = (name, next) =>
-      @[name]().destroy(next)
+      iterator = (name, next) =>
+        @[name]().destroy(next)
         
-    Tower.async dependents, iterator, callback
+      Tower.async dependents, iterator, callback
 
 module.exports = Tower.Model.Relations

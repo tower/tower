@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Model.Validations =
   ClassMethods:
     # Define validation(s) for attribute(s).
@@ -42,29 +42,30 @@ Tower.Model.Validations =
     # @return [Array]
     validators: ->
       @_validators ||= []
-
-  # Executes validations defined for the model.
-  # 
-  # @param [Function] callback
-  # 
-  # @return [void]
-  validate: (callback) ->
-    success         = false
+      
+  InstanceMethods:
+    # Executes validations defined for the model.
+    # 
+    # @param [Function] callback
+    # 
+    # @return [void]
+    validate: (callback) ->
+      success         = false
     
-    @runCallbacks "validate", (block) =>
-      complete        = @_callback(block, callback)
-      validators      = @constructor.validators()
-      errors          = @errors = {}
+      @runCallbacks "validate", (block) =>
+        complete        = @_callback(block, callback)
+        validators      = @constructor.validators()
+        errors          = @errors = {}
 
-      iterator        = (validator, next) =>
-        validator.validateEach @, errors, next
+        iterator        = (validator, next) =>
+          validator.validateEach @, errors, next
 
-      Tower.async validators, iterator, (error) =>
-        success = true unless error || _.isPresent(errors)
-        complete.call(@, !success)
+        Tower.async validators, iterator, (error) =>
+          success = true unless error || _.isPresent(errors)
+          complete.call(@, !success)
+
+        success
 
       success
-
-    success
 
 module.exports = Tower.Model.Validations

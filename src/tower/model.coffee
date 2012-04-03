@@ -1,3 +1,10 @@
+# @concern Tower.Model.Attributes
+# @concern Tower.Model.Relations
+# @concern Tower.Model.Scopes
+# @concern Tower.Model.Validations
+#
+# @method .where(conditions)
+#   Query conditions
 class Tower.Model extends Tower.Class
   @_relationship: false
   

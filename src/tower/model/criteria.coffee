@@ -1,6 +1,8 @@
 # This class has plenty of room for optimization,
 # but it's now into a form I'm starting to like.
 class Tower.Model.Criteria extends Tower.Class
+  defaultLimit: 20
+    
   @include Tower.Support.Callbacks
   
   constructor: (options = {}) ->
@@ -32,7 +34,7 @@ class Tower.Model.Criteria extends Tower.Class
   
   # Get the conditions, order, limit, fields, offset, or other private variables.
   get: (key) ->
-    @["_#{key}"] || @[key]
+    @["_#{key}"]
     
   addData: (args) ->
     if args.length && args.length > 1 || _.isArray(args[0])
@@ -146,6 +148,18 @@ class Tower.Model.Criteria extends Tower.Class
     @order(attribute, "desc") for attribute in attributes
     @_order
   
+  # @todo
+  gte: ->
+  
+  # @todo  
+  lte: ->
+    
+  # @todo
+  gt: ->
+  
+  # @todo
+  lt: ->
+  
   # Records must match all values in the array.
   # 
   # @example  
@@ -195,7 +209,8 @@ class Tower.Model.Criteria extends Tower.Class
   # @example  
   #   App.Post.page(2).all()
   page: (page) ->
-    @offset((page - 1) * (@_limit || 20))
+    limit = @limit(@_limit || @defaultLimit)
+    @offset((Math.max(1, page) - 1) * limit)
     
   paginate: (options) ->
     limit   = options.perPage || options.limit

@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Model.Scopes =
   ClassMethods:
     # Define a named scope on the model class.
