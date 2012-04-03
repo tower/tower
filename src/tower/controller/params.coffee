@@ -13,8 +13,10 @@ Tower.Controller.Params =
     # 
     # @return [Tower.HTTP.Param]
     param: (key, options = {}) ->
-      @_params      ||= {}
-      @_params[key] = Tower.HTTP.Param.create(key, options)
+      @params()[key] = Tower.HTTP.Param.create(key, options)
+      
+    params: ->
+      @_params  ||= {}
   
   # Compile the params defined for this controller into a criteria for querying the database.
   # 

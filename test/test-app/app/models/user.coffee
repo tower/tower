@@ -15,8 +15,8 @@ class App.User extends Tower.Model
   @hasMany "groups", through: "memberships"
   
   @hasMany "polymorphicMemberships", as: "joinable", type: "Membership"
-  
   @hasMany "cachedMemberships", type: "Membership", cache: true
+  #@hasMany "dependentMemberships", type: "DependentMembership", dependent: true
   
   @validates "firstName", presence: true
   

@@ -121,7 +121,10 @@ class Tower.Store extends Tower.Class
   # 
   # @return [void] Requires a callback.
   runBeforeUpdate: (criteria, callback) ->
-    callback()
+    if criteria.throughRelation
+      criteria.appendThroughConditions(callback)
+    else
+      callback()
     
   # Process the criteria after {#update}.
   # 
@@ -133,7 +136,10 @@ class Tower.Store extends Tower.Class
   # 
   # @return [void] Requires a callback.
   runBeforeDestroy: (criteria, callback) ->
-    callback()
+    if criteria.throughRelation
+      criteria.appendThroughConditions(callback)
+    else
+      callback()
 
   # Process the criteria after {#destroy}.
   # 

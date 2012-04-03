@@ -11,6 +11,6 @@ class App.BaseModel extends Tower.Model
     get: (value) ->
       value.join("-") if value
     set: (value) ->
-      Tower.Support.Object.toArray(value)
+      _.castArray(value)
   
 class App.NestedModel extends Tower.Model

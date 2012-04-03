@@ -11,6 +11,7 @@ describeWith = (store) ->
       App.Parent.store(new store(name: "parents", type: "App.Parent"))
       App.User.store(store)
       App.Membership.store(store)
+      App.DependentMembership.store(store)
       App.Group.store(store)
       async.parallel [
         (callback) => App.Child.destroy(callback)
@@ -37,14 +38,15 @@ describeWith = (store) ->
         
     describe 'HasMany', ->
       beforeEach (done) ->
-        App.Membership.destroy =>
-          App.User.destroy =>
-            App.Group.destroy =>
-              App.User.create firstName: "Lance", id: 10, (error, record) =>
-                user = record
-                App.Group.create id: 10, (error, record) =>
-                  group = record
-                  done()
+        App.DependentMembership.destroy =>
+          App.Membership.destroy =>
+            App.User.destroy =>
+              App.Group.destroy =>
+                App.User.create firstName: "Lance", id: 10, (error, record) =>
+                  user = record
+                  App.Group.create id: 10, (error, record) =>
+                    group = record
+                    done()
             
       describe '.create', ->
         test 'compileForCreate', ->
@@ -113,8 +115,17 @@ describeWith = (store) ->
           user.memberships().destroy (error, memberships) =>
             assert.equal memberships.length, 1
             App.Membership.count (error, count) =>
+              # since there were 2, but only one belonged to user
               assert.equal count, 1
               done()
+              
+        #test 'destroy relationship model if parent is destroyed (dependent: true)', (done) ->
+        #  App.User.create firstName: "Lance", (error, user) =>
+        #    user.dependentMemberships().create =>
+        #      user.destroy =>
+        #        App.DependentMembership.count (error, count) =>
+        #          assert.equal count, 0
+        #          done()
               
     describe 'HasMany(through: true)', ->
       describe '.create', ->
@@ -165,10 +176,55 @@ describeWith = (store) ->
                 assert.equal groups.length, 1
                 
                 done()
+                
+        test 'create 2 models and 2 through models as Arguments', (done) ->
+          user.groups().create {id: 2}, {id: 3}, (error, groups) =>
+            assert.equal groups.length, 2
+            
+            user.memberships().count (error, count) =>
+              assert.equal count, 2
+              
+              user.groups().count (error, count) =>
+                assert.equal count, 2
+                
+                done()
       
       describe '.update', ->
+        beforeEach (done) ->
+          user.groups().create {name: "Starbucks", id: 2}, {id: 3}, done
+        
+        test 'update all groups', (done) ->
+          user.groups().update name: "Peet's", =>
+            user.groups().all (error, groups) =>
+              assert.equal groups.length, 2
+              for group in groups
+                assert.equal group.get('name'), "Peet's"
+              done()
+              
+        test 'update matching groups', (done) ->
+          user.groups().where(name: "Starbucks").update name: "Peet's", =>
+            user.groups().where(name: "Peet's").count (error, count) =>
+              assert.equal count, 1
+              user.memberships().count (error, count) =>
+                assert.equal count, 2
+                done()
       
       describe '.destroy', ->
+        beforeEach (done) ->
+          user.groups().create {name: "Starbucks", id: 2}, {id: 3}, done
+        
+        test 'destroy all groups', (done) ->
+          user.groups().destroy =>
+            user.groups().count (error, count) =>
+              assert.equal count, 0
+              done()
+        
+        #describe 'through relation has dependent: "destroy"', ->
+        #  test 'destroy all through relations', (done) ->
+        #    user.groups().destroy =>
+        #      user.memberships().count (error, count) =>
+        #        assert.equal count, 0
+        #        done()
       
       describe '.find', ->
         beforeEach (done) ->

@@ -17,6 +17,7 @@ describe 'Tower.Model.Dirty', ->
       after:
         $set:
           likeCountWithDefault: 10
+      likeCountWithDefault: [0, 10]
     
   test '#attributeWas', ->
     assert.equal model.attributeWas("likeCountWithDefault"), undefined
@@ -56,6 +57,7 @@ describe 'Tower.Model.Dirty', ->
           tags: ["javascript"]
         $inc:
           likeCount: 2
+      title: [undefined, 'A Title!']    
     
     model.set
       $set:
@@ -81,39 +83,40 @@ describe 'Tower.Model.Dirty', ->
           tags: ["javascript", "javascript"]
         $inc:
           likeCount: 4
+      title: ['A Title!', 'Another Title!']
           
-  describe 'operations', ->
-    test 'operation', ->
-      assert.deepEqual model.operations, []
-      model.set tags: ["ruby"]
-      model.set tags: ["javascript"]
-      model.push tags: "ruby"
-      model.inc likeCount: 2
-      
-      assert.equal model.operationIndex, 4
-      
-      assert.deepEqual model.operations, [
-        {$set: tags: ["ruby"]}, 
-        {$set: tags: ["javascript"]}, 
-        {$push: tags: "ruby"}, 
-        {$inc: {likeCount: 2}, $before: {likeCount: 0}, $after: {likeCount: 2}}
-      ]
-      
-      assert.equal model.get("likeCount"), 2      
-      model.undo()
-      assert.equal model.get("likeCount"), 0      
-      model.redo()
-      assert.equal model.get("likeCount"), 2      
-      model.undo()
-      assert.equal model.get("likeCount"), 0      
-      model.inc likeCount: 5
-      assert.equal model.get("likeCount"), 5
-      
-      assert.deepEqual model.operations, [
-        {$set: tags: ["ruby"]}, 
-        {$set: tags: ["javascript"]}, 
-        {$push: tags: "ruby"}, 
-        {$inc: {likeCount: 5}, $before: {likeCount: 0}, $after: {likeCount: 5}}
-      ]
+  #describe 'operations', ->
+  #  test 'operation', ->
+  #    assert.deepEqual model.operations, []
+  #    model.set tags: ["ruby"]
+  #    model.set tags: ["javascript"]
+  #    model.push tags: "ruby"
+  #    model.inc likeCount: 2
+  #    
+  #    assert.equal model.operationIndex, 4
+  #    
+  #    assert.deepEqual model.operations, [
+  #      {$set: tags: ["ruby"]}, 
+  #      {$set: tags: ["javascript"]}, 
+  #      {$push: tags: "ruby"}, 
+  #      {$inc: {likeCount: 2}, $before: {likeCount: 0}, $after: {likeCount: 2}}
+  #    ]
+  #    
+  #    assert.equal model.get("likeCount"), 2      
+  #    model.undo()
+  #    assert.equal model.get("likeCount"), 0      
+  #    model.redo()
+  #    assert.equal model.get("likeCount"), 2      
+  #    model.undo()
+  #    assert.equal model.get("likeCount"), 0      
+  #    model.inc likeCount: 5
+  #    assert.equal model.get("likeCount"), 5
+  #    
+  #    assert.deepEqual model.operations, [
+  #      {$set: tags: ["ruby"]}, 
+  #      {$set: tags: ["javascript"]}, 
+  #      {$push: tags: "ruby"}, 
+  #      {$inc: {likeCount: 5}, $before: {likeCount: 0}, $after: {likeCount: 5}}
+  #    ]
       
       

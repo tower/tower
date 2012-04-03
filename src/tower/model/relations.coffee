@@ -90,6 +90,17 @@ Tower.Model.Relations =
   createRelation: (name, attributes, callback) ->
     @relation(name).create(attributes, callback)
 
-  destroyRelations: ->
+  destroyRelations: (callback) ->
+    relations   = @constructor.relations()
+    dependents  = []
+    
+    for name, relation of relations
+      if relation.dependent == true || relation.dependent == "destroy"
+        dependents.push(name)
+        
+    iterator = (name, next) =>
+      @[name]().destroy(next)
+        
+    Tower.async dependents, iterator, callback
 
 module.exports = Tower.Model.Relations

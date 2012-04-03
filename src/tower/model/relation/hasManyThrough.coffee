@@ -49,10 +49,8 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
                 callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
-              
+            
     appendThroughConditions: (callback) ->
-      console.log @relation.through
-      console.log @inverseRelation.foreignKey
       # @inverseRelation.foreignKey
       @owner[@relation.through]().all (error, records) =>
         ids = @store._mapKeys(@inverseRelation.foreignKey, records)
@@ -61,11 +59,20 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
         
         callback()
         
-    createThroughRelation: (record, callback) ->
+    createThroughRelation: (records, callback) ->
       #record = @owner.relation(@relation.name).criteria.records
-      attributes = {}
-      attributes[@inverseRelation.foreignKey] = record.get('id')
-      @owner[@relation.through]().create attributes, (error, throughRecord) =>
-        callback.call @, error, throughRecord if callback
+      returnArray = _.isArray(records)
+      records = _.castArray(records) # may only get 1
+      data    = []
+      key     = @inverseRelation.foreignKey
+      
+      for record in records
+        attributes = {}
+        attributes[key] = record.get('id')
+        data.push attributes
+        
+      @owner[@relation.through]().create data, (error, throughRecords) =>
+        throughRecords = throughRecords[0] unless returnArray
+        callback.call @, error, throughRecords if callback
 
 module.exports = Tower.Model.Relation.HasManyThrough

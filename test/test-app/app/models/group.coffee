@@ -1,3 +1,5 @@
 class App.Group extends Tower.Model
-  @hasMany "memberships"
+  @field "name"
+  
+  @hasMany "memberships", dependent: "destroy"
   @hasMany "users", through: "memberships"

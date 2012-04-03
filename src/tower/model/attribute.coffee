@@ -52,7 +52,7 @@ class Tower.Model.Attribute
         
   @array:
     from: (serialized) ->
-      if Tower.none(serialized) then null else _.toArray(serialized)
+      if Tower.none(serialized) then null else _.castArray(serialized)
       
     to: (deserialized) ->
       Tower.Model.Attribute.array.from(deserialized)

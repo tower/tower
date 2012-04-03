@@ -14,7 +14,7 @@ Tower.Support.Object =
     result = {}
 
     for key, value of options
-      if @isArray(value)
+      if _.isArray(value)
         result[key] = @cloneArray(value)
       else if @isHash(value)
         result[key] = @cloneHash(value)
@@ -27,7 +27,7 @@ Tower.Support.Object =
     result = value.concat()
 
     for item, i in result
-      if @isArray(item)
+      if _.isArray(item)
         result[i] = @cloneArray(item)
       else if @isHash(item)
         result[i] = @cloneHash(item)
@@ -51,7 +51,7 @@ Tower.Support.Object =
       for key, value of node when key not in specialProperties
         oldValue = object[key]
         if oldValue
-          if @isArray(oldValue)
+          if _.isArray(oldValue)
             object[key] = oldValue.concat value
           else if typeof oldValue == "object" && typeof value == "object"
             object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
@@ -71,7 +71,7 @@ Tower.Support.Object =
     fn.toString().match(/\W*function\s+([\w\$]+)\(/)?[1]
     
   castArray: (object) ->
-    if @isArray(object) then object else [object]
+    if _.isArray(object) then object else [object]
   
   # @todo
   isA: (object, isa) ->

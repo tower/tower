@@ -61,7 +61,7 @@ class Tower.Model extends Tower.Class
     @persistent     = if options.hasOwnProperty("persistent") then options.persisted else false
 
     @attributes[key] = value for key, value of attrs
-
+    
 require './model/scope'
 require './model/criteria'
 require './model/dirty'

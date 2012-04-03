@@ -173,14 +173,7 @@ class Tower.Model.Scope extends Tower.Class
     
     criteria.addData(updates)
     
-    if args.length
-      ids = []
-      
-      for object in args
-        continue unless object?
-        ids.push if object instanceof Tower.Model then object.get('id') else object
-      
-      criteria.where(id: $in: ids)
+    criteria.addIds(args)
       
     criteria.update(callback)
   
@@ -209,14 +202,7 @@ class Tower.Model.Scope extends Tower.Class
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
     
-    if args.length
-      ids = []
-      
-      for object in args
-        continue unless object?
-        ids.push if object instanceof Tower.Model then object.get('id') else object
-      
-      criteria.where(id: $in: ids)
+    criteria.addIds(args)
       
     criteria.destroy(callback)
   
@@ -241,14 +227,7 @@ class Tower.Model.Scope extends Tower.Class
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
     
-    if args.length
-      ids = []
-      
-      for object in args
-        continue unless object?
-        ids.push if object instanceof Tower.Model then object.get('id') else object
-      
-      criteria.where(id: $in: ids)
+    criteria.addIds(args)
       
     criteria.find(callback)
   

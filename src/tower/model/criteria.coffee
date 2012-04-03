@@ -5,7 +5,7 @@ class Tower.Model.Criteria extends Tower.Class
   
   constructor: (options = {}) ->
     @model        = options.model
-    @store        = @model.store()
+    @store        = if @model then @model.store() else undefined
     
     @instantiate  = options.instantiate != false
     
@@ -41,6 +41,20 @@ class Tower.Model.Criteria extends Tower.Class
     else
       @data = _.flatten [args]#if args[0]? then [args[0]] else []
       @returnArray = false
+      
+  addIds: (args) ->
+    ids = @ids ||= []
+    
+    if args.length
+      
+      for object in args
+        continue unless object?
+        id = if object instanceof Tower.Model then object.get('id') else object
+        ids.push(id) if ids.indexOf(id) == -1
+      
+      #@where(id: $in: ids)
+      
+    ids
       
   eagerLoad: (object) ->
     @_eagerLoad = _.extend @_eagerLoad, object
@@ -177,7 +191,7 @@ class Tower.Model.Criteria extends Tower.Class
   # @example  
   #   App.Post.page(2).all()
   page: (page) ->
-    @offset((page - 1) * @_limit || 20)
+    @offset((page - 1) * (@_limit || 20))
     
   paginate: (options) ->
     limit   = options.perPage || options.limit
@@ -328,6 +342,14 @@ class Tower.Model.Criteria extends Tower.Class
 
     for conditions in @_where
       _.deepMergeWithArrays(result, conditions)
+    
+    if @ids && @ids.length
+      delete result.id
+      if @ids.length == 1
+        @returnArray = false
+      else
+        @returnArray = true
+      result.id = $in: @ids
 
     result
   

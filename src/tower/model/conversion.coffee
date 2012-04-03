@@ -74,7 +74,7 @@ Tower.Model.Conversion =
   # 
   # @return [String]
   toLabel: ->
-    @className()
+    @metadata().className
   
   # Url for this model.
   toPath: ->

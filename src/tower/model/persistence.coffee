@@ -191,6 +191,8 @@ Tower.Model.Persistence =
   # 
   # @return [void] Requires a callback.
   _destroy: (callback) ->
+    id = @get('id')
+    
     @runCallbacks "destroy", (block) =>
       complete = @_callback(block, callback)
 
@@ -198,11 +200,13 @@ Tower.Model.Persistence =
         throw error if error && !callback
 
         unless error
-          @persistent = false
-          @_resetChanges()
-          delete @attributes.id
-
-        complete.call(@, error)
+          @destroyRelations (error) =>
+            @persistent = false
+            @_resetChanges()
+            delete @attributes.id
+            complete.call(@, error)
+        else
+          complete.call(@, error)
 
     undefined
 
