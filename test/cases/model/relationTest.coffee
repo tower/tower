@@ -48,7 +48,7 @@ describeWith = (store) ->
         
       test 'parent: withInverse_noInverse, child: noInverse_withInverse', ->
         assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
-        
+
     describe 'HasMany', ->
       beforeEach (done) ->
         __destroyAll(done)
@@ -131,11 +131,11 @@ describeWith = (store) ->
         #        App.DependentMembership.count (error, count) =>
         #          assert.equal count, 0
         #          done()
-              
+
     describe 'HasMany(through: true)', ->
       beforeEach (done) ->
         __destroyAll(done)
-        
+      
       describe '.create', ->
         # don't want it to have any data b/c all that data is stored on the relationship model.
         test 'compileForCreate', ->
@@ -155,7 +155,6 @@ describeWith = (store) ->
           assert.equal throughRelation.ownerType, "App.User"
           assert.equal throughRelation.foreignKey, "userId"
           
-          
           inverseRelation = relation.inverseThrough(throughRelation)
           
           assert.equal inverseRelation.name, "group"
@@ -170,31 +169,28 @@ describeWith = (store) ->
             assert.equal record.get('groupId').toString(), group.get('id').toString()
             assert.equal record.get('userId').toString(), user.get('id').toString()
             done()
-            
+
         test 'all together now, create through model', (done) ->
-          App.Membership.all (e, g) =>
-            console.log g
-            user.groups().create id: 2, (error, group) =>
-              assert.equal group.get('id'), 2
-              user.memberships().all (error, memberships) =>
-                #console.log memberships
-                assert.equal memberships.length, 1
-                record = memberships[0]
-                assert.equal record.get('groupId').toString(), group.get('id').toString()
-                assert.equal record.get('userId').toString(), user.get('id').toString()
+          user.groups().create id: 2, (error, group) =>
+            assert.equal group.get('id'), 2
+            user.memberships().all (error, memberships) =>
+              assert.equal memberships.length, 1
+              record = memberships[0]
+              assert.equal record.get('groupId').toString(), group.get('id').toString()
+              assert.equal record.get('userId').toString(), user.get('id').toString()
               
-                user.groups().all (error, groups) =>
-                  assert.equal groups.length, 1
-                
-                  done()
-                
+              user.groups().all (error, groups) =>
+                assert.equal groups.length, 1
+              
+                done()
+  
         test 'create 2 models and 2 through models as Arguments', (done) ->
           user.groups().create {id: 2}, {id: 3}, (error, groups) =>
             assert.equal groups.length, 2
             
             App.Group.count (error, count) =>
               assert.equal count, 3
-            
+              
               user.memberships().count (error, count) =>
                 assert.equal count, 2
               
@@ -202,7 +198,7 @@ describeWith = (store) ->
                   assert.equal count, 2
                 
                   done()
-      
+
       describe '.update', ->
         beforeEach (done) ->
           user.groups().create {name: "Starbucks", id: 2}, {id: 3}, done
@@ -242,7 +238,9 @@ describeWith = (store) ->
       
       describe '.find', ->
         beforeEach (done) ->
-          user.memberships().create id: 10, groupId: group.get('id'), done
+          App.Group.create id: 100, =>
+            App.Membership.create id: 200, =>
+              user.memberships().create id: 10, groupId: group.get('id'), done
           
         test 'appendThroughConditions', (done) ->
           criteria        = user.groups().criteria
@@ -252,7 +250,7 @@ describeWith = (store) ->
           criteria.appendThroughConditions =>
             assert.deepEqual criteria.conditions(), { id: $in: [10] }
             done()
-    
+
     #describe 'HasAndBelongs', ->
     #  test 'defaults to blank array', (done) ->
     #    sinon.spy App.Parent, "create"

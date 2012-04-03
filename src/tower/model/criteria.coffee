@@ -291,9 +291,15 @@ class Tower.Model.Criteria extends Tower.Class
         callback.call @, error, records
     
   count: (callback) ->
+    @_count callback
+    
+  _count: (callback) ->
     @store.count @, callback
     
   exists: (callback) ->
+    @_exists callback
+    
+  _exists: (callback) ->
     @store.exists @, callback
     
   # Show query that will be used for the datastore.

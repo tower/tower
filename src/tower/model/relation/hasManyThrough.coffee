@@ -49,6 +49,24 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
                 callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
+    
+    count: (callback) ->
+      @_runBeforeFindCallbacksOnStore =>
+        @_count (error, record) =>
+          unless error
+            @_runAfterFindCallbacksOnStore =>
+              callback.call @, error, record if callback
+          else
+            callback.call @, error, record if callback
+            
+    exists: (callback) ->
+      @_runBeforeFindCallbacksOnStore =>
+        @_exists (error, record) =>
+          unless error
+            @_runAfterFindCallbacksOnStore =>
+              callback.call @, error, record if callback
+          else
+            callback.call @, error, record if callback
             
     appendThroughConditions: (callback) ->
       # @inverseRelation.foreignKey
