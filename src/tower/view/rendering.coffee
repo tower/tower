@@ -101,7 +101,6 @@ Tower.View.Rendering =
     return template unless typeof template == "string"
     # tmp
     result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
-    #result = @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
     throw new Error("Template '#{template}' was not found.") unless result
     result
 

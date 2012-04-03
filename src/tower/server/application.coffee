@@ -193,11 +193,9 @@ class Tower.Application extends Tower.Engine
     forever.startServer(child);
 
   fileChanged: (path) ->
-    #for key, map in @constructor.reloadMap
-    #  if map.pattern.match(path)
-    #    map.paths.push("#{Tower.root}/#{key}")
-    #    break
-    
+    # this is a tmp solution, more robust coming later.
+    if path.match(/app\/views/)
+      Tower.View.cache = {}
     return unless path.match(/app\/(models|controllers)/)
     path = require.resolve("#{Tower.root}/#{path}")
     delete require.cache[path]
