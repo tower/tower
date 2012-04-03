@@ -21,6 +21,17 @@ class Tower.Application extends Tower.Engine
     "databases"
     "routes"
   ]
+  
+  @reloadMap:
+    models:
+      pattern:  /app\/models/
+      paths:    []
+    controllers:
+      pattern:  /app\/controllers/
+      paths:    []
+    helpers:
+      pattern:  /app\/helpers/
+      paths:    []
 
   @use: ->
     @middleware ||= []
@@ -71,6 +82,7 @@ class Tower.Application extends Tower.Engine
     #@runCallbacks "initialize", null, complete
     configNames = @constructor.configNames
     configs     = @constructor.initializers()
+    reloadMap   = @constructor.reloadMap
     self        = @
     initializer = (done) =>
       requirePaths = (paths) ->
@@ -103,6 +115,7 @@ class Tower.Application extends Tower.Engine
       requirePaths File.files("#{Tower.root}/app/models")
       require "#{Tower.root}/app/controllers/applicationController"
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
+        
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
       done()
@@ -168,7 +181,7 @@ class Tower.Application extends Tower.Engine
           path  = path.split('\033')[0]
           ext   = path.match(/\.(\w+)$/g)
           ext   = ext[0] if ext
-          if ext && ext.match(/(js|coffee)/) && action.match(/(updated|deleted)/)
+          if ext && ext.match(/(js|coffee)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
             @fileChanged(path)
           _
       catch error
@@ -180,7 +193,14 @@ class Tower.Application extends Tower.Engine
     forever.startServer(child);
 
   fileChanged: (path) ->
-    delete require.cache[require.resolve(path)]
+    #for key, map in @constructor.reloadMap
+    #  if map.pattern.match(path)
+    #    map.paths.push("#{Tower.root}/#{key}")
+    #    break
+    path = require.resolve("#{Tower.root}/#{path}")
+    delete require.cache[path]
+    
+    process.nextTick -> require(path)
 
 require './application/assets'
 
