@@ -33,10 +33,12 @@ npm install tower -g
 ``` bash
 tower new app
 cd app
-npm install
+sudo npm install
 tower generate scaffold Post title:string body:text
 node server
 ```
+
+If you run into an error during `npm install`, remove the `node_modules` folder and try again.
 
 To restart your server automatically if it crashes, run with forever:
 
