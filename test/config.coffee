@@ -15,8 +15,6 @@ Tower.publicPath      = Tower.root + "/public"
 Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/test-app/app/views"]
 
-require './factories'
-
 Tower.request = (method, action, options, callback) ->
   if typeof options == "function"
     callback      = options
