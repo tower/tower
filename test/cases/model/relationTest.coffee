@@ -4,32 +4,30 @@ membership  = null
 group       = null
 user        = null
 
-__destroyAll = (done) ->
-  async.series [
-    (callback) => App.Child.destroy(callback)
-    (callback) => App.Parent.destroy(callback)
-    (callback) => App.DependentMembership.destroy(callback)
-    (callback) => App.Membership.destroy(callback)
-    (callback) => App.Group.destroy(callback)
-    (callback) => App.User.destroy(callback)
-    (callback) => App.User.create firstName: "Lance", id: 10, (error, record) =>
-      user = record
-      callback()
-    (callback) => App.Group.create id: 10, (error, record) =>
-      group = record
-      callback()
-  ], done
-
 describeWith = (store) ->
   describe 'Tower.Model.Relation', ->
     beforeEach (done) ->
-      App.Child.store(new store(name: "child", type: "App.Child"))
-      App.Parent.store(new store(name: "parents", type: "App.Parent"))
-      App.User.store(store)
-      App.Membership.store(store)
-      App.DependentMembership.store(store)
-      App.Group.store(store)
-      __destroyAll(done)
+      async.series [
+        (callback) =>
+          store.clean(callback)
+        (callback) =>
+          # maybe the store should be global...
+          App.Child.store(store)
+          App.Parent.store(store)
+          App.User.store(store)
+          App.Membership.store(store)
+          App.DependentMembership.store(store)
+          App.Group.store(store)
+          callback()
+        (callback) =>
+          App.User.create firstName: "Lance", id: 10, (error, record) =>
+            user = record
+            callback()
+        (callback) =>
+          App.Group.create id: 10, (error, record) =>
+            group = record
+            callback()
+      ], done
       
     afterEach ->
       try App.Parent.create.restore()
@@ -50,9 +48,6 @@ describeWith = (store) ->
         assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
 
     describe 'HasMany', ->
-      beforeEach (done) ->
-        __destroyAll(done)
-        
       describe '.create', ->
         test 'compileForCreate', ->
           criteria = user.memberships().criteria
@@ -133,8 +128,6 @@ describeWith = (store) ->
         #          done()
 
     describe 'HasMany(through: true)', ->
-      beforeEach (done) ->
-        __destroyAll(done)
 
       describe '.create', ->
         # don't want it to have any data b/c all that data is stored on the relationship model.
@@ -171,8 +164,8 @@ describeWith = (store) ->
             done()
 
         test 'all together now, create through model', (done) ->
-          user.groups().create id: 2, (error, group) =>
-            assert.equal group.get('id'), 2
+          user.groups().create (error, group) =>
+            #assert.equal group.get('id'), 2
             user.memberships().all (error, memberships) =>
               assert.equal memberships.length, 1
               record = memberships[0]
@@ -185,7 +178,7 @@ describeWith = (store) ->
                 done()
   
         test 'create 2 models and 2 through models as Arguments', (done) ->
-          user.groups().create {id: 2}, {id: 3}, (error, groups) =>
+          user.groups().create {}, {}, (error, groups) =>
             assert.equal groups.length, 2
             
             App.Group.count (error, count) =>
@@ -253,9 +246,9 @@ describeWith = (store) ->
 
       describe 'finders', ->
         beforeEach (done) ->
-          App.Group.create id: 100, =>
-            App.Membership.create id: 200, =>
-              user.groups().create {id: 20, name: "A"}, {id: 30, name: "B"}, {id: 40, name: "C"}, done
+          App.Group.create =>
+            App.Membership.create =>
+              user.groups().create {name: "A"}, {name: "B"}, {name: "C"}, done
         
         describe 'relation (groups)', ->
           test 'all', (done) ->
@@ -309,55 +302,6 @@ describeWith = (store) ->
               assert.equal value, true
               done()
 
-    #describe 'HasAndBelongs', ->
-    #  test 'defaults to blank array', (done) ->
-    #    sinon.spy App.Parent, "create"
-    #    
-    #    App.Parent.create id: 1, (error, parent) =>
-    #      assert.deepEqual {id: 1}, App.Parent.create.getCall(0).args[0]
-    #      
-    #      parent.child().all (error, children) =>
-    #        assert.deepEqual children, []
-    #      
-    #        done()
-    #
-    #  test 'create from parent', (done) ->
-    #    App.Parent.create id: 1, (error, parent) =>
-    #      parent.child().create id: 10, (error, child) =>
-    #        # this used to be b/c cache: true
-    #        # assert.deepEqual child.parentIds, [1]
-    #        assert.equal child.get('parentId'), 1
-    #        # same, update models that are still in memory in a normalized way!
-    #        App.Parent.find 1, (error, parent) =>
-    #          assert.deepEqual parent.childIds, [10]
-    #          assert.equal parent.get('id'), 1
-    #          
-    #          parent.child().create id: 9, (error, child) =>
-    #            App.Parent.find 1, (error, parent) =>
-    #              assert.deepEqual parent.get("childIds"), [10, 9]
-    #              
-    #              done()
-
-      #test 'create from child', (done) ->    
-      #  App.Parent.create id: 1, (error, parent) =>
-      #    parent.child().create id: 10, =>
-      #      parent.child().create id: 9, (error, child) =>
-      #        child.parents().create id: 20, =>
-      #          # need to update the record in memory as well for mongodb!
-      #          App.Child.find 9, (error, child) =>
-      #            # assert.deepEqual child.parentIds, [1, 20]
-      #          
-      #            # assert.equal child.get("parentCount"), 2
-      #            # assert.deepEqual child.parents().toQuery().conditions, { childIds: { $in: [9] } }
-      #            
-      #            child.parents().count (error, count) =>
-      #              assert.equal count, 2
-      #      
-      #              App.Parent.first (error, parent) =>
-      #                parent.child().count (error, count) =>
-      #                  assert.equal count, 2
-      #    
-      #                  done()
 
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)

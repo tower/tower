@@ -86,6 +86,7 @@ require './model/validator'
 require './model/validations'
 require './model/timestamp'
 require './model/locale/en'
+require './model/factory'
 
 Tower.Model.include Tower.Support.Callbacks
 Tower.Model.include Tower.Model.Conversion

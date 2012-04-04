@@ -33,12 +33,15 @@ Tower.Store.MongoDB.Database =
         
       @database
     
-    # Drop the database and recreate it
-    reset: (callback) ->
+    # Remove all data from the database
+    clean: (callback) ->
       return callback.call @ unless @database
       
-      @database.dropDatabase =>
-        callback.apply @, arguments
+      @database.collections (error, collections) =>
+        remove = (collection, next) =>
+          collection.remove(next)
+          
+        Tower.parallel collections, remove, callback
 
   collection: ->
     unless @_collection

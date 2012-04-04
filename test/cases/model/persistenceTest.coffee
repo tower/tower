@@ -5,8 +5,9 @@ user      = null
 describeWith = (store) ->
   describe "Tower.Model.Persistence (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
-      App.User.store(new store(name: "users", type: "App.User"))
-      App.User.destroy(done)
+      store.clean =>
+        App.User.store(store)
+        done()
       
     describe 'new', ->
       test '#isNew', ->

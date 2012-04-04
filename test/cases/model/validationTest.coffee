@@ -41,5 +41,5 @@ describeWith = (store) ->
 
     describe 'length, min, max', ->
     
-describeWith(new Tower.Store.Memory(name: "users", type: "App.User"))
-describeWith(new Tower.Store.MongoDB(name: "users", type: "App.User"))
+describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.MongoDB)

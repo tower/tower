@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Controller.Callbacks =
   ClassMethods:
     beforeAction: ->

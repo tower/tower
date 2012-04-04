@@ -2,14 +2,12 @@ class Tower.Store.Memory extends Tower.Store
   @stores: ->
     @_stores ||= []
 
-  @clear: ->
+  @clean: (callback) ->
     stores = @stores()
-
-    for store in stores
-      store.clear()
-
-    @_stores.length = 0
-    @_stores
+    
+    store.clean() for store in stores
+    
+    callback()
 
   constructor: (options) ->
     super(options)
@@ -18,6 +16,10 @@ class Tower.Store.Memory extends Tower.Store
   initialize: ->
     @constructor.stores().push @
 
+    @records  = {}
+    @lastId   = 0
+    
+  clean: ->
     @records  = {}
     @lastId   = 0
 

@@ -5,11 +5,9 @@ moment = require('moment')
 describeWith = (store) ->
   describe "Tower.Model.Finders (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
-      App.Post.store(new store(name: "posts", type: "App.Post"))
-      App.Post.destroy(done)
-      
-    afterEach (done) ->
-      App.Post.destroy(done)
+      store.clean =>
+        App.Post.store(store)
+        done()
 
     #test 'exists', ->
     #  App.Post.exists 1, (error, result) -> assert.equal result, true
