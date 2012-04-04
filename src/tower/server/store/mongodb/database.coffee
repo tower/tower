@@ -1,3 +1,4 @@
+# @mixin
 Tower.Store.MongoDB.Database =
   ClassMethods:
     initialize: (callback) ->
@@ -29,8 +30,15 @@ Tower.Store.MongoDB.Database =
           @database.close() if @database
       else
         callback() if callback
+        
       @database
-
+    
+    # Drop the database and recreate it
+    reset: (callback) ->
+      return callback.call @ unless @database
+      
+      @database.dropDatabase =>
+        callback.apply @, arguments
 
   collection: ->
     unless @_collection
