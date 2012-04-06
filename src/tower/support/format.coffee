@@ -15,6 +15,12 @@ accounting  = require 'accounting'
 # https://github.com/xaviershay/kronic
 moment      = require 'moment'
 
+# geo library
+geo         = require 'geolib'
+
+# inflector
+inflector   = require 'inflection'
+
 # others
 # - UPS tracking codes: https://www.ups.com/content/us/en/tracking/help/tracking/tnh.html
 # https://github.com/zacharyvoase/humanhash
@@ -39,6 +45,9 @@ for name, format of postalCodeFormats
   postalCodeFormats[name] = new RegExp("^#{format.join('|').replace(/#/g, '\\d')}$", "i")
   
 casting =
+  distance: ->
+    geo.getDistance(arguments...)
+
   toInt: (value) ->
     sanitize(value).toInt()
     
@@ -198,7 +207,15 @@ for cardType in ['DinersClub', 'EnRoute', 'Discover', 'JCB', 'CarteBlanche', 'Sw
   do (cardType) ->
     validating["is#{cardType}"] = (value) ->
       _.isLuhn(value)
+      
+inflections =
+  pluralize: ->
+    inflector.pluralize(arguments...)
+    
+  singularize: ->
+    inflector.singularize(arguments...)
 
 _.mixin casting
 _.mixin sanitizing
+_.mixin inflections
 _.mixin validating

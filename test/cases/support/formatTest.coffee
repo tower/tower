@@ -183,4 +183,15 @@ describe 'Tower.Support.Format', ->
     test 'isAccept', ->
       assert.equal _.isAccept('.xls', 'xls|csv'), true
       assert.equal _.isAccept('xls', 'xls|csv'), false
-    
+  
+  describe 'inflection', ->
+    test 'pluralize', ->
+      assert.equal _.pluralize("entry"), "entries"
+      assert.equal _.pluralize("business"), "businesses"
+      assert.equal _.pluralize("people"), "people"
+      assert.equal _.pluralize("person"), "people"
+      
+    test 'singularize', ->
+      assert.equal _.singularize("businesses"), "business"
+      assert.equal _.singularize("people"), "person"
+      assert.equal _.singularize("person"), "person"

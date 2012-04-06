@@ -19,6 +19,12 @@ Tower.Model.Validations =
     #     @field "email"
     #     @validates "name", "email", presence: true, min: 3
     # 
+    # @example Validation for a date
+    #   class App.Deal extends Tower.Model
+    #     @field "expiresAt", type: "Date"
+    # 
+    #     @validates "expiresAt", ">=": -> _(7).days().after(@get('createdAt'))
+    # 
     # @param [String] attributes
     # @param [Object] options
     # @option options [Boolean] presence
@@ -26,7 +32,17 @@ Tower.Model.Validations =
     # @option options [Integer] max
     # @option options [Integer] length
     # @option options [RegExp] format
-    # @option options [Boolean] unique
+    # @option options [Boolean] uniqueness
+    # @option options [Boolean] numericality
+    # @option options [Boolean] confirmation
+    # @option options [Boolean] acceptance
+    # @option options [Object] date
+    # @option options [Boolean] phone
+    # @option options [Boolean] email
+    # @option options [Boolean] url
+    # @option options [Boolean] slug
+    # @option options [Boolean] postalCode
+    # 
     # 
     # @return [Array] Return the set of newly created validators.
     validates: ->

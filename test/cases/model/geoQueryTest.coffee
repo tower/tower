@@ -1,8 +1,6 @@
 require '../../config'
 
 address = null
-moment  = require 'moment'
-geo     = require 'geolib'
 
 places =
   "Brandenburg Gate, Berlin":    {latitude: 52.516272, longitude: 13.377722}
@@ -29,11 +27,11 @@ describeWith = (store) ->
     #  data = []
     #  data.push(value) for key, value of places
     #  console.log data
-    #  console.log geo.orderByDistance(coordinates.paris, places)
+    #  console.log _.orderByDistance(coordinates.paris, places)
     
     describe 'units', ->
       test 'miles', ->
-        console.log geo.getDistance(coordinates.paris, coordinates.moscow)
+        console.log _.distance(coordinates.paris, coordinates.moscow)
         
     describe 'Address.coordinates', ->
       beforeEach (done) ->
