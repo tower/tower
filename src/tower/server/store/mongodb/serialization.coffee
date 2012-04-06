@@ -80,8 +80,6 @@ Tower.Store.MongoDB.Serialization =
             result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
-          
-    console.log result
 
     result
 
