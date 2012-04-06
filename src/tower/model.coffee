@@ -55,7 +55,7 @@ class Tower.Model extends Tower.Class
     attributes  = {}
     
     for name, definition of definitions
-      attributes[name] = definition.defaultValue(@) unless attrs.hasOwnProperty(name)
+      attributes[name] = definition.defaultValue(@)
 
     @attributes     = attributes
     @relations      = {}
@@ -68,7 +68,8 @@ class Tower.Model extends Tower.Class
     @readOnly       = if options.hasOwnProperty("readOnly") then options.readOnly else false
     @persistent     = if options.hasOwnProperty("persistent") then options.persisted else false
 
-    @attributes[key] = value for key, value of attrs
+    for key, value of attrs
+      @set key, value
     
 require './model/scope'
 require './model/criteria'

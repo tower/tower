@@ -49,6 +49,21 @@ class Tower.Model.Attribute
       
   @time: @date
   @datetime: @date
+  
+  @geo:
+    from: (serialized) ->
+      serialized
+      
+    to: (deserialized) ->
+      switch _.kind(deserialized)
+        when "array"
+          lat: deserialized[0], lng: deserialized[1]
+        when "object"
+          lat: deserialized.lat || deserialized.latitude
+          lng: deserialized.lng || deserialized.longitude
+        else
+          deserialized = deserialized.split(/,\ */)
+          lat: parseFloat(deserialized[0]), lng: parseFloat(deserialized[1])
         
   @array:
     from: (serialized) ->
@@ -72,7 +87,7 @@ class Tower.Model.Attribute
       @type     = "Array"
     
     @encodingType = switch @type
-      when "Id", "Date", "Array", "String", "Integer", "Float", "BigDecimal", "Time", "DateTime", "Boolean", "Object", "Number"
+      when "Id", "Date", "Array", "String", "Integer", "Float", "BigDecimal", "Time", "DateTime", "Boolean", "Object", "Number", "Geo"
         @type
       else
         "Model"
@@ -80,6 +95,11 @@ class Tower.Model.Attribute
     serializer = Tower.Model.Attribute[Tower.Support.String.camelize(@type, true)]
     
     @_default = options.default
+    
+    unless @_default
+      if @type == "Geo"
+        @_default = lat: null, lng: null
+        
     @get      = options.get || (serializer.from if serializer)
     @set      = options.set || (serializer.to if serializer)
     

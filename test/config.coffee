@@ -68,7 +68,10 @@ Tower.Controller::redirectTo = (options = {}) ->
 app = Tower.Application.instance()
 
 before (done) ->
-  app.initialize(done)
+  app.initialize =>
+    require "#{Tower.root}/app/models/address"
+    
+    App.Address.store().collection().ensureIndex {coordinates:"2d"}, done
 
 beforeEach (done) ->
   #Tower.Application.instance().teardown()

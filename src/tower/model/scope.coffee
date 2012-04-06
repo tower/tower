@@ -37,14 +37,14 @@ class Tower.Model.Scope extends Tower.Class
     "excludes",
     "paginate",
     "page",
-    "within",
     "allIn",
     "allOf",
     "alsoIn",
     "anyIn",
     "anyOf",
+    "notIn",
     "near",
-    "notIn"
+    "within"
   ]
 
   # Map of human readable query operators to

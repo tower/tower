@@ -9,11 +9,6 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
   class @Criteria extends @Criteria
     isHasMany: true
     
-    # @before "create", "compileForCreate"
-    # @before "update", "compileForUpdate"
-    # @before "destroy", "compileForDestroy"
-    # @before "find", "compileForFind"
-    
     # @todo
     has: (object) ->
       object  = _.castArray(object)

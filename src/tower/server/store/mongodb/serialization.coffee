@@ -129,6 +129,14 @@ Tower.Store.MongoDB.Serialization =
         time.local(value)
       else
         value
+        
+  encodeGeo: (value) ->
+    # [lng, lat]
+    [value.lng, value.lat].reverse()
+    
+  decodeGeo: (value) ->
+    return value unless value
+    lat: value[1], lng: value[0]
 
   decodeDate: (value) ->
     value
