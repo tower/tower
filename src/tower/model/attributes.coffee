@@ -194,7 +194,7 @@ Tower.Model.Attributes =
       before[key]       = @get(key) unless before.hasOwnProperty(key)
       addToSet[key]   ||= (addToSet[key] || []).concat()
       addToSet[key].push value if addToSet[key].indexOf(value) == -1
-    
+      
       @attributes[key]  = addToSet[key]
 
 module.exports = Tower.Model.Attributes

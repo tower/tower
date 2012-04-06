@@ -12,55 +12,56 @@ class Tower.Store extends Tower.Class
     false
 
   @atomicModifiers:
-    "$set":     "$set"
-    "$unset":   "$unset"
-    "$push":    "$push"
-    "$pushAll": "$pushAll"
-    "$pull":    "$pull"
-    "$pullAll": "$pullAll"
-    "$inc":     "$inc"
-    "$pop":     "$pop"
+    "$set":       "$set"
+    "$unset":     "$unset"
+    "$push":      "$push"
+    "$pushAll":   "$pushAll"
+    "$pull":      "$pull"
+    "$pullAll":   "$pullAll"
+    "$inc":       "$inc"
+    "$pop":       "$pop"
+    "$addToSet":  "$addToSet"
 
   @queryOperators:
-    ">=":       "$gte"
-    "$gte":     "$gte"
-    ">":        "$gt"
-    "$gt":      "$gt"
-    "<=":       "$lte"
-    "$lte":     "$lte"
-    "<":        "$lt"
-    "$lt":      "$lt"
-    "$in":      "$in"
-    "$any":     "$in"
-    "$nin":     "$nin"
-    "$all":     "$all"
-    "=~":       "$regex"
-    "$m":       "$regex"
-    "$regex":   "$regex"
-    "$match":   "$regex"
-    "$notMatch":   "$notMatch"
-    "!~":       "$nm"
-    "$nm":      "$nm"
-    "=":        "$eq"
-    "$eq":      "$eq"
-    "!=":       "$neq"
-    "$neq":     "$neq"
-    "$null":    "$null"
-    "$notNull": "$notNull"
+    ">=":         "$gte"
+    "$gte":       "$gte"
+    ">":          "$gt"
+    "$gt":        "$gt"
+    "<=":         "$lte"
+    "$lte":       "$lte"
+    "<":          "$lt"
+    "$lt":        "$lt"
+    "$in":        "$in"
+    "$any":       "$in"
+    "$nin":       "$nin"
+    "$all":       "$all"
+    "=~":         "$regex"
+    "$m":         "$regex"
+    "$regex":     "$regex"
+    "$match":     "$regex"
+    "$notMatch":  "$notMatch"
+    "!~":         "$nm"
+    "$nm":        "$nm"
+    "=":          "$eq"
+    "$eq":        "$eq"
+    "!=":         "$neq"
+    "$neq":       "$neq"
+    "$null":      "$null"
+    "$notNull":   "$notNull"
 
   @booleans:
-    true:    true
-    "true":  true
-    "TRUE":  true
-    "1":     true
-    1:       true
-    1.0:     true
-    false:   false
-    "false": false
-    "FALSE": false
-    "0":     false
-    0:       false
-    0.0:     false
+    true:         true
+    "true":       true
+    "TRUE":       true
+    "1":          true
+    1:            true
+    1.0:          true
+    false:        false
+    "false":      false
+    "FALSE":      false
+    "0":          false
+    0:            false
+    0.0:          false
 
   supports: {}
 

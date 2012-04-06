@@ -77,7 +77,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       @_runBeforeCreateCallbacksOnStore =>
         @_create (error, record) =>
           unless error
-            #@_cacheRecords(record)
+            #@_idCacheRecords(record)
             
             @_runAfterCreateCallbacksOnStore =>
               # add the id to the array on the owner record after it's created
@@ -131,18 +131,18 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
       data            = {}
       
-      #if relation.cache
-      #  #defaults[relation.cacheKey] = $in: [@owner.get("id")]
-      #  defaults.id = $in: @owner.get(relation.cacheKey)
+      #if relation.idCache
+      #  #defaults[relation.idCacheKey] = $in: [@owner.get("id")]
+      #  defaults.id = $in: @owner.get(relation.idCacheKey)
       #  criteria.where(defaults)
       #else
       #  defaults[relation.foreignKey] = $in: @owner.get('id')
       #  criteria.where(defaults)
       
-      if inverseRelation && inverseRelation.cache
-        array = data[inverseRelation.cacheKey] || []
+      if inverseRelation && inverseRelation.idCache
+        array = data[inverseRelation.idCacheKey] || []
         array.push(id) if array.indexOf(id) == -1
-        data[inverseRelation.cacheKey] = array
+        data[inverseRelation.idCacheKey] = array
       else if relation.foreignKey
         data[relation.foreignKey]     = id if id != undefined
         # must check here if owner is instance of foreignType
@@ -167,26 +167,31 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
     updateOwnerRecord: ->
       relation = @relation
-      !!(relation && (relation.cache || relation.counterCache))
+      !!(relation && (relation.idCache || relation.counterCache))
       
     ownerAttributes: (record) ->
       relation = @relation
       
-      if relation.cache
+      if relation.idCache
         push    = {}
-        push[relation.cacheKey] = record.get("id")
+        push[relation.idCacheKey] = record.get("id")
       if relation.counterCacheKey
         inc     = {}
         inc[relation.counterCacheKey] = 1
         
       updates   = {}
-      updates["$push"]  = push if push
+      # probably should be $addToSet
+      updates["$addToSet"]  = push if push
       updates["$inc"]   = inc if inc
       
       updates
+    
+    # @todo
+    _counterCacheAttributes: (record) ->
+      
       
     # @private
-    _cacheRecords: (records) ->
+    _idCacheRecords: (records) ->
       rootRelation = @owner.relation(@relation.name)
       rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
 

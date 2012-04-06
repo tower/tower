@@ -17,8 +17,8 @@ class Tower.Model.Relation extends Tower.Class
   # @option options [Boolean] polymorphic (false)
   # @option options [String] foreignKey Defaults to "#{as}Id" if polymorphic, else "#{singularName}Id"
   # @option options [String] foreignType Defaults to "#{as}Type" if polymorphic, otherwise it's undefined
-  # @option options [Boolean|String] cache (false)
-  # @option options [String] cacheKey Set to the value of the `cache` option if it's a string,
+  # @option options [Boolean|String] idCache (false)
+  # @option options [String] idCacheKey Set to the value of the `idCache` option if it's a string,
   #   otherwise it's `"#{singularTargetName}Ids"`.
   # @option options [Boolean] counterCache (false) if true, will increment `relationshipCount` variable
   #   when relationship is created/destroyed.
@@ -42,7 +42,7 @@ class Tower.Model.Relation extends Tower.Class
     @ownerType          = Tower.namespaced(owner.name)
     @dependent        ||= false
     @counterCache     ||= false
-    @cache              = false unless @hasOwnProperty("cache")
+    @idCache            = false unless @hasOwnProperty("idCache")
     @readonly           = false unless @hasOwnProperty("readonly")
     @validate           = false unless @hasOwnProperty("validate")
     @autosave           = false unless @hasOwnProperty("autosave")
@@ -56,7 +56,7 @@ class Tower.Model.Relation extends Tower.Class
     @pluralTargetName   = Tower.Support.String.pluralize(name)
     @targetType         = @type
     
-    # hasMany "posts", foreignKey: "postId", cacheKey: "postIds"
+    # hasMany "posts", foreignKey: "postId", idCacheKey: "postIds"
     unless @foreignKey
       if @as
         @foreignKey = "#{@as}Id"
@@ -65,14 +65,14 @@ class Tower.Model.Relation extends Tower.Class
 
     @foreignType ||= "#{@as}Type" if @polymorphic
 
-    if @cache
-      if typeof @cache == "string"
-        @cacheKey = @cache
-        @cache    = true
+    if @idCache
+      if typeof @idCache == "string"
+        @idCacheKey = @idCache
+        @idCache    = true
       else
-        @cacheKey = "#{@singularTargetName}Ids"
+        @idCacheKey = "#{@singularTargetName}Ids"
       
-      @owner.field @cacheKey, type: "Array", default: []
+      @owner.field @idCacheKey, type: "Array", default: []
 
     if @counterCache
       if typeof @counterCache == "string"

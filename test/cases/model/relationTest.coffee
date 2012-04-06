@@ -33,7 +33,7 @@ describeWith = (store) ->
       try App.Parent.create.restore()
       try App.Group.create.restore()
       try App.Membership.create.restore()
-    
+
     describe 'inverseOf', ->
       test 'noInverse_noInverse', ->
         assert.notEqual "noInverse_noInverse", try App.Parent.relation("noInverse_noInverse").inverse().name
@@ -301,7 +301,56 @@ describeWith = (store) ->
             user.memberships().exists (error, value) =>
               assert.equal value, true
               done()
-
+    
+    describe 'hasMany with idCache', ->
+      parent      = null
+      
+      beforeEach (done) ->
+        async.series [
+          (next) => App.Parent.create (error, record) =>
+            parent = record
+            next()
+        ], done
+        
+      describe 'Parent.idCacheTrue_idCacheFalse', ->
+        criteria  = null
+        relation  = null
+        
+        beforeEach ->
+          relation = App.Parent.relations().idCacheTrue_idCacheFalse
+          criteria = parent.idCacheTrue_idCacheFalse().criteria
+          
+        test 'relation', ->
+          assert.equal relation.idCache, true
+          assert.equal relation.idCacheKey, "idCacheTrue_idCacheFalse" + "Ids"
+          
+        test 'default for idCacheKey should be array', ->
+          assert.ok _.isArray App.Parent.fields()[relation.idCacheKey]._default
+          
+        test 'compileForCreate', (done) ->
+          criteria.compileForCreate()
+          
+          # not sure if we want this or not...
+          assert.deepEqual criteria.conditions(), { parentId: parent.get('id') }
+          
+          done()
+          
+        test 'updateOwnerRecord', ->
+          assert.equal criteria.updateOwnerRecord(), true
+          
+        test 'ownerAttributes', (done) ->
+          child = new App.Child(id: 20)
+          
+          assert.deepEqual criteria.ownerAttributes(child), { '$addToSet': { idCacheTrue_idCacheFalseIds: child.get('id') } }
+          
+          done()
+        
+        test 'create', (done) ->
+          parent.idCacheTrue_idCacheFalse().create id: 10, (error, child) =>
+            App.Parent.find parent.get('id'), (error, parent) =>
+              assert.deepEqual parent.get(relation.idCacheKey), [10]
+              #console.log child
+              done()
 
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)

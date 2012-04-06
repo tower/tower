@@ -129,6 +129,9 @@ describeWith = (store) ->
               assert.equal count, 1
 
               done()
+              
+    describe 'reload', ->
+      test 'reload'
 
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)

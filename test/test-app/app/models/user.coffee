@@ -8,14 +8,14 @@ class App.User extends Tower.Model
   @scope "byBaldwin", firstName: "=~": "Baldwin"
   @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
   
-  @hasMany "posts", type: "Page", cache: true # postIds
+  @hasMany "posts", type: "Page", idCache: true # postIds
   @hasMany "comments", source: "commenter"
   
   @hasMany "memberships"
   @hasMany "groups", through: "memberships"
   
   @hasMany "polymorphicMemberships", as: "joinable", type: "Membership"
-  @hasMany "cachedMemberships", type: "Membership", cache: true
+  @hasMany "cachedMemberships", type: "Membership", idCache: true
   #@hasMany "dependentMemberships", type: "DependentMembership", dependent: true
   
   @validates "firstName", presence: true

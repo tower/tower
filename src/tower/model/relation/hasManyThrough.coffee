@@ -42,7 +42,7 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
       @_runBeforeCreateCallbacksOnStore =>
         @_create (error, record) =>
           unless error
-            #@_cacheRecords(record)
+            #@_idCacheRecords(record)
             
             @_runAfterCreateCallbacksOnStore =>
               @createThroughRelation record, (error, throughRecord) =>

@@ -34,5 +34,11 @@ Tower.Store.Memory.Serialization =
       attributes[_key] ||= 0
       attributes[_key] += _value
     attributes
+  
+  _addToSetAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      attributes[_key] ||= []
+      attributes[_key].push(_value) if attributes[_key].indexOf(_value) == -1
+    attributes
 
 module.exports = Tower.Store.Memory.Serialization
