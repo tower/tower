@@ -82,7 +82,10 @@ Tower.Store.MongoDB.Serialization =
         result[key] = @encode field, value
 
     result
-
+    
+  # batchSize
+  # hint
+  # explain
   serializeOptions: (criteria) ->
     limit         = criteria.get('limit')
     sort          = criteria.get('order')

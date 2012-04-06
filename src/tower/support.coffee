@@ -19,4 +19,6 @@ require './support/i18n'
 require './support/url'
 require './support/locale/en'
 
+require './support/format'
+
 module.exports = Tower.Support

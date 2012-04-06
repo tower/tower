@@ -1,6 +1,8 @@
 # @mixin
 Tower.Store.MongoDB.Database =
   ClassMethods:
+    info: (callback) ->
+    
     addIndex: (callback) ->
       indexes = @_pendingIndexes ||= []
       indexes.push(callback)
@@ -59,6 +61,7 @@ Tower.Store.MongoDB.Database =
           collection.remove(next)
           
         Tower.parallel collections, remove, callback
+        
   InstanceMethods:
     addIndex: (name, callback) ->
       if @constructor.initialized
