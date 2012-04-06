@@ -190,11 +190,11 @@ Tower.Model.Attributes =
       value             = fields[key].encode(value) if key in fields
       {before, after}   = @changes
       addToSet          = after.$addToSet ||= {}
-    
-      before[key]       = @get(key) unless before.hasOwnProperty(key)
-      addToSet[key]   ||= (addToSet[key] || []).concat()
-      addToSet[key].push value if addToSet[key].indexOf(value) == -1
       
+      before[key]     ||= @get(key)
+      current           = @get(key) || []
+      addToSet[key]   ||= current.concat()
+      addToSet[key].push value if addToSet[key].indexOf(value) == -1
       @attributes[key]  = addToSet[key]
 
 module.exports = Tower.Model.Attributes

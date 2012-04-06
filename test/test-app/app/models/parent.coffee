@@ -12,4 +12,4 @@ class App.Parent extends Tower.Model
   @hasMany "withInverse_noInverse", type: "Child", inverseOf: "noInverse_withInverse"
   
   @hasMany "idCacheTrue_idCacheFalse", type: "Child", idCache: true
-  # @hasMany "idCacheFalse_idCacheTrue", type: "Child"
+  @hasMany "idCacheFalse_idCacheTrue", type: "Child", inverseOf: "idCacheTrue_idCacheFalse"

@@ -33,7 +33,7 @@ describeWith = (store) ->
       try App.Parent.create.restore()
       try App.Group.create.restore()
       try App.Membership.create.restore()
-
+    
     describe 'inverseOf', ->
       test 'noInverse_noInverse', ->
         assert.notEqual "noInverse_noInverse", try App.Parent.relation("noInverse_noInverse").inverse().name
@@ -52,14 +52,13 @@ describeWith = (store) ->
         test 'compileForCreate', ->
           criteria = user.memberships().criteria
           criteria.compileForCreate()
-          
           assert.deepEqual criteria.conditions(), { userId: 10 }
           
         test 'compileForCreate with cache: true', ->
           criteria = user.cachedMemberships().criteria
           criteria.compileForCreate()
 
-          assert.deepEqual criteria.conditions(), { userId: 10 }
+          assert.deepEqual criteria.conditions(), { }
           
         test 'compileForCreate on polymorphic record', ->
           criteria = user.polymorphicMemberships().criteria
@@ -330,8 +329,8 @@ describeWith = (store) ->
         test 'compileForCreate', (done) ->
           criteria.compileForCreate()
           
-          # not sure if we want this or not...
-          assert.deepEqual criteria.conditions(), { parentId: parent.get('id') }
+          # not sure if we want this or not... { parentId: parent.get('id') }
+          assert.deepEqual criteria.conditions(), {  }
           
           done()
           
@@ -344,13 +343,74 @@ describeWith = (store) ->
           assert.deepEqual criteria.ownerAttributes(child), { '$addToSet': { idCacheTrue_idCacheFalseIds: child.get('id') } }
           
           done()
+          
+        describe 'persistence', ->
+          child = null
+          
+          beforeEach (done) ->
+            async.series [
+              (next) =>
+                parent.idCacheTrue_idCacheFalse().create (error, record) =>
+                  child = record
+                  next()
+              (next) =>
+                parent.idCacheTrue_idCacheFalse().create id: 20, next
+              (next) =>
+                # create one without a parent at all
+                App.Child.create id: 30, next
+              (next) =>
+                App.Parent.find parent.get('id'), (error, record) =>
+                  parent = record
+                  next()
+            ], done
         
-        test 'create', (done) ->
-          parent.idCacheTrue_idCacheFalse().create id: 10, (error, child) =>
-            App.Parent.find parent.get('id'), (error, parent) =>
-              assert.deepEqual parent.get(relation.idCacheKey), [10]
-              #console.log child
-              done()
+          test 'create', (done) ->
+            assert.equal child.get('parentId'), null
+            assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), 20]
+            done()
+            
+          test 'update(1)', (done) ->
+            parent.idCacheTrue_idCacheFalse().update child.get('id'), value: "something", =>
+              App.Child.find child.get('id'), (error, child) =>
+                assert.equal child.get('value'), 'something'
+                
+                App.Child.find 20, (error, child) =>
+                  assert.equal child.get('value'), null
+                  
+                  done()
+          
+          test 'update()', (done) ->
+            parent.idCacheTrue_idCacheFalse().update value: "something", =>
+              App.Child.find child.get('id'), (error, child) =>
+                assert.equal child.get('value'), 'something'
 
+                App.Child.find 30, (error, child) =>
+                  assert.equal child.get('value'), null
+
+                  done()
+            
+          test 'destroy(1)', (done) ->
+            parent.idCacheTrue_idCacheFalse().destroy child.get('id'), =>
+              App.Parent.find parent.get('id'), (error, parent) =>
+                assert.deepEqual parent.get(relation.idCacheKey), [20]
+                
+                App.Child.all (error, records) =>
+                  assert.equal records.length, 2
+                  done()
+                
+          test 'destroy()', (done) ->
+            parent.idCacheTrue_idCacheFalse().destroy =>
+              App.Parent.find parent.get('id'), (error, parent) =>
+                assert.deepEqual parent.get(relation.idCacheKey), []
+                
+                App.Child.all (error, records) =>
+                  assert.equal records.length, 1
+                  done()
+                
+          test 'all', (done) ->
+            parent.idCacheTrue_idCacheFalse().all (error, records) =>
+              assert.equal records.length, 2
+              done()
+          
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)

@@ -433,7 +433,7 @@ class Tower.Model.Criteria extends Tower.Class
           unless callback
             throw error if error
           else
-            callback.call @, error, records if callback
+            callback.call @, error, @export(records) if callback
   
   _array: (existing, orNull) ->
     if existing && existing.length then existing.concat() else (if orNull then null else [])

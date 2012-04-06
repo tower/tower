@@ -107,7 +107,11 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
         @_destroy (error, record) =>
           unless error
             @_runAfterDestroyCallbacksOnStore =>
-              callback.call @, error, record if callback
+              if @updateOwnerRecord()
+                @owner.updateAttributes @ownerAttributesForDestroy(record), (error) =>
+                  callback.call @, error, record if callback
+              else
+                callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
             
@@ -143,7 +147,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
         array = data[inverseRelation.idCacheKey] || []
         array.push(id) if array.indexOf(id) == -1
         data[inverseRelation.idCacheKey] = array
-      else if relation.foreignKey
+      else if relation.foreignKey && !relation.idCache
         data[relation.foreignKey]     = id if id != undefined
         # must check here if owner is instance of foreignType
         data[relation.foreignType]  ||= owner.constructor.name if relation.foreignType
@@ -157,13 +161,20 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       @compile()
     
     compileForUpdate: ->
-      @compile()
+      @compileForFind()
+      
+      @returnArray = true unless @ids && @ids.length
       
     compileForDestroy: ->
-      @compile()
+      @compileForFind()
       
     compileForFind: ->
       @compile()
+      
+      relation = @relation
+      
+      if relation.idCache
+        @where(id: $in: @owner.get(relation.idCacheKey))
       
     updateOwnerRecord: ->
       relation = @relation
@@ -185,15 +196,28 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       updates["$inc"]   = inc if inc
       
       updates
+      
+    ownerAttributesForDestroy: (record) ->
+      relation = @relation
+      
+      if relation.idCache
+        pull    = {}
+        # tmp hack
+        pull[relation.idCacheKey] = if @ids && @ids.length then @ids else @owner.get(relation.idCacheKey)
+      if relation.counterCacheKey
+        inc     = {}
+        inc[relation.counterCacheKey] = -1
+        
+      updates   = {}
+      # probably should be $addToSet
+      updates["$pullAll"]  = pull if pull
+      updates["$inc"]   = inc if inc
+      
+      updates
     
-    # @todo
-    _counterCacheAttributes: (record) ->
-      
-      
     # @private
     _idCacheRecords: (records) ->
       rootRelation = @owner.relation(@relation.name)
       rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
-
 
 module.exports = Tower.Model.Relation.HasMany

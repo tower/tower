@@ -20,8 +20,24 @@ Tower.Store.Memory.Serialization =
       attributes[_key] ||= []
       attributes[_key].push _value
     attributes
+    
+  _pushAllAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      attributes[_key] ||= []
+      attributes[_key].concat _.castArray(_value)
+    attributes
 
   _pullAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      _attributeValue = attributes[_key]
+      if _attributeValue
+        for item in _value
+          _attributeValue.splice _attributeValue.indexOf(item), 1
+    attributes
+  
+  # something is happening where all these functions are being called twice?
+  _pullAllAtomicUpdate: (attributes, value) ->
+    return attributes
     for _key, _value of value
       _attributeValue = attributes[_key]
       if _attributeValue
