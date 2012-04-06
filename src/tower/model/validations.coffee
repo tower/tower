@@ -57,7 +57,11 @@ Tower.Model.Validations =
     # 
     # @return [Array]
     validators: ->
-      @_validators ||= []
+      switch arguments.length
+        when 1
+          @fields()[arguments[0]].validators()
+        else
+          @metadata().validators
       
   InstanceMethods:
     # Executes validations defined for the model.

@@ -1,4 +1,27 @@
 class Tower.Model.Validator
+  @keys:
+    presence:   "presence"
+    required:   "required"
+    count:      "length"
+    length:     "length"
+    min:        "min"
+    max:        "max"
+    gte:        "gte"
+    ">=":       "gte"
+    gt:         "gt"
+    ">":        "gt"
+    lte:        "lte"
+    "<=":       "lte"
+    lt:         "lt"
+    "<":        "lt"
+    format:     "format"
+    unique:     "uniqueness"
+    uniqueness: "uniqueness"
+    in:         "in"
+    except:     "except"
+    only:       "only"
+    accepts:    "accepts"
+  
   @create: (name, value, attributes) ->
     if typeof name == "object"
       attributes = value
@@ -10,7 +33,7 @@ class Tower.Model.Validator
     switch name
       when "presence", "required"
         new @Presence(name, value, attributes)
-      when "count", "length", "min", "max"
+      when "count", "length", "min", "max", "gte", "gt", "lte", "lt"
         new @Length(name, value, attributes)
       when "format"
         new @Format(name, value, attributes)
@@ -61,6 +84,12 @@ class Tower.Model.Validator
     errors[attribute].push message
     callback.call @, message if callback
     false
+    
+  getValue: (binding) ->
+    if typeof @value == 'function'
+      @value.call binding
+    else
+      @value
 
 require './validator/format'
 require './validator/length'

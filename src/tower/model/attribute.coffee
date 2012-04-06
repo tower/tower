@@ -75,10 +75,15 @@ class Tower.Model.Attribute
   # @option options [Boolean|String|Function] set If `set` is a boolean, it will look for a method
   #   named `"set#{field.name}"` on the prototype.  If it's a string, it will call that method on the prototype.
   #   If it's a function, it will call that function as if it were on the prototype.
-  constructor: (owner, name, options = {}) ->
+  constructor: (owner, name, options = {}, block) ->
     @owner        = owner
     @name         = key = name
-    options       = type: options if typeof options == 'string'
+    
+    if typeof options == 'string'
+      options       = type: options
+    else if typeof options == 'function'
+      block         = options
+      options       = {}
     
     @type         = options.type || "String"
     
@@ -112,12 +117,26 @@ class Tower.Model.Attribute
         configurable: true
         get: -> @get(key)
         set: (value) -> @set(key, value)
+    
+        
+    validations           = {}
+    
+    for key, normalizedKey of Tower.Model.Validator.keys
+      validations[normalizedKey] = options[key] if options.hasOwnProperty(key)
+    
+    @owner.validates name, validations if _.isPresent(validations)
         
     if options.index
       if options.index == true
         @owner.index(name)
       else
         @owner.index(options.index)
+        
+  validators: ->
+    result = []
+    for validator in @owner.validators()
+      result.push(validator) if validator.attributes.indexOf(@name) != -1
+    result
 
   defaultValue: (record) ->
     _default = @_default

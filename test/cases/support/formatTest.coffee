@@ -89,7 +89,7 @@ describe 'Tower.Support.Format', ->
   describe 'validating', ->
     test 'isEmail', ->
       assert.equal _.isEmail('example@gmail.com'), true
-      assert.equal _.isEmail('example.com')._errors[0], "Invalid email"
+      assert.equal _.isEmail('example.com'), false
       
     test 'isWeakPassword', ->
       assert.equal _.isWeakPassword('sixchr'), true

@@ -352,7 +352,9 @@ describeWith = (store) ->
         while i < 18
           i++
           do (i) ->
-            callbacks.push (callback) => App.Post.create(id: i, title: (new Array(i + 1)).join("a"), rating: 8, callback)
+            callbacks.push (next) =>
+              App.Post.create id: i, title: (new Array(i + 1)).join("a"), rating: 8, (error, post) =>
+                next()
         
         async.series callbacks, =>
           process.nextTick(done)
@@ -394,12 +396,12 @@ describeWith = (store) ->
 
       test 'desc', (done) ->
         App.Post.page(2).desc('id').all (error, posts) =>
-          assert.equal posts[0].id, 13
+          assert.equal posts[0].get('id'), 13
           done()
       
       test 'asc', (done) ->
         App.Post.page(2).asc('id').all (error, posts) =>
-          assert.equal posts[0].id, 6
+          assert.equal posts[0].get('id'), 6
           done()
 
 describeWith(Tower.Store.Memory)

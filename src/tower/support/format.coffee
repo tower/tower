@@ -143,9 +143,9 @@ sanitizing =
   
 validating =
   isEmail: (value) ->
-    try result = check(value).isEmail()
+    result = check(value).isEmail()
     return true unless result._errors.length
-    result
+    false
     
   isUUID: (value) ->
     try result = check(value).isUUID()
@@ -159,6 +159,9 @@ validating =
   isPhone: (value, options = {}) ->
     pattern = phoneFormats[options.format] || /^\d{3}-\d{3}-\d{4}|\d{3}\.\d{3}\.\d{4}|\d{10}|\d{3}\s\d{3}\s\d{4}|\(\d{3}\)\s\d{3}-\d{4}$/i
     !!value.toString().match(pattern)
+    
+  isCreditCard: (value) ->
+    _.isLuhn(value)
     
   isMasterCard: (value) ->
     _.isLuhn(value) && !!value.match(/^5[1-5].{14}/)
@@ -214,6 +217,9 @@ inflections =
     
   singularize: ->
     inflector.singularize(arguments...)
+    
+  camelCase: (value) ->
+    Tower.Support.String.camelize(value)
 
 _.mixin casting
 _.mixin sanitizing

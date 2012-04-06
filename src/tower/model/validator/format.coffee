@@ -1,13 +1,19 @@
-class Tower.Model.Validator.Format
-  constructor: (value, attributes) ->
-    super(value, attributes)
-
-    @value = if typeof(value) == 'string' then new RegExp(value) else value
+class Tower.Model.Validator.Format extends Tower.Model.Validator
+  constructor: (name, value, attributes) ->
+    super(name, value, attributes)
+    
+    if @value.hasOwnProperty('with')
+      @value    = @value.with
+      
+    if typeof @value == 'string'
+      @matcher  = "is#{_.camelCase(value, true)}"
 
   validate: (record, attribute, errors, callback) ->
     value   = record.get(attribute)
-
-    unless !!@value.exec(value)
+    
+    success = if @matcher then !!_[@matcher](value) else !!@value.exec(value)
+    
+    unless success
       return @failure(
         record,
         attribute,

@@ -22,16 +22,15 @@ describe 'Tower.Model.Metadata', ->
   test '.metadata', ->
     metadata = _.extend {}, App.User.metadata()
     delete metadata.store
-    assert.deepEqual metadata,
-      name:                 'user'
-      namePlural:           'users'
-      className:            'User'
-      classNamePlural:      'Users'
-      paramName:            'user'
-      paramNamePlural:      'users'
-      modelName:            'App.User'
-      controllerName:       'App.UsersController'
-      indexes:              {}
+    
+    assert.equal metadata.name,                 'user'
+    assert.equal metadata.namePlural,           'users'
+    assert.equal metadata.className,            'User'
+    assert.equal metadata.classNamePlural,      'Users'
+    assert.equal metadata.paramName,            'user'
+    assert.equal metadata.paramNamePlural,      'users'
+    assert.equal metadata.modelName,            'App.User'
+    assert.equal metadata.controllerName,       'App.UsersController'
   
   describe 'instance', ->
     beforeEach ->
@@ -43,13 +42,12 @@ describe 'Tower.Model.Metadata', ->
     test '#metadata', ->
       metadata = _.extend {}, user.metadata()
       delete metadata.store
-      assert.deepEqual metadata,
-        name:                 'user'
-        namePlural:           'users'
-        className:            'User'
-        classNamePlural:      'Users'
-        paramName:            'user'
-        paramNamePlural:      'users'
-        modelName:            'App.User'
-        controllerName:       'App.UsersController'
-        indexes:              {}
+      
+      assert.equal metadata.name,                 'user'
+      assert.equal metadata.namePlural,           'users'
+      assert.equal metadata.className,            'User'
+      assert.equal metadata.classNamePlural,      'Users'
+      assert.equal metadata.paramName,            'user'
+      assert.equal metadata.paramNamePlural,      'users'
+      assert.equal metadata.modelName,            'App.User'
+      assert.equal metadata.controllerName,       'App.UsersController'

@@ -49,6 +49,13 @@ Tower.Model.Conversion =
       className               = @name
       metadata                = @metadata[className]
       return metadata if metadata
+      baseClassName           = @baseClass().name
+      
+      if baseClassName != className
+        superMetadata = @baseClass().metadata()
+      else
+        superMetadata = {}
+        
       namespace               = Tower.namespace()
       name                    = Tower.Support.String.camelize(className, true)
       namePlural              = Tower.Support.String.pluralize(name)
@@ -57,7 +64,9 @@ Tower.Model.Conversion =
       paramNamePlural         = Tower.Support.String.parameterize(namePlural)
       modelName               = "#{namespace}.#{className}"
       controllerName          = "#{namespace}.#{classNamePlural}Controller"
-      indexes                 = {}
+      fields                  = if superMetadata.fields then _.clone(superMetadata.fields) else {}
+      indexes                 = if superMetadata.indexes then _.clone(superMetadata.indexes) else {}
+      validators              = if superMetadata.validators then _.clone(superMetadata.validators) else []
       
       @metadata[className]    =
         name:                 name
@@ -69,6 +78,8 @@ Tower.Model.Conversion =
         modelName:            modelName
         controllerName:       controllerName
         indexes:              indexes
+        validators:           validators
+        fields:               {}
   
   # A label for this model when rendered to a string.
   # 
