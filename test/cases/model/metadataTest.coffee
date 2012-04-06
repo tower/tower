@@ -31,6 +31,7 @@ describe 'Tower.Model.Metadata', ->
       paramNamePlural:      'users'
       modelName:            'App.User'
       controllerName:       'App.UsersController'
+      indexes:              {}
   
   describe 'instance', ->
     beforeEach ->
@@ -51,3 +52,4 @@ describe 'Tower.Model.Metadata', ->
         paramNamePlural:      'users'
         modelName:            'App.User'
         controllerName:       'App.UsersController'
+        indexes:              {}

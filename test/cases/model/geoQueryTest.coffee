@@ -24,15 +24,6 @@ describeWith = (store) ->
       store.clean =>
         App.Address.store(store)
         done()
-
-    #test 'exists', ->
-    #  App.Post.exists 1, (error, result) -> assert.equal result, true
-    #  App.Post.exists "1", (error, result) -> assert.equal result, true
-    #  App.Post.exists authorName: "David", (error, result) -> assert.equal result, true
-    #  App.Post.exists authorName: "Mary", approved: true, (error, result) -> assert.equal result, true
-    #  App.Post.exists 45, (error, result) -> assert.equal result, false
-    #  App.Post.exists (error, result) -> assert.equal result, true
-    #  App.Post.exists null, (error, result) -> assert.equal result, false
     
     #test 'orderByDistance', ->
     #  data = []

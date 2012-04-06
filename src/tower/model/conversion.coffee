@@ -57,7 +57,8 @@ Tower.Model.Conversion =
       paramNamePlural         = Tower.Support.String.parameterize(namePlural)
       modelName               = "#{namespace}.#{className}"
       controllerName          = "#{namespace}.#{classNamePlural}Controller"
-
+      indexes                 = {}
+      
       @metadata[className]    =
         name:                 name
         namePlural:           namePlural
@@ -67,6 +68,7 @@ Tower.Model.Conversion =
         paramNamePlural:      paramNamePlural
         modelName:            modelName
         controllerName:       controllerName
+        indexes:              indexes
   
   # A label for this model when rendered to a string.
   # 

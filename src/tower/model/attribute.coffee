@@ -112,6 +112,12 @@ class Tower.Model.Attribute
         configurable: true
         get: -> @get(key)
         set: (value) -> @set(key, value)
+        
+    if options.index
+      if options.index == true
+        @owner.index(name)
+      else
+        @owner.index(options.index)
 
   defaultValue: (record) ->
     _default = @_default

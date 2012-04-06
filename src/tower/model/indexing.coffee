@@ -31,7 +31,13 @@ Tower.Model.Indexing =
     # @param [Object] options name of the index
     # 
     # @option options [Boolean] unique whether the index has to be unique or not
-    index: (key, options = {}) ->
-      @metadata().indices[key] = options
+    index: (name, options = {}) ->
+      # options.name      = name
+      @store().addIndex(name)
+      
+      @indexes()[name]  = options
+    
+    indexes: ->
+      @metadata().indexes
     
 module.exports = Tower.Model.Indexing

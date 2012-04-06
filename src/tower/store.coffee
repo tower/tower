@@ -64,6 +64,9 @@ class Tower.Store extends Tower.Class
     0.0:          false
 
   supports: {}
+  
+  addIndex: (name, options) ->
+    
 
   serialize: (data) ->
     data[i] = @serializeModel(item) for item, i in data
