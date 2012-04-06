@@ -35,6 +35,21 @@ describe 'Tower.Model.Fields', ->
       assert.equal field.encodingType, "Array"
       assert.equal field.itemType, "NestedModel"
       
+    test 'array of field names without options', ->
+      {a1, a2, a3} = App.BaseModel.fields()
+      assert.equal a1.type, "String"
+      assert.equal a3.type, "String"
+    
+    test 'array of field names with options', ->
+      {a4, a5, a6} = App.BaseModel.fields()
+      assert.equal a4.type, "Integer"
+      assert.equal a6.type, "Integer"
+      
+    test 'object of field names', ->
+      {o1, o2} = App.BaseModel.fields()
+      assert.equal o1.type, "String"
+      assert.equal o2.type, "Integer"
+      
   describe 'serialization', ->
     test 'string "A string" == "A string"', ->
       assert.equal attr.string.to("A string"), "A string"

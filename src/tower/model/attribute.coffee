@@ -63,6 +63,8 @@ class Tower.Model.Attribute
   constructor: (owner, name, options = {}) ->
     @owner        = owner
     @name         = key = name
+    options       = type: options if typeof options == 'string'
+    
     @type         = options.type || "String"
     
     if typeof @type != "string"

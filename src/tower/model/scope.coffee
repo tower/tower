@@ -217,6 +217,27 @@ class Tower.Model.Scope extends Tower.Class
       
     criteria.destroy(callback)
   
+  # Add to set.
+  add: ->
+    criteria        = @compile()
+    args            = _.args(arguments)
+    callback        = _.extractBlock(args)
+    # for `create`, the rest of the arguments must be records
+    
+    criteria.addData(args)
+    
+    criteria.add(callback)
+    
+  # Remove from set.
+  remove: ->
+    criteria        = @compile()
+    args            = _.flatten _.args(arguments)
+    callback        = _.extractBlock(args)
+    
+    criteria.addIds(args)
+      
+    criteria.remove(callback)
+  
   # Updates one or many records based on the scope's criteria.
   # 
   # @example Find single record

@@ -330,6 +330,12 @@ class Tower.Model.Criteria extends Tower.Class
   _exists: (callback) ->
     @store.exists @, callback
     
+  # add to set
+  add: (callback) ->
+    
+  # remove from set
+  remove: (callback) ->
+    
   # Show query that will be used for the datastore.
   # @todo
   explain: (callback) ->

@@ -53,8 +53,12 @@ Tower.Store.Memory.Serialization =
   
   _addToSetAtomicUpdate: (attributes, value) ->
     for _key, _value of value
-      attributes[_key] ||= []
-      attributes[_key].push(_value) if attributes[_key].indexOf(_value) == -1
+      attributeValue = attributes[_key] ||= []
+      if _value && _value.hasOwnProperty("$each")
+        for item in _value.$each
+          attributeValue.push(item) if attributeValue.indexOf(item) == -1
+      else
+        attributeValue.push(_value) if attributeValue.indexOf(_value) == -1
     attributes
 
 module.exports = Tower.Store.Memory.Serialization

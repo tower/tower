@@ -12,5 +12,9 @@ class App.BaseModel extends Tower.Model
       value.join("-") if value
     set: (value) ->
       _.castArray(value)
+      
+  @fields "a1", "a2", "a3"
+  @fields "a4", "a5", "a6", type: "Integer"
+  @fields o1: "String", o2: "Integer"
   
 class App.NestedModel extends Tower.Model

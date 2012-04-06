@@ -4,6 +4,9 @@ membership  = null
 group       = null
 user        = null
 
+_.toS = (array) ->
+  _.map array, (item) -> item.toString()
+
 describeWith = (store) ->
   describe 'Tower.Model.Relation', ->
     beforeEach (done) ->
@@ -411,6 +414,30 @@ describeWith = (store) ->
             parent.idCacheTrue_idCacheFalse().all (error, records) =>
               assert.equal records.length, 2
               done()
+              
+          test 'add to set', (done) ->
+            App.Child.create (error, newChild) =>
+              parent.idCacheTrue_idCacheFalse().add newChild, =>
+                App.Parent.find parent.get('id'), (error, parent) =>
+                  assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), 20, newChild.get('id')])
+                  
+                  App.Child.all (error, records) =>
+                    assert.equal records.length, 4
+                    done()
+                    
+          #test 'remove from set', (done) ->
+          #  parent.idCacheTrue_idCacheFalse().remove child, =>
+          #    App.Parent.find parent.get('id'), (error, parent) =>
+          #      assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), newChild.get('id')])
+          #
+          #      App.Child.all (error, records) =>
+          #        assert.equal records.length, 3
+          #        done()
+          
+          #describe 'inverseOf', ->
+          #  test 'add to set', (done) ->
+          #    App.Child.create (error, child) =>
+          #      child.idCacheFalse_idCacheTrue
           
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)

@@ -125,6 +125,20 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
               callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
+
+    # add to set
+    add: (callback) ->
+      throw new Error unless @relation.idCache
+      
+      @owner.updateAttributes @ownerAttributes(), (error) =>
+        callback.call @, error, @data if callback
+
+    # remove from set
+    remove: (callback) ->
+      throw new Error unless @relation.idCache
+      
+      @owner.updateAttributes @ownerAttributesForDestroy(), (error) =>
+        callback.call @, error, @data if callback
     
     compile: ->
       owner           = @owner
@@ -185,7 +199,8 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
       
       if relation.idCache
         push    = {}
-        push[relation.idCacheKey] = record.get("id")
+        data    = if record then record.get("id") else @store._mapKeys('id', @data)
+        push[relation.idCacheKey] = if _.isArray(data) then {$each: data} else data
       if relation.counterCacheKey
         inc     = {}
         inc[relation.counterCacheKey] = 1

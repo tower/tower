@@ -22,7 +22,19 @@ Tower.Model.Attributes =
     # 
     # @return [Object]
     fields: ->
-      @_fields   ||= {}
+      fields = @_fields ||= {}
+      
+      switch arguments.length
+        when 0
+          fields
+        when 1
+          @field(name, options) for name, options of arguments[0]
+        else
+          names   = _.args(arguments)
+          options = _.extractOptions(names)
+          @field(name, options) for name in names
+      
+      fields
       
   InstanceMethods:
     # Get a value defined by a {Tower.Model.field}.
@@ -194,7 +206,13 @@ Tower.Model.Attributes =
       before[key]     ||= @get(key)
       current           = @get(key) || []
       addToSet[key]   ||= current.concat()
-      addToSet[key].push value if addToSet[key].indexOf(value) == -1
+      
+      if value && value.hasOwnProperty("$each")
+        for item in value.$each
+          addToSet[key].push(item) if addToSet[key].indexOf(item) == -1
+      else
+        addToSet[key].push(value) if addToSet[key].indexOf(value) == -1
+        
       @attributes[key]  = addToSet[key]
 
 module.exports = Tower.Model.Attributes
