@@ -79,6 +79,12 @@ class Tower.Model.Scope extends Tower.Class
   constructor: (criteria) ->
     @criteria = criteria
   
+  # Check if this scope or relation contains this object
+  # 
+  # @param [Object] object an object or array of objects.
+  has: (object) ->
+    @criteria.has(object)
+  
   # Builds one or many records based on the scope's criteria.
   # 
   # @example Build single record

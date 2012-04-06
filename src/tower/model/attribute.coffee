@@ -57,6 +57,9 @@ class Tower.Model.Attribute
     to: (deserialized) ->
       Tower.Model.Attribute.array.from(deserialized)
   
+  # @option options [Boolean|String|Function] set If `set` is a boolean, it will look for a method
+  #   named `"set#{field.name}"` on the prototype.  If it's a string, it will call that method on the prototype.
+  #   If it's a function, it will call that function as if it were on the prototype.
   constructor: (owner, name, options = {}) ->
     @owner        = owner
     @name         = key = name
@@ -77,6 +80,9 @@ class Tower.Model.Attribute
     @_default = options.default
     @get      = options.get || (serializer.from if serializer)
     @set      = options.set || (serializer.to if serializer)
+    
+    @get = "get#{Tower.Support.String.camelize(name)}" if @get == true
+    @set = "set#{Tower.Support.String.camelize(name)}" if @set == true
     
     if Tower.accessors
       Object.defineProperty @owner.prototype, name,

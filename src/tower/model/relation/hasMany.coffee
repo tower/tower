@@ -14,6 +14,13 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
     # @before "destroy", "compileForDestroy"
     # @before "find", "compileForFind"
     
+    # @todo
+    has: (object) ->
+      object  = _.castArray(object)
+      records = []
+      return false unless records.length
+      return false
+    
     validate: (callback) ->
       unless @owner.isPersisted()
         throw new Error("You cannot call create unless the parent is saved")

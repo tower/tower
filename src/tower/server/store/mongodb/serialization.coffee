@@ -67,7 +67,7 @@ Tower.Store.MongoDB.Serialization =
       key   = "_id" if key == "id"
       if _.isRegExp(value)
         result[key] = value
-      else if _.isHash(value)
+      else if _.isBaseObject(value)
         result[key] = {}
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]
@@ -80,6 +80,8 @@ Tower.Store.MongoDB.Serialization =
             result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
+          
+    console.log result
 
     result
 
@@ -100,6 +102,7 @@ Tower.Store.MongoDB.Serialization =
 
   encode: (field, value, operation) ->
     return value unless field
+    
     method = @["encode#{field.encodingType}"]
     value = method.call(@, value, operation) if method
     value = [value] if operation == "$in" && !_.isArray(value)
@@ -181,10 +184,11 @@ Tower.Store.MongoDB.Serialization =
       return result
     else
       @_encodeId(value)
-
+  
+  # @todo need to figure out a better way to do this.
   _encodeId: (value) ->
     try
-      @constructor.database.bson_serializer.ObjectID(value.toString())
+      @constructor.database.bson_serializer.ObjectID(value)
     catch error
       value
 

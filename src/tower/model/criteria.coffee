@@ -60,6 +60,9 @@ class Tower.Model.Criteria extends Tower.Class
       
   eagerLoad: (object) ->
     @_eagerLoad = _.extend @_eagerLoad, object
+    
+  has: (object) ->
+    false
   
   # Join commands.
   # 

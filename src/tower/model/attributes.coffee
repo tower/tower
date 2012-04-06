@@ -54,7 +54,7 @@ Tower.Model.Attributes =
     # @return [Boolean]
     has: (key) ->
       @attributes.hasOwnProperty(key)
-
+      
     # Set values on the {Tower.Model#attributes} hash.
     # 
     # @example

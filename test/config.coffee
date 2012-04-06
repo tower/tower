@@ -8,7 +8,7 @@ global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
 global.async  = require 'async'
-global.cb     = true
+global.cb     = true # some library has a global leak...
 
 Tower.root            = process.cwd() + "/test/test-app"
 Tower.publicPath      = Tower.root + "/public"
@@ -90,24 +90,3 @@ beforeEach (done) ->
       require(controller) if File.exists(controller)
       
     done()
-###
-
-test 'where(firstName: "=~": "L")'
-test 'where(firstName: "$match": "L")'
-test 'where(firstName: "!~": "L")'
-test 'where(firstName: "!=": "Lance")'
-test 'where(firstName: "!=": null)'
-test 'where(firstName: "==": null)'
-test 'where(firstName: null)'
-test 'where(createdAt: ">=": _(2).days().ago())'
-test 'where(createdAt: ">=": _(2).days().ago(), "<=": _(1).day().ago())'
-test 'where(tags: $in: ["ruby", "javascript"])'
-test 'where(tags: $nin: ["java", "asp"])'
-test 'where(tags: $all: ["jquery", "node"])'
-test 'asc("firstName")'
-test 'desc("firstName")'
-test 'order(["firstName", "desc"])'
-test 'limit(10)'
-test 'paginate(perPage: 20, page: 2)'
-test 'page(2)'
-###
