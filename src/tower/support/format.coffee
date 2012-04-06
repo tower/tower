@@ -61,10 +61,11 @@ casting =
     value.toString().replace(/[- ]/g, '')
     
   strftime: (time, format) ->
+    time = time.value() if time._wrapped
     moment(time).format(format)
     
   now: ->
-    moment()._d
+    _ moment()._d
     
   endOfDay: (value) ->
     _ moment(value).eod()._d

@@ -30,10 +30,11 @@ describe 'Tower.Support.Format', ->
     
   describe 'dates', ->  
     test 'now', ->
-      assert.deepEqual _.now(), new Date
+      assert.deepEqual _.now().toDate().getSeconds(), (new Date).getSeconds()
       
     test 'strftime', ->
       assert.equal _.strftime(_.now(), 'YYYY'), '2012'
+      assert.equal _.now().strftime('YYYY'), '2012'
       
     test 'toDate', ->
       assert.equal _.toDate("Dec 25, 1995").getFullYear(), 1995
@@ -172,7 +173,8 @@ describe 'Tower.Support.Format', ->
       assert.equal _.isSlug('a-slug'), true
       assert.equal _.isSlug('a slug'), false
     
-    test 'isDate'
+    test 'isDate', ->
+      assert.equal _.isDate(new Date), true
     
     test 'isDateISO'
     
