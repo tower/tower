@@ -79,7 +79,7 @@ Tower.Model.Conversion =
         controllerName:       controllerName
         indexes:              indexes
         validators:           validators
-        fields:               {}
+        fields:               fields
   
   # A label for this model when rendered to a string.
   # 

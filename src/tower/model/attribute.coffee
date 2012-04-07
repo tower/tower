@@ -107,6 +107,11 @@ class Tower.Model.Attribute
       else if @type == 'Array'
         @_default = []
         
+    if @type == 'Geo' && !options.index
+      index       = {}
+      index[name] = "2d"
+      options.index = index
+        
     @get      = options.get || (serializer.from if serializer)
     @set      = options.set || (serializer.to if serializer)
     

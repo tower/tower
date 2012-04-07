@@ -69,8 +69,10 @@ describeWith = (store) ->
         async.forEachSeries data, iterator, done
         
       test 'near', (done) ->
-        App.Address.near(coordinates.paris).all (error, records) =>
-          #console.log _.map records, (i) -> i.get('coordinates')
+        paris = coordinates.paris
+        
+        App.Address.near(lat: paris.latitude, lng: paris.longitude).all (error, records) =>
+          assert.equal records.length, 7
           done()
           
       describe 'within', ->
@@ -79,3 +81,4 @@ describeWith = (store) ->
         test 'within(distance: 5, unit: "miles")'
 
 describeWith(Tower.Store.MongoDB)
+# describeWith(Tower.Store.Memory)

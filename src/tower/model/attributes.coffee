@@ -22,7 +22,7 @@ Tower.Model.Attributes =
     # 
     # @return [Object]
     fields: ->
-      fields = @_fields ||= {}
+      fields = @metadata().fields
       
       switch arguments.length
         when 0

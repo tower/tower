@@ -396,16 +396,16 @@ class Tower.Model.Criteria extends Tower.Class
     @
     
   toJSON: ->
-    where: @_where
-    order: @_order
-    offset: @_offset
-    limit: @_limit
-    fields: @_fields
-    except: @_except
-    includes: @_includes
-    joins: @_joins
+    where:     @_where
+    order:     @_order
+    offset:    @_offset
+    limit:     @_limit
+    fields:    @_fields
+    except:    @_except
+    includes:  @_includes
+    joins:     @_joins
     eagerLoad: @_eagerLoad
-    near: @_near
+    near:      @_near
     
   # Compiled result from the {#where} arguments.
   # 
