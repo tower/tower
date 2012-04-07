@@ -104,6 +104,8 @@ class Tower.Model.Attribute
     unless @_default
       if @type == "Geo"
         @_default = lat: null, lng: null
+      else if @type == 'Array'
+        @_default = []
         
     @get      = options.get || (serializer.from if serializer)
     @set      = options.set || (serializer.to if serializer)

@@ -1,7 +1,7 @@
 class Tower.Model.Validator.Length extends Tower.Model.Validator
-  constructor: (name, value, attributes) ->
+  constructor: (name, value, attributes, options) ->
     super
-
+    
     @validate = switch name
       when "min" then @validateMinimum
       when "max" then @validateMaximum
@@ -62,7 +62,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateMinimum: (record, attribute, errors, callback) ->
     value = record.get(attribute)
-    unless typeof(value) == 'number' && value >= @value
+    unless typeof(value) == 'number' && value >= @getValue(record)
       return @failure(
         record,
         attribute,
@@ -71,10 +71,11 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         callback
       )
     @success(callback)
-
+  
   validateMaximum: (record, attribute, errors, callback) ->
     value = record.get(attribute)
-    unless typeof(value) == 'number' && value <= @value
+    
+    unless typeof(value) == 'number' && value <= @getValue(record)
       return @failure(
         record,
         attribute,
@@ -86,7 +87,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateLength: (record, attribute, errors, callback) ->
     value = record.get(attribute)
-    unless typeof(value) == 'number' && value == @value
+    unless typeof(value) == 'number' && value == @getValue(record)
       return @failure(
         record,
         attribute,

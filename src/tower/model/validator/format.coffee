@@ -1,9 +1,9 @@
 class Tower.Model.Validator.Format extends Tower.Model.Validator
-  constructor: (name, value, attributes) ->
-    super(name, value, attributes)
+  constructor: (name, value, attributes, options) ->
+    super(name, value, attributes, options)
     
-    if @value.hasOwnProperty('with')
-      @value    = @value.with
+    if @value.hasOwnProperty('value')
+      @value    = @value.value
       
     if typeof @value == 'string'
       @matcher  = "is#{_.camelCase(value, true)}"

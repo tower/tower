@@ -176,5 +176,18 @@ Tower.Support.Object =
       delete object[variable]
     
     object
+    
+  copyProperties: (to, from) ->
+    properties = _.args(arguments, 2)
+    for property in properties
+      to[property] = from[property] unless from[property] == undefined
+    to
+    
+  moveProperties: (to, from) ->
+    properties = _.args(arguments, 2)
+    for property in properties
+      to[property] = from[property] unless from[property] == undefined
+      delete from[property]
+    to
 
 module.exports = Tower.Support.Object

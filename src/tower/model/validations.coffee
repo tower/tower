@@ -23,7 +23,7 @@ Tower.Model.Validations =
     #   class App.Deal extends Tower.Model
     #     @field "expiresAt", type: "Date"
     # 
-    #     @validates "expiresAt", ">=": -> _(7).days().after(@get('createdAt'))
+    #     @validates "expiresAt", ">=": -> _(7).days().after(@get('createdAt')), allow: blank: true, null: true
     # 
     # @param [String] attributes
     # @param [Object] options
@@ -31,27 +31,31 @@ Tower.Model.Validations =
     # @option options [Integer] min
     # @option options [Integer] max
     # @option options [Integer] length
-    # @option options [RegExp] format
+    # @option options [RegExp|String] format
     # @option options [Boolean] uniqueness
     # @option options [Boolean] numericality
-    # @option options [Boolean] confirmation
-    # @option options [Boolean] acceptance
     # @option options [Object] date
     # @option options [Boolean] phone
     # @option options [Boolean] email
     # @option options [Boolean] url
     # @option options [Boolean] slug
     # @option options [Boolean] postalCode
+    # @option options [Object] allow
+    # @option options [String] on
+    # @option options [String|Function] if
+    # @option options [String|Function] unless
     # 
     # 
     # @return [Array] Return the set of newly created validators.
     validates: ->
-      attributes = _.args(arguments)
-      options    = attributes.pop()
-      validators = @validators()
-
-      for key, value of options
-        validators.push Tower.Model.Validator.create(key, value, attributes)
+      attributes  = _.args(arguments)
+      options     = attributes.pop()
+      validators  = @validators()
+      
+      newValidators = Tower.Model.Validator.createAll(attributes, options)
+      validators.push(validator) for validator in newValidators
+      
+      @
     
     # Array of validators defined for this model class.
     # 

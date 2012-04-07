@@ -1,49 +1,65 @@
 class Tower.Model.Validator
   @keys:
-    presence:   "presence"
-    required:   "required"
-    count:      "length"
-    length:     "length"
-    min:        "min"
-    max:        "max"
-    gte:        "gte"
-    ">=":       "gte"
-    gt:         "gt"
-    ">":        "gt"
-    lte:        "lte"
-    "<=":       "lte"
-    lt:         "lt"
-    "<":        "lt"
-    format:     "format"
-    unique:     "uniqueness"
-    uniqueness: "uniqueness"
-    in:         "in"
-    except:     "except"
-    only:       "only"
-    accepts:    "accepts"
+    presence:   'presence'
+    required:   'required'
+    count:      'length'
+    length:     'length'
+    min:        'min'
+    max:        'max'
+    gte:        'gte'
+    '>=':       'gte'
+    gt:         'gt'
+    '>':        'gt'
+    lte:        'lte'
+    '<=':       'lte'
+    lt:         'lt'
+    '<':        'lt'
+    format:     'format'
+    unique:     'uniqueness'
+    uniqueness: 'uniqueness'
+    in:         'in'
+    notIn:      'notIn'
+    except:     'except'
+    only:       'only'
+    accepts:    'accepts'
+    
+  @createAll: (attributes, validations = {}) ->
+    options     = _.moveProperties({}, validations, 'on', 'if', 'unless', 'allow')
+    validators  = []
+    
+    for key, value of validations
+      validatorOptions = _.clone(options)
+      
+      if _.isBaseObject(value)
+        validatorOptions = _.moveProperties(validatorOptions, value, 'on', 'if', 'unless', 'allow')
+        
+      validators.push Tower.Model.Validator.create(key, value, attributes, validatorOptions)
+      
+    validators
   
-  @create: (name, value, attributes) ->
-    if typeof name == "object"
+  @create: (name, value, attributes, options) ->
+    if typeof name == 'object'
       attributes = value
-      @_create(key, value, attributes) for key, value of name
+      @_create(key, value, attributes, options) for key, value of name
     else
-      @_create(name, value, attributes)
+      @_create(name, value, attributes, options)
   
-  @_create: (name, value, attributes) ->
+  @_create: (name, value, attributes, options) ->
     switch name
-      when "presence", "required"
-        new @Presence(name, value, attributes)
-      when "count", "length", "min", "max", "gte", "gt", "lte", "lt"
-        new @Length(name, value, attributes)
-      when "format"
-        new @Format(name, value, attributes)
-      when "in", "except", "only", "notIn", "values", "accepts"
-        new @Set(name, value, attributes)
+      when 'presence', 'required'
+        new @Presence(name, value, attributes, options)
+      when 'count', 'length', 'min', 'max', 'gte', 'gt', 'lte', 'lt'
+        new @Length(name, value, attributes, options)
+      when 'format'
+        new @Format(name, value, attributes, options)
+      when 'in', 'except', 'only', 'notIn', 'values', 'accepts'
+        new @Set(name, value, attributes, options)
   
-  constructor: (name, value, attributes) ->
+  constructor: (name, value, attributes, options = {}) ->
     @name       = name
     @value      = value
     @attributes = _.castArray(attributes)
+    @options    = options
   
   # Given a record, validate each attribute defined for this validator.
   # 
@@ -53,14 +69,35 @@ class Tower.Model.Validator
   #
   # @return [void] Requires a callback.
   validateEach: (record, errors, callback) ->
-    iterator  = (attribute, next) =>
-      @validate record, attribute, errors, (error) =>
-        next()
-
-    Tower.parallel @attributes, iterator, (error) =>
-      callback.call(@, error) if callback
+    success = undefined
+    
+    @check record, (error, result) =>
+      success = result
       
-    undefined
+      if success
+        iterator  = (attribute, next) =>
+          @validate record, attribute, errors, (error) =>
+            next()
+
+        Tower.parallel @attributes, iterator, (error) =>
+          success = !error
+          callback.call(@, error) if callback
+      else
+        callback.call(@, error) if callback
+      
+    success
+    
+  check: (record, callback) ->
+    options = @options
+    
+    if options.if
+      @_callMethod record, options.if, (error, result) =>
+        callback.call @, error, !!result
+    else if options.unless
+      @_callMethod record, options.unless, (error, result) =>
+        callback.call @, error, !!!result
+    else
+      callback.call @, null, true
   
   # @abstract Implement in subclasses
   # validate: ->
@@ -90,6 +127,18 @@ class Tower.Model.Validator
       @value.call binding
     else
       @value
+      
+  _callMethod: (binding, method, callback) ->
+    method = binding[method] if typeof method == 'string'
+    
+    switch method.length
+      when 0
+        callback.call @, null, method.call binding
+      else
+        method.call binding, (error, result) =>
+          callback.call @, error, result
+    
+    undefined
 
 require './validator/format'
 require './validator/length'

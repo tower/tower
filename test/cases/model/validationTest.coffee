@@ -122,7 +122,7 @@ describeWith = (store) ->
         record.set 'string_formatPostalCode', '9194'
         assert.equal validator.validate(record, 'string_formatPostalCode', record.errors), false
         
-      test 'field "name", format: with: /^\d+$/', ->
+      test 'field "name", format: value: /^\d+$/', ->
         validator   = App.Validatable.validators("string_format_withOption")[0]
         
         record.set 'string_format_withOption', '91941'
@@ -132,6 +132,32 @@ describeWith = (store) ->
         assert.equal validator.validate(record, 'string_format_withOption', record.errors), false
 
     describe 'length, min, max', ->
+      test 'field "name", type: "Integer", min: 5', ->
+        validator   = App.Validatable.validators("integer_min")[0]
+        
+        record.set 'integer_min', 6
+        assert.equal validator.validate(record, 'integer_min', record.errors), true
+        
+        record.set 'integer_min', 4
+        assert.equal validator.validate(record, 'integer_min', record.errors), false
+        
+      test 'field "name", type: "Integer", max: 12', ->
+        validator   = App.Validatable.validators("integer_max")[0]
+
+        record.set 'integer_max', 11
+        assert.equal validator.validate(record, 'integer_max', record.errors), true
+
+        record.set 'integer_max', 13
+        assert.equal validator.validate(record, 'integer_max', record.errors), false
+        
+      test 'field "name", type: "Integer", min: -> 5', ->
+        validator   = App.Validatable.validators("integer_minFunction")[0]
+
+        record.set 'integer_minFunction', 6
+        assert.equal validator.validate(record, 'integer_minFunction', record.errors), true
+
+        record.set 'integer_minFunction', 4
+        assert.equal validator.validate(record, 'integer_minFunction', record.errors), false
     
     describe 'date', ->
       test 'field "name", type: "Date", ">=": -> _(20).days().ago()', ->
@@ -151,6 +177,100 @@ describeWith = (store) ->
 
         record.set 'date_lt', _(5).days().ago().toDate()
         assert.equal validator.validate(record, 'date_lt', record.errors), false
+        
+    describe 'enumerable', ->
+      test 'field "name", in: ["male", "female"]', ->
+        validator   = App.Validatable.validators("string_in")[0]
+
+        record.set 'string_in', 'male'
+        assert.equal validator.validate(record, 'string_in', record.errors), true
+
+        record.set 'string_in', 'random'
+        assert.equal validator.validate(record, 'string_in', record.errors), false
+        
+      test 'field "name", notIn: ["male", "female"]', ->
+        validator   = App.Validatable.validators("string_notIn")[0]
+        
+        record.set 'string_notIn', 'random'
+        assert.equal validator.validate(record, 'string_notIn', record.errors), true
+
+        record.set 'string_notIn', 'male'
+        assert.equal validator.validate(record, 'string_notIn', record.errors), false
+        
+    describe 'multiple fields at once', ->
+      test 'field "name", "name2", presence: true, format: /^[a-z]+/, on: "create"', ->
+        a   = App.Validatable.validators("onCreate_all1")
+        b   = App.Validatable.validators("onCreate_all2")
+        all = _.flatten(a, b)
+        
+        assert.equal a.length, 2
+        assert.equal a.length, b.length
+        
+        for validator in all
+          assert.equal validator.options.on, "create"
+        
+      test 'field "name", "name2", presence: true, format: value: /^[a-z]+/, on: "create"', ->
+        a       = App.Validatable.validators("onCreate_one1")
+        b       = App.Validatable.validators("onCreate_one2")
+        all     = _.flatten(a, b)
+        
+        assert.equal a.length, 2
+        assert.equal a.length, b.length
+        
+        formatValidators    = _.select all, (validator) -> validator.name == "format"
+        presenceValidators  = _.select all, (validator) -> validator.name == "presence"
+        
+        for formatValidator in formatValidators
+          assert.equal formatValidator.options.on, "create"
+          
+        for presenceValidator in presenceValidators
+          assert.equal presenceValidator.options.on, undefined
+        
+      test 'field "name", "name2", presence: {if: "method"}, format: unless: "method", value: /^[a-z]+/, on: "create"', ->
+        a       = App.Validatable.validators("if_and_unless1")
+        b       = App.Validatable.validators("if_and_unless2")
+        all     = _.flatten(a, b)
+        
+        assert.equal a.length, 2
+        assert.equal a.length, b.length
+
+        formatValidators    = _.select all, (validator) -> validator.name == "format"
+        presenceValidators  = _.select all, (validator) -> validator.name == "presence"
+
+        for formatValidator in formatValidators
+          assert.equal formatValidator.options.on, "create"
+          assert.equal formatValidator.options.unless, "ifAndUnlessFormatCheck"
+          
+          record.set 'if_and_unless1', 'asdf'
+          record._ifAndUnlessFormatCheck = false
+          assert.equal formatValidator.validateEach(record, record.errors), true
+          record._ifAndUnlessFormatCheck = true
+          assert.equal formatValidator.validateEach(record, record.errors), false
+
+        for presenceValidator in presenceValidators
+          assert.equal presenceValidator.options.on, undefined
+          assert.equal presenceValidator.options.if, 'ifAndUnlessPresenceCheck'
+          
+          record.set 'if_and_unless1', 'asdf'
+          record._ifAndUnlessPresenceCheck = true
+          assert.equal presenceValidator.validateEach(record, record.errors), true
+          record._ifAndUnlessPresenceCheck = false
+          assert.equal presenceValidator.validateEach(record, record.errors), false
+      
+      test 'field "name", "name2", presence: true, format: /^[a-z]+/, if: "method"', ->
+        a       = App.Validatable.validators("if_global1")
+        b       = App.Validatable.validators("if_global2")
+        all     = _.flatten(a, b)
     
+        assert.equal a.length, 2
+        assert.equal a.length, b.length
+
+        for validator in all
+          record.set 'if_global1', 'asdf'
+          record._ifGlobal = true
+          assert.equal validator.validateEach(record, record.errors), true
+          record._ifGlobal = false
+          assert.equal validator.validateEach(record, record.errors), false
+
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB)
