@@ -7,41 +7,6 @@
 # @method .where(conditions)
 #   Query conditions
 class Tower.Model extends Tower.Class
-  @_relationship: false
-  
-  # for now, just for neo4j
-  @relationship: (value = true) ->
-    @_relationship = value
-  
-  # @example All configuration options
-  #   class App.User extends Tower.Model
-  #     @configure
-  #
-  # @example Configure using a function
-  #   class App.User extends Tower.Model
-  #     @configure ->
-  #       defaultStore: Tower.Store.Memory
-  @configure: (object) ->
-    @config ||= {}
-    object = object.call @ if typeof object == "function"
-    _.extend @config, object
-    @
-
-  # @example All default options
-  #   class App.User extends Tower.Model
-  #     @defaults store: Tower.Store.Memory, scope: @desc("createdAt")
-  @defaults: (object) ->
-    @default(key, value) for key, value of object
-    @_defaults
-
-  # @example All default options
-  #   class App.User extends Tower.Model
-  #     @default "store", Tower.Store.Memory
-  #     @default "scope", @desc("createdAt")
-  @default: (key, value) ->
-    @_defaults ||= {}
-    @_defaults[key] = value
-
   # Construct a new Tower.Model
   # 
   # @param [Object] attributes a hash of attributes
@@ -56,7 +21,9 @@ class Tower.Model extends Tower.Class
     
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
-
+      
+    attributes.type ||= @constructor.name if @constructor.isSubClass()
+    
     @attributes     = attributes
     @relations      = {}
     @changes        =

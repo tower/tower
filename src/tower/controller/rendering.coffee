@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Controller.Rendering =
   ClassMethods:
     # Add a render for a specific mime type.
@@ -51,109 +51,110 @@ Tower.Controller.Rendering =
     # @return [Object]
     renderers: ->
       @_renderers ||= {}
+      
+  InstanceMethods:
+    # Render a view (a content-type) for the current controller action.
+    # 
+    # @example Render HTML for the index action on the users controller.
+    #   # full path
+    #   @render "users/index"
+    #   # action
+    #   @render "index"
+    #   # with variables for the template
+    #   @render "index", locals: {hello: "world"}
+    # 
+    # @example Render JSON
+    #   @render json: user.toJSON()
+    # 
+    # @example Custom status
+    #   @render json: user.toJSON(), status: 404
+    # 
+    # @return [void] Requires a callback.
+    render: ->
+      @renderToBody @_normalizeRender(arguments...)
+
+    renderToBody: (options) ->
+      @_processRenderOptions(options)
+      @_renderTemplate(options)
+
+    renderToString: ->
+      @renderToBody @_normalizeRender(arguments...)
+
+    # @todo implement
+    sendFile: (path, options = {}) ->
   
-  # Render a view (a content-type) for the current controller action.
-  # 
-  # @example Render HTML for the index action on the users controller.
-  #   # full path
-  #   @render "users/index"
-  #   # action
-  #   @render "index"
-  #   # with variables for the template
-  #   @render "index", locals: {hello: "world"}
-  # 
-  # @example Render JSON
-  #   @render json: user.toJSON()
-  # 
-  # @example Custom status
-  #   @render json: user.toJSON(), status: 404
-  # 
-  # @return [void] Requires a callback.
-  render: ->
-    @renderToBody @_normalizeRender(arguments...)
+    # @todo implement
+    sendData: (data, options = {}) ->
 
-  renderToBody: (options) ->
-    @_processRenderOptions(options)
-    @_renderTemplate(options)
+    # @private
+    _renderTemplate: (options) ->
+      _callback = options.callback
+      callback = (error, body) =>
+        if error
+          @status ||= 404
+          @body   = error.stack
+        else
+          @status ||= 200
+          @body     = body
+        _callback.apply @, arguments if _callback
+        @callback() if @callback
 
-  renderToString: ->
-    @renderToBody @_normalizeRender(arguments...)
+      return if @_handleRenderers(options, callback)
 
-  # @todo implement
-  sendFile: (path, options = {}) ->
-  
-  # @todo implement
-  sendData: (data, options = {}) ->
+      @headers["Content-Type"] ||= "text/html"
 
-  # @private
-  _renderTemplate: (options) ->
-    _callback = options.callback
-    callback = (error, body) =>
-      if error
-        @status ||= 404
-        @body   = error.stack
-      else
-        @status ||= 200
-        @body     = body
-      _callback.apply @, arguments if _callback
-      @callback() if @callback
+      view    = new Tower.View(@)
 
-    return if @_handleRenderers(options, callback)
+      try
+        view.render.call view, options, callback
+      catch error
+        callback error
 
-    @headers["Content-Type"] ||= "text/html"
+    # @private
+    _handleRenderers: (options, callback) ->
+      for name, renderer of Tower.Controller.renderers()
+        if options.hasOwnProperty(name)
+          renderer.call @, options[name], options, callback
+          return true
+      false
 
-    view    = new Tower.View(@)
+    # @private
+    _processRenderOptions: (options = {}) ->
+      @status                   = options.status if options.status
+      @headers["Content-Type"]  = options.contentType if options.contentType
+      @headers["Location"]      = @urlFor(options.location) if options.location
+      @
 
-    try
-      view.render.call view, options, callback
-    catch error
-      callback error
+    # @private
+    _normalizeRender: ->
+      @_normalizeOptions @_normalizeArgs(arguments...)
 
-  # @private
-  _handleRenderers: (options, callback) ->
-    for name, renderer of Tower.Controller.renderers()
-      if options.hasOwnProperty(name)
-        renderer.call @, options[name], options, callback
-        return true
-    false
+    # @private
+    _normalizeArgs: ->
+      args = _.args(arguments)
+      if typeof args[0] == "string"
+        action    = args.shift()
+      if typeof args[0] == "object"
+        options   = args.shift()
+      if typeof args[0] == "function"
+        callback  = args.shift()
 
-  # @private
-  _processRenderOptions: (options = {}) ->
-    @status                   = options.status if options.status
-    @headers["Content-Type"]  = options.contentType if options.contentType
-    @headers["Location"]      = @urlFor(options.location) if options.location
-    @
+      options         ||= {}
 
-  # @private
-  _normalizeRender: ->
-    @_normalizeOptions @_normalizeArgs(arguments...)
+      if action
+        key             = if !!action.match(/\//) then "file" else "action"
+        options[key]    = action
 
-  # @private
-  _normalizeArgs: ->
-    args = _.args(arguments)
-    if typeof args[0] == "string"
-      action    = args.shift()
-    if typeof args[0] == "object"
-      options   = args.shift()
-    if typeof args[0] == "function"
-      callback  = args.shift()
+      options.callback  = callback if callback
 
-    options         ||= {}
+      options
 
-    if action
-      key             = if !!action.match(/\//) then "file" else "action"
-      options[key]    = action
-
-    options.callback  = callback if callback
-
-    options
-
-  # @private
-  _normalizeOptions: (options = {}) ->
-    options.partial     = @action if options.partial == true
-    options.prefixes  ||= []
-    options.prefixes.push @collectionName
-    options.template ||= (options.file || (options.action || @action))
-    options
+    # @private
+    _normalizeOptions: (options = {}) ->
+      options.partial     = @action if options.partial == true
+      options.prefixes  ||= []
+      options.prefixes.push @collectionName
+      options.template ||= (options.file || (options.action || @action))
+      options
 
 module.exports = Tower.Controller.Rendering

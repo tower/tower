@@ -62,13 +62,13 @@ Tower.Model.Relations =
     # 
     # @return [Tower.Model.Relation.BelongsTo]
     belongsTo: (name, options) ->
-      @relations()[name]  = new Tower.Model.Relation.BelongsTo(@, name, options)
+      @relations()[name] = new Tower.Model.Relation.BelongsTo(@, name, options)
 
     # Set of all relations for this model.
     # 
     # @return [Object]
     relations: ->
-      @_relations ||= {}
+      @metadata().relations
 
     # Find a relation by name, otherwise throw an error.
     # 

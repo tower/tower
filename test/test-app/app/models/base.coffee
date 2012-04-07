@@ -17,4 +17,6 @@ class App.BaseModel extends Tower.Model
   @fields "a4", "a5", "a6", type: "Integer"
   @fields o1: "String", o2: "Integer"
   
+  @default "scope", title: "ABC"
+  
 class App.NestedModel extends Tower.Model

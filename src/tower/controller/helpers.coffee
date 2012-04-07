@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Controller.Helpers =
   ClassMethods:
     helper: (object) ->
@@ -7,9 +7,10 @@ Tower.Controller.Helpers =
 
     layout: (layout) ->
       @_layout = layout
-
-  layout: ->
-    layout = @constructor._layout
-    if typeof(layout) == "function" then layout.call(@) else layout
+      
+  InstanceMethods:
+    layout: ->
+      layout = @constructor._layout
+      if typeof(layout) == "function" then layout.call(@) else layout
 
 module.exports = Tower.Controller.Helpers

@@ -15,13 +15,20 @@ Tower.Model.Scopes =
     # 
     # @return [Tower.Model.Scope]
     scope: (name, scope) ->
-      @[name] = if scope instanceof Tower.Model.Scope then scope else @where(scope)
+      scope   = if scope instanceof Tower.Model.Scope then scope else @where(scope)
+      @[name] = ->
+        @scoped().where(scope.criteria)
 
     # Returns a {Tower.Model.Scope} with default criteria for the model class.
     # 
     # @return [Tower.Model.Scope]
     scoped: (options) ->
-      new Tower.Model.Scope(@criteria(options))
+      criteria      = @criteria(options)
+      defaultScope  = @defaults().scope
+      if defaultScope
+        defaultScope.where(criteria)
+      else
+        new Tower.Model.Scope(criteria)
     
     # Return a {Tower.Model.Criteria} to be used in building a query.
     # 
@@ -31,12 +38,6 @@ Tower.Model.Scopes =
       criteria = new Tower.Model.Criteria(options)
       criteria.where(type: @name) if @baseClass().name != @name
       criteria
-
-    defaultSort: (object) ->
-      @_defaultSort = object if object
-      @_defaultSort ||= {name: "createdAt", direction: "desc"}
-
-    defaultScope: ->
 
 for key in Tower.Model.Scope.queryMethods
   do (key) ->

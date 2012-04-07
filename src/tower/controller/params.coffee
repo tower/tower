@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Controller.Params =
   ClassMethods:
     # Define a parameter that should be parsed into criteria for a model query.
@@ -17,24 +17,25 @@ Tower.Controller.Params =
       
     params: ->
       @_params  ||= {}
-  
-  # Compile the params defined for this controller into a criteria for querying the database.
-  # 
-  # @note The criteria is memoized.
-  # 
-  # @return [Tower.Model.Criteria]
-  criteria: ->
-    return @_criteria if @_criteria
+      
+  InstanceMethods:
+    # Compile the params defined for this controller into a criteria for querying the database.
+    # 
+    # @note The criteria is memoized.
+    # 
+    # @return [Tower.Model.Criteria]
+    criteria: ->
+      return @_criteria if @_criteria
 
-    @_criteria  = criteria = new Tower.Model.Criteria
+      @_criteria  = criteria = new Tower.Model.Criteria
 
-    parsers     = @constructor.params()
-    params      = @params
+      parsers     = @constructor.params()
+      params      = @params
 
-    for name, parser of parsers
-      if params.hasOwnProperty(name)
-        criteria.where(parser.toCriteria(params[name]))
+      for name, parser of parsers
+        if params.hasOwnProperty(name)
+          criteria.where(parser.toCriteria(params[name]))
 
-    criteria
+      criteria
 
 module.exports = Tower.Controller.Params

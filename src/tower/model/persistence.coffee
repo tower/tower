@@ -65,7 +65,7 @@ Tower.Model.Persistence =
         callback  = options
         options   = {}
       options ||= {}
-
+      
       unless options.validate == false
         @validate (error) =>
           if error

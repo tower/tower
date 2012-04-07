@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Model.Indexing =
   ClassMethods:
     # Add indexing to the model.
