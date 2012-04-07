@@ -10,6 +10,8 @@ Tower.Controller.Resourceful =
     # @example Pass in an object
     #   class App.UsersController extends App.ApplicationController
     #     @resource name: "person", type: "User", collectionName: "people"
+    # 
+    # @return [Function] Return this controller.
     resource: (options) ->
       metadata = @metadata()
       
@@ -28,18 +30,30 @@ Tower.Controller.Resourceful =
       metadata.collectionName   = options.collectionName if options.collectionName
       
       @
-
-    belongsTo: (key, options = {}) ->
-      if @_belongsTo
-        @_belongsTo = @_belongsTo.concat()
-      else
-        @_belongsTo = []
-        
-      return @_belongsTo unless key
+    
+    # Specify the parent model for this resourceful controller,
+    # corresponding to a nested path.
+    # 
+    # @example
+    #   class App.CommentsController extends App.ApplicationController
+    #     @belongsTo "post" # /posts/1/comments
+    # 
+    # @example With options
+    #   class App.CommentsController extends App.ApplicationController
+    #     @belongsTo "article", type: "Post"
+    # 
+    # @return [Array<Object>] Returns belongsTo array
+    belongsTo: (key, options) ->
+      belongsTo = @metadata().belongsTo
+      
+      return belongsTo unless key
+      
+      options ||= {}
         
       options.key = key
       options.type ||= Tower.Support.String.camelize(options.key)
-      @_belongsTo.push(options)
+      
+      belongsTo.push(options)
       
     hasParent: ->
       belongsTo = @belongsTo()

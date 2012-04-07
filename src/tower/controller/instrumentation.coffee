@@ -26,6 +26,7 @@ Tower.Controller.Instrumentation =
       callbacks               = if superMetadata.callbacks then _.clone(superMetadata.callbacks) else {}
       renderers               = if superMetadata.renderers then _.clone(superMetadata.renderers) else {}
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
+      belongsTo               = if superMetadata.belongsTo then superMetadata.belongsTo.concat() else []
       
       result = @metadata[className]    =
         className:            className
@@ -36,6 +37,7 @@ Tower.Controller.Instrumentation =
         renderers:            renderers
         mimes:                mimes
         callbacks:            callbacks
+        belongsTo:            belongsTo
       
       result
       
