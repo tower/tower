@@ -21,7 +21,7 @@ Tower.Controller.Responding =
       @
 
     mimes: ->
-      @_mimes ||= {json: {}, html: {}}
+      @metadata().mimes
   
   InstanceMethods:
     # Build a responder.

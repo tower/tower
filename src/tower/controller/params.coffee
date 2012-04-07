@@ -16,7 +16,7 @@ Tower.Controller.Params =
       @params()[key] = Tower.HTTP.Param.create(key, options)
       
     params: ->
-      @_params  ||= {}
+      @metadata().params
       
   InstanceMethods:
     # Compile the params defined for this controller into a criteria for querying the database.

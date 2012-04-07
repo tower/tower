@@ -1,23 +1,13 @@
-# @module
+# @mixin
 Tower.Controller.Resourceful =
   ClassMethods:
     resource: (options) ->
-      @_resourceName    = options.name if options.hasOwnProperty("name")
-      @_resourceType    = options.type if options.hasOwnProperty("type")
-      @_collectionName  = options.collectionName if options.hasOwnProperty("collectionName")
+      metadata = @metadata()
+      metadata.resourceName   = options.name if options.hasOwnProperty("name")
+      metadata.resourceType   = options.type if options.hasOwnProperty("type")
+      metadata.collectionName = options.collectionName if options.hasOwnProperty("collectionName")
       @
-
-    resourceType: ->
-      @_resourceType ||= Tower.Support.String.singularize(@name.replace(/(Controller)$/, ""))
-
-    resourceName: ->
-      return @_resourceName if @_resourceName
-      parts = @resourceType().split(".")
-      @_resourceName = Tower.Support.String.camelize(parts[parts.length - 1], true)
-
-    collectionName: ->
-      @_collectionName ||= Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
-
+    
     belongsTo: (key, options = {}) ->
       if @_belongsTo
         @_belongsTo = @_belongsTo.concat()

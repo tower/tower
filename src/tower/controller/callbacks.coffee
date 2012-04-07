@@ -6,5 +6,8 @@ Tower.Controller.Callbacks =
 
     afterAction: ->
       @after "action", arguments...
+      
+    callbacks: ->
+      @metadata().callbacks
 
 module.exports = Tower.Controller.Callbacks

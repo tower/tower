@@ -16,9 +16,6 @@ class Tower.Controller extends Tower.Class
   @instance: ->
     @_instance ||= new @
 
-  @metadata: ->
-    @_metadata ||= {}
-
   constructor: ->
     @constructor._instance = @
     @headers              = {}
@@ -27,9 +24,9 @@ class Tower.Controller extends Tower.Class
     @response             = null
     @params               = {}
     @query                = {}
-    @resourceName         = @constructor.resourceName()
-    @resourceType         = @constructor.resourceType()
-    @collectionName       = @constructor.collectionName()
+    @resourceName         = @metadata().resourceName
+    @resourceType         = @metadata().resourceType
+    @collectionName       = @metadata().collectionName
     @formats              = _.keys(@constructor.mimes())
     @hasParent            = @constructor.hasParent()
 

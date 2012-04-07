@@ -50,7 +50,7 @@ Tower.Controller.Rendering =
     # 
     # @return [Object]
     renderers: ->
-      @_renderers ||= {}
+      @metadata().renderers
       
   InstanceMethods:
     # Render a view (a content-type) for the current controller action.
