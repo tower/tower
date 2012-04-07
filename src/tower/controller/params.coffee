@@ -12,10 +12,28 @@ Tower.Controller.Params =
     # @option options [String] type
     # 
     # @return [Tower.HTTP.Param]
-    param: (key, options = {}) ->
+    param: (key, options) ->
       @params()[key] = Tower.HTTP.Param.create(key, options)
-      
+    
+    # Return all params, or define multiple params at once.
+    # 
+    # @example Pass in an object
+    #   class App.UsersController extends App.ApplicationController
+    #     @params email: "String"
+    # 
+    # @example Pass in strings
+    #   class App.UsersController extends App.ApplicationController
+    #     @params "email", "firstName", "lastName"
+    # 
+    # @return [Object]
     params: ->
+      if arguments.length
+        for arg in arguments
+          if typeof arg == "object"
+            @param(key, value) for key, value of arg
+          else
+            @param(arg)
+      
       @metadata().params
       
   InstanceMethods:
