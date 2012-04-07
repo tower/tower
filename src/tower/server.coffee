@@ -26,7 +26,13 @@ require './server/middleware'
 require './server/command'
 require './server/generator'
 
-Tower.Model.defaultStore  = Tower.Store.MongoDB
+Tower.modules =
+  validator:  require 'validator'
+  accounting: require 'accounting'
+  moment:     require 'moment'
+  geo:        require 'geolib'
+  inflector:  require 'inflection'
+
 Tower.View.store(new Tower.Store.FileSystem(["app/views"]))
 Tower.root                = process.cwd()
 Tower.publicPath          = process.cwd() + "/public"

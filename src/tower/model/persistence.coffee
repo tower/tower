@@ -1,19 +1,13 @@
 # @mixin
 Tower.Model.Persistence =
   ClassMethods:
-    # Default store.
-    # 
-    # Defaults to {Tower.Store.Memory} on the client.
-    # Defaults to {Tower.Store.MongoDB} on the server.
-    defaultStore: if Tower.client then Tower.Store.Memory else Tower.Store.MongoDB
-    
     # Define or get the data store for this model.
     # 
     # @example Define the store from a store class
     #   class App.User extends Tower.Model
     #     @store Tower.Store.MongoDB
     # 
-    # @example Define the store from an object (uses {Tower.Model.defaultStore})
+    # @example Define the store from an object (uses {Tower.Model.default('store')})
     #   class App.Person extends Tower.Model
     #     @store name: "people", type: "Person"
     # 
@@ -26,17 +20,19 @@ Tower.Model.Persistence =
     store: (value) ->
       metadata  = @metadata()
       store     = metadata.store
-      return store if !value && store
+      return store if arguments.length == 0 && store
+      
+      defaultStore = @default('store')
       
       if typeof value == "function"
         store   = new value(name: @metadata().namePlural, type: Tower.namespaced(@name))
       else if typeof value == "object"
-        store ||= new @defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
+        store ||= new defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
         _.extend store, value
       else if value
         store   = value
 
-      store ||= new @defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
+      store ||= new defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
 
       metadata.store = store
 

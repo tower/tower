@@ -30,6 +30,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     @required ||= false
 
     # input type
+    
     field           = @model.constructor.fields()[@attribute]
 
     options.as    ||= if field then Tower.Support.String.camelize(field.type, true) else "string"

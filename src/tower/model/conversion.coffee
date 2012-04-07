@@ -16,6 +16,12 @@ Tower.Model.Conversion =
         @__super__.constructor.baseClass()
       else
         @
+    
+    parentClass: ->
+      if @__super__ && @__super__.constructor.parentClass
+        @__super__.constructor
+      else
+        @
         
     isSubClass: ->
       @baseClass().name != @name
@@ -61,11 +67,14 @@ Tower.Model.Conversion =
     #     @default "store", Tower.Store.Memory
     #     @default "scope", @desc("createdAt")
     default: (key, value) ->
-      method = "_setDefault#{Tower.Support.String.camelize(key)}"
-      if @[method]
-        @[method](value)
+      if arguments.length == 1 # we're getting a value
+        @metadata().defaults[key]
       else
-        @metadata().defaults[key] = value
+        method = "_setDefault#{Tower.Support.String.camelize(key)}"
+        if @[method]
+          @[method](value)
+        else
+          @metadata().defaults[key] = value
     
     # All of the different names related to this class.
     # 
@@ -76,13 +85,13 @@ Tower.Model.Conversion =
       className               = @name
       metadata                = @metadata[className]
       return metadata if metadata
-      baseClassName           = @baseClass().name
+      baseClassName           = @parentClass().name
       
       if baseClassName != className
-        superMetadata = @baseClass().metadata()
+        superMetadata = @parentClass().metadata()
       else
         superMetadata = {}
-        
+      
       namespace               = Tower.namespace()
       name                    = Tower.Support.String.camelize(className, true)
       namePlural              = Tower.Support.String.pluralize(name)

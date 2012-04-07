@@ -1,25 +1,26 @@
 # validator library
 # https://github.com/cesario/activevalidators
-validator   = require 'validator'
+validator   = Tower.modules.validator
 check       = validator.check
 sanitize    = validator.sanitize
-require('validator').Validator::error = (msg) ->
+
+validator.Validator::error = (msg) ->
   @_errors.push(msg)
   @
 
 # accounting library
 # http://josscrowcroft.github.com/accounting.js/
-accounting  = require 'accounting'
+accounting  = Tower.modules.accounting
 
 # date library
 # https://github.com/xaviershay/kronic
-moment      = require 'moment'
+moment      = Tower.modules.moment
 
 # geo library
-geo         = require 'geolib'
+geo         = Tower.modules.geo
 
 # inflector
-inflector   = require 'inflection'
+inflector   = Tower.modules.inflector
 
 # others
 # - UPS tracking codes: https://www.ups.com/content/us/en/tracking/help/tracking/tnh.html

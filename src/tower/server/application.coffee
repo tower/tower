@@ -5,6 +5,12 @@ io      = null
 
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
+  @before "initialize", "setDefaults"
+  
+  setDefaults: ->
+    Tower.Model.default "store", Tower.Store.MongoDB
+    true
+  
   @autoloadPaths: [
     "app/helpers",
     "app/models",

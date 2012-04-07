@@ -16,3 +16,10 @@ require './controller'
 require './client/controller'
 require './http'
 require './middleware'
+
+Tower.modules =
+  validator:  global
+  accounting: global.accounting
+  moment:     global.moment
+  geo:        global.geolib
+  inflector:  global.inflector # https://github.com/gmosx/inflection

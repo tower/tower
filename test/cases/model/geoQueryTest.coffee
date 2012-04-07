@@ -31,7 +31,7 @@ describeWith = (store) ->
     
     describe 'units', ->
       test 'miles', ->
-        console.log _.distance(coordinates.paris, coordinates.moscow)
+        #console.log _.distance(coordinates.paris, coordinates.moscow)
         
     describe 'Address.coordinates', ->
       beforeEach (done) ->

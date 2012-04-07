@@ -12,6 +12,8 @@ _.extend Tower,
   config:     {}
   namespaces: {}
   metadata:   {}
+  # external libraries, to get around having to use `require` in the browser.
+  modules:    {}
   metadataFor: (name) ->
     @metadata[name] ||= {}
 
@@ -46,9 +48,9 @@ _.extend Tower,
       options       = {}
     options       ||= {}
     url             = path
-    location        = new Tower.Dispatch.Url(url)
-    request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
-    response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+    location        = new Tower.HTTP.Url(url)
+    request         = new Tower.HTTP.Request(url: url, location: location, method: method)
+    response        = new Tower.HTTP.Response(url: url, location: location, method: method)
     request.query   = location.params
     Tower.Application.instance().handle request, response, ->
       callback.call @, @response
