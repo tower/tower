@@ -2,8 +2,10 @@
 Tower.Controller.Helpers =
   ClassMethods:
     helper: (object) ->
-      @_helpers ||= []
-      @_helpers.push(object)
+      @helpers().push(object)
+      
+    helpers: ->
+      @metadata().helpers
 
     layout: (layout) ->
       @_layout = layout
