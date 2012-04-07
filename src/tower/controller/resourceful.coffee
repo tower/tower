@@ -1,13 +1,34 @@
 # @mixin
 Tower.Controller.Resourceful =
   ClassMethods:
+    # Set information about resource/model for this controller.
+    # 
+    # @example Pass in a string
+    #   class App.UsersController extends App.ApplicationController
+    #     @resource "person"
+    #
+    # @example Pass in an object
+    #   class App.UsersController extends App.ApplicationController
+    #     @resource name: "person", type: "User", collectionName: "people"
     resource: (options) ->
       metadata = @metadata()
-      metadata.resourceName   = options.name if options.hasOwnProperty("name")
-      metadata.resourceType   = options.type if options.hasOwnProperty("type")
-      metadata.collectionName = options.collectionName if options.hasOwnProperty("collectionName")
+      
+      if typeof options == "string"
+        options                 =
+          name: options
+          type: Tower.Support.String.camelize(options)
+          collectionName: _.pluralize(options)
+      
+      metadata.resourceName     = options.name if options.name
+      
+      if options.type
+        metadata.resourceType   = options.type
+        metadata.resourceName   = @_compileResourceName(options.type) unless options.name
+      
+      metadata.collectionName   = options.collectionName if options.collectionName
+      
       @
-    
+
     belongsTo: (key, options = {}) ->
       if @_belongsTo
         @_belongsTo = @_belongsTo.concat()

@@ -19,8 +19,7 @@ Tower.Controller.Instrumentation =
         superMetadata = {}
         
       resourceType            = Tower.Support.String.singularize(@name.replace(/(Controller)$/, ""))
-      parts                   = resourceType.split(".")
-      resourceName            = Tower.Support.String.camelize(parts[parts.length - 1], true)
+      resourceName            = @_compileResourceName(resourceType)
       collectionName          = Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
       
       params                  = if superMetadata.params then _.clone(superMetadata.params) else {}
@@ -28,7 +27,7 @@ Tower.Controller.Instrumentation =
       renderers               = if superMetadata.renderers then _.clone(superMetadata.renderers) else {}
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
       
-      @metadata[className]    =
+      result = @metadata[className]    =
         className:            className
         resourceName:         resourceName
         resourceType:         resourceType
@@ -37,6 +36,12 @@ Tower.Controller.Instrumentation =
         renderers:            renderers
         mimes:                mimes
         callbacks:            callbacks
+      
+      result
+      
+    _compileResourceName: (type) ->
+      parts                   = type.split(".")
+      resourceName            = Tower.Support.String.camelize(parts[parts.length - 1], true)
       
   InstanceMethods:
     # Called when the route for this controller is found.

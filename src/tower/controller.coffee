@@ -24,10 +24,14 @@ class Tower.Controller extends Tower.Class
     @response             = null
     @params               = {}
     @query                = {}
-    @resourceName         = @metadata().resourceName
-    @resourceType         = @metadata().resourceType
-    @collectionName       = @metadata().collectionName
-    @formats              = _.keys(@constructor.mimes())
+    
+    metadata              = @constructor.metadata()
+    
+    @resourceName         = metadata.resourceName
+    @resourceType         = metadata.resourceType
+    @collectionName       = metadata.collectionName
+    
+    @formats              = _.keys(metadata.mimes)
     @hasParent            = @constructor.hasParent()
 
 require './controller/callbacks'
