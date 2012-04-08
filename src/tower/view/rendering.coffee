@@ -1,7 +1,7 @@
 # @mixin
 Tower.View.Rendering =
   render: (options, callback) ->
-    if !options.type && options.template && !options.inline
+    if !options.type && options.template && typeof(options.template) == 'string' && !options.inline
       type  = options.template.split('/')
       type  = type[type.length - 1].split(".")
       type  = type[1..-1].join()
@@ -106,8 +106,10 @@ Tower.View.Rendering =
   # @private
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
-    path      = @constructor.store().findPath(path: template, ext: ext, prefixes: prefixes)
-    path    ||= "#{@constructor.store().loadPaths[0]}/#{template}"
+    options   = {path: template, ext: ext, prefixes: prefixes}
+    store     = @constructor.store()
+    path      = store.findPath(options)
+    path    ||= store.defaultPath(options)
     #cachePath = path.replace(/\.\w+$/, "")
     cachePath = path
     result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
