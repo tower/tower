@@ -92,9 +92,9 @@ Here's how you might organize a blog:
 |    |-- assets.coffee
 |    |-- databases.coffee
 |    |-- environments
-|       |-- development
-|       |-- production
-|       `-- test
+|       |-- development.coffee
+|       |-- production.coffee
+|       `-- test.coffee
 |    |-- locale
 |       `-- en.coffee
 |    |-- routes.coffee
@@ -563,20 +563,6 @@ npm test
 ## Examples
 
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
-
-## Accent Libraries
-
-Tower.js is just the bare bones, so you're free to choose a date parsing library, a template engine, or a form validation library, whatever.
-
-Here's some other useful libraries:
-
-- [moment.js](http://momentjs.com/) for date parsing
-- [underscore.js](http://documentcloud.github.com/underscore/)
-- [socket.io](http://socket.io/) for web sockets.
-- [async.js](https://github.com/caolan/async) for taming callback spaghetti
-- [geolib](https://github.com/manuelbieh/Geolib) for geo calculations
-- [tiny-require.js](https://github.com/viatropos/tiny-require.js) for using `require()` in the browser
-- [mint.js](https://github.com/viatropos/mint.js) for a generic interface to the JavaScript template engines
 
 ## License
 
