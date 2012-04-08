@@ -1,5 +1,6 @@
 # validator library
 # https://github.com/cesario/activevalidators
+# https://github.com/rickharrison/validate.js/blob/master/validate.js
 validator   = Tower.modules.validator
 check       = validator.check
 sanitize    = validator.sanitize

@@ -14,7 +14,7 @@ csrfMetaTag()
 
 appleViewportMetaTag width: "device-width", max: 1, scalable: false
 
-stylesheets "lib", "vendor", "application"
+stylesheets "lib", "vendor", "application", "development"
 
 link href: "/favicon.png", rel: "icon shortcut-icon favicon"
 

@@ -13,9 +13,10 @@ Tower.Generator.Resources =
       else
         @injectIntoFile "config/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
 
-  asset: (path, options) ->
+  asset: (path, options = {}) ->
+    bundle = options.bundle || "application"
     @inRoot =>
-      @injectIntoFile "config/assets.coffee", "      \"#{path}\"\n", after: /javascripts:\s*application: *\[[^\]]+\n/g
+      @injectIntoFile "config/assets.coffee", "      \"#{path}\"\n", after: new RegExp("\\s*#{bundle}: *\\[[^\\]]+\\n", "i")
 
   navigation: (key, path) ->
     pattern = /div *class: *"nav-collapse" *, *->\s+ul *class: *"nav", *-> */
@@ -41,7 +42,9 @@ Tower.Generator.Resources =
       view:             @view
       controller:       @controller
       destinationRoot:  @destinationRoot
-    generator = new Tower.Generator[Tower.Support.String.camelize(type) + "Generator"](options)
+      
+    generator = @constructor.buildGenerator(type)
+    generator = new generator(options)
     generator.run()
 
   nodeModule: (name, options = {}) ->
@@ -75,8 +78,15 @@ Tower.Generator.Resources =
 
     default:    switch type
       when "integer"                        then 0
+      when "array" then []
       else
         null
+        
+    value: switch type
+      when "integer" then 0
+      when "array" then []
+      else
+        "A #{name}"
 
   buildRelation: (type, className) ->
     name:       Tower.Support.String.camelize(className, true)

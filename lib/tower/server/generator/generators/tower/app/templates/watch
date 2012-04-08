@@ -15,7 +15,7 @@ require("design.io-stylesheets") /(app\/client|lib\/stylesheets|vendor\/styleshe
 require("design.io-javascripts")
   compress: false
   debug:    false
-  ignore:   /(public|node_modules|server|test.*|spec.*[sS]pec|app\/views)/
+  ignore:   /(public|node_modules|server|app\/views)/
   outputPath: (path) ->
     "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
 

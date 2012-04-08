@@ -40,7 +40,9 @@ module.exports =
     
     development: [
       "/vendor/javascripts/mocha"
+      "/vendor/javascripts/chai"
       "/vendor/javascripts/design.io"
+      "/test/client"
     ]
   
   stylesheets:
@@ -55,4 +57,8 @@ module.exports =
     vendor: [
       "/vendor/stylesheets/bootstrap/bootstrap"
       "/vendor/stylesheets/prettify"
+    ]
+    
+    development: [
+      "/vendor/stylesheets/mocha"
     ]

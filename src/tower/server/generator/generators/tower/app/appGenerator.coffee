@@ -102,7 +102,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @directory "factories"
         @directory "features"
         @directory "models"
-        @template "config.coffee"
+        @template "server.coffee"
+        @template "client.coffee"
         @template "mocha.opts"
 
       @directory "tmp"
@@ -125,6 +126,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/viatropos/node.inflection/master/lib/inflection.js", "inflection.js"
           @get "https://raw.github.com/josscrowcroft/accounting.js/master/accounting.js", "accounting.js"
           @get "http://sinonjs.org/releases/sinon-1.3.1.js", "sinon.js"
+          @get "https://raw.github.com/logicalparadox/chai/master/chai.js", "chai.js"
           @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js", "prettify.js"
           @get "https://raw.github.com/Marak/Faker.js/master/Faker.js", "faker.js"
@@ -147,6 +149,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           ]
         @inside "stylesheets", ->
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css", "prettify.css"
+          @get "https://raw.github.com/visionmedia/mocha/master/mocha.css", "mocha.css"
           @directory "bootstrap"
           @get "https://raw.github.com/twitter/bootstrap/master/less/#{stylesheet}.less", "bootstrap/#{stylesheet}.less" for stylesheet in [
             "accordion",
