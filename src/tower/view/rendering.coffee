@@ -1,6 +1,12 @@
 # @mixin
 Tower.View.Rendering =
   render: (options, callback) ->
+    if !options.type && options.template && !options.inline
+      type  = options.template.split('/')
+      type  = type[type.length - 1].split(".")
+      type  = type[1..-1].join()
+      options.type  = if type != '' then type else @constructor.engine
+      
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
@@ -74,8 +80,12 @@ Tower.View.Rendering =
       callback e, result
     else if options.type
       mint = require "mint"
-      engine = require("mint").engine(options.type)
-      mint[engine](string, options.locals, callback)
+      engine = mint.engine(options.type)
+      # need to fix this on mint.js repo
+      if engine.match(/(eco|mustache)/)
+        mint[engine] string, options, callback
+      else
+        mint[engine](string, options.locals, callback)
     else
       mint = require "mint"
       engine = require("mint")
@@ -98,7 +108,8 @@ Tower.View.Rendering =
     return template unless typeof template == "string"
     path      = @constructor.store().findPath(path: template, ext: ext, prefixes: prefixes)
     path    ||= "#{@constructor.store().loadPaths[0]}/#{template}"
-    cachePath = path.replace(/\.\w+$/, "")
+    #cachePath = path.replace(/\.\w+$/, "")
+    cachePath = path
     result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
     throw new Error("Template '#{template}' was not found.") unless result
     result

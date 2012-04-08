@@ -29,7 +29,31 @@ describe 'Tower.View', ->
       path = store.findPath(path: 'edit', ext: 'coffee', prefixes: ['custom2'])
       
       assert.equal path, 'test/test-app/app/views/custom2/edit.coffee'
+  
+  for engine in ['jade', 'ejs', 'eco', 'mustache']
+    do (engine) ->
+      describe engine, ->
+        test "findPath(path: 'edit', ext: '#{engine}', prefixes: ['custom'])", ->
+          path = store.findPath(path: 'edit', ext: engine, prefixes: ['custom'])
       
-    #test 'render', (done) ->
-    #  view.render template: 'asdf', ->
-    #    done()
+          assert.equal path, "test/test-app/app/views/custom/edit.#{engine}"
+        
+        test "render(template: 'custom/edit.#{engine}')", (done) ->
+          view.render template: "custom/edit.#{engine}", locals: ENGINE: engine, (error, body) ->
+            assert.equal body, "<h1>I'm #{engine}!</h1>"
+            done()
+        
+        test "render(template: 'custom/edit', type: '#{engine}')", (done) ->
+          view.render template: 'custom/edit', type: engine, locals: ENGINE: engine, (error, body) ->
+            assert.equal body, "<h1>I'm #{engine}!</h1>"
+            done()
+    
+        test "render(template: 'edit', type: '#{engine}', prefixes: ['custom'])", (done) ->
+          view.render template: 'edit', type: engine, prefixes: ['custom'], locals: ENGINE: engine, (error, body) ->
+            assert.equal body, "<h1>I'm #{engine}!</h1>"
+            done()
+            
+        test "render(template: 'custom/edit', type: '#{engine}', layout: 'application')", (done) ->
+          view.render template: 'custom/edit', type: engine, layout: 'application', locals: ENGINE: engine, (error, body) ->
+            assert.equal body, "<h1>I'm #{engine}!</h1>"
+            done()

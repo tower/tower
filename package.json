@@ -80,7 +80,9 @@
     "gzip":               ">= 0.1.0",
     "forever":            ">= 0.8.5",
     "mongodb":            ">= 0.9.9",
-    "eco":                ">= 0.1.0"
+    "eco":                ">= 0.1.0",
+    "mustache":           ">= 0.4.0",
+    "jade":               ">= 0.22.0"
   },
   "scripts": {
     "test":               "mocha $(find test -name \"*Test.coffee\")",
