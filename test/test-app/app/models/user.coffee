@@ -1,5 +1,4 @@
 class App.User extends Tower.Model
-  @field "id", type: "Id"
   @field "firstName"
   @field "createdAt", type: "Time", default: -> new Date()
   @field "likes", type: "Integer", default: 0

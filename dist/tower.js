@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Sun, 08 Apr 2012 00:28:30 GMT
+ * Date: Sun, 08 Apr 2012 00:33:51 GMT
  */
 (function() {
   var Tower, accounting, action, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -1572,6 +1572,9 @@
 
     Application.prototype.setDefaults = function() {
       Tower.Model["default"]("store", Tower.Store.Memory);
+      Tower.Model.field("id", {
+        type: "Id"
+      });
       return true;
     };
 

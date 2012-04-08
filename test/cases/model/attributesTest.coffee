@@ -6,7 +6,6 @@ describe 'Tower.Model.Fields', ->
   describe 'class', ->
     test 'type: "Id"', ->
       field = App.BaseModel.fields().id
-      assert.equal field.owner, App.BaseModel
       assert.equal field.type, "Id"
       
     test 'type: "Integer" without default', ->

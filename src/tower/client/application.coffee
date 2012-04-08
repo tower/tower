@@ -12,6 +12,7 @@ class Tower.Application extends Tower.Engine
   
   setDefaults: ->
     Tower.Model.default "store", Tower.Store.Memory
+    Tower.Model.field "id", type: "Id"
     
     true
   

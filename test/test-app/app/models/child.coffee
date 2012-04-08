@@ -1,5 +1,4 @@
 class App.Child extends Tower.Model
-  @field "id", type: "Id"
   @field "value"
   @hasMany "parents"#, cache: true, counterCache: true
   

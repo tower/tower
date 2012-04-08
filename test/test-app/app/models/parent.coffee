@@ -1,5 +1,4 @@
 class App.Parent extends Tower.Model
-  @field "id", type: "Id"
   @hasMany "child", cache: true, counterCache: true
   
   # embed tests

@@ -1,5 +1,4 @@
 class App.BaseModel extends Tower.Model
-  @field "id", type: "Id"
   @field "likeCountWithoutDefault", type: "Integer"
   @field "likeCountWithDefault", type: "Integer", default: 0
   @field "tags", type: "Array", default: []
