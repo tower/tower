@@ -12,8 +12,6 @@ _.extend Tower,
   config:     {}
   namespaces: {}
   metadata:   {}
-  # external libraries, to get around having to use `require` in the browser.
-  modules:    {}
   metadataFor: (name) ->
     @metadata[name] ||= {}
 

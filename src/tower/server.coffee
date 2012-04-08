@@ -10,6 +10,14 @@ Tower.version = JSON.parse(require("fs").readFileSync(require("path").normalize(
 
 Tower.logger    = _console
 
+# external libraries, to get around having to use `require` in the browser.
+Tower.modules =
+  validator:  require 'validator'
+  accounting: require 'accounting'
+  moment:     require 'moment'
+  geo:        require 'geolib'
+  inflector:  require 'inflection'
+
 require './support'
 require './application'
 require './server/application'
@@ -25,13 +33,6 @@ require './middleware'
 require './server/middleware'
 require './server/command'
 require './server/generator'
-
-Tower.modules =
-  validator:  require 'validator'
-  accounting: require 'accounting'
-  moment:     require 'moment'
-  geo:        require 'geolib'
-  inflector:  require 'inflection'
 
 Tower.View.store(new Tower.Store.FileSystem(["app/views"]))
 Tower.root                = process.cwd()

@@ -65,7 +65,7 @@
     "geolib":             ">= 0.0.1",
     "validator":          ">= 0.4.5",
     "accounting":         ">= 0.3.2",
-    "inflection":         ">= 1.1.1"
+    "inflection":         "git://github.com/viatropos/node.inflection.git"
   },
   "devDependencies": {
     "cli-table":          ">= 0.0.1",
