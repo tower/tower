@@ -10,7 +10,7 @@ Tower.View.Rendering =
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
-
+    
     @_renderBody options, (error, body) =>
       return callback(error, body) if error
       @_renderLayout(body, options, callback)
