@@ -1,5 +1,6 @@
 {
   "name":                 "<%= app.name %>",
+  "private":              true,
   "version":              "0.0.1",
   "description":          "<%= app.description %>",
   "homepage":             "http://<%= user.username %>.github.com/<%= app.name %>",
