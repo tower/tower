@@ -137,9 +137,9 @@ module.exports = global.App = App
 ``` coffeescript
 # app/models/user.coffee
 class App.User extends Tower.Model
-  @field "firstName"
+  @field "firstName", required: true
   @field "lastName"
-  @field "email"
+  @field "email", format: /\w+@\w+.com/
   @field "activatedAt", type: "Date", default: -> new Date()
   
   @hasOne "address", embed: true
@@ -147,10 +147,9 @@ class App.User extends Tower.Model
   @hasMany "posts"
   @hasMany "comments"
   
-  @scope "thisWeek", -> @where(createdAt: ">=": -> require('moment')().subtract('days', 7))
+  @scope "recent", -> createdAt: ">=": -> _(3).days().ago().toDate()
   
-  @validates "firstName", presence: true
-  @validates "email", format: /\w+@\w+.com/
+  @validates "firstName", "email", presence: true
   
   @after "create", "welcome"
   
@@ -168,6 +167,7 @@ class App.Post extends Tower.Model
   @belongsTo "author", type: "User"
   
   @hasMany "comments", as: "commentable"
+  @hasMany "commenters", through: "comments", type: "User"
   
   @before "validate", "slugify"
   
