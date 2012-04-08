@@ -6,4 +6,4 @@ class <%= app.namespace %> extends Tower.Application
     
   bootstrap: (data) ->
 
-window.<%= app.namespace %> = new <%= app.namespace %>
+window.<%= app.namespace %> = (new <%= app.namespace %>).initialize()

@@ -1,7 +1,14 @@
 class Tower.Command.Generate
   constructor: (argv) ->
     @program = program = require('commander')
-
+    
+    # @todo Need to implement these options
+    # 
+    # @example --controller option for defining belongsTo
+    #   tower generate scaffold Comment body:string belongsTo:user belongsTo:post --controller belongsTo:user,post
+    # 
+    # @example --seed 20 (or without number, generates default of 100, enough to explore pagination)
+    #   tower generate scaffold Comment body:string --seed 100
     program
       .version(Tower.version)
       .option('-v, --version')

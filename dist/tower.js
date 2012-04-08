@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Sun, 08 Apr 2012 22:04:32 GMT
+ * Date: Sun, 08 Apr 2012 23:34:28 GMT
  */
 (function() {
   var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -1585,7 +1585,7 @@
     Application.before('initialize', 'setDefaults');
 
     Application.prototype.setDefaults = function() {
-      Tower.Model["default"]("store", Tower.Store.Memory);
+      Tower.Model["default"]("store", Tower.Store.Ajax);
       Tower.Model.field("id", {
         type: "Id"
       });
@@ -1640,6 +1640,7 @@
     Application.prototype.initialize = function() {
       this.extractAgent();
       this.applyMiddleware();
+      this.setDefaults();
       return this;
     };
 
@@ -2049,7 +2050,7 @@
           result.push(record);
         }
       }
-      if (callback) callback.call(this, null, result);
+      if (callback) result = callback.call(this, null, result);
       return result;
     },
     findOne: function(criteria, callback) {
@@ -2427,12 +2428,12 @@
       return $.ajax($.extend({}, this.defaults, defaults, params));
     };
 
-    Ajax.toJSON = function(record, format, method) {
+    Ajax.toJSON = function(record, method, format) {
       var data;
       data = {};
       data[Tower.Support.String.camelize(record.constructor.name, true)] = record;
-      data.format = format;
       data._method = method;
+      data.format = format;
       return JSON.stringify(data);
     };
 
@@ -2518,10 +2519,10 @@
       return (_ref2 = this.constructor).toJSON.apply(_ref2, arguments);
     };
 
-    Ajax.prototype.create = function(data, options, callback) {
+    Ajax.prototype.create = function(criteria, callback) {
       var _this = this;
-      if (options.sync !== false) {
-        return Ajax.__super__.create.call(this, data, options, function(error, records) {
+      if (criteria.sync !== false) {
+        return Ajax.__super__.create.call(this, criteria, function(error, records) {
           if (callback) callback.call(_this, error, records);
           return _this.createRequest(records, options);
         });
@@ -2530,10 +2531,10 @@
       }
     };
 
-    Ajax.prototype.update = function(updates, query, options, callback) {
+    Ajax.prototype.update = function(updates, criteria, callback) {
       var _this = this;
-      if (options.sync === true) {
-        return Ajax.__super__.update.call(this, updates, query, options, function(error, result) {
+      if (criteria.sync === true) {
+        return Ajax.__super__.update.call(this, updates, criteria, function(error, result) {
           if (callback) callback.call(_this, error, result);
           return _this.updateRequest(result, options);
         });
@@ -2542,11 +2543,12 @@
       }
     };
 
-    Ajax.prototype.destroy = function(query, options, callback) {
+    Ajax.prototype.destroy = function(criteria, callback) {
       var _this = this;
-      if (options.sync !== false) {
-        return Ajax.__super__.destroy.call(this, query, options, function(error, result) {
-          return _this.destroyRequest(result, options);
+      if (criteria.sync !== false) {
+        return Ajax.__super__.destroy.call(this, criteria, function(error, result) {
+          _this.destroyRequest(result, criteria);
+          if (callback) return callback.call(_this, error, result);
         });
       } else {
         return Ajax.__super__.destroy.apply(this, arguments);
@@ -2611,13 +2613,19 @@
       return function(xhr, statusText, error) {};
     };
 
-    Ajax.prototype.destroyRequest = function(record, options, callback) {
+    Ajax.prototype.destroyRequest = function(record, criteria) {
       var _this = this;
       return this.queue(function() {
-        var params;
+        var params, url;
+        if (_.isArray(record)) record = record[0];
+        url = Tower.urlFor(record);
         params = {
-          type: "DELETE",
-          data: _this.toJSON(record)
+          url: url,
+          type: 'POST',
+          data: JSON.stringify({
+            format: 'json',
+            _method: 'DELETE'
+          })
         };
         return _this.ajax({}, params).success(_this.destroySuccess(record)).error(_this.destroyFailure(record));
       });
@@ -8088,6 +8096,9 @@
       }
       return;
     },
+    resourceKlass: function() {
+      return Tower.constant(Tower.namespaced(this.resourceType));
+    },
     failure: function(resource, callback) {
       callback();
       return;
@@ -8387,11 +8398,13 @@
       },
       clickHandler: function(name, handler, options) {
         var _this = this;
-        return $(this.dispatcher).on(name, function(event) {});
+        return $(this.dispatcher).on(name, options.target, function(event) {
+          return _this._dispatch(event, handler);
+        });
       },
       submitHandler: function(name, handler, options) {
         var _this = this;
-        return $(this.dispatcher).on(name, function(event) {
+        return $(this.dispatcher).on(name, options.target, function(event) {
           var elements, form, method, params, target;
           try {
             target = $(event.target);
@@ -8405,7 +8418,7 @@
               target: target,
               form: form
             }, {});
-            _this._dispatch(handler, {
+            _this._dispatch(event, handler, {
               elements: elements,
               params: params
             });
@@ -8470,12 +8483,12 @@
           method.call(this, name, handler, options);
         } else {
           $(this.dispatcher).on(name, options.target, function(event) {
-            return _this._dispatch(handler, options);
+            return _this._dispatch(event, handler, options);
           });
         }
         return this;
       },
-      _dispatch: function(handler, options) {
+      _dispatch: function(event, handler, options) {
         var controller;
         if (options == null) options = {};
         controller = this.instance();

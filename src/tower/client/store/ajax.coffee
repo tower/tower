@@ -17,11 +17,11 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   @ajax: (params, defaults) ->
     $.ajax($.extend({}, @defaults, defaults, params))
 
-  @toJSON: (record, format, method) ->
+  @toJSON: (record, method, format) ->
     data          = {}
     data[Tower.Support.String.camelize(record.constructor.name, true)] = record
-    data.format   = format
     data._method  = method
+    data.format   = format
     JSON.stringify(data)
 
   @disable: (callback) ->
@@ -76,26 +76,27 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   toJSON: ->
     @constructor.toJSON arguments...
 
-  create: (data, options, callback) ->
-    unless options.sync == false
-      super data, options, (error, records) =>
+  create: (criteria, callback) ->
+    unless criteria.sync == false
+      super criteria, (error, records) =>
         callback.call @, error, records if callback
         @createRequest records, options
     else
       super
 
-  update: (updates, query, options, callback) ->
-    if options.sync == true
-      super updates, query, options, (error, result) =>
+  update: (updates, criteria, callback) ->
+    if criteria.sync == true
+      super updates, criteria, (error, result) =>
         callback.call @, error, result if callback
         @updateRequest result, options
     else
       super
 
-  destroy: (query, options, callback) ->
-    unless options.sync == false
-      super query, options, (error, result) =>
-        @destroyRequest result, options
+  destroy: (criteria, callback) ->
+    unless criteria.sync == false
+      super criteria, (error, result) =>
+        @destroyRequest result, criteria
+        callback.call @, error, result if callback
     else
       super
 
@@ -141,11 +142,19 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   updateFailure: (record) ->
     (xhr, statusText, error) =>
 
-  destroyRequest: (record, options, callback) ->
+  destroyRequest: (record, criteria) ->
     @queue =>
-      params =
-        type: "DELETE"
-        data: @toJSON(record)
+      # haven't yet handled arrays.
+      record  = record[0] if _.isArray(record)
+      url     = Tower.urlFor(record)
+      
+      params  =
+        url:        url
+        type:       'POST'
+        data:       JSON.stringify(
+          format:   'json'
+          _method:  'DELETE'
+        )
 
       @ajax({}, params)
         .success(@destroySuccess(record))

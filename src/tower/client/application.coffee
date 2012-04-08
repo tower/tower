@@ -11,7 +11,7 @@ class Tower.Application extends Tower.Engine
   @before 'initialize', 'setDefaults'
   
   setDefaults: ->
-    Tower.Model.default "store", Tower.Store.Memory
+    Tower.Model.default "store", Tower.Store.Ajax
     Tower.Model.field "id", type: "Id"
     
     true
@@ -53,6 +53,7 @@ class Tower.Application extends Tower.Engine
   initialize: ->
     @extractAgent()
     @applyMiddleware()
+    @setDefaults()
     @
 
   applyMiddleware: ->

@@ -14,10 +14,11 @@ Tower.Controller.Elements =
       @elements = @extractElements(target, options)
 
     clickHandler: (name, handler, options) ->
-      $(@dispatcher).on name, (event) =>
+      $(@dispatcher).on name, options.target, (event) =>
+        @_dispatch event, handler
 
     submitHandler: (name, handler, options) ->
-      $(@dispatcher).on name, (event) =>
+      $(@dispatcher).on name, options.target, (event) =>
         try
           target    = $(event.target)
           form      = target.closest("form")
@@ -30,7 +31,7 @@ Tower.Controller.Elements =
 
           elements  = _.extend {target: target, form: form}, {}#, @extractElements(target, options)
 
-          @_dispatch handler, elements: elements, params: params
+          @_dispatch event, handler, elements: elements, params: params
         catch error
           console.log error
 

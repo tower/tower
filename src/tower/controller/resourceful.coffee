@@ -234,6 +234,9 @@ Tower.Controller.Resourceful =
       callbackWithScope null, Tower.constant(@resourceType)
       
     undefined
+    
+  resourceKlass: ->
+    Tower.constant(Tower.namespaced(@resourceType))
 
   # @todo Default failure implemtation for create, update, and destory.
   # 

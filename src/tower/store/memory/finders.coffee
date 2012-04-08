@@ -28,7 +28,7 @@ Tower.Store.Memory.Finders =
     
     #result = criteria.export(result) if result.length
     
-    callback.call(@, null, result) if callback
+    result = callback.call(@, null, result) if callback
     
     result
 
