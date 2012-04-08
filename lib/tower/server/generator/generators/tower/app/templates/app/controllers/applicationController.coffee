@@ -1,7 +1,7 @@
 class <%= app.namespace %>.ApplicationController extends Tower.Controller
   @layout "application"
   
-  @beforeAction "bootstrap", only: "welcome"
+  @beforeAction "bootstrap"#, only: "welcome"
   
   welcome: ->
     @render "welcome", locals: {@bootstrapData}
