@@ -4,6 +4,7 @@
 validator   = Tower.modules.validator
 check       = validator.check
 sanitize    = validator.sanitize
+async       = Tower.modules.async
 
 validator.Validator::error = (msg) ->
   @_errors.push(msg)
@@ -222,8 +223,16 @@ inflections =
     
   camelCase: (value) ->
     Tower.Support.String.camelize(value)
+    
+asyncing =
+  series: ->
+    async.series arguments...
+    
+  parallel: ->
+    async.parallel arguments...
 
 _.mixin casting
 _.mixin sanitizing
 _.mixin inflections
 _.mixin validating
+_.mixin asyncing

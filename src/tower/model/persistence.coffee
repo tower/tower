@@ -22,7 +22,7 @@ Tower.Model.Persistence =
       store     = metadata.store
       return store if arguments.length == 0 && store
       
-      defaultStore = @default('store')
+      defaultStore = @default('store') || Tower.Store.Memory
       
       if typeof value == "function"
         store   = new value(name: @metadata().namePlural, type: Tower.namespaced(@name))

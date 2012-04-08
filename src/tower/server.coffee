@@ -17,6 +17,7 @@ Tower.modules =
   moment:     require 'moment'
   geo:        require 'geolib'
   inflector:  require 'inflection'
+  async:      require 'async'
 
 require './support'
 require './application'

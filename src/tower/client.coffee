@@ -10,6 +10,7 @@ Tower.modules =
   moment:     global.moment
   geo:        global.geolib
   inflector:  global.inflector # https://github.com/gmosx/inflection
+  async:      global.async # https://github.com/gmosx/inflection
 
 require './support'
 require './application'

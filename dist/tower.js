@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Sun, 08 Apr 2012 02:43:17 GMT
+ * Date: Sun, 08 Apr 2012 03:09:35 GMT
  */
 (function() {
   var Tower, accounting, action, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -3257,7 +3257,8 @@
       } else {
         return this.store.find(this, function(error, records) {
           if (!error && records.length) records = _this["export"](records);
-          return callback.call(_this, error, records);
+          if (callback) callback.call(_this, error, records);
+          return records;
         });
       }
     };
@@ -4964,7 +4965,7 @@
         metadata = this.metadata();
         store = metadata.store;
         if (arguments.length === 0 && store) return store;
-        defaultStore = this["default"]('store');
+        defaultStore = this["default"]('store') || Tower.Store.Memory;
         if (typeof value === "function") {
           store = new value({
             name: this.metadata().namePlural,

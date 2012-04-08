@@ -36,3 +36,5 @@ html ->
       
   if hasContentFor "bottom"
     yields "bottom"
+    
+    script "App.bootstrap(#{JSON.stringify(@bootstrapData, null, [])})" if @bootstrapData
