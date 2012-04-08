@@ -83,6 +83,7 @@
     "eco":                ">= 0.1.0"
   },
   "scripts": {
-    "test": "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@"
+    "test":               "mocha $(find test -name \"*Test.coffee\")",
+    "docs":               "codo"
   }
 }

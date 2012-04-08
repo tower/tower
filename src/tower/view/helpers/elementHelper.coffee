@@ -1,3 +1,4 @@
+# @mixin
 Tower.View.ElementHelper =
   title: (value) ->
     document.title = value

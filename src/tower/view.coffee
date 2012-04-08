@@ -1,3 +1,8 @@
+# @include Tower.View.AssetHelper
+# @include Tower.View.ComponentHelper
+# @include Tower.View.HeadHelper
+# @include Tower.View.RenderingHelper
+# @include Tower.View.StringHelper
 class Tower.View extends Tower.Class
   @extend
     cache:                                      {}
@@ -92,7 +97,6 @@ class Tower.View extends Tower.Class
   constructor: (context = {}) ->
     @_context = context
 
-require './view/helpers'
 require './view/rendering'
 require './view/component'
 require './view/table'
@@ -105,7 +109,6 @@ require './view/helpers/renderingHelper'
 require './view/helpers/stringHelper'
 
 Tower.View.include Tower.View.Rendering
-Tower.View.include Tower.View.Helpers
 Tower.View.include Tower.View.AssetHelper
 Tower.View.include Tower.View.ComponentHelper
 Tower.View.include Tower.View.HeadHelper

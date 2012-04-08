@@ -61,6 +61,4 @@ require './generator/generators/tower/mailer/mailerGenerator'
 require './generator/generators/tower/scaffold/scaffoldGenerator'
 require './generator/generators/mocha/model/modelGenerator'
 
-console.log './generator/generators/mocha/model/modelGenerator'
-
 module.exports = Tower.Generator

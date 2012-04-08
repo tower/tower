@@ -1,3 +1,4 @@
+# @mixin
 Tower.View.StringHelper =
   # Characters that need to be escaped to HTML entities from user input
   HTML_ESCAPE:

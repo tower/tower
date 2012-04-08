@@ -1,5 +1,7 @@
+# @mixin
 Tower.View.AssetHelper =
-  javascripts: (sources...) ->
+  javascripts: ->
+    sources = _.args(arguments)
     options = _.extractOptions(sources)
     options.namespace = "javascripts"
     options.extension = "js"
@@ -8,9 +10,10 @@ Tower.View.AssetHelper =
     return null
 
   javascript: ->
-    javascript.apply @, arguments
+    javascripts.apply @, arguments
 
-  stylesheets: (sources...) ->
+  stylesheets: ->
+    sources = _.args(arguments)
     options = _.extractOptions(sources)
     options.namespace = "stylesheets"
     options.extension = "css"
@@ -21,6 +24,13 @@ Tower.View.AssetHelper =
   stylesheet: ->
     stylesheets.apply @, arguments
 
+  stylesheetTag: (source) ->
+    link rel: 'stylesheet', href: source
+
+  javascriptTag: (source) ->
+    script src: source
+
+  # @private
   _extractAssetPaths: (sources, options = {}) ->
     namespace = options.namespace
     extension = options.extension
@@ -46,11 +56,5 @@ Tower.View.AssetHelper =
               result.push("/#{namespace}#{path}.#{extension}")
 
     result
-
-  stylesheetTag: (source) ->
-    link rel: 'stylesheet', href: source
-
-  javascriptTag: (source) ->
-    script src: source
 
 module.exports = Tower.View.AssetHelper

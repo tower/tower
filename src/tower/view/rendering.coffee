@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.View.Rendering =
   render: (options, callback) ->
     options.type        ||= @constructor.engine
@@ -89,9 +89,6 @@ Tower.View.Rendering =
     for key of _ref
       value = _ref[key]
       locals[key] = value  unless key.match(/^(constructor|head)/)
-    #newlocals = {}
-    #newlocals.locals = locals
-    #locals = newlocals
     locals = _.modules(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
@@ -99,8 +96,10 @@ Tower.View.Rendering =
   # @private
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
-    # tmp
-    result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
+    path      = @constructor.store().findPath(path: template, ext: ext, prefixes: prefixes)
+    path    ||= "#{@constructor.store().loadPaths[0]}/#{template}"
+    cachePath = path.replace(/\.\w+$/, "")
+    result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
     throw new Error("Template '#{template}' was not found.") unless result
     result
 
