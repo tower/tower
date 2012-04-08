@@ -1,12 +1,12 @@
 /*!
- * Tower.js v0.4.0-1
+ * Tower.js v0.4.0-2
  * http://towerjs.org/
  *
  * Copyright 2012, Lance Pollard
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Sun, 08 Apr 2012 23:34:28 GMT
+ * Date: Sun, 08 Apr 2012 23:37:25 GMT
  */
 (function() {
   var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -22,7 +22,7 @@
 
   global.Tower = Tower = {};
 
-  Tower.version = "0.4.0-1";
+  Tower.version = "0.4.0-2";
 
   Tower.logger = console;
 
