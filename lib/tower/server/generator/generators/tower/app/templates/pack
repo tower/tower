@@ -60,8 +60,7 @@
     "forever":                ">= 0.8.5"
   },
   "scripts": {
-    "test":                   "mocha $(find test -name \"*Test.coffee\") -r coffee-script $@",
-    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*",
-    "docs":                   "codo"
+    "test":                   "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
+    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*"
   }
 }

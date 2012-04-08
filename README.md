@@ -35,6 +35,7 @@ tower new app
 cd app
 sudo npm install
 tower generate scaffold Post title:string body:text
+npm test
 node server
 ```
 

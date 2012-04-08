@@ -6,10 +6,10 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Sun, 08 Apr 2012 03:09:35 GMT
+ * Date: Sun, 08 Apr 2012 22:04:32 GMT
  */
 (function() {
-  var Tower, accounting, action, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
+  var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = Array.prototype.slice,
     __hasProp = Object.prototype.hasOwnProperty,
@@ -31,7 +31,8 @@
     accounting: global.accounting,
     moment: global.moment,
     geo: global.geolib,
-    inflector: global.inflector
+    inflector: global.inflector,
+    async: global.async
   };
 
   Tower.Support = {};
@@ -1088,6 +1089,8 @@
 
   sanitize = validator.sanitize;
 
+  async = Tower.modules.async;
+
   validator.Validator.prototype.error = function(msg) {
     this._errors.push(msg);
     return this;
@@ -1313,6 +1316,15 @@
     }
   };
 
+  asyncing = {
+    series: function() {
+      return async.series.apply(async, arguments);
+    },
+    parallel: function() {
+      return async.parallel.apply(async, arguments);
+    }
+  };
+
   _.mixin(casting);
 
   _.mixin(sanitizing);
@@ -1320,6 +1332,8 @@
   _.mixin(inflections);
 
   _.mixin(validating);
+
+  _.mixin(asyncing);
 
   Tower.Hook = (function(_super) {
 
@@ -5900,37 +5914,16 @@
 
   })(Tower.Class);
 
-  Tower.View.Helpers = {
-    titleTag: function(title) {
-      return "<title>" + title + "</title>";
-    },
-    metaTag: function(name, content) {
-      return "<meta name=\"" + name + "\" content=\"" + content + "\"/>";
-    },
-    tag: function(name, options) {},
-    linkTag: function(title, path, options) {},
-    imageTag: function(path, options) {},
-    csrfMetaTag: function() {
-      return this.metaTag("csrf-token", this.request.session._csrf);
-    },
-    contentTypeTag: function(type) {
-      if (type == null) type = "UTF-8";
-      return "<meta charset=\"" + type + "\" />";
-    },
-    javascriptTag: function(path) {
-      return "<script type=\"text/javascript\" src=\"" + path + "\" ></script>";
-    },
-    stylesheetTag: function(path) {
-      return "<link href=\"" + path + "\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\"/>";
-    },
-    mobileTags: function() {
-      return "<meta content='yes' name='apple-mobile-web-app-capable'>\n<meta content='yes' name='apple-touch-fullscreen'>\n<meta content='initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, width = device-width' name='viewport'>";
-    }
-  };
-
   Tower.View.Rendering = {
     render: function(options, callback) {
-      var _this = this;
+      var type,
+        _this = this;
+      if (!options.type && options.template && typeof options.template === 'string' && !options.inline) {
+        type = options.template.split('/');
+        type = type[type.length - 1].split(".");
+        type = type.slice(1).join();
+        options.type = type !== '' ? type : this.constructor.engine;
+      }
       options.type || (options.type = this.constructor.engine);
       if (!options.hasOwnProperty("layout") && this._context.layout) {
         options.layout = this._context.layout();
@@ -6017,8 +6010,12 @@
         return callback(e, result);
       } else if (options.type) {
         mint = require("mint");
-        engine = require("mint").engine(options.type);
-        return mint[engine](string, options.locals, callback);
+        engine = mint.engine(options.type);
+        if (engine.match(/(eco|mustache)/)) {
+          return mint[engine](string, options, callback);
+        } else {
+          return mint[engine](string, options.locals, callback);
+        }
       } else {
         mint = require("mint");
         engine = require("mint");
@@ -6039,13 +6036,18 @@
       return locals;
     },
     _readTemplate: function(template, prefixes, ext) {
-      var result, _base, _name;
+      var cachePath, options, path, result, store;
       if (typeof template !== "string") return template;
-      result = (_base = this.constructor.cache)[_name = "app/views/" + template] || (_base[_name] = this.constructor.store().find({
+      options = {
         path: template,
         ext: ext,
         prefixes: prefixes
-      }));
+      };
+      store = this.constructor.store();
+      path = store.findPath(options);
+      path || (path = store.defaultPath(options));
+      cachePath = path;
+      result = this.constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString();
       if (!result) throw new Error("Template '" + template + "' was not found.");
       return result;
     }
@@ -6904,7 +6906,7 @@
   Tower.View.AssetHelper = {
     javascripts: function() {
       var options, path, paths, sources, _len8, _p;
-      sources = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      sources = _.args(arguments);
       options = _.extractOptions(sources);
       options.namespace = "javascripts";
       options.extension = "js";
@@ -6916,11 +6918,11 @@
       return null;
     },
     javascript: function() {
-      return javascript.apply(this, arguments);
+      return javascripts.apply(this, arguments);
     },
     stylesheets: function() {
       var options, path, paths, sources, _len8, _p;
-      sources = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      sources = _.args(arguments);
       options = _.extractOptions(sources);
       options.namespace = "stylesheets";
       options.extension = "css";
@@ -6933,6 +6935,17 @@
     },
     stylesheet: function() {
       return stylesheets.apply(this, arguments);
+    },
+    stylesheetTag: function(source) {
+      return link({
+        rel: 'stylesheet',
+        href: source
+      });
+    },
+    javascriptTag: function(source) {
+      return script({
+        src: source
+      });
     },
     _extractAssetPaths: function(sources, options) {
       var extension, manifest, namespace, path, paths, result, source, _len10, _len8, _len9, _p, _q, _r;
@@ -6969,17 +6982,6 @@
         }
       }
       return result;
-    },
-    stylesheetTag: function(source) {
-      return link({
-        rel: 'stylesheet',
-        href: source
-      });
-    },
-    javascriptTag: function(source) {
-      return script({
-        src: source
-      });
     }
   };
 
@@ -7350,8 +7352,6 @@
   };
 
   Tower.View.include(Tower.View.Rendering);
-
-  Tower.View.include(Tower.View.Helpers);
 
   Tower.View.include(Tower.View.AssetHelper);
 
