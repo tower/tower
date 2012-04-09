@@ -162,7 +162,6 @@ class Tower.Application extends Tower.Engine
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
-        # @ApplicationController.applySocketEventHandlers()
         value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
         @watch()
 
