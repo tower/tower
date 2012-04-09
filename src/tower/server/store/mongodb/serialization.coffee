@@ -196,6 +196,7 @@ Tower.Store.MongoDB.Serialization =
   
   # @todo need to figure out a better way to do this.
   _encodeId: (value) ->
+    return value if typeof value == 'number'
     try
       @constructor.database.bson_serializer.ObjectID(value)
     catch error
