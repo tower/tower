@@ -36,7 +36,7 @@
   "dependencies": {
     "underscore":             ">= 0.0.1",
     "underscore.string":      ">= 0.0.1",
-    "mongodb":                ">= 0.9.7-1.4",
+    "mongodb":                ">= 0.9.9-7",
     "redis":                  ">= 0.7.1",
     "coffee-resque":          ">= 0.1.4",
     "coffee-script":          ">= 1.1.3",

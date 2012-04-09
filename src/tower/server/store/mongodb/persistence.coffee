@@ -5,7 +5,7 @@ Tower.Store.MongoDB.Persistence =
     record      = @serializeModel(criteria.data[0])
     attributes  = @serializeAttributesForCreate(record)
     options     = @serializeOptions(criteria)
-    #console.log attributes
+    
     @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
       record.set("id", doc["_id"])

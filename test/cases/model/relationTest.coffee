@@ -23,11 +23,11 @@ describeWith = (store) ->
           App.Group.store(store)
           callback()
         (callback) =>
-          App.User.create firstName: "Lance", id: 10, (error, record) =>
+          App.User.create firstName: "Lance", (error, record) =>
             user = record
             callback()
         (callback) =>
-          App.Group.create id: 10, (error, record) =>
+          App.Group.create (error, record) =>
             group = record
             callback()
       ], done
@@ -55,7 +55,7 @@ describeWith = (store) ->
         test 'compileForCreate', ->
           criteria = user.memberships().criteria
           criteria.compileForCreate()
-          assert.deepEqual criteria.conditions(), { userId: 10 }
+          assert.deepEqual criteria.conditions(), { userId: user.get('id') }
           
         test 'compileForCreate with cache: true', ->
           criteria = user.cachedMemberships().criteria
@@ -67,7 +67,7 @@ describeWith = (store) ->
           criteria = user.polymorphicMemberships().criteria
           criteria.compileForCreate()
           
-          assert.deepEqual criteria.conditions(), { joinableId: 10, joinableType: "User" }
+          assert.deepEqual criteria.conditions(), { joinableId: user.get('id'), joinableType: "User" }
           
         test 'create relationship model', (done) ->
           user.memberships().create groupId: group.get('id'), (error, membership) =>
@@ -92,7 +92,7 @@ describeWith = (store) ->
           criteria = user.memberships().criteria
           criteria.compileForUpdate()
           
-          assert.deepEqual criteria.conditions(), { userId: 10 }
+          assert.deepEqual criteria.conditions(), { userId: user.get('id') }
           
         test 'update relationship model', (done) ->
           user.memberships().update kind: "guest", (error, memberships) =>
@@ -111,7 +111,7 @@ describeWith = (store) ->
           criteria = user.memberships().criteria
           criteria.compileForDestroy()
 
-          assert.deepEqual criteria.conditions(), { userId: 10 }
+          assert.deepEqual criteria.conditions(), { userId: user.get('id') }
           
         test 'destroy relationship model', (done) ->
           user.memberships().destroy (error, memberships) =>
@@ -196,7 +196,7 @@ describeWith = (store) ->
 
       describe '.update', ->
         beforeEach (done) ->
-          user.groups().create {name: "Starbucks", id: 2}, {id: 3}, done
+          user.groups().create {name: "Starbucks"}, {}, done
         
         test 'update all groups', (done) ->
           user.groups().update name: "Peet's", =>
@@ -216,7 +216,7 @@ describeWith = (store) ->
       
       describe '.destroy', ->
         beforeEach (done) ->
-          user.groups().create {name: "Starbucks", id: 2}, {id: 3}, done
+          user.groups().create {name: "Starbucks"}, {}, done
         
         test 'destroy all groups', (done) ->
           user.groups().destroy =>
@@ -233,9 +233,11 @@ describeWith = (store) ->
       
       describe '.find', ->
         beforeEach (done) ->
-          App.Group.create id: 100, =>
-            App.Membership.create id: 200, =>
-              user.memberships().create id: 10, groupId: group.get('id'), done
+          App.Group.create =>
+            App.Membership.create =>
+              user.memberships().create groupId: group.get('id'), (error, record) =>
+                membership = record
+                done()
           
         test 'appendThroughConditions', (done) ->
           criteria        = user.groups().criteria
@@ -243,7 +245,7 @@ describeWith = (store) ->
           assert.deepEqual criteria.conditions(), { }
           
           criteria.appendThroughConditions =>
-            assert.deepEqual criteria.conditions(), { id: $in: [10] }
+            assert.deepEqual criteria.conditions(), { id: $in: [group.get('id')] }
             done()
 
       describe 'finders', ->
@@ -348,7 +350,9 @@ describeWith = (store) ->
           done()
           
         describe 'persistence', ->
-          child = null
+          child   = null
+          child2  = null
+          child3  = null
           
           beforeEach (done) ->
             async.series [
@@ -357,10 +361,14 @@ describeWith = (store) ->
                   child = record
                   next()
               (next) =>
-                parent.idCacheTrue_idCacheFalse().create id: 20, next
+                parent.idCacheTrue_idCacheFalse().create (error, record) =>
+                  child2 = record
+                  next()
               (next) =>
                 # create one without a parent at all
-                App.Child.create id: 30, next
+                App.Child.create (error, record) =>
+                  child3 = record
+                  next()
               (next) =>
                 App.Parent.find parent.get('id'), (error, record) =>
                   parent = record
@@ -369,7 +377,7 @@ describeWith = (store) ->
         
           test 'create', (done) ->
             assert.equal child.get('parentId'), null
-            assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), 20]
+            assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), child2.get('id')]
             done()
             
           test 'update(1)', (done) ->
@@ -377,7 +385,7 @@ describeWith = (store) ->
               App.Child.find child.get('id'), (error, child) =>
                 assert.equal child.get('value'), 'something'
                 
-                App.Child.find 20, (error, child) =>
+                App.Child.find child2.get('id'), (error, child) =>
                   assert.equal child.get('value'), null
                   
                   done()
@@ -387,7 +395,7 @@ describeWith = (store) ->
               App.Child.find child.get('id'), (error, child) =>
                 assert.equal child.get('value'), 'something'
 
-                App.Child.find 30, (error, child) =>
+                App.Child.find child3.get('id'), (error, child) =>
                   assert.equal child.get('value'), null
 
                   done()
@@ -395,7 +403,7 @@ describeWith = (store) ->
           test 'destroy(1)', (done) ->
             parent.idCacheTrue_idCacheFalse().destroy child.get('id'), =>
               App.Parent.find parent.get('id'), (error, parent) =>
-                assert.deepEqual parent.get(relation.idCacheKey), [20]
+                assert.deepEqual parent.get(relation.idCacheKey), [child2.get('id')]
                 
                 App.Child.all (error, records) =>
                   assert.equal records.length, 2
@@ -419,7 +427,7 @@ describeWith = (store) ->
             App.Child.create (error, newChild) =>
               parent.idCacheTrue_idCacheFalse().add newChild, =>
                 App.Parent.find parent.get('id'), (error, parent) =>
-                  assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), 20, newChild.get('id')])
+                  assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), child2.get('id'), newChild.get('id')])
                   
                   App.Child.all (error, records) =>
                     assert.equal records.length, 4
