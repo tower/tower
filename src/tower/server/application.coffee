@@ -6,12 +6,12 @@ io      = null
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
   @before "initialize", "setDefaults"
-  
+
   setDefaults: ->
     Tower.Model.default "store", Tower.Store.MongoDB
     Tower.Model.field "id", type: "Id"
     true
-  
+
   @autoloadPaths: [
     "app/helpers",
     "app/models",
@@ -28,7 +28,7 @@ class Tower.Application extends Tower.Engine
     "databases"
     "routes"
   ]
-  
+
   @reloadMap:
     models:
       pattern:  /app\/models/
@@ -116,13 +116,13 @@ class Tower.Application extends Tower.Engine
       require "#{Tower.root}/config/environments/#{Tower.env}"
 
       requirePaths File.files("#{Tower.root}/config/initializers")
-      
+
       config.call(self) for config in configs
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
       require "#{Tower.root}/app/controllers/applicationController"
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
-        
+
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
       done()
@@ -142,7 +142,7 @@ class Tower.Application extends Tower.Engine
 
     unless middlewares && middlewares.length > 0
       middlewares = @constructor.defaultStack()
-      
+
     for middleware in middlewares
       args        = _.args(middleware)
       if typeof args[0] == "string"
@@ -162,6 +162,8 @@ class Tower.Application extends Tower.Engine
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
+        # @ApplicationController.applySocketEventHandlers()
+        value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
         @watch()
 
   run: ->
