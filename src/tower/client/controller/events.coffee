@@ -48,7 +48,7 @@ Tower.Controller.Events =
       @io ||= Tower.Application.instance().io.connect("/" + @socketNamespace())
 
       @io.on name, (data) =>
-        @_dispatch @io, handler, data
+        @_dispatch @io, handler, params: data
 
     # http://www.ravelrumba.com/blog/event-delegation-jquery-performance/
     addDomEventHandler: (name, handler, options) ->
