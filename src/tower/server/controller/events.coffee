@@ -3,21 +3,31 @@ Tower.Controller.Events =
     addEventHandler: (name, handler, options) ->
       @_addSocketEventHandler name, handler, options
 
+    _addSocketEventHandler: (name, handler, options) ->
+      @_socketHandlers ||= {}
+      @_socketHandlers[name] = handler
+
+    applySocketEventHandlers: ->
+      @addSocketEventHandler name, handler for name, handler of @_socketHandlers
+
     socketNamespace: ->
       Tower.Support.String.pluralize(Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), false))
 
     addSocketEventHandler: (name, handler, options) ->
       unless @io
-        @_socketHandlers = {}
+        @io = Tower.Application.instance().io.of("/" + @socketNamespace()).on "connection", (socket) =>
+          @socket = socket
+          @registerHandler(socket, eventType, handler) for eventType, handler of @_socketHandlers
 
-        @io = Tower.Application.instance().socket.of(@socketNamespace()).on "connection", (socket) =>
-          for eventType, handler of @_socketHandlers
-            do (eventType, handler) ->
-              if eventType isnt 'connection' and eventType isnt 'disconnect'
-                socket.on eventType, (data) =>
-                  @_dispatch undefined, handler, data
+    registerHandler: (socket, eventType, handler) ->
+      # Register all event handlers besides connection and disconnect
+      if eventType isnt 'connection' and eventType isnt 'disconnect'
+        socket.on eventType, (data) =>
+          @_dispatch socket, handler, _.extend data
 
-      @_socketHandlers[name] = handler
+      # Immediately call the "connection" handler
+      else if eventType is "connection"
+        @_dispatch socket, handler
 
     _dispatch: (event, handler, locals = {}) ->
       controller = new @

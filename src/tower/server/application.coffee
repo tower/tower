@@ -6,12 +6,12 @@ io      = null
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
   @before "initialize", "setDefaults"
-  
+
   setDefaults: ->
     Tower.Model.default "store", Tower.Store.Memory
     Tower.Model.field "id", type: "Id"
     true
-  
+
   @autoloadPaths: [
     "app/helpers",
     "app/models",
@@ -28,7 +28,7 @@ class Tower.Application extends Tower.Engine
     "databases"
     "routes"
   ]
-  
+
   @reloadMap:
     models:
       pattern:  /app\/models/
@@ -39,6 +39,10 @@ class Tower.Application extends Tower.Engine
     helpers:
       pattern:  /app\/helpers/
       paths:    []
+
+  @use: ->
+    @middleware ||= []
+    @middleware.push arguments
 
   @defaultStack: ->
     @use connect.favicon(Tower.publicPath + "/favicon.ico")
@@ -77,19 +81,20 @@ class Tower.Application extends Tower.Engine
     Tower.Application._instance = @
     global[@constructor.name] = @
 
+  use: ->
+    @constructor.use arguments...
+
   initialize: (complete) ->
     require "#{Tower.root}/config/application"
     #@runCallbacks "initialize", null, complete
     configNames = @constructor.configNames
+    configs     = @constructor.initializers()
     reloadMap   = @constructor.reloadMap
     self        = @
-    
     initializer = (done) =>
       requirePaths = (paths) ->
         for path in paths
           require(path) if path.match(/\.(coffee|js)$/)
-          
-      requirePaths File.files("#{Tower.root}/config/preinitializers")
 
       for key in configNames
         config = null
@@ -111,14 +116,13 @@ class Tower.Application extends Tower.Engine
       require "#{Tower.root}/config/environments/#{Tower.env}"
 
       requirePaths File.files("#{Tower.root}/config/initializers")
-      
-      self.stack()
-      
+
+      config.call(self) for config in configs
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
       require "#{Tower.root}/app/controllers/applicationController"
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
-        
+
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
       done()
@@ -132,37 +136,22 @@ class Tower.Application extends Tower.Engine
 
   handle: ->
     @server.handle arguments...
-    
-  use: ->
-    args        = _.args(arguments)
-    
-    if typeof args[0] == "string"
-      middleware  = args.shift()
-      @server.use connect[middleware] args...
-    else
-      @server.use args...
 
   stack: ->
-    configs     = @constructor.initializers()
-    self        = @
-    
-    #@server.configure ->
-    for config in configs
-      config.call(self)
+    middlewares = @constructor.middleware
 
-    #unless middlewares && middlewares.length > 0
-    #  middlewares = @constructor.defaultStack()
+    unless middlewares && middlewares.length > 0
+      middlewares = @constructor.defaultStack()
+
+    for middleware in middlewares
+      args        = _.args(middleware)
+      if typeof args[0] == "string"
+        middleware  = args.shift()
+        @server.use connect[middleware].apply(connect, args)
+      else
+        @server.use args...
 
     @
-    
-  get: ->
-    @server.get arguments...
-    
-  post: ->
-    @server.post arguments...
-    
-  put: ->
-    @server.put arguments...
 
   listen: ->
     unless Tower.env == "test"
@@ -173,10 +162,13 @@ class Tower.Application extends Tower.Engine
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
+        # @ApplicationController.applySocketEventHandlers()
+        value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
         @watch()
 
   run: ->
     @initialize()
+    @stack()
     @listen()
 
   watch: ->
