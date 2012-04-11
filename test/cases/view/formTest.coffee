@@ -42,13 +42,13 @@ describeWith = (store) ->
     <ol class="fields">
       <li class="field control-group string optional" id="user-first-name-field">
         <label for="user-first-name-input" class="control-label">
-          <span>FirstName</span>
+          <span>First name</span>
           <abbr title="Optional" class="optional">
             
           </abbr>
         </label>
         <div class="controls">
-          <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" value="Lance" aria-required="false" />
+          <input type="text" id="user-first-name-input" name="user[firstName]" value="Lance" class="string first-name optional input" aria-required="false" />
         </div>
       </li>
     </ol>
@@ -74,13 +74,42 @@ describeWith = (store) ->
     <ol class="fields">
       <li class="field control-group string optional" id="user-first-name-field">
         <label for="user-first-name-input" class="control-label">
-          <span>FirstName</span>
+          <span>First name</span>
           <abbr title="Optional" class="optional">
             
           </abbr>
         </label>
         <div class="controls">
           <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" aria-required="false" />
+        </div>
+      </li>
+    </ol>
+  </fieldset>
+</form>
+
+"""
+      test '#formFor(camelCasedModel)', ->
+        model = new App.CamelCasedModel(name: "something")
+        template = ->
+          formFor @model, (form) ->
+            form.fieldset (fields) ->
+              fields.field "name"
+      
+        view.render template: template, locals: model: model, (error, result) ->
+          assert.equal result, """
+<form action="/camel-cased-models" id="camel-cased-model-form" role="form" novalidate="true" data-method="post" method="post">
+  <input type="hidden" name="_method" value="post" />
+  <fieldset>
+    <ol class="fields">
+      <li class="field control-group string optional" id="camel-cased-model-name-field">
+        <label for="camel-cased-model-name-input" class="control-label">
+          <span>Name</span>
+          <abbr title="Optional" class="optional">
+            
+          </abbr>
+        </label>
+        <div class="controls">
+          <input type="text" id="camel-cased-model-name-input" name="camelCasedModel[name]" value="something" class="string name optional input" aria-required="false" />
         </div>
       </li>
     </ol>
@@ -107,13 +136,13 @@ describeWith = (store) ->
     <ol class="fields">
       <li class="field control-group string optional" id="user-first-name-field">
         <label for="user-first-name-input" class="control-label">
-          <span>FirstName</span>
+          <span>First name</span>
           <abbr title="Optional" class="optional">
             
           </abbr>
         </label>
         <div class="controls">
-          <input type="text" id="user-first-name-input" name="user[firstName]" class="string first-name optional input" value="Lance" aria-required="false" />
+          <input type="text" id="user-first-name-input" name="user[firstName]" value="Lance" class="string first-name optional input" aria-required="false" />
         </div>
       </li>
     </ol>
@@ -139,7 +168,7 @@ describeWith = (store) ->
     <ol class="fields">
       <li class="field control-group text optional" id="user-first-name-field">
         <label for="user-first-name-input" class="control-label">
-          <span>FirstName</span>
+          <span>First name</span>
           <abbr title="Optional" class="optional">
             
           </abbr>
@@ -177,7 +206,7 @@ describeWith = (store) ->
           </abbr>
         </label>
         <div class="controls">
-          <input data-type="array" id="post-tags-input" name="post[tags]" class="array tags optional input" value="ruby, javascript" aria-required="false" />
+          <input data-type="array" id="post-tags-input" name="post[tags]" value="ruby, javascript" class="array tags optional input" aria-required="false" />
         </div>
       </li>
     </ol>

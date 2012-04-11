@@ -4,7 +4,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
   buildApp: (name = @appName) ->
     app = super(name)
 
-    app.title       = @program.title || Tower.Support.String.camelize(app.name)
+    app.title       = @program.title || _.titleize(app.name)
     app.description = @program.description
     app.keywords    = @program.keywords
 
