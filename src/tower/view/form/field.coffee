@@ -91,11 +91,23 @@ class Tower.View.Form.Field extends Tower.View.Component
 
     # value
     unless @inputHTML.value?
+      value = undefined
+      
       if options.hasOwnProperty("value")
-        @inputHTML.value = options.value.toString()
-      unless @inputHTML.value?
+        value = options.value
+      if @inputHTML.hasOwnProperty('value')
+        value = @inputHTML.value
+      else
         value = @model.get(@attribute)
-        @inputHTML.value = value.toString() if value
+        value = value if value
+      
+      if value
+        if @inputType == "array"
+          value = _.castArray(value).join(", ")
+        else
+          value = value.toString()
+        
+        @inputHTML.value = value
 
     # @inputHTML[:tabindex]      = @tabindex
     @inputHTML.maxlength    ||= options.max if options.hasOwnProperty("max")
@@ -165,8 +177,6 @@ class Tower.View.Form.Field extends Tower.View.Component
     @tag "input", _.extend(type: "tel", "data-type": "phone", options)
 
   arrayInput: (key, options) ->
-    if options.value
-      options.value = _.castArray(options.value).join(", ")
     @tag "input", _.extend("data-type": "array", options)
 
   label: ->
