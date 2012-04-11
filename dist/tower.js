@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Wed, 11 Apr 2012 22:14:06 GMT
+ * Date: Wed, 11 Apr 2012 22:18:54 GMT
  */
 (function() {
   var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -6718,12 +6718,21 @@
       this.inputHTML["class"] = this.addClass(this.inputHTML["class"], classes);
       if (options.placeholder) this.inputHTML.placeholder = options.placeholder;
       if (this.inputHTML.value == null) {
-        if (options.hasOwnProperty("value")) {
-          this.inputHTML.value = options.value.toString();
-        }
-        if (this.inputHTML.value == null) {
+        value = void 0;
+        if (options.hasOwnProperty("value")) value = options.value;
+        if (this.inputHTML.hasOwnProperty('value')) {
+          value = this.inputHTML.value;
+        } else {
           value = this.model.get(this.attribute);
-          if (value) this.inputHTML.value = value.toString();
+          if (value) value = value;
+        }
+        if (value) {
+          if (this.inputType === "array") {
+            value = _.castArray(value).join(", ");
+          } else {
+            value = value.toString();
+          }
+          this.inputHTML.value = value;
         }
       }
       if (options.hasOwnProperty("max")) {
@@ -6837,7 +6846,6 @@
     };
 
     Field.prototype.arrayInput = function(key, options) {
-      if (options.value) options.value = _.castArray(options.value).join(", ");
       return this.tag("input", _.extend({
         "data-type": "array"
       }, options));
