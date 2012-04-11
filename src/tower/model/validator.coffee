@@ -54,6 +54,8 @@ class Tower.Model.Validator
         new @Format(name, value, attributes, options)
       when 'in', 'except', 'only', 'notIn', 'values', 'accepts'
         new @Set(name, value, attributes, options)
+      when 'uniqueness', 'unique'
+        new @Uniqueness(name, value, attributes, options)
   
   constructor: (name, value, attributes, options = {}) ->
     @name       = name
