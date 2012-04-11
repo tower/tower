@@ -280,6 +280,7 @@ Tower.Controller.Resourceful =
 
   # @private
   _show: (callback) ->
+    @__show = true
     @findResource (error, resource) =>
       @respondWith resource, callback
 
