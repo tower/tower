@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Wed, 11 Apr 2012 22:18:54 GMT
+ * Date: Wed, 11 Apr 2012 23:15:06 GMT
  */
 (function() {
   var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -5399,6 +5399,9 @@
         case 'values':
         case 'accepts':
           return new this.Set(name, value, attributes, options);
+        case 'uniqueness':
+        case 'unique':
+          return new this.Uniqueness(name, value, attributes, options);
       }
     };
 
@@ -6647,7 +6650,7 @@
     Field.prototype.toParam = function(options) {
       var result;
       if (options == null) options = {};
-      result = Tower.Support.String.parameterize(this.model.constructor.name);
+      result = Tower.Support.String.camelize(this.model.constructor.name, true);
       if (options.parentIndex) result += "[" + options.parentIndex + "]";
       result += "[" + this.attribute + "]";
       if (this.index != null) result += "[" + this.index + "]";
@@ -6655,7 +6658,7 @@
     };
 
     function Field(args, options) {
-      var classes, field, inputType, pattern, value, _base, _base2, _base3, _base4, _base5;
+      var classes, field, inputType, pattern, value, _base, _base2, _base3, _base4, _base5, _base6, _base7;
       this.labelValue = options.label;
       delete options.label;
       Field.__super__.constructor.call(this, args, options);
@@ -6689,7 +6692,7 @@
         (_base = this.labelHTML)["for"] || (_base["for"] = this.inputHTML.id);
         this.labelHTML["class"] = this.addClass(this.labelHTML["class"], [Tower.View.labelClass]);
         if (this.labelValue !== false) {
-          this.labelValue || (this.labelValue = Tower.Support.String.camelize(this.attribute.toString()));
+          this.labelValue || (this.labelValue = _.humanize(this.attribute.toString()));
         }
         if (options.hint !== false) {
           this.errorHTML["class"] = this.addClass(this.errorHTML["class"], [Tower.View.errorClass]);
@@ -6702,7 +6705,8 @@
       if (inputType !== "submit") {
         (_base3 = this.inputHTML).name || (_base3.name = this.toParam());
       }
-      this.value = options.value;
+      (_base4 = this.inputHTML).value || (_base4.value = options.value);
+      (_base5 = this.inputHTML).value || (_base5.value = this.value);
       this.dynamic = options.dynamic === true;
       this.richInput = options.hasOwnProperty("rich_input") ? !!options.rich_input : Tower.View.richInput;
       this.validate = options.validate !== false;
@@ -6717,26 +6721,22 @@
       }
       this.inputHTML["class"] = this.addClass(this.inputHTML["class"], classes);
       if (options.placeholder) this.inputHTML.placeholder = options.placeholder;
-      if (this.inputHTML.value == null) {
-        value = void 0;
-        if (options.hasOwnProperty("value")) value = options.value;
-        if (this.inputHTML.hasOwnProperty('value')) {
-          value = this.inputHTML.value;
+      value = void 0;
+      if (options.hasOwnProperty("value")) value = options.value;
+      if (!value && this.inputHTML.hasOwnProperty('value')) {
+        value = this.inputHTML.value;
+      }
+      value || (value = this.model.get(this.attribute));
+      if (value) {
+        if (this.inputType === "array") {
+          value = _.castArray(value).join(", ");
         } else {
-          value = this.model.get(this.attribute);
-          if (value) value = value;
-        }
-        if (value) {
-          if (this.inputType === "array") {
-            value = _.castArray(value).join(", ");
-          } else {
-            value = value.toString();
-          }
-          this.inputHTML.value = value;
+          value = value.toString();
         }
       }
+      this.inputHTML.value = value;
       if (options.hasOwnProperty("max")) {
-        (_base4 = this.inputHTML).maxlength || (_base4.maxlength = options.max);
+        (_base6 = this.inputHTML).maxlength || (_base6.maxlength = options.max);
       }
       pattern = options.match;
       if (_.isRegExp(pattern)) pattern = pattern.toString();
@@ -6747,7 +6747,7 @@
       if (this.autofocus === true) this.inputHTML.autofocus = "true";
       if (this.dynamic) this.inputHTML["data-dynamic"] = "true";
       if (this.inputHTML.placeholder) {
-        (_base5 = this.inputHTML).title || (_base5.title = this.inputHTML.placeholder);
+        (_base7 = this.inputHTML).title || (_base7.title = this.inputHTML.placeholder);
       }
       this.autocomplete = this.inputHTML.autocomplete === true;
       if (this.autocomplete && Tower.View.includeAria) {
@@ -8182,6 +8182,7 @@
     },
     _show: function(callback) {
       var _this = this;
+      this.__show = true;
       return this.findResource(function(error, resource) {
         return _this.respondWith(resource, callback);
       });
