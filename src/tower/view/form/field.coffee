@@ -15,7 +15,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     result
 
   toParam: (options = {}) ->
-    result = Tower.Support.String.parameterize(@model.constructor.name)#@model.toKey()
+    result = Tower.Support.String.camelize(@model.constructor.name, true)#@model.toKey()
     result += "[#{options.parentIndex}]" if options.parentIndex
     result += "[#{@attribute}]"
     result += "[#{@index}]" if @index?
@@ -58,7 +58,7 @@ class Tower.View.Form.Field extends Tower.View.Component
       @labelHTML.class = @addClass @labelHTML.class, [Tower.View.labelClass]
 
       unless @labelValue == false
-        @labelValue ||= Tower.Support.String.camelize(@attribute.toString())
+        @labelValue ||= _.humanize(@attribute.toString())
 
       unless options.hint == false
         @errorHTML.class = @addClass @errorHTML.class, [Tower.View.errorClass]
@@ -68,10 +68,12 @@ class Tower.View.Form.Field extends Tower.View.Component
     @attributes       = @fieldHTML
 
     @inputHTML.name ||= @toParam() unless inputType == "submit"
-
-    @value          = options.value
-    @dynamic        = options.dynamic == true
-    @richInput      = if options.hasOwnProperty("rich_input") then !!options.rich_input else Tower.View.richInput
+    
+    @inputHTML.value  ||= options.value
+    @inputHTML.value  ||= @value
+    
+    @dynamic          = options.dynamic == true
+    @richInput        = if options.hasOwnProperty("rich_input") then !!options.rich_input else Tower.View.richInput
 
     @validate       = options.validate != false
 
@@ -90,24 +92,22 @@ class Tower.View.Form.Field extends Tower.View.Component
     @inputHTML.placeholder = options.placeholder if options.placeholder
 
     # value
-    unless @inputHTML.value?
-      value = undefined
+    value = undefined
+    
+    if options.hasOwnProperty("value")
+      value = options.value
       
-      if options.hasOwnProperty("value")
-        value = options.value
-      if @inputHTML.hasOwnProperty('value')
-        value = @inputHTML.value
+    if !value && @inputHTML.hasOwnProperty('value')
+      value = @inputHTML.value
+    value ||= @model.get(@attribute)
+    
+    if value
+      if @inputType == "array"
+        value = _.castArray(value).join(", ")
       else
-        value = @model.get(@attribute)
-        value = value if value
+        value = value.toString()
       
-      if value
-        if @inputType == "array"
-          value = _.castArray(value).join(", ")
-        else
-          value = value.toString()
-        
-        @inputHTML.value = value
+    @inputHTML.value = value
 
     # @inputHTML[:tabindex]      = @tabindex
     @inputHTML.maxlength    ||= options.max if options.hasOwnProperty("max")

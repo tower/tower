@@ -118,7 +118,7 @@ Tower.Generator.Resources =
     namePlural            = Tower.Support.String.pluralize(name)
     paramName             = Tower.Support.String.parameterize(name)
     paramNamePlural       = Tower.Support.String.parameterize(namePlural)
-    humanName             = _.titleize(className)
+    humanName             = _.humanize(className)
     attributes            = []
     relations             = []
 
