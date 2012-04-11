@@ -3,35 +3,40 @@ require '../../config'
 view = null
 user = null
 
-describe 'Tower.View.Form', ->
-  beforeEach ->
-    view = new Tower.View
-    
-  describe 'form', ->
+
+describeWith = (store) ->
+  describe "Tower.View.Form (Tower.Store.#{store.name})", ->
     beforeEach ->
-      user = new App.User(id: 1, firstName: "Lance")
+      App.User.store(store)
+      view = new Tower.View
+    
+    describe 'form', ->
+      beforeEach (done) ->
+        App.User.create firstName: "Lance", (error, record) =>
+          user = record
+          done()
       
-    test '#formFor()', ->
-      template = ->
-        formFor()
+      test '#formFor()', ->
+        template = ->
+          formFor()
       
-      view.render template: template, (error, result) ->
-        assert.equal result, '''
+        view.render template: template, (error, result) ->
+          assert.equal result, """
 <form action="/" id="model-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
 </form>
 
-'''
-    test '#formFor(user)', ->
-      template = ->
-        formFor @user, (form) ->
-          form.fieldset (fields) ->
-            fields.field "firstName"
+"""
+      test '#formFor(user)', ->
+        template = ->
+          formFor @user, (form) ->
+            form.fieldset (fields) ->
+              fields.field "firstName"
       
-      view.render template: template, locals: user: user, (error, result) ->
-        throw error if error
-        assert.equal result, '''
-<form action="/users/1" id="user-form" role="form" novalidate="true" data-method="put" method="post">
+        view.render template: template, locals: user: user, (error, result) ->
+          throw error if error
+          assert.equal result, """
+<form action="/users/#{user.get('id')}" id="user-form" role="form" novalidate="true" data-method="put" method="post">
   <input type="hidden" name="_method" value="put" />
   <fieldset>
     <ol class="fields">
@@ -50,20 +55,20 @@ describe 'Tower.View.Form', ->
   </fieldset>
 </form>
 
-'''
-    test '#formFor(user) with errors', ->
-      user.set "firstName", null
-      user.validate()
-      assert.deepEqual user.errors, { firstName: [ 'firstName can\'t be blank' ] }
-      template = ->
-        formFor @user, (form) ->
-          form.fieldset (fields) ->
-            fields.field "firstName"
+"""
+      test '#formFor(user) with errors', ->
+        user.set "firstName", null
+        user.validate()
+        assert.deepEqual user.errors, { firstName: [ 'firstName can\'t be blank' ] }
+        template = ->
+          formFor @user, (form) ->
+            form.fieldset (fields) ->
+              fields.field "firstName"
 
-      view.render template: template, locals: user: user, (error, result) ->
-        throw error if error
-        assert.equal result, '''
-<form action="/users/1" id="user-form" role="form" novalidate="true" data-method="put" method="post">
+        view.render template: template, locals: user: user, (error, result) ->
+          throw error if error
+          assert.equal result, """
+<form action="/users/#{user.get('id')}" id="user-form" role="form" novalidate="true" data-method="put" method="post">
   <input type="hidden" name="_method" value="put" />
   <fieldset>
     <ol class="fields">
@@ -82,20 +87,20 @@ describe 'Tower.View.Form', ->
   </fieldset>
 </form>
 
-'''
+"""
     
-    describe 'fields', ->
-      test 'string', ->
-        user = new App.User(firstName: "Lance")
+      describe 'fields', ->
+        test 'string', ->
+          user = new App.User(firstName: "Lance")
         
-        template = ->
-          formFor @user, (form) ->
-            form.fieldset (fields) ->
-              fields.field "firstName", as: "string"
+          template = ->
+            formFor @user, (form) ->
+              form.fieldset (fields) ->
+                fields.field "firstName", as: "string"
         
-        view.render template: template, locals: user: user, (error, result) ->
-          throw error if error
-          assert.equal result, '''
+          view.render template: template, locals: user: user, (error, result) ->
+            throw error if error
+            assert.equal result, """
 <form action="/users" id="user-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -115,19 +120,19 @@ describe 'Tower.View.Form', ->
   </fieldset>
 </form>
 
-'''
+"""
 
-      test 'text', ->
-        user = new App.User(firstName: "Lance")
+        test 'text', ->
+          user = new App.User(firstName: "Lance")
+          
+          template = ->
+            formFor @user, (form) ->
+              form.fieldset (fields) ->
+                fields.field "firstName", as: "text"
         
-        template = ->
-          formFor @user, (form) ->
-            form.fieldset (fields) ->
-              fields.field "firstName", as: "text"
-        
-        view.render template: template, locals: user: user, (error, result) ->
-          throw error if error
-          assert.equal result, '''
+          view.render template: template, locals: user: user, (error, result) ->
+            throw error if error
+            assert.equal result, """
 <form action="/users" id="user-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -147,19 +152,19 @@ describe 'Tower.View.Form', ->
   </fieldset>
 </form>
 
-'''
+"""
 
-      test 'array', ->
-        post = new App.Post(tags: ["ruby", "javascript"])
+        test 'array', ->
+          post = new App.Post(tags: ["ruby", "javascript"])
         
-        template = ->
-          formFor @post, (form) ->
-            form.fieldset (fields) ->
-              fields.field "tags", as: "array"
+          template = ->
+            formFor @post, (form) ->
+              form.fieldset (fields) ->
+                fields.field "tags", as: "array"
         
-        view.render template: template, locals: post: post, (error, result) ->
-          throw error if error
-          assert.equal result, '''
+          view.render template: template, locals: post: post, (error, result) ->
+            throw error if error
+            assert.equal result, """
 <form action="/posts" id="post-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -179,50 +184,53 @@ describe 'Tower.View.Form', ->
   </fieldset>
 </form>
 
-'''
-###
-      test 'date', ->
-        post = new App.Post(createdAt: new Date())
+"""
+  ###
+        test 'date', ->
+          post = new App.Post(createdAt: new Date())
         
-        template = ->
-          formFor @post, (form) ->
-            form.fieldset (fields) ->
-              fields.field "createdAt", as: "date"
+          template = ->
+            formFor @post, (form) ->
+              form.fieldset (fields) ->
+                fields.field "createdAt", as: "date"
         
-        view.render template: template, locals: post: post, (error, result) ->
-          console.log result
-          throw error if error
-          assert.equal result, '''
+          view.render template: template, locals: post: post, (error, result) ->
+            console.log result
+            throw error if error
+            assert.equal result, """
 
-'''
+  """
 
-      test 'time', ->
-        post = new App.Post(createdAt: new Date())
+        test 'time', ->
+          post = new App.Post(createdAt: new Date())
         
-        template = ->
-          formFor @post, (form) ->
-            form.fieldset (fields) ->
-              fields.field "createdAt", as: "time"
+          template = ->
+            formFor @post, (form) ->
+              form.fieldset (fields) ->
+                fields.field "createdAt", as: "time"
         
-        view.render template: template, locals: post: post, (error, result) ->
-          console.log result
-          throw error if error
-          assert.equal result, '''
+          view.render template: template, locals: post: post, (error, result) ->
+            console.log result
+            throw error if error
+            assert.equal result, """
 
-'''
+  """
 
-      test 'datetime', ->
-        post = new App.Post(createdAt: new Date())
+        test 'datetime', ->
+          post = new App.Post(createdAt: new Date())
         
-        template = ->
-          formFor @post, (form) ->
-            form.fieldset (fields) ->
-              fields.field "createdAt", as: "datetime"
+          template = ->
+            formFor @post, (form) ->
+              form.fieldset (fields) ->
+                fields.field "createdAt", as: "datetime"
         
-        view.render template: template, locals: post: post, (error, result) ->
-          console.log result
-          throw error if error
-          assert.equal result, '''
+          view.render template: template, locals: post: post, (error, result) ->
+            console.log result
+            throw error if error
+            assert.equal result, """
 
-'''
-###
+  """
+  ###
+
+describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.MongoDB)

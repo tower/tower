@@ -40,10 +40,6 @@ class Tower.Application extends Tower.Engine
       pattern:  /app\/helpers/
       paths:    []
 
-  @use: ->
-    @middleware ||= []
-    @middleware.push arguments
-
   @defaultStack: ->
     @use connect.favicon(Tower.publicPath + "/favicon.ico")
     @use connect.static(Tower.publicPath, maxAge: Tower.publicCacheDuration)
@@ -81,20 +77,19 @@ class Tower.Application extends Tower.Engine
     Tower.Application._instance = @
     global[@constructor.name] = @
 
-  use: ->
-    @constructor.use arguments...
-
   initialize: (complete) ->
     require "#{Tower.root}/config/application"
     #@runCallbacks "initialize", null, complete
     configNames = @constructor.configNames
-    configs     = @constructor.initializers()
     reloadMap   = @constructor.reloadMap
     self        = @
+    
     initializer = (done) =>
       requirePaths = (paths) ->
         for path in paths
           require(path) if path.match(/\.(coffee|js)$/)
+          
+      requirePaths File.files("#{Tower.root}/config/preinitializers")
 
       for key in configNames
         config = null
@@ -117,7 +112,8 @@ class Tower.Application extends Tower.Engine
 
       requirePaths File.files("#{Tower.root}/config/initializers")
       
-      config.call(self) for config in configs
+      self.stack()
+      
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
       require "#{Tower.root}/app/controllers/applicationController"
@@ -136,22 +132,37 @@ class Tower.Application extends Tower.Engine
 
   handle: ->
     @server.handle arguments...
+    
+  use: ->
+    args        = _.args(arguments)
+    
+    if typeof args[0] == "string"
+      middleware  = args.shift()
+      @server.use connect[middleware] args...
+    else
+      @server.use args...
 
   stack: ->
-    middlewares = @constructor.middleware
+    configs     = @constructor.initializers()
+    self        = @
+    
+    #@server.configure ->
+    for config in configs
+      config.call(self)
 
-    unless middlewares && middlewares.length > 0
-      middlewares = @constructor.defaultStack()
-      
-    for middleware in middlewares
-      args        = _.args(middleware)
-      if typeof args[0] == "string"
-        middleware  = args.shift()
-        @server.use connect[middleware].apply(connect, args)
-      else
-        @server.use args...
+    #unless middlewares && middlewares.length > 0
+    #  middlewares = @constructor.defaultStack()
 
     @
+    
+  get: ->
+    @server.get arguments...
+    
+  post: ->
+    @server.post arguments...
+    
+  put: ->
+    @server.put arguments...
 
   listen: ->
     unless Tower.env == "test"
@@ -166,7 +177,6 @@ class Tower.Application extends Tower.Engine
 
   run: ->
     @initialize()
-    @stack()
     @listen()
 
   watch: ->

@@ -6,19 +6,9 @@ Tower.Store.MongoDB.Finders =
   # 
   # @return undefined Requires a callback to get the value.
   find: (criteria, callback) ->
-    #@serializeScope(criteria)
     conditions  = @serializeConditions(criteria)
     options     = @serializeOptions(criteria)
     
-    #conditions.coordinates = conditions.coordinates.$near if conditions.coordinates
-    #if conditions.coordinates
-    #  conditions.coordinates = 
-    #    $within: $center: [conditions.coordinates.$near, 100]
-    #  delete conditions.coordinates.$near
-    #console.log 'conditions'
-    #console.log conditions.coordinates.$within
-    #conditions.coordinates.$maxDistance = 10
-    #console.log conditions.coordinates
     @collection().find(conditions, options).toArray (error, docs) =>
       unless error
         unless criteria.raw

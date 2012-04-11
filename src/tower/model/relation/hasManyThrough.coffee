@@ -37,6 +37,14 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
         
     compile: ->
       @
+      
+    #build: (callback) ->
+    #  @_build (error, records) =>
+    #    for record in _.castArray(records)
+    #      record._throughCriteria = @ if record
+    #    
+    #    callback.call @, error, records if callback
+    #    records
     
     create: (callback) ->
       @_runBeforeCreateCallbacksOnStore =>
@@ -49,6 +57,22 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
                 callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
+    
+    # add to set
+    add: (callback) ->
+      @_build (error, record) =>
+        unless error
+          @createThroughRelation record, (error, throughRecord) =>
+            callback.call @, error, record if callback
+        else
+          callback.call @, error, record if callback
+
+    # remove from set
+    remove: (callback) ->
+      throw new Error unless @relation.idCache
+
+      @owner.updateAttributes @ownerAttributesForDestroy(), (error) =>
+        callback.call @, error, @data if callback
     
     count: (callback) ->
       @_runBeforeFindCallbacksOnStore =>
@@ -88,6 +112,7 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
       
       for record in records
         attributes = {}
+        
         attributes[key] = record.get('id')
         data.push attributes
         

@@ -21,6 +21,10 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
         throw new Error("You cannot call create unless the parent is saved")
         
       callback.call @
+      
+    build: (callback) ->
+      @compileForCreate()
+      @_build callback
     
     create: (callback) ->
       @validate (error) =>

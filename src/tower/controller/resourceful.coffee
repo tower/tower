@@ -156,6 +156,18 @@ Tower.Controller.Resourceful =
       @[@resourceName] = @resource = resource = scope.build(@params[@resourceName])
       callback.call @, null, resource if callback
       resource
+  
+  createResource: (callback) ->
+    @scoped (error, scope) =>
+      return callback.call @, error, null if error
+      
+      resource = null
+      
+      scope.create @params[@resourceName], (error, record) =>
+        @[@resourceName] = @resource = resource = record
+        callback.call @, null, resource if callback
+
+      resource
 
   # Returns the single record for the scope.
   # 
@@ -227,7 +239,7 @@ Tower.Controller.Resourceful =
     if @hasParent
       @findParent (error, parent) =>
         if error || !parent
-          callback.call @, error || true if callback
+          callbackWithScope error, Tower.constant(@resourceType)
         else
           callbackWithScope(error, parent[@collectionName]())
     else
@@ -262,10 +274,9 @@ Tower.Controller.Resourceful =
 
   # @private
   _create: (callback) ->
-    @buildResource (error, resource) =>
+    @createResource (error, resource) =>
       return @failure(error, callback) unless resource
-      resource.save (error) =>
-        @respondWithStatus _.isBlank(resource.errors), callback
+      @respondWithStatus _.isBlank(resource.errors), callback
 
   # @private
   _show: (callback) ->

@@ -253,6 +253,9 @@ class Tower.Model.Criteria extends Tower.Class
     @where(coordinates: $maxDistance: bounds)
     
   build: (callback) ->
+    @_build(callback)
+    
+  _build: (callback) ->
     store       = @store
     attributes  = @attributes()
     
@@ -265,9 +268,9 @@ class Tower.Model.Criteria extends Tower.Class
       if item instanceof Tower.Model
         _.extend(item.attributes, attributes, item.attributes)
       else
-        object = store.serializeModel(_.extend({}, attributes, item))
+        item = store.serializeModel(_.extend({}, attributes, item))
         
-      result.push(object)
+      result.push(item)
       
     result = if @returnArray then result else result[0]
     
