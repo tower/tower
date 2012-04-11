@@ -42,3 +42,4 @@ $.serializeParams = (params, coerce) ->
     else obj[key] = (if coerce then `undefined` else "")  if key
 
   obj
+

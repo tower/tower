@@ -16,3 +16,4 @@ Tower.View.ValidationHelper =
       if field.length
         field.css("background", "yellow")
         $("input", field).after("<output class='error'>#{errors.join("\n")}</output>")
+

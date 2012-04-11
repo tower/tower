@@ -92,13 +92,13 @@ class Tower.View.Form.Field extends Tower.View.Component
     # value
     unless @inputHTML.value?
       if options.hasOwnProperty("value")
-        @inputHTML.value.toString() = options.value
+        @inputHTML.value = options.value.toString()
       unless @inputHTML.value?
         value = @model.get(@attribute)
-        @inputHTML.value.toString() = value if value
+        @inputHTML.value = value.toString() if value
 
     # @inputHTML[:tabindex]      = @tabindex
-    @inputHTML.maxlength    ||= options.max.toString() if options.hasOwnProperty("max")
+    @inputHTML.maxlength    ||= options.max if options.hasOwnProperty("max")
 
     # expressions
     pattern                       = options.match

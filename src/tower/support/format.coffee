@@ -6,9 +6,12 @@ check       = validator.check
 sanitize    = validator.sanitize
 async       = Tower.modules.async
 
-validator.Validator::error = (msg) ->
-  @_errors.push(msg)
-  @
+try
+  validator.Validator::error = (msg) ->
+    @_errors.push(msg)
+    @
+catch error
+  console.log error
 
 # accounting library
 # http://josscrowcroft.github.com/accounting.js/
