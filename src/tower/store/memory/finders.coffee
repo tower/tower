@@ -116,6 +116,8 @@ Tower.Store.Memory.Finders =
             success = self._isNotMatchOf(recordValue, value)
           when "$all"
             success = self._allIn(recordValue, value)
+          when "$near"
+            success = self._near(recordValue, value)
         return false unless success
       else
         return recordValue == operators
@@ -172,5 +174,9 @@ Tower.Store.Memory.Finders =
       for value in array
         return false if recordValue != value
     true
+  
+  _near: (recordValue, coordinates) ->
+    # TODO
+    false
 
 module.exports = Tower.Store.Memory.Finders

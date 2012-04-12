@@ -75,6 +75,7 @@ class Tower.Model.Scope extends Tower.Class
     "$neq":     "$neq"
     "$null":    "$null"
     "$notNull": "$notNull"
+    "$near":    "$near"
     
   constructor: (criteria) ->
     @criteria = criteria
