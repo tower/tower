@@ -31,5 +31,7 @@ dist/*.coffee
 dist/*.min.js
 wiki
 docs
-spec/tmp
+test/tmp
+test/apps/README.md
+test/apps/package.json
 tmp
