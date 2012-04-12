@@ -6,15 +6,15 @@ class Tower.Class
       self[key] = value
 
     object
-  
+
   @extend: (object) ->
-    extended = object.extended    
+    extended = object.extended
     delete object.extended
-    
+
     @mixin(@, object)
-    
+
     extended.apply(object) if extended
-    
+
     object
 
   @self: @extend
@@ -22,10 +22,10 @@ class Tower.Class
   @include: (object) ->
     included = object.included
     delete object.included
-    
+
     @extend(object.ClassMethods) if object.hasOwnProperty("ClassMethods")
     @include(object.InstanceMethods) if object.hasOwnProperty("InstanceMethods")
-    
+
     @mixin(@::, object)
 
     included.apply(object) if included

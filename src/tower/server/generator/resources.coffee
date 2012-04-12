@@ -12,13 +12,13 @@ Tower.Generator.Resources =
         @injectIntoFile "config/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
       else
         @injectIntoFile "config/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
-        
+
   bootstrap: (model) ->
     @inRoot =>
       # bootstrap into client side
       @injectIntoFile "app/client/config/application.coffee",
         "    @#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n", after: /bootstrap\: *\(data\) *-\> *\n/i
-          
+
       # bootstrap into server side
       string = """
 \ \ \ \ \ \ (next) => #{@app.namespace}.#{@model.className}.all (error, #{@model.namePlural}) =>
@@ -57,7 +57,7 @@ Tower.Generator.Resources =
       view:             @view
       controller:       @controller
       destinationRoot:  @destinationRoot
-      
+
     generator = @constructor.buildGenerator(type)
     generator = new generator(options)
     generator.run()
@@ -96,7 +96,7 @@ Tower.Generator.Resources =
       when "array" then []
       else
         null
-        
+
     value: switch type
       when "integer" then 0
       when "array" then []

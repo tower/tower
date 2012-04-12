@@ -4,9 +4,9 @@ class Tower.Store.Memory extends Tower.Store
 
   @clean: (callback) ->
     stores = @stores()
-    
+
     store.clean() for store in stores
-    
+
     callback()
 
   constructor: (options) ->
@@ -18,7 +18,7 @@ class Tower.Store.Memory extends Tower.Store
 
     @records  = {}
     @lastId   = 0
-    
+
   clean: ->
     @records  = {}
     @lastId   = 0

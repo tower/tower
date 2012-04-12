@@ -1,5 +1,5 @@
 # This defines all the meta tag and other html `<head>` helpers.
-# 
+#
 # @mixin
 Tower.View.HeadHelper =
   metaTag: (name, content) ->

@@ -5,11 +5,11 @@ Tower.Command =
     c: "console"
     g: "generate"
     s: "server"
-  
+
   # Figure out the command you want to run, then run it.
-  # 
+  #
   # @param [Array] argv
-  # 
+  #
   # @return [void]
   run: (argv) ->
     command = argv[2]

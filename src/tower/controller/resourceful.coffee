@@ -2,7 +2,7 @@
 Tower.Controller.Resourceful =
   ClassMethods:
     # Set information about resource/model for this controller.
-    # 
+    #
     # @example Pass in a string
     #   class App.UsersController extends App.ApplicationController
     #     @resource "person"
@@ -10,51 +10,51 @@ Tower.Controller.Resourceful =
     # @example Pass in an object
     #   class App.UsersController extends App.ApplicationController
     #     @resource name: "person", type: "User", collectionName: "people"
-    # 
+    #
     # @return [Function] Return this controller.
     resource: (options) ->
       metadata = @metadata()
-      
+
       if typeof options == "string"
         options                 =
           name: options
           type: Tower.Support.String.camelize(options)
           collectionName: _.pluralize(options)
-      
+
       metadata.resourceName     = options.name if options.name
-      
+
       if options.type
         metadata.resourceType   = options.type
         metadata.resourceName   = @_compileResourceName(options.type) unless options.name
-      
+
       metadata.collectionName   = options.collectionName if options.collectionName
-      
+
       @
-    
+
     # Specify the parent model for this resourceful controller,
     # corresponding to a nested path.
-    # 
+    #
     # @example
     #   class App.CommentsController extends App.ApplicationController
     #     @belongsTo "post" # /posts/1/comments
-    # 
+    #
     # @example With options
     #   class App.CommentsController extends App.ApplicationController
     #     @belongsTo "article", type: "Post"
-    # 
+    #
     # @return [Array<Object>] Returns belongsTo array
     belongsTo: (key, options) ->
       belongsTo = @metadata().belongsTo
-      
+
       return belongsTo unless key
-      
+
       options ||= {}
-        
+
       options.key = key
       options.type ||= Tower.Support.String.camelize(options.key)
-      
+
       belongsTo.push(options)
-      
+
     hasParent: ->
       belongsTo = @belongsTo()
       belongsTo.length > 0
@@ -118,11 +118,11 @@ Tower.Controller.Resourceful =
     @_destroy (format) =>
       format.html => @redirectTo action: "index"
       format.json => @render json: @resource, status: 200
-  
+
   # Helper method to give you the {Tower.Model.Scope} and a new record.
-  # 
+  #
   # @param [Function] callback
-  # 
+  #
   # @return [void] Requires a callback
   respondWithScoped: (callback) ->
     @scoped (error, scope) =>
@@ -146,9 +146,9 @@ Tower.Controller.Resourceful =
       Tower.Controller.Responder.respond(@, options, callback)
 
   # Returns a new record for the scope.
-  # 
+  #
   # @param [Function] callback
-  # 
+  #
   # @return [void] Requires a callback.
   buildResource: (callback) ->
     @scoped (error, scope) =>
@@ -156,13 +156,13 @@ Tower.Controller.Resourceful =
       @[@resourceName] = @resource = resource = scope.build(@params[@resourceName])
       callback.call @, null, resource if callback
       resource
-  
+
   createResource: (callback) ->
     @scoped (error, scope) =>
       return callback.call @, error, null if error
-      
+
       resource = null
-      
+
       scope.create @params[@resourceName], (error, record) =>
         @[@resourceName] = @resource = resource = record
         callback.call @, null, resource if callback
@@ -170,9 +170,9 @@ Tower.Controller.Resourceful =
       resource
 
   # Returns the single record for the scope.
-  # 
+  #
   # @param [Function] callback
-  # 
+  #
   # @return [void] Requires a callback.
   findResource: (callback) ->
     @scoped (error, scope) =>
@@ -180,11 +180,11 @@ Tower.Controller.Resourceful =
       scope.find @params.id, (error, resource) =>
         @[@resourceName]  = @resource = resource
         callback.call @, error, resource
-  
+
   # Returns the set of records for the scope.
-  # 
+  #
   # @param [Function] callback
-  # 
+  #
   # @return [void] Requires a callback.
   findCollection: (callback) ->
     @scoped (error, scope) =>
@@ -192,12 +192,12 @@ Tower.Controller.Resourceful =
       scope.all (error, collection) =>
         @[@collectionName]  = @collection = collection
         callback.call @, error, collection if callback
-  
+
   # Finds the parent if `belongsTo` was defined for this controller.
-  # 
+  #
   # It does this by looking through the parameters for keys defined
   # by the relations in `belongsTo`.
-  # 
+  #
   # @param [Function] callback
   findParent: (callback) ->
     relation = @findParentRelation()
@@ -211,11 +211,11 @@ Tower.Controller.Resourceful =
     else
       callback.call @, null, false if callback
       false
-      
+
   findParentRelation: ->
     belongsTo = @constructor.belongsTo()
     params    = @params
-    
+
     if belongsTo.length > 0
       for relation in belongsTo
         param         = relation.param || "#{relation.key}Id"
@@ -228,9 +228,9 @@ Tower.Controller.Resourceful =
       null
 
   # Builds the scope for the current action, based on the resource defined for this controller.
-  # 
+  #
   # @param [Function] callback
-  # 
+  #
   # @return [void] Requires a callback.
   scoped: (callback) ->
     callbackWithScope = (error, scope) =>
@@ -244,28 +244,28 @@ Tower.Controller.Resourceful =
           callbackWithScope(error, parent[@collectionName]())
     else
       callbackWithScope null, Tower.constant(@resourceType)
-      
+
     undefined
-    
+
   resourceKlass: ->
     Tower.constant(Tower.namespaced(@resourceType))
 
   # @todo Default failure implemtation for create, update, and destory.
-  # 
+  #
   # @param [Tower.Model] resource
   # @param [Function] callback
-  # 
+  #
   # @return [void] Requires a callback.
   failure: (resource, callback) ->
     callback()
-    
+
     undefined
 
   # @private
   _index: (callback) ->
     @findCollection (error, collection) =>
       @respondWith collection, callback
-  
+
   # @private
   _new: (callback) ->
     @buildResource (error, resource) =>

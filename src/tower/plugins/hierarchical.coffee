@@ -7,7 +7,7 @@ Tower.Model.Hierarchical =
       @metadata().lft       = options.lft ||= "lft"
       @metadata().rgt       = options.rgt ||= "rgt"
       @metadata().parentId  = options.parentId ||= "parentId"
-      
+
       @field options.lft, type: "Integer"
       @field options.rgt, type: "Integer"
       @field options.parentId, type: "Integer"
@@ -19,16 +19,16 @@ Tower.Model.Hierarchical =
       metadata    = @metadata()
       conditions  = {}
       conditions[metadata.parentId] = null
-      
+
       @where(conditions).asc(metadata.lft)
-    
+
     leaves: ->
       metadata    = @metadata()
       @where("#{metadata.rgt} - #{metadata.lft} = 1").asc(metadata.lft)
-  
+
   isRoot: ->
     !!!@get(@metadata().parentId)
-  
+
   root: (callback) ->
     metadata    = @metadata()
     conditions  = {}
@@ -40,7 +40,7 @@ Tower.Model.Hierarchical =
       lft: "<=": @get("lft")
       rgt: ">=": @get("rgt")
     )
-  
+
   ancestors: ->
     @withoutSelf @selfAndAncestors
 
@@ -48,13 +48,13 @@ Tower.Model.Hierarchical =
     metadata    = @metadata()
     conditions  = {}
     conditions[metadata.parentId] = @get(metadata.parentId)
-    
+
     @nestedSetScope().where(conditions)
-  
+
   siblings: ->
     @withoutSelf @selfAndSiblings()
 
-  leaves: ->  
+  leaves: ->
     metadata = @metadata()
     @descendants().where("#{metadata.rgt} - #{metadata.lft} = 1").asc(metadata.lft)
 

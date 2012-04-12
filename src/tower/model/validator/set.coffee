@@ -5,7 +5,7 @@ class Tower.Model.Validator.Set extends Tower.Model.Validator
   validate: (record, attribute, errors, callback) ->
     value     = record.get(attribute)
     testValue = @getValue(record)
-    
+
     success = switch @name
       when 'in'
         testValue.indexOf(value) > -1
@@ -13,7 +13,7 @@ class Tower.Model.Validator.Set extends Tower.Model.Validator
         testValue.indexOf(value) == -1
       else
         false
-        
+
     unless success
       return @failure(
         record,

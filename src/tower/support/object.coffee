@@ -69,28 +69,28 @@ Tower.Support.Object =
     return fn.__name__ if fn.__name__
     return fn.name if fn.name
     fn.toString().match(/\W*function\s+([\w\$]+)\(/)?[1]
-    
+
   castArray: (object) ->
     if _.isArray(object) then object else [object]
-  
+
   # @todo
   isA: (object, isa) ->
-  
+
   isHash: (object) ->
     @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
-  
+
   # If the class is a direct instance of Object,
   # and not an instance of a subclass of Object, then this is true.
-  # 
+  #
   # @return [Boolean]
   isBaseObject: (object) ->
     object && object.constructor && object.constructor.name == "Object"
-  
+
   # A more robust implementation of `typeof`.
-  # 
+  #
   # Returns a string of the object type. This makes it so you don't have to
   # manually check `if _.isFunction || _.isArray`, etc.
-  # 
+  #
   # @return [String]
   kind: (object) ->
     type = typeof(object)
@@ -114,30 +114,30 @@ Tower.Support.Object =
         return "function"
       else
         return type
-  
+
   isObject: (object) ->
     return object == Object(object)
-  
+
   # Checks if the object is "present", defined below.
-  # 
+  #
   # If the object is a String, make sure it's not `""`.
   # If the object is an Object, make sure it has at least one property.
   # If the object is an Array, make sure length > 0.
   # If it's null or undefined, it's blank.
   # Otherwise, it's present.
-  # 
+  #
   # @return [Boolean]
   isPresent: (object) ->
     !@isBlank(object)
 
   # Checks if the object is "blank", defined below.
-  # 
+  #
   # If the object is a String, make sure it is `""`.
   # If the object is an Object, make sure it doesn't have any properties.
   # If the object is an Array, make sure length == 0.
   # If it's null or undefined, it's blank.
   # Otherwise, it's not blank.
-  # 
+  #
   # @return [Boolean]
   isBlank: (object) ->
     type = typeof(object)
@@ -147,42 +147,42 @@ Tower.Support.Object =
       return true
     return true if object == null || object == undefined
     return false
-  
+
   # @return [Boolean]
   none: (value) ->
     return value == null || value == undefined
 
   has: (object, key) ->
     object.hasOwnProperty(key)
-  
+
   # If you pass in (key, value) or (key: value), it will handle them.
   oneOrMany: (binding, method, key, value, args...) ->
     if typeof key == "object"
       method.call(binding, _key, value, args...) for _key, value of key
     else
       method.call binding, key, value, args...
-      
+
   error: (error, callback) ->
     if error
       if callback
         return callback(error)
       else
         throw error
-        
+
   teardown: (object, variables...) ->
     variables = _.flatten variables
     for variable in variables
       object[variable] = null
       delete object[variable]
-    
+
     object
-    
+
   copyProperties: (to, from) ->
     properties = _.args(arguments, 2)
     for property in properties
       to[property] = from[property] unless from[property] == undefined
     to
-    
+
   moveProperties: (to, from) ->
     properties = _.args(arguments, 2)
     for property in properties

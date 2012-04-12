@@ -1,18 +1,18 @@
 class Tower.HTTP.Test.Response extends Tower.HTTP.Response
   constructor: ->
     super
-    
+
     @set "host", "test.host"
     @set "remoteAddress", "0.0.0.0"
     @set "userAgent", "Tower Testing"
-    
+
   set: (key, value) ->
     @[key](value)
-  
+
   host: (value) ->
     @_host = value if arguments.length
     @_host
-  
+
   requestMethodGet: (method) ->
     @env['REQUEST_METHOD'] = method.toString().toUpperCase() if arguments.length
     @env['REQUEST_METHOD']

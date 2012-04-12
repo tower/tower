@@ -21,7 +21,7 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
       index:        @index
       parentIndex:  @parentIndex
     )
-  
+
   render: (block) ->
     @tag "fieldset", @attributes, =>
       if @label

@@ -2,23 +2,23 @@
 Tower.Store.MongoDB.Database =
   ClassMethods:
     info: (callback) ->
-    
+
     addIndex: (callback) ->
       indexes = @_pendingIndexes ||= []
       indexes.push(callback)
-    
+
     initialize: (callback) ->
       unless @initialized
         applyIndexes = (done) =>
           indexes = @_pendingIndexes
           applyIndex = (index, next) =>
             index(next)
-            
+
           if indexes && indexes.length
             Tower.series indexes, applyIndex, done
           else
             done()
-            
+
         @initialized = true
         env   = @env()
         mongo = @lib()
@@ -41,7 +41,7 @@ Tower.Store.MongoDB.Database =
                 callback() if callback
           else
             @database = client
-            
+
             applyIndexes =>
               callback() if callback
 
@@ -49,19 +49,19 @@ Tower.Store.MongoDB.Database =
           @database.close() if @database
       else
         callback() if callback
-        
+
       @database
-    
+
     # Remove all data from the database
     clean: (callback) ->
       return callback.call @ unless @database
-      
+
       @database.collections (error, collections) =>
         remove = (collection, next) =>
           collection.remove(next)
-          
+
         Tower.parallel collections, remove, callback
-        
+
   InstanceMethods:
     addIndex: (name, callback) ->
       if @constructor.initialized
@@ -69,7 +69,7 @@ Tower.Store.MongoDB.Database =
       else
         @constructor.addIndex (callback) =>
           @collection().ensureIndex(name, callback)
-      
+
     removeIndex: (name, callback) ->
       @collection().dropIndex(name, callback)
 
@@ -79,7 +79,7 @@ Tower.Store.MongoDB.Database =
         @_collection = new lib.Collection(@constructor.database, @name)
 
       @_collection
-    
+
     transaction: (callback) ->
       @_transaction = true
       callback.call @

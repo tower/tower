@@ -4,17 +4,17 @@ class Tower.Generator extends Tower.Class
   @run: (type, options) ->
     klass = @buildGenerator(type)
     new klass(options)
-    
+
   @buildGenerator: (type) ->
     klass   = Tower.Generator
     # tower generate model
     # tower generate mocha:model
     nodes   = type.split(":")
     nodes[nodes.length - 1] += "Generator"
-    
+
     for node, i in nodes
       klass = klass[Tower.Support.String.camelize(node)]
-      
+
     klass
 
   constructor: (options = {}) ->
