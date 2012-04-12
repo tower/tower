@@ -1,5 +1,3 @@
-require '../../config'
-
 membership  = null
 group       = null
 user        = null

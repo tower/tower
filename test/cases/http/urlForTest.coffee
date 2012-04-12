@@ -1,5 +1,3 @@
-require '../../config'
-
 post              = null
 defaultUrlOptions = null
 

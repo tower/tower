@@ -1,5 +1,3 @@
-require '../../config'
-
 controller  = null
 view        = null
 user        = null

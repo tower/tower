@@ -1,5 +1,3 @@
-require '../config'
-
 view    = null
 user    = null
 store   = Tower.View.store()

@@ -1,5 +1,3 @@
-require '../../config'
-
 model = null
 
 describe 'Tower.Model.Dirty', ->
