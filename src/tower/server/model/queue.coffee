@@ -1,4 +1,4 @@
-# @module
+# @mixin
 # @todo
 # https://github.com/technoweenie/coffee-resque
 Tower.Model.Queue =
