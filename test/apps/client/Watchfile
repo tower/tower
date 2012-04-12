@@ -1,0 +1,72 @@
+require('design.io').extension('watchfile')
+
+async = require('async')
+File  = require('pathfinder').File
+mint  = require('mint')
+
+require("design.io-stylesheets") /(app\/client|lib\/stylesheets|vendor\/stylesheets)/
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules)/
+  paths:    ["./app/client/stylesheets", "./vendor/stylesheets/bootstrap"]
+  outputPath: (path) ->
+    "public/stylesheets/#{path}".replace(/\.(sass|scss|stylus|styl|less|css)/, ".css")
+
+require("design.io-javascripts")
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules|server|app\/views)/
+  outputPath: (path) ->
+    "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+
+watch /app\/views.*\.coffee$/
+  update: (path, callback) ->
+    try
+      nodes = path.replace("app/views/", "").split("/")
+      name  = {}
+
+      data  = File.read(path)
+      id    = nodes.join("/")
+      selector = id
+      name  = ""
+      
+      @broadcast body: data, id: id, selector: selector, path: "/#{name}"
+      
+      files   = File.files("app/views")
+      result  = []
+      
+      for file in files
+        continue unless file.match(/\.coffee$/)
+        result.push [file.replace(/\.coffee$/, ""), File.read(file)]
+        
+      template      = "Tower.View.cache =\n"
+      
+      iterator = (item, next) =>
+        template += "  '#{item[0]}': ->\n"
+        lines = item[1].split(/\n/)
+        for line, i in lines
+          lines[i] = "    #{line}"
+        template += lines.join("\n")
+        template += "\n"
+        next()
+        
+      async.forEachSeries result, iterator, (error) =>
+        mint.coffee template, bare: true, (error, string) =>
+          if error
+            console.log error
+            return callback(error)
+          else
+            File.write "public/javascripts/app/views/templates.js", string
+            callback()
+        
+    catch error
+      callback(error)
+    
+  client:
+    update: (data) ->
+      Tower.View.cache[data.id] = data
+      
+      if data.reload
+        window.location = data.path
+      else
+        Tower.get data.path
