@@ -1,5 +1,3 @@
-require '../../config'
-
 describeWith = (store) ->
   post = null
   

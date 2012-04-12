@@ -1,8 +1,5 @@
-require '../../config'
-
 view = null
 user = null
-
 
 describeWith = (store) ->
   describe "Tower.View.Form (Tower.Store.#{store.name})", ->

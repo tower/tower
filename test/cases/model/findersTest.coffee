@@ -1,5 +1,3 @@
-require '../../config'
-
 moment = require('moment')
 
 describeWith = (store) ->

@@ -1,5 +1,3 @@
-require '../../config'
-
 attr = Tower.Model.Attribute
   
 describe 'Tower.Model.Fields', ->

@@ -1,5 +1,3 @@
-require '../../config'
-
 user = null
 
 describe 'Tower.Model.Metadata', ->

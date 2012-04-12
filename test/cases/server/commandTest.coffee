@@ -1,5 +1,3 @@
-require "../../config"
-
 describe "Tower.Command", ->
   test "aliases", ->
     assert.deepEqual Tower.Command.aliases, 

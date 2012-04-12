@@ -1,5 +1,3 @@
-require '../../config'
-
 scope     = null
 criteria  = null
 user      = null

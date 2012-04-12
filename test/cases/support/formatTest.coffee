@@ -1,5 +1,3 @@
-require '../../config'
-
 describe 'Tower.Support.Format', ->
   describe 'casting', ->
     test 'toInt', ->

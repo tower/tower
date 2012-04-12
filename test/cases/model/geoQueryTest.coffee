@@ -1,5 +1,3 @@
-require '../../config'
-
 address = null
 
 places =

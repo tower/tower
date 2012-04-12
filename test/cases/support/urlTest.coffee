@@ -1,5 +1,3 @@
-require '../../config'
-
 describe 'Tower.Support.Url', ->
   test 'urlFor("something")', ->
     url = Tower.urlFor("something")

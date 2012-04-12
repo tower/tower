@@ -1,5 +1,3 @@
-require '../../config'
-
 fs          = require "fs"
 controller  = null
 view        = null

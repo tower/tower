@@ -1,5 +1,3 @@
-require '../../config'
-
 user      = null
 
 describeWith = (store) ->

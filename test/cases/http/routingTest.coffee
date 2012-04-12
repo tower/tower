@@ -1,5 +1,3 @@
-require '../../config'
-
 describe "Tower.Dispatch.Route", ->
   describe "dsl", ->
     beforeEach ->

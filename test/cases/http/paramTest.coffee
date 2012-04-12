@@ -1,5 +1,3 @@
-require '../../config'
-
 describe 'Tower.HTTP.Param', ->
   #describe 'String', ->
   #  param = null
