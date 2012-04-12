@@ -116,9 +116,10 @@ class Tower.Application extends Tower.Engine
       
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
+      
       require "#{Tower.root}/app/controllers/applicationController"
+      
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
-        
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
       done()

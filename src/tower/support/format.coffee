@@ -51,6 +51,9 @@ for name, format of postalCodeFormats
   postalCodeFormats[name] = new RegExp("^#{format.join('|').replace(/#/g, '\\d')}$", "i")
   
 casting =
+  xss: (value) ->
+    sanitize(value).xss()
+
   distance: ->
     geo.getDistance(arguments...)
 
