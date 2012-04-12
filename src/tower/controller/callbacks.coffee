@@ -8,9 +8,9 @@ Tower.Controller.Callbacks =
     # Callback to run after any action.
     afterAction: ->
       @after "action", arguments...
-      
+
     # All of the callbacks defined for this controller.
-    # 
+    #
     # @return [Object]
     callbacks: ->
       @metadata().callbacks

@@ -4,12 +4,12 @@ Tower.Model.Authentication =
     authenticated: ->
       @validates "password", confirmation: true
       @validates "passwordDigest", presence: true
-      
+
       # attributes protected by default
       @protected "passwordDigest"
-      
+
       @include Tower.Model.Authentication._InstanceMethods
-  
+
   # Only included if class method is called.
   _InstanceMethods:
     authenticate: (unencryptedPassword) ->

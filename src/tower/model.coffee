@@ -8,7 +8,7 @@
 #   Query conditions
 class Tower.Model extends Tower.Class
   # Construct a new Tower.Model
-  # 
+  #
   # @param [Object] attributes a hash of attributes
   # @param [Object] options a hash of options
   # @option options [Boolean] persistent whether or not this object is from the database
@@ -18,12 +18,12 @@ class Tower.Model extends Tower.Class
   initialize: (attrs = {}, options = {}) ->
     definitions = @constructor.fields()
     attributes  = {}
-    
+
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
-      
+
     attributes.type ||= @constructor.name if @constructor.isSubClass()
-    
+
     @attributes     = attributes
     @relations      = {}
     @changes        =
@@ -37,7 +37,7 @@ class Tower.Model extends Tower.Class
 
     for key, value of attrs
       @set key, value
-    
+
 require './model/scope'
 require './model/criteria'
 require './model/dirty'

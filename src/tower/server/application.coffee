@@ -11,7 +11,7 @@ class Tower.Application extends Tower.Engine
     Tower.Model.default "store", Tower.Store.Memory
     Tower.Model.field "id", type: "Id"
     true
-  
+
   @autoloadPaths: [
     "app/helpers",
     "app/models",
@@ -28,7 +28,7 @@ class Tower.Application extends Tower.Engine
     "databases"
     "routes"
   ]
-  
+
   @reloadMap:
     models:
       pattern:  /app\/models/
@@ -83,12 +83,12 @@ class Tower.Application extends Tower.Engine
     configNames = @constructor.configNames
     reloadMap   = @constructor.reloadMap
     self        = @
-    
+
     initializer = (done) =>
       requirePaths = (paths) ->
         for path in paths
           require(path) if path.match(/\.(coffee|js)$/)
-          
+
       requirePaths File.files("#{Tower.root}/config/preinitializers")
 
       for key in configNames
@@ -111,14 +111,14 @@ class Tower.Application extends Tower.Engine
       require "#{Tower.root}/config/environments/#{Tower.env}"
 
       requirePaths File.files("#{Tower.root}/config/initializers")
-      
+
       self.stack()
-      
+
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
-      
+
       require "#{Tower.root}/app/controllers/applicationController"
-      
+
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
@@ -133,10 +133,10 @@ class Tower.Application extends Tower.Engine
 
   handle: ->
     @server.handle arguments...
-    
+
   use: ->
     args        = _.args(arguments)
-    
+
     if typeof args[0] == "string"
       middleware  = args.shift()
       @server.use connect[middleware] args...
@@ -146,7 +146,7 @@ class Tower.Application extends Tower.Engine
   stack: ->
     configs     = @constructor.initializers()
     self        = @
-    
+
     #@server.configure ->
     for config in configs
       config.call(self)
@@ -155,13 +155,13 @@ class Tower.Application extends Tower.Engine
     #  middlewares = @constructor.defaultStack()
 
     @
-    
+
   get: ->
     @server.get arguments...
-    
+
   post: ->
     @server.post arguments...
-    
+
   put: ->
     @server.put arguments...
 

@@ -2,7 +2,7 @@
 Tower.Controller.Rendering =
   ClassMethods:
     # Add a render for a specific mime type.
-    # 
+    #
     # @example Add a json renderer
     #   Tower.Controller.addRenderer "json", (json, options, callback) ->
     #     unless typeof(json) == "string"
@@ -14,18 +14,18 @@ Tower.Controller.Rendering =
     #     @headers["Content-Type"] ||= require("mime").lookup("json")
     #     callback null, json if callback
     #     json
-    # 
+    #
     # @param [String] key key to be used in the controller's {#render} method.
     # @param [Function] block function to conver the data to appropriate format.
-    # 
+    #
     # @return [Function] Returns the block added.
     addRenderer: (key, block) ->
       @renderers()[key] = block
-    
+
     # Add multiple renders at once.
-    # 
+    #
     # @see {#addRenderer}
-    # 
+    #
     # @example Add a json renderer
     #   Tower.Controller.addRenderer
     #     json: (json, options, callback) ->
@@ -38,23 +38,23 @@ Tower.Controller.Rendering =
     #       @headers["Content-Type"] ||= require("mime").lookup("json")
     #       callback null, json if callback
     #       json
-    # 
+    #
     # @param [Object] renderers hash of `{format: function}` pairs.
-    # 
+    #
     # @return [Function] Returns the controller instance.
     addRenderers: (renderers = {}) ->
       @addRenderer(key, block) for key, block of renderers
       @
-    
+
     # Set of renderers defined for this controller.
-    # 
+    #
     # @return [Object]
     renderers: ->
       @metadata().renderers
-      
+
   InstanceMethods:
     # Render a view (a content-type) for the current controller action.
-    # 
+    #
     # @example Render HTML for the index action on the users controller.
     #   # full path
     #   @render "users/index"
@@ -62,13 +62,13 @@ Tower.Controller.Rendering =
     #   @render "index"
     #   # with variables for the template
     #   @render "index", locals: {hello: "world"}
-    # 
+    #
     # @example Render JSON
     #   @render json: user.toJSON()
-    # 
+    #
     # @example Custom status
     #   @render json: user.toJSON(), status: 404
-    # 
+    #
     # @return [void] Requires a callback.
     render: ->
       @renderToBody @_normalizeRender(arguments...)
@@ -82,7 +82,7 @@ Tower.Controller.Rendering =
 
     # @todo implement
     sendFile: (path, options = {}) ->
-  
+
     # @todo implement
     sendData: (data, options = {}) ->
 

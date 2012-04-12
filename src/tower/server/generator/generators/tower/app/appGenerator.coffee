@@ -66,7 +66,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
 
         @inside "locales", ->
           @template "en.coffee"
-    
+
       @inside "db", ->
         @template "seeds.coffee"
 

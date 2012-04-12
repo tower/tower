@@ -2,39 +2,39 @@
 Tower.Model.Conversion =
   ClassMethods:
     # The class in the superclass hierarchy that directly subclasses Tower.Model
-    # 
+    #
     # @example
     #   class App.Attachment extends Tower.Model
     #   class App.Video extends App.Attachment
-    #   
+    #
     #   App.Attachment.baseClass()  #=> App.Attachment
     #   App.Video.baseClass()       #=> App.Attachment
-    # 
+    #
     # @return [Function]
     baseClass: ->
       if @__super__ && @__super__.constructor.baseClass && @__super__.constructor != Tower.Model
         @__super__.constructor.baseClass()
       else
         @
-    
+
     parentClass: ->
       if @__super__ && @__super__.constructor.parentClass
         @__super__.constructor
       else
         @
-        
+
     isSubClass: ->
       @baseClass().name != @name
-    
+
     # The name of this class, parameterized and pluralized.
-    # 
+    #
     # This is used for generating urls from this model.
     #
     # @return [String]
     toParam: ->
       return undefined if @ == Tower.Model
       @metadata().paramNamePlural
-    
+
     toKey: ->
       @metadata().paramName
 
@@ -48,7 +48,7 @@ Tower.Model.Conversion =
             url = "/#{Tower.Support.String.parameterize(Tower.Support.String.pluralize(options.parent))}/:#{Tower.Support.String.camelize(options.parent, true)}/#{@toParam()}"
         else
           options
-    
+
     _relationship: false
 
     # for now, just for neo4j
@@ -75,9 +75,9 @@ Tower.Model.Conversion =
           @[method](value)
         else
           @metadata().defaults[key] = value
-    
+
     # All of the different names related to this class.
-    # 
+    #
     # The result is memoized.
     #
     # @return [Object]
@@ -86,12 +86,12 @@ Tower.Model.Conversion =
       metadata                = @metadata[className]
       return metadata if metadata
       baseClassName           = @parentClass().name
-      
+
       if baseClassName != className
         superMetadata = @parentClass().metadata()
       else
         superMetadata = {}
-      
+
       namespace               = Tower.namespace()
       name                    = Tower.Support.String.camelize(className, true)
       namePlural              = Tower.Support.String.pluralize(name)
@@ -105,7 +105,7 @@ Tower.Model.Conversion =
       validators              = if superMetadata.validators then _.clone(superMetadata.validators) else []
       relations               = if superMetadata.relations then _.clone(superMetadata.relations) else {}
       defaults                = if superMetadata.defaults then _.clone(superMetadata.defaults) else {}
-      
+
       @metadata[className]    =
         name:                 name
         namePlural:           namePlural
@@ -120,19 +120,19 @@ Tower.Model.Conversion =
         fields:               fields
         relations:            relations
         defaults:             defaults
-        
+
     _setDefaultScope: (scope) ->
       @metadata().defaults.scope = if scope instanceof Tower.Model.Scope then scope else @where(scope)
-        
+
   InstanceMethods:
     # A label for this model when rendered to a string.
-    # 
+    #
     # Defaults to the class name.
-    # 
+    #
     # @return [String]
     toLabel: ->
       @metadata().className
-  
+
     # Url for this model.
     toPath: ->
       result  = @constructor.toParam()
@@ -147,7 +147,7 @@ Tower.Model.Conversion =
 
     toKey: ->
       @constructor.tokey()
-  
+
     # Key used to persist this model in a cache store.
     toCacheKey: ->
 

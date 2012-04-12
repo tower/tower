@@ -9,13 +9,13 @@ _.mixin(_.string.exports())
 
 class Tower.Application extends Tower.Engine
   @before 'initialize', 'setDefaults'
-  
+
   setDefaults: ->
     Tower.Model.default "store", Tower.Store.Ajax
     Tower.Model.field "id", type: "Id"
-    
+
     true
-  
+
   @configure: (block) ->
     @initializers().push block
 

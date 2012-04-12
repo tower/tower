@@ -2,16 +2,16 @@
 Tower.Controller.Responding =
   ClassMethods:
     # Defines mime types that are rendered by default when invoking {#respondWith}.
-    # 
+    #
     # @example
     #   @respondTo "html", "json", "csv", "pdf"
-    # 
+    #
     # @example Only certain actions
     #   @respondTo "json", only: "edit"
-    # 
+    #
     # @example Except certain actions
     #   @respondTo "json", except: ["create", "destroy"]
-    # 
+    #
     # @return [Function] Return this controller.
     respondTo: ->
       mimes     = @mimes()
@@ -34,42 +34,42 @@ Tower.Controller.Responding =
 
     mimes: ->
       @metadata().mimes
-  
+
   InstanceMethods:
     # Build a responder.
-    # 
+    #
     # @example
     #   index: ->
     #     App.User.all (error, users) =>
     #       @respondTo (format) =>
     #         format.html()
     #         format.json => @render json: users
-    # 
+    #
     # @param [Function] block
-    # 
+    #
     # @return [void] Requires a block.
     respondTo: (block) ->
       Tower.Controller.Responder.respond(@, {}, block)
 
     # A more robust responder.
-    # 
-    # Wraps a resource around a responder for default representation. 
-    # First it invokes {#respondTo}, and if a response cannot be found 
-    # (ie. no block for the request was given and template was not available), 
+    #
+    # Wraps a resource around a responder for default representation.
+    # First it invokes {#respondTo}, and if a response cannot be found
+    # (ie. no block for the request was given and template was not available),
     # it instantiates a {Tower.Controller.Responder} with the controller and resource.
-    # 
+    #
     # @example
     #   index: ->
     #     App.User.all (error, users) =>
     #       @respondWith(users)
-    # 
+    #
     # @example With simple handler
     #   index: ->
     #     App.User.all (error, users) =>
     #       @respondWith users, (format) =>
     #         format.html()
     #         format.json => @render json: users
-    # 
+    #
     # @example With success and failure handlers
     #   index: ->
     #     App.User.all (error, users) =>

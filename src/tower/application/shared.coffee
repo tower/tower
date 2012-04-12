@@ -152,13 +152,13 @@ _.extend Tower,
 
   none: (value) ->
     _.none value
-    
+
   oneOrMany: ->
     _.oneOrMany arguments...
-      
+
   args: (args) ->
     _.args(args)
-    
+
   clone: (object) ->
     _.extend({}, object)
 

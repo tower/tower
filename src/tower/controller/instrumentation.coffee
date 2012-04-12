@@ -6,29 +6,29 @@ Tower.Controller.Instrumentation =
         @__super__.constructor.baseClass()
       else
         @
-        
+
     metadata: ->
       className               = @name
       metadata                = @metadata[className]
       return metadata if metadata
       baseClassName           = @baseClass().name
-      
+
       if baseClassName != className
         superMetadata = @baseClass().metadata()
       else
         superMetadata = {}
-        
+
       resourceType            = Tower.Support.String.singularize(@name.replace(/(Controller)$/, ""))
       resourceName            = @_compileResourceName(resourceType)
       collectionName          = Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
-      
+
       params                  = if superMetadata.params then _.clone(superMetadata.params) else {}
       callbacks               = if superMetadata.callbacks then _.clone(superMetadata.callbacks) else {}
       renderers               = if superMetadata.renderers then _.clone(superMetadata.renderers) else {}
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
       helpers                 = if superMetadata.helpers then superMetadata.helpers.concat() else []
       belongsTo               = if superMetadata.belongsTo then superMetadata.belongsTo.concat() else []
-      
+
       result = @metadata[className]    =
         className:            className
         resourceName:         resourceName
@@ -40,13 +40,13 @@ Tower.Controller.Instrumentation =
         callbacks:            callbacks
         helpers:              helpers
         belongsTo:            belongsTo
-      
+
       result
-      
+
     _compileResourceName: (type) ->
       parts                   = type.split(".")
       resourceName            = Tower.Support.String.camelize(parts[parts.length - 1], true)
-      
+
   InstanceMethods:
     # Called when the route for this controller is found.
     call: (request, response, next) ->
@@ -80,7 +80,7 @@ Tower.Controller.Instrumentation =
       @request  = null
       @response = null
       @headers  = null
-      
+
     metadata: ->
       @constructor.metadata()
 

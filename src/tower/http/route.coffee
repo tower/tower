@@ -2,13 +2,13 @@
 class Tower.HTTP.Route extends Tower.Class
   @store: ->
     @_store ||= []
-    
+
   @byName: {}
 
   @create: (route) ->
     @byName[route.name] = route
     @store().push(route)
-    
+
   @find: (name) ->
     @byName[name]
 
@@ -71,7 +71,7 @@ class Tower.HTTP.Route extends Tower.Class
     @id           = @path
     if @controller
       @id += @controller.name + @controller.action
-      
+
   get: (name) ->
     @[name]
 

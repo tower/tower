@@ -37,7 +37,7 @@ class Tower.Store.FileSystem extends Tower.Store
     path = @findPath query
     return (File.read(path) || "") if path
     null
-    
+
   defaultPath: (query, callback) ->
     path  = "#{@loadPaths[0]}/#{query.path}"
     path  = path.replace(new RegExp("(\\.#{query.ext})?$"), ".#{query.ext}")

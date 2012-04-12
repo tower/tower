@@ -147,7 +147,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
       # haven't yet handled arrays.
       record  = record[0] if _.isArray(record)
       url     = Tower.urlFor(record)
-      
+
       params  =
         url:        url
         type:       'POST'

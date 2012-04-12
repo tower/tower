@@ -30,7 +30,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     @required ||= false
 
     # input type
-    
+
     field           = @model.constructor.fields()[@attribute]
 
     options.as    ||= if field then Tower.Support.String.camelize(field.type, true) else "string"
@@ -68,10 +68,10 @@ class Tower.View.Form.Field extends Tower.View.Component
     @attributes       = @fieldHTML
 
     @inputHTML.name ||= @toParam() unless inputType == "submit"
-    
+
     @inputHTML.value  ||= options.value
     @inputHTML.value  ||= @value
-    
+
     @dynamic          = options.dynamic == true
     @richInput        = if options.hasOwnProperty("rich_input") then !!options.rich_input else Tower.View.richInput
 
@@ -93,20 +93,20 @@ class Tower.View.Form.Field extends Tower.View.Component
 
     # value
     value = undefined
-    
+
     if options.hasOwnProperty("value")
       value = options.value
-      
+
     if !value && @inputHTML.hasOwnProperty('value')
       value = @inputHTML.value
     value ||= @model.get(@attribute)
-    
+
     if value
       if @inputType == "array"
         value = _.castArray(value).join(", ")
       else
         value = value.toString()
-      
+
     @inputHTML.value = value
 
     # @inputHTML[:tabindex]      = @tabindex

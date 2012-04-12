@@ -3,7 +3,7 @@ Tower.Model.MassAssigment =
   ClassMethods:
     # Protected attributes
     protected: ->
-    
+
     # Accessible attributes
     accessible: ->
 
