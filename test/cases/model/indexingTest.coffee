@@ -21,5 +21,5 @@ describeWith = (store) ->
       
       done()
         
-#describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.Store.MongoDB) unless Tower.client
 describeWith(Tower.Store.Memory)

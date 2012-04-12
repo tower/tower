@@ -2,9 +2,6 @@ membership  = null
 group       = null
 user        = null
 
-_.toS = (array) ->
-  _.map array, (item) -> item.toString()
-
 describeWith = (store) ->
   describe 'Tower.Model.Relation', ->
     beforeEach (done) ->
@@ -446,4 +443,4 @@ describeWith = (store) ->
           #      child.idCacheFalse_idCacheTrue
           
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.Store.MongoDB) unless Tower.client

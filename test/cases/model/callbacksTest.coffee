@@ -11,5 +11,5 @@ describeWith = (store) ->
     #  test 'should have callback if instantiate: false', (done) ->
     #    done()
       
-describeWith Tower.Store.Memory
-#describeWith Tower.Store.MongoDB
+describeWith(Tower.Store.Memory)
+#describeWith(Tower.Store.MongoDB) unless Tower.cient

@@ -271,4 +271,4 @@ describeWith = (store) ->
           assert.equal validator.validateEach(record, record.errors), false
 
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.Store.MongoDB) unless Tower.client
