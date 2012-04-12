@@ -80,6 +80,7 @@ Tower.View.Rendering =
       callback e, result
     else if options.type
       mint = require "mint"
+      string = string() if typeof string == 'function'
       engine = mint.engine(options.type)
       # need to fix this on mint.js repo
       if engine.match(/(eco|mustache)/)

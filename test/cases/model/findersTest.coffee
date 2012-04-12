@@ -1,5 +1,3 @@
-moment = require('moment')
-
 describeWith = (store) ->
   describe "Tower.Model.Finders (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
@@ -66,22 +64,22 @@ describeWith = (store) ->
             assert.equal count, 2
             done()
 
-      describe 'date > value (' + moment().format('MMM D, YYYY') + ')', ->
+      describe 'date > value (' + _.strftime('MMM D, YYYY') + ')', ->
         beforeEach (done) ->
-          App.Post.create rating: 1, someDate: moment()._d, done
+          App.Post.create rating: 1, someDate: new Date, done
         
         test 'where(someDate: ">": Dec 25, 1995)', (done) ->
-          App.Post.where(someDate: ">": moment("Dec 25, 1995")._d).count (error, count) =>
+          App.Post.where(someDate: ">": _.toDate("Dec 25, 1995")).count (error, count) =>
             assert.equal count, 1
             done()
         
         test 'where(createdAt: ">": Dec 25, 1995)', (done) ->
-          App.Post.where(createdAt: ">": moment("Dec 25, 1995")._d).count (error, count) =>
+          App.Post.where(createdAt: ">": _.toDate("Dec 25, 1995")).count (error, count) =>
             assert.equal count, 1
             done()
         
         test 'where(createdAt: ">": Dec 25, 2050)', (done) ->
-          App.Post.where(createdAt: ">": moment("Dec 25, 2050")._d).count (error, count) =>
+          App.Post.where(createdAt: ">": _.toDate("Dec 25, 2050")).count (error, count) =>
             assert.equal count, 0
             done()
 
@@ -131,22 +129,22 @@ describeWith = (store) ->
             assert.equal count, 0
             done()
       
-      describe 'date < value (' + moment().format('MMM D, YYYY') + ')', ->
+      describe 'date < value (' + _.toDate('MMM D, YYYY') + ')', ->
         beforeEach (done) ->
-          App.Post.create rating: 1, someDate: moment()._d, done
+          App.Post.create rating: 1, someDate: new Date, done
         
         test 'where(someDate: "<": Dec 25, 2050)', (done) ->
-          App.Post.where(someDate: "<": moment("Dec 25, 2050")._d).count (error, count) =>
+          App.Post.where(someDate: "<": _.toDate("Dec 25, 2050")).count (error, count) =>
             assert.equal count, 1
             done()
             
         test 'where(createdAt: "<": Dec 25, 2050)', (done) ->
-          App.Post.where(createdAt: "<": moment("Dec 25, 2050")._d).count (error, count) =>
+          App.Post.where(createdAt: "<": _.toDate("Dec 25, 2050")).count (error, count) =>
             assert.equal count, 1
             done()
             
         test 'where(createdAt: "<": Dec 25, 1995)', (done) ->
-          App.Post.where(createdAt: "<": moment("Dec 25, 1995")._d).count (error, count) =>
+          App.Post.where(createdAt: "<": _.toDate("Dec 25, 1995")).count (error, count) =>
             assert.equal count, 0
             done()
             
@@ -180,20 +178,20 @@ describeWith = (store) ->
       
       test 'date <= value', ->
         beforeEach (done) ->
-          App.Post.create(rating: 1, someDate: moment()._d, done)
+          App.Post.create(rating: 1, someDate: new Date, done)
           
         test 'where(someDate: "<=": Dec 25, 2050)', (done) ->
-          App.Post.where(someDate: "<=": moment("Dec 25, 2050")._d).count (error, count) =>
+          App.Post.where(someDate: "<=": _.toDate("Dec 25, 2050")).count (error, count) =>
             assert.equal count, 1
             done()
             
         test 'where(createdAt: "<=": Dec 25, 2050)', (done) ->
-          App.Post.where(createdAt: "<=": moment("Dec 25, 2050")._d).count (error, count) =>
+          App.Post.where(createdAt: "<=": _.toDate("Dec 25, 2050")).count (error, count) =>
             assert.equal count, 1
             done()
             
         test 'where(createdAt: "<=": Dec 25, 1995)', (done) ->
-          App.Post.where(createdAt: "<=": moment("Dec 25, 1995")._d).count (error, count) =>
+          App.Post.where(createdAt: "<=": _.toDate("Dec 25, 1995")).count (error, count) =>
             assert.equal count, 0
             done()
   

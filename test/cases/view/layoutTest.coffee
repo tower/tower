@@ -1,4 +1,3 @@
-fs          = require "fs"
 controller  = null
 view        = null
 user        = null
@@ -37,6 +36,29 @@ describe 'Tower.View eco template', ->
     view = new Tower.View
 
   test 'eco layout', ->
-    out_put = fs.readFileSync __dirname + "/out_put.html", "utf-8"
-    view.render {type: "eco", template: "eco_layout"}, (error, result) ->
-      assert.equal result, out_put
+    template = -> """
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
+  </head>
+  <body role="application">
+    <div>2</div>
+  </body>
+</html>
+"""
+
+    view.render {type: "eco", template: template}, (error, result) ->
+      assert.equal result, """
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tower.js - Full Stack JavaScript Framework for Node.js and the Browser</title>
+  </head>
+  <body role="application">
+    <div>2</div>
+  </body>
+</html>
+"""
