@@ -80,5 +80,5 @@ describeWith = (store) ->
         test 'within(5, "miles")'
         test 'within(distance: 5, unit: "miles")'
 
-describeWith(Tower.Store.MongoDB)
-# describeWith(Tower.Store.Memory)
+#describeWith(Tower.Store.MongoDB)
+describeWith(Tower.Store.Memory)

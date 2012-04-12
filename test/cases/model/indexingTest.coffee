@@ -23,4 +23,5 @@ describeWith = (store) ->
       
       done()
         
-describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.Store.MongoDB)
+describeWith(Tower.Store.Memory)

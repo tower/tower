@@ -16,7 +16,5 @@ before (done) ->
 
 # run this before each action
 beforeEach (done) ->
-  if Tower.client
-    Tower.Store.Memory.clean(done)
-  else
-    Tower.Store.MongoDB.clean(done)
+  Tower.Store.Memory.clean(done)
+  

@@ -8,7 +8,7 @@ class Tower.Application extends Tower.Engine
   @before "initialize", "setDefaults"
   
   setDefaults: ->
-    Tower.Model.default "store", Tower.Store.MongoDB
+    Tower.Model.default "store", Tower.Store.Memory
     Tower.Model.field "id", type: "Id"
     true
   
