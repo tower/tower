@@ -10,10 +10,10 @@ global.sinon  = require 'sinon'
 global.async  = require 'async'
 global.cb     = true # some library has a global leak...
 
-Tower.root            = process.cwd() + "/test/apps/default"
+Tower.root            = process.cwd() + "/test/apps/server"
 Tower.publicPath      = Tower.root + "/public"
 Tower.env             = "test"
-Tower.View.loadPaths  = ["./test/apps/default/app/views"]
+Tower.View.loadPaths  = ["./test/apps/server/app/views"]
 
 Tower.request = (method, action, options, callback) ->
   if typeof options == "function"
@@ -73,22 +73,11 @@ before (done) ->
 
 beforeEach (done) ->
   #Tower.Application.instance().teardown()
-  Tower.root          = process.cwd() + "/test/apps/default"
-  Tower.relativeRoot  = "test/apps/default"
-  Tower.publicPath    = Tower.root + "/public"
-  Tower.View.engine = "coffee"
-  Tower.View.store().loadPaths = ["test/apps/default/app/views"]
+  Tower.root                    = "#{process.cwd()}/test/apps/server"
+  Tower.relativeRoot            = "test/apps/server"
+  Tower.publicPath              = "#{Tower.root}/public"
+  Tower.View.engine             = "coffee"
+  Tower.View.store().loadPaths  = ["test/apps/server/app/views"]
   
   Tower.Application.instance().initialize ->
-    require "#{Tower.root}/app/controllers/customController"
-    
-    models = File.files("#{Tower.root}/app/models")
-    
-    for model in models
-      require(model) if File.exists(model)
-    
-    controllers = File.files("#{Tower.root}/app/controllers")
-    for controller in controllers
-      require(controller) if File.exists(controller)
-      
     done()

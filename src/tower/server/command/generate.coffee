@@ -2,6 +2,9 @@ class Tower.Command.Generate
   constructor: (argv) ->
     @program = program = require('commander')
 
+    # tower generate template
+    # tower generate model
+    # tower generate library # a plugin/module/extension
     # @todo Need to implement these options
     #
     # @example --controller option for defining belongsTo
