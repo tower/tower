@@ -27,10 +27,10 @@ class App.CustomController extends Tower.Controller
 
   renderUser: ->
 
-  renderCoffeeKupFromTemplate: ->
+  renderCoffeeCupFromTemplate: ->
     @render 'index'
 
-  renderCoffeeKupInline: ->
+  renderCoffeeCupInline: ->
     @self = "I'm"
 
     @render ->

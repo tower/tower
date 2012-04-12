@@ -5,8 +5,8 @@ user        = null
 router      = null
 
 describe 'Tower.Controller.Rendering', ->
-  test 'renderCoffeeKupFromTemplate', ->
-    Tower.get 'renderCoffeeKupFromTemplate', ->
+  test 'renderCoffeeCupFromTemplate', ->
+    Tower.get 'renderCoffeeCupFromTemplate', ->
       assert.equal @body, "<h1>Hello World</h1>\n"
       assert.equal @headers["Content-Type"], "text/html"
 
