@@ -130,6 +130,9 @@ casting =
   humanizeDuration: (from, as = 'days') ->
     from = from.value() if from._wrapped
     moment.humanizeDuration(from, 'milliseconds')
+    
+  toS: (array) ->
+    _.map array, (item) -> item.toString()
 
 sanitizing =
   trim: (value) ->
