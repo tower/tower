@@ -24,4 +24,6 @@ require './support/locale/en'
 
 require './support/format'
 
+require './support/factory'
+
 module.exports = Tower.Support

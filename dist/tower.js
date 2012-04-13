@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Fri, 13 Apr 2012 03:48:44 GMT
+ * Date: Fri, 13 Apr 2012 23:31:04 GMT
  */
 (function() {
   var Tower, action, key, module, phase, specialProperties, _fn, _fn2, _fn3, _fn4, _fn5, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6,
@@ -1333,6 +1333,88 @@
     return _.mixin(asyncing);
   })();
 
+  Tower.Factory = (function() {
+
+    Factory.definitions = {};
+
+    Factory.clear = function() {
+      return this.definitions = {};
+    };
+
+    Factory.define = function(name, options, callback) {
+      return this.definitions[name] = new Tower.Factory(name, options, callback);
+    };
+
+    Factory.create = function(name, options) {
+      var factory;
+      factory = Tower.Factory.definitions[name];
+      if (!factory) throw new Error("Factory '" + name + "' doesn't exist.");
+      return factory.create(options);
+    };
+
+    function Factory(name, options, callback) {
+      if (options == null) options = {};
+      if (this.constructor !== Tower.Factory) {
+        return Tower.Factory.create(name, options);
+      }
+      if (typeof options === "function") {
+        callback = options;
+        options = {};
+      }
+      if (typeof callback !== "function") {
+        throw new Error("Expected function callback for Factory '" + name + "'");
+      }
+      this.name = name;
+      this.className = Tower.namespaced(Tower.Support.String.camelize(options.className || name));
+      this.parentClassName = options.parent;
+      this.callback = callback;
+    }
+
+    Factory.prototype.toClass = function() {
+      var fn, node, parts, _i, _len;
+      parts = this.className.split(".");
+      fn = global;
+      for (_i = 0, _len = parts.length; _i < _len; _i++) {
+        node = parts[_i];
+        fn = fn[node];
+      }
+      if (typeof fn !== "function") {
+        throw new Error("Class " + string + " not found");
+      }
+      return fn;
+    };
+
+    Factory.prototype.create = function(overrides, callback) {
+      var _this = this;
+      if (typeof overrides === "function") {
+        callback = overrides;
+        overrides = {};
+      }
+      overrides || (overrides = {});
+      return this.createAttributes(overrides, function(error, attributes) {
+        var klass, result;
+        klass = _this.toClass();
+        result = new klass(attributes);
+        if (callback) callback.call(_this, error, result);
+        return result;
+      });
+    };
+
+    Factory.prototype.createAttributes = function(overrides, callback) {
+      var _this = this;
+      if (this.callback.length) {
+        return this.callback.call(this, function(error, attributes) {
+          return callback.call(_this, error, _.extend(attributes, overrides));
+        });
+      } else {
+        return callback.call(this, null, _.extend(this.callback.call(this), overrides));
+      }
+    };
+
+    return Factory;
+
+  })();
+
   Tower.Hook = (function(_super) {
 
     __extends(Hook, _super);
@@ -2264,6 +2346,7 @@
       var attributes;
       attributes = this.deserializeModel(record);
       if (attributes.id == null) attributes.id = this.generateId();
+      attributes.id = attributes.id.toString();
       return this.loadOne(this.serializeModel(record));
     },
     update: function(updates, criteria, callback) {
@@ -3359,7 +3442,7 @@
     };
 
     Criteria.prototype.conditions = function() {
-      var conditions, result, _j, _len2, _ref2;
+      var conditions, ids, result, _j, _len2, _ref2;
       result = {};
       _ref2 = this._where;
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
@@ -3373,8 +3456,14 @@
         } else {
           this.returnArray = true;
         }
+        ids = this.ids;
+        if (this.store.constructor.name === "Memory") {
+          ids = _.map(ids, function(id) {
+            return id.toString();
+          });
+        }
         result.id = {
-          $in: this.ids
+          $in: ids
         };
       }
       return result;
@@ -6028,7 +6117,7 @@
       }
     },
     _renderString: function(string, options, callback) {
-      var coffeekup, e, engine, hardcode, helper, locals, mint, result, _len7, _o, _ref7;
+      var coffeekup, e, engine, hardcode, helper, locals, mint, result, tags, _len7, _o, _ref7;
       if (options == null) options = {};
       if (!!options.type.match(/coffee/)) {
         e = null;
@@ -6046,14 +6135,16 @@
             helper = _ref7[_o];
             hardcode = _.extend(hardcode, helper);
           }
+          tags = coffeekup.tags;
           hardcode = _.extend(hardcode, {
-            tags: coffeekup.tags
+            tags: tags
           });
           locals.hardcode = hardcode;
           locals._ = _;
           result = coffeekup.render(string, locals);
         } catch (error) {
           e = error;
+          console.log(e.stack);
         }
         return callback(e, result);
       } else if (options.type) {
@@ -7615,7 +7706,7 @@
         } else {
           superMetadata = {};
         }
-        resourceType = Tower.Support.String.singularize(this.name.replace(/(Controller)$/, ""));
+        resourceType = _.singularize(this.name.replace(/(Controller)$/, ""));
         resourceName = this._compileResourceName(resourceType);
         collectionName = Tower.Support.String.camelize(this.name.replace(/(Controller)$/, ""), true);
         params = superMetadata.params ? _.clone(superMetadata.params) : {};
@@ -7685,8 +7776,7 @@
       processQuery: function() {},
       clear: function() {
         this.request = null;
-        this.response = null;
-        return this.headers = null;
+        return this.response = null;
       },
       metadata: function() {
         return this.constructor.metadata();
@@ -7763,6 +7853,11 @@
             }).call(this);
           }
           url || (url = "/");
+          if (options.action === 'index') {
+            url = "/custom";
+          } else {
+            url = "/custom/1";
+          }
           this.response.redirect(url);
         } catch (error) {
           console.log(error);
@@ -7819,6 +7914,7 @@
             _this.status || (_this.status = 200);
             _this.body = body;
           }
+          if (error) console.log(_this.body);
           if (_callback) _callback.apply(_this, arguments);
           if (_this.callback) return _this.callback();
         };
@@ -8193,7 +8289,6 @@
     },
     _show: function(callback) {
       var _this = this;
-      this.__show = true;
       return this.findResource(function(error, resource) {
         return _this.respondWith(resource, callback);
       });
@@ -9042,7 +9137,7 @@
     };
 
     Route.prototype.toController = function(request) {
-      var capture, controller, i, keys, match, method, params, _len7, _name;
+      var capture, controller, i, keys, match, method, params, _len7;
       match = this.match(request);
       if (!match) return null;
       method = request.method.toLowerCase();
@@ -9051,7 +9146,15 @@
       match = match.slice(1);
       for (i = 0, _len7 = match.length; i < _len7; i++) {
         capture = match[i];
-        params[_name = keys[i].name] || (params[_name] = capture ? decodeURIComponent(capture) : null);
+        key = keys[i].name;
+        if (capture && !(params[key] != null)) {
+          capture = decodeURIComponent(capture);
+          try {
+            params[key] = JSON.parse(capture);
+          } catch (error) {
+            params[key] = capture;
+          }
+        }
       }
       controller = this.controller;
       if (controller) params.action = controller.action;
@@ -9658,14 +9761,14 @@
   Tower.Middleware.Router = function(request, response, callback) {
     Tower.Middleware.Router.find(request, response, function(controller) {
       if (controller) {
+        if (Tower.env === "test") Tower.Controller.testCase = controller;
         if (response.statusCode !== 302) {
           response.controller = controller;
-          if (Tower.env === "test") Tower.Controller.testCase = controller;
           response.writeHead(controller.status, controller.headers);
           response.write(controller.body);
           response.end();
+          return controller.clear();
         }
-        return controller.clear();
       } else {
         return Tower.Middleware.Router.error(request, response);
       }
