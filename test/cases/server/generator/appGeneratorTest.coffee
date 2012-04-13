@@ -11,6 +11,8 @@ describe 'Tower.Generator.AppGenerator', ->
     generator       = new Tower.Generator.AppGenerator(sourceRoot: sourceRoot, destinationRoot: destinationRoot)
     
   test 'create an app', (done) ->
-    generator.run =>
-      done()
+    assert.file "./test/apps/server/app/controllers/testJsonController.coffee"
+    done()
+    #generator.run =>
+    #  done()
     #Tower.Command.run(["tower", "new", "myapp"])
