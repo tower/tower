@@ -1,6 +1,6 @@
 window.designer ||= new DesignIO("client", port: 4181)
 
-mocha.setup 'bdd'
+mocha.setup(ui: 'bdd', timeout: 5000)
 
 global.assert = chai.assert
 global.expect = chai.expect
@@ -13,9 +13,11 @@ global.naughty        = null
 
 $ ->
   app = Tower.Application.instance()
+  Tower.env = "test"
   
   before (done) ->
     app.initialize()
+    app.listen()
     done()
 
   beforeEach (done) ->

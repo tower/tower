@@ -2,6 +2,10 @@ File = require('pathfinder').File
 
 require('design.io').extension('watchfile')
 
+async = require('async')
+File  = require('pathfinder').File
+mint  = require('mint')
+
 require("design.io-javascripts")
   compress: false
   debug:    false
@@ -31,3 +35,55 @@ require("design.io-javascripts") /test\/cases\/.*\.coffee$/
   debug:    false
   outputPath: (path) ->
     "test/example/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+
+watch /test\/example\/app\/views.*\.coffee$/
+  update: (path, callback) ->
+    try
+      nodes = path.replace("test/example/app/views/", "").split("/")
+      name  = {}
+
+      data  = File.read(path)
+      id    = nodes.join("/")
+      selector = id
+      name  = ""
+      
+      @broadcast body: data, id: id, selector: selector, path: "/#{name}"
+      
+      files   = File.files("test/example/app/views")
+      result  = []
+      
+      for file in files
+        continue unless file.match(/\.coffee$/)
+        result.push [file.replace("test/example/", ""), File.read(file)]
+        
+      template      = "Tower.View.cache =\n"
+      
+      iterator = (item, next) =>
+        template += "  '#{item[0]}': ->\n"
+        lines = item[1].split(/\n/)
+        for line, i in lines
+          lines[i] = "    #{line}"
+        template += lines.join("\n")
+        template += "\n"
+        next()
+        
+      require('async').forEachSeries result, iterator, (error) =>
+        mint.coffee template, bare: true, (error, string) =>
+          if error
+            console.log error
+            return callback(error)
+          else
+            File.write "test/example/public/javascripts/app/views/templates.js", string
+            callback()
+        
+    catch error
+      callback(error)
+    
+  client:
+    update: (data) ->
+      Tower.View.cache[data.id] = data
+      
+      if data.reload
+        window.location = data.path
+      else
+        Tower.get data.path

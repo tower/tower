@@ -27,6 +27,9 @@ Tower.Route.draw ->
     "renderJsonHelloWorld"
     "renderJsonHelloWorldWithParams"
     "renderJsonHelloWorldWithStatus"
+    "testCreateCallback"
+    "testNoCallback"
+  #  "renderCoffeeKupInline"
   ]
   
   for action in actions

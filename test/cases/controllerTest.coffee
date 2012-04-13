@@ -20,5 +20,6 @@ describeWith = (store) ->
       assert.equal controller.resourceType, "Post"
       
 describeWith(Tower.Store.Memory)
+
 #unless Tower.client
 #  describeWith(Tower.Store.MongoDB)
