@@ -147,4 +147,5 @@ describeWith = (store) ->
       #  geo:            ":lat,:lng,:radius"   # geo=20,-50,7
 
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+unless Tower.client
+  describeWith(Tower.Store.MongoDB)

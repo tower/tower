@@ -5,7 +5,7 @@ testCases   = _.map File.files("#{Tower.root}/public/javascripts/test/cases"), (
   
 testCases   = _.select testCases, (path) ->
   #!path.match("server")
-  path.match(/model|application|store|support/)
+  path.match(/model|application|store|support|http/)
   
 testModels  = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
