@@ -16,15 +16,15 @@ class App.CustomController extends Tower.Controller
     
   testCreateCallback: ->
     @testCreateCallbackCalled = true
-    @render action: 'helloWorld'
+    @render text: 'testCreateCallback!'
     
   testUpdateCallback: ->
     @testUpdateCallbackCalled = true
-    @render action: 'helloWorld'
+    @render text: 'testUpdateCallback!'
     
   testNoCallback: ->
     @testNoCallbackCalled = true
-    @render action: 'helloWorld'
+    @render text: 'testNoCallback!'
   
   renderUser: ->
     

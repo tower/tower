@@ -2,10 +2,10 @@ File = require('pathfinder').File
 
 testCases   = _.map File.files("#{Tower.root}/public/javascripts/test/cases"), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
-  
+
 testCases   = _.select testCases, (path) ->
   #!path.match("server")
-  path.match(/model|application|store|support|http|client/)
+  path.match(/model|application|store|support|http|client|controller/)
   
 testModels  = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
@@ -18,6 +18,7 @@ module.exports =
     application: [
       "/app/client/config/application"
       "/config/routes"
+      "/app/views/templates"
     ].concat(testModels)
     
     lib: [

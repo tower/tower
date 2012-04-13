@@ -96,6 +96,7 @@ Tower.Controller.Rendering =
         else
           @status ||= 200
           @body     = body
+        console.log @body if error
         _callback.apply @, arguments if _callback
         @callback() if @callback
 
