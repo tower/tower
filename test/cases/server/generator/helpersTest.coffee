@@ -1,0 +1,1 @@
+describe 'Tower.Generator.Helpers', ->

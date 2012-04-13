@@ -1,3 +1,4 @@
+# @mixin
 Tower.Generator.Configuration =
   ClassMethods:
     desc: (usage, description, options = {}) ->
