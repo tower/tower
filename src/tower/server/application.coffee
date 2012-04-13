@@ -87,7 +87,7 @@ class Tower.Application extends Tower.Engine
     initializer = (done) =>
       requirePaths = (paths) ->
         for path in paths
-          require(path) if path.match(/\.(coffee|js)$/)
+          require(path) if path.match(/\.(iced|coffee|js)$/)
 
       requirePaths File.files("#{Tower.root}/config/preinitializers")
 
@@ -105,7 +105,7 @@ class Tower.Application extends Tower.Engine
 
       paths = File.files("#{Tower.root}/config/locales")
       for path in paths
-        Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
+        Tower.Support.I18n.load(path) if path.match(/\.(iced|coffee|js)$/)
 
       # load initializers
       require "#{Tower.root}/config/environments/#{Tower.env}"
@@ -198,7 +198,7 @@ class Tower.Application extends Tower.Engine
           path  = path.split('\033')[0]
           ext   = path.match(/\.(\w+)$/g)
           ext   = ext[0] if ext
-          if ext && ext.match(/(js|coffee)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
+          if ext && ext.match(/(js|iced|coffee)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
             @fileChanged(path)
           _
       catch error
