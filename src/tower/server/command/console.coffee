@@ -25,6 +25,7 @@ class Tower.Command.Console
     if program.help
       console.log program.options[program.options.length - 1].description
       process.exit()
+      
     Tower.env = @program.environment
 
   run: ->

@@ -1,6 +1,6 @@
 class Tower.Command.Generate
   constructor: (argv) ->
-    @program = program = require('commander')
+    @program = program = new (require('commander').Command)
 
     # tower generate template
     # tower generate model
