@@ -14,6 +14,7 @@ Tower.root            = process.cwd() + "/test/apps/server"
 Tower.publicPath      = Tower.root + "/public"
 Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/apps/server/app/views"]
+Tower.port            = 3001
 
 require '../lib/tower/controller/tst'
 require '../lib/tower/server/generator/tst'
@@ -83,4 +84,11 @@ beforeEach (done) ->
   Tower.View.store().loadPaths  = ["test/apps/server/app/views"]
   
   Tower.Application.instance().initialize ->
+    done()
+
+after (done) ->
+  if process.platform == "darwin" # tmp for travis.ci
+    require("child_process").exec "open http://localhost:3000", =>
+      done()
+  else
     done()

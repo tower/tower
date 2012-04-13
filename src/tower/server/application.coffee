@@ -174,7 +174,7 @@ class Tower.Application extends Tower.Engine
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
-        @watch()
+        @watch() if Tower.watch
 
   run: ->
     @initialize()
@@ -182,11 +182,11 @@ class Tower.Application extends Tower.Engine
 
   watch: ->
     forever = require("forever")
-
+    console.log Tower.root
     child = new (forever.Monitor)("node_modules/design.io/bin/design.io",
       max:    1
       silent: false
-      options: []
+      options: []#["-d", "#{Tower.root}", "-w", "#{Tower.root}/Watchfile"]
     )
 
     child.start()

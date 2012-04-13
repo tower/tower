@@ -38,6 +38,8 @@ require './server/middleware'
 require './server/command'
 require './server/generator'
 
+Tower.watch = true
+
 Tower.View.store(new Tower.Store.FileSystem(["app/views"]))
 Tower.root                = process.cwd()
 Tower.publicPath          = process.cwd() + "/public"

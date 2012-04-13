@@ -20,6 +20,7 @@ module.exports =
       "/vendor/javascripts/inflection"
       "/vendor/javascripts/coffeekup"
       "/vendor/javascripts/prettify"
+      "/vendor/javascripts/async"
       "/vendor/javascripts/socket.io"
       "/vendor/javascripts/history"
       "/vendor/javascripts/history.adapter.jquery"

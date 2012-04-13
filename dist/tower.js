@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Wed, 11 Apr 2012 23:15:06 GMT
+ * Date: Fri, 13 Apr 2012 01:55:10 GMT
  */
 (function() {
   var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
@@ -1131,6 +1131,9 @@
   }
 
   casting = {
+    xss: function(value) {
+      return sanitize(value).xss();
+    },
     distance: function() {
       return geo.getDistance.apply(geo, arguments);
     },
@@ -1199,6 +1202,11 @@
       if (as == null) as = 'days';
       if (from._wrapped) from = from.value();
       return moment.humanizeDuration(from, 'milliseconds');
+    },
+    toS: function(array) {
+      return _.map(array, function(item) {
+        return item.toString();
+      });
     }
   };
 
@@ -1322,10 +1330,12 @@
 
   asyncing = {
     series: function() {
-      return async.series.apply(async, arguments);
+      var _ref2;
+      return (_ref2 = Tower.modules.async).series.apply(_ref2, arguments);
     },
     parallel: function() {
-      return async.parallel.apply(async, arguments);
+      var _ref2;
+      return (_ref2 = Tower.modules.async).parallel.apply(_ref2, arguments);
     }
   };
 
@@ -3817,9 +3827,11 @@
           "default": 0
         });
       }
-      return this.owner.prototype[name] = function() {
-        return this.relation(name);
-      };
+      return (function(name) {
+        return this.owner.prototype[name] = function() {
+          return this.relation(name);
+        };
+      })(name);
     };
 
     Relation.prototype.scoped = function(record) {
@@ -6055,6 +6067,7 @@
         return callback(e, result);
       } else if (options.type) {
         mint = require("mint");
+        if (typeof string === 'function') string = string();
         engine = mint.engine(options.type);
         if (engine.match(/(eco|mustache)/)) {
           return mint[engine](string, options, callback);
@@ -7645,13 +7658,14 @@
     },
     InstanceMethods: {
       call: function(request, response, next) {
+        var _base;
         this.request = request;
         this.response = response;
         this.params = this.request.params || {};
         this.cookies = this.request.cookies || {};
         this.query = this.request.query || {};
         this.session = this.request.session || {};
-        this.format = this.params.format || "html";
+        this.format = (_base = this.params).format || (_base.format = require('mime').extension(this.request.header("content-type")) || "html");
         this.action = this.params.action;
         this.headers = {};
         this.callback = next;
@@ -9048,7 +9062,9 @@
       options || (options = options);
       this.path = options.path;
       this.name = options.name;
-      this.method = (options.method || "GET").toUpperCase();
+      this.methods = _.map(_.castArray(options.method || "GET"), function(i) {
+        return i.toUpperCase();
+      });
       this.ip = options.ip;
       this.defaults = options.defaults || {};
       this.constraints = options.constraints;
@@ -9072,7 +9088,9 @@
         return this.pattern.exec(requestOrPath);
       }
       path = requestOrPath.location.path;
-      if (requestOrPath.method.toUpperCase() !== this.method) return null;
+      if (!(_.indexOf(this.methods, requestOrPath.method.toUpperCase()) > -1)) {
+        return null;
+      }
       match = this.pattern.exec(path);
       if (!match) return null;
       if (!this.matchConstraints(requestOrPath)) return null;
@@ -9398,7 +9416,7 @@
     };
 
     DSL.prototype._extractRequestMethod = function(options) {
-      return (options.method || options.via || "GET").toUpperCase();
+      return options.method || options.via || "GET";
     };
 
     DSL.prototype._extractAnchor = function(options) {
@@ -9423,11 +9441,11 @@
       if (!controller) {
         throw new Error("No controller was specified for the route " + options.path);
       }
-      controller = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller");
+      controller = Tower.Support.String.camelize(controller).replace(/(?:[cC]ontroller)?$/, "Controller");
       return {
         name: controller,
         action: action,
-        className: Tower.Support.String.camelize("" + controller)
+        className: controller
       };
     };
 
@@ -9473,6 +9491,8 @@
       this.headers = data.headers || {};
       this.method = data.method || "GET";
     }
+
+    Request.prototype.header = function() {};
 
     return Request;
 
@@ -9636,6 +9656,7 @@
       if (controller) {
         if (response.statusCode !== 302) {
           response.controller = controller;
+          if (Tower.env === "test") Tower.Controller.testCase = controller;
           response.writeHead(controller.status, controller.headers);
           response.write(controller.body);
           response.end();

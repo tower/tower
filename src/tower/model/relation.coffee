@@ -83,8 +83,9 @@ class Tower.Model.Relation extends Tower.Class
 
       @owner.field @counterCacheKey, type: "Integer", default: 0
 
-    @owner.prototype[name] = ->
-      @relation(name)
+    do (name) ->
+      owner.prototype[name] = ->
+        @relation(name)
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->

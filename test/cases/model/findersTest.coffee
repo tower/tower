@@ -353,8 +353,7 @@ describeWith = (store) ->
               App.Post.create title: title, rating: 8, (error, post) =>
                 next()
         
-        async.series callbacks, =>
-          process.nextTick(done)
+        _.series callbacks, done
         
       afterEach ->
         Tower.Model.Criteria::defaultLimit = 20
@@ -402,4 +401,5 @@ describeWith = (store) ->
           done()
 
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB) unless Tower.client
+#unless Tower.client
+#  describeWith(Tower.Store.MongoDB)

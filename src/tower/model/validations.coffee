@@ -85,7 +85,8 @@ Tower.Model.Validations =
           validator.validateEach @, errors, next
 
         Tower.async validators, iterator, (error) =>
-          success = true unless error || _.isPresent(errors)
+          if (!(_.isPresent(errors) || error))
+            success = true
           complete.call(@, !success)
 
         success

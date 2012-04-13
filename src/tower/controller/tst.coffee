@@ -3,7 +3,7 @@ Tower.start = (port, callback) ->
     callback  = port
     port      = undefined
     
-  Tower.port = port || 3000
+  Tower.port = port || 3001
   
   Tower.Application.instance().server.listen Tower.port, callback
   
