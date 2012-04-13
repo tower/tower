@@ -16,7 +16,7 @@ describe 'Tower.Generator.AppGenerator', ->
     #)
     
   test 'create an app', (done) ->
-    assert.file "./test/apps/server/app/controllers/testJsonController.coffee"
+    assert.file "#{Tower.root}/app/controllers/testJsonController.coffee"
     done()
     #generator.run =>
     #  done()

@@ -74,8 +74,8 @@ describe "Tower.View", ->
             assert.equal body.trim(), "<h1>I'm #{engine}!</h1>"
             done()
             
-        test "render(template: 'custom/engine', type: '#{engine}', layout: 'application')", (done) ->
-          view.render template: 'custom/engine', type: engine, layout: 'application', locals: ENGINE: engine, (error, body) ->
+        test "render(template: 'custom/engine', type: '#{engine}', layout: 'test')", (done) ->
+          view.render template: 'custom/engine', type: engine, layout: 'test', locals: ENGINE: engine, (error, body) ->
             assert.equal body.trim(), "<h1>I'm #{engine}!</h1>"
             done()
             

@@ -10,10 +10,10 @@ global.sinon  = require 'sinon'
 global.async  = require 'async'
 global.cb     = true # some library has a global leak...
 
-Tower.root            = process.cwd() + "/test/apps/server"
+Tower.root            = process.cwd() + "/test/example"
 Tower.publicPath      = Tower.root + "/public"
 Tower.env             = "test"
-Tower.View.loadPaths  = ["./test/apps/server/app/views"]
+Tower.View.loadPaths  = ["./test/example/app/views"]
 Tower.port            = 3001
 
 require '../lib/tower/controller/tst'
@@ -77,11 +77,11 @@ before (done) ->
 
 beforeEach (done) ->
   #Tower.Application.instance().teardown()
-  Tower.root                    = "#{process.cwd()}/test/apps/server"
-  Tower.relativeRoot            = "test/apps/server"
+  Tower.root                    = "#{process.cwd()}/test/example"
+  Tower.relativeRoot            = "test/example"
   Tower.publicPath              = "#{Tower.root}/public"
   Tower.View.engine             = "coffee"
-  Tower.View.store().loadPaths  = ["test/apps/server/app/views"]
+  Tower.View.store().loadPaths  = ["test/example/app/views"]
   
   Tower.Application.instance().initialize ->
     done()

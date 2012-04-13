@@ -15,3 +15,5 @@ Tower.Route.draw ->
   
   # test rendering
   @match "/custom/renderHelloWorld", to: "custom#renderHelloWorld"
+
+  @match "/", to: "application#welcome"

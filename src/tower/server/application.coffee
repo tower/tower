@@ -182,7 +182,6 @@ class Tower.Application extends Tower.Engine
 
   watch: ->
     forever = require("forever")
-    console.log Tower.root
     child = new (forever.Monitor)("node_modules/design.io/bin/design.io",
       max:    1
       silent: false
