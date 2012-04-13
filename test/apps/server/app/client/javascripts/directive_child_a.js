@@ -1,1 +1,0 @@
-alert("child a");

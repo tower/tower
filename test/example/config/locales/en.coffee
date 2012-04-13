@@ -1,5 +1,5 @@
 module.exports =
-  title:        "Client"
+  title:        "Test Tower App"
   description:  ""
   keywords:     ""
   author:       "Lance Pollard"
