@@ -16,3 +16,23 @@ require("design.io-javascripts")
         console.log(error.stack) if error
     catch error
       console.log error.stack
+      
+require("design.io-javascripts") /test\/apps\/client\/.*\.coffee$/
+  compress: false
+  debug:    false
+  outputPath: (path) ->
+    path = path.replace("test/apps/client/", "")
+    "test/apps/client/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+    
+require("design.io-javascripts") /test\/cases\/.*\.coffee$/
+  compress: false
+  debug:    false
+  outputPath: (path) ->
+    "test/apps/client/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+    
+require("design.io-javascripts") /test\/apps\/server\/app\/.*\.coffee$/
+  compress: false
+  debug:    false
+  outputPath: (path) ->
+    path = path.replace("test/apps/server/", "")
+    "test/apps/client/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")

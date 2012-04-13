@@ -12,6 +12,9 @@ _.mixin Tower.Support.Object
 _.mixin Tower.Support.RegExp
 _.mixin Tower.Support.String
 
+# hack
+try _.string.isBlank = Tower.Support.Object
+
 require './support/callbacks'
 require './support/class'
 require './support/eventEmitter'

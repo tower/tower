@@ -8,7 +8,12 @@ describe 'Tower.Generator.AppGenerator', ->
     destinationRoot = process.cwd() + "/test/tmp/myapp"
     sourceRoot      = process.cwd() + "/src/tower/generator/generators/tower/app"
     destinationRoot = process.cwd() + "/test/tmp/myapp"
-    generator       = new Tower.Generator.AppGenerator(sourceRoot: sourceRoot, destinationRoot: destinationRoot)
+    #generator       = new Tower.Generator.AppGenerator(
+    #  sourceRoot: sourceRoot
+    #  destinationRoot: destinationRoot
+    #  program: {}
+    #  appName: "myapp"
+    #)
     
   test 'create an app', (done) ->
     assert.file "./test/apps/server/app/controllers/testJsonController.coffee"

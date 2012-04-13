@@ -1,10 +1,23 @@
+File = require('pathfinder').File
+
+testCases   = _.map File.files("#{Tower.root}/public/javascripts/test/cases"), (path) ->
+  path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
+  
+testCases   = _.select testCases, (path) ->
+  #!path.match("server")
+  path.match(/model/)
+  
+testModels  = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
+  path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
+  
+testModels  = _.select testModels, (path) ->
+  path.match(/model/) && !path.match('client')
+  
 module.exports =
   javascripts:
     application: [
       "/app/client/config/application"
-      "/config/routes"
-      "/app/views/templates"
-    ]
+    ].concat(testModels)
     
     lib: [
       
@@ -20,10 +33,10 @@ module.exports =
       "/vendor/javascripts/inflection"
       "/vendor/javascripts/coffeekup"
       "/vendor/javascripts/prettify"
+      "/vendor/javascripts/async"
       "/vendor/javascripts/socket.io"
       "/vendor/javascripts/history"
       "/vendor/javascripts/history.adapter.jquery"
-      "/vendor/javascripts/tower"
       "/vendor/javascripts/bootstrap/bootstrap-transition"
       "/vendor/javascripts/bootstrap/bootstrap-alert"
       "/vendor/javascripts/bootstrap/bootstrap-modal"
@@ -36,6 +49,7 @@ module.exports =
       "/vendor/javascripts/bootstrap/bootstrap-collapse"
       "/vendor/javascripts/bootstrap/bootstrap-carousel"
       "/vendor/javascripts/bootstrap/bootstrap-typeahead"
+      "/vendor/javascripts/tower"
     ]
     
     development: [
@@ -43,11 +57,11 @@ module.exports =
       "/vendor/javascripts/chai"
       "/vendor/javascripts/design.io"
       "/test/client"
-    ]
+    ].concat(testCases)
   
   stylesheets:
     application: [
-      "/app/client/stylesheets/application"
+      # "/app/client/stylesheets/application"
     ]
     
     lib: [
@@ -55,10 +69,10 @@ module.exports =
     ]
     
     vendor: [
-      "/vendor/stylesheets/bootstrap/bootstrap"
-      "/vendor/stylesheets/prettify"
+      # "/vendor/stylesheets/bootstrap/bootstrap"
+      # "/vendor/stylesheets/prettify"
     ]
     
     development: [
-      # "/vendor/stylesheets/mocha"
+      "/vendor/stylesheets/mocha"
     ]

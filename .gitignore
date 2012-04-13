@@ -34,4 +34,5 @@ docs
 test/tmp
 test/apps/README.md
 test/apps/package.json
+test/apps/client/public/javascripts
 tmp

@@ -2,9 +2,15 @@ fs    = require 'fs'
 path  = require 'path'
 
 assert.file = (path, arg) ->
-  assert.ok path.existsSync(path), "#{path} exists"
-  assert.ok !fs.statSync(path).isDirectory(), "#{path} is file"
-  
+  try
+    stat = fs.statSync(path)
+    assert.ok stat, "#{path} exists"
+    assert.ok !stat.isDirectory(), "#{path} is file"
+  catch error
+    assert.ok false, "#{path} exists"
+    arg() if typeof arg == "function"
+    return
+    
   return unless arg
   
   content = fs.readFileSync(path, "utf-8")

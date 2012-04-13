@@ -20,3 +20,6 @@ class App.User extends Tower.Model
   @validates "firstName", presence: true
   
   @timestamps()
+
+class App.Admin extends App.User
+  @scope "subclassNamedScope", likes: ">": 0

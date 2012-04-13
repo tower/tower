@@ -37,4 +37,6 @@ html ->
   if hasContentFor "bottom"
     yields "bottom"
     
+    div id: "mocha", ->
+    
     script "App.bootstrap(#{JSON.stringify(@bootstrapData, null, [])})" if @bootstrapData
