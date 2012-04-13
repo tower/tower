@@ -3,21 +3,30 @@ user        = null
 router      = null
 
 describe 'Tower.Controller.Rendering', ->
-  test 'renderCoffeeKupFromTemplate', ->
-    Tower.get 'renderCoffeeKupFromTemplate', ->
+  beforeEach (done) ->
+    Tower.start(done)
+
+  afterEach ->
+    Tower.stop()
+    
+  test 'renderCoffeeKupFromTemplate', (done) ->
+    _.get '/custom/renderCoffeeKupFromTemplate', ->
       assert.equal @body, "<h1>Hello World</h1>\n"
       assert.equal @headers["Content-Type"], "text/html"
-  
-  test 'renderHelloWorldFromVariable', ->
-    Tower.get 'renderHelloWorldFromVariable', ->
+      done()
+      
+  test 'renderHelloWorldFromVariable', (done) ->
+    _.get '/custom/renderHelloWorldFromVariable', ->
       assert.equal @person, "david"
       assert.equal @body, "hello david"
+      done()
       
-  test 'renderWithExplicitStringTemplateAsAction', ->
-    Tower.get 'renderWithExplicitStringTemplateAsAction', ->
+  test 'renderWithExplicitStringTemplateAsAction', (done) ->
+    _.get '/custom/renderWithExplicitStringTemplateAsAction', ->
       assert.equal @body, "<h1>Hello World!!!</h1>\n"
-
-  #test 'helloWorldFile', ->
+      done()
+         
+  # test 'helloWorldFile', ->
   #  Tower.get 'helloWorldFile', ->
   #    assert.equal @body, "Hello world!"
   #    
@@ -33,13 +42,15 @@ describe 'Tower.Controller.Rendering', ->
   #  Tower.get 'renderActionHelloWorld', ->
   #    assert.equal @body, "Hello world!"
   #    
-  test 'renderActionUpcasedHelloWorld', ->
-    Tower.get 'renderActionUpcasedHelloWorld', ->
+  test 'renderActionUpcasedHelloWorld', (done) ->
+    _.get '/custom/renderActionUpcasedHelloWorld', ->
       assert.equal @body, "<h1>renderActionUpcasedHelloWorld</h1>\n"
+      done()
       
-  test 'renderActionUpcasedHelloWorldAsString', ->
-    Tower.get 'renderActionUpcasedHelloWorldAsString', ->
+  test 'renderActionUpcasedHelloWorldAsString', (done) ->
+    _.get '/custom/renderActionUpcasedHelloWorldAsString', ->
       assert.equal @body, "<h1>renderActionUpcasedHelloWorld</h1>\n"
+      done()
   
   #test 'renderActionHelloWorldAsString', ->
   #  Tower.get 'renderActionUpcasedHelloWorld', ->
@@ -81,19 +92,22 @@ describe 'Tower.Controller.Rendering', ->
   #test 'accessingParamsInTemplate'
   #test 'accessingLocalAssignsInInlineTemplate'
   
-  test 'renderJsonHelloWorld', ->
-    Tower.get 'renderJsonHelloWorld', ->
+  test 'renderJsonHelloWorld', (done) ->
+    _.get '/custom/renderJsonHelloWorld', ->
       assert.equal @body, JSON.stringify(hello: "world")
       assert.equal @headers["Content-Type"], "application/json"
+      done()
       
-  test 'renderJsonHelloWorldWithParams', ->
-    Tower.get 'renderJsonHelloWorldWithParams', hello: "world", ->
+  test 'renderJsonHelloWorldWithParams', (done) ->
+    _.get '/custom/renderJsonHelloWorldWithParams', params: hello: "world", ->
       assert.equal @body, JSON.stringify(hello: "world")
       assert.equal @headers["Content-Type"], "application/json"
       assert.equal @status, 200
+      done()
       
-  test 'renderJsonHelloWorldWithStatus', ->
-    Tower.get 'renderJsonHelloWorldWithStatus', ->
+  test 'renderJsonHelloWorldWithStatus', (done) ->
+    _.get '/custom/renderJsonHelloWorldWithStatus', ->
       assert.equal @body, JSON.stringify(hello: "world")
       assert.equal @headers["Content-Type"], "application/json"
       assert.equal @status, 401
+      done()

@@ -1,3 +1,4 @@
+# https://raw.github.com/plessbd/superagent/f6e7a85555bbd1a70babf62b4d0c0ec674f3d2f5/lib/node/index.js
 Tower.start = (port, callback) ->
   if typeof port == 'function'
     callback  = port
@@ -8,18 +9,18 @@ Tower.start = (port, callback) ->
   Tower.Application.instance().server.listen Tower.port, callback
   
 Tower.stop = ->
-  Tower.port = 3000
+  Tower.port = 3001
   delete Tower.Controller.testCase
   Tower.Application.instance().server.close()
 
 Tower.modules.superagent.Request::make = (callback) ->
-  @end (request) ->
+  @end (response) ->
     controller = Tower.Controller.testCase
     if controller
-      request.controller = controller
-      callback.call controller, request
+      response.controller = controller
+      callback.call controller, response
     else
-      callback.call @, request
+      callback.call @, response
 
 _.get     = ->
   _.request "get", arguments...
@@ -45,8 +46,8 @@ _.request = (method, path, options, callback) ->
   params      = options.params  || {}
   redirects   = options.redirects || 5
   auth        = options.auth
-  format      = options.format
-    
+  format      = options.format# || "form-data"
+  
   newRequest = Tower.modules.superagent[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
     .set(headers)
     .send(params)

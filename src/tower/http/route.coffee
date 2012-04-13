@@ -51,9 +51,17 @@ class Tower.HTTP.Route extends Tower.Class
     keys    = @keys
     params  = _.extend({}, @defaults, request.query || {}, request.body || {})
     match   = match[1..-1]
-
+    
     for capture, i in match
-      params[keys[i].name] ||= if capture then decodeURIComponent(capture) else null
+      key = keys[i].name
+      
+      if capture && !params[key]?
+        capture = decodeURIComponent(capture)
+        # need a way to convert :id to integer if it's an integer...
+        try
+          params[key] = JSON.parse(capture)
+        catch error
+          params[key] = capture
 
     controller      = @controller
     params.action   = controller.action if controller

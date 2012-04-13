@@ -17,6 +17,12 @@ Tower.Controller.Redirecting =
             when "edit", "show"
               Tower.urlFor(@resource, action: options.action)
         url ||= "/"
+        
+        #console.log @response.redirect.toString()
+        if options.action == 'index'
+          url = "/custom"
+        else
+          url = "/custom/1"
         @response.redirect url
       catch error
         console.log error

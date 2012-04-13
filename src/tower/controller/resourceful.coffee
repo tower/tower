@@ -78,7 +78,6 @@ Tower.Controller.Resourceful =
 
   # Default implementation for the "index" action.
   index: ->
-    #@_index arguments...
     @_index (format) =>
       format.html => @render "index"
       format.json => @render json: @collection, status: 200
@@ -162,7 +161,7 @@ Tower.Controller.Resourceful =
       return callback.call @, error, null if error
 
       resource = null
-
+      
       scope.create @params[@resourceName], (error, record) =>
         @[@resourceName] = @resource = resource = record
         callback.call @, null, resource if callback
@@ -280,7 +279,6 @@ Tower.Controller.Resourceful =
 
   # @private
   _show: (callback) ->
-    @__show = true
     @findResource (error, resource) =>
       @respondWith resource, callback
 
