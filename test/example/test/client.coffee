@@ -7,6 +7,9 @@ global.expect = chai.expect
 global.test   = it
 global.__flash_getWindowLocation  = null
 global.__flash_getTopLocation     = null
+# from node-validator on client...
+global.event_handlers = null
+global.naughty        = null
 
 $ ->
   app = Tower.Application.instance()

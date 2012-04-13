@@ -132,7 +132,7 @@ Tower.version = "#{VERSION}"
     result = JS_COPYRIGHT + result
     _console.error error.stack if error
     fs.writeFile "./dist/tower.js", result
-    fs.writeFile './test/apps/client/public/javascripts/vendor/javascripts/tower.js', result
+    fs.writeFile './test/exampe/public/javascripts/vendor/javascripts/tower.js', result
     unless error
       #result = obscurify(result)
 
