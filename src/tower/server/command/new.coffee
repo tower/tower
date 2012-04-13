@@ -17,7 +17,7 @@ class Tower.Command.New
       .option '-h, --help', '''
 \ \ Usage:
 \ \   tower new <app-name> [options]
-\ \ 
+\ \
 \ \ Options:
 \ \   -T, --title <title>               project title (as opposed to its file name)
 \ \   -D, --description <description>   project tagline (one sentence)
@@ -27,7 +27,7 @@ class Tower.Command.New
 \ \   -v, --version                     output version number
 \ \   --skip-procfile                   skip creating a Procfile (for deploying to Heroku)
 \ \   --skip-git                        Skip Git ignores and keeps
-\ \ 
+\ \
 '''
 
     program.parse(argv)
