@@ -8,6 +8,14 @@ _.mixin(_.string.exports())
 #  false
 
 class Tower.Application extends Tower.Engine
+  @before 'initialize', 'setDefaults'
+
+  setDefaults: ->
+    Tower.Model.default "store", Tower.Store.Ajax
+    Tower.Model.field "id", type: "Id"
+
+    true
+
   @configure: (block) ->
     @initializers().push block
 
@@ -45,6 +53,7 @@ class Tower.Application extends Tower.Engine
   initialize: ->
     @extractAgent()
     @applyMiddleware()
+    @setDefaults()
     @
 
   applyMiddleware: ->
@@ -70,8 +79,8 @@ class Tower.Application extends Tower.Engine
     @
 
   extractAgent: ->
-    Tower.cookies = Tower.Dispatch.Cookies.parse()
-    Tower.agent   = new Tower.Dispatch.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
+    Tower.cookies = Tower.HTTP.Cookies.parse()
+    Tower.agent   = new Tower.HTTP.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
 
   listen: ->
     self = @
@@ -81,9 +90,9 @@ class Tower.Application extends Tower.Engine
     if @History && @History.enabled
       @History.Adapter.bind global, "statechange", ->
         state     = History.getState()
-        location  = new Tower.Dispatch.Url(state.url)
-        request   = new Tower.Dispatch.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
-        response  = new Tower.Dispatch.Response(url: state.url, location: location)
+        location  = new Tower.HTTP.Url(state.url)
+        request   = new Tower.HTTP.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
+        response  = new Tower.HTTP.Response(url: state.url, location: location)
         # History.log State.data, State.title, State.url
         self.handle request, response
       $(global).trigger "statechange"

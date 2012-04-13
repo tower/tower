@@ -2,13 +2,13 @@
 class Tower.HTTP.Route extends Tower.Class
   @store: ->
     @_store ||= []
-    
+
   @byName: {}
 
   @create: (route) ->
     @byName[route.name] = route
     @store().push(route)
-    
+
   @find: (name) ->
     @byName[name]
 
@@ -60,7 +60,7 @@ class Tower.HTTP.Route extends Tower.Class
     options     ||= options
     @path         = options.path
     @name         = options.name
-    @method       = (options.method || "GET").toUpperCase()
+    @methods      = _.map _.castArray(options.method || "GET"), (i) -> i.toUpperCase()
     @ip           = options.ip
     @defaults     = options.defaults || {}
     @constraints  = options.constraints
@@ -71,14 +71,15 @@ class Tower.HTTP.Route extends Tower.Class
     @id           = @path
     if @controller
       @id += @controller.name + @controller.action
-      
+
   get: (name) ->
     @[name]
 
   match: (requestOrPath) ->
     if typeof requestOrPath == "string" then return @pattern.exec(requestOrPath)
-    path  = requestOrPath.location.path
-    return null unless requestOrPath.method.toUpperCase() == @method
+    path    = requestOrPath.location.path
+    
+    return null unless _.indexOf(@methods, requestOrPath.method.toUpperCase()) > -1
     match = @pattern.exec(path)
     return null unless match
     return null unless @matchConstraints(requestOrPath)

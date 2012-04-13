@@ -21,7 +21,23 @@ Tower.Store.Memory.Serialization =
       attributes[_key].push _value
     attributes
 
+  _pushAllAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      attributes[_key] ||= []
+      attributes[_key].concat _.castArray(_value)
+    attributes
+
   _pullAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      _attributeValue = attributes[_key]
+      if _attributeValue
+        for item in _value
+          _attributeValue.splice _attributeValue.indexOf(item), 1
+    attributes
+
+  # something is happening where all these functions are being called twice?
+  _pullAllAtomicUpdate: (attributes, value) ->
+    return attributes
     for _key, _value of value
       _attributeValue = attributes[_key]
       if _attributeValue
@@ -33,6 +49,16 @@ Tower.Store.Memory.Serialization =
     for _key, _value of value
       attributes[_key] ||= 0
       attributes[_key] += _value
+    attributes
+
+  _addToSetAtomicUpdate: (attributes, value) ->
+    for _key, _value of value
+      attributeValue = attributes[_key] ||= []
+      if _value && _value.hasOwnProperty("$each")
+        for item in _value.$each
+          attributeValue.push(item) if attributeValue.indexOf(item) == -1
+      else
+        attributeValue.push(_value) if attributeValue.indexOf(_value) == -1
     attributes
 
 module.exports = Tower.Store.Memory.Serialization

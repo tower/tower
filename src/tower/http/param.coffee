@@ -6,7 +6,8 @@ class Tower.HTTP.Param
   @pageKey:       "page"
   @separator:     "_"                    # or "-"
 
-  @create: (key, options) ->
+  @create: (key, options = {}) ->
+    options = type: options if typeof options == "string"
     options.type ||= "String"
     new Tower.HTTP.Param[options.type](key, options)
 

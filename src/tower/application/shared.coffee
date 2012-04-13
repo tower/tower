@@ -46,9 +46,9 @@ _.extend Tower,
       options       = {}
     options       ||= {}
     url             = path
-    location        = new Tower.Dispatch.Url(url)
-    request         = new Tower.Dispatch.Request(url: url, location: location, method: method)
-    response        = new Tower.Dispatch.Response(url: url, location: location, method: method)
+    location        = new Tower.HTTP.Url(url)
+    request         = new Tower.HTTP.Request(url: url, location: location, method: method)
+    response        = new Tower.HTTP.Response(url: url, location: location, method: method)
     request.query   = location.params
     Tower.Application.instance().handle request, response, ->
       callback.call @, @response
@@ -152,13 +152,13 @@ _.extend Tower,
 
   none: (value) ->
     _.none value
-    
+
   oneOrMany: ->
     _.oneOrMany arguments...
-      
+
   args: (args) ->
     _.args(args)
-    
+
   clone: (object) ->
     _.extend({}, object)
 

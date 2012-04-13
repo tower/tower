@@ -58,7 +58,7 @@ Tower.Support.String =
     for key, value of keys
       string = string.replace(new RegExp("%\\{#{key}\\}", "g"), value)
     string
-    
+
   grep: (object, regex, iterator, context) ->
     regex = if _.isRegExp(regex) then regex else RegExp(String(regex).replace(/([{.(|}:)$+?=^*!\/[\]\\])/g, "\\$1"))
     found = _.select(object, (s) ->
@@ -241,7 +241,7 @@ Tower.urlFor = ->
   options ||= args.pop()
 
   result    = ""
-  
+
   if options.route
     route = Tower.Route.find(options.route)
     result = route.urlFor() if route

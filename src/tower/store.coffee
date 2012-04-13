@@ -12,57 +12,61 @@ class Tower.Store extends Tower.Class
     false
 
   @atomicModifiers:
-    "$set":     "$set"
-    "$unset":   "$unset"
-    "$push":    "$push"
-    "$pushAll": "$pushAll"
-    "$pull":    "$pull"
-    "$pullAll": "$pullAll"
-    "$inc":     "$inc"
-    "$pop":     "$pop"
+    "$set":       "$set"
+    "$unset":     "$unset"
+    "$push":      "$push"
+    "$pushAll":   "$pushAll"
+    "$pull":      "$pull"
+    "$pullAll":   "$pullAll"
+    "$inc":       "$inc"
+    "$pop":       "$pop"
+    "$addToSet":  "$addToSet"
 
   @queryOperators:
-    ">=":       "$gte"
-    "$gte":     "$gte"
-    ">":        "$gt"
-    "$gt":      "$gt"
-    "<=":       "$lte"
-    "$lte":     "$lte"
-    "<":        "$lt"
-    "$lt":      "$lt"
-    "$in":      "$in"
-    "$any":     "$in"
-    "$nin":     "$nin"
-    "$all":     "$all"
-    "=~":       "$regex"
-    "$m":       "$regex"
-    "$regex":   "$regex"
-    "$match":   "$regex"
-    "$notMatch":   "$notMatch"
-    "!~":       "$nm"
-    "$nm":      "$nm"
-    "=":        "$eq"
-    "$eq":      "$eq"
-    "!=":       "$neq"
-    "$neq":     "$neq"
-    "$null":    "$null"
-    "$notNull": "$notNull"
+    ">=":         "$gte"
+    "$gte":       "$gte"
+    ">":          "$gt"
+    "$gt":        "$gt"
+    "<=":         "$lte"
+    "$lte":       "$lte"
+    "<":          "$lt"
+    "$lt":        "$lt"
+    "$in":        "$in"
+    "$any":       "$in"
+    "$nin":       "$nin"
+    "$all":       "$all"
+    "=~":         "$regex"
+    "$m":         "$regex"
+    "$regex":     "$regex"
+    "$match":     "$regex"
+    "$notMatch":  "$notMatch"
+    "!~":         "$nm"
+    "$nm":        "$nm"
+    "=":          "$eq"
+    "$eq":        "$eq"
+    "!=":         "$neq"
+    "$neq":       "$neq"
+    "$null":      "$null"
+    "$notNull":   "$notNull"
 
   @booleans:
-    true:    true
-    "true":  true
-    "TRUE":  true
-    "1":     true
-    1:       true
-    1.0:     true
-    false:   false
-    "false": false
-    "FALSE": false
-    "0":     false
-    0:       false
-    0.0:     false
+    true:         true
+    "true":       true
+    "TRUE":       true
+    "1":          true
+    1:            true
+    1.0:          true
+    false:        false
+    "false":      false
+    "FALSE":      false
+    "0":          false
+    0:            false
+    0.0:          false
 
   supports: {}
+
+  addIndex: (name, options) ->
+
 
   serialize: (data) ->
     data[i] = @serializeModel(item) for item, i in data
@@ -96,19 +100,19 @@ class Tower.Store extends Tower.Class
 
   supports: (key) ->
     @constructor.supports[key] == true
-    
+
   _mapKeys: (key, records) ->
     _.map(records, (record) -> record.get(key))
-  
+
   # Prepare the criteria before you execute {#create},
   # perhaps for mimicking join tables in MongoDB.
-  # 
+  #
   # @return [void] Requires a callback.
   runBeforeCreate: (criteria, callback) ->
     callback()
-    
+
   # Process the criteria after {#create}, perhaps for eager loading.
-  # 
+  #
   # @return [void] Requires a callback.
   runAfterCreate: (criteria, callback) ->
     #if criteria.throughRelation
@@ -116,24 +120,24 @@ class Tower.Store extends Tower.Class
     #else
     #  callback()
     callback()
-      
+
   # Prepare the criteria before you execute {#update}.
-  # 
+  #
   # @return [void] Requires a callback.
   runBeforeUpdate: (criteria, callback) ->
     if criteria.throughRelation
       criteria.appendThroughConditions(callback)
     else
       callback()
-    
+
   # Process the criteria after {#update}.
-  # 
+  #
   # @return [void] Requires a callback.
   runAfterUpdate: (criteria, callback) ->
     callback()
-    
+
   # Prepare the criteria before you execute {#destroy}.
-  # 
+  #
   # @return [void] Requires a callback.
   runBeforeDestroy: (criteria, callback) ->
     if criteria.throughRelation
@@ -142,26 +146,26 @@ class Tower.Store extends Tower.Class
       callback()
 
   # Process the criteria after {#destroy}.
-  # 
+  #
   # @return [void] Requires a callback.
   runAfterDestroy: (criteria, callback) ->
     callback()
-  
+
   # Prepare the criteria before you execute {#find}.
-  # 
+  #
   # @return [void] Requires a callback.
   runBeforeFind: (criteria, callback) ->
     if criteria.throughRelation
       criteria.appendThroughConditions(callback)
     else
       callback()
-    
+
   # Process the criteria after {#find}.
-  # 
+  #
   # @return [void] Requires a callback.
   runAfterFind: (criteria, callback) ->
     callback()
-    
+
 require './store/memory'
 
 module.exports = Tower.Store

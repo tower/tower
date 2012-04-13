@@ -2,6 +2,10 @@ class Tower.Generator extends Tower.Class
   sourceRoot: __dirname
 
   @run: (type, options) ->
+    klass = @buildGenerator(type)
+    new klass(options)
+
+  @buildGenerator: (type) ->
     klass   = Tower.Generator
     # tower generate model
     # tower generate mocha:model
@@ -11,7 +15,7 @@ class Tower.Generator extends Tower.Class
     for node, i in nodes
       klass = klass[Tower.Support.String.camelize(node)]
 
-    new klass(options)
+    klass
 
   constructor: (options = {}) ->
     _.extend @, options
@@ -45,6 +49,8 @@ Tower.Generator.include Tower.Generator.Configuration
 Tower.Generator.include Tower.Generator.Resources
 Tower.Generator.include Tower.Generator.Shell
 
+Tower.Generator.Mocha = {}
+
 require './generator/generators/tower/app/appGenerator'
 require './generator/generators/tower/model/modelGenerator'
 require './generator/generators/tower/view/viewGenerator'
@@ -53,5 +59,6 @@ require './generator/generators/tower/helper/helperGenerator'
 require './generator/generators/tower/assets/assetsGenerator'
 require './generator/generators/tower/mailer/mailerGenerator'
 require './generator/generators/tower/scaffold/scaffoldGenerator'
+require './generator/generators/mocha/model/modelGenerator'
 
 module.exports = Tower.Generator

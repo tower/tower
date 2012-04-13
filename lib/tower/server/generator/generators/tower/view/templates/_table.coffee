@@ -4,7 +4,7 @@ tableFor "<%= model.namePlural %>", (t) ->
       t.header "<%= model.attributes[i].name %>", sort: true<% } %>
   t.body ->
     for <%= model.name %> in @<%= model.namePlural %>
-      t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
+      t.row class: "<%= model.name %>", "data-id": <%= model.name %>.get('id').toString(), -><% for (var i = 0; i < model.attributes.length; i++) { %>
         t.cell -> <%= model.name %>.get("<%= model.attributes[i].name %>")<% } %>
         t.cell -> 
           linkTo 'Show', urlFor(<%= model.name %>)
@@ -15,5 +15,5 @@ tableFor "<%= model.namePlural %>", (t) ->
   t.foot ->
     t.row ->
       t.cell colspan: <%= model.attributes.length + 3 %>, ->
-        linkTo 'New <%= model.className %>', urlFor(<%= app.namespace %>.<%= model.className %>, action: "new")
+        linkTo 'New <%= model.humanName %>', urlFor(<%= app.namespace %>.<%= model.className %>, action: "new")
 

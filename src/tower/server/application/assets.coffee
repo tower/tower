@@ -14,7 +14,7 @@ print         = require('util').print
 # https://github.com/tomgallacher/gzippo
 Tower.Application.Assets =
   # Loads "public/assets/manifest.json".
-  # 
+  #
   # @return [Object] the JSON contained in that file.
   loadManifest: ->
     try
@@ -23,7 +23,7 @@ Tower.Application.Assets =
       Tower.assetManifest = {}
 
   # Minify and gzip assets for production.
-  # 
+  #
   # @return [void]
   bundle: ->
     gzip          = require 'gzip'
@@ -83,9 +83,9 @@ Tower.Application.Assets =
             process.exit()
             #process.nextTick ->
             #  invoke 'stats'
-  
+
   # Upload assets to Amazon S3
-  # 
+  #
   # @return [void]
   upload: (block) ->
     gzip          = require 'gzip'

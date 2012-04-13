@@ -7,51 +7,51 @@ Tower.Store.Memory.Finders =
     records     = @records
     conditions  = criteria.conditions()
     options     = criteria
-    
+
     if _.isPresent(conditions)
       sort        = options.get('order')
       limit       = options.get('limit')# || Tower.Store.defaultLimit
       startIndex  = options.get('offset') || 0
-      
+
       for key, record of records
         result.push(record) if @matches(record, conditions)
         # break if result.length >= limit
 
-      result  = @sort(result, sort) if sort.length
-      
-      endIndex   = startIndex + (limit || result.length) - 1
-      
-      result  = result[startIndex..endIndex]
+      result    = @sort(result, sort) if sort.length
+
+      endIndex  = startIndex + (limit || result.length) - 1
+
+      result    = result[startIndex..endIndex]
     else
       for key, record of records
         result.push(record)
-    
+
     #result = criteria.export(result) if result.length
-    
-    callback.call(@, null, result) if callback
-    
+
+    result = callback.call(@, null, result) if callback
+
     result
 
   # @see Tower.Store#findOne
   findOne: (criteria, callback) ->
     record = undefined
-    
+
     criteria.limit(1)
-    
+
     @find criteria, (error, records) =>
       record = records[0] || null
       callback.call(@, error, record) if callback
-      
+
     record
-  
+
   # @see Tower.Store#count
   count: (criteria, callback) ->
     result = undefined
-    
+
     @find criteria, (error, records) =>
       result = records.length
       callback.call(@, error, result) if callback
-      
+
     result
 
   # @see Tower.Store#exists
@@ -61,7 +61,7 @@ Tower.Store.Memory.Finders =
     @count criteria, (error, record) =>
       result = !!record
       callback.call(@, error, result) if callback
-    
+
     result
 
   # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]

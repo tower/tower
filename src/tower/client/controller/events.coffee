@@ -62,10 +62,11 @@ Tower.Controller.Events =
       if method
         method.call @, name, handler, options
       else
-        $(@dispatcher).on name, options.target, (event) => @_dispatch handler, options
+        $(@dispatcher).on name, options.target, (event) =>
+          @_dispatch event, handler, options
       @
 
-    _dispatch: (handler, options = {}) ->
+    _dispatch: (event, handler, options = {}) ->
       controller = @instance()
 
       controller.elements ||= {}

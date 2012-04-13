@@ -1,5 +1,3 @@
-require '../../config'
-
 controller  = null
 view        = null
 user        = null
@@ -13,7 +11,7 @@ describe 'Tower.View', ->
     Tower.View.cache = {}
     
   test 'partial', ->
-    Tower.View.cache["app/views/shared/_meta"] = """
+    Tower.View.cache["#{Tower.relativeRoot}/app/views/shared/_meta.coffee"] = """
       meta charset: "utf-8"
       title "Tower.js - Full Stack JavaScript Framework for Node.js and the Browser"
     """
@@ -40,7 +38,7 @@ describe 'Tower.View', ->
 """
   
   test "partial with collection", ->
-    Tower.View.cache["app/views/posts/_item"] = """
+    Tower.View.cache["#{Tower.relativeRoot}/app/views/posts/_item.coffee"] = """
       li class: "post", -> post.get("title")
     """
     
@@ -68,7 +66,7 @@ describe 'Tower.View', ->
 """
   
   test "partial with locals", ->
-    Tower.View.cache["app/views/posts/_item"] = """
+    Tower.View.cache["#{Tower.relativeRoot}/app/views/posts/_item.coffee"] = """
       li class: "post", -> post.get("title")
     """
     
@@ -91,12 +89,12 @@ describe 'Tower.View', ->
 """
 
   test "partials within partials with locals", ->
-    Tower.View.cache["app/views/posts/_item"] = """
+    Tower.View.cache["#{Tower.relativeRoot}/app/views/posts/_item.coffee"] = """
       li class: "post", ->
         partial "posts/header", locals: post: post
     """
     
-    Tower.View.cache["app/views/posts/_header"] = """
+    Tower.View.cache["#{Tower.relativeRoot}/app/views/posts/_header.coffee"] = """
       header ->
         h1 post.get("title")
     """

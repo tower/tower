@@ -7,7 +7,7 @@ class <%= app.namespace %> extends Tower.Application
     @use "query"
     @use "cookieParser", Tower.config.session.key
     @use "session", secret: Tower.config.session.secret, cookie: {domain: Tower.config.session.cookie.domain}
-    @use "bodyParser"
+    @use "bodyParser", uploadDir: "./public/uploads"
     #@use "csrf"
     @use "methodOverride", "_method"
     @use Tower.Middleware.Agent

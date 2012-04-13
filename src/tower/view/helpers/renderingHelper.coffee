@@ -1,3 +1,4 @@
+# @mixin
 Tower.View.RenderingHelper =
   partial: (path, options, callback) ->
     try

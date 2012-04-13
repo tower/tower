@@ -35,6 +35,7 @@ tower new app
 cd app
 sudo npm install
 tower generate scaffold Post title:string body:text
+npm test
 node server
 ```
 
@@ -92,9 +93,9 @@ Here's how you might organize a blog:
 |    |-- assets.coffee
 |    |-- databases.coffee
 |    |-- environments
-|       |-- development
-|       |-- production
-|       `-- test
+|       |-- development.coffee
+|       |-- production.coffee
+|       `-- test.coffee
 |    |-- locale
 |       `-- en.coffee
 |    |-- routes.coffee
@@ -137,9 +138,9 @@ module.exports = global.App = App
 ``` coffeescript
 # app/models/user.coffee
 class App.User extends Tower.Model
-  @field "firstName"
+  @field "firstName", required: true
   @field "lastName"
-  @field "email"
+  @field "email", format: /\w+@\w+.com/
   @field "activatedAt", type: "Date", default: -> new Date()
   
   @hasOne "address", embed: true
@@ -147,10 +148,9 @@ class App.User extends Tower.Model
   @hasMany "posts"
   @hasMany "comments"
   
-  @scope "thisWeek", -> @where(createdAt: ">=": -> require('moment')().subtract('days', 7))
+  @scope "recent", -> createdAt: ">=": -> _(3).days().ago().toDate()
   
-  @validates "firstName", presence: true
-  @validates "email", format: /\w+@\w+.com/
+  @validates "firstName", "email", presence: true
   
   @after "create", "welcome"
   
@@ -168,6 +168,7 @@ class App.Post extends Tower.Model
   @belongsTo "author", type: "User"
   
   @hasMany "comments", as: "commentable"
+  @hasMany "commenters", through: "comments", type: "User"
   
   @before "validate", "slugify"
   
@@ -563,20 +564,6 @@ npm test
 ## Examples
 
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
-
-## Accent Libraries
-
-Tower.js is just the bare bones, so you're free to choose a date parsing library, a template engine, or a form validation library, whatever.
-
-Here's some other useful libraries:
-
-- [moment.js](http://momentjs.com/) for date parsing
-- [underscore.js](http://documentcloud.github.com/underscore/)
-- [socket.io](http://socket.io/) for web sockets.
-- [async.js](https://github.com/caolan/async) for taming callback spaghetti
-- [geolib](https://github.com/manuelbieh/Geolib) for geo calculations
-- [tiny-require.js](https://github.com/viatropos/tiny-require.js) for using `require()` in the browser
-- [mint.js](https://github.com/viatropos/mint.js) for a generic interface to the JavaScript template engines
 
 ## License
 

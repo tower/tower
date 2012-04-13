@@ -1,4 +1,5 @@
 # @concern Tower.Model.Attributes
+# @concern Tower.Model.Persistence
 # @concern Tower.Model.Relations
 # @concern Tower.Model.Scopes
 # @concern Tower.Model.Validations
@@ -6,43 +7,8 @@
 # @method .where(conditions)
 #   Query conditions
 class Tower.Model extends Tower.Class
-  @_relationship: false
-  
-  # for now, just for neo4j
-  @relationship: (value = true) ->
-    @_relationship = value
-  
-  # @example All configuration options
-  #   class App.User extends Tower.Model
-  #     @configure
-  #
-  # @example Configure using a function
-  #   class App.User extends Tower.Model
-  #     @configure ->
-  #       defaultStore: Tower.Store.Memory
-  @configure: (object) ->
-    @config ||= {}
-    object = object.call @ if typeof object == "function"
-    _.extend @config, object
-    @
-
-  # @example All default options
-  #   class App.User extends Tower.Model
-  #     @defaults store: Tower.Store.Memory, scope: @desc("createdAt")
-  @defaults: (object) ->
-    @default(key, value) for key, value of object
-    @_defaults
-
-  # @example All default options
-  #   class App.User extends Tower.Model
-  #     @default "store", Tower.Store.Memory
-  #     @default "scope", @desc("createdAt")
-  @default: (key, value) ->
-    @_defaults ||= {}
-    @_defaults[key] = value
-
   # Construct a new Tower.Model
-  # 
+  #
   # @param [Object] attributes a hash of attributes
   # @param [Object] options a hash of options
   # @option options [Boolean] persistent whether or not this object is from the database
@@ -52,9 +18,11 @@ class Tower.Model extends Tower.Class
   initialize: (attrs = {}, options = {}) ->
     definitions = @constructor.fields()
     attributes  = {}
-    
+
     for name, definition of definitions
-      attributes[name] = definition.defaultValue(@) unless attrs.hasOwnProperty(name)
+      attributes[name] = definition.defaultValue(@)
+
+    attributes.type ||= @constructor.name if @constructor.isSubClass()
 
     @attributes     = attributes
     @relations      = {}
@@ -67,8 +35,9 @@ class Tower.Model extends Tower.Class
     @readOnly       = if options.hasOwnProperty("readOnly") then options.readOnly else false
     @persistent     = if options.hasOwnProperty("persistent") then options.persisted else false
 
-    @attributes[key] = value for key, value of attrs
-    
+    for key, value of attrs
+      @set key, value
+
 require './model/scope'
 require './model/criteria'
 require './model/dirty'

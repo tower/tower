@@ -7,7 +7,7 @@ Tower.Store.MongoDB.Serialization =
     delete attributes._id
     model = new klass(attributes)
     model
-  
+
   generateId: ->
     new @constructor.database.bson_serializer.ObjectID()
 
@@ -61,13 +61,13 @@ Tower.Store.MongoDB.Serialization =
     schema  = @schema()
     result  = {}
     query   = @deserializeModel(criteria.conditions())
-    
+
     for key, value of query
       field = schema[key]
       key   = "_id" if key == "id"
       if _.isRegExp(value)
         result[key] = value
-      else if _.isHash(value)
+      else if _.isBaseObject(value)
         result[key] = {}
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]
@@ -83,6 +83,9 @@ Tower.Store.MongoDB.Serialization =
 
     result
 
+  # batchSize
+  # hint
+  # explain
   serializeOptions: (criteria) ->
     limit         = criteria.get('limit')
     sort          = criteria.get('order')
@@ -92,14 +95,15 @@ Tower.Store.MongoDB.Serialization =
     if sort.length
       options.sort  = _.map sort, (set) ->
         [
-          if set[0] == "id" then "_id" else set[0], 
+          if set[0] == "id" then "_id" else set[0],
           if set[1] == 'asc' then 1 else -1
         ]
-    options.skip  = offset if offset  
+    options.skip  = offset if offset
     options
 
   encode: (field, value, operation) ->
     return value unless field
+
     method = @["encode#{field.encodingType}"]
     value = method.call(@, value, operation) if method
     value = [value] if operation == "$in" && !_.isArray(value)
@@ -128,6 +132,14 @@ Tower.Store.MongoDB.Serialization =
         time.local(value)
       else
         value
+
+  encodeGeo: (value) ->
+    # [lng, lat]
+    [value.lng, value.lat].reverse()
+
+  decodeGeo: (value) ->
+    return value unless value
+    lat: value[1], lng: value[0]
 
   decodeDate: (value) ->
     value
@@ -182,9 +194,11 @@ Tower.Store.MongoDB.Serialization =
     else
       @_encodeId(value)
 
+  # @todo need to figure out a better way to do this.
   _encodeId: (value) ->
+    return value if typeof value == 'number'
     try
-      @constructor.database.bson_serializer.ObjectID(value.toString())
+      @constructor.database.bson_serializer.ObjectID(value)
     catch error
       value
 

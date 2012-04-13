@@ -1,4 +1,3 @@
-require '../../config'
 ###
 generator       = null
 sourceRoot      = null

@@ -8,7 +8,7 @@ class Tower.View.Form extends Tower.View.Component
       @model    = if klass then new klass else null
 
     @attributes = @_extractAttributes(options)
-  
+
   render: (callback) ->
     @tag "form", @attributes, =>
       @tag "input", type: "hidden", name: "_method", value: @attributes["data-method"]

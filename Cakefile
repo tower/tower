@@ -132,6 +132,7 @@ Tower.version = "#{VERSION}"
     result = JS_COPYRIGHT + result
     _console.error error.stack if error
     fs.writeFile "./dist/tower.js", result
+    fs.writeFile './test/exampe/public/javascripts/vendor/javascripts/tower.js', result
     unless error
       #result = obscurify(result)
 
@@ -167,6 +168,7 @@ task 'build-generic', ->
     mint.coffee result, {}, (error, result) ->
       console.log error
       fs.writeFile './dist/tower.js', result
+      fs.writeFileSync './test/apps/client/public/javascripts/vendor/javascripts/tower.js', result
       unless error
         fs.writeFile './dist/tower.min.js', mint.uglifyjs(result, {})
         #compressor.render result, (error, result) ->

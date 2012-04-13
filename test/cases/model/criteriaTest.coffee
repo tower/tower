@@ -1,5 +1,3 @@
-require '../../config'
-
 scope     = null
 criteria  = null
 
@@ -134,4 +132,5 @@ describe 'Tower.Model.Criteria', ->
     assert.ok criteria.clone()
     
   test '#allIn', ->
+    
     

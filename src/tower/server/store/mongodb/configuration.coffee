@@ -30,4 +30,5 @@ Tower.Store.MongoDB.Configuration =
     lib: ->
       require 'mongodb'
 
+
 module.exports = Tower.Store.MongoDB.Configuration

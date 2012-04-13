@@ -1,6 +1,12 @@
-# @module
+# @mixin
 Tower.View.Rendering =
   render: (options, callback) ->
+    if !options.type && options.template && typeof(options.template) == 'string' && !options.inline
+      type  = options.template.split('/')
+      type  = type[type.length - 1].split(".")
+      type  = type[1..-1].join()
+      options.type  = if type != '' then type else @constructor.engine
+
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
@@ -66,7 +72,7 @@ Tower.View.Rendering =
         hardcode        = _.extend(hardcode, tags: coffeekup.tags)
         locals.hardcode = hardcode
         locals._ = _
-        
+
         result = coffeekup.render string, locals
       catch error
         e = error
@@ -74,8 +80,13 @@ Tower.View.Rendering =
       callback e, result
     else if options.type
       mint = require "mint"
-      engine = require("mint").engine(options.type)
-      mint[engine](string, options.locals, callback)
+      string = string() if typeof string == 'function'
+      engine = mint.engine(options.type)
+      # need to fix this on mint.js repo
+      if engine.match(/(eco|mustache)/)
+        mint[engine] string, options, callback
+      else
+        mint[engine](string, options.locals, callback)
     else
       mint = require "mint"
       engine = require("mint")
@@ -89,9 +100,6 @@ Tower.View.Rendering =
     for key of _ref
       value = _ref[key]
       locals[key] = value  unless key.match(/^(constructor|head)/)
-    #newlocals = {}
-    #newlocals.locals = locals
-    #locals = newlocals
     locals = _.modules(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
@@ -99,8 +107,13 @@ Tower.View.Rendering =
   # @private
   _readTemplate: (template, prefixes, ext) ->
     return template unless typeof template == "string"
-    # tmp
-    result = @constructor.cache["app/views/#{template}"] ||= @constructor.store().find(path: template, ext: ext, prefixes: prefixes)
+    options   = {path: template, ext: ext, prefixes: prefixes}
+    store     = @constructor.store()
+    path      = store.findPath(options)
+    path    ||= store.defaultPath(options)
+    #cachePath = path.replace(/\.\w+$/, "")
+    cachePath = path
+    result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
     throw new Error("Template '#{template}' was not found.") unless result
     result
 

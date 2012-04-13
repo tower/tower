@@ -6,6 +6,7 @@ class Tower.Command.Server
       .version(Tower.version)
       .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)')
       .option('-p, --port <n>', 'port for the application')
+      .option('--static', 'disable-watch')
       .option('-v, --version')
       .option '-h, --help', '''
 \ \ Usage:
@@ -32,6 +33,7 @@ class Tower.Command.Server
 
   run: ->
     program     = @program
+    Tower.watch = !!!program.static
     Tower.env   = program.environment || "development"
     Tower.port  = program.port      = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
 

@@ -1,5 +1,3 @@
-require '../config'
-
 describe "Tower.Application", ->
   beforeEach ->
     @application = Tower.Application.instance().initialize()

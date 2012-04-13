@@ -4,6 +4,7 @@ Tower.Middleware.Router = (request, response, callback) ->
       # need a more robust way to check if headers were sent
       unless response.statusCode == 302
         response.controller = controller
+        Tower.Controller.testCase = controller if Tower.env == "test"
         response.writeHead(controller.status, controller.headers)
         response.write(controller.body)
         response.end()

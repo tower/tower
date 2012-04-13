@@ -27,8 +27,12 @@ spec/secrets.coffee
 inspiration.md
 favicon.png
 dist/*.gz
+dist/*.coffee
 dist/*.min.js
 wiki
 docs
-spec/tmp
+test/tmp
+test/example/README.md
+test/example/package.json
+test/example/public/javascripts
 tmp

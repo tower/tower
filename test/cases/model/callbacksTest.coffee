@@ -1,5 +1,3 @@
-require '../../config'
-
 user      = null
 
 describeWith = (store) ->
@@ -13,5 +11,6 @@ describeWith = (store) ->
     #  test 'should have callback if instantiate: false', (done) ->
     #    done()
       
-describeWith Tower.Store.Memory
-describeWith Tower.Store.MongoDB
+describeWith(Tower.Store.Memory)
+unless Tower.client
+  describeWith(Tower.Store.MongoDB)

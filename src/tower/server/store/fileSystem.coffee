@@ -38,31 +38,8 @@ class Tower.Store.FileSystem extends Tower.Store
     return (File.read(path) || "") if path
     null
 
-  @select: @find
-
-  first: (query, callback) ->
-
-  last: (query, callback) ->
-
-  all: (query, callback) ->
-
-  length: (query, callback) ->
-
-  @count: @length
-
-  remove: (query, callback) ->
-
-  clear: ->
-
-  toArray: ->
-
-  create: (record, callback) ->
-    @collection().insert(record, callback)
-
-  update: (record) ->
-
-  destroy: (record) ->
-
-  sort: ->
+  defaultPath: (query, callback) ->
+    path  = "#{@loadPaths[0]}/#{query.path}"
+    path  = path.replace(new RegExp("(\\.#{query.ext})?$"), ".#{query.ext}")
 
 module.exports = Tower.Store.FileSystem

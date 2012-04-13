@@ -1,5 +1,3 @@
-require '../config'
-
 describe 'Tower.Store', ->
   test '.queryOperators', ->
     queryOperators =

@@ -5,12 +5,12 @@ Tower.Store.MongoDB.Persistence =
     record      = @serializeModel(criteria.data[0])
     attributes  = @serializeAttributesForCreate(record)
     options     = @serializeOptions(criteria)
-    #console.log attributes
+
     @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
       record.set("id", doc["_id"])
       record.persistent = !!!error
-      
+
       callback.call(@, error, record.attributes) if callback
 
     record.set("id", attributes["_id"])
@@ -22,12 +22,12 @@ Tower.Store.MongoDB.Persistence =
     updates         = @serializeAttributesForUpdate(updates)
     conditions      = @serializeConditions(criteria)
     options         = @serializeOptions(criteria)
-    
+
     options.safe    = true unless options.hasOwnProperty("safe")
     options.upsert  = false unless options.hasOwnProperty("upsert")
     # update multiple docs, b/c it defaults to false
     options.multi   = true unless options.hasOwnProperty("multi")
-    
+
     @collection().update conditions, updates, options, (error) =>
       callback.call(@, error) if callback
 
@@ -37,7 +37,7 @@ Tower.Store.MongoDB.Persistence =
   destroy: (criteria, callback) ->
     conditions      = @serializeConditions(criteria)
     options         = @serializeOptions(criteria)
-    
+
     @collection().remove conditions, options, (error) =>
       callback.call(@, error) if callback
 

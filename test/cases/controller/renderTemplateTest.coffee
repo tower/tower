@@ -1,5 +1,3 @@
-require '../../config'
-
 controller  = null
 user        = null
 router      = null

@@ -1,4 +1,10 @@
 Tower.Controller.addRenderers
+  text: (text, options, callback) ->
+    text = JSON.stringify(text) unless typeof(text) == "string"
+    @headers["Content-Type"] ||= require("mime").lookup("text")
+    callback null, text if callback
+    text
+    
   json: (json, options, callback) ->
     unless typeof(json) == "string"
       if @params.prettify && @params.prettify.toString() == "true"
