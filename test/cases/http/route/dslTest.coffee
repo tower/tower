@@ -39,7 +39,8 @@ describe "Tower.Dispatch.Route.DSL", ->
   
   describe "mapper", ->
     beforeEach ->
-      Tower.Application.instance().teardown()
+      #Tower.Application.instance().teardown()
+      Tower.Route.clear()
       
       Tower.Route.draw ->
         @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}, constraints: {subdomain: /www/}
@@ -80,7 +81,8 @@ describe "Tower.Dispatch.Route.DSL", ->
 
   describe 'resources', ->
     beforeEach ->
-      Tower.Application.instance().teardown()
+      #Tower.Application.instance().teardown()
+      Tower.Route.clear()
       
       Tower.Route.draw ->
         @resource "user"

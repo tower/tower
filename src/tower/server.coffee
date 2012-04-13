@@ -49,9 +49,6 @@ Tower.render              = (string, options = {}) ->
 
 Tower.domain              = "localhost"
 
-Tower.date = ->
-  _.toDate arguments...
-
 Tower.run = (argv) ->
   (new Tower.Command.Server(argv)).run()
 

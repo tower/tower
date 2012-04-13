@@ -1,7 +1,8 @@
 describe "Tower.Dispatch.Route", ->
   describe "dsl", ->
     beforeEach ->
-      Tower.Application.instance().teardown()
+      #Tower.Application.instance().teardown()
+      Tower.Route.clear()
       
       Tower.Route.draw ->
         @match "/login",  to: "sessions#new", via: "get", as: "login", defaults: {flow: "signup"}, constraints: {subdomain: /www/}

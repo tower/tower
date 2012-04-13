@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Fri, 13 Apr 2012 03:08:02 GMT
+ * Date: Fri, 13 Apr 2012 03:48:44 GMT
  */
 (function() {
   var Tower, action, key, module, phase, specialProperties, _fn, _fn2, _fn3, _fn4, _fn5, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6,
@@ -1558,6 +1558,9 @@
     },
     clone: function(object) {
       return _.extend({}, object);
+    },
+    date: function() {
+      return _.toDate.apply(_, arguments);
     }
   });
 
@@ -1616,6 +1619,10 @@
     Application.prototype.use = function() {
       var _ref;
       return (_ref = this.constructor).use.apply(_ref, arguments);
+    };
+
+    Application.prototype.teardown = function() {
+      return Tower.Route.reload();
     };
 
     function Application(middlewares) {
@@ -7649,7 +7656,13 @@
         this.cookies = this.request.cookies || {};
         this.query = this.request.query || {};
         this.session = this.request.session || {};
-        this.format = (_base = this.params).format || (_base.format = require('mime').extension(this.request.header("content-type")) || "html");
+        if (!this.params.format) {
+          try {
+            this.params.format = require('mime').extension(this.request.header("content-type"));
+          } catch (_error) {}
+          (_base = this.params).format || (_base.format = "html");
+        }
+        this.format = this.params.format;
         this.action = this.params.action;
         this.headers = {};
         this.callback = next;
@@ -8999,7 +9012,14 @@
       return this._store = [];
     };
 
+    Route.reload = function() {
+      this.clear();
+      return this.draw();
+    };
+
     Route.draw = function(callback) {
+      this._defaultCallback || (this._defaultCallback = callback);
+      if (!callback) callback = this._defaultCallback;
       return callback.apply(new Tower.HTTP.Route.DSL(this));
     };
 

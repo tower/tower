@@ -38,6 +38,10 @@ class Tower.Application extends Tower.Engine
   #use: (route, handle) ->
   use: ->
     @constructor.use arguments...
+    
+  teardown: ->
+    #@server.stack.length = 0 # remove middleware
+    Tower.Route.reload()
 
   constructor: (middlewares = []) ->
     throw new Error("Already initialized application") if Tower.Application._instance

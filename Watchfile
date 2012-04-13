@@ -20,13 +20,13 @@ require("design.io-javascripts")
 require("design.io-javascripts") /test\/example\/.*\.coffee$/
   compress: false
   debug:    false
-  ignore:   /(public|node_modules)/
+  ignore:   /(public|node_modules|view)/
   outputPath: (path) ->
     path = path.replace("test/example/", "")
     "test/example/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
     
 require("design.io-javascripts") /test\/cases\/.*\.coffee$/
-  ignore:   /(public|node_modules)/
+  ignore:   /(public|node_modules|server)/
   compress: false
   debug:    false
   outputPath: (path) ->

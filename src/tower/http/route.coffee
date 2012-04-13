@@ -17,8 +17,14 @@ class Tower.HTTP.Route extends Tower.Class
 
   @clear: ->
     @_store = []
+    
+  @reload: ->
+    @clear()
+    @draw()
 
   @draw: (callback) ->
+    @_defaultCallback ||= callback
+    callback = @_defaultCallback unless callback
     callback.apply(new Tower.HTTP.Route.DSL(@))
 
   @findController: (request, response, callback) ->
