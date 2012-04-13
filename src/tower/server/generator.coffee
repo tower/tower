@@ -44,11 +44,13 @@ class Tower.Generator extends Tower.Class
 
 require './generator/actions'
 require './generator/configuration'
+require './generator/helpers'
 require './generator/resources'
 require './generator/shell'
 
 Tower.Generator.include Tower.Generator.Actions
 Tower.Generator.include Tower.Generator.Configuration
+Tower.Generator.include Tower.Generator.Helpers
 Tower.Generator.include Tower.Generator.Resources
 Tower.Generator.include Tower.Generator.Shell
 

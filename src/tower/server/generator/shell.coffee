@@ -1,3 +1,5 @@
+# @todo
+# @mixin
 Tower.Generator.Shell =
   sayStatus: (status, color) ->
     _console.log status if @options.verbose
