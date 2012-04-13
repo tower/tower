@@ -426,7 +426,12 @@ class Tower.Model.Criteria extends Tower.Class
         @returnArray = false
       else
         @returnArray = true
-      result.id = $in: @ids
+      
+      ids = @ids
+      # tmp
+      if @store.constructor.name == "Memory"
+        ids = _.map ids, (id) -> id.toString()
+      result.id = $in: ids
 
     result
 

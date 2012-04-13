@@ -4,7 +4,7 @@ user      = null
 record    = null
 
 describeWith = (store) ->
-  describe "Tower.Model.Validation (Tower.Store.#{store.constructor.name})", ->
+  describe "Tower.Model.Validation (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
       App.User.store(store)
       App.Validatable.store(store)
@@ -271,4 +271,7 @@ describeWith = (store) ->
           assert.equal validator.validateEach(record, record.errors), false
 
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+if Tower.client
+  describeWith(Tower.Store.Ajax)
+else
+  describeWith(Tower.Store.MongoDB)

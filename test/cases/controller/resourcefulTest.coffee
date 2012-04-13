@@ -8,12 +8,18 @@ describeWith = (store) ->
       App.User.store(store)
       App.User.destroy =>
         App.User.create id: 1, firstName: "Lance", done
+        
+    beforeEach (done) ->
+      Tower.start(done)
+
+    afterEach ->
+      Tower.stop()
     
     describe 'format: "json"', ->
       describe "success", ->
         test '#index', (done) ->
-          Tower.get "index", format: "json", ->
-            resources = JSON.parse(@body)
+          _.get "/custom", format: "json", (response) ->
+            resources = response.body
             assert.isArray resources
             assert.isArray @collection
             assert.equal typeof(@resource), "undefined"
@@ -26,7 +32,7 @@ describeWith = (store) ->
               done()
             
         test '#new', (done) ->
-          Tower.get 'new', format: "json", ->
+          _.get '/custom/new', format: "json", ->
             resource = JSON.parse(@body)
             assert.equal typeof(@collection), "undefined"
             assert.equal typeof(@resource), "object"
@@ -38,8 +44,8 @@ describeWith = (store) ->
               done()
         
         test '#create', (done) ->
-          Tower.post 'create', format: "json", user: firstName: "Lance", ->
-            resource = JSON.parse(@body)
+          _.post '/custom', format: "json", params: user: firstName: "Lance", (response) ->
+            resource = response.body
             assert.equal resource.firstName, "Lance"
             assert.equal @headers["Content-Type"], "application/json"
           
@@ -48,7 +54,7 @@ describeWith = (store) ->
               done()
         
         test '#show', (done) ->
-          Tower.get 'show', id: 1, format: "json", ->
+          _.get "/custom/1", format: "json", (response) ->
             resource = JSON.parse(@body)
             assert.equal resource.firstName, "Lance"
             assert.equal resource.id, 1
@@ -59,7 +65,7 @@ describeWith = (store) ->
               done()
     
         test '#edit', (done) ->
-          Tower.get 'edit', id: 1, format: "json", ->
+          _.get '/custom/1/edit', format: "json", (response) ->
             resource = JSON.parse(@body)
             assert.equal resource.firstName, "Lance"
             assert.equal resource.id, 1
@@ -70,7 +76,7 @@ describeWith = (store) ->
               done()
         
         test '#update', (done) ->
-          Tower.put 'update', id: 1, format: "json", user: firstName: "Dane", ->
+          _.put '/custom/1', format: "json", params: user: firstName: "Dane", (response) ->
             resource = JSON.parse(@body)
             assert.equal resource.firstName, "Dane"
             assert.equal resource.id, 1
@@ -82,10 +88,10 @@ describeWith = (store) ->
               App.User.count (error, count) =>
                 assert.equal count, 1
                 done()
-              
+
         test '#destroy', (done) ->
-          Tower.destroy 'destroy', id: 1, format: "json", ->
-            resource = JSON.parse(@body)
+          _.destroy '/custom/1', format: "json", (response) ->
+            resource = response.body
             assert.equal resource.firstName, "Lance"
             assert.equal resource.id, undefined
             assert.equal @headers["Content-Type"], "application/json"
@@ -93,27 +99,28 @@ describeWith = (store) ->
             App.User.count (error, count) =>
               assert.equal count, 0
               done()
-      
+              
       describe "failure", ->
         test '#create'
         
         test '#update'
               
         test '#destroy'
-    
+        
     describe 'format: "html"', ->
       describe 'success', ->
         test '#index', (done) ->
-          Tower.get 'index', ->
+          _.get '/custom', (response) ->
             assert.equal @body, '<h1>Hello World</h1>\n'
             assert.equal @headers["Content-Type"], "text/html"
         
             App.User.count (error, count) =>
               assert.equal count, 1
               done()
-        
+              
         test '#new', (done) ->
-          Tower.get 'new', ->
+          _.get '/custom/new', ->
+            assert.equal @action, "new"
             assert.equal @body, '<h1>New User</h1>\n'
             assert.equal @headers["Content-Type"], "text/html"
         
@@ -122,35 +129,39 @@ describeWith = (store) ->
               done()
         
         test '#create', (done) ->
-          Tower.post 'create', user: firstName: "Lance", ->
-            assert.equal @body, "<h1>Hello Lance</h1>\n"
+          params = user: firstName: "Lance"
+          
+          _.post '/custom.html', params: params, (response) ->
+            assert.equal @action, "show"
+            assert.equal response.text, "<h1>Hello Lance</h1>\n"
             assert.equal @headers["Content-Type"], "text/html"
             
             App.User.count (error, count) =>
               assert.equal count, 2
               done()
-            
+              
         test '#show', (done) ->
-          Tower.get 'show', id: 1, ->
-            assert.equal @body, "<h1>Hello Lance</h1>\n"
+          _.get '/custom/1', (response) ->
+            assert.equal response.text, "<h1>Hello Lance</h1>\n"
             assert.equal @headers["Content-Type"], "text/html"
             
             App.User.count (error, count) =>
               assert.equal count, 1
               done()
-        
+              
         test '#edit', (done) ->
-          Tower.get 'edit', ->
-            assert.equal @body, '<h1>Editing User</h1>\n'
+          _.get '/custom/1/edit', (response) ->
+            assert.equal response.text, '<h1>Editing User</h1>\n'
             assert.equal @headers["Content-Type"], "text/html"
-        
+            
             App.User.count (error, count) =>
               assert.equal count, 1
               done()
             
         test '#update', (done) ->
-          Tower.put 'update', id: 1, user: firstName: "Dane", ->
-            assert.equal @body, '<h1>Hello Dane</h1>\n'
+          _.put '/custom/1.html', params: user: firstName: "Dane", (response) ->
+            assert.equal @action, "show"
+            assert.equal response.text, '<h1>Hello Dane</h1>\n'
             assert.equal @headers["Content-Type"], "text/html"
             
             App.User.find 1, (error, user) =>
@@ -161,8 +172,9 @@ describeWith = (store) ->
                 done()
         
         test '#destroy', (done) ->
-          Tower.destroy 'destroy', id: 1, ->
-            assert.equal @body, '<h1>Hello World</h1>\n'
+          _.destroy '/custom/1.html', (response) ->
+            assert.equal @action, "index"
+            assert.equal response.text, '<h1>Hello World</h1>\n'
             assert.equal @headers["Content-Type"], "text/html"
         
             App.User.count (error, count) =>
@@ -170,4 +182,4 @@ describeWith = (store) ->
               done()
               
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+describeWith(Tower.Store.MongoDB)

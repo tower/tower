@@ -188,4 +188,8 @@ describeWith = (store) ->
           assert.equal model.get("likeCount"), 1
 
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+
+if Tower.client
+  describeWith(Tower.Store.Ajax)
+else
+  describeWith(Tower.Store.MongoDB)

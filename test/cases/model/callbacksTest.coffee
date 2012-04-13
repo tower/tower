@@ -12,5 +12,8 @@ describeWith = (store) ->
     #    done()
       
 describeWith(Tower.Store.Memory)
-unless Tower.client
+
+if Tower.client
+  describeWith(Tower.Store.Ajax)
+else
   describeWith(Tower.Store.MongoDB)

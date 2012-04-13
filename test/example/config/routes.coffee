@@ -14,6 +14,28 @@ Tower.Route.draw ->
   @match "/test-json/post", to: "testJson#postMethod", via: "post"
   
   # test rendering
-  @match "/custom/renderHelloWorld", to: "custom#renderHelloWorld"
-
+  @match "/custom", to: "custom#index"
+  @match "/custom", to: "custom#create", via: ["post"]
+  
+  actions = [
+    "renderHelloWorld"
+    "renderCoffeeKupFromTemplate"
+    "renderHelloWorldFromVariable"
+    "renderWithExplicitStringTemplateAsAction"
+    "renderActionUpcasedHelloWorldAsString"
+    "renderActionUpcasedHelloWorld"
+    "renderJsonHelloWorld"
+    "renderJsonHelloWorldWithParams"
+    "renderJsonHelloWorldWithStatus"
+  ]
+  
+  for action in actions
+    @match "/custom/#{action}", to: "custom##{action}"
+  
+  @match "/custom/new", to: "custom#new"
+  @match "/custom/:id", to: "custom#show"
+  @match "/custom/:id/edit", to: "custom#edit"
+  @match "/custom/:id", to: "custom#update", via: ["put"]
+  @match "/custom/:id", to: "custom#destroy", via: ["delete"]
+  
   @match "/", to: "application#welcome"
