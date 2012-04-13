@@ -8,7 +8,7 @@ class Tower.Command.New
       .option('--skip-procfile', "Don't create a Procfile (for Heroku)")
       .option('--skip-git', "Skip Git ignores and keeps")
       .option('-d, --database <database>', 'Preconfigure for selected database (options: mongodb)', "mongodb")
-      .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)')
+      .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeecup/jade/eco/ejs)')
       .option('-T, --title <title>', 'Your project title (as opposed to its file name)')
       .option('-D, --description <description>', 'Your project tagline (one sentence)', "")
       .option('-K, --keywords <keywords>', 'Your project keywords (e.g. "node.js, file uploading, s3")', "")
@@ -17,7 +17,7 @@ class Tower.Command.New
       .option '-h, --help', '''
 \ \ Usage:
 \ \   tower new <app-name> [options]
-\ \ 
+\ \
 \ \ Options:
 \ \   -T, --title <title>               project title (as opposed to its file name)
 \ \   -D, --description <description>   project tagline (one sentence)
@@ -27,7 +27,7 @@ class Tower.Command.New
 \ \   -v, --version                     output version number
 \ \   --skip-procfile                   skip creating a Procfile (for deploying to Heroku)
 \ \   --skip-git                        Skip Git ignores and keeps
-\ \ 
+\ \
 '''
 
     program.parse(argv)

@@ -142,18 +142,18 @@ class App.User extends Tower.Model
   @field "lastName"
   @field "email", format: /\w+@\w+.com/
   @field "activatedAt", type: "Date", default: -> new Date()
-  
+
   @hasOne "address", embed: true
-  
+
   @hasMany "posts"
   @hasMany "comments"
-  
+
   @scope "recent", -> createdAt: ">=": -> _(3).days().ago().toDate()
-  
+
   @validates "firstName", "email", presence: true
-  
+
   @after "create", "welcome"
-  
+
   welcome: ->
     Tower.Mailer.welcome(@).deliver()
 ```
@@ -164,14 +164,14 @@ class App.Post extends Tower.Model
   @field "body"
   @field "tags", type: ["String"], default: []
   @field "slug"
-  
+
   @belongsTo "author", type: "User"
-  
+
   @hasMany "comments", as: "commentable"
   @hasMany "commenters", through: "comments", type: "User"
-  
+
   @before "validate", "slugify"
-  
+
   slugify: ->
     @set "slug", @get("title").replace(/[^a-z0-9]+/g, "-").toLowerCase()
 ```
@@ -179,7 +179,7 @@ class App.Post extends Tower.Model
 # app/models/comment.coffee
 class App.Comment extends Tower.Model
   @field "message"
-  
+
   @belongsTo "author", type: "User"
   @belongsTo "commentable", polymorphic: true
 ```
@@ -191,7 +191,7 @@ class App.Address extends Tower.Model
   @field "state"
   @field "zip"
   @field "coordinates", type: "Geo"
-  
+
   @belongsTo "user", embed: true
 ```
 
@@ -241,19 +241,19 @@ user.errors #=> {}
 Tower.Route.draw ->
   @match "/login", "sessions#new", via: "get", as: "login"
   @match "/logout", "sessions#destroy", via: "get", as: "logout"
-  
+
   @resources "posts", ->
     @resources "comments"
-    
+
   @namespace "admin", ->
     @resources "users"
     @resources "posts", ->
       @resources "comments"
-      
+
   @constraints subdomain: /^api$/, ->
     @resources "posts", ->
       @resources "comments"
-      
+
   @match "(/*path)", to: "application#index", via: "get"
 ```
 
@@ -269,7 +269,7 @@ formFor "post", (f) ->
   f.fieldset (fields) ->
     fields.field "title", as: "string"
     fields.field "body", as: "text"
-  
+
   f.fieldset (fields) ->
     fields.submit "Submit"
 ```
@@ -316,44 +316,44 @@ html ->
     csrfMetaTag()
 
     appleViewportMetaTag width: "device-width", max: 1, scalable: false
-    
+
     stylesheets "lib", "vendor", "application"
 
     javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
     javascripts "vendor", "lib", "application"
-  
+
   body role: "application", ->
     if hasContentFor "templates"
       yield "templates"
-      
+
     nav id: "navigation", role: "navigation", ->
       div class: "frame", ->
         partial "shared/navigation"
-        
+
     header id: "header", role: "banner", ->
       div class: "frame", ->
         partial "shared/header"
-        
+
     section id: "body", role: "main", ->
       div class: "frame", ->
         yields "body"
         aside id: "sidebar", role: "complementary", ->
           if hasContentFor "sidebar"
             yields "sidebar"
-            
+
     footer id: "footer", role: "contentinfo", ->
       div class: "frame", ->
         partial "shared/footer"
-        
+
   if hasContentFor "popups"
     aside id: "popups", ->
       yields "popups"
-      
+
   if hasContentFor "bottom"
     yields "bottom"
 ```
 
-The default templating engine is [CoffeeKup](http://coffeekup.org/), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
+The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
 
 ## Styles
 
@@ -367,33 +367,33 @@ class App.PostsController extends Tower.Controller
   index: ->
     App.Post.all (error, posts) =>
       @render "index", locals: posts: posts
-    
+
   new: ->
     @post = new App.Post
     @render "new"
-    
+
   create: ->
     @post = new App.Post(@params.post)
-    
+
     super (success, failure) ->
       @success.html => @render "posts/edit"
       @success.json => @render text: "success!"
       @failure.html => @render text: "Error", status: 404
       @failure.json => @render text: "Error", status: 404
-    
+
   show: ->
     App.Post.find @params.id, (error, post) =>
       @render "show"
-    
+
   edit: ->
     App.Post.find @params.id, (error, post) =>
       @render "edit"
-    
+
   update: ->
     App.Post.find @params.id, (error, post) =>
       post.updateAttributes @params.post, (error) =>
         @redirectTo action: "show"
-    
+
   destroy: ->
     App.Post.find @params.id, (error, post) =>
       post.destroy (error) =>
@@ -496,17 +496,17 @@ module.exports =
       "/vendor/javascripts/socket.io"
       "/vendor/javascripts/tower.js"
     ]
-    
+
     lib: [
       "/lib/grid.js"
       "/lib/profiler.js"
     ]
-    
+
     application: [
       "/app/models/post.js"
       "/app/models/comment.js"
     ]
-    
+
   stylesheets:
     vendor: [
       "/vendor/stylesheets/reset.css"
@@ -549,7 +549,7 @@ require("design.io-javascripts")
   ignore:   /(public|node_modules|server|spec.*[sS]pec)/
   outputPath: (path) ->
     "public/javascripts/#{path}".replace(/\.(js|coffee)$/, ".js")
-    
+
 watch /app\/views\/.+\.mustache/
   update: (path) ->
     # do anything!

@@ -6,11 +6,11 @@ Tower.View.Rendering =
       type  = type[type.length - 1].split(".")
       type  = type[1..-1].join()
       options.type  = if type != '' then type else @constructor.engine
-      
+
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
-    
+
     @_renderBody options, (error, body) =>
       return callback(error, body) if error
       @_renderLayout(body, options, callback)
@@ -59,7 +59,7 @@ Tower.View.Rendering =
       e       = null
       result  = null
       # tmp hack
-      coffeekup = if Tower.client then global.CoffeeKup else require("coffeekup")
+      coffeecup = if Tower.client then global.CoffeeCup else require("coffeecup")
       try
         locals          = options.locals
         locals.renderWithEngine = @renderWithEngine
@@ -69,11 +69,11 @@ Tower.View.Rendering =
         hardcode        = {}
         for helper in Tower.View.helpers
           hardcode      = _.extend(hardcode, helper)
-        hardcode        = _.extend(hardcode, tags: coffeekup.tags)
+        hardcode        = _.extend(hardcode, tags: coffeecup.tags)
         locals.hardcode = hardcode
         locals._ = _
-        
-        result = coffeekup.render string, locals
+
+        result = coffeecup.render string, locals
       catch error
         e = error
 

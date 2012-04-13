@@ -5,11 +5,11 @@ module.exports =
       "/config/routes"
       "/app/views/templates"
     ]
-    
+
     lib: [
-      
+
     ]
-    
+
     vendor: [
       "/vendor/javascripts/underscore"
       "/vendor/javascripts/underscore.string"
@@ -18,7 +18,7 @@ module.exports =
       "/vendor/javascripts/validator"
       "/vendor/javascripts/accounting"
       "/vendor/javascripts/inflection"
-      "/vendor/javascripts/coffeekup"
+      "/vendor/javascripts/coffeecup"
       "/vendor/javascripts/prettify"
       "/vendor/javascripts/socket.io"
       "/vendor/javascripts/history"
@@ -37,28 +37,28 @@ module.exports =
       "/vendor/javascripts/bootstrap/bootstrap-carousel"
       "/vendor/javascripts/bootstrap/bootstrap-typeahead"
     ]
-    
+
     development: [
       "/vendor/javascripts/mocha"
       "/vendor/javascripts/chai"
       "/vendor/javascripts/design.io"
       "/test/client"
     ]
-  
+
   stylesheets:
     application: [
       "/app/client/stylesheets/application"
     ]
-    
+
     lib: [
-      
+
     ]
-    
+
     vendor: [
       "/vendor/stylesheets/bootstrap/bootstrap"
       "/vendor/stylesheets/prettify"
     ]
-    
+
     development: [
       # "/vendor/stylesheets/mocha"
     ]
