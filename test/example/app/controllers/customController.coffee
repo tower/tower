@@ -27,11 +27,11 @@ class App.CustomController extends Tower.Controller
     @render text: 'testNoCallback!'
   
   renderUser: ->
-    
-  renderCoffeeKupFromTemplate: ->
+
+  renderCoffeeCupFromTemplate: ->
     @render 'index'
-    
-  renderCoffeeKupInline: ->
+
+  renderCoffeeCupInline: ->
     @self = "I'm"
     
     @render ->
