@@ -56,7 +56,7 @@
     "express":            ">= 2.5.1",
     "socket.io":          ">= 0.8.7",
     "coffee-script":      ">= 1.2.0",
-    "coffeecup":          ">= 0.3.8",
+    "coffeekup":          ">= 0.3.1",
     "restler":            ">= 0.0.1",
     "useragent":          ">= 1.0.5",
     "URIjs":              ">= 1.4.2",

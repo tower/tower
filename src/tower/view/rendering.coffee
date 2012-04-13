@@ -59,7 +59,7 @@ Tower.View.Rendering =
       e       = null
       result  = null
       # tmp hack
-      coffeecup = if Tower.client then global.CoffeeCup else require("coffeecup")
+      coffeekup = if Tower.client then global.CoffeeKup else require("coffeekup")
       try
         locals          = options.locals
         locals.renderWithEngine = @renderWithEngine
@@ -69,13 +69,15 @@ Tower.View.Rendering =
         hardcode        = {}
         for helper in Tower.View.helpers
           hardcode      = _.extend(hardcode, helper)
-        hardcode        = _.extend(hardcode, tags: coffeecup.tags)
+        tags = coffeekup.tags
+        hardcode        = _.extend(hardcode, tags: tags)
         locals.hardcode = hardcode
         locals._ = _
-
-        result = coffeecup.render string, locals
+        
+        result = coffeekup.render string, locals
       catch error
         e = error
+        console.log e.stack
 
       callback e, result
     else if options.type
