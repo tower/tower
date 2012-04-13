@@ -8,7 +8,7 @@ Tower.Command =
 
   # Figure out the command you want to run, then run it.
   #
-  # @param [Array] argv
+  # @param [Array] argv Command line arguments (["node", "tower", "new", "blog"])
   #
   # @return [void]
   run: (argv) ->

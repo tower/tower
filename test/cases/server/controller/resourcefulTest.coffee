@@ -182,4 +182,5 @@ describeWith = (store) ->
               done()
               
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB)
+unless Tower.client
+  describeWith(Tower.Store.MongoDB)

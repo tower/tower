@@ -3,7 +3,7 @@ sourceRoot      = null
 destinationRoot = null
 
 describe 'Tower.Generator.AppGenerator', ->
-  beforeEach ->
+  before ->
     sourceRoot      = "#{process.cwd()}/lib/tower/server/generator/generators/tower/app"
     destinationRoot = "#{process.cwd()}/test/tmp/myapp"
     #generator       = new Tower.Generator.AppGenerator(
