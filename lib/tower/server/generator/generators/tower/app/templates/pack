@@ -61,6 +61,7 @@
   },
   "scripts": {
     "test":                   "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
-    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*"
+    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*",
+    "start":                  "node server.js -e production"
   }
 }

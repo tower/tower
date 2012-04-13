@@ -7,6 +7,7 @@ class Tower.Command.New
       .option('--template <name>', 'Path to an application template (can be a filesystem path or URL)')
       .option('--skip-procfile', "Don't create a Procfile (for Heroku)")
       .option('--skip-git', "Skip Git ignores and keeps")
+      .option('--skip-assets', "Skip downloading javascripts, stylesheets, swfs, etc.")
       .option('-T, --title <title>', 'Your project title (as opposed to its file name)')
       .option('-D, --description <description>', 'Your project tagline (one sentence)', "")
       .option('-K, --keywords <keywords>', 'Your project keywords (e.g. "node.js, file uploading, s3")', "")
