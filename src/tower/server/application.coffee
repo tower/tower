@@ -146,7 +146,7 @@ class Tower.Application extends Tower.Engine
   stack: ->
     configs     = @constructor.initializers()
     self        = @
-
+    
     #@server.configure ->
     for config in configs
       config.call(self)

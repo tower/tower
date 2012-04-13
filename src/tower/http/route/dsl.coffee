@@ -167,7 +167,7 @@ class Tower.HTTP.Route.DSL
     "#{options.path}.:format?"
 
   _extractRequestMethod: (options) ->
-    (options.method || options.via || "GET").toUpperCase()
+    options.method || options.via || "GET"
 
   _extractAnchor: (options) ->
     options.anchor
@@ -187,9 +187,9 @@ class Tower.HTTP.Route.DSL
 
     throw new Error("No controller was specified for the route #{options.path}") unless controller
 
-    controller  = controller.toLowerCase().replace(/(?:[cC]ontroller)?$/, "Controller")
+    controller  = Tower.Support.String.camelize(controller).replace(/(?:[cC]ontroller)?$/, "Controller")
     #action      = action.toLowerCase()
 
-    name: controller, action: action, className: Tower.Support.String.camelize("#{controller}")
+    name: controller, action: action, className: controller
 
 module.exports = Tower.Route.DSL

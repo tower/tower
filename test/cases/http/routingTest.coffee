@@ -23,19 +23,19 @@ describe "Tower.Dispatch.Route", ->
       route   = routes[0]
       
       assert.equal route.path, "/login.:format?"
-      assert.equal route.controller.name, "sessionsController"
+      assert.equal route.controller.name, "SessionsController"
       assert.equal route.controller.className, "SessionsController"
       assert.equal route.controller.action, "new"
-      assert.equal route.method, "GET"
+      assert.equal route.methods[0], "GET"
       assert.equal route.name, "login"
       assert.deepEqual route.defaults, {flow: "signup"}
     
     it "should be found in the router", ->
       router      = Tower.Middleware.Router
-      request     = method: "get", url: "http://www.local.host:3000/login"
+      request     = method: "get", url: "http://www.local.host:3000/login", header: ->
       
       controller  = router.find request, {}, (controller) ->
-        assert.deepEqual request.params, { flow : 'signup', format : null, action : 'new' }
-        assert.deepEqual controller.params, { flow : 'signup', format : null, action : 'new' }
+        assert.deepEqual request.params, { flow : 'signup', format : "html", action : 'new' }
+        assert.deepEqual controller.params, { flow : 'signup', format : "html", action : 'new' }
       
       #controller.callback()

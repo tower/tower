@@ -1,4 +1,5 @@
 require '../lib/tower'
+require '../lib/tower/controller/tst'
 File  = require('pathfinder').File
 # require './secrets'
 
