@@ -6,10 +6,10 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Fri, 13 Apr 2012 01:55:10 GMT
+ * Date: Fri, 13 Apr 2012 03:05:19 GMT
  */
 (function() {
-  var Tower, accounting, action, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, key, module, moment, name, phase, phoneFormats, postalCodeFormats, sanitize, sanitizing, specialProperties, validating, validator, _fn, _fn2, _fn3, _fn4, _fn5, _fn6, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _len7, _m, _n, _o, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7,
+  var Tower, action, key, module, phase, specialProperties, _fn, _fn2, _fn3, _fn4, _fn5, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6,
     __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = Array.prototype.slice,
     __hasProp = Object.prototype.hasOwnProperty,
@@ -666,6 +666,10 @@
 
   _.mixin(Tower.Support.String);
 
+  try {
+    _.string.isBlank = Tower.Support.Object;
+  } catch (_error) {}
+
   Tower.Support.Callbacks = {
     ClassMethods: {
       before: function() {
@@ -1083,271 +1087,251 @@
     }
   });
 
-  validator = Tower.modules.validator;
-
-  check = validator.check;
-
-  sanitize = validator.sanitize;
-
-  async = Tower.modules.async;
-
-  try {
-    validator.Validator.prototype.error = function(msg) {
-      this._errors.push(msg);
-      return this;
+  (function() {
+    var accounting, async, asyncing, cardType, casting, check, format, geo, inflections, inflector, moment, name, phoneFormats, postalCodeFormats, sanitize, sanitizing, validating, validator, _fn, _i, _len, _ref;
+    validator = Tower.modules.validator;
+    check = validator.check;
+    sanitize = validator.sanitize;
+    async = Tower.modules.async;
+    try {
+      validator.Validator.prototype.error = function(msg) {
+        this._errors.push(msg);
+        return this;
+      };
+    } catch (error) {
+      console.log(error);
+    }
+    accounting = Tower.modules.accounting;
+    moment = Tower.modules.moment;
+    geo = Tower.modules.geo;
+    inflector = Tower.modules.inflector;
+    phoneFormats = {
+      us: ["###-###-####", "##########", "###\\.###\\.####", "### ### ####", "\\(###\\) ###-####"],
+      brazil: ["## ####-####", "\\(##\\) ####-####", "##########"],
+      france: ["## ## ## ## ##"],
+      uk: ["#### ### ####"]
     };
-  } catch (error) {
-    console.log(error);
-  }
-
-  accounting = Tower.modules.accounting;
-
-  moment = Tower.modules.moment;
-
-  geo = Tower.modules.geo;
-
-  inflector = Tower.modules.inflector;
-
-  phoneFormats = {
-    us: ["###-###-####", "##########", "###\\.###\\.####", "### ### ####", "\\(###\\) ###-####"],
-    brazil: ["## ####-####", "\\(##\\) ####-####", "##########"],
-    france: ["## ## ## ## ##"],
-    uk: ["#### ### ####"]
-  };
-
-  for (name in phoneFormats) {
-    format = phoneFormats[name];
-    phoneFormats[name] = new RegExp("^" + (format.join('|').replace(/#/g, '\\d')) + "$", "i");
-  }
-
-  postalCodeFormats = {
-    us: ['#####', '#####-####'],
-    pt: ['####', '####-###']
-  };
-
-  for (name in postalCodeFormats) {
-    format = postalCodeFormats[name];
-    postalCodeFormats[name] = new RegExp("^" + (format.join('|').replace(/#/g, '\\d')) + "$", "i");
-  }
-
-  casting = {
-    xss: function(value) {
-      return sanitize(value).xss();
-    },
-    distance: function() {
-      return geo.getDistance.apply(geo, arguments);
-    },
-    toInt: function(value) {
-      return sanitize(value).toInt();
-    },
-    toBoolean: function(value) {
-      return sanitize(value).toBoolean();
-    },
-    toFixed: function() {
-      return accounting.toFixed.apply(accounting, arguments);
-    },
-    formatCurrency: function() {
-      return accounting.formatMoney.apply(accounting, arguments);
-    },
-    formatNumber: function() {
-      return accounting.formatNumber.apply(accounting, arguments);
-    },
-    unformatCurrency: function() {
-      return accounting.unformat.apply(accounting, arguments);
-    },
-    unformatCreditCard: function(value) {
-      return value.toString().replace(/[- ]/g, '');
-    },
-    strftime: function(time, format) {
-      if (time._wrapped) time = time.value();
-      return moment(time).format(format);
-    },
-    now: function() {
-      return _(moment()._d);
-    },
-    endOfDay: function(value) {
-      return _(moment(value).eod()._d);
-    },
-    endOfWeek: function(value) {},
-    endOfMonth: function() {},
-    endOfQuarter: function() {},
-    endOfYear: function() {},
-    beginningOfDay: function(value) {
-      return _(moment(value).sod()._d);
-    },
-    beginningOfWeek: function() {},
-    beginningOfMonth: function() {},
-    beginningOfQuarter: function() {},
-    beginningOfYear: function() {},
-    midnight: function() {},
-    toDate: function(value) {
-      return moment(value)._d;
-    },
-    withDate: function(value) {
-      return moment(value);
-    },
-    days: function(value) {
-      return _(value * 24 * 60 * 60 * 1000);
-    },
-    fromNow: function(value) {
-      return _(moment().add('milliseconds', value)._d);
-    },
-    ago: function(value) {
-      return _(moment().subtract('milliseconds', value)._d);
-    },
-    toHuman: function(value) {
-      return moment(value).from();
-    },
-    humanizeDuration: function(from, as) {
-      if (as == null) as = 'days';
-      if (from._wrapped) from = from.value();
-      return moment.humanizeDuration(from, 'milliseconds');
-    },
-    toS: function(array) {
-      return _.map(array, function(item) {
-        return item.toString();
-      });
+    for (name in phoneFormats) {
+      format = phoneFormats[name];
+      phoneFormats[name] = new RegExp("^" + (format.join('|').replace(/#/g, '\\d')) + "$", "i");
     }
-  };
-
-  sanitizing = {
-    trim: function(value) {
-      return sanitize(value).trim();
-    },
-    ltrim: function(value, trim) {
-      return sanitize(value).ltrim(trim);
-    },
-    rtrim: function(value, trim) {
-      return sanitize(value, trim).rtrim(trim);
-    },
-    xss: function(value) {
-      return sanitize(value).xss();
-    },
-    entityDecode: function(value) {
-      return sanitize(value).entityDecode();
-    },
-    "with": function(value) {
-      return sanitize(value).chain();
+    postalCodeFormats = {
+      us: ['#####', '#####-####'],
+      pt: ['####', '####-###']
+    };
+    for (name in postalCodeFormats) {
+      format = postalCodeFormats[name];
+      postalCodeFormats[name] = new RegExp("^" + (format.join('|').replace(/#/g, '\\d')) + "$", "i");
     }
-  };
-
-  validating = {
-    isEmail: function(value) {
-      var result;
-      result = check(value).isEmail();
-      if (!result._errors.length) return true;
-      return false;
-    },
-    isUUID: function(value) {
-      var result;
-      try {
-        result = check(value).isUUID();
-      } catch (_error) {}
-      if (!result._errors.length) return true;
-      return result;
-    },
-    isAccept: function(value, param) {
-      param = typeof param === "string" ? param.replace(/,/g, "|") : "png|jpe?g|gif";
-      return !!value.match(new RegExp(".(" + param + ")$", "i"));
-    },
-    isPhone: function(value, options) {
-      var pattern;
-      if (options == null) options = {};
-      pattern = phoneFormats[options.format] || /^\d{3}-\d{3}-\d{4}|\d{3}\.\d{3}\.\d{4}|\d{10}|\d{3}\s\d{3}\s\d{4}|\(\d{3}\)\s\d{3}-\d{4}$/i;
-      return !!value.toString().match(pattern);
-    },
-    isCreditCard: function(value) {
-      return _.isLuhn(value);
-    },
-    isMasterCard: function(value) {
-      return _.isLuhn(value) && !!value.match(/^5[1-5].{14}/);
-    },
-    isAmex: function(value) {
-      return _.isLuhn(value) && !!value.match(/^3[47].{13}/);
-    },
-    isVisa: function(value) {
-      return _.isLuhn(value) && !!value.match(/^4.{15}/);
-    },
-    isLuhn: function(value) {
-      var digit, i, length, number, parity, total;
-      if (!value) return false;
-      number = value.toString().replace(/\D/g, "");
-      length = number.length;
-      parity = length % 2;
-      total = 0;
-      i = 0;
-      while (i < length) {
-        digit = number.charAt(i);
-        if (i % 2 === parity) {
-          digit *= 2;
-          if (digit > 9) digit -= 9;
-        }
-        total += parseInt(digit);
-        i++;
+    casting = {
+      xss: function(value) {
+        return sanitize(value).xss();
+      },
+      distance: function() {
+        return geo.getDistance.apply(geo, arguments);
+      },
+      toInt: function(value) {
+        return sanitize(value).toInt();
+      },
+      toBoolean: function(value) {
+        return sanitize(value).toBoolean();
+      },
+      toFixed: function() {
+        return accounting.toFixed.apply(accounting, arguments);
+      },
+      formatCurrency: function() {
+        return accounting.formatMoney.apply(accounting, arguments);
+      },
+      formatNumber: function() {
+        return accounting.formatNumber.apply(accounting, arguments);
+      },
+      unformatCurrency: function() {
+        return accounting.unformat.apply(accounting, arguments);
+      },
+      unformatCreditCard: function(value) {
+        return value.toString().replace(/[- ]/g, '');
+      },
+      strftime: function(time, format) {
+        if (time._wrapped) time = time.value();
+        return moment(time).format(format);
+      },
+      now: function() {
+        return _(moment()._d);
+      },
+      endOfDay: function(value) {
+        return _(moment(value).eod()._d);
+      },
+      endOfWeek: function(value) {},
+      endOfMonth: function() {},
+      endOfQuarter: function() {},
+      endOfYear: function() {},
+      beginningOfDay: function(value) {
+        return _(moment(value).sod()._d);
+      },
+      beginningOfWeek: function() {},
+      beginningOfMonth: function() {},
+      beginningOfQuarter: function() {},
+      beginningOfYear: function() {},
+      midnight: function() {},
+      toDate: function(value) {
+        return moment(value)._d;
+      },
+      withDate: function(value) {
+        return moment(value);
+      },
+      days: function(value) {
+        return _(value * 24 * 60 * 60 * 1000);
+      },
+      fromNow: function(value) {
+        return _(moment().add('milliseconds', value)._d);
+      },
+      ago: function(value) {
+        return _(moment().subtract('milliseconds', value)._d);
+      },
+      toHuman: function(value) {
+        return moment(value).from();
+      },
+      humanizeDuration: function(from, as) {
+        if (as == null) as = 'days';
+        if (from._wrapped) from = from.value();
+        return moment.humanizeDuration(from, 'milliseconds');
+      },
+      toS: function(array) {
+        return _.map(array, function(item) {
+          return item.toString();
+        });
       }
-      return total % 10 === 0;
-    },
-    isWeakPassword: function(value) {
-      return !!value.match(/(?=.{6,}).*/g);
-    },
-    isMediumPassword: function(value) {
-      return !!value.match(/^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$/);
-    },
-    isStrongPassword: function(value) {
-      return !!value.match(/^.*(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W]).*$/);
-    },
-    isPostalCode: function(value, country) {
-      if (country == null) country = 'us';
-      return !!value.match(postalCodeFormats[country]);
-    },
-    isSlug: function(value) {
-      return value === _.parameterize(value);
-    }
-  };
-
-  _ref = ['DinersClub', 'EnRoute', 'Discover', 'JCB', 'CarteBlanche', 'Switch', 'Solo', 'Laser'];
-  _fn = function(cardType) {
-    return validating["is" + cardType] = function(value) {
-      return _.isLuhn(value);
     };
-  };
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    cardType = _ref[_i];
-    _fn(cardType);
-  }
-
-  inflections = {
-    pluralize: function() {
-      return inflector.pluralize.apply(inflector, arguments);
-    },
-    singularize: function() {
-      return inflector.singularize.apply(inflector, arguments);
-    },
-    camelCase: function(value) {
-      return Tower.Support.String.camelize(value);
+    sanitizing = {
+      trim: function(value) {
+        return sanitize(value).trim();
+      },
+      ltrim: function(value, trim) {
+        return sanitize(value).ltrim(trim);
+      },
+      rtrim: function(value, trim) {
+        return sanitize(value, trim).rtrim(trim);
+      },
+      xss: function(value) {
+        return sanitize(value).xss();
+      },
+      entityDecode: function(value) {
+        return sanitize(value).entityDecode();
+      },
+      "with": function(value) {
+        return sanitize(value).chain();
+      }
+    };
+    validating = {
+      isEmail: function(value) {
+        var result;
+        result = check(value).isEmail();
+        if (!result._errors.length) return true;
+        return false;
+      },
+      isUUID: function(value) {
+        var result;
+        try {
+          result = check(value).isUUID();
+        } catch (_error) {}
+        if (!result._errors.length) return true;
+        return result;
+      },
+      isAccept: function(value, param) {
+        param = typeof param === "string" ? param.replace(/,/g, "|") : "png|jpe?g|gif";
+        return !!value.match(new RegExp(".(" + param + ")$", "i"));
+      },
+      isPhone: function(value, options) {
+        var pattern;
+        if (options == null) options = {};
+        pattern = phoneFormats[options.format] || /^\d{3}-\d{3}-\d{4}|\d{3}\.\d{3}\.\d{4}|\d{10}|\d{3}\s\d{3}\s\d{4}|\(\d{3}\)\s\d{3}-\d{4}$/i;
+        return !!value.toString().match(pattern);
+      },
+      isCreditCard: function(value) {
+        return _.isLuhn(value);
+      },
+      isMasterCard: function(value) {
+        return _.isLuhn(value) && !!value.match(/^5[1-5].{14}/);
+      },
+      isAmex: function(value) {
+        return _.isLuhn(value) && !!value.match(/^3[47].{13}/);
+      },
+      isVisa: function(value) {
+        return _.isLuhn(value) && !!value.match(/^4.{15}/);
+      },
+      isLuhn: function(value) {
+        var digit, i, length, number, parity, total;
+        if (!value) return false;
+        number = value.toString().replace(/\D/g, "");
+        length = number.length;
+        parity = length % 2;
+        total = 0;
+        i = 0;
+        while (i < length) {
+          digit = number.charAt(i);
+          if (i % 2 === parity) {
+            digit *= 2;
+            if (digit > 9) digit -= 9;
+          }
+          total += parseInt(digit);
+          i++;
+        }
+        return total % 10 === 0;
+      },
+      isWeakPassword: function(value) {
+        return !!value.match(/(?=.{6,}).*/g);
+      },
+      isMediumPassword: function(value) {
+        return !!value.match(/^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$/);
+      },
+      isStrongPassword: function(value) {
+        return !!value.match(/^.*(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W]).*$/);
+      },
+      isPostalCode: function(value, country) {
+        if (country == null) country = 'us';
+        return !!value.match(postalCodeFormats[country]);
+      },
+      isSlug: function(value) {
+        return value === _.parameterize(value);
+      }
+    };
+    _ref = ['DinersClub', 'EnRoute', 'Discover', 'JCB', 'CarteBlanche', 'Switch', 'Solo', 'Laser'];
+    _fn = function(cardType) {
+      return validating["is" + cardType] = function(value) {
+        return _.isLuhn(value);
+      };
+    };
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cardType = _ref[_i];
+      _fn(cardType);
     }
-  };
-
-  asyncing = {
-    series: function() {
-      var _ref2;
-      return (_ref2 = Tower.modules.async).series.apply(_ref2, arguments);
-    },
-    parallel: function() {
-      var _ref2;
-      return (_ref2 = Tower.modules.async).parallel.apply(_ref2, arguments);
-    }
-  };
-
-  _.mixin(casting);
-
-  _.mixin(sanitizing);
-
-  _.mixin(inflections);
-
-  _.mixin(validating);
-
-  _.mixin(asyncing);
+    inflections = {
+      pluralize: function() {
+        return inflector.pluralize.apply(inflector, arguments);
+      },
+      singularize: function() {
+        return inflector.singularize.apply(inflector, arguments);
+      },
+      camelCase: function(value) {
+        return Tower.Support.String.camelize(value);
+      }
+    };
+    asyncing = {
+      series: function() {
+        var _ref2;
+        return (_ref2 = Tower.modules.async).series.apply(_ref2, arguments);
+      },
+      parallel: function() {
+        var _ref2;
+        return (_ref2 = Tower.modules.async).parallel.apply(_ref2, arguments);
+      }
+    };
+    _.mixin(casting);
+    _.mixin(sanitizing);
+    _.mixin(inflections);
+    _.mixin(validating);
+    return _.mixin(asyncing);
+  })();
 
   Tower.Hook = (function(_super) {
 
@@ -1394,12 +1378,12 @@
       return (_base = this.metadata)[name] || (_base[name] = {});
     },
     callback: function() {
-      var _ref2;
-      return (_ref2 = Tower.Application).callback.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = Tower.Application).callback.apply(_ref, arguments);
     },
     runCallbacks: function() {
-      var _ref2;
-      return (_ref2 = Tower.Application.instance()).runCallbacks.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = Tower.Application.instance()).runCallbacks.apply(_ref, arguments);
     },
     sync: function(method, records, callback) {
       if (callback) return callback(null, records);
@@ -1444,12 +1428,12 @@
       throw new Error(Tower.t.apply(Tower, arguments));
     },
     t: function() {
-      var _ref2;
-      return (_ref2 = Tower.Support.I18n).translate.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = Tower.Support.I18n).translate.apply(_ref, arguments);
     },
     l: function() {
-      var _ref2;
-      return (_ref2 = Tower.Support.I18n).localize.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = Tower.Support.I18n).localize.apply(_ref, arguments);
     },
     stringify: function() {
       var string;
@@ -1465,24 +1449,24 @@
       return Tower.Application.instance().constructor.name;
     },
     module: function(namespace) {
-      var node, part, parts, _j, _len2;
+      var node, part, parts, _i, _len;
       node = Tower.namespaces[namespace];
       if (node) return node;
       parts = namespace.split(".");
       node = Tower;
-      for (_j = 0, _len2 = parts.length; _j < _len2; _j++) {
-        part = parts[_j];
+      for (_i = 0, _len = parts.length; _i < _len; _i++) {
+        part = parts[_i];
         node = node[part] || (node[part] = {});
       }
       return Tower.namespaces[namespace] = node;
     },
     constant: function(string) {
-      var namespace, node, part, parts, _j, _len2;
+      var namespace, node, part, parts, _i, _len;
       node = global;
       parts = string.split(".");
       try {
-        for (_j = 0, _len2 = parts.length; _j < _len2; _j++) {
-          part = parts[_j];
+        for (_i = 0, _len = parts.length; _i < _len; _i++) {
+          part = parts[_i];
           node = node[part];
         }
       } catch (error) {
@@ -1511,12 +1495,12 @@
       return this.series(array, iterator, callback);
     },
     each: function(array, iterator) {
-      var index, item, _len2, _results;
+      var index, item, _len, _results;
       if (array.forEach) {
         return array.forEach(iterator);
       } else {
         _results = [];
-        for (index = 0, _len2 = array.length; index < _len2; index++) {
+        for (index = 0, _len = array.length; index < _len; index++) {
           item = array[index];
           _results.push(iterator(item, index, array));
         }
@@ -1630,12 +1614,12 @@
     };
 
     Application.prototype.use = function() {
-      var _ref2;
-      return (_ref2 = this.constructor).use.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = this.constructor).use.apply(_ref, arguments);
     };
 
     function Application(middlewares) {
-      var middleware, _base, _j, _len2;
+      var middleware, _base, _i, _len;
       if (middlewares == null) middlewares = [];
       if (Tower.Application._instance) {
         throw new Error("Already initialized application");
@@ -1645,8 +1629,8 @@
       this.io = global["io"];
       this.History = global["History"];
       this.stack = [];
-      for (_j = 0, _len2 = middlewares.length; _j < _len2; _j++) {
-        middleware = middlewares[_j];
+      for (_i = 0, _len = middlewares.length; _i < _len; _i++) {
+        middleware = middlewares[_i];
         this.use(middleware);
       }
     }
@@ -1659,14 +1643,14 @@
     };
 
     Application.prototype.applyMiddleware = function() {
-      var middleware, middlewares, _j, _len2, _results;
+      var middleware, middlewares, _i, _len, _results;
       middlewares = this.constructor.middleware;
       if (!(middlewares && middlewares.length > 0)) {
         middlewares = this.constructor.defaultStack();
       }
       _results = [];
-      for (_j = 0, _len2 = middlewares.length; _j < _len2; _j++) {
-        middleware = middlewares[_j];
+      for (_i = 0, _len = middlewares.length; _i < _len; _i++) {
+        middleware = middlewares[_i];
         _results.push(this.middleware.apply(this, middleware));
       }
       return _results;
@@ -1808,11 +1792,11 @@
     Store.hasKeyword = function(object) {
       var key, value;
       if ((function() {
-        var _ref2, _results;
-        _ref2 = this.queryOperators;
+        var _ref, _results;
+        _ref = this.queryOperators;
         _results = [];
-        for (key in _ref2) {
-          value = _ref2[key];
+        for (key in _ref) {
+          value = _ref[key];
           _results.push(object.hasOwnProperty(key));
         }
         return _results;
@@ -1820,11 +1804,11 @@
         return true;
       }
       if ((function() {
-        var _ref2, _results;
-        _ref2 = this.atomicModifiers;
+        var _ref, _results;
+        _ref = this.atomicModifiers;
         _results = [];
-        for (key in _ref2) {
-          value = _ref2[key];
+        for (key in _ref) {
+          value = _ref[key];
           _results.push(object.hasOwnProperty(key));
         }
         return _results;
@@ -1894,8 +1878,8 @@
     Store.prototype.addIndex = function(name, options) {};
 
     Store.prototype.serialize = function(data) {
-      var i, item, _len2;
-      for (i = 0, _len2 = data.length; i < _len2; i++) {
+      var i, item, _len;
+      for (i = 0, _len = data.length; i < _len; i++) {
         item = data[i];
         data[i] = this.serializeModel(item);
       }
@@ -1903,8 +1887,8 @@
     };
 
     Store.prototype.deserialize = function(models) {
-      var i, model, _len2;
-      for (i = 0, _len2 = models.length; i < _len2; i++) {
+      var i, model, _len;
+      for (i = 0, _len = models.length; i < _len; i++) {
         model = models[i];
         models[i] = this.deserializeModel(model);
       }
@@ -2011,10 +1995,10 @@
     };
 
     Memory.clean = function(callback) {
-      var store, stores, _j, _len2;
+      var store, stores, _i, _len;
       stores = this.stores();
-      for (_j = 0, _len2 = stores.length; _j < _len2; _j++) {
-        store = stores[_j];
+      for (_i = 0, _len = stores.length; _i < _len; _i++) {
+        store = stores[_i];
         store.clean();
       }
       return callback();
@@ -2197,45 +2181,45 @@
       return !!!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
     },
     _anyIn: function(recordValue, array) {
-      var value, _j, _k, _len2, _len3;
+      var value, _i, _j, _len, _len2;
       if (_.isArray(recordValue)) {
-        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
-          value = array[_j];
+        for (_i = 0, _len = array.length; _i < _len; _i++) {
+          value = array[_i];
           if (recordValue.indexOf(value) > -1) return true;
         }
       } else {
-        for (_k = 0, _len3 = array.length; _k < _len3; _k++) {
-          value = array[_k];
+        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
+          value = array[_j];
           if (recordValue === value) return true;
         }
       }
       return false;
     },
     _notIn: function(recordValue, array) {
-      var value, _j, _k, _len2, _len3;
+      var value, _i, _j, _len, _len2;
       if (_.isArray(recordValue)) {
-        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
-          value = array[_j];
+        for (_i = 0, _len = array.length; _i < _len; _i++) {
+          value = array[_i];
           if (recordValue.indexOf(value) > -1) return false;
         }
       } else {
-        for (_k = 0, _len3 = array.length; _k < _len3; _k++) {
-          value = array[_k];
+        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
+          value = array[_j];
           if (recordValue === value) return false;
         }
       }
       return true;
     },
     _allIn: function(recordValue, array) {
-      var value, _j, _k, _len2, _len3;
+      var value, _i, _j, _len, _len2;
       if (_.isArray(recordValue)) {
-        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
-          value = array[_j];
+        for (_i = 0, _len = array.length; _i < _len; _i++) {
+          value = array[_i];
           if (recordValue.indexOf(value) === -1) return false;
         }
       } else {
-        for (_k = 0, _len3 = array.length; _k < _len3; _k++) {
-          value = array[_k];
+        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
+          value = array[_j];
           if (recordValue !== value) return false;
         }
       }
@@ -2245,10 +2229,10 @@
 
   Tower.Store.Memory.Persistence = {
     load: function(data) {
-      var record, records, _j, _len2;
+      var record, records, _i, _len;
       records = _.castArray(data);
-      for (_j = 0, _len2 = records.length; _j < _len2; _j++) {
-        record = records[_j];
+      for (_i = 0, _len = records.length; _i < _len; _i++) {
+        record = records[_i];
         this.loadOne(this.serializeModel(record));
       }
       return records;
@@ -2258,11 +2242,11 @@
       return this.records[record.get("id").toString()] = record;
     },
     create: function(criteria, callback) {
-      var object, result, _j, _len2, _ref2;
+      var object, result, _i, _len, _ref;
       result = [];
-      _ref2 = criteria.data;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        object = _ref2[_j];
+      _ref = criteria.data;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        object = _ref[_i];
         result.push(this.createOne(object));
       }
       result = criteria["export"](result);
@@ -2278,10 +2262,10 @@
     update: function(updates, criteria, callback) {
       var _this = this;
       return this.find(criteria, function(error, records) {
-        var record, _j, _len2;
+        var record, _i, _len;
         if (error) return _.error(error, callback);
-        for (_j = 0, _len2 = records.length; _j < _len2; _j++) {
-          record = records[_j];
+        for (_i = 0, _len = records.length; _i < _len; _i++) {
+          record = records[_i];
           _this.updateOne(record, updates);
         }
         if (callback) callback.call(_this, error, records);
@@ -2298,10 +2282,10 @@
     },
     destroy: function(criteria, callback) {
       return this.find(criteria, function(error, records) {
-        var record, _j, _len2;
+        var record, _i, _len;
         if (error) return _.error(error, callback);
-        for (_j = 0, _len2 = records.length; _j < _len2; _j++) {
-          record = records[_j];
+        for (_i = 0, _len = records.length; _i < _len; _i++) {
+          record = records[_i];
           this.destroyOne(record);
         }
         if (callback) callback.call(this, error, records);
@@ -2351,13 +2335,13 @@
       return attributes;
     },
     _pullAtomicUpdate: function(attributes, value) {
-      var item, _attributeValue, _j, _key, _len2, _value;
+      var item, _attributeValue, _i, _key, _len, _value;
       for (_key in value) {
         _value = value[_key];
         _attributeValue = attributes[_key];
         if (_attributeValue) {
-          for (_j = 0, _len2 = _value.length; _j < _len2; _j++) {
-            item = _value[_j];
+          for (_i = 0, _len = _value.length; _i < _len; _i++) {
+            item = _value[_i];
             _attributeValue.splice(_attributeValue.indexOf(item), 1);
           }
         }
@@ -2365,14 +2349,14 @@
       return attributes;
     },
     _pullAllAtomicUpdate: function(attributes, value) {
-      var item, _attributeValue, _j, _key, _len2, _value;
+      var item, _attributeValue, _i, _key, _len, _value;
       return attributes;
       for (_key in value) {
         _value = value[_key];
         _attributeValue = attributes[_key];
         if (_attributeValue) {
-          for (_j = 0, _len2 = _value.length; _j < _len2; _j++) {
-            item = _value[_j];
+          for (_i = 0, _len = _value.length; _i < _len; _i++) {
+            item = _value[_i];
             _attributeValue.splice(_attributeValue.indexOf(item), 1);
           }
         }
@@ -2389,14 +2373,14 @@
       return attributes;
     },
     _addToSetAtomicUpdate: function(attributes, value) {
-      var attributeValue, item, _j, _key, _len2, _ref2, _value;
+      var attributeValue, item, _i, _key, _len, _ref, _value;
       for (_key in value) {
         _value = value[_key];
         attributeValue = attributes[_key] || (attributes[_key] = []);
         if (_value && _value.hasOwnProperty("$each")) {
-          _ref2 = _value.$each;
-          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-            item = _ref2[_j];
+          _ref = _value.$each;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
             if (attributeValue.indexOf(item) === -1) attributeValue.push(item);
           }
         } else {
@@ -2493,7 +2477,7 @@
       var _this = this;
       if (options == null) options = {};
       return function(data, status, xhr) {
-        var _ref2;
+        var _ref;
         Ajax.disable(function() {
           if (data && !_.isBlank(data)) {
             return record.updateAttributes(data, {
@@ -2501,7 +2485,7 @@
             });
           }
         });
-        return (_ref2 = options.success) != null ? _ref2.apply(_this.record) : void 0;
+        return (_ref = options.success) != null ? _ref.apply(_this.record) : void 0;
       };
     };
 
@@ -2509,8 +2493,8 @@
       var _this = this;
       if (options == null) options = {};
       return function(xhr, statusText, error) {
-        var _ref2;
-        return (_ref2 = options.error) != null ? _ref2.apply(record) : void 0;
+        var _ref;
+        return (_ref = options.error) != null ? _ref.apply(record) : void 0;
       };
     };
 
@@ -2519,18 +2503,18 @@
     };
 
     Ajax.prototype.request = function() {
-      var _ref2;
-      return (_ref2 = this.constructor).request.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = this.constructor).request.apply(_ref, arguments);
     };
 
     Ajax.prototype.ajax = function() {
-      var _ref2;
-      return (_ref2 = this.constructor).ajax.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = this.constructor).ajax.apply(_ref, arguments);
     };
 
     Ajax.prototype.toJSON = function() {
-      var _ref2;
-      return (_ref2 = this.constructor).toJSON.apply(_ref2, arguments);
+      var _ref;
+      return (_ref = this.constructor).toJSON.apply(_ref, arguments);
     };
 
     Ajax.prototype.create = function(criteria, callback) {
@@ -2706,14 +2690,14 @@
     sync = function() {
       var _this = this;
       return this.all(function(error, records) {
-        var changes, record, _j, _len2;
+        var changes, record, _i, _len;
         changes = {
           create: [],
           update: [],
           destroy: []
         };
-        for (_j = 0, _len2 = records.length; _j < _len2; _j++) {
-          record = records[_j];
+        for (_i = 0, _len = records.length; _i < _len; _i++) {
+          record = records[_i];
           if (record.syncAction) changes[record.syncAction].push(record);
         }
         if (changes.create != null) _this.createRequest(changes.create);
@@ -2972,18 +2956,18 @@
 
   })(Tower.Class);
 
-  _ref2 = Tower.Model.Scope.queryMethods;
-  _fn2 = function(key) {
+  _ref = Tower.Model.Scope.queryMethods;
+  _fn = function(key) {
     return Tower.Model.Scope.prototype[key] = function() {
-      var clone, _ref3;
+      var clone, _ref2;
       clone = this.clone();
-      (_ref3 = clone.criteria)[key].apply(_ref3, arguments);
+      (_ref2 = clone.criteria)[key].apply(_ref2, arguments);
       return clone;
     };
   };
-  for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-    key = _ref2[_j];
-    _fn2(key);
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    key = _ref[_i];
+    _fn(key);
   }
 
   Tower.Model.Criteria = (function(_super) {
@@ -3035,11 +3019,11 @@
     };
 
     Criteria.prototype.addIds = function(args) {
-      var id, ids, object, _k, _len3;
+      var id, ids, object, _j, _len2;
       ids = this.ids || (this.ids = []);
       if (args.length) {
-        for (_k = 0, _len3 = args.length; _k < _len3; _k++) {
-          object = args[_k];
+        for (_j = 0, _len2 = args.length; _j < _len2; _j++) {
+          object = args[_j];
           if (object == null) continue;
           id = object instanceof Tower.Model ? object.get('id') : object;
           if (ids.indexOf(id) === -1) ids.push(id);
@@ -3057,11 +3041,11 @@
     };
 
     Criteria.prototype.joins = function(object) {
-      var joins, key, _k, _len3;
+      var joins, key, _j, _len2;
       joins = this._joins;
       if (_.isArray(object)) {
-        for (_k = 0, _len3 = object.length; _k < _len3; _k++) {
-          key = object[_k];
+        for (_j = 0, _len2 = object.length; _j < _len2; _j++) {
+          key = object[_j];
           joins[key] = true;
         }
       } else if (typeof object === "string") {
@@ -3092,9 +3076,9 @@
     Criteria.prototype.sort = Criteria.prototype.order;
 
     Criteria.prototype.reverseSort = function() {
-      var i, order, set, _len3;
+      var i, order, set, _len2;
       order = this.get('order');
-      for (i = 0, _len3 = order.length; i < _len3; i++) {
+      for (i = 0, _len2 = order.length; i < _len2; i++) {
         set = order[i];
         set[1] = set[1] === "asc" ? "desc" : "asc";
       }
@@ -3102,20 +3086,20 @@
     };
 
     Criteria.prototype.asc = function() {
-      var attribute, attributes, _k, _len3;
+      var attribute, attributes, _j, _len2;
       attributes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      for (_k = 0, _len3 = attributes.length; _k < _len3; _k++) {
-        attribute = attributes[_k];
+      for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+        attribute = attributes[_j];
         this.order(attribute);
       }
       return this._order;
     };
 
     Criteria.prototype.desc = function() {
-      var attribute, attributes, _k, _len3;
+      var attribute, attributes, _j, _len2;
       attributes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      for (_k = 0, _len3 = attributes.length; _k < _len3; _k++) {
-        attribute = attributes[_k];
+      for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+        attribute = attributes[_j];
         this.order(attribute, "desc");
       }
       return this._order;
@@ -3196,14 +3180,14 @@
     };
 
     Criteria.prototype._build = function(callback) {
-      var attributes, data, item, result, store, _k, _len3;
+      var attributes, data, item, result, store, _j, _len2;
       store = this.store;
       attributes = this.attributes();
       data = this.data;
       if (!data.length) data.push({});
       result = [];
-      for (_k = 0, _len3 = data.length; _k < _len3; _k++) {
-        item = data[_k];
+      for (_j = 0, _len2 = data.length; _j < _len2; _j++) {
+        item = data[_j];
         if (item instanceof Tower.Model) {
           _.extend(item.attributes, attributes, item.attributes);
         } else {
@@ -3368,11 +3352,11 @@
     };
 
     Criteria.prototype.conditions = function() {
-      var conditions, result, _k, _len3, _ref3;
+      var conditions, result, _j, _len2, _ref2;
       result = {};
-      _ref3 = this._where;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        conditions = _ref3[_k];
+      _ref2 = this._where;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        conditions = _ref2[_j];
         _.deepMergeWithArrays(result, conditions);
       }
       if (this.ids && this.ids.length) {
@@ -3390,11 +3374,11 @@
     };
 
     Criteria.prototype.attributes = function() {
-      var attributes, conditions, key, value, _k, _key, _len3, _ref3, _value;
+      var attributes, conditions, key, value, _j, _key, _len2, _ref2, _value;
       attributes = {};
-      _ref3 = this._where;
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        conditions = _ref3[_k];
+      _ref2 = this._where;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        conditions = _ref2[_j];
         for (key in conditions) {
           value = conditions[key];
           if (Tower.Store.isKeyword(key)) {
@@ -3493,34 +3477,34 @@
         }
       },
       undo: function(amount) {
-        var key, nextIndex, operation, operations, prevIndex, value, _k, _len3, _ref3;
+        var key, nextIndex, operation, operations, prevIndex, value, _j, _len2, _ref2;
         if (amount == null) amount = 1;
         prevIndex = this.operationIndex;
         nextIndex = this.operationIndex = Math.max(this.operationIndex - amount, -1);
         if (prevIndex === nextIndex) return;
         operations = this.operations.slice(nextIndex, prevIndex).reverse();
-        for (_k = 0, _len3 = operations.length; _k < _len3; _k++) {
-          operation = operations[_k];
-          _ref3 = operation.$before;
-          for (key in _ref3) {
-            value = _ref3[key];
+        for (_j = 0, _len2 = operations.length; _j < _len2; _j++) {
+          operation = operations[_j];
+          _ref2 = operation.$before;
+          for (key in _ref2) {
+            value = _ref2[key];
             this.attributes[key] = value;
           }
         }
         return this;
       },
       redo: function(amount) {
-        var key, nextIndex, operation, operations, prevIndex, value, _k, _len3, _ref3;
+        var key, nextIndex, operation, operations, prevIndex, value, _j, _len2, _ref2;
         if (amount == null) amount = 1;
         prevIndex = this.operationIndex;
         nextIndex = this.operationIndex = Math.min(this.operationIndex + amount, this.operations.length);
         if (prevIndex === nextIndex) return;
         operations = this.operations.slice(prevIndex, nextIndex);
-        for (_k = 0, _len3 = operations.length; _k < _len3; _k++) {
-          operation = operations[_k];
-          _ref3 = operation.$after;
-          for (key in _ref3) {
-            value = _ref3[key];
+        for (_j = 0, _len2 = operations.length; _j < _len2; _j++) {
+          operation = operations[_j];
+          _ref2 = operation.$after;
+          for (key in _ref2) {
+            value = _ref2[key];
             this.attributes[key] = value;
           }
         }
@@ -3530,8 +3514,8 @@
         return _.isPresent(this.changes);
       },
       attributeChanged: function(name) {
-        var after, before, key, value, _ref3;
-        _ref3 = this.changes, before = _ref3.before, after = _ref3.after;
+        var after, before, key, value, _ref2;
+        _ref2 = this.changes, before = _ref2.before, after = _ref2.after;
         if (_.isBlank(before)) return false;
         before = before[name];
         for (key in after) {
@@ -3563,12 +3547,12 @@
         return this;
       },
       toUpdates: function() {
-        var array, attributes, key, result, _ref3;
+        var array, attributes, key, result, _ref2;
         result = {};
         attributes = this.attributes;
-        _ref3 = this.changes;
-        for (key in _ref3) {
-          array = _ref3[key];
+        _ref2 = this.changes;
+        for (key in _ref2) {
+          array = _ref2[key];
           result[key] = attributes[key];
         }
         result.updatedAt || (result.updatedAt = new Date);
@@ -3665,7 +3649,7 @@
         }
       },
       metadata: function() {
-        var baseClassName, className, classNamePlural, controllerName, defaults, fields, indexes, metadata, modelName, namePlural, namespace, paramName, paramNamePlural, relations, superMetadata, validators;
+        var baseClassName, className, classNamePlural, controllerName, defaults, fields, indexes, metadata, modelName, name, namePlural, namespace, paramName, paramNamePlural, relations, superMetadata, validators;
         className = this.name;
         metadata = this.metadata[className];
         if (metadata) return metadata;
@@ -3773,7 +3757,7 @@
     }
 
     Relation.prototype.initialize = function(options) {
-      var owner;
+      var name, owner;
       owner = this.owner;
       name = this.name;
       this.type = options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name));
@@ -3828,7 +3812,7 @@
         });
       }
       return (function(name) {
-        return this.owner.prototype[name] = function() {
+        return owner.prototype[name] = function() {
           return this.relation(name);
         };
       })(name);
@@ -3921,18 +3905,18 @@
 
   })(Tower.Class);
 
-  _ref3 = ["Before", "After"];
-  for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-    phase = _ref3[_k];
-    _ref4 = ["Create", "Update", "Destroy", "Find"];
-    _fn3 = function(phase, action) {
+  _ref2 = ["Before", "After"];
+  for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+    phase = _ref2[_j];
+    _ref3 = ["Create", "Update", "Destroy", "Find"];
+    _fn2 = function(phase, action) {
       return Tower.Model.Relation.Criteria.prototype["_run" + phase + action + "CallbacksOnStore"] = function(done) {
         return this.store["run" + phase + action](this, done);
       };
     };
-    for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-      action = _ref4[_l];
-      _fn3(phase, action);
+    for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+      action = _ref3[_k];
+      _fn2(phase, action);
     }
   }
 
@@ -4432,14 +4416,14 @@
       };
 
       Criteria.prototype.createThroughRelation = function(records, callback) {
-        var attributes, data, record, returnArray, _len5, _m,
+        var attributes, data, record, returnArray, _l, _len4,
           _this = this;
         returnArray = _.isArray(records);
         records = _.castArray(records);
         data = [];
         key = this.inverseRelation.foreignKey;
-        for (_m = 0, _len5 = records.length; _m < _len5; _m++) {
-          record = records[_m];
+        for (_l = 0, _len4 = records.length; _l < _len4; _l++) {
+          record = records[_l];
           attributes = {};
           attributes[key] = record.get('id');
           data.push(attributes);
@@ -4673,7 +4657,7 @@
     };
 
     function Attribute(owner, name, options, block) {
-      var index, key, normalizedKey, serializer, validations, _ref5;
+      var index, key, normalizedKey, serializer, validations, _ref4;
       if (options == null) options = {};
       this.owner = owner;
       this.name = key = name;
@@ -4748,9 +4732,9 @@
         });
       }
       validations = {};
-      _ref5 = Tower.Model.Validator.keys;
-      for (key in _ref5) {
-        normalizedKey = _ref5[key];
+      _ref4 = Tower.Model.Validator.keys;
+      for (key in _ref4) {
+        normalizedKey = _ref4[key];
         if (options.hasOwnProperty(key)) validations[normalizedKey] = options[key];
       }
       if (_.isPresent(validations)) this.owner.validates(name, validations);
@@ -4764,11 +4748,11 @@
     }
 
     Attribute.prototype.validators = function() {
-      var result, validator, _len5, _m, _ref5;
+      var result, validator, _l, _len4, _ref4;
       result = [];
-      _ref5 = this.owner.validators();
-      for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
-        validator = _ref5[_m];
+      _ref4 = this.owner.validators();
+      for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+        validator = _ref4[_l];
         if (validator.attributes.indexOf(this.name) !== -1) result.push(validator);
       }
       return result;
@@ -4817,24 +4801,24 @@
         return this.fields()[name] = new Tower.Model.Attribute(this, name, options);
       },
       fields: function() {
-        var fields, name, names, options, _len5, _m, _ref5;
+        var fields, name, names, options, _l, _len4, _ref4;
         fields = this.metadata().fields;
         switch (arguments.length) {
           case 0:
             fields;
             break;
           case 1:
-            _ref5 = arguments[0];
-            for (name in _ref5) {
-              options = _ref5[name];
+            _ref4 = arguments[0];
+            for (name in _ref4) {
+              options = _ref4[name];
               this.field(name, options);
             }
             break;
           default:
             names = _.args(arguments);
             options = _.extractOptions(names);
-            for (_m = 0, _len5 = names.length; _m < _len5; _m++) {
-              name = names[_m];
+            for (_l = 0, _len4 = names.length; _l < _len4; _l++) {
+              name = names[_l];
               this.field(name, options);
             }
         }
@@ -4909,23 +4893,23 @@
         });
       },
       unset: function() {
-        var key, keys, _len5, _m;
+        var key, keys, _l, _len4;
         keys = _.flatten(Tower.args(arguments));
-        for (_m = 0, _len5 = keys.length; _m < _len5; _m++) {
-          key = keys[_m];
+        for (_l = 0, _len4 = keys.length; _l < _len4; _l++) {
+          key = keys[_l];
           delete this.attributes[key];
         }
         return;
       },
       _set: function(key, value) {
-        var after, before, field, fields, operation, _ref5;
+        var after, before, field, fields, operation, _ref4;
         if (Tower.Store.atomicModifiers.hasOwnProperty(key)) {
           return this[key.replace(/^\$/, "")](value);
         } else {
           fields = this.constructor.fields();
           field = fields[key];
           if (field) value = field.encode(value, this);
-          _ref5 = this.changes, before = _ref5.before, after = _ref5.after;
+          _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
           this._attributeChange(key, value);
           if (!before.hasOwnProperty(key)) before[key] = this.get(key);
           after.$set || (after.$set = {});
@@ -4938,11 +4922,11 @@
         }
       },
       _push: function(key, value, array) {
-        var after, before, current, fields, operation, push, _ref5;
+        var after, before, current, fields, operation, push, _ref4;
         if (array == null) array = false;
         fields = this.constructor.fields();
         if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref5 = this.changes, before = _ref5.before, after = _ref5.after;
+        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
         push = after.$push || (after.$push = {});
         before[key] || (before[key] = this.get(key));
         current = this.get(key) || [];
@@ -4959,18 +4943,18 @@
         return this.attributes[key] = push[key];
       },
       _pull: function(key, value, array) {
-        var after, before, current, fields, item, operation, pull, _len5, _m, _ref5;
+        var after, before, current, fields, item, operation, pull, _l, _len4, _ref4;
         if (array == null) array = false;
         fields = this.constructor.fields();
         if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref5 = this.changes, before = _ref5.before, after = _ref5.after;
+        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
         pull = after.$pull || (after.$pull = {});
         before[key] || (before[key] = this.get(key));
         current = this.get(key) || [];
         pull[key] || (pull[key] = current.concat());
         if (array && _.isArray(value)) {
-          for (_m = 0, _len5 = value.length; _m < _len5; _m++) {
-            item = value[_m];
+          for (_l = 0, _len4 = value.length; _l < _len4; _l++) {
+            item = value[_l];
             pull[key].splice(pull[key].indexOf(item), 1);
           }
         } else {
@@ -4983,10 +4967,10 @@
         return this.attributes[key] = pull[key];
       },
       _inc: function(key, value) {
-        var after, before, fields, inc, operation, _ref5;
+        var after, before, fields, inc, operation, _ref4;
         fields = this.constructor.fields();
         if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref5 = this.changes, before = _ref5.before, after = _ref5.after;
+        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
         inc = after.$inc || (after.$inc = {});
         if (!before.hasOwnProperty(key)) before[key] = this.get(key);
         inc[key] = this.get(key) || 0;
@@ -5004,18 +4988,18 @@
         return this.attributes[key] = inc[key];
       },
       _addToSet: function(key, value) {
-        var addToSet, after, before, current, fields, item, _len5, _m, _ref5, _ref6;
+        var addToSet, after, before, current, fields, item, _l, _len4, _ref4, _ref5;
         fields = this.constructor.fields();
         if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref5 = this.changes, before = _ref5.before, after = _ref5.after;
+        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
         addToSet = after.$addToSet || (after.$addToSet = {});
         before[key] || (before[key] = this.get(key));
         current = this.get(key) || [];
         addToSet[key] || (addToSet[key] = current.concat());
         if (value && value.hasOwnProperty("$each")) {
-          _ref6 = value.$each;
-          for (_m = 0, _len5 = _ref6.length; _m < _len5; _m++) {
-            item = _ref6[_m];
+          _ref5 = value.$each;
+          for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
+            item = _ref5[_l];
             if (addToSet[key].indexOf(item) === -1) addToSet[key].push(item);
           }
         } else {
@@ -5212,7 +5196,19 @@
     }
   };
 
-  _ref5 = Tower.Model.Scope.queryMethods;
+  _ref4 = Tower.Model.Scope.queryMethods;
+  _fn3 = function(key) {
+    return Tower.Model.Scopes.ClassMethods[key] = function() {
+      var _ref5;
+      return (_ref5 = this.scoped())[key].apply(_ref5, arguments);
+    };
+  };
+  for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+    key = _ref4[_l];
+    _fn3(key);
+  }
+
+  _ref5 = Tower.Model.Scope.finderMethods;
   _fn4 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref6;
@@ -5224,7 +5220,7 @@
     _fn4(key);
   }
 
-  _ref6 = Tower.Model.Scope.finderMethods;
+  _ref6 = Tower.Model.Scope.persistenceMethods;
   _fn5 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref7;
@@ -5236,36 +5232,24 @@
     _fn5(key);
   }
 
-  _ref7 = Tower.Model.Scope.persistenceMethods;
-  _fn6 = function(key) {
-    return Tower.Model.Scopes.ClassMethods[key] = function() {
-      var _ref8;
-      return (_ref8 = this.scoped())[key].apply(_ref8, arguments);
-    };
-  };
-  for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
-    key = _ref7[_o];
-    _fn6(key);
-  }
-
   Tower.Model.Serialization = {
     ClassMethods: {
       fromJSON: function(data) {
-        var i, record, records, _len8;
+        var i, record, records, _len7;
         records = JSON.parse(data);
         if (!(records instanceof Array)) records = [records];
-        for (i = 0, _len8 = records.length; i < _len8; i++) {
+        for (i = 0, _len7 = records.length; i < _len7; i++) {
           record = records[i];
           records[i] = new this(record);
         }
         return records;
       },
       toJSON: function(records, options) {
-        var record, result, _len8, _p;
+        var record, result, _len7, _o;
         if (options == null) options = {};
         result = [];
-        for (_p = 0, _len8 = records.length; _p < _len8; _p++) {
-          record = records[_p];
+        for (_o = 0, _len7 = records.length; _o < _len7; _o++) {
+          record = records[_o];
           result.push(record.toJSON());
         }
         return result;
@@ -5281,7 +5265,7 @@
       return new this.constructor(attributes);
     },
     _serializableHash: function(options) {
-      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _len10, _len11, _len8, _len9, _p, _q, _r;
+      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _len10, _len7, _len8, _len9, _o, _p, _q;
       if (options == null) options = {};
       result = {};
       attributeNames = _.keys(this.attributes);
@@ -5290,21 +5274,21 @@
       } else if (except = options.except) {
         attributeNames = _.difference(_.toArray(except), attributeNames);
       }
-      for (_p = 0, _len8 = attributeNames.length; _p < _len8; _p++) {
-        name = attributeNames[_p];
+      for (_o = 0, _len7 = attributeNames.length; _o < _len7; _o++) {
+        name = attributeNames[_o];
         result[name] = this._readAttributeForSerialization(name);
       }
       if (methods = options.methods) {
         methodNames = _.toArray(methods);
-        for (_q = 0, _len9 = methods.length; _q < _len9; _q++) {
-          name = methods[_q];
+        for (_p = 0, _len8 = methods.length; _p < _len8; _p++) {
+          name = methods[_p];
           result[name] = this[name]();
         }
       }
       if (includes = options.include) {
         includes = _.toArray(includes);
-        for (_r = 0, _len10 = includes.length; _r < _len10; _r++) {
-          include = includes[_r];
+        for (_q = 0, _len9 = includes.length; _q < _len9; _q++) {
+          include = includes[_q];
           if (!_.isHash(include)) {
             tmp = {};
             tmp[include] = {};
@@ -5314,7 +5298,7 @@
           for (name in include) {
             opts = include[name];
             records = this[name]().all();
-            for (i = 0, _len11 = records.length; i < _len11; i++) {
+            for (i = 0, _len10 = records.length; i < _len10; i++) {
               record = records[i];
               records[i] = record._serializableHash(opts);
             }
@@ -5739,13 +5723,13 @@
   Tower.Model.Validations = {
     ClassMethods: {
       validates: function() {
-        var attributes, newValidators, options, validator, validators, _len8, _p;
+        var attributes, newValidators, options, validator, validators, _len7, _o;
         attributes = _.args(arguments);
         options = attributes.pop();
         validators = this.validators();
         newValidators = Tower.Model.Validator.createAll(attributes, options);
-        for (_p = 0, _len8 = newValidators.length; _p < _len8; _p++) {
-          validator = newValidators[_p];
+        for (_o = 0, _len7 = newValidators.length; _o < _len7; _o++) {
+          validator = newValidators[_o];
           validators.push(validator);
         }
         return this;
@@ -5773,7 +5757,7 @@
             return validator.validateEach(_this, errors, next);
           };
           Tower.async(validators, iterator, function(error) {
-            if (!(error || _.isPresent(errors))) success = true;
+            if (!(_.isPresent(errors) || error)) success = true;
             return complete.call(_this, !success);
           });
           return success;
@@ -6037,7 +6021,7 @@
       }
     },
     _renderString: function(string, options, callback) {
-      var coffeekup, e, engine, hardcode, helper, locals, mint, result, _len8, _p, _ref8;
+      var coffeekup, e, engine, hardcode, helper, locals, mint, result, _len7, _o, _ref7;
       if (options == null) options = {};
       if (!!options.type.match(/coffee/)) {
         e = null;
@@ -6050,9 +6034,9 @@
           locals.cache = Tower.env !== "development";
           locals.format = true;
           hardcode = {};
-          _ref8 = Tower.View.helpers;
-          for (_p = 0, _len8 = _ref8.length; _p < _len8; _p++) {
-            helper = _ref8[_p];
+          _ref7 = Tower.View.helpers;
+          for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
+            helper = _ref7[_o];
             hardcode = _.extend(hardcode, helper);
           }
           hardcode = _.extend(hardcode, {
@@ -6141,10 +6125,10 @@
     };
 
     Component.prototype.addClass = function(string, args) {
-      var arg, result, _len8, _p;
+      var arg, result, _len7, _o;
       result = string ? string.split(/\s+/g) : [];
-      for (_p = 0, _len8 = args.length; _p < _len8; _p++) {
-        arg = args[_p];
+      for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+        arg = args[_o];
         if (!arg) continue;
         if (!(result.indexOf(arg) > -1)) result.push(arg);
       }
@@ -6269,8 +6253,8 @@
     };
 
     Table.prototype.row = function() {
-      var args, attributes, block, _p;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _p = arguments.length - 1) : (_p = 0, []), block = arguments[_p++];
+      var args, attributes, block, _o;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _o = arguments.length - 1) : (_o = 0, []), block = arguments[_o++];
       attributes = _.extractOptions(args);
       attributes.scope = "row";
       if (this.scope === "body") attributes.role = "row";
@@ -6281,8 +6265,8 @@
     };
 
     Table.prototype.column = function() {
-      var args, attributes, block, value, _base, _p;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _p = arguments.length - 1) : (_p = 0, []), block = arguments[_p++];
+      var args, attributes, block, value, _base, _o;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _o = arguments.length - 1) : (_o = 0, []), block = arguments[_o++];
       attributes = _.extractOptions(args);
       value = args.shift();
       if (typeof (_base = Tower.View.idEnabledOn).include === "function" ? _base.include("table") : void 0) {
@@ -6371,8 +6355,8 @@
     };
 
     Table.prototype.cell = function() {
-      var args, attributes, block, value, _base, _p;
-      args = 2 <= arguments.length ? __slice.call(arguments, 0, _p = arguments.length - 1) : (_p = 0, []), block = arguments[_p++];
+      var args, attributes, block, value, _base, _o;
+      args = 2 <= arguments.length ? __slice.call(arguments, 0, _o = arguments.length - 1) : (_o = 0, []), block = arguments[_o++];
       attributes = _.extractOptions(args);
       value = args.shift();
       attributes.role = "gridcell";
@@ -6639,10 +6623,10 @@
     __extends(Field, _super);
 
     Field.prototype.addClass = function(string, args) {
-      var arg, result, _len8, _p;
+      var arg, result, _len7, _o;
       result = string ? string.split(/\s+/g) : [];
-      for (_p = 0, _len8 = args.length; _p < _len8; _p++) {
-        arg = args[_p];
+      for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+        arg = args[_o];
         if (!arg) continue;
         if (!(result.indexOf(arg) > -1)) result.push(arg);
       }
@@ -6970,14 +6954,14 @@
 
   Tower.View.AssetHelper = {
     javascripts: function() {
-      var options, path, paths, sources, _len8, _p;
+      var options, path, paths, sources, _len7, _o;
       sources = _.args(arguments);
       options = _.extractOptions(sources);
       options.namespace = "javascripts";
       options.extension = "js";
       paths = _extractAssetPaths(sources, options);
-      for (_p = 0, _len8 = paths.length; _p < _len8; _p++) {
-        path = paths[_p];
+      for (_o = 0, _len7 = paths.length; _o < _len7; _o++) {
+        path = paths[_o];
         javascriptTag(path);
       }
       return null;
@@ -6986,14 +6970,14 @@
       return javascripts.apply(this, arguments);
     },
     stylesheets: function() {
-      var options, path, paths, sources, _len8, _p;
+      var options, path, paths, sources, _len7, _o;
       sources = _.args(arguments);
       options = _.extractOptions(sources);
       options.namespace = "stylesheets";
       options.extension = "css";
       paths = _extractAssetPaths(sources, options);
-      for (_p = 0, _len8 = paths.length; _p < _len8; _p++) {
-        path = paths[_p];
+      for (_o = 0, _len7 = paths.length; _o < _len7; _o++) {
+        path = paths[_o];
         stylesheetTag(path);
       }
       return null;
@@ -7013,15 +6997,15 @@
       });
     },
     _extractAssetPaths: function(sources, options) {
-      var extension, manifest, namespace, path, paths, result, source, _len10, _len8, _len9, _p, _q, _r;
+      var extension, manifest, namespace, path, paths, result, source, _len7, _len8, _len9, _o, _p, _q;
       if (options == null) options = {};
       namespace = options.namespace;
       extension = options.extension;
       result = [];
       if (Tower.env === "production") {
         manifest = Tower.assetManifest;
-        for (_p = 0, _len8 = sources.length; _p < _len8; _p++) {
-          source = sources[_p];
+        for (_o = 0, _len7 = sources.length; _o < _len7; _o++) {
+          source = sources[_o];
           if (!source.match(/^(http|\/{2})/)) {
             source = "" + source + "." + extension;
             if (manifest[source]) source = manifest[source];
@@ -7031,15 +7015,15 @@
           result.push(source);
         }
       } else {
-        for (_q = 0, _len9 = sources.length; _q < _len9; _q++) {
-          source = sources[_q];
+        for (_p = 0, _len8 = sources.length; _p < _len8; _p++) {
+          source = sources[_p];
           if (!!source.match(/^(http|\/{2})/)) {
             result.push(source);
           } else {
             paths = Tower.config.assets[namespace][source];
             if (paths) {
-              for (_r = 0, _len10 = paths.length; _r < _len10; _r++) {
-                path = paths[_r];
+              for (_q = 0, _len9 = paths.length; _q < _len9; _q++) {
+                path = paths[_q];
                 result.push("/" + namespace + path + "." + extension);
               }
             }
@@ -7052,12 +7036,12 @@
 
   Tower.View.ComponentHelper = {
     formFor: function() {
-      var _ref8;
-      return (_ref8 = Tower.View.Form).render.apply(_ref8, [__ck].concat(__slice.call(arguments)));
+      var _ref7;
+      return (_ref7 = Tower.View.Form).render.apply(_ref7, [__ck].concat(__slice.call(arguments)));
     },
     tableFor: function() {
-      var _ref8;
-      return (_ref8 = Tower.View.Table).render.apply(_ref8, [__ck].concat(__slice.call(arguments)));
+      var _ref7;
+      return (_ref7 = Tower.View.Table).render.apply(_ref7, [__ck].concat(__slice.call(arguments)));
     },
     widget: function() {},
     linkTo: function(title, path, options) {
@@ -7080,11 +7064,11 @@
       return document.title = value;
     },
     addClass: function() {
-      var classes, part, parts, string, _len8, _p;
+      var classes, part, parts, string, _len7, _o;
       string = arguments[0], parts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       classes = string.split(/\ +/);
-      for (_p = 0, _len8 = parts.length; _p < _len8; _p++) {
-        part = parts[_p];
+      for (_o = 0, _len7 = parts.length; _o < _len7; _o++) {
+        part = parts[_o];
         if (classes.indexOf(part) > -1) classes.push(part);
       }
       return classes.join(" ");
@@ -7099,21 +7083,21 @@
       return Tower.Support.String.parameterize(this.elementNameComponents.apply(this, arguments).join("-"));
     },
     elementName: function() {
-      var i, item, result, _len8;
+      var i, item, result, _len7;
       result = this.elementNameComponents.apply(this, arguments);
       i = 1;
-      for (i = 0, _len8 = result.length; i < _len8; i++) {
+      for (i = 0, _len7 = result.length; i < _len7; i++) {
         item = result[i];
         result[i] = "[" + item + "]";
       }
       return Tower.Support.String.parameterize(result.join(""));
     },
     elementNameComponents: function() {
-      var args, item, result, _len8, _p;
+      var args, item, result, _len7, _o;
       args = _.args(arguments);
       result = [];
-      for (_p = 0, _len8 = args.length; _p < _len8; _p++) {
-        item = args[_p];
+      for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+        item = args[_o];
         switch (typeof item) {
           case "function":
             result.push(item.constructor.name);
@@ -7267,7 +7251,7 @@
       });
     },
     appleTouchIconLinkTags: function() {
-      var options, path, result, size, sizes, _len8, _p;
+      var options, path, result, size, sizes, _len7, _o;
       path = arguments[0], sizes = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (typeof sizes[sizes.length - 1] === "object") {
         options = sizes.pop();
@@ -7275,8 +7259,8 @@
         options = {};
       }
       result = [];
-      for (_p = 0, _len8 = sizes.length; _p < _len8; _p++) {
-        size = sizes[_p];
+      for (_o = 0, _len7 = sizes.length; _o < _len7; _o++) {
+        size = sizes[_o];
         result.push(appleTouchIconLinkTag(path, _.extend({
           size: size
         }, options)));
@@ -7314,7 +7298,7 @@
 
   Tower.View.RenderingHelper = {
     partial: function(path, options, callback) {
-      var item, locals, prefixes, template, tmpl, _len8, _p, _ref8;
+      var item, locals, name, prefixes, template, tmpl, _len7, _o, _ref7;
       try {
         if (typeof options === "function") {
           callback = options;
@@ -7333,9 +7317,9 @@
         if (options.collection) {
           name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true);
           tmpl = eval("(function(data) { with(data) { this." + name + " = " + name + "; " + (String(template)) + " } })");
-          _ref8 = options.collection;
-          for (_p = 0, _len8 = _ref8.length; _p < _len8; _p++) {
-            item = _ref8[_p];
+          _ref7 = options.collection;
+          for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
+            item = _ref7[_o];
             locals[name] = item;
             tmpl.call(this, locals);
             delete this[name];
@@ -7443,7 +7427,7 @@
   };
 
   $.serializeParams = function(params, coerce) {
-    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len8;
+    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len7;
     obj = {};
     coerce_types = {
       "true": !0,
@@ -7451,7 +7435,7 @@
       "null": null
     };
     array = params.replace(/\+/g, " ").split("&");
-    for (index = 0, _len8 = array.length; index < _len8; index++) {
+    for (index = 0, _len7 = array.length; index < _len7; index++) {
       item = array[index];
       param = item.split("=");
       key = decodeURIComponent(param[0]);
@@ -7512,12 +7496,12 @@
       }
     },
     invalidate: function() {
-      var attribute, element, errors, field, _ref8, _results;
+      var attribute, element, errors, field, _ref7, _results;
       element = $("#" + this.resourceName + "-" + this.elementName);
-      _ref8 = this.resource.errors;
+      _ref7 = this.resource.errors;
       _results = [];
-      for (attribute in _ref8) {
-        errors = _ref8[attribute];
+      for (attribute in _ref7) {
+        errors = _ref7[attribute];
         field = $("#" + this.resourceName + "-" + attribute + "-field");
         if (field.length) {
           field.css("background", "yellow");
@@ -7703,10 +7687,10 @@
         return this.params()[key] = Tower.HTTP.Param.create(key, options);
       },
       params: function() {
-        var arg, key, value, _len8, _p;
+        var arg, key, value, _len7, _o;
         if (arguments.length) {
-          for (_p = 0, _len8 = arguments.length; _p < _len8; _p++) {
-            arg = arguments[_p];
+          for (_o = 0, _len7 = arguments.length; _o < _len7; _o++) {
+            arg = arguments[_o];
             if (typeof arg === "object") {
               for (key in arg) {
                 value = arg[key];
@@ -7835,10 +7819,10 @@
         }
       },
       _handleRenderers: function(options, callback) {
-        var name, renderer, _ref8;
-        _ref8 = Tower.Controller.renderers();
-        for (name in _ref8) {
-          renderer = _ref8[name];
+        var name, renderer, _ref7;
+        _ref7 = Tower.Controller.renderers();
+        for (name in _ref7) {
+          renderer = _ref7[name];
           if (options.hasOwnProperty(name)) {
             renderer.call(this, options[name], options, callback);
             return true;
@@ -7924,7 +7908,7 @@
         return belongsTo.length > 0;
       },
       actions: function() {
-        var action, actions, actionsToRemove, args, options, _len8, _p;
+        var action, actions, actionsToRemove, args, options, _len7, _o;
         args = _.args(arguments);
         if (typeof args[args.length - 1] === "object") {
           options = args.pop();
@@ -7933,8 +7917,8 @@
         }
         actions = ["index", "new", "create", "show", "edit", "update", "destroy"];
         actionsToRemove = _.difference(actions, args, options.except || []);
-        for (_p = 0, _len8 = actionsToRemove.length; _p < _len8; _p++) {
-          action = actionsToRemove[_p];
+        for (_o = 0, _len7 = actionsToRemove.length; _o < _len7; _o++) {
+          action = actionsToRemove[_o];
           this[action] = null;
           delete this[action];
         }
@@ -8130,12 +8114,12 @@
       }
     },
     findParentRelation: function() {
-      var belongsTo, param, params, relation, _len8, _p;
+      var belongsTo, param, params, relation, _len7, _o;
       belongsTo = this.constructor.belongsTo();
       params = this.params;
       if (belongsTo.length > 0) {
-        for (_p = 0, _len8 = belongsTo.length; _p < _len8; _p++) {
-          relation = belongsTo[_p];
+        for (_o = 0, _len7 = belongsTo.length; _o < _len7; _o++) {
+          relation = belongsTo[_o];
           param = relation.param || ("" + relation.key + "Id");
           if (params.hasOwnProperty(param)) {
             relation = _.extend({}, relation);
@@ -8236,13 +8220,13 @@
     };
 
     function Responder(controller, options) {
-      var format, _len8, _p, _ref8;
+      var format, _len7, _o, _ref7;
       if (options == null) options = {};
       this.controller = controller;
       this.options = options;
-      _ref8 = this.controller.formats;
-      for (_p = 0, _len8 = _ref8.length; _p < _len8; _p++) {
-        format = _ref8[_p];
+      _ref7 = this.controller.formats;
+      for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
+        format = _ref7[_o];
         this.accept(format);
       }
     }
@@ -8369,7 +8353,7 @@
   Tower.Controller.Responding = {
     ClassMethods: {
       respondTo: function() {
-        var args, except, mimes, name, only, options, _len8, _p;
+        var args, except, mimes, name, only, options, _len7, _o;
         mimes = this.mimes();
         args = _.args(arguments);
         if (typeof args[args.length - 1] === "object") {
@@ -8379,8 +8363,8 @@
         }
         if (options.only) only = _.toArray(options.only);
         if (options.except) except = _.toArray(options.except);
-        for (_p = 0, _len8 = args.length; _p < _len8; _p++) {
-          name = args[_p];
+        for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+          name = args[_o];
           mimes[name] = {};
           if (only) mimes[name].only = only;
           if (except) mimes[name].except = except;
@@ -8499,12 +8483,12 @@
         });
       },
       invalidForm: function() {
-        var attribute, element, errors, field, _ref8, _results;
+        var attribute, element, errors, field, _ref7, _results;
         element = $("#" + this.resourceName + "-" + this.elementName);
-        _ref8 = this.resource.errors;
+        _ref7 = this.resource.errors;
         _results = [];
-        for (attribute in _ref8) {
-          errors = _ref8[attribute];
+        for (attribute in _ref7) {
+          errors = _ref7[attribute];
           field = $("#" + this.resourceName + "-" + attribute + "-field");
           if (field.length) {
             field.css("background", "yellow");
@@ -8614,7 +8598,7 @@
   };
 
   $.serializeParams = function(params, coerce) {
-    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len8;
+    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len7;
     obj = {};
     coerce_types = {
       "true": !0,
@@ -8622,7 +8606,7 @@
       "null": null
     };
     array = params.replace(/\+/g, " ").split("&");
-    for (index = 0, _len8 = array.length; index < _len8; index++) {
+    for (index = 0, _len7 = array.length; index < _len7; index++) {
       item = array[index];
       param = item.split("=");
       key = decodeURIComponent(param[0]);
@@ -8693,12 +8677,12 @@
   Tower.HTTP.Cookies = (function() {
 
     Cookies.parse = function(string) {
-      var eqlIndex, pair, pairs, result, value, _len8, _p;
+      var eqlIndex, pair, pairs, result, value, _len7, _o;
       if (string == null) string = document.cookie;
       result = {};
       pairs = string.split(/[;,] */);
-      for (_p = 0, _len8 = pairs.length; _p < _len8; _p++) {
-        pair = pairs[_p];
+      for (_o = 0, _len7 = pairs.length; _o < _len7; _o++) {
+        pair = pairs[_o];
         eqlIndex = pair.indexOf('=');
         key = pair.substring(0, eqlIndex).trim().toLowerCase();
         value = pair.substring(++eqlIndex, pair.length).trim();
@@ -8779,13 +8763,13 @@
     };
 
     Param.prototype.toCriteria = function(value) {
-      var attribute, conditions, criteria, node, nodes, operator, set, _len8, _len9, _p, _q;
+      var attribute, conditions, criteria, node, nodes, operator, set, _len7, _len8, _o, _p;
       nodes = this.parse(value);
       criteria = new Tower.Model.Criteria;
-      for (_p = 0, _len8 = nodes.length; _p < _len8; _p++) {
-        set = nodes[_p];
-        for (_q = 0, _len9 = set.length; _q < _len9; _q++) {
-          node = set[_q];
+      for (_o = 0, _len7 = nodes.length; _o < _len7; _o++) {
+        set = nodes[_o];
+        for (_p = 0, _len8 = set.length; _p < _len8; _p++) {
+          node = set[_p];
           attribute = node.attribute;
           operator = node.operators[0];
           conditions = {};
@@ -8828,12 +8812,12 @@
     }
 
     Array.prototype.parse = function(value) {
-      var array, isRange, negation, string, values, _len8, _p,
+      var array, isRange, negation, string, values, _len7, _o,
         _this = this;
       values = [];
       array = value.toString().split(/[,\|]/);
-      for (_p = 0, _len8 = array.length; _p < _len8; _p++) {
-        string = array[_p];
+      for (_o = 0, _len7 = array.length; _o < _len7; _o++) {
+        string = array[_o];
         isRange = false;
         negation = !!string.match(/^\^/);
         string = string.replace(/^\^/, "");
@@ -8867,12 +8851,12 @@
     }
 
     Date.prototype.parse = function(value) {
-      var array, isRange, string, values, _len8, _p,
+      var array, isRange, string, values, _len7, _o,
         _this = this;
       values = [];
       array = value.toString().split(/[\s,\+]/);
-      for (_p = 0, _len8 = array.length; _p < _len8; _p++) {
-        string = array[_p];
+      for (_o = 0, _len7 = array.length; _o < _len7; _o++) {
+        string = array[_o];
         isRange = false;
         string.replace(/([^\.]+)?(\.\.)([^\.]+)?/, function(_, startsOn, operator, endsOn) {
           var range;
@@ -8908,12 +8892,12 @@
     }
 
     Number.prototype.parse = function(value) {
-      var array, isRange, negation, string, values, _len8, _p,
+      var array, isRange, negation, string, values, _len7, _o,
         _this = this;
       values = [];
       array = value.toString().split(/[,\|]/);
-      for (_p = 0, _len8 = array.length; _p < _len8; _p++) {
-        string = array[_p];
+      for (_o = 0, _len7 = array.length; _o < _len7; _o++) {
+        string = array[_o];
         isRange = false;
         negation = !!string.match(/^\^/);
         string = string.replace(/^\^/, "");
@@ -8951,10 +8935,10 @@
     }
 
     String.prototype.parse = function(value) {
-      var arrays, i, node, values, _len8,
+      var arrays, i, node, values, _len7,
         _this = this;
       arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/g);
-      for (i = 0, _len8 = arrays.length; i < _len8; i++) {
+      for (i = 0, _len7 = arrays.length; i < _len7; i++) {
         node = arrays[i];
         values = [];
         node.replace(/([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, function(_, token) {
@@ -9020,10 +9004,10 @@
     };
 
     Route.findController = function(request, response, callback) {
-      var controller, route, routes, _len8, _p;
+      var controller, route, routes, _len7, _o;
       routes = Tower.Route.all();
-      for (_p = 0, _len8 = routes.length; _p < _len8; _p++) {
-        route = routes[_p];
+      for (_o = 0, _len7 = routes.length; _o < _len7; _o++) {
+        route = routes[_o];
         controller = route.toController(request);
         if (controller) break;
       }
@@ -9038,14 +9022,14 @@
     };
 
     Route.prototype.toController = function(request) {
-      var capture, controller, i, keys, match, method, params, _len8, _name;
+      var capture, controller, i, keys, match, method, params, _len7, _name;
       match = this.match(request);
       if (!match) return null;
       method = request.method.toLowerCase();
       keys = this.keys;
       params = _.extend({}, this.defaults, request.query || {}, request.body || {});
       match = match.slice(1);
-      for (i = 0, _len8 = match.length; i < _len8; i++) {
+      for (i = 0, _len7 = match.length; i < _len7; i++) {
         capture = match[i];
         params[_name = keys[i].name] || (params[_name] = capture ? decodeURIComponent(capture) : null);
       }
@@ -9199,7 +9183,7 @@
     };
 
     DSL.prototype.matchMethod = function(method, args) {
-      var options, path;
+      var name, options, path;
       if (typeof args[args.length - 1] === "object") {
         options = args.pop();
       } else {
@@ -9366,7 +9350,7 @@
     };
 
     DSL.prototype._extractOptions = function() {
-      var anchor, args, constraints, controller, defaults, method, options, path;
+      var anchor, args, constraints, controller, defaults, format, method, name, options, path;
       args = _.args(arguments);
       path = "/" + args.shift().replace(/^\/|\/$/, "");
       if (typeof args[args.length - 1] === "object") {

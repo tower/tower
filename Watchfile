@@ -17,14 +17,13 @@ require("design.io-javascripts")
     catch error
       console.log error.stack
 
-###
 require("design.io-javascripts") /test\/example\/.*\.coffee$/
   compress: false
   debug:    false
   ignore:   /(public|node_modules)/
   outputPath: (path) ->
     path = path.replace("test/example/", "")
-    "test/apps/client/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+    "test/example/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
     
 require("design.io-javascripts") /test\/cases\/.*\.coffee$/
   ignore:   /(public|node_modules)/
@@ -32,4 +31,3 @@ require("design.io-javascripts") /test\/cases\/.*\.coffee$/
   debug:    false
   outputPath: (path) ->
     "test/example/public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
-###
