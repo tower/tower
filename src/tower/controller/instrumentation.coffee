@@ -18,7 +18,7 @@ Tower.Controller.Instrumentation =
       else
         superMetadata = {}
 
-      resourceType            = Tower.Support.String.singularize(@name.replace(/(Controller)$/, ""))
+      resourceType            = _.singularize(@name.replace(/(Controller)$/, ""))
       resourceName            = @_compileResourceName(resourceType)
       collectionName          = Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
 

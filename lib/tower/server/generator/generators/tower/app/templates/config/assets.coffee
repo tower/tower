@@ -24,6 +24,7 @@ module.exports =
       "/vendor/javascripts/socket.io"
       "/vendor/javascripts/history"
       "/vendor/javascripts/history.adapter.jquery"
+      "/vendor/javascripts/ember"
       "/vendor/javascripts/tower"
       "/vendor/javascripts/bootstrap/bootstrap-transition"
       "/vendor/javascripts/bootstrap/bootstrap-alert"

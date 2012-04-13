@@ -66,7 +66,8 @@
     "validator":          ">= 0.4.5",
     "accounting":         ">= 0.3.2",
     "inflection":         "git://github.com/viatropos/node.inflection.git",
-    "superagent":         ">= 0.4.0"
+    "superagent":         ">= 0.4.0",
+    "ember-runtime":      ">= 0.9.2"
   },
   "devDependencies": {
     "cli-table":          ">= 0.0.1",
