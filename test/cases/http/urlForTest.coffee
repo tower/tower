@@ -3,6 +3,8 @@ defaultUrlOptions = null
 
 describe 'urlFor', ->
   beforeEach ->
+    Tower.Route.reload()
+    
     post = new App.Post(id: 10)
     
     defaultUrlOptions = 

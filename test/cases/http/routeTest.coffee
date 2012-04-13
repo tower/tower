@@ -1,7 +1,8 @@
 describe 'Tower.Dispatch.Route', ->
   describe 'resources', ->
     beforeEach ->
-      Tower.Application.instance().teardown()
+      #Tower.Application.instance().teardown()
+      Tower.Route.clear()
       
       Tower.Route.draw ->
         @resource "user"

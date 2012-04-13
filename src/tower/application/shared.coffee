@@ -161,6 +161,9 @@ _.extend Tower,
 
   clone: (object) ->
     _.extend({}, object)
+    
+  date: ->
+    _.toDate arguments...
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->
