@@ -1,5 +1,4 @@
 require '../lib/tower'
-require '../lib/tower/controller/tst'
 File  = require('pathfinder').File
 # require './secrets'
 
@@ -15,6 +14,9 @@ Tower.root            = process.cwd() + "/test/apps/server"
 Tower.publicPath      = Tower.root + "/public"
 Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/apps/server/app/views"]
+
+require '../lib/tower/controller/tst'
+require '../lib/tower/server/generator/tst'
 
 Tower.request = (method, action, options, callback) ->
   if typeof options == "function"
