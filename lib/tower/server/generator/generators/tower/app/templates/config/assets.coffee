@@ -18,7 +18,7 @@ module.exports =
       "/vendor/javascripts/validator"
       "/vendor/javascripts/accounting"
       "/vendor/javascripts/inflection"
-      "/vendor/javascripts/coffeecup"
+      "/vendor/javascripts/coffeekup"
       "/vendor/javascripts/prettify"
       "/vendor/javascripts/async"
       "/vendor/javascripts/socket.io"

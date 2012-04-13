@@ -16,7 +16,7 @@ class Tower.Command.New
       .option('-K, --keywords <keywords>', 'Your project keywords (e.g. "node.js, file uploading, s3")', "")
       .option('-n, --namespace <namespace>', 'Global namespace for your app (defaults to App)', "App")
       .option('-p, --persistence <name>', 'Preconfigure for selected database (options: mongodb)', array, ["mongodb"])
-      .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeecup/jade/eco/ejs)', "coffee")
+      .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)', "coffee")
       .option('-s, --stylesheets <names>', 'Stylesheets to use (defaults to twitter-bootstrap)', array, ["twitter-bootstrap"])
       .option('-t, --test <name>', 'Test framework (defaults to mocha)', "mocha")
       # heroku, nodejitsu, dotcloud, etc.
