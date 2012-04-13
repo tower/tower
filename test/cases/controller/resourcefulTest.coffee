@@ -20,7 +20,7 @@ describeWith = (store) ->
             assert.equal resources.length, 1
             assert.equal resources[0].firstName, "Lance"
             assert.equal @headers["Content-Type"], "application/json"
-          
+            
             App.User.count (error, count) =>
               assert.equal count, 1
               done()

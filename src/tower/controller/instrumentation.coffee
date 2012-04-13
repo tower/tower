@@ -56,7 +56,7 @@ Tower.Controller.Instrumentation =
       @cookies  = @request.cookies  || {}
       @query    = @request.query    || {}
       @session  = @request.session  || {}
-      @format   = @params.format    || "html"
+      @format   = @params.format    ||= require('mime').extension(@request.header("content-type")) || "html"
       @action   = @params.action
       @headers  = {}
       @callback = next

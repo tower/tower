@@ -23,4 +23,3 @@ describe 'Tower.Controller.Callbacks', ->
           assert.equal @testExceptCallbackCalled, undefined
           assert.equal @testNoCallbackCalled, true
           done()
-  
