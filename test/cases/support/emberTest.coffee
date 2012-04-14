@@ -72,3 +72,24 @@ describe 'Tower + Ember', ->
     
     assert.equal _c1.aVariable, "aVariable!!!"
     assert.equal _c1.aMethod(), "aMethod!!!"
+    
+  test 'class A extends Tower.Class (should be ember object)', ->
+    class A extends Tower.Class
+      
+    assert.equal A.superclass.name, Tower.Class.name
+      
+  test '@include', ->
+    viaInclude = 
+      includedMethod: "includedMethod!"
+      
+    viaReopen =
+      reopenedMethod: "reopenedMethod!"
+      
+    class A extends Tower.Class
+      @include viaInclude
+      @reopen viaReopen
+      
+    a = new A
+      
+    assert.equal a.includedMethod, "includedMethod!"
+    assert.equal a.reopenedMethod, "reopenedMethod!"
