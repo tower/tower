@@ -1,5 +1,4 @@
 class Tower.Model.Relation extends Tower.Class
-
   # Construct a new relation.
   #
   # @param [Function] owner Tower.Model class this relation is defined on.
@@ -120,31 +119,31 @@ class Tower.Model.Relation extends Tower.Class
 
     null
 
-  class @Criteria extends Tower.Model.Criteria
-    isConstructable: ->
-      !!!@relation.polymorphic
+class Tower.Model.Relation.Criteria extends Tower.Model.Criteria
+  isConstructable: ->
+    !!!@relation.polymorphic
 
-    constructor: (options = {}) ->
-      super(options)
-      @owner        = options.owner
-      @relation     = options.relation
-      @records      = []
+  constructor: (options = {}) ->
+    super(options)
+    @owner        = options.owner
+    @relation     = options.relation
+    @records      = []
 
-    clone: ->
-      (new @constructor(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)).merge(@)
+  clone: ->
+    (new @constructor(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)).merge(@)
 
-    setInverseInstance: (record) ->
-      if record && @invertibleFor(record)
-        inverse = record.relation(@inverseReflectionFor(record).name)
-        inverse.target = owner
+  setInverseInstance: (record) ->
+    if record && @invertibleFor(record)
+      inverse = record.relation(@inverseReflectionFor(record).name)
+      inverse.target = owner
 
-    invertibleFor: (record) ->
-      true
+  invertibleFor: (record) ->
+    true
 
-    inverse: (record) ->
+  inverse: (record) ->
 
-    _teardown: ->
-      _.teardown(@, "relation", "records", "owner", "model", "criteria")
+  _teardown: ->
+    _.teardown(@, "relation", "records", "owner", "model", "criteria")
 
 for phase in ["Before", "After"]
   for action in ["Create", "Update", "Destroy", "Find"]

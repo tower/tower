@@ -1,20 +1,3 @@
-# doesn't work:
-# Ember.Object.__extend = -> @extend arguments...
-
-Ember.Object.reopenClass
-  __extend: ->
-    @extend arguments...
-    
-  __defineStaticProperty: (key, value) ->
-    object = {}
-    object[key] = value
-    @reopenClass(object)
-    
-  __defineProperty: (key, value) ->
-    object = {}
-    object[key] = value
-    @reopen(object)
-    
 describe 'Tower + Ember', ->
   #before ->
   #  global.window = global # tmp ember hack

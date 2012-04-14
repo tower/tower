@@ -18,7 +18,7 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     owner.prototype["create#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
       @createRelation(name, attributes, callback)
 
-  class @Criteria extends @Criteria
+  class @Criteria extends Tower.Model.Relation.Criteria
     isBelongsTo: true
     # need to do something here about Reflection
 

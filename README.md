@@ -10,6 +10,10 @@ Follow me [@viatropos](http://twitter.com/viatropos).
 
 Docs are a work in progress.
 
+- **IRC**: #towerjs on irc.freenode.net
+- **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
+- **Issues**: http://github.com/viatropos/tower/issues
+
 ## Default Development Stack
 
 - MongoDB (database)

@@ -4,7 +4,7 @@
 # @include Tower.View.RenderingHelper
 # @include Tower.View.StringHelper
 class Tower.View extends Tower.Class
-  @extend
+  @reopenClass
     cache:                                      {}
     engine:                                     "coffee"
     prettyPrint:                                false

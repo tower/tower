@@ -195,7 +195,7 @@ class Tower.Application extends Tower.Engine
       try
         # [Sat, 18 Feb 2012 22:49:33 GMT] INFO updated public/stylesheets/vendor/stylesheets/bootstrap/reset.css
         data.replace /\[([^\]]+)\] (\w+) (\w+) (.+)/, (_, date, type, action, path) =>
-          path  = path.split('\033')[0]
+          #path  = path.split('\033')[0]
           ext   = path.match(/\.(\w+)$/g)
           ext   = ext[0] if ext
           if ext && ext.match(/(js|coffee)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
