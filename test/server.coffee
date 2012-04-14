@@ -8,7 +8,6 @@ global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
 global.async  = require 'async'
-global.window = global # tmp ember hack
 global.cb     = true # some library has a global leak...
 
 Tower.root            = process.cwd() + "/test/example"

@@ -55,7 +55,7 @@
     "commander":          ">= 0.4.0",
     "express":            ">= 2.5.1",
     "socket.io":          ">= 0.8.7",
-    "coffee-script":      ">= 1.2.0",
+    "coffee-script":      "git://github.com/d4tocchini/coffee-script.git",
     "coffeekup":          ">= 0.3.1",
     "restler":            ">= 0.0.1",
     "useragent":          ">= 1.0.5",

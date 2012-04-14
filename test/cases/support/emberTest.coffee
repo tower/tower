@@ -1,6 +1,3 @@
-require 'ember-metal'
-require 'ember-runtime'
-
 # doesn't work:
 # Ember.Object.__extend = -> @extend arguments...
 
@@ -19,6 +16,11 @@ Ember.Object.reopenClass
     @reopen(object)
     
 describe 'Tower + Ember', ->
+  #before ->
+  #  global.window = global # tmp ember hack
+  #
+  #after ->
+  #  delete global.window
   test 'coffeescript subclasses == ember subclasses', ->
     A1 = Ember.Object.extend()
     B1 = A1.extend()
@@ -63,8 +65,10 @@ describe 'Tower + Ember', ->
     
     assert.deepEqual ember, coffee
 
-    # console.log _C1.aClassVariable
-    # console.log _C1.aClassMethod()
-    # _c1 = new _C1
-    # console.log _c1.aVariable
-    # console.log _c1.aMethod()
+    assert.equal _C1.aClassVariable, "aClassVariable!!!"
+    assert.equal _C1.aClassMethod(), "aClassMethod!!!"
+    
+    _c1 = new _C1
+    
+    assert.equal _c1.aVariable, "aVariable!!!"
+    assert.equal _c1.aMethod(), "aMethod!!!"
