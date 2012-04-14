@@ -1,25 +1,28 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
 
-class Tower.Class
-  @mixin: (self, object) ->
+Tower.Class = Ember.Object.extend()
+
+Tower.Class.reopenClass
+  mixin: (self, object) ->
     for key, value of object when key not in specialProperties
       self[key] = value
 
     object
 
-  @extend: (object) ->
+  extend: (object) ->
     extended = object.extended
     delete object.extended
-
-    @mixin(@, object)
-
+    
+    #@mixin(@, object)
+    @reopenClass object
+    
     extended.apply(object) if extended
 
     object
 
-  @self: @extend
+  #self: @extend
 
-  @include: (object) ->
+  include: (object) ->
     included = object.included
     delete object.included
 
@@ -27,20 +30,13 @@ class Tower.Class
     @include(object.InstanceMethods) if object.hasOwnProperty("InstanceMethods")
 
     @mixin(@::, object)
+    #@reopen object
 
     included.apply(object) if included
 
     object
 
-  @className: ->
-    _.functionName(@)
-
   className: ->
-    @constructor.className()
-
-  constructor: ->
-    @initialize()
-
-  initialize: ->
-
+    _.functionName(@)
+    
 module.exports = Tower.Class

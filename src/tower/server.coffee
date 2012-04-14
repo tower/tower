@@ -10,6 +10,9 @@ Tower.version = JSON.parse(require("fs").readFileSync(require("path").normalize(
 
 Tower.logger    = _console
 
+require 'ember-metal'
+require 'ember-runtime'
+
 # external libraries, to get around having to use `require` in the browser.
 Tower.modules =
   validator:  require 'validator'
