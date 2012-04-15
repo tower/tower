@@ -3,6 +3,8 @@ class App.User extends Tower.Model
   @field "createdAt", type: "Time", default: -> new Date()
   @field "likes", type: "Integer", default: 0
   @field "tags", type: ["Array"], default: []
+  @field "admin", type: "Boolean", default: false
+  @field "rating", type: "Float", default: 2.5
   
   @scope "byBaldwin", firstName: "=~": "Baldwin"
   @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)

@@ -73,6 +73,9 @@ class Tower.Support.Callbacks.Chain
 
     @before ||= []
     @after  ||= []
+    
+  clone: ->
+    new Tower.Support.Callbacks.Chain(before: @before.concat(), after: @after.concat())
 
   run: (binding, options, block, complete) ->
     runner    = (callback, next) =>

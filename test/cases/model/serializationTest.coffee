@@ -8,11 +8,13 @@ describe 'Tower.Model.Serialization', ->
     
   test "instance.toJSON", ->
     assert.deepEqual (new App.User(firstName: "Lance")).toJSON(),
-      id:        undefined,
-      createdAt: undefined,
-      likes:     0,
-      tags:      [],
-      postIds:   [],
-      updatedAt: undefined,
-      firstName: 'Lance'
+      id:                  undefined,
+      createdAt:           undefined,
+      likes:               0,
+      tags:                [],
+      postIds:             [],
+      updatedAt:           undefined,
+      firstName:           'Lance'
+      rating:              2.5
+      admin:               false
       cachedMembershipIds: []

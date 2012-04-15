@@ -128,6 +128,7 @@ task 'build', ->
 Tower.version = "#{VERSION}"
 
 """
+  fs.writeFileSync './dist/tower.coffee', content
   mint.coffee content, bare: false, (error, result) ->
     result = JS_COPYRIGHT + result
     _console.error error.stack if error

@@ -23,6 +23,7 @@ Tower.Controller.Redirecting =
           url = "/custom"
         else
           url = "/custom/1"
+          
         @response.redirect url
       catch error
         console.log error

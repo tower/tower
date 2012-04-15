@@ -6,13 +6,13 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Fri, 13 Apr 2012 23:31:04 GMT
+ * Date: Sun, 15 Apr 2012 22:17:53 GMT
  */
 (function() {
-  var Tower, action, key, module, phase, specialProperties, _fn, _fn2, _fn3, _fn4, _fn5, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _n, _ref, _ref2, _ref3, _ref4, _ref5, _ref6,
-    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __slice = Array.prototype.slice,
-    __hasProp = Object.prototype.hasOwnProperty,
+  var Tower, action, key, module, phase, specialProperties, _fn, _fn1, _fn2, _fn3, _fn4, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = [].slice,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     _this = this;
 
@@ -53,9 +53,15 @@
       }
     },
     args: function(args, index, withCallback, withOptions) {
-      if (index == null) index = 0;
-      if (withCallback == null) withCallback = false;
-      if (withOptions == null) withOptions = false;
+      if (index == null) {
+        index = 0;
+      }
+      if (withCallback == null) {
+        withCallback = false;
+      }
+      if (withOptions == null) {
+        withOptions = false;
+      }
       args = Array.prototype.slice.call(args, index, args.length);
       if (withCallback && !(args.length >= 2 && typeof args[args.length - 1] === "function")) {
         throw new Error("You must pass a callback to the render method");
@@ -101,7 +107,9 @@
         }
       };
       sortings = sortings.map(function(sorting) {
-        if (!(sorting instanceof Array)) sorting = [sorting, "asc"];
+        if (!(sorting instanceof Array)) {
+          sorting = [sorting, "asc"];
+        }
         if (sorting[1] === "desc") {
           sorting[1] = -1;
         } else {
@@ -134,7 +142,9 @@
         node = args[_i];
         for (key in node) {
           value = node[key];
-          if (__indexOf.call(specialProperties, key) < 0) object[key] = value;
+          if (__indexOf.call(specialProperties, key) < 0) {
+            object[key] = value;
+          }
         }
       }
       return object;
@@ -155,9 +165,9 @@
       return result;
     },
     cloneArray: function(value) {
-      var i, item, result, _len;
+      var i, item, result, _i, _len;
       result = value.concat();
-      for (i = 0, _len = result.length; i < _len; i++) {
+      for (i = _i = 0, _len = result.length; _i < _len; i = ++_i) {
         item = result[i];
         if (_.isArray(item)) {
           result[i] = this.cloneArray(item);
@@ -192,7 +202,9 @@
         node = args[_i];
         for (key in node) {
           value = node[key];
-          if (!(__indexOf.call(specialProperties, key) < 0)) continue;
+          if (!(__indexOf.call(specialProperties, key) < 0)) {
+            continue;
+          }
           oldValue = object[key];
           if (oldValue) {
             if (_.isArray(oldValue)) {
@@ -210,13 +222,19 @@
       return object;
     },
     defineProperty: function(object, key, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return Object.defineProperty(object, key, options);
     },
     functionName: function(fn) {
       var _ref;
-      if (fn.__name__) return fn.__name__;
-      if (fn.name) return fn.name;
+      if (fn.__name__) {
+        return fn.__name__;
+      }
+      if (fn.name) {
+        return fn.name;
+      }
       return (_ref = fn.toString().match(/\W*function\s+([\w\$]+)\(/)) != null ? _ref[1] : void 0;
     },
     castArray: function(object) {
@@ -238,21 +256,43 @@
       type = typeof object;
       switch (type) {
         case "object":
-          if (_.isArray(object)) return "array";
-          if (_.isArguments(object)) return "arguments";
-          if (_.isBoolean(object)) return "boolean";
-          if (_.isDate(object)) return "date";
-          if (_.isRegExp(object)) return "regex";
-          if (_.isNaN(object)) return "NaN";
-          if (_.isNull(object)) return "null";
-          if (_.isUndefined(object)) return "undefined";
+          if (_.isArray(object)) {
+            return "array";
+          }
+          if (_.isArguments(object)) {
+            return "arguments";
+          }
+          if (_.isBoolean(object)) {
+            return "boolean";
+          }
+          if (_.isDate(object)) {
+            return "date";
+          }
+          if (_.isRegExp(object)) {
+            return "regex";
+          }
+          if (_.isNaN(object)) {
+            return "NaN";
+          }
+          if (_.isNull(object)) {
+            return "null";
+          }
+          if (_.isUndefined(object)) {
+            return "undefined";
+          }
           return "object";
         case "number":
-          if (object === +object && object === (object | 0)) return "integer";
-          if (object === +object && object !== (object | 0)) return "float";
+          if (object === +object && object === (object | 0)) {
+            return "integer";
+          }
+          if (object === +object && object !== (object | 0)) {
+            return "float";
+          }
           return "number";
         case "function":
-          if (_.isRegExp(object)) return "regex";
+          if (_.isRegExp(object)) {
+            return "regex";
+          }
           return "function";
         default:
           return type;
@@ -267,7 +307,9 @@
     isBlank: function(object) {
       var key, type, value;
       type = typeof object;
-      if (type === "string") return object === "";
+      if (type === "string") {
+        return object === "";
+      }
       if (type === "object") {
         for (key in object) {
           value = object[key];
@@ -275,7 +317,9 @@
         }
         return true;
       }
-      if (object === null || object === void 0) return true;
+      if (object === null || object === void 0) {
+        return true;
+      }
       return false;
     },
     none: function(value) {
@@ -323,7 +367,9 @@
       properties = _.args(arguments, 2);
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         property = properties[_i];
-        if (from[property] !== void 0) to[property] = from[property];
+        if (from[property] !== void 0) {
+          to[property] = from[property];
+        }
       }
       return to;
     },
@@ -332,7 +378,9 @@
       properties = _.args(arguments, 2);
       for (_i = 0, _len = properties.length; _i < _len; _i++) {
         property = properties[_i];
-        if (from[property] !== void 0) to[property] = from[property];
+        if (from[property] !== void 0) {
+          to[property] = from[property];
+        }
         delete from[property];
       }
       return to;
@@ -354,7 +402,9 @@
       return Tower.Support.String.underscore(string).replace("_", "-");
     },
     constantize: function(string, scope) {
-      if (scope == null) scope = global;
+      if (scope == null) {
+        scope = global;
+      }
       return scope[this.camelize(string)];
     },
     camelize: function(string, firstLetterLower) {
@@ -384,7 +434,9 @@
     pluralize: function(count, string) {
       var lastLetter, len;
       if (string) {
-        if (count === 1) return string;
+        if (count === 1) {
+          return string;
+        }
       } else {
         string = count;
       }
@@ -414,7 +466,9 @@
       var key, string, value;
       if (typeof stringOrObject === 'object') {
         string = stringOrObject[keys.count];
-        if (!string) string = stringOrObject['other'];
+        if (!string) {
+          string = stringOrObject['other'];
+        }
       } else {
         string = stringOrObject;
       }
@@ -430,14 +484,18 @@
       found = _.select(object, function(s) {
         return regex.test(s);
       }, context);
-      if (iterator) return _.map(found, iterator, context);
+      if (iterator) {
+        return _.map(found, iterator, context);
+      }
       return found;
     }
   };
 
   Tower.Support.String.toQueryValue = function(value, negate) {
     var item, items, result, _i, _len;
-    if (negate == null) negate = "";
+    if (negate == null) {
+      negate = "";
+    }
     if (_.isArray(value)) {
       items = [];
       for (_i = 0, _len = value.length; _i < _len; _i++) {
@@ -459,7 +517,9 @@
 
   Tower.Support.String.toQuery = function(object, schema) {
     var data, key, negate, param, range, result, set, type, value;
-    if (schema == null) schema = {};
+    if (schema == null) {
+      schema = {};
+    }
     result = [];
     for (key in object) {
       value = object[key];
@@ -468,14 +528,30 @@
       negate = type === "string" ? "-" : "^";
       if (_.isHash(value)) {
         data = {};
-        if (value.hasOwnProperty(">=")) data.min = value[">="];
-        if (value.hasOwnProperty(">")) data.min = value[">"];
-        if (value.hasOwnProperty("<=")) data.max = value["<="];
-        if (value.hasOwnProperty("<")) data.max = value["<"];
-        if (value.hasOwnProperty("=~")) data.match = value["=~"];
-        if (value.hasOwnProperty("!~")) data.notMatch = value["!~"];
-        if (value.hasOwnProperty("==")) data.eq = value["=="];
-        if (value.hasOwnProperty("!=")) data.neq = value["!="];
+        if (value.hasOwnProperty(">=")) {
+          data.min = value[">="];
+        }
+        if (value.hasOwnProperty(">")) {
+          data.min = value[">"];
+        }
+        if (value.hasOwnProperty("<=")) {
+          data.max = value["<="];
+        }
+        if (value.hasOwnProperty("<")) {
+          data.max = value["<"];
+        }
+        if (value.hasOwnProperty("=~")) {
+          data.match = value["=~"];
+        }
+        if (value.hasOwnProperty("!~")) {
+          data.notMatch = value["!~"];
+        }
+        if (value.hasOwnProperty("==")) {
+          data.eq = value["=="];
+        }
+        if (value.hasOwnProperty("!=")) {
+          data.neq = value["!="];
+        }
         data.range = data.hasOwnProperty("min") || data.hasOwnProperty("max");
         set = [];
         if (data.range && !(data.hasOwnProperty("eq") || data.hasOwnProperty("match"))) {
@@ -516,22 +592,32 @@
 
   Tower.Support.String.extractDomain = function(host, tldLength) {
     var parts;
-    if (tldLength == null) tldLength = 1;
-    if (!this.namedHost(host)) return null;
+    if (tldLength == null) {
+      tldLength = 1;
+    }
+    if (!this.namedHost(host)) {
+      return null;
+    }
     parts = host.split('.');
     return parts.slice(0, (parts.length - 1 - 1 + tldLength) + 1 || 9e9).join(".");
   };
 
   Tower.Support.String.extractSubdomains = function(host, tldLength) {
     var parts;
-    if (tldLength == null) tldLength = 1;
-    if (!this.namedHost(host)) return [];
+    if (tldLength == null) {
+      tldLength = 1;
+    }
+    if (!this.namedHost(host)) {
+      return [];
+    }
     parts = host.split('.');
-    return parts.slice(0, -(tldLength + 2) + 1 || 9e9);
+    return parts.slice(0, (-(tldLength + 2)) + 1 || 9e9);
   };
 
   Tower.Support.String.extractSubdomain = function(host, tldLength) {
-    if (tldLength == null) tldLength = 1;
+    if (tldLength == null) {
+      tldLength = 1;
+    }
     return this.extractSubdomains(host, tldLength).join('.');
   };
 
@@ -549,12 +635,16 @@
 
   Tower.Support.String.hostOrSubdomainAndDomain = function(options) {
     var host, subdomain, tldLength;
-    if (options.subdomain === null && options.domain === null) return options.host;
+    if (options.subdomain === null && options.domain === null) {
+      return options.host;
+    }
     tldLength = options.tldLength || 1;
     host = "";
     if (options.subdomain !== false) {
       subdomain = options.subdomain || this.extractSubdomain(options.host, tldLength);
-      if (subdomain) host += "" + subdomain + ".";
+      if (subdomain) {
+        host += "" + subdomain + ".";
+      }
     }
     host += options.domain || this.extractDomain(options.host, tldLength);
     return host;
@@ -580,10 +670,14 @@
           result += ":";
         }
       }
-      if (!result.match("//")) result += "//";
+      if (!result.match("//")) {
+        result += "//";
+      }
       result += this.rewriteAuthentication(options);
       result += this.hostOrSubdomainAndDomain(options);
-      if (port) result += ":" + port;
+      if (port) {
+        result += ":" + port;
+      }
     }
     if (options.trailingSlash) {
       result += path.replace(/\/$/, "/");
@@ -602,7 +696,9 @@
   Tower.urlFor = function() {
     var args, item, last, options, result, route, _i, _len;
     args = _.args(arguments);
-    if (!args[0]) return null;
+    if (!args[0]) {
+      return null;
+    }
     if (args[0] instanceof Tower.Model || (typeof args[0]).match(/(string|function)/)) {
       last = args[args.length - 1];
       if (last instanceof Tower.Model || (typeof last).match(/(string|function)/)) {
@@ -615,7 +711,9 @@
     result = "";
     if (options.route) {
       route = Tower.Route.find(options.route);
-      if (route) result = route.urlFor();
+      if (route) {
+        result = route.urlFor();
+      }
     } else if (options.controller && options.action) {
       route = Tower.Route.find({
         name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"),
@@ -647,7 +745,9 @@
           return "";
       }
     })();
-    if (!options.hasOwnProperty("onlyPath")) options.onlyPath = true;
+    if (!options.hasOwnProperty("onlyPath")) {
+      options.onlyPath = true;
+    }
     options.path = result;
     return Tower.Support.String.urlFor(options);
   };
@@ -692,8 +792,12 @@
       appendCallback: function(phase) {
         var args, callback, callbacks, filter, method, options, _i, _len;
         args = _.args(arguments, 1);
-        if (typeof args[args.length - 1] !== "object") method = args.pop();
-        if (typeof args[args.length - 1] === "object") options = args.pop();
+        if (typeof args[args.length - 1] !== "object") {
+          method = args.pop();
+        }
+        if (typeof args[args.length - 1] === "object") {
+          options = args.pop();
+        }
         method || (method = args.pop());
         options || (options = {});
         callbacks = this.callbacks();
@@ -705,7 +809,9 @@
         return this;
       },
       prependCallback: function(action, phase, run, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         return this;
       },
       callbacks: function() {
@@ -725,7 +831,9 @@
         return chain.run(this, options, block, complete);
       } else {
         block.call(this);
-        if (complete) return complete.call(this);
+        if (complete) {
+          return complete.call(this);
+        }
       }
     },
     _callback: function() {
@@ -750,9 +858,13 @@
 
   Tower.Support.Callbacks.Chain = (function() {
 
+    Chain.name = 'Chain';
+
     function Chain(options) {
       var key, value;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       for (key in options) {
         value = options[key];
         this[key] = value;
@@ -760,6 +872,13 @@
       this.before || (this.before = []);
       this.after || (this.after = []);
     }
+
+    Chain.prototype.clone = function() {
+      return new Tower.Support.Callbacks.Chain({
+        before: this.before.concat(),
+        after: this.after.concat()
+      });
+    };
 
     Chain.prototype.run = function(binding, options, block, complete) {
       var runner,
@@ -774,14 +893,18 @@
               case 0:
                 block.call(binding);
                 return Tower.async(_this.after, runner, function(error) {
-                  if (complete) complete.call(binding);
+                  if (complete) {
+                    complete.call(binding);
+                  }
                   return binding;
                 });
               default:
                 return block.call(binding, function(error) {
                   if (!error) {
                     return Tower.async(_this.after, runner, function(error) {
-                      if (complete) complete.call(binding);
+                      if (complete) {
+                        complete.call(binding);
+                      }
                       return binding;
                     });
                   }
@@ -789,7 +912,9 @@
             }
           } else {
             return Tower.async(_this.after, runner, function(error) {
-              if (complete) complete.call(binding);
+              if (complete) {
+                complete.call(binding);
+              }
               return binding;
             });
           }
@@ -807,8 +932,12 @@
 
   Tower.Support.Callback = (function() {
 
+    Callback.name = 'Callback';
+
     function Callback(method, conditions) {
-      if (conditions == null) conditions = {};
+      if (conditions == null) {
+        conditions = {};
+      }
       this.method = method;
       this.conditions = conditions;
       if (conditions.hasOwnProperty("only")) {
@@ -824,9 +953,13 @@
       conditions = this.conditions;
       if (options && options.hasOwnProperty("name")) {
         if (conditions.hasOwnProperty("only")) {
-          if (_.indexOf(conditions.only, options.name) === -1) return next();
+          if (_.indexOf(conditions.only, options.name) === -1) {
+            return next();
+          }
         } else if (conditions.hasOwnProperty("except")) {
-          if (_.indexOf(conditions.except, options.name) !== -1) return next();
+          if (_.indexOf(conditions.except, options.name) !== -1) {
+            return next();
+          }
         }
       }
       method = this.method;
@@ -851,58 +984,67 @@
 
   specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods'];
 
-  Tower.Class = (function() {
+  Tower.Class = Ember.Object.extend();
 
-    Class.mixin = function(self, object) {
+  Ember.Object.reopenClass({
+    __extend: function() {
+      return this.extend.apply(this, arguments);
+    },
+    __defineStaticProperty: function(key, value) {
+      var object;
+      object = {};
+      object[key] = value;
+      return this.reopenClass(object);
+    },
+    __defineProperty: function(key, value) {
+      var object;
+      object = {};
+      object[key] = value;
+      return this.reopen(object);
+    }
+  });
+
+  Tower.Class.reopenClass({
+    mixin: function(self, object) {
       var key, value;
       for (key in object) {
         value = object[key];
-        if (__indexOf.call(specialProperties, key) < 0) self[key] = value;
+        if (__indexOf.call(specialProperties, key) < 0) {
+          self[key] = value;
+        }
       }
       return object;
-    };
-
-    Class.extend = function(object) {
+    },
+    extend: function(object) {
       var extended;
       extended = object.extended;
       delete object.extended;
-      this.mixin(this, object);
-      if (extended) extended.apply(object);
+      this.reopenClass(object);
+      if (extended) {
+        extended.apply(object);
+      }
       return object;
-    };
-
-    Class.self = Class.extend;
-
-    Class.include = function(object) {
+    },
+    include: function(object) {
       var included;
       included = object.included;
       delete object.included;
-      if (object.hasOwnProperty("ClassMethods")) this.extend(object.ClassMethods);
+      if (object.hasOwnProperty("ClassMethods")) {
+        this.extend(object.ClassMethods);
+      }
       if (object.hasOwnProperty("InstanceMethods")) {
         this.include(object.InstanceMethods);
       }
       this.mixin(this.prototype, object);
-      if (included) included.apply(object);
+      if (included) {
+        included.apply(object);
+      }
       return object;
-    };
-
-    Class.className = function() {
+    },
+    className: function() {
       return _.functionName(this);
-    };
-
-    Class.prototype.className = function() {
-      return this.constructor.className();
-    };
-
-    function Class() {
-      this.initialize();
     }
-
-    Class.prototype.initialize = function() {};
-
-    return Class;
-
-  })();
+  });
 
   Tower.Support.EventEmitter = {
     isEventEmitter: true,
@@ -978,15 +1120,21 @@
     defaultLanguage: "en",
     load: function(pathOrObject, language) {
       var store;
-      if (language == null) language = this.defaultLanguage;
+      if (language == null) {
+        language = this.defaultLanguage;
+      }
       store = this.store();
       language = store[language] || (store[language] = {});
       _.deepMerge(language, typeof pathOrObject === "string" ? require(pathOrObject) : pathOrObject);
       return this;
     },
     translate: function(key, options) {
-      if (options == null) options = {};
-      if (options.hasOwnProperty("tense")) key += "." + options.tense;
+      if (options == null) {
+        options = {};
+      }
+      if (options.hasOwnProperty("tense")) {
+        key += "." + options.tense;
+      }
       if (options.hasOwnProperty("count")) {
         switch (options.count) {
           case 0:
@@ -1006,7 +1154,9 @@
     },
     lookup: function(key, language) {
       var part, parts, result, _i, _len;
-      if (language == null) language = this.defaultLanguage;
+      if (language == null) {
+        language = this.defaultLanguage;
+      }
       parts = key.split(".");
       result = this.store()[language];
       try {
@@ -1026,7 +1176,9 @@
       return this._store || (this._store = {});
     },
     interpolate: function(string, locals) {
-      if (locals == null) locals = {};
+      if (locals == null) {
+        locals = {};
+      }
       return string.replace(this.PATTERN, function(match, $1, $2, $3) {
         var key, value;
         if (match === '%%') {
@@ -1038,7 +1190,9 @@
           } else {
             throw new Error("Missing interpolation argument " + key);
           }
-          if (typeof value === 'function') value = value.call(locals);
+          if (typeof value === 'function') {
+            value = value.call(locals);
+          }
           if ($3) {
             return sprintf("%" + $3, value);
           } else {
@@ -1152,7 +1306,9 @@
         return value.toString().replace(/[- ]/g, '');
       },
       strftime: function(time, format) {
-        if (time._wrapped) time = time.value();
+        if (time._wrapped) {
+          time = time.value();
+        }
         return moment(time).format(format);
       },
       now: function() {
@@ -1192,8 +1348,12 @@
         return moment(value).from();
       },
       humanizeDuration: function(from, as) {
-        if (as == null) as = 'days';
-        if (from._wrapped) from = from.value();
+        if (as == null) {
+          as = 'days';
+        }
+        if (from._wrapped) {
+          from = from.value();
+        }
         return moment.humanizeDuration(from, 'milliseconds');
       },
       toS: function(array) {
@@ -1226,7 +1386,9 @@
       isEmail: function(value) {
         var result;
         result = check(value).isEmail();
-        if (!result._errors.length) return true;
+        if (!result._errors.length) {
+          return true;
+        }
         return false;
       },
       isUUID: function(value) {
@@ -1234,7 +1396,9 @@
         try {
           result = check(value).isUUID();
         } catch (_error) {}
-        if (!result._errors.length) return true;
+        if (!result._errors.length) {
+          return true;
+        }
         return result;
       },
       isAccept: function(value, param) {
@@ -1243,7 +1407,9 @@
       },
       isPhone: function(value, options) {
         var pattern;
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         pattern = phoneFormats[options.format] || /^\d{3}-\d{3}-\d{4}|\d{3}\.\d{3}\.\d{4}|\d{10}|\d{3}\s\d{3}\s\d{4}|\(\d{3}\)\s\d{3}-\d{4}$/i;
         return !!value.toString().match(pattern);
       },
@@ -1261,7 +1427,9 @@
       },
       isLuhn: function(value) {
         var digit, i, length, number, parity, total;
-        if (!value) return false;
+        if (!value) {
+          return false;
+        }
         number = value.toString().replace(/\D/g, "");
         length = number.length;
         parity = length % 2;
@@ -1271,7 +1439,9 @@
           digit = number.charAt(i);
           if (i % 2 === parity) {
             digit *= 2;
-            if (digit > 9) digit -= 9;
+            if (digit > 9) {
+              digit -= 9;
+            }
           }
           total += parseInt(digit);
           i++;
@@ -1288,7 +1458,9 @@
         return !!value.match(/^.*(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W]).*$/);
       },
       isPostalCode: function(value, country) {
-        if (country == null) country = 'us';
+        if (country == null) {
+          country = 'us';
+        }
         return !!value.match(postalCodeFormats[country]);
       },
       isSlug: function(value) {
@@ -1318,12 +1490,12 @@
     };
     asyncing = {
       series: function() {
-        var _ref2;
-        return (_ref2 = Tower.modules.async).series.apply(_ref2, arguments);
+        var _ref1;
+        return (_ref1 = Tower.modules.async).series.apply(_ref1, arguments);
       },
       parallel: function() {
-        var _ref2;
-        return (_ref2 = Tower.modules.async).parallel.apply(_ref2, arguments);
+        var _ref1;
+        return (_ref1 = Tower.modules.async).parallel.apply(_ref1, arguments);
       }
     };
     _.mixin(casting);
@@ -1334,6 +1506,8 @@
   })();
 
   Tower.Factory = (function() {
+
+    Factory.name = 'Factory';
 
     Factory.definitions = {};
 
@@ -1348,12 +1522,16 @@
     Factory.create = function(name, options) {
       var factory;
       factory = Tower.Factory.definitions[name];
-      if (!factory) throw new Error("Factory '" + name + "' doesn't exist.");
+      if (!factory) {
+        throw new Error("Factory '" + name + "' doesn't exist.");
+      }
       return factory.create(options);
     };
 
     function Factory(name, options, callback) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       if (this.constructor !== Tower.Factory) {
         return Tower.Factory.create(name, options);
       }
@@ -1395,7 +1573,9 @@
         var klass, result;
         klass = _this.toClass();
         result = new klass(attributes);
-        if (callback) callback.call(_this, error, result);
+        if (callback) {
+          callback.call(_this, error, result);
+        }
         return result;
       });
     };
@@ -1419,8 +1599,10 @@
 
     __extends(Hook, _super);
 
+    Hook.name = 'Hook';
+
     function Hook() {
-      Hook.__super__.constructor.apply(this, arguments);
+      return Hook.__super__.constructor.apply(this, arguments);
     }
 
     Hook.include(Tower.Support.Callbacks);
@@ -1433,8 +1615,10 @@
 
     __extends(Engine, _super);
 
+    Engine.name = 'Engine';
+
     function Engine() {
-      Engine.__super__.constructor.apply(this, arguments);
+      return Engine.__super__.constructor.apply(this, arguments);
     }
 
     return Engine;
@@ -1448,7 +1632,6 @@
     root: "/",
     publicPath: "/",
     "case": "camelcase",
-    namespace: null,
     accessors: typeof window === "undefined",
     logger: typeof _console !== 'undefined' ? _console : console,
     structure: "standard",
@@ -1468,7 +1651,9 @@
       return (_ref = Tower.Application.instance()).runCallbacks.apply(_ref, arguments);
     },
     sync: function(method, records, callback) {
-      if (callback) return callback(null, records);
+      if (callback) {
+        return callback(null, records);
+      }
     },
     get: function() {
       return Tower.request.apply(Tower, ["get"].concat(__slice.call(arguments)));
@@ -1533,7 +1718,9 @@
     module: function(namespace) {
       var node, part, parts, _i, _len;
       node = Tower.namespaces[namespace];
-      if (node) return node;
+      if (node) {
+        return node;
+      }
       parts = namespace.split(".");
       node = Tower;
       for (_i = 0, _len = parts.length; _i < _len; _i++) {
@@ -1577,12 +1764,12 @@
       return this.series(array, iterator, callback);
     },
     each: function(array, iterator) {
-      var index, item, _len, _results;
+      var index, item, _i, _len, _results;
       if (array.forEach) {
         return array.forEach(iterator);
       } else {
         _results = [];
-        for (index = 0, _len = array.length; index < _len; index++) {
+        for (index = _i = 0, _len = array.length; _i < _len; index = ++_i) {
           item = array[index];
           _results.push(iterator(item, index, array));
         }
@@ -1591,8 +1778,12 @@
     },
     series: function(array, iterator, callback) {
       var completed, iterate;
-      if (callback == null) callback = function() {};
-      if (!array.length) return callback();
+      if (callback == null) {
+        callback = function() {};
+      }
+      if (!array.length) {
+        return callback();
+      }
       completed = 0;
       iterate = function() {
         return iterator(array[completed], function(error) {
@@ -1613,8 +1804,12 @@
     },
     parallel: function(array, iterator, callback) {
       var completed, iterate;
-      if (callback == null) callback = function() {};
-      if (!array.length) return callback();
+      if (callback == null) {
+        callback = function() {};
+      }
+      if (!array.length) {
+        return callback();
+      }
       completed = 0;
       iterate = function() {};
       return Tower.each(array, function(x) {
@@ -1624,7 +1819,9 @@
             return callback = function() {};
           } else {
             completed += 1;
-            if (completed === array.length) return callback();
+            if (completed === array.length) {
+              return callback();
+            }
           }
         });
       });
@@ -1664,6 +1861,8 @@
   Tower.Application = (function(_super) {
 
     __extends(Application, _super);
+
+    Application.name = 'Application';
 
     Application.before('initialize', 'setDefaults');
 
@@ -1709,7 +1908,9 @@
 
     function Application(middlewares) {
       var middleware, _base, _i, _len;
-      if (middlewares == null) middlewares = [];
+      if (middlewares == null) {
+        middlewares = [];
+      }
       if (Tower.Application._instance) {
         throw new Error("Already initialized application");
       }
@@ -1772,7 +1973,9 @@
     Application.prototype.listen = function() {
       var self;
       self = this;
-      if (this.listening) return;
+      if (this.listening) {
+        return;
+      }
       this.listening = true;
       if (this.History && this.History.enabled) {
         this.History.Adapter.bind(global, "statechange", function() {
@@ -1815,11 +2018,17 @@
         removed = "";
         layer = stack[index++];
         if (!layer || response.headerSent) {
-          if (out) return out(err);
+          if (out) {
+            return out(err);
+          }
           if (err) {
             msg = ("production" === env ? "Internal Server Error" : err.stack || err.toString());
-            if ("test" !== env) console.error(err.stack || err.toString());
-            if (response.headerSent) return request.socket.destroy();
+            if ("test" !== env) {
+              console.error(err.stack || err.toString());
+            }
+            if (response.headerSent) {
+              return request.socket.destroy();
+            }
             response.statusCode = 500;
             response.setHeader("Content-Type", "text/plain");
             response.end(msg);
@@ -1832,13 +2041,21 @@
         }
         try {
           path = request.location.path;
-          if (undefined === path) path = "/";
-          if (0 !== path.indexOf(layer.route)) return next(err);
+          if (undefined === path) {
+            path = "/";
+          }
+          if (0 !== path.indexOf(layer.route)) {
+            return next(err);
+          }
           c = path[layer.route.length];
-          if (c && "/" !== c && "." !== c) return next(err);
+          if (c && "/" !== c && "." !== c) {
+            return next(err);
+          }
           removed = layer.route;
           request.url = request.url.substr(removed.length);
-          if ("/" !== request.url[0]) request.url = "/" + request.url;
+          if ("/" !== request.url[0]) {
+            request.url = "/" + request.url;
+          }
           arity = layer.handle.length;
           if (err) {
             if (arity === 4) {
@@ -1869,6 +2086,8 @@
   Tower.Store = (function(_super) {
 
     __extends(Store, _super);
+
+    Store.name = 'Store';
 
     Store.include(Tower.Support.Callbacks);
 
@@ -1967,8 +2186,8 @@
     Store.prototype.addIndex = function(name, options) {};
 
     Store.prototype.serialize = function(data) {
-      var i, item, _len;
-      for (i = 0, _len = data.length; i < _len; i++) {
+      var i, item, _i, _len;
+      for (i = _i = 0, _len = data.length; _i < _len; i = ++_i) {
         item = data[i];
         data[i] = this.serializeModel(item);
       }
@@ -1976,8 +2195,8 @@
     };
 
     Store.prototype.deserialize = function(models) {
-      var i, model, _len;
-      for (i = 0, _len = models.length; i < _len; i++) {
+      var i, model, _i, _len;
+      for (i = _i = 0, _len = models.length; _i < _len; i = ++_i) {
         model = models[i];
         models[i] = this.deserializeModel(model);
       }
@@ -1986,7 +2205,9 @@
 
     Store.prototype.serializeModel = function(attributes) {
       var klass;
-      if (attributes instanceof Tower.Model) return attributes;
+      if (attributes instanceof Tower.Model) {
+        return attributes;
+      }
       klass = Tower.constant(this.className);
       return new klass(attributes);
     };
@@ -2000,7 +2221,9 @@
     };
 
     function Store(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.name = options.name;
       this.className = options.type || Tower.namespaced(Tower.Support.String.camelize(Tower.Support.String.singularize(this.name)));
     }
@@ -2079,6 +2302,8 @@
 
     __extends(Memory, _super);
 
+    Memory.name = 'Memory';
+
     Memory.stores = function() {
       return this._stores || (this._stores = []);
     };
@@ -2126,9 +2351,13 @@
         startIndex = options.get('offset') || 0;
         for (key in records) {
           record = records[key];
-          if (this.matches(record, conditions)) result.push(record);
+          if (this.matches(record, conditions)) {
+            result.push(record);
+          }
         }
-        if (sort.length) result = this.sort(result, sort);
+        if (sort.length) {
+          result = this.sort(result, sort);
+        }
         endIndex = startIndex + (limit || result.length) - 1;
         result = result.slice(startIndex, endIndex + 1 || 9e9);
       } else {
@@ -2137,7 +2366,9 @@
           result.push(record);
         }
       }
-      if (callback) result = callback.call(this, null, result);
+      if (callback) {
+        result = callback.call(this, null, result);
+      }
       return result;
     },
     findOne: function(criteria, callback) {
@@ -2147,7 +2378,9 @@
       criteria.limit(1);
       this.find(criteria, function(error, records) {
         record = records[0] || null;
-        if (callback) return callback.call(_this, error, record);
+        if (callback) {
+          return callback.call(_this, error, record);
+        }
       });
       return record;
     },
@@ -2157,7 +2390,9 @@
       result = void 0;
       this.find(criteria, function(error, records) {
         result = records.length;
-        if (callback) return callback.call(_this, error, result);
+        if (callback) {
+          return callback.call(_this, error, result);
+        }
       });
       return result;
     },
@@ -2167,7 +2402,9 @@
       result = void 0;
       this.count(criteria, function(error, record) {
         result = !!record;
-        if (callback) return callback.call(_this, error, result);
+        if (callback) {
+          return callback.call(_this, error, result);
+        }
       });
       return result;
     },
@@ -2187,10 +2424,14 @@
         } else if (typeof value === "object") {
           success = self._matchesOperators(record, recordValue, value);
         } else {
-          if (typeof value === "function") value = value.call(record);
+          if (typeof value === "function") {
+            value = value.call(record);
+          }
           success = recordValue === value;
         }
-        if (!success) return false;
+        if (!success) {
+          return false;
+        }
       }
       return true;
     },
@@ -2201,7 +2442,9 @@
       for (key in operators) {
         value = operators[key];
         if (operator = Tower.Store.queryOperators[key]) {
-          if (_.isFunction(value)) value = value.call(record);
+          if (_.isFunction(value)) {
+            value = value.call(record);
+          }
           switch (operator) {
             case "$in":
             case "$any":
@@ -2238,7 +2481,9 @@
             case "$all":
               success = self._allIn(recordValue, value);
           }
-          if (!success) return false;
+          if (!success) {
+            return false;
+          }
         } else {
           return recordValue === operators;
         }
@@ -2270,46 +2515,58 @@
       return !!!(typeof recordValue === "string" ? recordValue.match(value) : recordValue.exec(value));
     },
     _anyIn: function(recordValue, array) {
-      var value, _i, _j, _len, _len2;
+      var value, _i, _j, _len, _len1;
       if (_.isArray(recordValue)) {
         for (_i = 0, _len = array.length; _i < _len; _i++) {
           value = array[_i];
-          if (recordValue.indexOf(value) > -1) return true;
+          if (recordValue.indexOf(value) > -1) {
+            return true;
+          }
         }
       } else {
-        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = array.length; _j < _len1; _j++) {
           value = array[_j];
-          if (recordValue === value) return true;
+          if (recordValue === value) {
+            return true;
+          }
         }
       }
       return false;
     },
     _notIn: function(recordValue, array) {
-      var value, _i, _j, _len, _len2;
+      var value, _i, _j, _len, _len1;
       if (_.isArray(recordValue)) {
         for (_i = 0, _len = array.length; _i < _len; _i++) {
           value = array[_i];
-          if (recordValue.indexOf(value) > -1) return false;
+          if (recordValue.indexOf(value) > -1) {
+            return false;
+          }
         }
       } else {
-        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = array.length; _j < _len1; _j++) {
           value = array[_j];
-          if (recordValue === value) return false;
+          if (recordValue === value) {
+            return false;
+          }
         }
       }
       return true;
     },
     _allIn: function(recordValue, array) {
-      var value, _i, _j, _len, _len2;
+      var value, _i, _j, _len, _len1;
       if (_.isArray(recordValue)) {
         for (_i = 0, _len = array.length; _i < _len; _i++) {
           value = array[_i];
-          if (recordValue.indexOf(value) === -1) return false;
+          if (recordValue.indexOf(value) === -1) {
+            return false;
+          }
         }
       } else {
-        for (_j = 0, _len2 = array.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = array.length; _j < _len1; _j++) {
           value = array[_j];
-          if (recordValue !== value) return false;
+          if (recordValue !== value) {
+            return false;
+          }
         }
       }
       return true;
@@ -2339,13 +2596,17 @@
         result.push(this.createOne(object));
       }
       result = criteria["export"](result);
-      if (callback) callback.call(this, null, result);
+      if (callback) {
+        callback.call(this, null, result);
+      }
       return result;
     },
     createOne: function(record) {
       var attributes;
       attributes = this.deserializeModel(record);
-      if (attributes.id == null) attributes.id = this.generateId();
+      if (attributes.id == null) {
+        attributes.id = this.generateId();
+      }
       attributes.id = attributes.id.toString();
       return this.loadOne(this.serializeModel(record));
     },
@@ -2353,12 +2614,16 @@
       var _this = this;
       return this.find(criteria, function(error, records) {
         var record, _i, _len;
-        if (error) return _.error(error, callback);
+        if (error) {
+          return _.error(error, callback);
+        }
         for (_i = 0, _len = records.length; _i < _len; _i++) {
           record = records[_i];
           _this.updateOne(record, updates);
         }
-        if (callback) callback.call(_this, error, records);
+        if (callback) {
+          callback.call(_this, error, records);
+        }
         return records;
       });
     },
@@ -2373,12 +2638,16 @@
     destroy: function(criteria, callback) {
       return this.find(criteria, function(error, records) {
         var record, _i, _len;
-        if (error) return _.error(error, callback);
+        if (error) {
+          return _.error(error, callback);
+        }
         for (_i = 0, _len = records.length; _i < _len; _i++) {
           record = records[_i];
           this.destroyOne(record);
         }
-        if (callback) callback.call(this, error, records);
+        if (callback) {
+          callback.call(this, error, records);
+        }
         return records;
       });
     },
@@ -2471,10 +2740,14 @@
           _ref = _value.$each;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             item = _ref[_i];
-            if (attributeValue.indexOf(item) === -1) attributeValue.push(item);
+            if (attributeValue.indexOf(item) === -1) {
+              attributeValue.push(item);
+            }
           }
         } else {
-          if (attributeValue.indexOf(_value) === -1) attributeValue.push(_value);
+          if (attributeValue.indexOf(_value) === -1) {
+            attributeValue.push(_value);
+          }
         }
       }
       return attributes;
@@ -2491,6 +2764,8 @@
     var sync;
 
     __extends(Ajax, _super);
+
+    Ajax.name = 'Ajax';
 
     Ajax.requests = [];
 
@@ -2553,7 +2828,9 @@
     };
 
     Ajax.queue = function(callback) {
-      if (!this.enabled) return;
+      if (!this.enabled) {
+        return;
+      }
       if (this.pending) {
         this.requests.push(callback);
       } else {
@@ -2565,7 +2842,9 @@
 
     Ajax.prototype.success = function(record, options) {
       var _this = this;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return function(data, status, xhr) {
         var _ref;
         Ajax.disable(function() {
@@ -2581,7 +2860,9 @@
 
     Ajax.prototype.failure = function(record, options) {
       var _this = this;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return function(xhr, statusText, error) {
         var _ref;
         return (_ref = options.error) != null ? _ref.apply(record) : void 0;
@@ -2611,8 +2892,10 @@
       var _this = this;
       if (criteria.sync !== false) {
         return Ajax.__super__.create.call(this, criteria, function(error, records) {
-          if (callback) callback.call(_this, error, records);
-          return _this.createRequest(records, options);
+          if (callback) {
+            callback.call(_this, error, records);
+          }
+          return _this.createRequest(records, criteria);
         });
       } else {
         return Ajax.__super__.create.apply(this, arguments);
@@ -2623,8 +2906,10 @@
       var _this = this;
       if (criteria.sync === true) {
         return Ajax.__super__.update.call(this, updates, criteria, function(error, result) {
-          if (callback) callback.call(_this, error, result);
-          return _this.updateRequest(result, options);
+          if (callback) {
+            callback.call(_this, error, result);
+          }
+          return _this.updateRequest(result, criteria);
         });
       } else {
         return Ajax.__super__.update.apply(this, arguments);
@@ -2636,7 +2921,9 @@
       if (criteria.sync !== false) {
         return Ajax.__super__.destroy.call(this, criteria, function(error, result) {
           _this.destroyRequest(result, criteria);
-          if (callback) return callback.call(_this, error, result);
+          if (callback) {
+            return callback.call(_this, error, result);
+          }
         });
       } else {
         return Ajax.__super__.destroy.apply(this, arguments);
@@ -2646,7 +2933,9 @@
     Ajax.prototype.createRequest = function(records, options) {
       var json,
         _this = this;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       json = this.toJSON(records);
       Tower.urlFor(records.constructor);
       return this.queue(function() {
@@ -2705,7 +2994,9 @@
       var _this = this;
       return this.queue(function() {
         var params, url;
-        if (_.isArray(record)) record = record[0];
+        if (_.isArray(record)) {
+          record = record[0];
+        }
         url = Tower.urlFor(record);
         params = {
           url: url,
@@ -2746,7 +3037,9 @@
     Ajax.prototype.findSuccess = function(options) {
       var _this = this;
       return function(data, status, xhr) {
-        if (_.isPresent(data)) return _this.load(data);
+        if (_.isPresent(data)) {
+          return _this.load(data);
+        }
       };
     };
 
@@ -2788,11 +3081,19 @@
         };
         for (_i = 0, _len = records.length; _i < _len; _i++) {
           record = records[_i];
-          if (record.syncAction) changes[record.syncAction].push(record);
+          if (record.syncAction) {
+            changes[record.syncAction].push(record);
+          }
         }
-        if (changes.create != null) _this.createRequest(changes.create);
-        if (changes.update != null) _this.updateRequest(changes.update);
-        if (changes.destroy != null) _this.destroyRequest(changes.destroy);
+        if (changes.create != null) {
+          _this.createRequest(changes.create);
+        }
+        if (changes.update != null) {
+          _this.updateRequest(changes.update);
+        }
+        if (changes.destroy != null) {
+          _this.destroyRequest(changes.destroy);
+        }
         return true;
       });
     };
@@ -2809,8 +3110,10 @@
 
     __extends(Local, _super);
 
+    Local.name = 'Local';
+
     function Local() {
-      Local.__super__.constructor.apply(this, arguments);
+      return Local.__super__.constructor.apply(this, arguments);
     }
 
     Local.prototype.initialize = function() {
@@ -2835,14 +3138,20 @@
 
     __extends(Model, _super);
 
+    Model.name = 'Model';
+
     function Model(attributes, options) {
       this.initialize(attributes, options);
     }
 
     Model.prototype.initialize = function(attrs, options) {
       var attributes, definition, definitions, key, name, value, _results;
-      if (attrs == null) attrs = {};
-      if (options == null) options = {};
+      if (attrs == null) {
+        attrs = {};
+      }
+      if (options == null) {
+        options = {};
+      }
       definitions = this.constructor.fields();
       attributes = {};
       for (name in definitions) {
@@ -2878,6 +3187,8 @@
   Tower.Model.Scope = (function(_super) {
 
     __extends(Scope, _super);
+
+    Scope.name = 'Scope';
 
     Scope.finderMethods = ["find", "all", "first", "last", "count", "exists", "instantiate", "pluck"];
 
@@ -3049,9 +3360,9 @@
   _ref = Tower.Model.Scope.queryMethods;
   _fn = function(key) {
     return Tower.Model.Scope.prototype[key] = function() {
-      var clone, _ref2;
+      var clone, _ref1;
       clone = this.clone();
-      (_ref2 = clone.criteria)[key].apply(_ref2, arguments);
+      (_ref1 = clone.criteria)[key].apply(_ref1, arguments);
       return clone;
     };
   };
@@ -3064,12 +3375,16 @@
 
     __extends(Criteria, _super);
 
+    Criteria.name = 'Criteria';
+
     Criteria.prototype.defaultLimit = 20;
 
     Criteria.include(Tower.Support.Callbacks);
 
     function Criteria(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.model = options.model;
       this.store = this.model ? this.model.store() : void 0;
       this.instantiate = options.instantiate !== false;
@@ -3088,7 +3403,9 @@
     }
 
     Criteria.prototype["export"] = function(result) {
-      if (this.returnArray === false) result = result[0];
+      if (this.returnArray === false) {
+        result = result[0];
+      }
       delete this.data;
       delete this.returnArray;
       return result;
@@ -3109,14 +3426,18 @@
     };
 
     Criteria.prototype.addIds = function(args) {
-      var id, ids, object, _j, _len2;
+      var id, ids, object, _j, _len1;
       ids = this.ids || (this.ids = []);
       if (args.length) {
-        for (_j = 0, _len2 = args.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = args.length; _j < _len1; _j++) {
           object = args[_j];
-          if (object == null) continue;
+          if (object == null) {
+            continue;
+          }
           id = object instanceof Tower.Model ? object.get('id') : object;
-          if (ids.indexOf(id) === -1) ids.push(id);
+          if (ids.indexOf(id) === -1) {
+            ids.push(id);
+          }
         }
       }
       return ids;
@@ -3131,10 +3452,10 @@
     };
 
     Criteria.prototype.joins = function(object) {
-      var joins, key, _j, _len2;
+      var joins, key, _j, _len1;
       joins = this._joins;
       if (_.isArray(object)) {
-        for (_j = 0, _len2 = object.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = object.length; _j < _len1; _j++) {
           key = object[_j];
           joins[key] = true;
         }
@@ -3159,16 +3480,18 @@
     };
 
     Criteria.prototype.order = function(attribute, direction) {
-      if (direction == null) direction = "asc";
+      if (direction == null) {
+        direction = "asc";
+      }
       return this._order.push([attribute, direction]);
     };
 
     Criteria.prototype.sort = Criteria.prototype.order;
 
     Criteria.prototype.reverseSort = function() {
-      var i, order, set, _len2;
+      var i, order, set, _j, _len1;
       order = this.get('order');
-      for (i = 0, _len2 = order.length; i < _len2; i++) {
+      for (i = _j = 0, _len1 = order.length; _j < _len1; i = ++_j) {
         set = order[i];
         set[1] = set[1] === "asc" ? "desc" : "asc";
       }
@@ -3176,9 +3499,9 @@
     };
 
     Criteria.prototype.asc = function() {
-      var attribute, attributes, _j, _len2;
+      var attribute, attributes, _j, _len1;
       attributes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+      for (_j = 0, _len1 = attributes.length; _j < _len1; _j++) {
         attribute = attributes[_j];
         this.order(attribute);
       }
@@ -3186,9 +3509,9 @@
     };
 
     Criteria.prototype.desc = function() {
-      var attribute, attributes, _j, _len2;
+      var attribute, attributes, _j, _len1;
       attributes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      for (_j = 0, _len2 = attributes.length; _j < _len2; _j++) {
+      for (_j = 0, _len1 = attributes.length; _j < _len1; _j++) {
         attribute = attributes[_j];
         this.order(attribute, "desc");
       }
@@ -3270,13 +3593,15 @@
     };
 
     Criteria.prototype._build = function(callback) {
-      var attributes, data, item, result, store, _j, _len2;
+      var attributes, data, item, result, store, _j, _len1;
       store = this.store;
       attributes = this.attributes();
       data = this.data;
-      if (!data.length) data.push({});
+      if (!data.length) {
+        data.push({});
+      }
       result = [];
-      for (_j = 0, _len2 = data.length; _j < _len2; _j++) {
+      for (_j = 0, _len1 = data.length; _j < _len1; _j++) {
         item = data[_j];
         if (item instanceof Tower.Model) {
           _.extend(item.attributes, attributes, item.attributes);
@@ -3286,7 +3611,9 @@
         result.push(item);
       }
       result = this.returnArray ? result : result[0];
-      if (callback) callback.call(this, null, result);
+      if (callback) {
+        callback.call(this, null, result);
+      }
       return result;
     };
 
@@ -3312,11 +3639,19 @@
         };
         Tower.async(records, iterator, function(error) {
           if (!callback) {
-            if (error) throw error;
-            if (!returnArray) return records = records[0];
+            if (error) {
+              throw error;
+            }
+            if (!returnArray) {
+              return records = records[0];
+            }
           } else {
-            if (error) return callback(error);
-            if (!returnArray) records = records[0];
+            if (error) {
+              return callback(error);
+            }
+            if (!returnArray) {
+              records = records[0];
+            }
             return callback(error, records);
           }
         });
@@ -3370,8 +3705,12 @@
         return this.store.findOne(this, callback);
       } else {
         return this.store.find(this, function(error, records) {
-          if (!error && records.length) records = _this["export"](records);
-          if (callback) callback.call(_this, error, records);
+          if (!error && records.length) {
+            records = _this["export"](records);
+          }
+          if (callback) {
+            callback.call(_this, error, records);
+          }
           return records;
         });
       }
@@ -3442,11 +3781,11 @@
     };
 
     Criteria.prototype.conditions = function() {
-      var conditions, ids, result, _j, _len2, _ref2;
+      var conditions, ids, result, _j, _len1, _ref1;
       result = {};
-      _ref2 = this._where;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        conditions = _ref2[_j];
+      _ref1 = this._where;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        conditions = _ref1[_j];
         _.deepMergeWithArrays(result, conditions);
       }
       if (this.ids && this.ids.length) {
@@ -3470,11 +3809,11 @@
     };
 
     Criteria.prototype.attributes = function() {
-      var attributes, conditions, key, value, _j, _key, _len2, _ref2, _value;
+      var attributes, conditions, key, value, _j, _key, _len1, _ref1, _value;
       attributes = {};
-      _ref2 = this._where;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        conditions = _ref2[_j];
+      _ref1 = this._where;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        conditions = _ref1[_j];
         for (key in conditions) {
           value = conditions[key];
           if (Tower.Store.isKeyword(key)) {
@@ -3494,7 +3833,9 @@
       }
       for (key in attributes) {
         value = attributes[key];
-        if (value === void 0) delete attributes[key];
+        if (value === void 0) {
+          delete attributes[key];
+        }
       }
       return attributes;
     };
@@ -3520,7 +3861,9 @@
         } else {
           return Tower.parallel(records, iterator, function(error) {
             if (!callback) {
-              if (error) throw error;
+              if (error) {
+                throw error;
+              }
             } else {
               if (callback) {
                 return callback.call(_this, error, _this["export"](records));
@@ -3552,7 +3895,9 @@
       operation: function(block) {
         var completeOperation,
           _this = this;
-        if (this._currentOperation) return block();
+        if (this._currentOperation) {
+          return block();
+        }
         if (this.operationIndex !== this.operations.length) {
           this.operations.splice(this.operationIndex, this.operations.length);
         }
@@ -3573,34 +3918,42 @@
         }
       },
       undo: function(amount) {
-        var key, nextIndex, operation, operations, prevIndex, value, _j, _len2, _ref2;
-        if (amount == null) amount = 1;
+        var key, nextIndex, operation, operations, prevIndex, value, _j, _len1, _ref1;
+        if (amount == null) {
+          amount = 1;
+        }
         prevIndex = this.operationIndex;
         nextIndex = this.operationIndex = Math.max(this.operationIndex - amount, -1);
-        if (prevIndex === nextIndex) return;
+        if (prevIndex === nextIndex) {
+          return;
+        }
         operations = this.operations.slice(nextIndex, prevIndex).reverse();
-        for (_j = 0, _len2 = operations.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = operations.length; _j < _len1; _j++) {
           operation = operations[_j];
-          _ref2 = operation.$before;
-          for (key in _ref2) {
-            value = _ref2[key];
+          _ref1 = operation.$before;
+          for (key in _ref1) {
+            value = _ref1[key];
             this.attributes[key] = value;
           }
         }
         return this;
       },
       redo: function(amount) {
-        var key, nextIndex, operation, operations, prevIndex, value, _j, _len2, _ref2;
-        if (amount == null) amount = 1;
+        var key, nextIndex, operation, operations, prevIndex, value, _j, _len1, _ref1;
+        if (amount == null) {
+          amount = 1;
+        }
         prevIndex = this.operationIndex;
         nextIndex = this.operationIndex = Math.min(this.operationIndex + amount, this.operations.length);
-        if (prevIndex === nextIndex) return;
+        if (prevIndex === nextIndex) {
+          return;
+        }
         operations = this.operations.slice(prevIndex, nextIndex);
-        for (_j = 0, _len2 = operations.length; _j < _len2; _j++) {
+        for (_j = 0, _len1 = operations.length; _j < _len1; _j++) {
           operation = operations[_j];
-          _ref2 = operation.$after;
-          for (key in _ref2) {
-            value = _ref2[key];
+          _ref1 = operation.$after;
+          for (key in _ref1) {
+            value = _ref1[key];
             this.attributes[key] = value;
           }
         }
@@ -3610,9 +3963,11 @@
         return _.isPresent(this.changes);
       },
       attributeChanged: function(name) {
-        var after, before, key, value, _ref2;
-        _ref2 = this.changes, before = _ref2.before, after = _ref2.after;
-        if (_.isBlank(before)) return false;
+        var after, before, key, value, _ref1;
+        _ref1 = this.changes, before = _ref1.before, after = _ref1.after;
+        if (_.isBlank(before)) {
+          return false;
+        }
         before = before[name];
         for (key in after) {
           value = after[key];
@@ -3621,34 +3976,42 @@
             break;
           }
         }
-        if (!after) return false;
+        if (!after) {
+          return false;
+        }
         return before !== after;
       },
       attributeChange: function(name) {
         var change;
         change = this.changes[name];
-        if (!change) return;
+        if (!change) {
+          return;
+        }
         return change[1];
       },
       attributeWas: function(name) {
         var change;
         change = this.changes.before[name];
-        if (change === void 0) return;
+        if (change === void 0) {
+          return;
+        }
         return change;
       },
       resetAttribute: function(name) {
         var array;
         array = this.changes[name];
-        if (array) this.set(name, array[0]);
+        if (array) {
+          this.set(name, array[0]);
+        }
         return this;
       },
       toUpdates: function() {
-        var array, attributes, key, result, _ref2;
+        var array, attributes, key, result, _ref1;
         result = {};
         attributes = this.attributes;
-        _ref2 = this.changes;
-        for (key in _ref2) {
-          array = _ref2[key];
+        _ref1 = this.changes;
+        for (key in _ref1) {
+          array = _ref1[key];
           result[key] = attributes[key];
         }
         result.updatedAt || (result.updatedAt = new Date);
@@ -3659,7 +4022,9 @@
         array = (_base = this.changes)[attribute] || (_base[attribute] = []);
         beforeValue = array[0] || (array[0] = this.attributes[attribute]);
         array[1] = value;
-        if (array[0] === array[1]) array = null;
+        if (array[0] === array[1]) {
+          array = null;
+        }
         if (array) {
           this.changes[attribute] = array;
         } else {
@@ -3696,7 +4061,9 @@
         return this.baseClass().name !== this.name;
       },
       toParam: function() {
-        if (this === Tower.Model) return;
+        if (this === Tower.Model) {
+          return;
+        }
         return this.metadata().paramNamePlural;
       },
       toKey: function() {
@@ -3718,7 +4085,9 @@
       },
       _relationship: false,
       relationship: function(value) {
-        if (value == null) value = true;
+        if (value == null) {
+          value = true;
+        }
         return this._relationship = value;
       },
       defaults: function(object) {
@@ -3748,7 +4117,9 @@
         var baseClassName, className, classNamePlural, controllerName, defaults, fields, indexes, metadata, modelName, name, namePlural, namespace, paramName, paramNamePlural, relations, superMetadata, validators;
         className = this.name;
         metadata = this.metadata[className];
-        if (metadata) return metadata;
+        if (metadata) {
+          return metadata;
+        }
         baseClassName = this.parentClass().name;
         if (baseClassName !== className) {
           superMetadata = this.parentClass().metadata();
@@ -3795,9 +4166,13 @@
       toPath: function() {
         var param, result;
         result = this.constructor.toParam();
-        if (result === void 0) return "/";
+        if (result === void 0) {
+          return "/";
+        }
         param = this.toParam();
-        if (param) result += "/" + param;
+        if (param) {
+          result += "/" + param;
+        }
         return result;
       },
       toParam: function() {
@@ -3822,7 +4197,9 @@
   Tower.Model.Indexing = {
     ClassMethods: {
       index: function(name, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         this.store().addIndex(name);
         return this.indexes()[name] = options;
       },
@@ -3840,9 +4217,13 @@
 
     __extends(Relation, _super);
 
+    Relation.name = 'Relation';
+
     function Relation(owner, name, options) {
       var key, value;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       for (key in options) {
         value = options[key];
         this[key] = value;
@@ -3860,14 +4241,26 @@
       this.ownerType = Tower.namespaced(owner.name);
       this.dependent || (this.dependent = false);
       this.counterCache || (this.counterCache = false);
-      if (!this.hasOwnProperty("idCache")) this.idCache = false;
-      if (!this.hasOwnProperty("readonly")) this.readonly = false;
-      if (!this.hasOwnProperty("validate")) this.validate = false;
-      if (!this.hasOwnProperty("autosave")) this.autosave = false;
-      if (!this.hasOwnProperty("touch")) this.touch = false;
+      if (!this.hasOwnProperty("idCache")) {
+        this.idCache = false;
+      }
+      if (!this.hasOwnProperty("readonly")) {
+        this.readonly = false;
+      }
+      if (!this.hasOwnProperty("validate")) {
+        this.validate = false;
+      }
+      if (!this.hasOwnProperty("autosave")) {
+        this.autosave = false;
+      }
+      if (!this.hasOwnProperty("touch")) {
+        this.touch = false;
+      }
       this.inverseOf || (this.inverseOf = void 0);
       this.polymorphic = options.hasOwnProperty("as") || !!options.polymorphic;
-      if (!this.hasOwnProperty("default")) this["default"] = false;
+      if (!this.hasOwnProperty("default")) {
+        this["default"] = false;
+      }
       this.singularName = Tower.Support.String.camelize(owner.name, true);
       this.pluralName = Tower.Support.String.pluralize(owner.name);
       this.singularTargetName = Tower.Support.String.singularize(name);
@@ -3932,87 +4325,97 @@
 
     Relation.prototype.inverse = function(type) {
       var name, relation, relations;
-      if (this._inverse) return this._inverse;
+      if (this._inverse) {
+        return this._inverse;
+      }
       relations = this.targetKlass().relations();
       if (this.inverseOf) {
         return relations[this.inverseOf];
       } else {
         for (name in relations) {
           relation = relations[name];
-          if (relation.inverseOf === this.name) return relation;
+          if (relation.inverseOf === this.name) {
+            return relation;
+          }
         }
         for (name in relations) {
           relation = relations[name];
-          if (relation.targetType === this.ownerType) return relation;
+          if (relation.targetType === this.ownerType) {
+            return relation;
+          }
         }
       }
       return null;
     };
 
-    Relation.Criteria = (function(_super2) {
-
-      __extends(Criteria, _super2);
-
-      Criteria.prototype.isConstructable = function() {
-        return !!!this.relation.polymorphic;
-      };
-
-      function Criteria(options) {
-        if (options == null) options = {};
-        Criteria.__super__.constructor.call(this, options);
-        this.owner = options.owner;
-        this.relation = options.relation;
-        this.records = [];
-      }
-
-      Criteria.prototype.clone = function() {
-        return (new this.constructor({
-          model: this.model,
-          owner: this.owner,
-          relation: this.relation,
-          records: this.records.concat(),
-          instantiate: this.instantiate
-        })).merge(this);
-      };
-
-      Criteria.prototype.setInverseInstance = function(record) {
-        var inverse;
-        if (record && this.invertibleFor(record)) {
-          inverse = record.relation(this.inverseReflectionFor(record).name);
-          return inverse.target = owner;
-        }
-      };
-
-      Criteria.prototype.invertibleFor = function(record) {
-        return true;
-      };
-
-      Criteria.prototype.inverse = function(record) {};
-
-      Criteria.prototype._teardown = function() {
-        return _.teardown(this, "relation", "records", "owner", "model", "criteria");
-      };
-
-      return Criteria;
-
-    })(Tower.Model.Criteria);
-
     return Relation;
 
   })(Tower.Class);
 
-  _ref2 = ["Before", "After"];
-  for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-    phase = _ref2[_j];
-    _ref3 = ["Create", "Update", "Destroy", "Find"];
-    _fn2 = function(phase, action) {
+  Tower.Model.Relation.Criteria = (function(_super) {
+
+    __extends(Criteria, _super);
+
+    Criteria.name = 'Criteria';
+
+    Criteria.prototype.isConstructable = function() {
+      return !!!this.relation.polymorphic;
+    };
+
+    function Criteria(options) {
+      if (options == null) {
+        options = {};
+      }
+      Criteria.__super__.constructor.call(this, options);
+      this.owner = options.owner;
+      this.relation = options.relation;
+      this.records = [];
+    }
+
+    Criteria.prototype.clone = function() {
+      return (new this.constructor({
+        model: this.model,
+        owner: this.owner,
+        relation: this.relation,
+        records: this.records.concat(),
+        instantiate: this.instantiate
+      })).merge(this);
+    };
+
+    Criteria.prototype.setInverseInstance = function(record) {
+      var inverse;
+      if (record && this.invertibleFor(record)) {
+        inverse = record.relation(this.inverseReflectionFor(record).name);
+        return inverse.target = owner;
+      }
+    };
+
+    Criteria.prototype.invertibleFor = function(record) {
+      return true;
+    };
+
+    Criteria.prototype.inverse = function(record) {};
+
+    Criteria.prototype._teardown = function() {
+      return _.teardown(this, "relation", "records", "owner", "model", "criteria");
+    };
+
+    return Criteria;
+
+  })(Tower.Model.Criteria);
+
+  _ref1 = ["Before", "After"];
+  for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+    phase = _ref1[_j];
+    _ref2 = ["Create", "Update", "Destroy", "Find"];
+    _fn1 = function(phase, action) {
       return Tower.Model.Relation.Criteria.prototype["_run" + phase + action + "CallbacksOnStore"] = function(done) {
         return this.store["run" + phase + action](this, done);
       };
     };
-    for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-      action = _ref3[_k];
-      _fn2(phase, action);
+    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+      action = _ref2[_k];
+      _fn1(phase, action);
     }
   }
 
@@ -4020,8 +4423,12 @@
 
     __extends(BelongsTo, _super);
 
+    BelongsTo.name = 'BelongsTo';
+
     function BelongsTo(owner, name, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       BelongsTo.__super__.constructor.call(this, owner, name, options);
       this.foreignKey = "" + name + "Id";
       owner.field(this.foreignKey, {
@@ -4044,12 +4451,14 @@
       };
     }
 
-    BelongsTo.Criteria = (function(_super2) {
+    BelongsTo.Criteria = (function(_super1) {
 
-      __extends(Criteria, _super2);
+      __extends(Criteria, _super1);
+
+      Criteria.name = 'Criteria';
 
       function Criteria() {
-        Criteria.__super__.constructor.apply(this, arguments);
+        return Criteria.__super__.constructor.apply(this, arguments);
       }
 
       Criteria.prototype.isBelongsTo = true;
@@ -4068,7 +4477,7 @@
 
       return Criteria;
 
-    })(BelongsTo.Criteria);
+    })(Tower.Model.Relation.Criteria);
 
     return BelongsTo;
 
@@ -4078,308 +4487,366 @@
 
     __extends(HasMany, _super);
 
+    HasMany.name = 'HasMany';
+
     function HasMany() {
-      HasMany.__super__.constructor.apply(this, arguments);
+      return HasMany.__super__.constructor.apply(this, arguments);
     }
-
-    HasMany.Criteria = (function(_super2) {
-
-      __extends(Criteria, _super2);
-
-      function Criteria() {
-        Criteria.__super__.constructor.apply(this, arguments);
-      }
-
-      Criteria.prototype.isHasMany = true;
-
-      Criteria.prototype.has = function(object) {
-        var records;
-        object = _.castArray(object);
-        records = [];
-        if (!records.length) return false;
-        return false;
-      };
-
-      Criteria.prototype.validate = function(callback) {
-        if (!this.owner.isPersisted()) {
-          throw new Error("You cannot call create unless the parent is saved");
-        }
-        return callback.call(this);
-      };
-
-      Criteria.prototype.build = function(callback) {
-        this.compileForCreate();
-        return this._build(callback);
-      };
-
-      Criteria.prototype.create = function(callback) {
-        var _this = this;
-        return this.validate(function(error) {
-          return _this.createReferenced(callback);
-        });
-      };
-
-      Criteria.prototype.update = function(callback) {
-        var _this = this;
-        return this.validate(function(error) {
-          return _this.updateReferenced(callback);
-        });
-      };
-
-      Criteria.prototype.destroy = function(callback) {
-        var _this = this;
-        return this.validate(function(error) {
-          return _this.destroyReferenced(callback);
-        });
-      };
-
-      Criteria.prototype.find = function(callback) {
-        var _this = this;
-        return this.validate(function(error) {
-          return _this.findReferenced(callback);
-        });
-      };
-
-      Criteria.prototype.count = function(callback) {
-        var _this = this;
-        return this.validate(function(error) {
-          _this.compileForFind();
-          return _this._runBeforeFindCallbacksOnStore(function() {
-            return _this._count(function(error, record) {
-              if (!error) {
-                return _this._runAfterFindCallbacksOnStore(function() {
-                  if (callback) return callback.call(_this, error, record);
-                });
-              } else {
-                if (callback) return callback.call(_this, error, record);
-              }
-            });
-          });
-        });
-      };
-
-      Criteria.prototype.exists = function(callback) {
-        var _this = this;
-        return this.validate(function(error) {
-          _this.compileForFind();
-          return _this._runBeforeFindCallbacksOnStore(function() {
-            return _this._exists(function(error, record) {
-              if (!error) {
-                return _this._runAfterFindCallbacksOnStore(function() {
-                  if (callback) return callback.call(_this, error, record);
-                });
-              } else {
-                if (callback) return callback.call(_this, error, record);
-              }
-            });
-          });
-        });
-      };
-
-      Criteria.prototype.createReferenced = function(callback) {
-        var _this = this;
-        this.compileForCreate();
-        return this._runBeforeCreateCallbacksOnStore(function() {
-          return _this._create(function(error, record) {
-            if (!error) {
-              return _this._runAfterCreateCallbacksOnStore(function() {
-                if (_this.updateOwnerRecord()) {
-                  return _this.owner.updateAttributes(_this.ownerAttributes(record), function(error) {
-                    if (callback) return callback.call(_this, error, record);
-                  });
-                } else {
-                  if (callback) return callback.call(_this, error, record);
-                }
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.updateReferenced = function(callback) {
-        var _this = this;
-        this.compileForUpdate();
-        return this._runBeforeUpdateCallbacksOnStore(function() {
-          return _this._update(function(error, record) {
-            if (!error) {
-              return _this._runAfterUpdateCallbacksOnStore(function() {
-                if (callback) return callback.call(_this, error, record);
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.destroyReferenced = function(callback) {
-        var _this = this;
-        this.compileForDestroy();
-        return this._runBeforeDestroyCallbacksOnStore(function() {
-          return _this._destroy(function(error, record) {
-            if (!error) {
-              return _this._runAfterDestroyCallbacksOnStore(function() {
-                if (_this.updateOwnerRecord()) {
-                  return _this.owner.updateAttributes(_this.ownerAttributesForDestroy(record), function(error) {
-                    if (callback) return callback.call(_this, error, record);
-                  });
-                } else {
-                  if (callback) return callback.call(_this, error, record);
-                }
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.findReferenced = function(callback) {
-        var _this = this;
-        this.compileForFind();
-        return this._runBeforeFindCallbacksOnStore(function() {
-          return _this._find(function(error, record) {
-            if (!error) {
-              return _this._runAfterFindCallbacksOnStore(function() {
-                if (callback) return callback.call(_this, error, record);
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.add = function(callback) {
-        var _this = this;
-        if (!this.relation.idCache) throw new Error;
-        return this.owner.updateAttributes(this.ownerAttributes(), function(error) {
-          if (callback) return callback.call(_this, error, _this.data);
-        });
-      };
-
-      Criteria.prototype.remove = function(callback) {
-        var _this = this;
-        if (!this.relation.idCache) throw new Error;
-        return this.owner.updateAttributes(this.ownerAttributesForDestroy(), function(error) {
-          if (callback) return callback.call(_this, error, _this.data);
-        });
-      };
-
-      Criteria.prototype.compile = function() {
-        var array, data, id, inverseRelation, owner, relation, _name;
-        owner = this.owner;
-        relation = this.relation;
-        inverseRelation = relation.inverse();
-        id = owner.get("id");
-        data = {};
-        if (inverseRelation && inverseRelation.idCache) {
-          array = data[inverseRelation.idCacheKey] || [];
-          if (array.indexOf(id) === -1) array.push(id);
-          data[inverseRelation.idCacheKey] = array;
-        } else if (relation.foreignKey && !relation.idCache) {
-          if (id !== void 0) data[relation.foreignKey] = id;
-          if (relation.foreignType) {
-            data[_name = relation.foreignType] || (data[_name] = owner.constructor.name);
-          }
-        }
-        if (inverseRelation && inverseRelation.counterCacheKey) {
-          data[inverseRelation.counterCacheKey] = 1;
-        }
-        return this.where(data);
-      };
-
-      Criteria.prototype.compileForCreate = function() {
-        return this.compile();
-      };
-
-      Criteria.prototype.compileForUpdate = function() {
-        this.compileForFind();
-        if (!(this.ids && this.ids.length)) return this.returnArray = true;
-      };
-
-      Criteria.prototype.compileForDestroy = function() {
-        return this.compileForFind();
-      };
-
-      Criteria.prototype.compileForFind = function() {
-        var relation;
-        this.compile();
-        relation = this.relation;
-        if (relation.idCache) {
-          return this.where({
-            id: {
-              $in: this.owner.get(relation.idCacheKey)
-            }
-          });
-        }
-      };
-
-      Criteria.prototype.updateOwnerRecord = function() {
-        var relation;
-        relation = this.relation;
-        return !!(relation && (relation.idCache || relation.counterCache));
-      };
-
-      Criteria.prototype.ownerAttributes = function(record) {
-        var data, inc, push, relation, updates;
-        relation = this.relation;
-        if (relation.idCache) {
-          push = {};
-          data = record ? record.get("id") : this.store._mapKeys('id', this.data);
-          push[relation.idCacheKey] = _.isArray(data) ? {
-            $each: data
-          } : data;
-        }
-        if (relation.counterCacheKey) {
-          inc = {};
-          inc[relation.counterCacheKey] = 1;
-        }
-        updates = {};
-        if (push) updates["$addToSet"] = push;
-        if (inc) updates["$inc"] = inc;
-        return updates;
-      };
-
-      Criteria.prototype.ownerAttributesForDestroy = function(record) {
-        var inc, pull, relation, updates;
-        relation = this.relation;
-        if (relation.idCache) {
-          pull = {};
-          pull[relation.idCacheKey] = this.ids && this.ids.length ? this.ids : this.owner.get(relation.idCacheKey);
-        }
-        if (relation.counterCacheKey) {
-          inc = {};
-          inc[relation.counterCacheKey] = -1;
-        }
-        updates = {};
-        if (pull) updates["$pullAll"] = pull;
-        if (inc) updates["$inc"] = inc;
-        return updates;
-      };
-
-      Criteria.prototype._idCacheRecords = function(records) {
-        var rootRelation;
-        rootRelation = this.owner.relation(this.relation.name);
-        return rootRelation.criteria.records = rootRelation.criteria.records.concat(_.castArray(records));
-      };
-
-      return Criteria;
-
-    })(HasMany.Criteria);
 
     return HasMany;
 
   })(Tower.Model.Relation);
 
+  Tower.Model.Relation.HasMany.Criteria = (function(_super) {
+
+    __extends(Criteria, _super);
+
+    Criteria.name = 'Criteria';
+
+    function Criteria() {
+      return Criteria.__super__.constructor.apply(this, arguments);
+    }
+
+    Criteria.prototype.isHasMany = true;
+
+    Criteria.prototype.has = function(object) {
+      var records;
+      object = _.castArray(object);
+      records = [];
+      if (!records.length) {
+        return false;
+      }
+      return false;
+    };
+
+    Criteria.prototype.validate = function(callback) {
+      if (!this.owner.isPersisted()) {
+        throw new Error("You cannot call create unless the parent is saved");
+      }
+      return callback.call(this);
+    };
+
+    Criteria.prototype.build = function(callback) {
+      this.compileForCreate();
+      return this._build(callback);
+    };
+
+    Criteria.prototype.create = function(callback) {
+      var _this = this;
+      return this.validate(function(error) {
+        return _this.createReferenced(callback);
+      });
+    };
+
+    Criteria.prototype.update = function(callback) {
+      var _this = this;
+      return this.validate(function(error) {
+        return _this.updateReferenced(callback);
+      });
+    };
+
+    Criteria.prototype.destroy = function(callback) {
+      var _this = this;
+      return this.validate(function(error) {
+        return _this.destroyReferenced(callback);
+      });
+    };
+
+    Criteria.prototype.find = function(callback) {
+      var _this = this;
+      return this.validate(function(error) {
+        return _this.findReferenced(callback);
+      });
+    };
+
+    Criteria.prototype.count = function(callback) {
+      var _this = this;
+      return this.validate(function(error) {
+        _this.compileForFind();
+        return _this._runBeforeFindCallbacksOnStore(function() {
+          return _this._count(function(error, record) {
+            if (!error) {
+              return _this._runAfterFindCallbacksOnStore(function() {
+                if (callback) {
+                  return callback.call(_this, error, record);
+                }
+              });
+            } else {
+              if (callback) {
+                return callback.call(_this, error, record);
+              }
+            }
+          });
+        });
+      });
+    };
+
+    Criteria.prototype.exists = function(callback) {
+      var _this = this;
+      return this.validate(function(error) {
+        _this.compileForFind();
+        return _this._runBeforeFindCallbacksOnStore(function() {
+          return _this._exists(function(error, record) {
+            if (!error) {
+              return _this._runAfterFindCallbacksOnStore(function() {
+                if (callback) {
+                  return callback.call(_this, error, record);
+                }
+              });
+            } else {
+              if (callback) {
+                return callback.call(_this, error, record);
+              }
+            }
+          });
+        });
+      });
+    };
+
+    Criteria.prototype.createReferenced = function(callback) {
+      var _this = this;
+      this.compileForCreate();
+      return this._runBeforeCreateCallbacksOnStore(function() {
+        return _this._create(function(error, record) {
+          if (!error) {
+            return _this._runAfterCreateCallbacksOnStore(function() {
+              if (_this.updateOwnerRecord()) {
+                return _this.owner.updateAttributes(_this.ownerAttributes(record), function(error) {
+                  if (callback) {
+                    return callback.call(_this, error, record);
+                  }
+                });
+              } else {
+                if (callback) {
+                  return callback.call(_this, error, record);
+                }
+              }
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.updateReferenced = function(callback) {
+      var _this = this;
+      this.compileForUpdate();
+      return this._runBeforeUpdateCallbacksOnStore(function() {
+        return _this._update(function(error, record) {
+          if (!error) {
+            return _this._runAfterUpdateCallbacksOnStore(function() {
+              if (callback) {
+                return callback.call(_this, error, record);
+              }
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.destroyReferenced = function(callback) {
+      var _this = this;
+      this.compileForDestroy();
+      return this._runBeforeDestroyCallbacksOnStore(function() {
+        return _this._destroy(function(error, record) {
+          if (!error) {
+            return _this._runAfterDestroyCallbacksOnStore(function() {
+              if (_this.updateOwnerRecord()) {
+                return _this.owner.updateAttributes(_this.ownerAttributesForDestroy(record), function(error) {
+                  if (callback) {
+                    return callback.call(_this, error, record);
+                  }
+                });
+              } else {
+                if (callback) {
+                  return callback.call(_this, error, record);
+                }
+              }
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.findReferenced = function(callback) {
+      var _this = this;
+      this.compileForFind();
+      return this._runBeforeFindCallbacksOnStore(function() {
+        return _this._find(function(error, record) {
+          if (!error) {
+            return _this._runAfterFindCallbacksOnStore(function() {
+              if (callback) {
+                return callback.call(_this, error, record);
+              }
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.add = function(callback) {
+      var _this = this;
+      if (!this.relation.idCache) {
+        throw new Error;
+      }
+      return this.owner.updateAttributes(this.ownerAttributes(), function(error) {
+        if (callback) {
+          return callback.call(_this, error, _this.data);
+        }
+      });
+    };
+
+    Criteria.prototype.remove = function(callback) {
+      var _this = this;
+      if (!this.relation.idCache) {
+        throw new Error;
+      }
+      return this.owner.updateAttributes(this.ownerAttributesForDestroy(), function(error) {
+        if (callback) {
+          return callback.call(_this, error, _this.data);
+        }
+      });
+    };
+
+    Criteria.prototype.compile = function() {
+      var array, data, id, inverseRelation, owner, relation, _name;
+      owner = this.owner;
+      relation = this.relation;
+      inverseRelation = relation.inverse();
+      id = owner.get("id");
+      data = {};
+      if (inverseRelation && inverseRelation.idCache) {
+        array = data[inverseRelation.idCacheKey] || [];
+        if (array.indexOf(id) === -1) {
+          array.push(id);
+        }
+        data[inverseRelation.idCacheKey] = array;
+      } else if (relation.foreignKey && !relation.idCache) {
+        if (id !== void 0) {
+          data[relation.foreignKey] = id;
+        }
+        if (relation.foreignType) {
+          data[_name = relation.foreignType] || (data[_name] = owner.constructor.name);
+        }
+      }
+      if (inverseRelation && inverseRelation.counterCacheKey) {
+        data[inverseRelation.counterCacheKey] = 1;
+      }
+      return this.where(data);
+    };
+
+    Criteria.prototype.compileForCreate = function() {
+      return this.compile();
+    };
+
+    Criteria.prototype.compileForUpdate = function() {
+      this.compileForFind();
+      if (!(this.ids && this.ids.length)) {
+        return this.returnArray = true;
+      }
+    };
+
+    Criteria.prototype.compileForDestroy = function() {
+      return this.compileForFind();
+    };
+
+    Criteria.prototype.compileForFind = function() {
+      var relation;
+      this.compile();
+      relation = this.relation;
+      if (relation.idCache) {
+        return this.where({
+          id: {
+            $in: this.owner.get(relation.idCacheKey)
+          }
+        });
+      }
+    };
+
+    Criteria.prototype.updateOwnerRecord = function() {
+      var relation;
+      relation = this.relation;
+      return !!(relation && (relation.idCache || relation.counterCache));
+    };
+
+    Criteria.prototype.ownerAttributes = function(record) {
+      var data, inc, push, relation, updates;
+      relation = this.relation;
+      if (relation.idCache) {
+        push = {};
+        data = record ? record.get("id") : this.store._mapKeys('id', this.data);
+        push[relation.idCacheKey] = _.isArray(data) ? {
+          $each: data
+        } : data;
+      }
+      if (relation.counterCacheKey) {
+        inc = {};
+        inc[relation.counterCacheKey] = 1;
+      }
+      updates = {};
+      if (push) {
+        updates["$addToSet"] = push;
+      }
+      if (inc) {
+        updates["$inc"] = inc;
+      }
+      return updates;
+    };
+
+    Criteria.prototype.ownerAttributesForDestroy = function(record) {
+      var inc, pull, relation, updates;
+      relation = this.relation;
+      if (relation.idCache) {
+        pull = {};
+        pull[relation.idCacheKey] = this.ids && this.ids.length ? this.ids : this.owner.get(relation.idCacheKey);
+      }
+      if (relation.counterCacheKey) {
+        inc = {};
+        inc[relation.counterCacheKey] = -1;
+      }
+      updates = {};
+      if (pull) {
+        updates["$pullAll"] = pull;
+      }
+      if (inc) {
+        updates["$inc"] = inc;
+      }
+      return updates;
+    };
+
+    Criteria.prototype._idCacheRecords = function(records) {
+      var rootRelation;
+      rootRelation = this.owner.relation(this.relation.name);
+      return rootRelation.criteria.records = rootRelation.criteria.records.concat(_.castArray(records));
+    };
+
+    return Criteria;
+
+  })(Tower.Model.Relation.Criteria);
+
   Tower.Model.Relation.HasManyThrough = (function(_super) {
 
     __extends(HasManyThrough, _super);
 
+    HasManyThrough.name = 'HasManyThrough';
+
     function HasManyThrough() {
-      HasManyThrough.__super__.constructor.apply(this, arguments);
+      return HasManyThrough.__super__.constructor.apply(this, arguments);
     }
 
     HasManyThrough.prototype.initialize = function(options) {
@@ -4401,177 +4868,217 @@
         type = this.type;
         for (name in relations) {
           relation = relations[name];
-          if (relation.inverseOf === name) return relation;
+          if (relation.inverseOf === name) {
+            return relation;
+          }
         }
         for (name in relations) {
           relation = relations[name];
-          if (relation.targetType === type) return relation;
+          if (relation.targetType === type) {
+            return relation;
+          }
         }
       }
     };
-
-    HasManyThrough.Criteria = (function(_super2) {
-
-      __extends(Criteria, _super2);
-
-      Criteria.prototype.isHasManyThrough = true;
-
-      function Criteria(options) {
-        if (options == null) options = {};
-        Criteria.__super__.constructor.apply(this, arguments);
-        if (this.relation.through) {
-          this.throughRelation = this.owner.constructor.relation(this.relation.through);
-          this.inverseRelation = this.relation.inverseThrough(this.throughRelation);
-        }
-      }
-
-      Criteria.prototype.compile = function() {
-        return this;
-      };
-
-      Criteria.prototype.create = function(callback) {
-        var _this = this;
-        return this._runBeforeCreateCallbacksOnStore(function() {
-          return _this._create(function(error, record) {
-            if (!error) {
-              return _this._runAfterCreateCallbacksOnStore(function() {
-                return _this.createThroughRelation(record, function(error, throughRecord) {
-                  if (callback) return callback.call(_this, error, record);
-                });
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.add = function(callback) {
-        var _this = this;
-        return this._build(function(error, record) {
-          if (!error) {
-            return _this.createThroughRelation(record, function(error, throughRecord) {
-              if (callback) return callback.call(_this, error, record);
-            });
-          } else {
-            if (callback) return callback.call(_this, error, record);
-          }
-        });
-      };
-
-      Criteria.prototype.remove = function(callback) {
-        var _this = this;
-        if (!this.relation.idCache) throw new Error;
-        return this.owner.updateAttributes(this.ownerAttributesForDestroy(), function(error) {
-          if (callback) return callback.call(_this, error, _this.data);
-        });
-      };
-
-      Criteria.prototype.count = function(callback) {
-        var _this = this;
-        return this._runBeforeFindCallbacksOnStore(function() {
-          return _this._count(function(error, record) {
-            if (!error) {
-              return _this._runAfterFindCallbacksOnStore(function() {
-                if (callback) return callback.call(_this, error, record);
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.exists = function(callback) {
-        var _this = this;
-        return this._runBeforeFindCallbacksOnStore(function() {
-          return _this._exists(function(error, record) {
-            if (!error) {
-              return _this._runAfterFindCallbacksOnStore(function() {
-                if (callback) return callback.call(_this, error, record);
-              });
-            } else {
-              if (callback) return callback.call(_this, error, record);
-            }
-          });
-        });
-      };
-
-      Criteria.prototype.appendThroughConditions = function(callback) {
-        var _this = this;
-        return this.owner[this.relation.through]().all(function(error, records) {
-          var ids;
-          ids = _this.store._mapKeys(_this.inverseRelation.foreignKey, records);
-          _this.where({
-            'id': {
-              $in: ids
-            }
-          });
-          return callback();
-        });
-      };
-
-      Criteria.prototype.createThroughRelation = function(records, callback) {
-        var attributes, data, record, returnArray, _l, _len4,
-          _this = this;
-        returnArray = _.isArray(records);
-        records = _.castArray(records);
-        data = [];
-        key = this.inverseRelation.foreignKey;
-        for (_l = 0, _len4 = records.length; _l < _len4; _l++) {
-          record = records[_l];
-          attributes = {};
-          attributes[key] = record.get('id');
-          data.push(attributes);
-        }
-        return this.owner[this.relation.through]().create(data, function(error, throughRecords) {
-          if (!returnArray) throughRecords = throughRecords[0];
-          if (callback) return callback.call(_this, error, throughRecords);
-        });
-      };
-
-      return Criteria;
-
-    })(HasManyThrough.Criteria);
 
     return HasManyThrough;
 
   })(Tower.Model.Relation.HasMany);
 
+  Tower.Model.Relation.HasManyThrough.Criteria = (function(_super) {
+
+    __extends(Criteria, _super);
+
+    Criteria.name = 'Criteria';
+
+    Criteria.prototype.isHasManyThrough = true;
+
+    function Criteria(options) {
+      if (options == null) {
+        options = {};
+      }
+      Criteria.__super__.constructor.apply(this, arguments);
+      if (this.relation.through) {
+        this.throughRelation = this.owner.constructor.relation(this.relation.through);
+        this.inverseRelation = this.relation.inverseThrough(this.throughRelation);
+      }
+    }
+
+    Criteria.prototype.compile = function() {
+      return this;
+    };
+
+    Criteria.prototype.create = function(callback) {
+      var _this = this;
+      return this._runBeforeCreateCallbacksOnStore(function() {
+        return _this._create(function(error, record) {
+          if (!error) {
+            return _this._runAfterCreateCallbacksOnStore(function() {
+              return _this.createThroughRelation(record, function(error, throughRecord) {
+                if (callback) {
+                  return callback.call(_this, error, record);
+                }
+              });
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.add = function(callback) {
+      var _this = this;
+      return this._build(function(error, record) {
+        if (!error) {
+          return _this.createThroughRelation(record, function(error, throughRecord) {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          });
+        } else {
+          if (callback) {
+            return callback.call(_this, error, record);
+          }
+        }
+      });
+    };
+
+    Criteria.prototype.remove = function(callback) {
+      var _this = this;
+      if (!this.relation.idCache) {
+        throw new Error;
+      }
+      return this.owner.updateAttributes(this.ownerAttributesForDestroy(), function(error) {
+        if (callback) {
+          return callback.call(_this, error, _this.data);
+        }
+      });
+    };
+
+    Criteria.prototype.count = function(callback) {
+      var _this = this;
+      return this._runBeforeFindCallbacksOnStore(function() {
+        return _this._count(function(error, record) {
+          if (!error) {
+            return _this._runAfterFindCallbacksOnStore(function() {
+              if (callback) {
+                return callback.call(_this, error, record);
+              }
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.exists = function(callback) {
+      var _this = this;
+      return this._runBeforeFindCallbacksOnStore(function() {
+        return _this._exists(function(error, record) {
+          if (!error) {
+            return _this._runAfterFindCallbacksOnStore(function() {
+              if (callback) {
+                return callback.call(_this, error, record);
+              }
+            });
+          } else {
+            if (callback) {
+              return callback.call(_this, error, record);
+            }
+          }
+        });
+      });
+    };
+
+    Criteria.prototype.appendThroughConditions = function(callback) {
+      var _this = this;
+      return this.owner[this.relation.through]().all(function(error, records) {
+        var ids;
+        ids = _this.store._mapKeys(_this.inverseRelation.foreignKey, records);
+        _this.where({
+          'id': {
+            $in: ids
+          }
+        });
+        return callback();
+      });
+    };
+
+    Criteria.prototype.createThroughRelation = function(records, callback) {
+      var attributes, data, record, returnArray, _l, _len3,
+        _this = this;
+      returnArray = _.isArray(records);
+      records = _.castArray(records);
+      data = [];
+      key = this.inverseRelation.foreignKey;
+      for (_l = 0, _len3 = records.length; _l < _len3; _l++) {
+        record = records[_l];
+        attributes = {};
+        attributes[key] = record.get('id');
+        data.push(attributes);
+      }
+      return this.owner[this.relation.through]().create(data, function(error, throughRecords) {
+        if (!returnArray) {
+          throughRecords = throughRecords[0];
+        }
+        if (callback) {
+          return callback.call(_this, error, throughRecords);
+        }
+      });
+    };
+
+    return Criteria;
+
+  })(Tower.Model.Relation.HasMany.Criteria);
+
   Tower.Model.Relation.HasOne = (function(_super) {
 
     __extends(HasOne, _super);
 
+    HasOne.name = 'HasOne';
+
     function HasOne() {
-      HasOne.__super__.constructor.apply(this, arguments);
+      return HasOne.__super__.constructor.apply(this, arguments);
     }
-
-    HasOne.Criteria = (function(_super2) {
-
-      __extends(Criteria, _super2);
-
-      function Criteria() {
-        Criteria.__super__.constructor.apply(this, arguments);
-      }
-
-      Criteria.prototype.isHasOne = true;
-
-      return Criteria;
-
-    })(HasOne.Criteria);
 
     return HasOne;
 
   })(Tower.Model.Relation);
 
+  Tower.Model.Relation.HasOne.Criteria = (function(_super) {
+
+    __extends(Criteria, _super);
+
+    Criteria.name = 'Criteria';
+
+    function Criteria() {
+      return Criteria.__super__.constructor.apply(this, arguments);
+    }
+
+    Criteria.prototype.isHasOne = true;
+
+    return Criteria;
+
+  })(Tower.Model.Relation.Criteria);
+
   Tower.Model.Relations = {
     ClassMethods: {
       hasOne: function(name, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         return this.relations()[name] = new Tower.Model.Relation.HasOne(this, name, options);
       },
       hasMany: function(name, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         if (options.hasOwnProperty("through")) {
           return this.relations()[name] = new Tower.Model.Relation.HasManyThrough(this, name, options);
         } else {
@@ -4624,6 +5131,8 @@
   };
 
   Tower.Model.Attribute = (function() {
+
+    Attribute.name = 'Attribute';
 
     Attribute.string = {
       from: function(serialized) {
@@ -4705,7 +5214,7 @@
         return date;
       },
       to: function(date) {
-        return date;
+        return _.toDate(date);
       }
     };
 
@@ -4753,8 +5262,10 @@
     };
 
     function Attribute(owner, name, options, block) {
-      var index, key, normalizedKey, serializer, validations, _ref4;
-      if (options == null) options = {};
+      var index, key, normalizedKey, serializer, validations, _ref3;
+      if (options == null) {
+        options = {};
+      }
       this.owner = owner;
       this.name = key = name;
       if (typeof options === 'string') {
@@ -4828,12 +5339,16 @@
         });
       }
       validations = {};
-      _ref4 = Tower.Model.Validator.keys;
-      for (key in _ref4) {
-        normalizedKey = _ref4[key];
-        if (options.hasOwnProperty(key)) validations[normalizedKey] = options[key];
+      _ref3 = Tower.Model.Validator.keys;
+      for (key in _ref3) {
+        normalizedKey = _ref3[key];
+        if (options.hasOwnProperty(key)) {
+          validations[normalizedKey] = options[key];
+        }
       }
-      if (_.isPresent(validations)) this.owner.validates(name, validations);
+      if (_.isPresent(validations)) {
+        this.owner.validates(name, validations);
+      }
       if (options.index) {
         if (options.index === true) {
           this.owner.index(name);
@@ -4844,12 +5359,14 @@
     }
 
     Attribute.prototype.validators = function() {
-      var result, validator, _l, _len4, _ref4;
+      var result, validator, _l, _len3, _ref3;
       result = [];
-      _ref4 = this.owner.validators();
-      for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-        validator = _ref4[_l];
-        if (validator.attributes.indexOf(this.name) !== -1) result.push(validator);
+      _ref3 = this.owner.validators();
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        validator = _ref3[_l];
+        if (validator.attributes.indexOf(this.name) !== -1) {
+          result.push(validator);
+        }
       }
       return result;
     };
@@ -4897,23 +5414,24 @@
         return this.fields()[name] = new Tower.Model.Attribute(this, name, options);
       },
       fields: function() {
-        var fields, name, names, options, _l, _len4, _ref4;
+        var fields, name, names, options, _l, _len3, _ref3;
         fields = this.metadata().fields;
         switch (arguments.length) {
           case 0:
             fields;
+
             break;
           case 1:
-            _ref4 = arguments[0];
-            for (name in _ref4) {
-              options = _ref4[name];
+            _ref3 = arguments[0];
+            for (name in _ref3) {
+              options = _ref3[name];
               this.field(name, options);
             }
             break;
           default:
             names = _.args(arguments);
             options = _.extractOptions(names);
-            for (_l = 0, _len4 = names.length; _l < _len4; _l++) {
+            for (_l = 0, _len3 = names.length; _l < _len3; _l++) {
               name = names[_l];
               this.field(name, options);
             }
@@ -4926,7 +5444,9 @@
         var field;
         field = this.constructor.fields()[name];
         if (!this.has(name)) {
-          if (field) this.attributes[name] = field.defaultValue(this);
+          if (field) {
+            this.attributes[name] = field.defaultValue(this);
+          }
         }
         if (field) {
           return field.decode(this.attributes[name], this);
@@ -4989,25 +5509,29 @@
         });
       },
       unset: function() {
-        var key, keys, _l, _len4;
+        var key, keys, _l, _len3;
         keys = _.flatten(Tower.args(arguments));
-        for (_l = 0, _len4 = keys.length; _l < _len4; _l++) {
+        for (_l = 0, _len3 = keys.length; _l < _len3; _l++) {
           key = keys[_l];
           delete this.attributes[key];
         }
         return;
       },
       _set: function(key, value) {
-        var after, before, field, fields, operation, _ref4;
+        var after, before, field, fields, operation, _ref3;
         if (Tower.Store.atomicModifiers.hasOwnProperty(key)) {
           return this[key.replace(/^\$/, "")](value);
         } else {
           fields = this.constructor.fields();
           field = fields[key];
-          if (field) value = field.encode(value, this);
-          _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
+          if (field) {
+            value = field.encode(value, this);
+          }
+          _ref3 = this.changes, before = _ref3.before, after = _ref3.after;
           this._attributeChange(key, value);
-          if (!before.hasOwnProperty(key)) before[key] = this.get(key);
+          if (!before.hasOwnProperty(key)) {
+            before[key] = this.get(key);
+          }
           after.$set || (after.$set = {});
           after.$set[key] = value;
           if (operation = this._currentOperation) {
@@ -5018,11 +5542,15 @@
         }
       },
       _push: function(key, value, array) {
-        var after, before, current, fields, operation, push, _ref4;
-        if (array == null) array = false;
+        var after, before, current, fields, operation, push, _ref3;
+        if (array == null) {
+          array = false;
+        }
         fields = this.constructor.fields();
-        if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
+        if (__indexOf.call(fields, key) >= 0) {
+          value = fields[key].encode(value);
+        }
+        _ref3 = this.changes, before = _ref3.before, after = _ref3.after;
         push = after.$push || (after.$push = {});
         before[key] || (before[key] = this.get(key));
         current = this.get(key) || [];
@@ -5039,17 +5567,21 @@
         return this.attributes[key] = push[key];
       },
       _pull: function(key, value, array) {
-        var after, before, current, fields, item, operation, pull, _l, _len4, _ref4;
-        if (array == null) array = false;
+        var after, before, current, fields, item, operation, pull, _l, _len3, _ref3;
+        if (array == null) {
+          array = false;
+        }
         fields = this.constructor.fields();
-        if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
+        if (__indexOf.call(fields, key) >= 0) {
+          value = fields[key].encode(value);
+        }
+        _ref3 = this.changes, before = _ref3.before, after = _ref3.after;
         pull = after.$pull || (after.$pull = {});
         before[key] || (before[key] = this.get(key));
         current = this.get(key) || [];
         pull[key] || (pull[key] = current.concat());
         if (array && _.isArray(value)) {
-          for (_l = 0, _len4 = value.length; _l < _len4; _l++) {
+          for (_l = 0, _len3 = value.length; _l < _len3; _l++) {
             item = value[_l];
             pull[key].splice(pull[key].indexOf(item), 1);
           }
@@ -5063,12 +5595,16 @@
         return this.attributes[key] = pull[key];
       },
       _inc: function(key, value) {
-        var after, before, fields, inc, operation, _ref4;
+        var after, before, fields, inc, operation, _ref3;
         fields = this.constructor.fields();
-        if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
+        if (__indexOf.call(fields, key) >= 0) {
+          value = fields[key].encode(value);
+        }
+        _ref3 = this.changes, before = _ref3.before, after = _ref3.after;
         inc = after.$inc || (after.$inc = {});
-        if (!before.hasOwnProperty(key)) before[key] = this.get(key);
+        if (!before.hasOwnProperty(key)) {
+          before[key] = this.get(key);
+        }
         inc[key] = this.get(key) || 0;
         inc[key] += value;
         if (operation = this._currentOperation) {
@@ -5084,22 +5620,28 @@
         return this.attributes[key] = inc[key];
       },
       _addToSet: function(key, value) {
-        var addToSet, after, before, current, fields, item, _l, _len4, _ref4, _ref5;
+        var addToSet, after, before, current, fields, item, _l, _len3, _ref3, _ref4;
         fields = this.constructor.fields();
-        if (__indexOf.call(fields, key) >= 0) value = fields[key].encode(value);
-        _ref4 = this.changes, before = _ref4.before, after = _ref4.after;
+        if (__indexOf.call(fields, key) >= 0) {
+          value = fields[key].encode(value);
+        }
+        _ref3 = this.changes, before = _ref3.before, after = _ref3.after;
         addToSet = after.$addToSet || (after.$addToSet = {});
         before[key] || (before[key] = this.get(key));
         current = this.get(key) || [];
         addToSet[key] || (addToSet[key] = current.concat());
         if (value && value.hasOwnProperty("$each")) {
-          _ref5 = value.$each;
-          for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
-            item = _ref5[_l];
-            if (addToSet[key].indexOf(item) === -1) addToSet[key].push(item);
+          _ref4 = value.$each;
+          for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
+            item = _ref4[_l];
+            if (addToSet[key].indexOf(item) === -1) {
+              addToSet[key].push(item);
+            }
           }
         } else {
-          if (addToSet[key].indexOf(value) === -1) addToSet[key].push(value);
+          if (addToSet[key].indexOf(value) === -1) {
+            addToSet[key].push(value);
+          }
         }
         return this.attributes[key] = addToSet[key];
       }
@@ -5112,7 +5654,9 @@
         var defaultStore, metadata, store;
         metadata = this.metadata();
         store = metadata.store;
-        if (arguments.length === 0 && store) return store;
+        if (arguments.length === 0 && store) {
+          return store;
+        }
         defaultStore = this["default"]('store') || Tower.Store.Memory;
         if (typeof value === "function") {
           store = new value({
@@ -5141,7 +5685,9 @@
     InstanceMethods: {
       save: function(options, callback) {
         var _this = this;
-        if (this.readOnly) throw new Error("Record is read only");
+        if (this.readOnly) {
+          throw new Error("Record is read only");
+        }
         if (typeof options === "function") {
           callback = options;
           options = {};
@@ -5150,7 +5696,9 @@
         if (options.validate !== false) {
           this.validate(function(error) {
             if (error) {
-              if (callback) return callback.call(_this, null, false);
+              if (callback) {
+                return callback.call(_this, null, false);
+              }
             } else {
               return _this._save(callback);
             }
@@ -5166,7 +5714,9 @@
       },
       destroy: function(callback) {
         if (this.isNew()) {
-          if (callback) callback.call(this, null);
+          if (callback) {
+            callback.call(this, null);
+          }
         } else {
           this._destroy(callback);
         }
@@ -5203,7 +5753,9 @@
           return _this.constructor.scoped({
             instantiate: false
           }).create(_this, function(error) {
-            if (error && !callback) throw error;
+            if (error && !callback) {
+              throw error;
+            }
             if (!error) {
               _this._resetChanges();
               _this.persistent = true;
@@ -5221,7 +5773,9 @@
           return _this.constructor.scoped({
             instantiate: false
           }).update(_this.get("id"), updates, function(error) {
-            if (error && !callback) throw error;
+            if (error && !callback) {
+              throw error;
+            }
             if (!error) {
               _this._resetChanges();
               _this.persistent = true;
@@ -5241,7 +5795,9 @@
           return _this.constructor.scoped({
             instantiate: false
           }).destroy(_this, function(error) {
-            if (error && !callback) throw error;
+            if (error && !callback) {
+              throw error;
+            }
             if (!error) {
               return _this.destroyRelations(function(error) {
                 _this.persistent = false;
@@ -5279,7 +5835,9 @@
       },
       criteria: function(options) {
         var criteria;
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         options.model = this;
         criteria = new Tower.Model.Criteria(options);
         if (this.baseClass().name !== this.name) {
@@ -5292,59 +5850,63 @@
     }
   };
 
-  _ref4 = Tower.Model.Scope.queryMethods;
+  _ref3 = Tower.Model.Scope.queryMethods;
+  _fn2 = function(key) {
+    return Tower.Model.Scopes.ClassMethods[key] = function() {
+      var _ref4;
+      return (_ref4 = this.scoped())[key].apply(_ref4, arguments);
+    };
+  };
+  for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+    key = _ref3[_l];
+    _fn2(key);
+  }
+
+  _ref4 = Tower.Model.Scope.finderMethods;
   _fn3 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref5;
       return (_ref5 = this.scoped())[key].apply(_ref5, arguments);
     };
   };
-  for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
-    key = _ref4[_l];
+  for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+    key = _ref4[_m];
     _fn3(key);
   }
 
-  _ref5 = Tower.Model.Scope.finderMethods;
+  _ref5 = Tower.Model.Scope.persistenceMethods;
   _fn4 = function(key) {
     return Tower.Model.Scopes.ClassMethods[key] = function() {
       var _ref6;
       return (_ref6 = this.scoped())[key].apply(_ref6, arguments);
     };
   };
-  for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
-    key = _ref5[_m];
+  for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
+    key = _ref5[_n];
     _fn4(key);
-  }
-
-  _ref6 = Tower.Model.Scope.persistenceMethods;
-  _fn5 = function(key) {
-    return Tower.Model.Scopes.ClassMethods[key] = function() {
-      var _ref7;
-      return (_ref7 = this.scoped())[key].apply(_ref7, arguments);
-    };
-  };
-  for (_n = 0, _len6 = _ref6.length; _n < _len6; _n++) {
-    key = _ref6[_n];
-    _fn5(key);
   }
 
   Tower.Model.Serialization = {
     ClassMethods: {
       fromJSON: function(data) {
-        var i, record, records, _len7;
+        var i, record, records, _len6, _o;
         records = JSON.parse(data);
-        if (!(records instanceof Array)) records = [records];
-        for (i = 0, _len7 = records.length; i < _len7; i++) {
+        if (!(records instanceof Array)) {
+          records = [records];
+        }
+        for (i = _o = 0, _len6 = records.length; _o < _len6; i = ++_o) {
           record = records[i];
           records[i] = new this(record);
         }
         return records;
       },
       toJSON: function(records, options) {
-        var record, result, _len7, _o;
-        if (options == null) options = {};
+        var record, result, _len6, _o;
+        if (options == null) {
+          options = {};
+        }
         result = [];
-        for (_o = 0, _len7 = records.length; _o < _len7; _o++) {
+        for (_o = 0, _len6 = records.length; _o < _len6; _o++) {
           record = records[_o];
           result.push(record.toJSON());
         }
@@ -5361,8 +5923,10 @@
       return new this.constructor(attributes);
     },
     _serializableHash: function(options) {
-      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _len10, _len7, _len8, _len9, _o, _p, _q;
-      if (options == null) options = {};
+      var attributeNames, except, i, include, includes, methodNames, methods, name, only, opts, record, records, result, tmp, _len6, _len7, _len8, _len9, _o, _p, _q, _r;
+      if (options == null) {
+        options = {};
+      }
       result = {};
       attributeNames = _.keys(this.attributes);
       if (only = options.only) {
@@ -5370,20 +5934,20 @@
       } else if (except = options.except) {
         attributeNames = _.difference(_.toArray(except), attributeNames);
       }
-      for (_o = 0, _len7 = attributeNames.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = attributeNames.length; _o < _len6; _o++) {
         name = attributeNames[_o];
         result[name] = this._readAttributeForSerialization(name);
       }
       if (methods = options.methods) {
         methodNames = _.toArray(methods);
-        for (_p = 0, _len8 = methods.length; _p < _len8; _p++) {
+        for (_p = 0, _len7 = methods.length; _p < _len7; _p++) {
           name = methods[_p];
           result[name] = this[name]();
         }
       }
       if (includes = options.include) {
         includes = _.toArray(includes);
-        for (_q = 0, _len9 = includes.length; _q < _len9; _q++) {
+        for (_q = 0, _len8 = includes.length; _q < _len8; _q++) {
           include = includes[_q];
           if (!_.isHash(include)) {
             tmp = {};
@@ -5394,7 +5958,7 @@
           for (name in include) {
             opts = include[name];
             records = this[name]().all();
-            for (i = 0, _len10 = records.length; i < _len10; i++) {
+            for (i = _r = 0, _len9 = records.length; _r < _len9; i = ++_r) {
               record = records[i];
               records[i] = record._serializableHash(opts);
             }
@@ -5405,12 +5969,16 @@
       return result;
     },
     _readAttributeForSerialization: function(name, type) {
-      if (type == null) type = "json";
+      if (type == null) {
+        type = "json";
+      }
       return this.attributes[name];
     }
   };
 
   Tower.Model.Validator = (function() {
+
+    Validator.name = 'Validator';
 
     Validator.keys = {
       presence: 'presence',
@@ -5439,7 +6007,9 @@
 
     Validator.createAll = function(attributes, validations) {
       var key, options, validatorOptions, validators, value;
-      if (validations == null) validations = {};
+      if (validations == null) {
+        validations = {};
+      }
       options = _.moveProperties({}, validations, 'on', 'if', 'unless', 'allow');
       validators = [];
       for (key in validations) {
@@ -5498,7 +6068,9 @@
     };
 
     function Validator(name, value, attributes, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.name = name;
       this.value = value;
       this.attributes = _.castArray(attributes);
@@ -5520,10 +6092,14 @@
           };
           return Tower.parallel(_this.attributes, iterator, function(error) {
             success = !error;
-            if (callback) return callback.call(_this, error);
+            if (callback) {
+              return callback.call(_this, error);
+            }
           });
         } else {
-          if (callback) return callback.call(_this, error);
+          if (callback) {
+            return callback.call(_this, error);
+          }
         }
       });
       return success;
@@ -5547,14 +6123,18 @@
     };
 
     Validator.prototype.success = function(callback) {
-      if (callback) callback.call(this);
+      if (callback) {
+        callback.call(this);
+      }
       return true;
     };
 
     Validator.prototype.failure = function(record, attribute, errors, message, callback) {
       errors[attribute] || (errors[attribute] = []);
       errors[attribute].push(message);
-      if (callback) callback.call(this, message);
+      if (callback) {
+        callback.call(this, message);
+      }
       return false;
     };
 
@@ -5568,7 +6148,9 @@
 
     Validator.prototype._callMethod = function(binding, method, callback) {
       var _this = this;
-      if (typeof method === 'string') method = binding[method];
+      if (typeof method === 'string') {
+        method = binding[method];
+      }
       switch (method.length) {
         case 0:
           callback.call(this, null, method.call(binding));
@@ -5589,9 +6171,13 @@
 
     __extends(Format, _super);
 
+    Format.name = 'Format';
+
     function Format(name, value, attributes, options) {
       Format.__super__.constructor.call(this, name, value, attributes, options);
-      if (this.value.hasOwnProperty('value')) this.value = this.value.value;
+      if (this.value.hasOwnProperty('value')) {
+        this.value = this.value.value;
+      }
       if (typeof this.value === 'string') {
         this.matcher = "is" + (_.camelCase(value, true));
       }
@@ -5618,6 +6204,8 @@
   Tower.Model.Validator.Length = (function(_super) {
 
     __extends(Length, _super);
+
+    Length.name = 'Length';
 
     function Length(name, value, attributes, options) {
       Length.__super__.constructor.apply(this, arguments);
@@ -5733,8 +6321,10 @@
 
     __extends(Presence, _super);
 
+    Presence.name = 'Presence';
+
     function Presence() {
-      Presence.__super__.constructor.apply(this, arguments);
+      return Presence.__super__.constructor.apply(this, arguments);
     }
 
     Presence.prototype.validate = function(record, attribute, errors, callback) {
@@ -5753,6 +6343,8 @@
   Tower.Model.Validator.Set = (function(_super) {
 
     __extends(Set, _super);
+
+    Set.name = 'Set';
 
     function Set(name, value, attributes, options) {
       Set.__super__.constructor.call(this, name, _.castArray(value), attributes, options);
@@ -5790,8 +6382,10 @@
 
     __extends(Uniqueness, _super);
 
+    Uniqueness.name = 'Uniqueness';
+
     function Uniqueness() {
-      Uniqueness.__super__.constructor.apply(this, arguments);
+      return Uniqueness.__super__.constructor.apply(this, arguments);
     }
 
     Uniqueness.prototype.validate = function(record, attribute, errors, callback) {
@@ -5819,12 +6413,12 @@
   Tower.Model.Validations = {
     ClassMethods: {
       validates: function() {
-        var attributes, newValidators, options, validator, validators, _len7, _o;
+        var attributes, newValidators, options, validator, validators, _len6, _o;
         attributes = _.args(arguments);
         options = attributes.pop();
         validators = this.validators();
         newValidators = Tower.Model.Validator.createAll(attributes, options);
-        for (_o = 0, _len7 = newValidators.length; _o < _len7; _o++) {
+        for (_o = 0, _len6 = newValidators.length; _o < _len6; _o++) {
           validator = newValidators[_o];
           validators.push(validator);
         }
@@ -5853,7 +6447,9 @@
             return validator.validateEach(_this, errors, next);
           };
           Tower.async(validators, iterator, function(error) {
-            if (!(_.isPresent(errors) || error)) success = true;
+            if (!(_.isPresent(errors) || error)) {
+              success = true;
+            }
             return complete.call(_this, !success);
           });
           return success;
@@ -5955,7 +6551,9 @@
 
     __extends(View, _super);
 
-    View.extend({
+    View.name = 'View';
+
+    View.reopenClass({
       cache: {},
       engine: "coffee",
       prettyPrint: false,
@@ -6034,7 +6632,9 @@
       helpers: [],
       metaTags: ["description", "keywords", "author", "copyright", "category", "robots"],
       store: function(store) {
-        if (store) this._store = store;
+        if (store) {
+          this._store = store;
+        }
         return this._store || (this._store = new Tower.Store.Memory({
           name: "view"
         }));
@@ -6043,7 +6643,9 @@
     });
 
     function View(context) {
-      if (context == null) context = {};
+      if (context == null) {
+        context = {};
+      }
       this._context = context;
     }
 
@@ -6067,7 +6669,9 @@
       }
       options.locals = this._renderingContext(options);
       return this._renderBody(options, function(error, body) {
-        if (error) return callback(error, body);
+        if (error) {
+          return callback(error, body);
+        }
         return _this._renderLayout(body, options, callback);
       });
     },
@@ -6079,7 +6683,9 @@
       }
       options || (options = {});
       prefixes = options.prefixes;
-      if (this._context) prefixes || (prefixes = [this._context.collectionName]);
+      if (this._context) {
+        prefixes || (prefixes = [this._context.collectionName]);
+      }
       template = this._readTemplate(path, prefixes, options.type || Tower.View.engine);
       return this._renderString(template, options, callback);
     },
@@ -6090,7 +6696,9 @@
       } else {
         mint = require("mint");
         return mint[mint.engine(engine || "coffee")](template, {}, function(error, result) {
-          if (error) return console.log(error);
+          if (error) {
+            return console.log(error);
+          }
         });
       }
     },
@@ -6117,8 +6725,10 @@
       }
     },
     _renderString: function(string, options, callback) {
-      var coffeekup, e, engine, hardcode, helper, locals, mint, result, tags, _len7, _o, _ref7;
-      if (options == null) options = {};
+      var coffeekup, e, engine, hardcode, helper, locals, mint, result, tags, _len6, _o, _ref6;
+      if (options == null) {
+        options = {};
+      }
       if (!!options.type.match(/coffee/)) {
         e = null;
         result = null;
@@ -6130,9 +6740,9 @@
           locals.cache = Tower.env !== "development";
           locals.format = true;
           hardcode = {};
-          _ref7 = Tower.View.helpers;
-          for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
-            helper = _ref7[_o];
+          _ref6 = Tower.View.helpers;
+          for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
+            helper = _ref6[_o];
             hardcode = _.extend(hardcode, helper);
           }
           tags = coffeekup.tags;
@@ -6149,7 +6759,9 @@
         return callback(e, result);
       } else if (options.type) {
         mint = require("mint");
-        if (typeof string === 'function') string = string();
+        if (typeof string === 'function') {
+          string = string();
+        }
         engine = mint.engine(options.type);
         if (engine.match(/(eco|mustache)/)) {
           return mint[engine](string, options, callback);
@@ -6169,15 +6781,21 @@
       _ref = this._context;
       for (key in _ref) {
         value = _ref[key];
-        if (!key.match(/^(constructor|head)/)) locals[key] = value;
+        if (!key.match(/^(constructor|head)/)) {
+          locals[key] = value;
+        }
       }
       locals = _.modules(locals, options.locals);
-      if (this.constructor.prettyPrint) locals.pretty = true;
+      if (this.constructor.prettyPrint) {
+        locals.pretty = true;
+      }
       return locals;
     },
     _readTemplate: function(template, prefixes, ext) {
       var cachePath, options, path, result, store;
-      if (typeof template !== "string") return template;
+      if (typeof template !== "string") {
+        return template;
+      }
       options = {
         path: template,
         ext: ext,
@@ -6188,12 +6806,16 @@
       path || (path = store.defaultPath(options));
       cachePath = path;
       result = this.constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString();
-      if (!result) throw new Error("Template '" + template + "' was not found.");
+      if (!result) {
+        throw new Error("Template '" + template + "' was not found.");
+      }
       return result;
     }
   };
 
   Tower.View.Component = (function() {
+
+    Component.name = 'Component';
 
     Component.render = function() {
       var args, block, options, template;
@@ -6223,12 +6845,16 @@
     };
 
     Component.prototype.addClass = function(string, args) {
-      var arg, result, _len7, _o;
+      var arg, result, _len6, _o;
       result = string ? string.split(/\s+/g) : [];
-      for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = args.length; _o < _len6; _o++) {
         arg = args[_o];
-        if (!arg) continue;
-        if (!(result.indexOf(arg) > -1)) result.push(arg);
+        if (!arg) {
+          continue;
+        }
+        if (!(result.indexOf(arg) > -1)) {
+          result.push(arg);
+        }
       }
       return result.join(" ");
     };
@@ -6240,6 +6866,8 @@
   Tower.View.Table = (function(_super) {
 
     __extends(Table, _super);
+
+    Table.name = 'Table';
 
     function Table(args, options) {
       var aria, data, recordOrKey;
@@ -6254,9 +6882,15 @@
       options.role = "grid";
       options["class"] = this.addClass(options["class"] || "", ["table"]);
       data = options.data || (options.data = {});
-      if (options.hasOwnProperty("total")) data.total = options.total;
-      if (options.hasOwnProperty("page")) data.page = options.page;
-      if (options.hasOwnProperty("count")) data.count = options.count;
+      if (options.hasOwnProperty("total")) {
+        data.total = options.total;
+      }
+      if (options.hasOwnProperty("page")) {
+        data.page = options.page;
+      }
+      if (options.hasOwnProperty("count")) {
+        data.count = options.count;
+      }
       aria = options.aria || {};
       delete options.aria;
       if (!(aria.hasOwnProperty("aria-multiselectable") || options.multiselect === true)) {
@@ -6274,7 +6908,9 @@
     Table.prototype.render = function(block) {
       var _this = this;
       return this.tag("table", this.options, function() {
-        if (block) block(_this);
+        if (block) {
+          block(_this);
+        }
         return null;
       });
     };
@@ -6285,7 +6921,9 @@
 
     Table.prototype.linkToSort = function(title, attribute, options) {
       var sortParam;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       sortParam = sortValue(attribute, oppositeSortDirection(attribute));
       return linkTo(title, withParams(request.path, {
         sort: sortParam
@@ -6319,26 +6957,34 @@
     Table.prototype.currentPageNum = function() {
       var page;
       page = params.page ? params.page : 1;
-      if (page < 1) page = 1;
+      if (page < 1) {
+        page = 1;
+      }
       return page;
     };
 
     Table.prototype.caption = function() {};
 
     Table.prototype.head = function(attributes, block) {
-      if (attributes == null) attributes = {};
+      if (attributes == null) {
+        attributes = {};
+      }
       this.hideHeader = attributes.visible === false;
       delete attributes.visible;
       return this._section("head", attributes, block);
     };
 
     Table.prototype.body = function(attributes, block) {
-      if (attributes == null) attributes = {};
+      if (attributes == null) {
+        attributes = {};
+      }
       return this._section("body", attributes, block);
     };
 
     Table.prototype.foot = function(attributes, block) {
-      if (attributes == null) attributes = {};
+      if (attributes == null) {
+        attributes = {};
+      }
       return this._section("foot", attributes, block);
     };
 
@@ -6355,7 +7001,9 @@
       args = 2 <= arguments.length ? __slice.call(arguments, 0, _o = arguments.length - 1) : (_o = 0, []), block = arguments[_o++];
       attributes = _.extractOptions(args);
       attributes.scope = "row";
-      if (this.scope === "body") attributes.role = "row";
+      if (this.scope === "body") {
+        attributes.role = "row";
+      }
       this.rowIndex += 1;
       this.cellIndex = 0;
       this.tag("tr", attributes, block);
@@ -6485,8 +7133,12 @@
     };
 
     Table.prototype.idFor = function(type, key, value, row_index, column_index) {
-      if (row_index == null) row_index = this.row_index;
-      if (column_index == null) column_index = this.column_index;
+      if (row_index == null) {
+        row_index = this.row_index;
+      }
+      if (column_index == null) {
+        column_index = this.column_index;
+      }
       [key, type, row_index, column_index].compact.map(function(node) {
         return node.replace(/[\s_]/, "-");
       });
@@ -6508,6 +7160,8 @@
   Tower.View.Form = (function(_super) {
 
     __extends(Form, _super);
+
+    Form.name = 'Form';
 
     function Form(args, options) {
       var klass;
@@ -6543,11 +7197,17 @@
 
     Form.prototype._extractAttributes = function(options) {
       var attributes, method;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       attributes = options.html || {};
       attributes.action = options.url || Tower.urlFor(this.model);
-      if (options.hasOwnProperty("class")) attributes["class"] = options["class"];
-      if (options.hasOwnProperty("id")) attributes.id = options.id;
+      if (options.hasOwnProperty("class")) {
+        attributes["class"] = options["class"];
+      }
+      if (options.hasOwnProperty("id")) {
+        attributes.id = options.id;
+      }
       attributes.id || (attributes.id = Tower.Support.String.parameterize("" + this.model.constructor.name + "-form"));
       if (options.multipart || attributes.multipart === true) {
         attributes.enctype = "multipart/form-data";
@@ -6578,8 +7238,12 @@
 
     __extends(Builder, _super);
 
+    Builder.name = 'Builder';
+
     function Builder(args, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.template = options.template;
       this.model = options.model;
       this.attribute = options.attribute;
@@ -6590,7 +7254,9 @@
     }
 
     Builder.prototype.defaultOptions = function(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       options.model || (options.model = this.model);
       options.index || (options.index = this.index);
       options.attribute || (options.attribute = this.attribute);
@@ -6658,7 +7324,9 @@
       var args, attributeName, block, defaults, last, options;
       args = _.args(arguments);
       last = args[args.length - 1];
-      if (last === null || last === void 0) args.pop();
+      if (last === null || last === void 0) {
+        args.pop();
+      }
       block = _.extractBlock(args);
       options = _.extractOptions(args);
       attributeName = args.shift() || "attribute.name";
@@ -6693,7 +7361,9 @@
     Builder.prototype.submit = Builder.prototype.button;
 
     Builder.prototype.partial = function(path, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return this.template.render({
         partial: path,
         locals: options.merge({
@@ -6720,40 +7390,58 @@
 
     __extends(Field, _super);
 
+    Field.name = 'Field';
+
     Field.prototype.addClass = function(string, args) {
-      var arg, result, _len7, _o;
+      var arg, result, _len6, _o;
       result = string ? string.split(/\s+/g) : [];
-      for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = args.length; _o < _len6; _o++) {
         arg = args[_o];
-        if (!arg) continue;
-        if (!(result.indexOf(arg) > -1)) result.push(arg);
+        if (!arg) {
+          continue;
+        }
+        if (!(result.indexOf(arg) > -1)) {
+          result.push(arg);
+        }
       }
       return result.join(" ");
     };
 
     Field.prototype.toId = function(options) {
       var result;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       result = Tower.Support.String.parameterize(this.model.constructor.name);
-      if (options.parentIndex) result += "-" + options.parentIndex;
+      if (options.parentIndex) {
+        result += "-" + options.parentIndex;
+      }
       result += "-" + (Tower.Support.String.parameterize(this.attribute));
       result += "-" + (options.type || "field");
-      if (this.index != null) result += "-" + this.index;
+      if (this.index != null) {
+        result += "-" + this.index;
+      }
       return result;
     };
 
     Field.prototype.toParam = function(options) {
       var result;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       result = Tower.Support.String.camelize(this.model.constructor.name, true);
-      if (options.parentIndex) result += "[" + options.parentIndex + "]";
+      if (options.parentIndex) {
+        result += "[" + options.parentIndex + "]";
+      }
       result += "[" + this.attribute + "]";
-      if (this.index != null) result += "[" + this.index + "]";
+      if (this.index != null) {
+        result += "[" + this.index + "]";
+      }
       return result;
     };
 
     function Field(args, options) {
-      var classes, field, inputType, pattern, value, _base, _base2, _base3, _base4, _base5, _base6, _base7;
+      var classes, field, inputType, pattern, value, _base, _base1, _base2, _base3, _base4, _base5, _base6;
       this.labelValue = options.label;
       delete options.label;
       Field.__super__.constructor.call(this, args, options);
@@ -6792,16 +7480,16 @@
         if (options.hint !== false) {
           this.errorHTML["class"] = this.addClass(this.errorHTML["class"], [Tower.View.errorClass]);
           if (Tower.View.includeAria && Tower.View.hintIsPopup) {
-            (_base2 = this.errorHTML).role || (_base2.role = "tooltip");
+            (_base1 = this.errorHTML).role || (_base1.role = "tooltip");
           }
         }
       }
       this.attributes = this.fieldHTML;
       if (inputType !== "submit") {
-        (_base3 = this.inputHTML).name || (_base3.name = this.toParam());
+        (_base2 = this.inputHTML).name || (_base2.name = this.toParam());
       }
-      (_base4 = this.inputHTML).value || (_base4.value = options.value);
-      (_base5 = this.inputHTML).value || (_base5.value = this.value);
+      (_base3 = this.inputHTML).value || (_base3.value = options.value);
+      (_base4 = this.inputHTML).value || (_base4.value = this.value);
       this.dynamic = options.dynamic === true;
       this.richInput = options.hasOwnProperty("rich_input") ? !!options.rich_input : Tower.View.richInput;
       this.validate = options.validate !== false;
@@ -6815,9 +7503,13 @@
         }
       }
       this.inputHTML["class"] = this.addClass(this.inputHTML["class"], classes);
-      if (options.placeholder) this.inputHTML.placeholder = options.placeholder;
+      if (options.placeholder) {
+        this.inputHTML.placeholder = options.placeholder;
+      }
       value = void 0;
-      if (options.hasOwnProperty("value")) value = options.value;
+      if (options.hasOwnProperty("value")) {
+        value = options.value;
+      }
       if (!value && this.inputHTML.hasOwnProperty('value')) {
         value = this.inputHTML.value;
       }
@@ -6831,18 +7523,30 @@
       }
       this.inputHTML.value = value;
       if (options.hasOwnProperty("max")) {
-        (_base6 = this.inputHTML).maxlength || (_base6.maxlength = options.max);
+        (_base5 = this.inputHTML).maxlength || (_base5.maxlength = options.max);
       }
       pattern = options.match;
-      if (_.isRegExp(pattern)) pattern = pattern.toString();
-      if (pattern != null) this.inputHTML["data-match"] = pattern;
+      if (_.isRegExp(pattern)) {
+        pattern = pattern.toString();
+      }
+      if (pattern != null) {
+        this.inputHTML["data-match"] = pattern;
+      }
       this.inputHTML["aria-required"] = this.required.toString();
-      if (this.required === true) this.inputHTML.required = "true";
-      if (this.disabled) this.inputHTML.disabled = "true";
-      if (this.autofocus === true) this.inputHTML.autofocus = "true";
-      if (this.dynamic) this.inputHTML["data-dynamic"] = "true";
+      if (this.required === true) {
+        this.inputHTML.required = "true";
+      }
+      if (this.disabled) {
+        this.inputHTML.disabled = "true";
+      }
+      if (this.autofocus === true) {
+        this.inputHTML.autofocus = "true";
+      }
+      if (this.dynamic) {
+        this.inputHTML["data-dynamic"] = "true";
+      }
       if (this.inputHTML.placeholder) {
-        (_base7 = this.inputHTML).title || (_base7.title = this.inputHTML.placeholder);
+        (_base6 = this.inputHTML).title || (_base6.title = this.inputHTML.placeholder);
       }
       this.autocomplete = this.inputHTML.autocomplete === true;
       if (this.autocomplete && Tower.View.includeAria) {
@@ -6948,7 +7652,9 @@
 
     Field.prototype.label = function() {
       var _this = this;
-      if (!this.labelValue) return;
+      if (!this.labelValue) {
+        return;
+      }
       return this.tag("label", this.labelHTML, function() {
         _this.tag("span", _this.labelValue);
         if (_this.required) {
@@ -6991,7 +7697,9 @@
 
     Field.prototype.extractElements = function(options) {
       var elements, _base;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       elements = [];
       if (typeof (_base = ["hidden", "submit"]).include === "function" ? _base.include(inputType) : void 0) {
         elements.push("inputs");
@@ -7011,6 +7719,8 @@
   Tower.View.Form.Fieldset = (function(_super) {
 
     __extends(Fieldset, _super);
+
+    Fieldset.name = 'Fieldset';
 
     function Fieldset(args, options) {
       var attributes;
@@ -7052,13 +7762,13 @@
 
   Tower.View.AssetHelper = {
     javascripts: function() {
-      var options, path, paths, sources, _len7, _o;
+      var options, path, paths, sources, _len6, _o;
       sources = _.args(arguments);
       options = _.extractOptions(sources);
       options.namespace = "javascripts";
       options.extension = "js";
       paths = _extractAssetPaths(sources, options);
-      for (_o = 0, _len7 = paths.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = paths.length; _o < _len6; _o++) {
         path = paths[_o];
         javascriptTag(path);
       }
@@ -7068,13 +7778,13 @@
       return javascripts.apply(this, arguments);
     },
     stylesheets: function() {
-      var options, path, paths, sources, _len7, _o;
+      var options, path, paths, sources, _len6, _o;
       sources = _.args(arguments);
       options = _.extractOptions(sources);
       options.namespace = "stylesheets";
       options.extension = "css";
       paths = _extractAssetPaths(sources, options);
-      for (_o = 0, _len7 = paths.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = paths.length; _o < _len6; _o++) {
         path = paths[_o];
         stylesheetTag(path);
       }
@@ -7095,32 +7805,38 @@
       });
     },
     _extractAssetPaths: function(sources, options) {
-      var extension, manifest, namespace, path, paths, result, source, _len7, _len8, _len9, _o, _p, _q;
-      if (options == null) options = {};
+      var extension, manifest, namespace, path, paths, result, source, _len6, _len7, _len8, _o, _p, _q;
+      if (options == null) {
+        options = {};
+      }
       namespace = options.namespace;
       extension = options.extension;
       result = [];
       if (Tower.env === "production") {
         manifest = Tower.assetManifest;
-        for (_o = 0, _len7 = sources.length; _o < _len7; _o++) {
+        for (_o = 0, _len6 = sources.length; _o < _len6; _o++) {
           source = sources[_o];
           if (!source.match(/^(http|\/{2})/)) {
             source = "" + source + "." + extension;
-            if (manifest[source]) source = manifest[source];
+            if (manifest[source]) {
+              source = manifest[source];
+            }
             source = "/assets/" + source;
-            if (Tower.assetHost) source = "" + Tower.assetHost + source;
+            if (Tower.assetHost) {
+              source = "" + Tower.assetHost + source;
+            }
           }
           result.push(source);
         }
       } else {
-        for (_p = 0, _len8 = sources.length; _p < _len8; _p++) {
+        for (_p = 0, _len7 = sources.length; _p < _len7; _p++) {
           source = sources[_p];
           if (!!source.match(/^(http|\/{2})/)) {
             result.push(source);
           } else {
             paths = Tower.config.assets[namespace][source];
             if (paths) {
-              for (_q = 0, _len9 = paths.length; _q < _len9; _q++) {
+              for (_q = 0, _len8 = paths.length; _q < _len8; _q++) {
                 path = paths[_q];
                 result.push("/" + namespace + path + "." + extension);
               }
@@ -7134,23 +7850,27 @@
 
   Tower.View.ComponentHelper = {
     formFor: function() {
-      var _ref7;
-      return (_ref7 = Tower.View.Form).render.apply(_ref7, [__ck].concat(__slice.call(arguments)));
+      var _ref6;
+      return (_ref6 = Tower.View.Form).render.apply(_ref6, [__ck].concat(__slice.call(arguments)));
     },
     tableFor: function() {
-      var _ref7;
-      return (_ref7 = Tower.View.Table).render.apply(_ref7, [__ck].concat(__slice.call(arguments)));
+      var _ref6;
+      return (_ref6 = Tower.View.Table).render.apply(_ref6, [__ck].concat(__slice.call(arguments)));
     },
     widget: function() {},
     linkTo: function(title, path, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return a(_.extend(options, {
         href: path,
         title: title
       }), title.toString());
     },
     navItem: function(title, path, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return li(function() {
         return linkTo(title, path, options);
       });
@@ -7162,12 +7882,14 @@
       return document.title = value;
     },
     addClass: function() {
-      var classes, part, parts, string, _len7, _o;
+      var classes, part, parts, string, _len6, _o;
       string = arguments[0], parts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       classes = string.split(/\ +/);
-      for (_o = 0, _len7 = parts.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = parts.length; _o < _len6; _o++) {
         part = parts[_o];
-        if (classes.indexOf(part) > -1) classes.push(part);
+        if (classes.indexOf(part) > -1) {
+          classes.push(part);
+        }
       }
       return classes.join(" ");
     },
@@ -7181,20 +7903,20 @@
       return Tower.Support.String.parameterize(this.elementNameComponents.apply(this, arguments).join("-"));
     },
     elementName: function() {
-      var i, item, result, _len7;
+      var i, item, result, _len6, _o;
       result = this.elementNameComponents.apply(this, arguments);
       i = 1;
-      for (i = 0, _len7 = result.length; i < _len7; i++) {
+      for (i = _o = 0, _len6 = result.length; _o < _len6; i = ++_o) {
         item = result[i];
         result[i] = "[" + item + "]";
       }
       return Tower.Support.String.parameterize(result.join(""));
     },
     elementNameComponents: function() {
-      var args, item, result, _len7, _o;
+      var args, item, result, _len6, _o;
       args = _.args(arguments);
       result = [];
-      for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = args.length; _o < _len6; _o++) {
         item = args[_o];
         switch (typeof item) {
           case "function":
@@ -7225,8 +7947,12 @@
       });
     },
     html4ContentTypeTag: function(charset, type) {
-      if (charset == null) charset = "UTF-8";
-      if (type == null) type = "text/html";
+      if (charset == null) {
+        charset = "UTF-8";
+      }
+      if (type == null) {
+        type = "text/html";
+      }
       return httpMetaTag("Content-Type", "" + type + "; charset=" + charset);
     },
     chromeFrameTag: function() {
@@ -7237,7 +7963,9 @@
       });
     },
     html5ContentTypeTag: function(charset) {
-      if (charset == null) charset = "UTF-8";
+      if (charset == null) {
+        charset = "UTF-8";
+      }
       return meta({
         charset: charset
       });
@@ -7257,7 +7985,9 @@
       });
     },
     faviconLinkTag: function(favicon) {
-      if (favicon == null) favicon = "/favicon.ico";
+      if (favicon == null) {
+        favicon = "/favicon.ico";
+      }
       return linkTag({
         rel: "shortcut icon",
         href: favicon,
@@ -7265,12 +7995,16 @@
       });
     },
     linkTag: function(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       return link(options);
     },
     ieApplicationMetaTags: function(title, options) {
       var result;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       result = [];
       result.push(metaTag("application-name", title));
       if (options.hasOwnProperty("tooltip")) {
@@ -7289,16 +8023,22 @@
     },
     ieTaskMetaTag: function(name, path, icon) {
       var content;
-      if (icon == null) icon = null;
+      if (icon == null) {
+        icon = null;
+      }
       content = [];
       content.push("name=" + name);
       content.push("uri=" + path);
-      if (icon) content.push("icon-uri=" + icon);
+      if (icon) {
+        content.push("icon-uri=" + icon);
+      }
       return this.metaTag("msapplication-task", content.join(";"));
     },
     appleMetaTags: function(options) {
       var result;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       result = [];
       result.push(appleViewportMetaTag(options));
       if (options.hasOwnProperty("fullScreen")) {
@@ -7311,9 +8051,13 @@
     },
     appleViewportMetaTag: function(options) {
       var viewport;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       viewport = [];
-      if (options.hasOwnProperty("width")) viewport.push("width=" + options.width);
+      if (options.hasOwnProperty("width")) {
+        viewport.push("width=" + options.width);
+      }
       if (options.hasOwnProperty("height")) {
         viewport.push("height=" + options.height);
       }
@@ -7337,19 +8081,23 @@
     },
     appleTouchIconLinkTag: function(path, options) {
       var rel;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       rel = ["apple-touch-icon"];
       if (options.hasOwnProperty("size")) {
         rel.push("" + options.size + "x" + options.size);
       }
-      if (options.precomposed) rel.push("precomposed");
+      if (options.precomposed) {
+        rel.push("precomposed");
+      }
       return linkTag({
         rel: rel.join("-"),
         href: path
       });
     },
     appleTouchIconLinkTags: function() {
-      var options, path, result, size, sizes, _len7, _o;
+      var options, path, result, size, sizes, _len6, _o;
       path = arguments[0], sizes = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (typeof sizes[sizes.length - 1] === "object") {
         options = sizes.pop();
@@ -7357,7 +8105,7 @@
         options = {};
       }
       result = [];
-      for (_o = 0, _len7 = sizes.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = sizes.length; _o < _len6; _o++) {
         size = sizes[_o];
         result.push(appleTouchIconLinkTag(path, _.extend({
           size: size
@@ -7366,24 +8114,54 @@
       return result.join();
     },
     openGraphMetaTags: function(options) {
-      if (options == null) options = {};
-      if (options.title) openGraphMetaTag("og:title", options.title);
-      if (options.type) openGraphMetaTag("og:type", options.type);
-      if (options.image) openGraphMetaTag("og:image", options.image);
-      if (options.site) openGraphMetaTag("og:siteName", options.site);
+      if (options == null) {
+        options = {};
+      }
+      if (options.title) {
+        openGraphMetaTag("og:title", options.title);
+      }
+      if (options.type) {
+        openGraphMetaTag("og:type", options.type);
+      }
+      if (options.image) {
+        openGraphMetaTag("og:image", options.image);
+      }
+      if (options.site) {
+        openGraphMetaTag("og:siteName", options.site);
+      }
       if (options.description) {
         openGraphMetaTag("og:description", options.description);
       }
-      if (options.email) openGraphMetaTag("og:email", options.email);
-      if (options.phone) openGraphMetaTag("og:phoneNumber", options.phone);
-      if (options.fax) openGraphMetaTag("og:faxNumber", options.fax);
-      if (options.lat) openGraphMetaTag("og:latitude", options.lat);
-      if (options.lng) openGraphMetaTag("og:longitude", options.lng);
-      if (options.street) openGraphMetaTag("og:street-address", options.street);
-      if (options.city) openGraphMetaTag("og:locality", options.city);
-      if (options.state) openGraphMetaTag("og:region", options.state);
-      if (options.zip) openGraphMetaTag("og:postal-code", options.zip);
-      if (options.country) openGraphMetaTag("og:country-name", options.country);
+      if (options.email) {
+        openGraphMetaTag("og:email", options.email);
+      }
+      if (options.phone) {
+        openGraphMetaTag("og:phoneNumber", options.phone);
+      }
+      if (options.fax) {
+        openGraphMetaTag("og:faxNumber", options.fax);
+      }
+      if (options.lat) {
+        openGraphMetaTag("og:latitude", options.lat);
+      }
+      if (options.lng) {
+        openGraphMetaTag("og:longitude", options.lng);
+      }
+      if (options.street) {
+        openGraphMetaTag("og:street-address", options.street);
+      }
+      if (options.city) {
+        openGraphMetaTag("og:locality", options.city);
+      }
+      if (options.state) {
+        openGraphMetaTag("og:region", options.state);
+      }
+      if (options.zip) {
+        openGraphMetaTag("og:postal-code", options.zip);
+      }
+      if (options.country) {
+        openGraphMetaTag("og:country-name", options.country);
+      }
       return null;
     },
     openGraphMetaTag: function(property, content) {
@@ -7396,7 +8174,7 @@
 
   Tower.View.RenderingHelper = {
     partial: function(path, options, callback) {
-      var item, locals, name, prefixes, template, tmpl, _len7, _o, _ref7;
+      var item, locals, name, prefixes, template, tmpl, _len6, _o, _ref6;
       try {
         if (typeof options === "function") {
           callback = options;
@@ -7409,15 +8187,17 @@
         path[path.length - 1] = "_" + path[path.length - 1];
         path = path.join("/");
         prefixes = options.prefixes;
-        if (this._context) prefixes || (prefixes = [this._context.collectionName]);
+        if (this._context) {
+          prefixes || (prefixes = [this._context.collectionName]);
+        }
         template = this._readTemplate(path, prefixes, options.type || Tower.View.engine);
         template = this.renderWithEngine(String(template));
         if (options.collection) {
           name = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true);
           tmpl = eval("(function(data) { with(data) { this." + name + " = " + name + "; " + (String(template)) + " } })");
-          _ref7 = options.collection;
-          for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
-            item = _ref7[_o];
+          _ref6 = options.collection;
+          for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
+            item = _ref6[_o];
             locals[name] = item;
             tmpl.call(this, locals);
             delete this[name];
@@ -7525,7 +8305,7 @@
   };
 
   $.serializeParams = function(params, coerce) {
-    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len7;
+    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len6, _o;
     obj = {};
     coerce_types = {
       "true": !0,
@@ -7533,7 +8313,7 @@
       "null": null
     };
     array = params.replace(/\+/g, " ").split("&");
-    for (index = 0, _len7 = array.length; index < _len7; index++) {
+    for (index = _o = 0, _len6 = array.length; _o < _len6; index = ++_o) {
       item = array[index];
       param = item.split("=");
       key = decodeURIComponent(param[0]);
@@ -7570,7 +8350,9 @@
           }
         }
       } else {
-        if (key) obj[key] = (coerce ? undefined : "");
+        if (key) {
+          obj[key] = (coerce ? undefined : "");
+        }
       }
     }
     return obj;
@@ -7594,12 +8376,12 @@
       }
     },
     invalidate: function() {
-      var attribute, element, errors, field, _ref7, _results;
+      var attribute, element, errors, field, _ref6, _results;
       element = $("#" + this.resourceName + "-" + this.elementName);
-      _ref7 = this.resource.errors;
+      _ref6 = this.resource.errors;
       _results = [];
-      for (attribute in _ref7) {
-        errors = _ref7[attribute];
+      for (attribute in _ref6) {
+        errors = _ref6[attribute];
         field = $("#" + this.resourceName + "-" + attribute + "-field");
         if (field.length) {
           field.css("background", "yellow");
@@ -7615,6 +8397,8 @@
   Tower.Controller = (function(_super) {
 
     __extends(Controller, _super);
+
+    Controller.name = 'Controller';
 
     Controller.include(Tower.Support.Callbacks);
 
@@ -7696,10 +8480,12 @@
         }
       },
       metadata: function() {
-        var baseClassName, belongsTo, callbacks, className, collectionName, helpers, metadata, mimes, params, renderers, resourceName, resourceType, result, superMetadata;
+        var action, baseClassName, belongsTo, callbackChain, callbacks, className, collectionName, helpers, metadata, mimes, params, renderers, resourceName, resourceType, result, superMetadata, _ref6;
         className = this.name;
         metadata = this.metadata[className];
-        if (metadata) return metadata;
+        if (metadata) {
+          return metadata;
+        }
         baseClassName = this.baseClass().name;
         if (baseClassName !== className) {
           superMetadata = this.baseClass().metadata();
@@ -7710,7 +8496,6 @@
         resourceName = this._compileResourceName(resourceType);
         collectionName = Tower.Support.String.camelize(this.name.replace(/(Controller)$/, ""), true);
         params = superMetadata.params ? _.clone(superMetadata.params) : {};
-        callbacks = superMetadata.callbacks ? _.clone(superMetadata.callbacks) : {};
         renderers = superMetadata.renderers ? _.clone(superMetadata.renderers) : {};
         mimes = superMetadata.mimes ? _.clone(superMetadata.mimes) : {
           json: {},
@@ -7718,6 +8503,14 @@
         };
         helpers = superMetadata.helpers ? superMetadata.helpers.concat() : [];
         belongsTo = superMetadata.belongsTo ? superMetadata.belongsTo.concat() : [];
+        callbacks = {};
+        if (superMetadata.callbacks) {
+          _ref6 = superMetadata.callbacks;
+          for (action in _ref6) {
+            callbackChain = _ref6[action];
+            callbacks[action] = callbackChain.clone();
+          }
+        }
         result = this.metadata[className] = {
           className: className,
           resourceName: resourceName,
@@ -7790,9 +8583,9 @@
         return this.params()[key] = Tower.HTTP.Param.create(key, options);
       },
       params: function() {
-        var arg, key, value, _len7, _o;
+        var arg, key, value, _len6, _o;
         if (arguments.length) {
-          for (_o = 0, _len7 = arguments.length; _o < _len7; _o++) {
+          for (_o = 0, _len6 = arguments.length; _o < _len6; _o++) {
             arg = arguments[_o];
             if (typeof arg === "object") {
               for (key in arg) {
@@ -7810,7 +8603,9 @@
     InstanceMethods: {
       criteria: function() {
         var criteria, name, params, parser, parsers;
-        if (this._criteria) return this._criteria;
+        if (this._criteria) {
+          return this._criteria;
+        }
         this._criteria = criteria = new Tower.Model.Criteria;
         parsers = this.constructor.params();
         params = this.params;
@@ -7862,7 +8657,9 @@
         } catch (error) {
           console.log(error);
         }
-        if (this.callback) return this.callback();
+        if (this.callback) {
+          return this.callback();
+        }
       }
     }
   };
@@ -7874,7 +8671,9 @@
       },
       addRenderers: function(renderers) {
         var block, key;
-        if (renderers == null) renderers = {};
+        if (renderers == null) {
+          renderers = {};
+        }
         for (key in renderers) {
           block = renderers[key];
           this.addRenderer(key, block);
@@ -7897,10 +8696,14 @@
         return this.renderToBody(this._normalizeRender.apply(this, arguments));
       },
       sendFile: function(path, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
       },
       sendData: function(data, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
       },
       _renderTemplate: function(options) {
         var callback, view, _base, _callback,
@@ -7914,11 +8717,19 @@
             _this.status || (_this.status = 200);
             _this.body = body;
           }
-          if (error) console.log(_this.body);
-          if (_callback) _callback.apply(_this, arguments);
-          if (_this.callback) return _this.callback();
+          if (error) {
+            console.log(_this.body);
+          }
+          if (_callback) {
+            _callback.apply(_this, arguments);
+          }
+          if (_this.callback) {
+            return _this.callback();
+          }
         };
-        if (this._handleRenderers(options, callback)) return;
+        if (this._handleRenderers(options, callback)) {
+          return;
+        }
         (_base = this.headers)["Content-Type"] || (_base["Content-Type"] = "text/html");
         view = new Tower.View(this);
         try {
@@ -7928,10 +8739,10 @@
         }
       },
       _handleRenderers: function(options, callback) {
-        var name, renderer, _ref7;
-        _ref7 = Tower.Controller.renderers();
-        for (name in _ref7) {
-          renderer = _ref7[name];
+        var name, renderer, _ref6;
+        _ref6 = Tower.Controller.renderers();
+        for (name in _ref6) {
+          renderer = _ref6[name];
           if (options.hasOwnProperty(name)) {
             renderer.call(this, options[name], options, callback);
             return true;
@@ -7940,8 +8751,12 @@
         return false;
       },
       _processRenderOptions: function(options) {
-        if (options == null) options = {};
-        if (options.status) this.status = options.status;
+        if (options == null) {
+          options = {};
+        }
+        if (options.status) {
+          this.status = options.status;
+        }
         if (options.contentType) {
           this.headers["Content-Type"] = options.contentType;
         }
@@ -7956,20 +8771,32 @@
       _normalizeArgs: function() {
         var args, callback, options;
         args = _.args(arguments);
-        if (typeof args[0] === "string") action = args.shift();
-        if (typeof args[0] === "object") options = args.shift();
-        if (typeof args[0] === "function") callback = args.shift();
+        if (typeof args[0] === "string") {
+          action = args.shift();
+        }
+        if (typeof args[0] === "object") {
+          options = args.shift();
+        }
+        if (typeof args[0] === "function") {
+          callback = args.shift();
+        }
         options || (options = {});
         if (action) {
           key = !!action.match(/\//) ? "file" : "action";
           options[key] = action;
         }
-        if (callback) options.callback = callback;
+        if (callback) {
+          options.callback = callback;
+        }
         return options;
       },
       _normalizeOptions: function(options) {
-        if (options == null) options = {};
-        if (options.partial === true) options.partial = this.action;
+        if (options == null) {
+          options = {};
+        }
+        if (options.partial === true) {
+          options.partial = this.action;
+        }
         options.prefixes || (options.prefixes = []);
         options.prefixes.push(this.collectionName);
         options.template || (options.template = options.file || (options.action || this.action));
@@ -7990,7 +8817,9 @@
             collectionName: _.pluralize(options)
           };
         }
-        if (options.name) metadata.resourceName = options.name;
+        if (options.name) {
+          metadata.resourceName = options.name;
+        }
         if (options.type) {
           metadata.resourceType = options.type;
           if (!options.name) {
@@ -8005,7 +8834,9 @@
       belongsTo: function(key, options) {
         var belongsTo;
         belongsTo = this.metadata().belongsTo;
-        if (!key) return belongsTo;
+        if (!key) {
+          return belongsTo;
+        }
         options || (options = {});
         options.key = key;
         options.type || (options.type = Tower.Support.String.camelize(options.key));
@@ -8017,7 +8848,7 @@
         return belongsTo.length > 0;
       },
       actions: function() {
-        var action, actions, actionsToRemove, args, options, _len7, _o;
+        var action, actions, actionsToRemove, args, options, _len6, _o;
         args = _.args(arguments);
         if (typeof args[args.length - 1] === "object") {
           options = args.pop();
@@ -8026,7 +8857,7 @@
         }
         actions = ["index", "new", "create", "show", "edit", "update", "destroy"];
         actionsToRemove = _.difference(actions, args, options.except || []);
-        for (_o = 0, _len7 = actionsToRemove.length; _o < _len7; _o++) {
+        for (_o = 0, _len6 = actionsToRemove.length; _o < _len6; _o++) {
           action = actionsToRemove[_o];
           this[action] = null;
           delete this[action];
@@ -8141,7 +8972,9 @@
     respondWithScoped: function(callback) {
       var _this = this;
       return this.scoped(function(error, scope) {
-        if (error) return _this.failure(error, callback);
+        if (error) {
+          return _this.failure(error, callback);
+        }
         return _this.respondWith(scope.build(), callback);
       });
     },
@@ -8167,9 +9000,13 @@
       var _this = this;
       return this.scoped(function(error, scope) {
         var resource;
-        if (error) return callback.call(_this, error, null);
+        if (error) {
+          return callback.call(_this, error, null);
+        }
         _this[_this.resourceName] = _this.resource = resource = scope.build(_this.params[_this.resourceName]);
-        if (callback) callback.call(_this, null, resource);
+        if (callback) {
+          callback.call(_this, null, resource);
+        }
         return resource;
       });
     },
@@ -8177,11 +9014,15 @@
       var _this = this;
       return this.scoped(function(error, scope) {
         var resource;
-        if (error) return callback.call(_this, error, null);
+        if (error) {
+          return callback.call(_this, error, null);
+        }
         resource = null;
         scope.create(_this.params[_this.resourceName], function(error, record) {
           _this[_this.resourceName] = _this.resource = resource = record;
-          if (callback) return callback.call(_this, null, resource);
+          if (callback) {
+            return callback.call(_this, null, resource);
+          }
         });
         return resource;
       });
@@ -8189,7 +9030,9 @@
     findResource: function(callback) {
       var _this = this;
       return this.scoped(function(error, scope) {
-        if (error) return callback.call(_this, error, null);
+        if (error) {
+          return callback.call(_this, error, null);
+        }
         return scope.find(_this.params.id, function(error, resource) {
           _this[_this.resourceName] = _this.resource = resource;
           return callback.call(_this, error, resource);
@@ -8199,10 +9042,14 @@
     findCollection: function(callback) {
       var _this = this;
       return this.scoped(function(error, scope) {
-        if (error) return callback.call(_this, error, null);
+        if (error) {
+          return callback.call(_this, error, null);
+        }
         return scope.all(function(error, collection) {
           _this[_this.collectionName] = _this.collection = collection;
-          if (callback) return callback.call(_this, error, collection);
+          if (callback) {
+            return callback.call(_this, error, collection);
+          }
         });
       });
     },
@@ -8213,21 +9060,29 @@
       if (relation) {
         parentClass = Tower.constant(relation.type);
         return parentClass.find(this.params[relation.param], function(error, parent) {
-          if (error && !callback) throw error;
-          if (!error) _this.parent = _this[relation.key] = parent;
-          if (callback) return callback.call(_this, error, parent);
+          if (error && !callback) {
+            throw error;
+          }
+          if (!error) {
+            _this.parent = _this[relation.key] = parent;
+          }
+          if (callback) {
+            return callback.call(_this, error, parent);
+          }
         });
       } else {
-        if (callback) callback.call(this, null, false);
+        if (callback) {
+          callback.call(this, null, false);
+        }
         return false;
       }
     },
     findParentRelation: function() {
-      var belongsTo, param, params, relation, _len7, _o;
+      var belongsTo, param, params, relation, _len6, _o;
       belongsTo = this.constructor.belongsTo();
       params = this.params;
       if (belongsTo.length > 0) {
-        for (_o = 0, _len7 = belongsTo.length; _o < _len7; _o++) {
+        for (_o = 0, _len6 = belongsTo.length; _o < _len6; _o++) {
           relation = belongsTo[_o];
           param = relation.param || ("" + relation.key + "Id");
           if (params.hasOwnProperty(param)) {
@@ -8276,14 +9131,18 @@
     _new: function(callback) {
       var _this = this;
       return this.buildResource(function(error, resource) {
-        if (!resource) return _this.failure(error);
+        if (!resource) {
+          return _this.failure(error);
+        }
         return _this.respondWith(resource, callback);
       });
     },
     _create: function(callback) {
       var _this = this;
       return this.createResource(function(error, resource) {
-        if (!resource) return _this.failure(error, callback);
+        if (!resource) {
+          return _this.failure(error, callback);
+        }
         return _this.respondWithStatus(_.isBlank(resource.errors), callback);
       });
     },
@@ -8302,7 +9161,9 @@
     _update: function(callback) {
       var _this = this;
       return this.findResource(function(error, resource) {
-        if (error) return _this.failure(error, callback);
+        if (error) {
+          return _this.failure(error, callback);
+        }
         return resource.updateAttributes(_this.params[_this.resourceName], function(error) {
           return _this.respondWithStatus(!!!error && _.isBlank(resource.errors), callback);
         });
@@ -8311,7 +9172,9 @@
     _destroy: function(callback) {
       var _this = this;
       return this.findResource(function(error, resource) {
-        if (error) return _this.failure(error, callback);
+        if (error) {
+          return _this.failure(error, callback);
+        }
         return resource.destroy(function(error) {
           return _this.respondWithStatus(!!!error, callback);
         });
@@ -8321,6 +9184,8 @@
 
   Tower.Controller.Responder = (function() {
 
+    Responder.name = 'Responder';
+
     Responder.respond = function(controller, options, callback) {
       var responder;
       responder = new this(controller, options);
@@ -8328,13 +9193,15 @@
     };
 
     function Responder(controller, options) {
-      var format, _len7, _o, _ref7;
-      if (options == null) options = {};
+      var format, _len6, _o, _ref6;
+      if (options == null) {
+        options = {};
+      }
       this.controller = controller;
       this.options = options;
-      _ref7 = this.controller.formats;
-      for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
-        format = _ref7[_o];
+      _ref6 = this.controller.formats;
+      for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
+        format = _ref6[_o];
         this.accept(format);
       }
     }
@@ -8347,7 +9214,9 @@
 
     Responder.prototype.respond = function(callback) {
       var method;
-      if (callback) callback.call(this.controller, this);
+      if (callback) {
+        callback.call(this.controller, this);
+      }
       method = this["_" + this.controller.format];
       if (method) {
         return method.call(this);
@@ -8418,7 +9287,9 @@
     };
 
     Responder.prototype.display = function(resource, givenOptions) {
-      if (givenOptions == null) givenOptions = {};
+      if (givenOptions == null) {
+        givenOptions = {};
+      }
       return this.controller.render(_.extend(givenOptions, this.options, {
         format: this.resource
       }));
@@ -8461,7 +9332,7 @@
   Tower.Controller.Responding = {
     ClassMethods: {
       respondTo: function() {
-        var args, except, mimes, name, only, options, _len7, _o;
+        var args, except, mimes, name, only, options, _len6, _o;
         mimes = this.mimes();
         args = _.args(arguments);
         if (typeof args[args.length - 1] === "object") {
@@ -8469,13 +9340,21 @@
         } else {
           options = {};
         }
-        if (options.only) only = _.toArray(options.only);
-        if (options.except) except = _.toArray(options.except);
-        for (_o = 0, _len7 = args.length; _o < _len7; _o++) {
+        if (options.only) {
+          only = _.toArray(options.only);
+        }
+        if (options.except) {
+          except = _.toArray(options.except);
+        }
+        for (_o = 0, _len6 = args.length; _o < _len6; _o++) {
           name = args[_o];
           mimes[name] = {};
-          if (only) mimes[name].only = only;
-          if (except) mimes[name].except = except;
+          if (only) {
+            mimes[name].only = only;
+          }
+          if (except) {
+            mimes[name].except = except;
+          }
         }
         return this;
       },
@@ -8491,7 +9370,9 @@
         var args, callback, options;
         args = _.args(arguments);
         callback = null;
-        if (typeof args[args.length - 1] === "function") callback = args.pop();
+        if (typeof args[args.length - 1] === "function") {
+          callback = args.pop();
+        }
         if (typeof args[args.length - 1] === "object" && !(args[args.length - 1] instanceof Tower.Model)) {
           options = args.pop();
         } else {
@@ -8516,7 +9397,9 @@
           } else {
             success = true;
           }
-          if (success) result.push(mime);
+          if (success) {
+            result.push(mime);
+          }
         }
         return result;
       }
@@ -8543,7 +9426,9 @@
     ClassMethods: {
       extractElements: function(target, options) {
         var key, method, result, selector, selectors;
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         result = {};
         for (method in options) {
           selectors = options[method];
@@ -8555,7 +9440,9 @@
         return result;
       },
       processElements: function(target, options) {
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         return this.elements = this.extractElements(target, options);
       },
       clickHandler: function(name, handler, options) {
@@ -8591,12 +9478,12 @@
         });
       },
       invalidForm: function() {
-        var attribute, element, errors, field, _ref7, _results;
+        var attribute, element, errors, field, _ref6, _results;
         element = $("#" + this.resourceName + "-" + this.elementName);
-        _ref7 = this.resource.errors;
+        _ref6 = this.resource.errors;
         _results = [];
-        for (attribute in _ref7) {
-          errors = _ref7[attribute];
+        for (attribute in _ref6) {
+          errors = _ref6[attribute];
           field = $("#" + this.resourceName + "-" + attribute + "-field");
           if (field.length) {
             field.css("background", "yellow");
@@ -8637,7 +9524,9 @@
         parts = name.split(/\ +/);
         name = parts.shift();
         selector = parts.join(" ");
-        if (selector && selector !== "") options.target = selector;
+        if (selector && selector !== "") {
+          options.target = selector;
+        }
         options.target || (options.target = "body");
         eventType = name.split(/[\.:]/)[0];
         method = this["" + eventType + "Handler"];
@@ -8652,12 +9541,18 @@
       },
       _dispatch: function(event, handler, options) {
         var controller;
-        if (options == null) options = {};
+        if (options == null) {
+          options = {};
+        }
         controller = this.instance();
         controller.elements || (controller.elements = {});
         controller.params || (controller.params = {});
-        if (options.params) _.extend(controller.params, options.params);
-        if (options.elements) _.extend(controller.elements, options.elements);
+        if (options.params) {
+          _.extend(controller.params, options.params);
+        }
+        if (options.elements) {
+          _.extend(controller.elements, options.elements);
+        }
         if (typeof handler === "string") {
           return controller[handler].call(controller, event);
         } else {
@@ -8706,7 +9601,7 @@
   };
 
   $.serializeParams = function(params, coerce) {
-    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len7;
+    var array, coerce_types, cur, i, index, item, keys, keys_last, obj, param, val, _len6, _o;
     obj = {};
     coerce_types = {
       "true": !0,
@@ -8714,7 +9609,7 @@
       "null": null
     };
     array = params.replace(/\+/g, " ").split("&");
-    for (index = 0, _len7 = array.length; index < _len7; index++) {
+    for (index = _o = 0, _len6 = array.length; _o < _len6; index = ++_o) {
       item = array[index];
       param = item.split("=");
       key = decodeURIComponent(param[0]);
@@ -8751,7 +9646,9 @@
           }
         }
       } else {
-        if (key) obj[key] = (coerce ? undefined : "");
+        if (key) {
+          obj[key] = (coerce ? undefined : "");
+        }
       }
     }
     return obj;
@@ -8761,8 +9658,12 @@
 
   Tower.HTTP.Agent = (function() {
 
+    Agent.name = 'Agent';
+
     function Agent(attributes) {
-      if (attributes == null) attributes = {};
+      if (attributes == null) {
+        attributes = {};
+      }
       _.extend(this, attributes);
     }
 
@@ -8784,17 +9685,23 @@
 
   Tower.HTTP.Cookies = (function() {
 
+    Cookies.name = 'Cookies';
+
     Cookies.parse = function(string) {
-      var eqlIndex, pair, pairs, result, value, _len7, _o;
-      if (string == null) string = document.cookie;
+      var eqlIndex, pair, pairs, result, value, _len6, _o;
+      if (string == null) {
+        string = document.cookie;
+      }
       result = {};
       pairs = string.split(/[;,] */);
-      for (_o = 0, _len7 = pairs.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = pairs.length; _o < _len6; _o++) {
         pair = pairs[_o];
         eqlIndex = pair.indexOf('=');
         key = pair.substring(0, eqlIndex).trim().toLowerCase();
         value = pair.substring(++eqlIndex, pair.length).trim();
-        if ('"' === value[0]) value = value.slice(1, -1);
+        if ('"' === value[0]) {
+          value = value.slice(1, -1);
+        }
         if (result[key] === void 0) {
           value = value.replace(/\+/g, ' ');
           try {
@@ -8813,7 +9720,9 @@
 
     function Cookies(attributes) {
       var key, value;
-      if (attributes == null) attributes = {};
+      if (attributes == null) {
+        attributes = {};
+      }
       for (key in attributes) {
         value = attributes[key];
         this[key] = value;
@@ -8825,6 +9734,8 @@
   })();
 
   Tower.HTTP.Param = (function() {
+
+    Param.name = 'Param';
 
     Param.perPage = 20;
 
@@ -8839,7 +9750,9 @@
     Param.separator = "_";
 
     Param.create = function(key, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       if (typeof options === "string") {
         options = {
           type: options
@@ -8850,7 +9763,9 @@
     };
 
     function Param(key, options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.controller = options.controller;
       this.key = key;
       this.attribute = options.as || this.key;
@@ -8871,12 +9786,12 @@
     };
 
     Param.prototype.toCriteria = function(value) {
-      var attribute, conditions, criteria, node, nodes, operator, set, _len7, _len8, _o, _p;
+      var attribute, conditions, criteria, node, nodes, operator, set, _len6, _len7, _o, _p;
       nodes = this.parse(value);
       criteria = new Tower.Model.Criteria;
-      for (_o = 0, _len7 = nodes.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = nodes.length; _o < _len6; _o++) {
         set = nodes[_o];
-        for (_p = 0, _len8 = set.length; _p < _len8; _p++) {
+        for (_p = 0, _len7 = set.length; _p < _len7; _p++) {
           node = set[_p];
           attribute = node.attribute;
           operator = node.operators[0];
@@ -8915,16 +9830,18 @@
 
     __extends(Array, _super);
 
+    Array.name = 'Array';
+
     function Array() {
-      Array.__super__.constructor.apply(this, arguments);
+      return Array.__super__.constructor.apply(this, arguments);
     }
 
     Array.prototype.parse = function(value) {
-      var array, isRange, negation, string, values, _len7, _o,
+      var array, isRange, negation, string, values, _len6, _o,
         _this = this;
       values = [];
       array = value.toString().split(/[,\|]/);
-      for (_o = 0, _len7 = array.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = array.length; _o < _len6; _o++) {
         string = array[_o];
         isRange = false;
         negation = !!string.match(/^\^/);
@@ -8941,7 +9858,9 @@
           }
           return values.push(range);
         });
-        if (!isRange) values.push([this.parseValue(string, ["$eq"])]);
+        if (!isRange) {
+          values.push([this.parseValue(string, ["$eq"])]);
+        }
       }
       return values;
     };
@@ -8954,16 +9873,18 @@
 
     __extends(Date, _super);
 
+    Date.name = 'Date';
+
     function Date() {
-      Date.__super__.constructor.apply(this, arguments);
+      return Date.__super__.constructor.apply(this, arguments);
     }
 
     Date.prototype.parse = function(value) {
-      var array, isRange, string, values, _len7, _o,
+      var array, isRange, string, values, _len6, _o,
         _this = this;
       values = [];
       array = value.toString().split(/[\s,\+]/);
-      for (_o = 0, _len7 = array.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = array.length; _o < _len6; _o++) {
         string = array[_o];
         isRange = false;
         string.replace(/([^\.]+)?(\.\.)([^\.]+)?/, function(_, startsOn, operator, endsOn) {
@@ -8978,7 +9899,9 @@
           }
           return values.push(range);
         });
-        if (!isRange) values.push([this.parseValue(string, ["$eq"])]);
+        if (!isRange) {
+          values.push([this.parseValue(string, ["$eq"])]);
+        }
       }
       return values;
     };
@@ -8995,16 +9918,18 @@
 
     __extends(Number, _super);
 
+    Number.name = 'Number';
+
     function Number() {
-      Number.__super__.constructor.apply(this, arguments);
+      return Number.__super__.constructor.apply(this, arguments);
     }
 
     Number.prototype.parse = function(value) {
-      var array, isRange, negation, string, values, _len7, _o,
+      var array, isRange, negation, string, values, _len6, _o,
         _this = this;
       values = [];
       array = value.toString().split(/[,\|]/);
-      for (_o = 0, _len7 = array.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = array.length; _o < _len6; _o++) {
         string = array[_o];
         isRange = false;
         negation = !!string.match(/^\^/);
@@ -9021,7 +9946,9 @@
           }
           return values.push(range);
         });
-        if (!isRange) values.push([this.parseValue(string, ["$eq"])]);
+        if (!isRange) {
+          values.push([this.parseValue(string, ["$eq"])]);
+        }
       }
       return values;
     };
@@ -9038,15 +9965,17 @@
 
     __extends(String, _super);
 
+    String.name = 'String';
+
     function String() {
-      String.__super__.constructor.apply(this, arguments);
+      return String.__super__.constructor.apply(this, arguments);
     }
 
     String.prototype.parse = function(value) {
-      var arrays, i, node, values, _len7,
+      var arrays, i, node, values, _len6, _o,
         _this = this;
       arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/g);
-      for (i = 0, _len7 = arrays.length; i < _len7; i++) {
+      for (i = _o = 0, _len6 = arrays.length; _o < _len6; i = ++_o) {
         node = arrays[i];
         values = [];
         node.replace(/([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, function(_, token) {
@@ -9066,8 +9995,12 @@
           } else {
             operators = [exact ? "$eq" : "$match"];
           }
-          if (!!token.match(/^\+?\-?\^/)) operators.push("^");
-          if (!!token.match(/\$$/)) operators.push("$");
+          if (!!token.match(/^\+?\-?\^/)) {
+            operators.push("^");
+          }
+          if (!!token.match(/\$$/)) {
+            operators.push("$");
+          }
           values.push(_this.parseValue(_this._clean(token), operators));
           return _;
         });
@@ -9083,6 +10016,8 @@
   Tower.HTTP.Route = (function(_super) {
 
     __extends(Route, _super);
+
+    Route.name = 'Route';
 
     Route.store = function() {
       return this._store || (this._store = []);
@@ -9114,17 +10049,21 @@
 
     Route.draw = function(callback) {
       this._defaultCallback || (this._defaultCallback = callback);
-      if (!callback) callback = this._defaultCallback;
+      if (!callback) {
+        callback = this._defaultCallback;
+      }
       return callback.apply(new Tower.HTTP.Route.DSL(this));
     };
 
     Route.findController = function(request, response, callback) {
-      var controller, route, routes, _len7, _o;
+      var controller, route, routes, _len6, _o;
       routes = Tower.Route.all();
-      for (_o = 0, _len7 = routes.length; _o < _len7; _o++) {
+      for (_o = 0, _len6 = routes.length; _o < _len6; _o++) {
         route = routes[_o];
         controller = route.toController(request);
-        if (controller) break;
+        if (controller) {
+          break;
+        }
       }
       if (controller) {
         controller.call(request, response, function() {
@@ -9137,14 +10076,16 @@
     };
 
     Route.prototype.toController = function(request) {
-      var capture, controller, i, keys, match, method, params, _len7;
+      var capture, controller, i, keys, match, method, params, _len6, _o;
       match = this.match(request);
-      if (!match) return null;
+      if (!match) {
+        return null;
+      }
       method = request.method.toLowerCase();
       keys = this.keys;
       params = _.extend({}, this.defaults, request.query || {}, request.body || {});
       match = match.slice(1);
-      for (i = 0, _len7 = match.length; i < _len7; i++) {
+      for (i = _o = 0, _len6 = match.length; _o < _len6; i = ++_o) {
         capture = match[i];
         key = keys[i].name;
         if (capture && !(params[key] != null)) {
@@ -9157,7 +10098,9 @@
         }
       }
       controller = this.controller;
-      if (controller) params.action = controller.action;
+      if (controller) {
+        params.action = controller.action;
+      }
       request.params = params;
       if (controller) {
         controller = new (Tower.constant(Tower.namespaced(this.controller.className)));
@@ -9199,8 +10142,12 @@
         return null;
       }
       match = this.pattern.exec(path);
-      if (!match) return null;
-      if (!this.matchConstraints(requestOrPath)) return null;
+      if (!match) {
+        return null;
+      }
+      if (!this.matchConstraints(requestOrPath)) {
+        return null;
+      }
       return match;
     };
 
@@ -9214,11 +10161,15 @@
             switch (typeof value) {
               case "string":
               case "number":
-                if (request[key] !== value) return false;
+                if (request[key] !== value) {
+                  return false;
+                }
                 break;
               case "function":
               case "object":
-                if (!request.location[key].match(value)) return false;
+                if (!request.location[key].match(value)) {
+                  return false;
+                }
             }
           }
           break;
@@ -9232,7 +10183,9 @@
 
     Route.prototype.urlFor = function(options) {
       var key, result, value;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       result = this.path;
       for (key in options) {
         value = options[key];
@@ -9244,9 +10197,13 @@
 
     Route.prototype.extractPattern = function(path, caseSensitive, strict) {
       var self;
-      if (path instanceof RegExp) return path;
+      if (path instanceof RegExp) {
+        return path;
+      }
       self = this;
-      if (path === "/") return new RegExp('^' + path + '$');
+      if (path === "/") {
+        return new RegExp('^' + path + '$');
+      }
       path = path.replace(/(\(?)(\/)?(\.)?([:\*])(\w+)(\))?(\?)?/g, function(_, open, slash, format, symbol, key, close, optional) {
         var result, splat;
         optional = (!!optional) || (open + close === "()");
@@ -9258,7 +10215,9 @@
         });
         slash || (slash = "");
         result = "";
-        if (!optional || !splat) result += slash;
+        if (!optional || !splat) {
+          result += slash;
+        }
         result += "(?:";
         if (format != null) {
           result += splat ? "\\.([^.]+?)" : "\\.([^/.]+?)";
@@ -9266,7 +10225,9 @@
           result += splat ? "/?(.+)" : "([^/\\.]+)";
         }
         result += ")";
-        if (optional) result += "?";
+        if (optional) {
+          result += "?";
+        }
         return result;
       });
       return new RegExp('^' + path + '$', !!caseSensitive ? '' : 'i');
@@ -9279,6 +10240,8 @@
   Tower.Route = Tower.HTTP.Route;
 
   Tower.HTTP.Route.DSL = (function() {
+
+    DSL.name = 'DSL';
 
     function DSL() {
       this._scope = {};
@@ -9320,14 +10283,18 @@
         options.name = this._scope.name + Tower.Support.String.camelize(options.name);
       }
       path = "/" + name;
-      if (this._scope.path) path = this._scope.path + path;
+      if (this._scope.path) {
+        path = this._scope.path + path;
+      }
       this.match(path, options);
       return this;
     };
 
     DSL.prototype.scope = function(options, block) {
       var originalScope;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       originalScope = this._scope || (this._scope = {});
       this._scope = _.extend({}, originalScope, options);
       block.call(this);
@@ -9375,10 +10342,14 @@
 
     DSL.prototype.resource = function(name, options) {
       var path;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       options.controller = name;
       path = "/" + name;
-      if (this._scope.path) path = this._scope.path + path;
+      if (this._scope.path) {
+        path = this._scope.path + path;
+      }
       if (this._scope.name) {
         name = this._scope.name + Tower.Support.String.camelize(name);
       }
@@ -9418,7 +10389,9 @@
       }
       options.controller || (options.controller = name);
       path = "/" + name;
-      if (this._scope.path) path = this._scope.path + path;
+      if (this._scope.path) {
+        path = this._scope.path + path;
+      }
       if (this._scope.name) {
         many = this._scope.name + Tower.Support.String.camelize(name);
       } else {
@@ -9481,7 +10454,9 @@
       } else {
         options = {};
       }
-      if (args.length > 0) options.to || (options.to = args.shift());
+      if (args.length > 0) {
+        options.to || (options.to = args.shift());
+      }
       options.path = path;
       format = this._extractFormat(options);
       options.path = this._extractPath(options);
@@ -9532,7 +10507,9 @@
 
     DSL.prototype._extractController = function(options) {
       var controller, to;
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       to = options.to;
       if (to) {
         to = to.split('#');
@@ -9586,8 +10563,12 @@
 
   Tower.HTTP.Request = (function() {
 
+    Request.name = 'Request';
+
     function Request(data) {
-      if (data == null) data = {};
+      if (data == null) {
+        data = {};
+      }
       this.url = data.url;
       this.location = data.location;
       this.pathname = this.location.path;
@@ -9607,8 +10588,12 @@
 
   Tower.HTTP.Response = (function() {
 
+    Response.name = 'Response';
+
     function Response(data) {
-      if (data == null) data = {};
+      if (data == null) {
+        data = {};
+      }
       this.url = data.url;
       this.location = data.location;
       this.pathname = this.location.path;
@@ -9628,25 +10613,35 @@
     };
 
     Response.prototype.setHeader = function(key, value) {
-      if (this.headerSent) throw new Error("Headers already sent");
+      if (this.headerSent) {
+        throw new Error("Headers already sent");
+      }
       return this.headers[key] = value;
     };
 
     Response.prototype.write = function(body) {
-      if (body == null) body = '';
+      if (body == null) {
+        body = '';
+      }
       return this.body += body;
     };
 
     Response.prototype.end = function(body) {
-      if (body == null) body = '';
+      if (body == null) {
+        body = '';
+      }
       this.body += body;
       this.sent = true;
       return this.headerSent = true;
     };
 
     Response.prototype.redirect = function(path, options) {
-      if (options == null) options = {};
-      if (global.History) return global.History.push(options, null, path);
+      if (options == null) {
+        options = {};
+      }
+      if (global.History) {
+        return global.History.push(options, null, path);
+      }
     };
 
     return Response;
@@ -9654,6 +10649,8 @@
   })();
 
   Tower.HTTP.Url = (function() {
+
+    Url.name = 'Url';
 
     Url.key = ["source", "protocol", "host", "userInfo", "user", "password", "hostname", "port", "relative", "path", "directory", "file", "query", "fragment"];
 
@@ -9687,10 +10684,14 @@
         attributes[key[i]] = parsed[i] || "";
       }
       attributes["query"].replace(this.constructor.querystringParser, function($0, $1, $2) {
-        if ($1) return params[$1] = $2;
+        if ($1) {
+          return params[$1] = $2;
+        }
       });
       attributes["fragment"].replace(this.constructor.fragmentParser, function($0, $1, $2) {
-        if ($1) return fragment.params[$1] = $2;
+        if ($1) {
+          return fragment.params[$1] = $2;
+        }
       });
       this.segments = attributes.path.replace(/^\/+|\/+$/g, "").split("/");
       fragment.segments = attributes.fragment.replace(/^\/+|\/+$/g, "").split("/");
@@ -9703,11 +10704,15 @@
       this.domain = domains.slice(domains.length - 1 - this.depth, (domains.length - 1) + 1 || 9e9).join(".");
       this.subdomains = domains.slice(0, (domains.length - 2 - this.depth) + 1 || 9e9);
       this.subdomain = this.subdomains.join(".");
-      if (this.port != null) return this.port = parseInt(this.port);
+      if (this.port != null) {
+        return this.port = parseInt(this.port);
+      }
     };
 
     function Url(url, depth, strictMode) {
-      if (depth == null) depth = 1;
+      if (depth == null) {
+        depth = 1;
+      }
       this.strictMode = strictMode || false;
       this.depth = depth || 1;
       if (typeof window !== "undefined" && window !== null) {
@@ -9738,7 +10743,9 @@
       linux: !!agent.os.match(/linux/i)
     });
     request.agent = new Tower.HTTP.Agent(attributes);
-    if (next) return next();
+    if (next) {
+      return next();
+    }
   };
 
   Tower.Middleware.Cookies = function(request, response, next) {
@@ -9761,7 +10768,9 @@
   Tower.Middleware.Router = function(request, response, callback) {
     Tower.Middleware.Router.find(request, response, function(controller) {
       if (controller) {
-        if (Tower.env === "test") Tower.Controller.testCase = controller;
+        if (Tower.env === "test") {
+          Tower.Controller.testCase = controller;
+        }
         if (response.statusCode !== 302) {
           response.controller = controller;
           response.writeHead(controller.status, controller.headers);

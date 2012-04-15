@@ -121,17 +121,7 @@ Tower.Store.MongoDB.Serialization =
   encodeOrder: (value) ->
 
   encodeDate: (value) ->
-    # if Tower.Support.config.useTimeZone
-    time = require('moment')
-    switch typeof(value)
-      when "string"
-        time.parse(value)
-      when Date
-        time.local(value.year, value.month, value.day, value.hour, value.min, value.sec)
-      when Array
-        time.local(value)
-      else
-        value
+    _.toDate(value)
 
   encodeGeo: (value) ->
     # [lng, lat]
