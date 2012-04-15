@@ -1,3 +1,4 @@
+###
 describe 'Tower + Ember', ->
   #before ->
   #  global.window = global # tmp ember hack
@@ -76,3 +77,4 @@ describe 'Tower + Ember', ->
       
     assert.equal a.includedMethod, "includedMethod!"
     assert.equal a.reopenedMethod, "reopenedMethod!"
+###
