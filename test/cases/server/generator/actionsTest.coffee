@@ -8,7 +8,7 @@ cakefileDestination = null
 
 describe 'Tower.Generator.Actions', ->
   beforeEach ->
-    try wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp")
+    try wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp", true)
     sourceRoot          = process.cwd() + "/lib/tower/server/generator/generators/tower/app"
     destinationRoot     = process.cwd() + "/test/tmp"
     cakefileDestination = File.join(destinationRoot, "Cakefile")
