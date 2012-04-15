@@ -1,12 +1,12 @@
 /*!
- * Tower.js v0.4.0-4
+ * Tower.js v0.4.0-5
  * http://towerjs.org/
  *
  * Copyright 2012, Lance Pollard
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Sun, 15 Apr 2012 22:17:53 GMT
+ * Date: Sun, 15 Apr 2012 22:20:22 GMT
  */
 (function() {
   var Tower, action, key, module, phase, specialProperties, _fn, _fn1, _fn2, _fn3, _fn4, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
@@ -22,7 +22,7 @@
 
   global.Tower = Tower = {};
 
-  Tower.version = "0.4.0-4";
+  Tower.version = "0.4.0-5";
 
   Tower.logger = console;
 
