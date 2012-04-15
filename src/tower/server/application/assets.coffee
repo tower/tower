@@ -170,8 +170,16 @@ Tower.Application.Assets =
 
       percent = (1 - (compressedSize / normalSize)) * 100.0
       percent = percent.toFixed(1)
+      
+      compressedSize  = compressedSize.toFixed(1)
+      normalSize      = normalSize.toFixed(1)
+      
+      if compressedSize == normalSize == "0.0"
+        percent = "-"
+      else
+        percent = "#{percent}%"
 
-      table.push [path, compressedSize.toFixed(1), normalSize.toFixed(1), "#{percent}%"]
+      table.push [path, compressedSize, normalSize, percent]
 
     console.log table.toString()
 

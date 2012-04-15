@@ -57,7 +57,8 @@
     "design.io-stylesheets":  ">= 0.3.0",
     "knox":                   ">= 0.0.9",
     "gzip":                   ">= 0.1.0",
-    "forever":                ">= 0.8.5"
+    "forever":                ">= 0.8.5",
+    "cli-table":              ">= 0.0.1"
   },
   "scripts": {
     "test":                   "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
