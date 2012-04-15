@@ -1,14 +1,14 @@
-File  = require('pathfinder').File
-_path = require('path')
-fs    = require('fs')
-_url  = require('url')
-rest  = require('restler')
-wrench          = require 'wrench'
+File        = require('pathfinder').File
+_path       = require('path')
+fs          = require('fs')
+_url        = require('url')
+superagent  = require('superagent')
+wrench      = require('wrench')
 
 File.mkdirpSync = (dir) ->
   dir = _path.resolve(_path.normalize(dir))
   try
-    fs.mkdirSync(dir, 0755)
+    fs.mkdirSync(dir, parseInt("0755"))
   catch e
     switch e.errno
       when 47
@@ -26,9 +26,12 @@ Tower.Generator.Actions =
     error = ->
       console.log "Error downloading #{url}"
 
-    rest.get(url).on('error', error).on 'complete', (data) =>
-      @log "create", path
-      File.write path, data
+    superagent.get url, (response) =>
+      if response.ok
+        @log "create", path
+        File.write path, response.text
+      else
+        error()
 
   log: (action, path) ->
     return if @silent
@@ -36,9 +39,9 @@ Tower.Generator.Actions =
 
     key = switch action
       when "destroy"
-        '   \x1b[36mremove\x1b[0m'
+        `'   \x1b[36mremove\x1b[0m'`
       else
-        '   \x1b[36m' + action + '\x1b[0m'
+        `'   \x1b[36m'` + action + `'\x1b[0m'`
 
     console.log("#{key} : #{File.relativePath(path)}")
 
@@ -180,18 +183,6 @@ Tower.Generator.Actions =
       content = File.binread(path)
       content.gsub(flag, args..., block)
       File.open path, 'wb', (file) -> file.write(content)
-
-  uncommentLines: (path, flag) ->
-    flag = if flag.hasOwnProperty("source") then flag.source else flag
-
-    @gsubFile(path, /^(\s*)#\s*(.*#{flag})/, '\1\2', args...)
-
-  commentLines: (path, flag) ->
-    {args, options, block} = @_args(arguments, 2)
-
-    flag = if flag.hasOwnProperty("source") then flag.source else flag
-
-    @gsubFile(path, /^(\s*)([^#|\n]*#{flag})/, '\1# \2', args...)
 
   removeFile: (path, options = {}) ->
     # return unless behavior == "invoke"
