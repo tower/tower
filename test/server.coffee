@@ -16,7 +16,6 @@ Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/example/app/views"]
 Tower.port            = 3001
 
-require '../lib/tower/controller/tst'
 require '../lib/tower/server/generator/tst'
 
 Tower.request = (method, action, options, callback) ->

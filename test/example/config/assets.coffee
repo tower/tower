@@ -51,6 +51,7 @@ module.exports =
       "/vendor/javascripts/bootstrap/bootstrap-collapse"
       "/vendor/javascripts/bootstrap/bootstrap-carousel"
       "/vendor/javascripts/bootstrap/bootstrap-typeahead"
+      "/vendor/javascripts/ember"
       "/vendor/javascripts/tower"
     ]
     

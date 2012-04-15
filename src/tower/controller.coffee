@@ -10,7 +10,7 @@
 # @include Tower.Controller.Responding
 class Tower.Controller extends Tower.Class
   @include  Tower.Support.Callbacks
-  @reopenClass   Tower.Support.EventEmitter
+  @extend Tower.Support.EventEmitter
   @include  Tower.Support.EventEmitter
 
   @instance: ->

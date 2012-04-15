@@ -2,6 +2,11 @@ attr = Tower.Model.Attribute
 
 describeWith = (store) ->
   describe "Tower.Model.Fields (Tower.Store.#{store.name})", ->
+    beforeEach (done) ->
+      App.BaseModel.store(store)
+      App.User.store(store)
+      done()
+      
     describe 'class', ->
       test 'type: "Id"', ->
         field = App.BaseModel.fields().id
@@ -186,6 +191,57 @@ describeWith = (store) ->
           assert.equal model.get("likeCount"), 2
           model.inc likeCount: -1
           assert.equal model.get("likeCount"), 1
+          
+    describe 'persistence', ->
+      user = null
+      
+      beforeEach ->
+        user = new App.User(firstName: "Lance")
+        
+      test 'boolean', (done) ->
+        assert.equal user.get('admin'), false
+        
+        user.save =>
+          App.User.find user.get('id'), (error, user) =>
+            assert.equal user.get('admin'), false
+            user.set "admin", true
+            assert.equal user.get('admin'), true
+            
+            user.save =>
+              App.User.find user.get('id'), (error, user) =>
+                assert.equal user.get('admin'), true
+                
+                done()
+      
+      test 'integer', (done) ->
+        assert.equal user.get('likes'), 0
+        
+        user.save =>
+          App.User.find user.get('id'), (error, user) =>
+            assert.equal user.get('likes'), 0
+            user.set "likes", 5.12
+            assert.equal user.get('likes'), 5
+
+            user.save =>
+              App.User.find user.get('id'), (error, user) =>
+                assert.equal user.get('likes'), 5
+
+                done()
+                
+      test 'float', (done) ->
+        assert.equal user.get('rating'), 2.5
+
+        user.save =>
+          App.User.find user.get('id'), (error, user) =>
+            assert.equal user.get('rating'), 2.5
+            user.set "rating", 3.4
+            assert.equal user.get('rating'), 3.4
+
+            user.save =>
+              App.User.find user.get('id'), (error, user) =>
+                assert.equal user.get('rating'), 3.4
+
+                done()
 
 describeWith(Tower.Store.Memory)
 

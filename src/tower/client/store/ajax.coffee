@@ -80,7 +80,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
     unless criteria.sync == false
       super criteria, (error, records) =>
         callback.call @, error, records if callback
-        @createRequest records, options
+        @createRequest records, criteria
     else
       super
 
@@ -88,7 +88,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
     if criteria.sync == true
       super updates, criteria, (error, result) =>
         callback.call @, error, result if callback
-        @updateRequest result, options
+        @updateRequest result, criteria
     else
       super
 

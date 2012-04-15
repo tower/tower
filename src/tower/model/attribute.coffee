@@ -45,7 +45,7 @@ class Tower.Model.Attribute
       date
 
     to: (date) ->
-      date
+      _.toDate(date)
 
   @time: @date
   @datetime: @date

@@ -5,7 +5,6 @@ _.extend Tower,
   root:       "/"
   publicPath: "/"
   case:       "camelcase"
-  namespace:  null
   accessors:  typeof(window) == "undefined"
   logger:     if typeof(_console) != 'undefined' then _console else console
   structure:  "standard"
