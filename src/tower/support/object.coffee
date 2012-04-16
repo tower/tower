@@ -140,13 +140,18 @@ Tower.Support.Object =
   #
   # @return [Boolean]
   isBlank: (object) ->
-    type = typeof(object)
-    return (object == "") if type == "string"
-    if type == "object"
-      return false for key, value of object
-      return true
-    return true if object == null || object == undefined
-    return false
+    switch _.kind(object)
+      when "object"
+        return false for key, value of object
+        return true
+      when "string"
+        object == ""
+      when "array"
+        object.length == 0
+      when "null", "undefined"
+        true
+      else
+        false
 
   # @return [Boolean]
   none: (value) ->

@@ -1,4 +1,19 @@
 describe 'Tower.Support.Format', ->
+  describe 'validation', ->
+    test 'isPresent', ->
+      assert.isFalse _.isPresent(null)
+      assert.isFalse _.isPresent(undefined)
+      assert.isFalse _.isPresent([])
+      assert.isFalse _.isPresent({})
+      assert.isFalse _.isPresent("")
+      
+      assert.isTrue _.isPresent("string")
+      assert.isTrue _.isPresent(0)
+      assert.isTrue _.isPresent(new Date)
+      assert.isTrue _.isPresent(/asdf/)
+      assert.isTrue _.isPresent({key:"value"})
+      assert.isTrue _.isPresent([1])
+
   describe 'casting', ->
     test 'toInt', ->
       assert.equal _.toInt('123'), 123
