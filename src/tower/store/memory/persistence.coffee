@@ -14,7 +14,7 @@ Tower.Store.Memory.Persistence =
 
   create: (criteria, callback) ->
     result    = []
-
+    
     result.push @createOne(object) for object in criteria.data
 
     result    = criteria.export(result)
