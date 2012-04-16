@@ -8,11 +8,14 @@ Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built 
 
 Follow me [@viatropos](http://twitter.com/viatropos).
 
-Docs are a work in progress.
-
 - **IRC**: #towerjs on irc.freenode.net
 - **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
 - **Issues**: http://github.com/viatropos/tower/issues
+- **Roadmap**: http://github.com/viatropos/tower/wiki/roadmap
+
+Note, Tower is still very early alpha (0.4.0).  Check out the [roadmap](http://github.com/viatropos/tower/wiki/roadmap) to see where we're going.  If your up for it please contribute!  The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release.  From there, it's performance optimization, workflow streamlining, and creating some awesome examples.  1.0 will be a plug-and-chug real-time app framework.
+
+Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
 
 ## Default Development Stack
 

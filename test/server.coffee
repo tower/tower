@@ -18,7 +18,7 @@ Tower.port            = 3001
 
 require '../lib/tower/server/generator/tst'
 
-Tower.request = (method, action, options, callback) ->
+Tower.requestOLD = (method, action, options, callback) ->
   if typeof options == "function"
     callback      = options
     options       = {}

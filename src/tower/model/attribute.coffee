@@ -1,24 +1,24 @@
 class Tower.Model.Attribute
   @string:
     from: (serialized) ->
-      if Tower.none(serialized) then null else String(serialized)
+      if _.none(serialized) then null else String(serialized)
 
     to: (deserialized) ->
-      if Tower.none(deserialized) then null else String(deserialized)
+      if _.none(deserialized) then null else String(deserialized)
 
   @number:
     from: (serialized) ->
-      if Tower.none(serialized) then null else Number(serialized)
+      if _.none(serialized) then null else Number(serialized)
 
     to: (deserialized) ->
-      if Tower.none(deserialized) then null else Number(deserialized)
+      if _.none(deserialized) then null else Number(deserialized)
 
   @integer:
     from: (serialized) ->
-      if Tower.none(serialized) then null else parseInt(serialized)
+      if _.none(serialized) then null else parseInt(serialized)
 
     to: (deserialized) ->
-      if Tower.none(deserialized) then null else parseInt(deserialized)
+      if _.none(deserialized) then null else parseInt(deserialized)
 
   @float:
     from: (serialized) ->
@@ -67,7 +67,7 @@ class Tower.Model.Attribute
 
   @array:
     from: (serialized) ->
-      if Tower.none(serialized) then null else _.castArray(serialized)
+      if _.none(serialized) then null else _.castArray(serialized)
 
     to: (deserialized) ->
       Tower.Model.Attribute.array.from(deserialized)

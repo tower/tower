@@ -84,25 +84,25 @@ Tower.Model.Attributes =
     #     popAll  = _.difference(post.changes["tags"][0], post.changes["tags"][1])
     #     pushAll = _.difference(post.changes["tags"][1], post.changes["tags"][0])
     set: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_set, key, value)
+      @operation => _.oneOrMany(@, @_set, key, value)
 
     push: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_push, key, value)
+      @operation => _.oneOrMany(@, @_push, key, value)
 
     pushAll: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_push, key, value, true)
+      @operation => _.oneOrMany(@, @_push, key, value, true)
 
     pull: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_pull, key, value)
+      @operation => _.oneOrMany(@, @_pull, key, value)
 
     pullAll: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_pull, key, value, true)
+      @operation => _.oneOrMany(@, @_pull, key, value, true)
 
     inc: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_inc, key, value)
+      @operation => _.oneOrMany(@, @_inc, key, value)
 
     addToSet: (key, value) ->
-      @operation => Tower.oneOrMany(@, @_addToSet, key, value)
+      @operation => _.oneOrMany(@, @_addToSet, key, value)
 
     unset: ->
       keys = _.flatten Tower.args(arguments)
