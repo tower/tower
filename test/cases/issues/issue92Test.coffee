@@ -5,6 +5,7 @@ describeWith = (store) ->
     issue = null
 
     beforeEach ->
+      App.Issue92.store(store)
       issue = new App.Issue92()
 
     test 'test for changing boolean values', (done) ->

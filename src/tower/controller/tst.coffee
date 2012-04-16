@@ -4,8 +4,21 @@ Tower.start = (port, callback) ->
     callback  = port
     port      = undefined
     
-  Tower.port = port || 3010
+  Tower.port  = port || 3010
   Tower.Application.instance().server.listen Tower.port, callback
+  
+Tower.startWithSocket = (port, callback) ->
+  if typeof port == 'function'
+    callback  = port
+    port      = undefined
+    
+  Tower.port  = port || 3010
+  app         = Tower.Application.instance()
+  app.io      = require('socket.io').listen(app.server, log: false)
+  app.io.set('client store expiration', 0)
+  app.io.set('log level', -1)
+  #app.io.set("transports", ["websocket"])
+  app.server.listen Tower.port, callback
   
 Tower.stop = ->
   Tower.port = 3010
@@ -60,3 +73,4 @@ _.request = (method, path, options, callback) ->
     newRequest.make(callback)
   else
     newRequest
+    

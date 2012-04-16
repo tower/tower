@@ -97,10 +97,11 @@ Tower.Model.Dirty =
     toUpdates: ->
       result      = {}
       attributes  = @attributes
-
+      
+      # need to clean
       for key, array of @changes
-        result[key] = attributes[key]
-
+        result[key] = attributes[key] unless key.match(/(before|after)/)
+      
       result.updatedAt ||= new Date
 
       result

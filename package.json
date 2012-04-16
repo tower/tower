@@ -84,7 +84,8 @@
     "eco":                ">= 0.1.0",
     "mustache":           ">= 0.4.0",
     "jade":               ">= 0.22.0",
-    "kue":                ">= 0.3.4"
+    "kue":                ">= 0.3.4",
+    "socket.io-client":   ">= 0.9.5"
   },
   "scripts": {
     "test":               "node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",

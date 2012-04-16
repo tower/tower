@@ -168,7 +168,7 @@ Tower.Model.Persistence =
     _update: (updates, callback) ->
       @runCallbacks "update", (block) =>
         complete = @_callback(block, callback)
-
+        
         @constructor.scoped(instantiate: false).update @get("id"), updates, (error) =>
           throw error if error && !callback
 
