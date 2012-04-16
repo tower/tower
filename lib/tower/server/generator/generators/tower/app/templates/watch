@@ -15,7 +15,15 @@ require("design.io-stylesheets") /(app\/client|lib\/stylesheets|vendor\/styleshe
 require("design.io-javascripts")
   compress: false
   debug:    false
-  ignore:   /(public|node_modules|server|app\/views)/
+  ignore:   /(public|node_modules|server|app\/views|config)/
+  outputPath: (path) ->
+    "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
+
+# client config
+require("design.io-javascripts") /(config\/locales\/.*|config\/routes|app\/client\/config\/.*)\.(js|coffee)$/
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules)/
   outputPath: (path) ->
     "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
 
@@ -37,7 +45,7 @@ watch /app\/views.*\.coffee$/
       
       for file in files
         continue unless file.match(/\.coffee$/)
-        result.push [file.replace(/\.coffee$/, ""), File.read(file)]
+        result.push [file.replace(/\.coffee$/, ""), File.read(file) + "\n\n"]
         
       template      = "Tower.View.cache =\n"
       
