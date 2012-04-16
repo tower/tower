@@ -3,7 +3,7 @@ Tower.Store.MongoDB.Configuration =
     supports:
       embed: true
 
-    config: {}
+    config:
       development:
         name: "tower-development"
         port: 27017
