@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-require('iced-coffee-script');
+
 require('../lib/tower').Command.run(process.argv);
