@@ -24,34 +24,34 @@ _.extend Tower,
   runCallbacks: ->
     Tower.Application.instance().runCallbacks arguments...
 
-  sync: (method, records, callback) ->
-    callback null, records if callback
-
-  get: ->
-    Tower.request "get", arguments...
-
-  post: ->
-    Tower.request "post", arguments...
-
-  put: ->
-    Tower.request "put", arguments...
-
-  destroy: ->
-    Tower.request "delete", arguments...
-
-  request: (method, path, options, callback) ->
-    if typeof options == "function"
-      callback      = options
-      options       = {}
-    options       ||= {}
-    url             = path
-    location        = new Tower.HTTP.Url(url)
-    request         = new Tower.HTTP.Request(url: url, location: location, method: method)
-    response        = new Tower.HTTP.Response(url: url, location: location, method: method)
-    request.query   = location.params
-    Tower.Application.instance().handle request, response, ->
-      callback.call @, @response
-
+  #sync: (method, records, callback) ->
+  #  callback null, records if callback
+  #
+  #get: ->
+  #  Tower.request "get", arguments...
+  #
+  #post: ->
+  #  Tower.request "post", arguments...
+  #
+  #put: ->
+  #  Tower.request "put", arguments...
+  #
+  #destroy: ->
+  #  Tower.request "delete", arguments...
+  #
+  #request: (method, path, options, callback) ->
+  #  if typeof options == "function"
+  #    callback      = options
+  #    options       = {}
+  #  options       ||= {}
+  #  url             = path
+  #  location        = new Tower.HTTP.Url(url)
+  #  request         = new Tower.HTTP.Request(url: url, location: location, method: method)
+  #  response        = new Tower.HTTP.Response(url: url, location: location, method: method)
+  #  request.query   = location.params
+  #  Tower.Application.instance().handle request, response, ->
+  #    callback.call @, @response
+  
   raise: ->
     throw new Error(Tower.t(arguments...))
 
@@ -148,21 +148,6 @@ _.extend Tower,
           completed += 1
           if completed == array.length
             callback()
-
-  none: (value) ->
-    _.none value
-
-  oneOrMany: ->
-    _.oneOrMany arguments...
-
-  args: (args) ->
-    _.args(args)
-
-  clone: (object) ->
-    _.extend({}, object)
-    
-  date: ->
-    _.toDate arguments...
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->

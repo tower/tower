@@ -57,19 +57,19 @@ describeWith = (store) ->
   
       test 'exact date', ->
         criteria  = param.toCriteria("12-25-2012")
-        assert.deepEqual criteria.conditions(), { "createdAt": Tower.date("12-25-2012") }
+        assert.deepEqual criteria.conditions(), { "createdAt": _.toDate("12-25-2012") }
       
       test 'date range with start and end', ->
         criteria  = param.toCriteria("12-25-2012..12-31-2012")
-        assert.deepEqual criteria.conditions(), { "createdAt": "$gte": Tower.date("12-25-2012"), "$lte": Tower.date("12-31-2012") }
+        assert.deepEqual criteria.conditions(), { "createdAt": "$gte": _.toDate("12-25-2012"), "$lte": _.toDate("12-31-2012") }
   
       test 'date range with start and NO end', ->
         criteria  = param.toCriteria("12-25-2012..t")
-        assert.deepEqual criteria.conditions(), { "createdAt": "$gte": Tower.date("12-25-2012") }
+        assert.deepEqual criteria.conditions(), { "createdAt": "$gte": _.toDate("12-25-2012") }
     
       test 'date range with NO start but WITH an end', ->
         criteria  = param.toCriteria("t..12-31-2012")
-        assert.deepEqual criteria.conditions(), { "createdAt": "$lte": Tower.date("12-31-2012") }
+        assert.deepEqual criteria.conditions(), { "createdAt": "$lte": _.toDate("12-31-2012") }
   
       #test 'multiple dates', ->
   
@@ -78,7 +78,7 @@ describeWith = (store) ->
       test 'exact datetime', ->
         datetime  = "01-12-2012@3:25:50"
         criteria  = param.toCriteria(datetime)
-        assert.deepEqual criteria.conditions(), { "createdAt": Tower.date(datetime) }
+        assert.deepEqual criteria.conditions(), { "createdAt": _.toDate(datetime) }
     
     describe 'Number', ->
       param = null

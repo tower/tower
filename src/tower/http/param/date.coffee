@@ -18,6 +18,6 @@ class Tower.HTTP.Param.Date extends Tower.HTTP.Param
     values
 
   parseValue: (value, operators) ->
-    super(Tower.date(value), operators)
+    super(_.toDate(value), operators)
 
 module.exports = Tower.HTTP.Param.Date
