@@ -343,7 +343,7 @@ class Tower.Model.Criteria extends Tower.Class
       @store.findOne @, callback
     else
       @store.find @, (error, records) =>
-        records = @export(records) if !error && records.length
+        records = @export(records) if !error && records.length?
         callback.call @, error, records if callback
         records
 
