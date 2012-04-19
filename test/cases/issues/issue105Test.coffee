@@ -23,7 +23,6 @@ describeWith = (store) ->
       options =
         format: "form"
       _.destroy "/posts/" + post.get("id"), options, (response) ->
-        console.log response
 
         App.Post.find post.get("id"), (err, resource) ->
           assert.equal resource, undefined
