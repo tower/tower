@@ -110,6 +110,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
 
       @inside "vendor", ->
         @inside "javascripts", ->
+          # @todo add something like this:
+          #   @get "simple path that may update", fallback: "commit path we know works"
           @get "https://raw.github.com/documentcloud/underscore/master/underscore.js", "underscore.js"
           @get "https://raw.github.com/epeli/underscore.string/master/lib/underscore.string.js", "underscore.string.js"
           @get "https://raw.github.com/caolan/async/master/lib/async.js", "async.js"
