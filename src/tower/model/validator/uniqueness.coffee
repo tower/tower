@@ -3,6 +3,7 @@ class Tower.Model.Validator.Uniqueness extends Tower.Model.Validator
     value       = record.get(attribute)
     conditions  = {}
     conditions[attribute] = value
+    record.persistent && conditions["id"] = {"$ne": record.get("id")}
     record.constructor.where(conditions).exists (error, result) =>
       if result
         return @failure(
