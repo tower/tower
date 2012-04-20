@@ -169,7 +169,7 @@ task 'build-generic', ->
     mint.coffee result, {}, (error, result) ->
       console.log error
       fs.writeFile './dist/tower.js', result
-      fs.writeFileSync './test/apps/client/public/javascripts/vendor/javascripts/tower.js', result
+      fs.writeFileSync './test/example/public/javascripts/vendor/javascripts/tower.js', result
       unless error
         fs.writeFile './dist/tower.min.js', mint.uglifyjs(result, {})
         #compressor.render result, (error, result) ->
