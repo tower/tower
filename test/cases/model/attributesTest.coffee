@@ -143,7 +143,15 @@ describeWith = (store) ->
         model.set('likeCountWithDefault', 10)
       
         assert.equal model.get('likeCountWithDefault'), 10
-      
+
+      test 'attribute getter', ->
+        assert.equal model.likeCountWithDefault, 0
+
+      test 'attribute setter', ->
+        assert.equal model.likeCountWithDefault, 0
+        model.likeCountWithDefault = 10
+        assert.equal model.likeCountWithDefault, 10
+
       test '#has', ->
         assert.equal model.has('likeCountWithDefault'), true
         assert.equal model.has('somethingIDontHave'), false
@@ -247,5 +255,5 @@ describeWith(Tower.Store.Memory)
 
 if Tower.client
   describeWith(Tower.Store.Ajax)
-else
-  describeWith(Tower.Store.MongoDB)
+#else
+#  describeWith(Tower.Store.MongoDB)
