@@ -77,7 +77,7 @@ class Tower.Application extends Tower.Engine
       requirePaths = (paths) ->
         for path in paths
           require(path) if path.match(/\.(coffee|js|iced)$/)
-      
+
       requirePaths File.files("#{Tower.root}/config/preinitializers")
 
       for key in configNames

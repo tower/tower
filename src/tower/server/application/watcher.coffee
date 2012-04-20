@@ -31,7 +31,7 @@ Tower.Application.Watcher =
           #path  = path.split('\033')[0]
           ext   = path.match(/\.(\w+)$/g)
           ext   = ext[0] if ext
-          if ext && ext.match(/(js|coffee)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
+          if ext && ext.match(/(js|coffee|iced)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
             @fileChanged(path)
           _
       catch error
