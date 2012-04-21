@@ -3,6 +3,8 @@ module                = global.module || {}
 global.Tower = Tower  = {}
 Tower.version         = "0.0.0" # this is dynamically modified so it doesn't really matter what it is.
 Tower.logger          = console
+# include underscore.string mixins
+_.mixin(_.string.exports())
 
 Tower.modules =
   validator:  global

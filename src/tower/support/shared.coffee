@@ -1,3 +1,5 @@
+specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
+
 _.extend Tower,
   env:        "development"
   port:       3000
@@ -11,6 +13,52 @@ _.extend Tower,
   config:     {}
   namespaces: {}
   metadata:   {}
+  toMixin: ->
+    mixin: ->
+      Tower.mixin @, arguments...
+
+    extend: ->
+      Tower.extend @, arguments...
+
+    include: ->
+      Tower.include @, arguments...
+
+    className: ->
+      _.functionName(@)
+      
+  mixin: (self, object) ->
+    for key, value of object when key not in specialProperties
+      self[key] = value
+
+    object
+
+  extend: (self, object) ->
+    extended = object.extended
+    delete object.extended
+    
+    #@mixin(@, object)
+    self.reopenClass object
+    
+    extended.apply(object) if extended
+
+    object
+
+  #self: @extend
+
+  include: (self, object) ->
+    included = object.included
+    delete object.included
+
+    self.extend(object.ClassMethods) if object.hasOwnProperty("ClassMethods")
+    self.include(object.InstanceMethods) if object.hasOwnProperty("InstanceMethods")
+
+    self.mixin(self::, object)
+    #@reopen object
+
+    included.apply(object) if included
+
+    object
+    
   metadataFor: (name) ->
     @metadata[name] ||= {}
 

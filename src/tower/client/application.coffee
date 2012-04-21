@@ -1,6 +1,3 @@
-# include underscore.string mixins
-_.mixin(_.string.exports())
-
 # tmp hack, make all links run through history.pushState
 # $("a").click ->
 #  History.pushState null, null, $(this).attr("href")
