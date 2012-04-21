@@ -28,7 +28,7 @@ class Tower.View.Form extends Tower.View.Component
     attributes.class            = options["class"] if options.hasOwnProperty("class")
     #@mergeClass attributes, config.formClass
     attributes.id               = options.id if options.hasOwnProperty("id")
-    attributes.id             ||= Tower.Support.String.parameterize("#{@model.constructor.name}-form")
+    attributes.id             ||= Tower.Support.String.parameterize("#{@model.constructor.className()}-form")
     attributes.enctype          = "multipart/form-data" if (options.multipart || attributes.multipart == true)
     attributes.role             = "form"
     attributes.novalidate       = "true" # needs to be true b/c the error popups are horribly ugly!# if options.validate == false

@@ -25,14 +25,14 @@ Tower.Model.Persistence =
       defaultStore = @default('store') || Tower.Store.Memory
 
       if typeof value == "function"
-        store   = new value(name: @metadata().namePlural, type: Tower.namespaced(@name))
+        store   = new value(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
       else if typeof value == "object"
-        store ||= new defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
+        store ||= new defaultStore(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
         _.extend store, value
       else if value
         store   = value
 
-      store ||= new defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
+      store ||= new defaultStore(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
 
       metadata.store = store
 

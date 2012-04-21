@@ -16,7 +16,8 @@ class Tower.Controller extends Tower.Class
   @instance: ->
     @_instance ||= new @
 
-  constructor: ->
+  init: ->
+    @_super arguments...
     @constructor._instance = @
     @headers              = {}
     @status               = 200

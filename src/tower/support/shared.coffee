@@ -1,5 +1,3 @@
-specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
-
 _.extend Tower,
   env:        "development"
   port:       3000
@@ -14,46 +12,44 @@ _.extend Tower,
   namespaces: {}
   metadata:   {}
   toMixin: ->
-    mixin: ->
-      Tower.mixin @, arguments...
+    #mixin: ->
+    #  Tower.mixin @, arguments...
 
-    extend: ->
-      Tower.extend @, arguments...
+    #extend: ->
+    #  Tower.extend @, arguments...
 
     include: ->
       Tower.include @, arguments...
 
     className: ->
       _.functionName(@)
-      
-  mixin: (self, object) ->
-    for key, value of object when key not in specialProperties
-      self[key] = value
 
-    object
-
-  extend: (self, object) ->
-    extended = object.extended
-    delete object.extended
-    
-    #@mixin(@, object)
-    self.reopenClass object
-    
-    extended.apply(object) if extended
-
-    object
-
-  #self: @extend
+  #extend: (self, object) ->
+  #  extended = object.extended
+  #  delete object.extended
+  #  
+  #  self.reopenClass object
+  #  
+  #  extended.apply(object) if extended
+  #
+  #  object
 
   include: (self, object) ->
-    included = object.included
+    included        = object.included
+    ClassMethods    = object.ClassMethods
+    InstanceMethods = object.InstanceMethods
+    
     delete object.included
-
-    self.extend(object.ClassMethods) if object.hasOwnProperty("ClassMethods")
-    self.include(object.InstanceMethods) if object.hasOwnProperty("InstanceMethods")
-
-    self.mixin(self::, object)
-    #@reopen object
+    delete object.ClassMethods
+    delete object.InstanceMethods
+    
+    self.reopenClass(ClassMethods) if ClassMethods
+    self.include(InstanceMethods) if InstanceMethods
+    
+    self.reopen object
+    
+    object.InstanceMethods  = InstanceMethods
+    object.ClassMethods     = ClassMethods
 
     included.apply(object) if included
 
@@ -118,7 +114,7 @@ _.extend Tower,
         Tower.Support.String.camelcase(string)
 
   namespace:  ->
-    Tower.Application.instance().constructor.name
+    Tower.Application.instance().constructor.className()
 
   module: (namespace) ->
     node    = Tower.namespaces[namespace]

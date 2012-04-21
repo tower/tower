@@ -84,7 +84,9 @@ class Tower.Store extends Tower.Class
   deserializeModel: (data) ->
     if data instanceof Tower.Model then data.attributes else data
 
-  constructor: (options = {}) ->
+  init: (options = {}) ->
+    @_super arguments...
+    
     @name       = options.name
     @className  = options.type || Tower.namespaced(Tower.Support.String.camelize(Tower.Support.String.singularize(@name)))
 

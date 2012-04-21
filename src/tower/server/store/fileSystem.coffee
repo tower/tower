@@ -3,7 +3,7 @@ File = require('pathfinder').File
 class Tower.Store.FileSystem extends Tower.Store
   # add load paths if you need to, e.g.
   # Tower.View.store().loadPaths.push("themes/views")
-  constructor: (loadPaths = []) ->
+  init: (loadPaths = []) ->
     @loadPaths = loadPaths
     @records   = {}
 

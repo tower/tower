@@ -70,7 +70,7 @@ class Tower.HTTP.Route extends Tower.Class
     controller      = new (Tower.constant(Tower.namespaced(@controller.className))) if controller
     controller
 
-  constructor: (options) ->
+  init: (options) ->
     options     ||= options
     @path         = options.path
     @name         = options.name
@@ -85,6 +85,8 @@ class Tower.HTTP.Route extends Tower.Class
     @id           = @path
     if @controller
       @id += @controller.name + @controller.action
+      
+    @_super()
 
   get: (name) ->
     @[name]

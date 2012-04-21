@@ -24,7 +24,7 @@ Tower.Model.Conversion =
         @
 
     isSubClass: ->
-      @baseClass().name != @name
+      @baseClass().className() != @className()
 
     # The name of this class, parameterized and pluralized.
     #
@@ -82,16 +82,16 @@ Tower.Model.Conversion =
     #
     # @return [Object]
     metadata: ->
-      className               = @name
+      className               = @className()
       metadata                = @metadata[className]
       return metadata if metadata
-      baseClassName           = @parentClass().name
-
+      baseClassName           = @parentClass().className()
+        
       if baseClassName != className
         superMetadata = @parentClass().metadata()
       else
         superMetadata = {}
-
+        
       namespace               = Tower.namespace()
       name                    = Tower.Support.String.camelize(className, true)
       namePlural              = Tower.Support.String.pluralize(name)
@@ -105,7 +105,8 @@ Tower.Model.Conversion =
       validators              = if superMetadata.validators then _.clone(superMetadata.validators) else []
       relations               = if superMetadata.relations then _.clone(superMetadata.relations) else {}
       defaults                = if superMetadata.defaults then _.clone(superMetadata.defaults) else {}
-
+      callbacks               = if superMetadata.callbacks then _.clone(superMetadata.callbacks) else {}
+      
       @metadata[className]    =
         name:                 name
         namePlural:           namePlural
@@ -120,9 +121,13 @@ Tower.Model.Conversion =
         fields:               fields
         relations:            relations
         defaults:             defaults
+        callbacks:            callbacks
 
     _setDefaultScope: (scope) ->
       @metadata().defaults.scope = if scope instanceof Tower.Model.Scope then scope else @where(scope)
+      
+    callbacks: ->
+      @metadata().callbacks
 
   InstanceMethods:
     # A label for this model when rendered to a string.

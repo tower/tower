@@ -17,7 +17,9 @@ class Tower.Generator extends Tower.Class
 
     klass
 
-  constructor: (options = {}) ->
+  init: (options = {}) ->
+    @_super arguments...
+    
     options.program ||= {}
     _.extend @, options
 

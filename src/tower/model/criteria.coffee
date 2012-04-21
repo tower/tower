@@ -1,14 +1,16 @@
 # This class has plenty of room for optimization,
 # but it's now into a form I'm starting to like.
+# May rename this to Tower.Model.Cursor
 class Tower.Model.Criteria extends Tower.Class
   defaultLimit: 20
 
   @include Tower.Support.Callbacks
 
-  constructor: (options = {}) ->
+  init: (options = {}) ->
     @model        = options.model
     @store        = if @model then @model.store() else undefined
-
+    #@transaction  = options.transaction || new Tower.Store.Transaction
+    
     @instantiate  = options.instantiate != false
 
     @_where       = options.where || []
@@ -93,6 +95,9 @@ class Tower.Model.Criteria extends Tower.Class
   # @param [Arguments] keys
   except: ->
     @_except = _.flatten _.args(arguments)
+    
+  with: (transaction) ->
+    @transaction = transaction
 
   # Set of conditions the database fields must satisfy.
   #
@@ -370,6 +375,9 @@ class Tower.Model.Criteria extends Tower.Class
 
   # remove from set
   remove: (callback) ->
+    
+  # ideally we can call this to free up some memory on this object.
+  compile: ->
 
   # Show query that will be used for the datastore.
   # @todo
@@ -429,7 +437,8 @@ class Tower.Model.Criteria extends Tower.Class
       
       ids = @ids
       # tmp
-      if @store.constructor.name == "Memory"
+      
+      if @store.constructor.className() == "Memory"
         ids = _.map ids, (id) -> id.toString()
       result.id = $in: ids
 

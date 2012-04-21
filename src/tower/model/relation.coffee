@@ -25,7 +25,9 @@ class Tower.Model.Relation extends Tower.Class
   #   otherwise it's `"#{singularTargetName}Count"`.
   #
   # @see Tower.Model.Relations.ClassMethods#hasMany
-  constructor: (owner, name, options = {}) ->
+  init: (owner, name, options = {}) ->
+    @_super arguments...
+    
     @[key] = value for key, value of options
 
     @owner              = owner
@@ -38,7 +40,7 @@ class Tower.Model.Relation extends Tower.Class
     name                = @name
     # @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
     @type               = options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name))
-    @ownerType          = Tower.namespaced(owner.name)
+    @ownerType          = Tower.namespaced(owner.className())
     @dependent        ||= false
     @counterCache     ||= false
     @idCache            = false unless @hasOwnProperty("idCache")
@@ -49,20 +51,24 @@ class Tower.Model.Relation extends Tower.Class
     @inverseOf        ||= undefined
     @polymorphic        = options.hasOwnProperty("as") || !!options.polymorphic
     @default            = false unless @hasOwnProperty("default")
-    @singularName       = Tower.Support.String.camelize(owner.name, true)
-    @pluralName         = Tower.Support.String.pluralize(owner.name) # collectionName?
+    @singularName       = Tower.Support.String.camelize(owner.className(), true)
+    @pluralName         = Tower.Support.String.pluralize(owner.className()) # collectionName?
     @singularTargetName = Tower.Support.String.singularize(name)
     @pluralTargetName   = Tower.Support.String.pluralize(name)
     @targetType         = @type
-
     # hasMany "posts", foreignKey: "postId", idCacheKey: "postIds"
     unless @foreignKey
       if @as
         @foreignKey = "#{@as}Id"
       else
-        @foreignKey = "#{@singularName}Id"
+        if @className() == "BelongsTo"
+          @foreignKey = "#{@singularTargetName}Id"
+        else
+          @foreignKey = "#{@singularName}Id"
 
     @foreignType ||= "#{@as}Type" if @polymorphic
+    
+    #console.log "#{@owner.className()}.#{@constructor.className()}('#{@name}', foreignKey: #{@foreignKey})" 
 
     if @idCache
       if typeof @idCache == "string"
@@ -83,8 +89,11 @@ class Tower.Model.Relation extends Tower.Class
       @owner.field @counterCacheKey, type: "Integer", default: 0
 
     do (name) ->
-      owner.prototype[name] = ->
-        @relation(name)
+      object = {}
+      object[name] = -> @relation(name)
+      owner.reopen(object)
+      #owner.prototype.reopen ->
+      #  @relation(name)
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
@@ -123,8 +132,9 @@ class Tower.Model.Relation.Criteria extends Tower.Model.Criteria
   isConstructable: ->
     !!!@relation.polymorphic
 
-  constructor: (options = {}) ->
-    super(options)
+  init: (options = {}) ->
+    @_super arguments...
+    
     @owner        = options.owner
     @relation     = options.relation
     @records      = []

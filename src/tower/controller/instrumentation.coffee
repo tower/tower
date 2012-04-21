@@ -8,19 +8,19 @@ Tower.Controller.Instrumentation =
         @
 
     metadata: ->
-      className               = @name
+      className               = @className()
       metadata                = @metadata[className]
       return metadata if metadata
-      baseClassName           = @baseClass().name
+      baseClassName           = @baseClass().className()
 
       if baseClassName != className
         superMetadata = @baseClass().metadata()
       else
         superMetadata = {}
 
-      resourceType            = _.singularize(@name.replace(/(Controller)$/, ""))
+      resourceType            = _.singularize(className.replace(/(Controller)$/, ""))
       resourceName            = @_compileResourceName(resourceType)
-      collectionName          = Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), true)
+      collectionName          = Tower.Support.String.camelize(className.replace(/(Controller)$/, ""), true)
       params                  = if superMetadata.params then _.clone(superMetadata.params) else {}
       renderers               = if superMetadata.renderers then _.clone(superMetadata.renderers) else {}
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
@@ -76,7 +76,7 @@ Tower.Controller.Instrumentation =
 
       # hacking in logging for now
       unless Tower.env.match(/(test|production)/)
-        console.log "  Processing by #{@constructor.name}##{@action} as #{@format.toUpperCase()}"
+        console.log "  Processing by #{@constructor.className()}##{@action} as #{@format.toUpperCase()}"
         console.log "  Parameters:"
         console.log @params
 

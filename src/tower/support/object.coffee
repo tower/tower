@@ -194,5 +194,15 @@ Tower.Support.Object =
       to[property] = from[property] unless from[property] == undefined
       delete from[property]
     to
+    
+  isEmptyObject: (object) ->
+    for name of object
+      return false  if object.hasOwnProperty(name)
+    true
+    
+  hasDefinedProperties: (object) ->
+    for name of object
+      return true  if object.hasOwnProperty(name) and object[name]
+    false
 
 module.exports = Tower.Support.Object

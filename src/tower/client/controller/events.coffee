@@ -42,7 +42,7 @@ Tower.Controller.Events =
         @addDomEventHandler(name, handler, options)
 
     socketNamespace: ->
-      Tower.Support.String.pluralize(Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), false))
+      Tower.Support.String.pluralize(Tower.Support.String.camelize(@className().replace(/(Controller)$/, ""), false))
 
     addSocketEventHandler: (name, handler, options) ->
       @io ||= Tower.Application.instance().io.connect("/" + @socketNamespace())

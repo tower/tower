@@ -1,6 +1,5 @@
 # @module
 Tower.Store.Memory.Finders =
-
   # @see Tower.Store#find
   find: (criteria, callback) ->
     result      = []

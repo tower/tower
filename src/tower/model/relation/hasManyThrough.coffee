@@ -1,6 +1,6 @@
 class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
-  initialize: (options) ->
-    super
+  init: (options) ->
+    @_super arguments...
 
     if @through && !options.type
       @throughRelation = throughRelation = @owner.relation(@through)
@@ -26,8 +26,9 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
 class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.HasMany.Criteria
   isHasManyThrough: true
 
-  constructor: (options = {}) ->
-    super
+  init: (options = {}) ->
+    @_super arguments...
+    
     if @relation.through
       @throughRelation  = @owner.constructor.relation(@relation.through)
       @inverseRelation  = @relation.inverseThrough(@throughRelation)

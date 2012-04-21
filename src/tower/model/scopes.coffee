@@ -36,7 +36,7 @@ Tower.Model.Scopes =
     criteria: (options = {}) ->
       options.model = @
       criteria = new Tower.Model.Criteria(options)
-      criteria.where(type: @name) if @baseClass().name != @name
+      criteria.where(type: @className()) if @baseClass().className() != @className()
       criteria
 
 for key in Tower.Model.Scope.queryMethods

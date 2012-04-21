@@ -163,7 +163,7 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
     else if relation.foreignKey && !relation.idCache
       data[relation.foreignKey]     = id if id != undefined
       # must check here if owner is instance of foreignType
-      data[relation.foreignType]  ||= owner.constructor.name if relation.foreignType
+      data[relation.foreignType]  ||= owner.constructor.className() if relation.foreignType
 
     if inverseRelation && inverseRelation.counterCacheKey
       data[inverseRelation.counterCacheKey] = 1

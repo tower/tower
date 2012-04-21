@@ -3,7 +3,7 @@ group       = null
 user        = null
 
 describeWith = (store) ->
-  describe 'Tower.Model.Relation', ->
+  describe "Tower.Model.Relation (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       async.series [
         (callback) =>
@@ -146,7 +146,6 @@ describeWith = (store) ->
           assert.equal throughRelation.foreignKey, "userId"
           
           inverseRelation = relation.inverseThrough(throughRelation)
-          
           assert.equal inverseRelation.name, "group"
           assert.equal inverseRelation.type, "Group"
           assert.equal inverseRelation.foreignKey, "groupId"
@@ -155,7 +154,7 @@ describeWith = (store) ->
           criteria        = user.groups().criteria
           
           criteria.createThroughRelation group, (error, record) =>
-            assert.equal record.constructor.name, "Membership"
+            assert.equal record.constructor.className(), "Membership"
             assert.equal record.get('groupId').toString(), group.get('id').toString()
             assert.equal record.get('userId').toString(), user.get('id').toString()
             done()

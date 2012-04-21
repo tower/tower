@@ -7,7 +7,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     result.join(" ")
 
   toId: (options = {}) ->
-    result = Tower.Support.String.parameterize(@model.constructor.name)#@model.toKey()
+    result = Tower.Support.String.parameterize(@model.constructor.className())#@model.toKey()
     result += "-#{options.parentIndex}" if options.parentIndex
     result += "-#{Tower.Support.String.parameterize(@attribute)}"
     result += "-#{options.type || "field"}"
@@ -15,7 +15,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     result
 
   toParam: (options = {}) ->
-    result = Tower.Support.String.camelize(@model.constructor.name, true)#@model.toKey()
+    result = Tower.Support.String.camelize(@model.constructor.className(), true)#@model.toKey()
     result += "[#{options.parentIndex}]" if options.parentIndex
     result += "[#{@attribute}]"
     result += "[#{@index}]" if @index?

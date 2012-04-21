@@ -21,18 +21,18 @@ describe 'Tower.Factory', ->
     test '#toClass', ->
       userFactory = Tower.Factory.define "user", ->
       
-      assert.equal userFactory.toClass().name, "User"
+      assert.equal userFactory.toClass().className(), "User"
   
     test 'throw error if cant figure out class', ->
       userFactory = Tower.Factory.define "guest", ->
       
-      assert.throws -> userFactory.toClass().name
+      assert.throws -> userFactory.toClass().className()
       
     test 'with className', ->
       userFactory = Tower.Factory.define "guest", className: "User", ->
 
-      assert.doesNotThrow -> userFactory.toClass().name
-      assert.equal userFactory.toClass().name, "User"
+      assert.doesNotThrow -> userFactory.toClass().className()
+      assert.equal userFactory.toClass().className(), "User"
       
   describe '.create', ->
     test 'create (factory has no attributes)', ->
@@ -40,7 +40,7 @@ describe 'Tower.Factory', ->
       
       user = Tower.Factory.create "user"
       
-      assert.equal user.constructor.name, "User"
+      assert.equal user.constructor.className(), "User"
       
     test 'create (factory has attributes)', ->
       Tower.Factory.define "user", ->

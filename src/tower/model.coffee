@@ -7,22 +7,27 @@
 # @method .where(conditions)
 #   Query conditions
 class Tower.Model extends Tower.Class
+  @reopen Ember.Evented
+  
+  data: Ember.computed(->
+    new Tower.Model.Data(@)
+  ).cacheable()
+  
   # Construct a new Tower.Model
   #
   # @param [Object] attributes a hash of attributes
   # @param [Object] options a hash of options
   # @option options [Boolean] persistent whether or not this object is from the database
-  constructor: (attributes, options) ->
-    @initialize attributes, options
-
-  initialize: (attrs = {}, options = {}) ->
+  init: (attrs = {}, options = {}) ->
+    @_super arguments...
+    
     definitions = @constructor.fields()
     attributes  = {}
 
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
 
-    attributes.type ||= @constructor.name if @constructor.isSubClass()
+    attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
     @attributes     = attributes
     @relations      = {}

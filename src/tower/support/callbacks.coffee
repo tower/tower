@@ -54,8 +54,9 @@ Tower.Support.Callbacks =
       options   = {}
 
     options   ||= {}
-
+    
     chain = @constructor.callbacks()[kind]
+    
     if chain
       chain.run(@, options, block, complete)
     else

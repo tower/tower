@@ -1,6 +1,6 @@
 class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
-  constructor: (owner, name, options = {}) ->
-    super(owner, name, options)
+  init: (owner, name, options = {}) ->
+    @_super arguments...
 
     @foreignKey = "#{name}Id"
     owner.field @foreignKey, type: "Id"

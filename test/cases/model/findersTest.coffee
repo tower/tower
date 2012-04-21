@@ -1,5 +1,5 @@
 describeWith = (store) ->
-  describe "Tower.Model.Finders (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Finders (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       store.clean =>
         App.Post.store(store)
@@ -64,7 +64,7 @@ describeWith = (store) ->
             assert.equal count, 2
             done()
 
-      describe 'date > value (' + _.strftime('MMM D, YYYY') + ')', ->
+      describe 'date > value', ->
         beforeEach (done) ->
           App.Post.create rating: 1, someDate: new Date, done
         
@@ -129,7 +129,7 @@ describeWith = (store) ->
             assert.equal count, 0
             done()
       
-      describe 'date < value (' + _.toDate('MMM D, YYYY') + ')', ->
+      describe 'date < value', ->
         beforeEach (done) ->
           App.Post.create rating: 1, someDate: new Date, done
         

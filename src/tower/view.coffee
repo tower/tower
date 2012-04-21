@@ -94,7 +94,9 @@ class Tower.View extends Tower.Class
       @_store ||= new Tower.Store.Memory(name: "view")
     renderers: {}
 
-  constructor: (context = {}) ->
+  init: (context = {}) ->
+    @_super arguments...
+    
     @_context = context
 
 require './view/rendering'

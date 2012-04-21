@@ -76,7 +76,9 @@ class Tower.Model.Scope extends Tower.Class
     "$null":    "$null"
     "$notNull": "$notNull"
 
-  constructor: (criteria) ->
+  init: (criteria) ->
+    @_super arguments...
+    
     @criteria = criteria
 
   # Check if this scope or relation contains this object
