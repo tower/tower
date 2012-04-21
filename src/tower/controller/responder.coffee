@@ -48,7 +48,7 @@ class Tower.Controller.Responder
     else if post?
       @display resource, status: "created", location: @apiLocation
     else
-      @head "noContent"
+      @controller.head "noContent"
 
   isResourceful: ->
     @resource.hasOwnProperty("to#{@format.toUpperCase()}")
