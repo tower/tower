@@ -20,28 +20,15 @@ Tower.Support.String =
           .replace('-', '_').toLowerCase()
 
   singularize: (string) ->
-    len = string.length
-    if string.substr(len - 3) is 'ies'
-      string.substr(0, len - 3) + 'y'
-    else if string.substr(len - 1) is 's'
-      string.substr(0, len - 1)
-    else
-      string
+    Tower.modules.inflector.singularize arguments...
 
   pluralize: (count, string) ->
     if string
       return string if count is 1
     else
       string = count
-
-    len = string.length
-    lastLetter = string.substr(len - 1)
-    if lastLetter is 'y'
-      "#{string.substr(0, len - 1)}ies"
-    else if lastLetter is 's'
-      string
-    else
-      "#{string}s"
+    
+    Tower.modules.inflector.pluralize string
 
   capitalize: (string) -> string.replace @capitalize_rx, (m,p1,p2) -> p1 + p2.toUpperCase()
 
