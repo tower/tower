@@ -26,13 +26,11 @@ class Tower.Model.Relation extends Tower.Class
   #
   # @see Tower.Model.Relations.ClassMethods#hasMany
   init: (owner, name, options = {}) ->
-    @_super arguments...
-    
     @[key] = value for key, value of options
 
     @owner              = owner
     @name               = name
-
+    
     @initialize(options)
 
   initialize: (options) ->
@@ -67,8 +65,6 @@ class Tower.Model.Relation extends Tower.Class
           @foreignKey = "#{@singularName}Id"
 
     @foreignType ||= "#{@as}Type" if @polymorphic
-    
-    #console.log "#{@owner.className()}.#{@constructor.className()}('#{@name}', foreignKey: #{@foreignKey})" 
 
     if @idCache
       if typeof @idCache == "string"
@@ -97,7 +93,7 @@ class Tower.Model.Relation extends Tower.Class
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
-    new Tower.Model.Scope(new @constructor.Criteria(model: @klass(), owner: record, relation: @))
+    new Tower.Model.Scope(new @constructor.Cursor(model: @klass(), owner: record, relation: @))
 
   # @return [Function]
   targetKlass: ->
@@ -127,8 +123,12 @@ class Tower.Model.Relation extends Tower.Class
         return relation if relation.targetType == @ownerType
 
     null
+    
+  _setForeignKey: ->
+    
+  _setForeignType: ->
 
-class Tower.Model.Relation.Criteria extends Tower.Model.Criteria
+class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
   isConstructable: ->
     !!!@relation.polymorphic
 
@@ -158,7 +158,7 @@ class Tower.Model.Relation.Criteria extends Tower.Model.Criteria
 for phase in ["Before", "After"]
   for action in ["Create", "Update", "Destroy", "Find"]
     do (phase, action) =>
-      Tower.Model.Relation.Criteria::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
+      Tower.Model.Relation.Cursor::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
         @store["run#{phase}#{action}"](@, done)
 
 require './relation/belongsTo'

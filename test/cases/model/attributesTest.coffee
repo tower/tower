@@ -1,7 +1,8 @@
-attr = Tower.Model.Attribute
+attr        = Tower.Model.Attribute
+Serializer  = Tower.Store.Serializer
 
 describeWith = (store) ->
-  describe "Tower.Model.Fields (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Fields (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       App.BaseModel.store(store)
       App.User.store(store)
@@ -11,7 +12,7 @@ describeWith = (store) ->
       test 'type: "Id"', ->
         field = App.BaseModel.fields().id
         assert.equal field.type, "Id"
-      
+
       test 'type: "Integer" without default', ->
         field = App.BaseModel.fields().likeCountWithoutDefault
         assert.equal field.type, "Integer"
@@ -55,75 +56,75 @@ describeWith = (store) ->
       
     describe 'serialization', ->
       test 'string "A string" == "A string"', ->
-        assert.equal attr.string.to("A string"), "A string"
-        assert.equal attr.string.from("A string"), "A string"
-      
+        assert.equal Serializer.String.to("A string"), "A string"
+        assert.equal Serializer.String.from("A string"), "A string"
+
       test 'string null, undefined == null', ->
-        assert.equal attr.string.to(undefined), null
-        assert.equal attr.string.from(undefined), null
-        assert.equal attr.string.to(null), null
-        assert.equal attr.string.from(null), null
+        assert.equal Serializer.String.to(undefined), null
+        assert.equal Serializer.String.from(undefined), null
+        assert.equal Serializer.String.to(null), null
+        assert.equal Serializer.String.from(null), null
       
       #test 'date', ->
-      #  assert.equal attr.date.to("Jan 10, 2010").getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
-      #  assert.equal attr.date.from(new Date("Sun, 10 Jan 2010 08:00:00 GMT")).getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
+      #  assert.equal Serializer.Date.to("Jan 10, 2010").getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
+      #  assert.equal Serializer.Date.from(new Date("Sun, 10 Jan 2010 08:00:00 GMT")).getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
       
       test 'boolean == true', ->
-        assert.equal attr.boolean.to(true), true
-        assert.equal attr.boolean.from(true), true
+        assert.equal Serializer.Boolean.to(true), true
+        assert.equal Serializer.Boolean.from(true), true
       
-        assert.equal attr.boolean.to(1), true
-        assert.equal attr.boolean.from(1), true
+        assert.equal Serializer.Boolean.to(1), true
+        assert.equal Serializer.Boolean.from(1), true
       
-        assert.equal attr.boolean.to("true"), true
-        assert.equal attr.boolean.from("true"), true
+        assert.equal Serializer.Boolean.to("true"), true
+        assert.equal Serializer.Boolean.from("true"), true
       
       test 'boolean == false', ->
-        assert.equal attr.boolean.to(false), false
-        assert.equal attr.boolean.from(false), false
+        assert.equal Serializer.Boolean.to(false), false
+        assert.equal Serializer.Boolean.from(false), false
       
-        assert.equal attr.boolean.to(null), false
-        assert.equal attr.boolean.from(null), false
+        assert.equal Serializer.Boolean.to(null), false
+        assert.equal Serializer.Boolean.from(null), false
       
-        assert.equal attr.boolean.to(undefined), false
-        assert.equal attr.boolean.from(undefined), false
+        assert.equal Serializer.Boolean.to(undefined), false
+        assert.equal Serializer.Boolean.from(undefined), false
       
-        assert.equal attr.boolean.to(0), false
-        assert.equal attr.boolean.from(0), false
+        assert.equal Serializer.Boolean.to(0), false
+        assert.equal Serializer.Boolean.from(0), false
       
-        assert.equal attr.boolean.to("false"), false
-        assert.equal attr.boolean.from("false"), false
+        assert.equal Serializer.Boolean.to("false"), false
+        assert.equal Serializer.Boolean.from("false"), false
       
       test 'number', ->
-        assert.equal attr.number.to(1), 1
-        assert.equal attr.number.to(1.1), 1.1
+        assert.equal Serializer.Number.to(1), 1
+        assert.equal Serializer.Number.to(1.1), 1.1
       
-        assert.equal attr.number.from(1), 1
-        assert.equal attr.number.from(1.1), 1.1
+        assert.equal Serializer.Number.from(1), 1
+        assert.equal Serializer.Number.from(1.1), 1.1
     
       test 'integer', ->
-        assert.equal attr.integer.to(1), 1
-        assert.equal attr.integer.to(1.1), 1
+        assert.equal Serializer.Integer.to(1), 1
+        assert.equal Serializer.Integer.to(1.1), 1
 
-        assert.equal attr.integer.from(1), 1
-        assert.equal attr.integer.from(1.1), 1
+        assert.equal Serializer.Integer.from(1), 1
+        assert.equal Serializer.Integer.from(1.1), 1
     
       test 'float', ->
-        assert.equal attr.float.to(1), 1.0
-        assert.equal attr.float.to(1.1), 1.1
+        assert.equal Serializer.Float.to(1), 1.0
+        assert.equal Serializer.Float.to(1.1), 1.1
 
-        assert.equal attr.float.from(1), 1.0
-        assert.equal attr.float.from(1.1), 1.1
+        assert.equal Serializer.Float.from(1), 1.0
+        assert.equal Serializer.Float.from(1.1), 1.1
       
       test 'array', ->
-        assert.equal attr.array.to(undefined), null
-        assert.equal attr.array.to(null), null
+        assert.equal Serializer.Array.to(undefined), null
+        assert.equal Serializer.Array.to(null), null
       
-        assert.deepEqual attr.array.from(1), [1]
-        assert.deepEqual attr.array.from([1]), [1]
+        assert.deepEqual Serializer.Array.from(1), [1]
+        assert.deepEqual Serializer.Array.from([1]), [1]
 
-        assert.deepEqual attr.array.from("hey"), ["hey"]
-        assert.deepEqual attr.array.from(["hey"]), ["hey"]
+        assert.deepEqual Serializer.Array.from("hey"), ["hey"]
+        assert.deepEqual Serializer.Array.from(["hey"]), ["hey"]
       
     describe 'instance', ->
       model = null
@@ -131,9 +132,9 @@ describeWith = (store) ->
       beforeEach ->
         model = new App.BaseModel
     
-      test '#attributes', ->
-        assert.equal typeof(model.attributes), "object"
-      
+      test '#data', ->
+        assert.equal typeof(model.get('data')), "object"
+
       test '#get', ->
         assert.equal model.get('likeCountWithDefault'), 0
       
@@ -143,25 +144,23 @@ describeWith = (store) ->
         model.set('likeCountWithDefault', 10)
       
         assert.equal model.get('likeCountWithDefault'), 10
-      
-      test '#has', ->
-        assert.equal model.has('likeCountWithDefault'), true
-        assert.equal model.has('somethingIDontHave'), false
-      
+               
       test 'encode boolean', ->
         assert.equal model.get("favorite"), false
         model.set("favorite", "true")
         assert.equal model.get("favorite"), true
-      
-      test 'custom encoding', ->
-        model.set("custom", ["ruby", "javascript"])
-        assert.deepEqual model.attributes.custom, ["ruby", "javascript"]
-        assert.equal model.get("custom"), "ruby-javascript"
-      
-        model.attributes.custom.push "mongodb"
-      
-        assert.equal model.get("custom"), "ruby-javascript-mongodb"
-      
+        model.set("favorite", "false")
+        assert.equal model.get("favorite"), false
+
+      #test 'custom encoding', ->
+      #  model.set("custom", ["ruby", "javascript"])
+      #  assert.deepEqual model.get('data'), ["ruby", "javascript"]
+      #  assert.equal model.get("custom"), "ruby-javascript"
+      #
+      #  model.attributes.custom.push "mongodb"
+      #
+      #  assert.equal model.get("custom"), "ruby-javascript-mongodb"
+          
       describe 'operations', ->
         test '$push', ->
           model.set("tags", ["ruby"])
@@ -170,7 +169,7 @@ describeWith = (store) ->
           assert.deepEqual model.get("tags"), ["ruby", "javascript"]
           model.push tags: ["mongodb"]
           assert.deepEqual model.get("tags"), ["ruby", "javascript", ["mongodb"]]
-        
+###             
         test '$pushAll', ->
           assert.deepEqual model.get("tags"), []
           model.pushAll tags: ["ruby"]
@@ -242,7 +241,16 @@ describeWith = (store) ->
                 assert.equal user.get('rating'), 3.4
 
                 done()
-
+                
+  describe 'accessors', ->
+    user = null
+    
+    beforeEach ->
+      user = new App.User
+      
+    test 'string', ->
+      console.log user.getField("firstName")
+###
 describeWith(Tower.Store.Memory)
 
 if Tower.client

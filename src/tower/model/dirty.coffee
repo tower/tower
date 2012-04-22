@@ -1,65 +1,6 @@
 # @mixin
 Tower.Model.Dirty =
   InstanceMethods:
-    # @example simple sequence of operations
-    #   post.set title: "A Post!"
-    #   post.set tags: ["javascript"]
-    #   post.operations
-    #     #=> [{$set: {title: "A Post!"}}, {$set: {tags: ["javascript"]}}]
-    #
-    # @example combining operations
-    #   post.operation ->
-    #     post.set title: "A Post!"
-    #     # it's in the post's context, so same thing
-    #     @set tags: ["javascript"]
-    #   post.operations
-    #     #=> [{$set: {title: "A Post!", tags: ["javascript"]}}]
-    #
-    # @example implicit operations
-    #   post.set title: "A Post!", tags: ["javascript"]
-    #   post.operations
-    #     #=> [{$set: {title: "A Post!", tags: ["javascript"]}}]
-    operation: (block) ->
-      return block() if @_currentOperation
-
-      if @operationIndex != @operations.length
-        @operations.splice(@operationIndex, @operations.length)
-
-      @_currentOperation  = {}
-
-      completeOperation = =>
-        @operations.push @_currentOperation
-        delete @_currentOperation
-        @operationIndex = @operations.length
-
-      switch block.length
-        when 0
-          block.call(@)
-          completeOperation()
-        else
-          block.call @, => completeOperation()
-
-    undo: (amount = 1) ->
-      prevIndex   = @operationIndex
-      nextIndex   = @operationIndex = Math.max(@operationIndex - amount, -1)
-      return if prevIndex == nextIndex
-      operations  = @operations.slice(nextIndex, prevIndex).reverse()
-      for operation in operations
-        for key, value of operation.$before
-          @attributes[key] = value
-      @
-
-    redo: (amount = 1) ->
-      prevIndex   = @operationIndex
-      nextIndex   = @operationIndex = Math.min(@operationIndex + amount, @operations.length)
-      return if prevIndex == nextIndex
-      operations  = @operations.slice(prevIndex, nextIndex)
-
-      for operation in operations
-        for key, value of operation.$after
-          @attributes[key] = value
-      @
-
     # Check if the model has any attributes that have been changed.
     #
     # @return [Boolean]

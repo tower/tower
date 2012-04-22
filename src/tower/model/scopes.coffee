@@ -17,27 +17,27 @@ Tower.Model.Scopes =
     scope: (name, scope) ->
       scope   = if scope instanceof Tower.Model.Scope then scope else @where(scope)
       @[name] = ->
-        @scoped().where(scope.criteria)
+        @scoped().where(scope.cursor)
 
-    # Returns a {Tower.Model.Scope} with default criteria for the model class.
+    # Returns a {Tower.Model.Scope} with default cursor for the model class.
     #
     # @return [Tower.Model.Scope]
     scoped: (options) ->
-      criteria      = @criteria(options)
+      cursor      = @cursor(options)
       defaultScope  = @defaults().scope
       if defaultScope
-        defaultScope.where(criteria)
+        defaultScope.where(cursor)
       else
-        new Tower.Model.Scope(criteria)
+        new Tower.Model.Scope(cursor)
 
-    # Return a {Tower.Model.Criteria} to be used in building a query.
+    # Return a {Tower.Model.Cursor} to be used in building a query.
     #
-    # @return [Tower.Model.Criteria]
-    criteria: (options = {}) ->
+    # @return [Tower.Model.Cursor]
+    cursor: (options = {}) ->
       options.model = @
-      criteria = new Tower.Model.Criteria(options)
-      criteria.where(type: @className()) if @baseClass().className() != @className()
-      criteria
+      cursor = new Tower.Model.Cursor(options)
+      cursor.where(type: @className()) if @baseClass().className() != @className()
+      cursor
 
 for key in Tower.Model.Scope.queryMethods
   do (key) ->

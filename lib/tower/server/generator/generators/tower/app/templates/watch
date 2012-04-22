@@ -72,9 +72,9 @@ watch /app\/views.*\.coffee$/
     
   client:
     update: (data) ->
-      Tower.View.cache[data.id] = data
+      #Tower.View.cache[data.id] = data
       
-      if data.reload
-        window.location = data.path
-      else
-        Tower.get data.path
+      #if data.reload
+      #  window.location = data.path
+      #else
+      #  Tower.get data.path

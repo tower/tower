@@ -1,7 +1,7 @@
 user      = null
 
 describeWith = (store) ->
-  describe "Tower.Model.Persistence (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Persistence (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       store.clean =>
         App.User.store(store)
@@ -30,7 +30,7 @@ describeWith = (store) ->
             assert.equal count, 1
             
             done()
-
+###
       test 'with multiple with valid attributes as array', (done) ->
         App.User.create [{firstName: "Lance"}, {firstName: "Dane"}], (error, records) =>
           assert.equal records.length, 2
@@ -130,6 +130,6 @@ describeWith = (store) ->
               
     describe 'reload', ->
       test 'reload'
-
+###
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.MongoDB) unless Tower.client

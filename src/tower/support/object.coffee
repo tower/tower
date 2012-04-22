@@ -204,5 +204,15 @@ Tower.Support.Object =
     for name of object
       return true  if object.hasOwnProperty(name) and object[name]
     false
+    
+  getNestedAttribute: (object, key) ->
+    parts = key.split('.')
+    return Ember.get(object, key) if parts.length == 1
+    
+    for part in parts
+      object = Ember.get(object, part) # object[key]
+      break unless object
+        
+    object
 
 module.exports = Tower.Support.Object

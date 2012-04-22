@@ -18,11 +18,11 @@ class Tower.Store.Memory extends Tower.Store
     @constructor.stores().push @
 
     @records  = {}
-    @lastId   = 0
+    @lastId   = 1
 
   clean: ->
     @records  = {}
-    @lastId   = 0
+    @lastId   = 1
 
 require './memory/finders'
 require './memory/persistence'

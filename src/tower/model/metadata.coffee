@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Conversion =
+Tower.Model.Metadata =
   ClassMethods:
     # The class in the superclass hierarchy that directly subclasses Tower.Model
     #
@@ -159,4 +159,4 @@ Tower.Model.Conversion =
     metadata: ->
       @constructor.metadata()
 
-module.exports = Tower.Model.Conversion
+module.exports = Tower.Model.Metadata

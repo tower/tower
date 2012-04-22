@@ -1,4 +1,4 @@
-class Tower.Store.Local extends Tower.Store.Memory
+class Tower.Store.LocalStorage extends Tower.Store.Memory
   initialize: ->
     @lastId   = 0
 
@@ -11,4 +11,4 @@ class Tower.Store.Local extends Tower.Store.Memory
   _removeRecord: (key) ->
     delete @records[record.id]
 
-module.exports = Tower.Store.Local
+module.exports = Tower.Store.LocalStorage

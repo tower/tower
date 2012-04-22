@@ -32,4 +32,6 @@ towerMixin = Tower.toMixin()
 Tower.Class.reopenClass(towerMixin)
 Tower.Namespace.reopenClass(towerMixin)
 
+Ember.ArrayProxy.reopenClass(coffeescriptMixin, towerMixin)
+
 module.exports = Tower.Class

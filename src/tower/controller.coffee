@@ -38,6 +38,7 @@ class Tower.Controller extends Tower.Class
 require './controller/callbacks'
 require './controller/helpers'
 require './controller/instrumentation'
+require './controller/metadata'
 require './controller/params'
 require './controller/redirecting'
 require './controller/rendering'
@@ -48,6 +49,7 @@ require './controller/responding'
 Tower.Controller.include Tower.Controller.Callbacks
 Tower.Controller.include Tower.Controller.Helpers
 Tower.Controller.include Tower.Controller.Instrumentation
+Tower.Controller.include Tower.Controller.Metadata
 Tower.Controller.include Tower.Controller.Params
 Tower.Controller.include Tower.Controller.Redirecting
 Tower.Controller.include Tower.Controller.Rendering

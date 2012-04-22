@@ -1,7 +1,7 @@
 class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
   init: (owner, name, options = {}) ->
     @_super arguments...
-
+    
     @foreignKey = "#{name}Id"
     owner.field @foreignKey, type: "Id"
 
@@ -12,23 +12,17 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     owner.prototype[name] = ->
       @relation(name)
 
-    owner.prototype["build#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
-      @buildRelation(name, attributes, callback)
+class Tower.Model.Relation.BelongsTo.Cursor extends Tower.Model.Relation.Cursor
+  isBelongsTo: true
+  # need to do something here about Reflection
+  
+  toCursor: ->
+    criteria  = super
+    relation  = @relation
 
-    owner.prototype["create#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
-      @createRelation(name, attributes, callback)
+    # @todo shouldn't have to do $in here...
+    criteria.where(id: $in: [@owner.get(relation.foreignKey)])
 
-  class @Criteria extends Tower.Model.Relation.Criteria
-    isBelongsTo: true
-    # need to do something here about Reflection
-
-    toCriteria: ->
-      criteria  = super
-      relation  = @relation
-
-      # @todo shouldn't have to do $in here...
-      criteria.where(id: $in: [@owner.get(relation.foreignKey)])
-
-      criteria
+    criteria
 
 module.exports = Tower.Model.Relation.BelongsTo

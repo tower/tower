@@ -6,7 +6,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 
-class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteria
+class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
   isHasMany: true
 
   # @todo

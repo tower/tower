@@ -13,7 +13,7 @@ Tower.Model.Authentication =
   # Only included if class method is called.
   _InstanceMethods:
     authenticate: (unencryptedPassword) ->
-      if require('crypto').bcript(passwordDigest) == unencryptedPassword
+      if require('crypto').bcript(@get('passwordDigest')) == unencryptedPassword
         @
       else
         false

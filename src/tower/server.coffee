@@ -24,6 +24,7 @@ Tower.modules =
   superagent: require 'superagent'
   mime:       require 'mime'
   mint:       require 'mint'
+  kue:        try require 'kue'
 
 require './support'
 require './application'

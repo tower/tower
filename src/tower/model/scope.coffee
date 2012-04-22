@@ -1,4 +1,4 @@
-# Interface to {Tower.Model.Criteria}, used to build database operations.
+# Interface to {Tower.Model.Cursor}, used to build database operations.
 class Tower.Model.Scope extends Tower.Class
   @finderMethods: [
     "find",
@@ -76,18 +76,18 @@ class Tower.Model.Scope extends Tower.Class
     "$null":    "$null"
     "$notNull": "$notNull"
 
-  init: (criteria) ->
+  init: (cursor) ->
     @_super arguments...
     
-    @criteria = criteria
+    @cursor = cursor
 
   # Check if this scope or relation contains this object
   #
   # @param [Object] object an object or array of objects.
   has: (object) ->
-    @criteria.has(object)
+    @cursor.has(object)
 
-  # Builds one or many records based on the scope's criteria.
+  # Builds one or many records based on the scope's cursor.
   #
   # @example Build single record
   #   App.User.build(firstName: "Lance")
@@ -112,16 +112,16 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   build: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
 
-    criteria.addData(args)
+    cursor.addData(args)
 
-    criteria.build(callback)
+    cursor.build(callback)
 
-  # Creates one or many records based on the scope's criteria.
+  # Creates one or many records based on the scope's cursor.
   #
   # @example Create single record
   #   App.User.create(firstName: "Lance")
@@ -146,16 +146,16 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   create: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
 
-    criteria.addData(args)
+    cursor.addData(args)
 
-    criteria.create(callback)
+    cursor.create(callback)
 
-  # Updates records based on the scope's criteria.
+  # Updates records based on the scope's cursor.
   #
   # @example Update by id
   #   App.User.update(1, firstName: "Lance")
@@ -176,7 +176,7 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   update: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
     # for `update`, the last argument before the callback must be the updates you're making
@@ -184,13 +184,13 @@ class Tower.Model.Scope extends Tower.Class
 
     throw new Error("Must pass in updates hash") unless updates && typeof updates == "object"
 
-    criteria.addData(updates)
+    cursor.addData(updates)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.update(callback)
+    cursor.update(callback)
 
-  # Deletes records based on the scope's criteria.
+  # Deletes records based on the scope's cursor.
   #
   # @example Destroy by id
   #   App.User.destroy(1)
@@ -211,36 +211,36 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   destroy: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.destroy(callback)
+    cursor.destroy(callback)
 
   # Add to set.
   add: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
 
-    criteria.addData(args)
+    cursor.addData(args)
 
-    criteria.add(callback)
+    cursor.add(callback)
 
   # Remove from set.
   remove: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.remove(callback)
+    cursor.remove(callback)
 
-  # Updates one or many records based on the scope's criteria.
+  # Updates one or many records based on the scope's cursor.
   #
   # @example Find single record
   #   # find record with `id` 45
@@ -257,30 +257,30 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [undefined] Requires a callback to get the data.
   find: ->
-    criteria        = @compile()
+    cursor        = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.find(callback)
+    cursor.find(callback)
 
-  # Find the first record matching this scope's criteria.
+  # Find the first record matching this scope's cursor.
   #
   # @param [Function] callback
   first: (callback) ->
-    criteria = @compile()
-    criteria.findOne(callback)
+    cursor = @compile()
+    cursor.findOne(callback)
 
-  # Find the last record matching this scope's criteria.
+  # Find the last record matching this scope's cursor.
   #
   # @param [Function] callback
   last: (callback) ->
-    criteria = @compile()
-    criteria.reverseSort()
-    criteria.findOne(callback)
+    cursor = @compile()
+    cursor.reverseSort()
+    cursor.findOne(callback)
 
-  # Find all the records matching this scope's criteria.
+  # Find all the records matching this scope's cursor.
   #
   # @param [Function] callback
   all: (callback) ->
@@ -297,13 +297,13 @@ class Tower.Model.Scope extends Tower.Class
   explain: ->
     @compile().explain(callback)
 
-  # Count the number of records matching this scope's criteria.
+  # Count the number of records matching this scope's cursor.
   #
   # @param [Function] callback
   count: (callback) ->
     @compile().count(callback)
 
-  # Check if a record exists that matches this scope's criteria.
+  # Check if a record exists that matches this scope's cursor.
   #
   # @param [Function] callback
   exists: (callback) ->
@@ -322,22 +322,22 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [Object] returns all of the options.
   options: (options) ->
-    _.extend @criteria.options, options
+    _.extend @cursor.options, options
 
   compile: ->
-    @criteria.clone()
+    @cursor.clone()
 
   # Clone this scope (and the critera attached to it).
   #
   # @return [Tower.Model.Scope]
   clone: ->
-    new @constructor(@criteria.clone())
+    new @constructor(@cursor.clone())
 
 for key in Tower.Model.Scope.queryMethods
   do (key) =>
     Tower.Model.Scope::[key] = ->
       clone = @clone()
-      clone.criteria[key](arguments...)
+      clone.cursor[key](arguments...)
       clone
 
 module.exports = Tower.Model.Scope

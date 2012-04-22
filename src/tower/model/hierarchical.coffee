@@ -13,7 +13,7 @@ Tower.Model.Hierarchical =
       @field options.parentId, type: "Integer"
 
     root: (callback) ->
-      @roots.first(callback)
+      @roots().first(callback)
 
     roots: ->
       metadata    = @metadata()

@@ -79,10 +79,12 @@ class Tower.Store extends Tower.Class
   serializeModel: (attributes) ->
     return attributes if attributes instanceof Tower.Model
     klass = Tower.constant(@className)
-    new klass(attributes)
+    klass.__create = Ember.Object.create
+    #new klass(attributes)
+    klass.__create(attributes)
 
   deserializeModel: (data) ->
-    if data instanceof Tower.Model then data.attributes else data
+    if data instanceof Tower.Model then data.get('data').unsavedData else data
 
   init: (options = {}) ->
     @_super arguments...
@@ -169,5 +171,9 @@ class Tower.Store extends Tower.Class
     callback()
 
 require './store/memory'
+require './store/modifiers'
+require './store/operators'
+require './store/serializer'
+require './store/transaction'
 
 module.exports = Tower.Store

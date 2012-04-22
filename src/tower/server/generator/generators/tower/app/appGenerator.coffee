@@ -110,6 +110,10 @@ class Tower.Generator.AppGenerator extends Tower.Generator
 
       @inside "vendor", ->
         @inside "javascripts", ->
+          # https://github.com/phiggins42/has.js
+          # https://github.com/eriwen/javascript-stacktrace
+          # https://github.com/madrobby/keymaster
+          # https://github.com/mrdoob/stats.js
           @get "https://raw.github.com/documentcloud/underscore/master/underscore.js", "underscore.js"
           @get "https://raw.github.com/epeli/underscore.string/master/lib/underscore.string.js", "underscore.string.js"
           @get "https://raw.github.com/caolan/async/master/lib/async.js", "async.js"

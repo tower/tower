@@ -23,7 +23,7 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
       for name, relation of relations
         return relation if relation.targetType == type
 
-class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.HasMany.Criteria
+class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.HasMany.Cursor
   isHasManyThrough: true
 
   init: (options = {}) ->
@@ -42,7 +42,7 @@ class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.
   #build: (callback) ->
   #  @_build (error, records) =>
   #    for record in _.castArray(records)
-  #      record._throughCriteria = @ if record
+  #      record._throughCursor = @ if record
   #
   #    callback.call @, error, records if callback
   #    records
