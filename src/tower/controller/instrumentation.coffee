@@ -62,7 +62,8 @@ Tower.Controller.Instrumentation =
       @session  = @request.session  || {}
       
       unless @params.format
-        try @params.format = require('mime').extension(@request.header("content-type"))
+        console.log @request.header("content-type")
+        try @params.format = require('mime').extension(@controller.request.header("content-type"))
         @params.format ||= "html"
         
       @format   = @params.format
