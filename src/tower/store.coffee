@@ -104,6 +104,19 @@ class Tower.Store extends Tower.Class
 
   supports: (key) ->
     @constructor.supports[key] == true
+    
+  hashWasUpdated: (type, clientId, record) ->
+    return if Ember.get(record, 'isDeleted')
+    
+    @updateCursors(type, clientId, record)
+  
+  cursors: Ember.computed(-> []).cacheable()
+  
+  updateCursors: (type, clientId, record) ->
+    #console.log Ember.get @, 'cursors'
+    
+  removeFromCursors: (record) ->
+    #console.log Ember.get @, 'cursors'
 
   _mapKeys: (key, records) ->
     _.map(records, (record) -> record.get(key))

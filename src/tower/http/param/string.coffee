@@ -26,7 +26,7 @@ class Tower.HTTP.Param.String extends Tower.HTTP.Param
         operators.push "^" if !!token.match(/^\+?\-?\^/)
         operators.push "$" if !!token.match(/\$$/)
 
-        values.push @parseValue(@_clean(token), operators)
+        values.push @parseValue([@_clean(token)], operators)
         _
 
       arrays[i] = values

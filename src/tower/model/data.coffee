@@ -135,6 +135,28 @@ class Tower.Model.Data
     
   rollback: ->
     @unsavedData = {}
+    
+  unknownProperty: (key) ->
+    unsavedData   = @unsavedData
+    relations     = @relations
+    savedData     = @savedData
+    value         = unsavedData[key]
+    relation      = undefined
+    relation      = relations[key]
+    
+    if typeof relation != 'undefined'
+      store       = Ember.get(@record, "store")
+      return store.clientIdToId[relation]
+      
+    value         = savedData[key] if savedData && value == `undefined`
+    value
+
+  setUnknownProperty: (key, value) ->
+    record            = @record
+    unsavedData       = @unsavedData
+    unsavedData[key]  = value
+    record.hashWasUpdated()
+    value
 
   # @private
   _set: (key, value) ->

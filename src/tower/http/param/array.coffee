@@ -1,23 +1,50 @@
+# @example
+#   /?tags=[rails],-[-node,javascript],-[grails],-java,[male,-female]
+#   /?tags=rails,node
+#   /?tags=rails,-[flex,.net]
 class Tower.HTTP.Param.Array extends Tower.HTTP.Param
   parse: (value) ->
-    values  = []
-    array   = value.toString().split(/[,\|]/)
-
+    values    = []
+    # [rails],-[-node,javascript],-[grails],-java,[male,-female]
+    array     = value.toString().split(/(-?\[[^\]]+\]|-?\w+)/g)
+    
     for string in array
-      isRange   = false
-      negation  = !!string.match(/^\^/)
-      string    = string.replace(/^\^/, "")
-
-      string.replace /([^\.]+)?(\.{2})([^\.]+)?/, (_, startsOn, operator, endsOn) =>
-        isRange = true
-        range   = []
-        range.push @parseValue(startsOn, ["$gte"]) if !!(startsOn && startsOn.match(/^\d/))
-        range.push @parseValue(endsOn, ["$lte"])   if !!(endsOn && endsOn.match(/^\d/))
-        values.push range
-
-      unless isRange
-        values.push [@parseValue(string, ["$eq"])]
-
+      negatedSet    = false
+      isSet         = false
+      
+      continue if _.isBlank(string)
+      
+      string        = string.replace /^(-)/, (_, $1) ->
+        negatedSet  = !!($1 && $1.length > 0)
+        ""
+      
+      string        = string.replace /([\[\]])/g, (_, $1) ->
+        isSet       = !!($1 && $1.length > 0)
+        ""
+      
+      continue if _.isBlank(string)
+      
+      tokens        = string.split(/,/g)
+      set           = []
+      
+      for token in tokens
+        negated     = false
+        
+        token       = token.replace /^(-)/, (_, $1) ->
+          negated   = !!($1 && $1.length > 0)
+          ""
+          
+        continue if _.isBlank(token)
+        
+        if isSet
+          operators = [if negated || negatedSet then '$notInAll' else '$allIn']
+        else
+          operators = [if negated || negatedSet then '$notInAny' else '$anyIn']
+        
+        set.push @parseValue([token], operators)
+      
+      values.push set
+      
     values
 
 module.exports = Tower.HTTP.Param.Array

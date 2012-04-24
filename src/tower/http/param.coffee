@@ -23,10 +23,10 @@ class Tower.HTTP.Param
   parse: (value) -> value
 
   render: (value) -> value
-
-  toCriteria: (value) ->
+  
+  toCursor: (value) ->
     nodes     = @parse(value)
-    criteria  = new Tower.Model.Criteria
+    criteria  = new Tower.Model.Cursor
     for set in nodes
       for node in set
         attribute   = node.attribute

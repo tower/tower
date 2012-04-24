@@ -15,3 +15,7 @@ class Tower.Store.Transaction extends Tower.Class
       created:  Ember.Map.create()
       updated:  Ember.Map.create()
       deleted:  Ember.Map.create()
+      
+  recordBecameDirty: ->
+    
+  recordBecameClean: ->

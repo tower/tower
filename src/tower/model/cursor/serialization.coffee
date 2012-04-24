@@ -99,13 +99,27 @@ Tower.Model.Cursor.Serialization =
     joins:     @_joins
     eagerLoad: @_eagerLoad
     near:      @_near
+    
+  _compileAttributes: (object, conditions) ->
+    for key, value of conditions
+      oldValue = result[key]
+      if oldValue
+        if _.isArray(oldValue)
+          object[key] = oldValue.concat value
+        else if typeof oldValue == "object" && typeof value == "object"
+          object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
+        else
+          object[key] = value
+      else
+        object[key] = value
 
   # Compiled result from the {#where} arguments.
   #
   # @return [Object]
   conditions: ->
     result = {}
-
+    args = _.args(arguments, 1)
+    
     for conditions in @_where
       _.deepMergeWithArrays(result, conditions)
 

@@ -2,7 +2,7 @@
 # but it's now into a form I'm starting to like.
 # May rename this to Tower.Model.Cursor
 
-class Tower.Model.Cursor extends Ember.ArrayProxy# Tower.Class
+class Tower.Model.Cursor extends Tower.Collection
   defaultLimit: 20
   
   init: (options = {}) ->
@@ -13,6 +13,13 @@ class Tower.Model.Cursor extends Ember.ArrayProxy# Tower.Class
     
     @pushObjects(matching)
       
+    matching
+    
+  pullMatching: (records) ->
+    matching = Tower.Store.Operators.select(records, @conditions())
+    
+    @pullObjects(matching)
+    
     matching
     
 require './cursor/finders'

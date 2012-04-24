@@ -1,5 +1,6 @@
 require 'ember-metal'
 require 'ember-runtime'
+require 'ember-states'
 
 require 'underscore.logger'
 

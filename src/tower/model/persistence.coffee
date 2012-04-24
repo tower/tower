@@ -43,8 +43,16 @@ Tower.Model.Persistence =
     # @return [Array] will return the array of models.
     load: (records) ->
       @store().load(records)
+      
+    transaction: (block) ->
+      transaction = new Tower.Store.Transaction
+      block.call @, transaction if block
+      transaction
 
   InstanceMethods:
+    withTransaction: (block) ->
+      @constructor.transaction(block)
+    
     # Create or update the record.
     #
     # @example Default save
@@ -96,26 +104,8 @@ Tower.Model.Persistence =
         @_destroy callback
       @
 
-    # Check if this record has been saved to the database.
-    #
-    # @return [Boolean]
-    isPersisted: ->
-      !!(@persistent)# && @attributes.hasOwnProperty("id") && @attributes.id != null && @attributes.id != undefined)
-
-    # Check if this record has not yet been saved to the database.
-    #
-    # @return [Boolean]
-    isNew: ->
-      !!!@isPersisted()
-
     # @todo Haven't implemented
     reload: ->
-
-    # Returns the data store associated with this model's class.
-    #
-    # @return [Tower.Store]
-    store: ->
-      @constructor.store()
 
     # Implementation of the {#save} method.
     #
@@ -150,7 +140,6 @@ Tower.Model.Persistence =
           throw error if error && !callback
 
           unless error
-            @_resetChanges()
             @persistent = true
 
           complete.call(@, error)
@@ -173,7 +162,6 @@ Tower.Model.Persistence =
           throw error if error && !callback
 
           unless error
-            @_resetChanges()
             @persistent = true
 
           complete.call(@, error)
@@ -199,7 +187,6 @@ Tower.Model.Persistence =
           unless error
             @destroyRelations (error) =>
               @persistent = false
-              @_resetChanges()
               delete @attributes.id
               complete.call(@, error)
           else
