@@ -15,7 +15,56 @@ class Tower.Store.Transaction extends Tower.Class
       created:  Ember.Map.create()
       updated:  Ember.Map.create()
       deleted:  Ember.Map.create()
-      
-  recordBecameDirty: ->
+
+  add: (record) ->
+    # Tower.assert !Ember.get(record, "isDirty"), "store.transaction.dirty"
+
+    #recordTransaction   = Ember.get(record, "transaction")
+    #defaultTransaction  = Ember.getPath(@, "store.defaultTransaction")
+
+    # Tower.assert recordTransaction != defaultTransaction, "store.transaction.unique"
+
+    @adopt record
+
+  remove: (record) ->
+    defaultTransaction = Ember.getPath(@, "store.defaultTransaction")
+    defaultTransaction.adopt(record)
+
+  adopt: (record) ->
+    oldTransaction = Ember.get(record, "transaction")
+    oldTransaction.removeFromBucket("clean", record) if oldTransaction
+
+    @addToBucket "clean", record
+
+    Ember.set(record, "transaction", @)
+
+  recordBecameDirty: (kind, record) ->
+    @removeFromBucket "clean", record
+    @addToBucket kind, record
+
+  # @private
+  addToBucket: (kind, record) ->
+    bucket    = Ember.get(Ember.get(@, "buckets"), kind)
+    type      = record.constructor
+    records   = bucket.get(type)
     
-  recordBecameClean: ->
+    unless records
+      records = Ember.OrderedSet.create()
+      bucket.set(type, records)
+      
+    records.add(record)
+
+  # @private
+  removeFromBucket: (kind, record) ->
+    bucket    = Ember.get(Ember.get(@, "buckets"), kind)
+    type      = record.constructor
+    records   = bucket.get(type)
+    
+    records.remove(record) if records
+
+  recordBecameClean: (kind, record) ->
+    @removeFromBucket kind, record
+
+    defaultTransaction = Ember.getPath(@, "store.defaultTransaction")
+    
+    defaultTransaction.adopt(record) if defaultTransaction

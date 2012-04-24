@@ -125,5 +125,10 @@ describeWith = (store) ->
           stateMachine.send 'didAfterCommit'
           
           assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.saved'
+        
+        test 'saveWithState', (done) ->
+          record.saveWithState =>
+            console.log "DONE!"
+            done()
 
 describeWith(Tower.Store.Memory)
