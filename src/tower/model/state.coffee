@@ -8,32 +8,32 @@ class Tower.Model.State extends Tower.State
   @setProperty: (stateMachine, context) ->
     key     = context.key
     value   = context.value
-    record  = Ember.get(stateMachine, "record")
-    data    = Ember.get(record, "data")
+    record  = Ember.get(stateMachine, 'record')
+    data    = Ember.get(record, 'data')
 
     Ember.set(data, key, value)
 
   @setAssociation: (stateMachine, context) ->
     key     =  context.key
     value   =  context.value
-    record  =  Ember.get(stateMachine, "record")
-    data    =  Ember.get(record, "data")
+    record  =  Ember.get(stateMachine, 'record')
+    data    =  Ember.get(record, 'data')
 
     data.setAssociation(key, value)
 
   @didChangeData: (stateMachine) ->
-    record           =  Ember.get(stateMachine, "record")
-    data             =  Ember.get(record, "data")
+    record           =  Ember.get(stateMachine, 'record')
+    data             =  Ember.get(record, 'data')
     data._savedData  =  null
     
-    record.notifyPropertyChange("data")
+    record.notifyPropertyChange('data')
     
   @becameInvalid: (stateMachine, errors) ->
-    record = Ember.get(stateMachine, "record")
+    record = Ember.get(stateMachine, 'record')
     
-    Ember.set(record, "errors", errors)
+    Ember.set(record, 'errors', errors)
     
-    stateMachine.goToState("invalid")
+    stateMachine.goToState('invalid')
   
   # Sets an observer on the `id` of the record we're waiting on that's
   # associated with our `stateMachine.record`.
@@ -42,30 +42,30 @@ class Tower.Model.State extends Tower.State
   # then we call `stateMachine.send('doneWaiting', object)`.  It's basically a 
   # state machine version of an async callback.
   @waitingOn: (stateMachine, object) ->
-    record        =  Ember.get(stateMachine, "record")
-    pendingQueue  =  Ember.get(record, "pendingQueue")
+    record        =  Ember.get(stateMachine, 'record')
+    pendingQueue  =  Ember.get(record, 'pendingQueue')
     objectGuid    =  Ember.guidFor(object)
     
     observer      =  ->
-      if Ember.get(object, "id")
-        stateMachine.send("doneWaitingOn", object)
-        Ember.removeObserver(object, "id", observer)
+      if Ember.get(object, 'id')
+        stateMachine.send('doneWaitingOn', object)
+        Ember.removeObserver(object, 'id', observer)
 
     pendingQueue[objectGuid] = [object, observer]
 
-    Ember.addObserver(object, "id", observer)
+    Ember.addObserver(object, 'id', observer)
     
   @doneWaitingOn: (stateMachine, object) ->
-    record        = Ember.get(stateMachine, "record")
-    pendingQueue  = Ember.get(record, "pendingQueue")
+    record        = Ember.get(stateMachine, 'record')
+    pendingQueue  = Ember.get(record, 'pendingQueue')
     objectGuid    = Ember.guidFor(object)
     
     delete pendingQueue[objectGuid]
 
-    stateMachine.send("doneWaiting") if _.isEmptyObject(pendingQueue)
+    stateMachine.send('doneWaiting') if _.isEmptyObject(pendingQueue)
   
   stateProperty = Ember.computed((key) ->
-    parent = Ember.get(@, "parentState")
+    parent = Ember.get(@, 'parentState')
     Ember.get parent, key  if parent
   ).property()
   
@@ -86,8 +86,8 @@ class Tower.Model.State extends Tower.State
     destroy: (stateMachine) ->
       @_super(stateMachine)
       
-      record    = Ember.get(stateMachine, "record")
-      dirtyType = Ember.get(@, "dirtyType")
+      record    = Ember.get(stateMachine, 'record')
+      dirtyType = Ember.get(@, 'dirtyType')
       
       record.withTransaction (t) ->
         t.recordBecameClean(dirtyType, record)
@@ -96,25 +96,25 @@ class Tower.Model.State extends Tower.State
     destroy: (stateMachine) ->
       @_super(stateMachine)
       
-      stateMachine.goToState("deleted.saved")
+      stateMachine.goToState('deleted.saved')
   
   @UpdatedUncommitted: Ember.Mixin.create
     destroy: (stateMachine) ->
       @_super(stateMachine)
       
-      record = Ember.get(stateMachine, "record")
+      record = Ember.get(stateMachine, 'record')
 
       record.withTransaction (t) ->
-        t.recordBecameClean("created", record)
+        t.recordBecameClean('created', record)
 
-      stateMachine.goToState("deleted")
+      stateMachine.goToState('deleted')
       
 Uncommitted         = Tower.Model.State.Uncommitted
 CreatedUncommitted  = Tower.Model.State.CreatedUncommitted
 UpdatedUncommitted  = Tower.Model.State.UpdatedUncommitted
 
 class Tower.Model.State.Dirty extends Tower.Model.State
-  initialState: "uncommitted"
+  initialState: 'uncommitted'
   isDirty:      true
   
   # When you first set a property on the record, it will enter this state.
@@ -140,26 +140,26 @@ class Tower.Model.State.Dirty extends Tower.Model.State
     destroy: Ember.K
     
     enter: (stateMachine) ->
-      dirtyType = Ember.get(@, "dirtyType")
-      record    = Ember.get(stateMachine, "record")
+      dirtyType = Ember.get(@, 'dirtyType')
+      record    = Ember.get(stateMachine, 'record')
       
       record.withTransaction (t) ->
         t.recordBecameDirty(dirtyType, record)
 
     exit: (stateMachine) ->
-      record = Ember.get(stateMachine, "record")
-      stateMachine.send("invokeLifecycleCallbacks", record)
+      record = Ember.get(stateMachine, 'record')
+      stateMachine.send('invokeLifecycleCallbacks', record)
     
     # You have to send it to "pending.uncommitted", and it will go back to just
     # "updated.uncommitted" once the other record is done doing it's thing.
     waitingOn: (stateMachine, object) ->
       Tower.Model.State.waitingOn(stateMachine, object)
       
-      stateMachine.goToState("pending")
+      stateMachine.goToState('pending')
 
     willCommit: (stateMachine) ->
-      # stateMachine.goToState("inFlight")
-      stateMachine.goToState("committing")
+      # stateMachine.goToState('inFlight')
+      stateMachine.goToState('committing')
       
   , Uncommitted
   
@@ -173,26 +173,26 @@ class Tower.Model.State.Dirty extends Tower.Model.State
   # This is the state it should enter when it's running through validations (which could be async),
   # and when it's running before callbacks.
   pending: Tower.Model.State.create
-    initialState: "uncommitted"
+    initialState: 'uncommitted'
     isPending:    true
     
     uncommitted:  Tower.Model.State.create
       destroy: (stateMachine) ->
-        record        = Ember.get(stateMachine, "record")
-        pendingQueue  = Ember.get(record, "pendingQueue")
+        record        = Ember.get(stateMachine, 'record')
+        pendingQueue  = Ember.get(record, 'pendingQueue')
         
         for property of pendingQueue
           continue unless pendingQueue.hasOwnProperty(property)
           [object, observer] = pendingQueue[property]
-          Ember.removeObserver(object, "id", observer)
+          Ember.removeObserver(object, 'id', observer)
 
       willCommit: (stateMachine) ->
-        stateMachine.goToState("committing")
+        stateMachine.goToState('committing')
 
       doneWaitingOn: Tower.Model.State.doneWaitingOn
 
       doneWaiting: (stateMachine) ->
-        dirtyType = Ember.get(@, "dirtyType")
+        dirtyType = Ember.get(@, 'dirtyType')
         stateMachine.goToState("#{dirtyType}.uncommitted")
 
     , Uncommitted
@@ -203,16 +203,16 @@ class Tower.Model.State.Dirty extends Tower.Model.State
     doneWaitingOn: Tower.Model.State.doneWaitingOn
 
     doneWaiting: (stateMachine) ->
-      record        = Ember.get(stateMachine, "record")
-      transaction   = Ember.get(record, "transaction")
+      record        = Ember.get(stateMachine, 'record')
+      transaction   = Ember.get(record, 'transaction')
       
       # in here we must call the before callbacks, and after callbacks.
       Ember.run.once(transaction, transaction.commit)
 
     willCommit: (stateMachine) ->
-      dirtyType     = Ember.get(@, "dirtyType")
+      dirtyType     = Ember.get(@, 'dirtyType')
       
-      stateMachine.goToState("before")
+      stateMachine.goToState('before')
     
     # calls this state if a before/after callback throws an error
     becameInvalid: Tower.Model.State.becameInvalid
@@ -229,7 +229,7 @@ class Tower.Model.State.Dirty extends Tower.Model.State
       becameInvalid: Tower.Model.State.becameInvalid
       
       didAfterCommit: (stateMachine) ->
-        stateMachine.goToState("loaded")
+        stateMachine.goToState('loaded')
     
     # When you first save/delete a model (persisting to server if you're on the client),
     # it will enter this state.
@@ -252,8 +252,8 @@ class Tower.Model.State.Dirty extends Tower.Model.State
       didChangeData: Tower.Model.State.didChangeData
 
       enter: (stateMachine) ->
-        dirtyType = Ember.get(@, "dirtyType")
-        record    = Ember.get(stateMachine, "record")
+        dirtyType = Ember.get(@, 'dirtyType')
+        record    = Ember.get(stateMachine, 'record')
 
         record.withTransaction (t) ->
           t.recordBecameClean(dirtyType, record)
@@ -261,7 +261,7 @@ class Tower.Model.State.Dirty extends Tower.Model.State
       # Called from the store after the record is persisted.
       # The "loaded" state is as if the record was just loaded (page refresh).
       didCommit: (stateMachine) ->
-        stateMachine.goToState("after")
+        stateMachine.goToState('after')
 
       becameInvalid: Tower.Model.State.becameInvalid
   
@@ -277,20 +277,20 @@ class Tower.Model.State.Dirty extends Tower.Model.State
     setAssociation: Tower.Model.State.setAssociation
     
     destroy: (stateMachine) ->
-      stateMachine.goToState("deleted")
+      stateMachine.goToState('deleted')
       
     setProperty: (stateMachine, context) ->
       Tower.Model.State.setProperty(stateMachine, context)
       
-      record  = Ember.get(stateMachine, "record")
-      errors  = Ember.get(record, "errors")
+      record  = Ember.get(stateMachine, 'record')
+      errors  = Ember.get(record, 'errors')
       key     = context.key
       
       delete errors[key]
 
-      stateMachine.send("becameValid") unless _.hasDefinedProperties(errors)
+      stateMachine.send('becameValid') unless _.hasDefinedProperties(errors)
 
     becameValid: (stateMachine) ->
-      stateMachine.goToState("uncommitted")
+      stateMachine.goToState('uncommitted')
 
 module.exports = Tower.Model.State

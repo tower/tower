@@ -1,12 +1,12 @@
 Tower.Model.Attachment =
   ClassMethod:
     # @example
-    #   @attachment "photo"
+    #   @attachment 'photo'
     attachment: (name, options = {}) ->
       @field name, ->
-        @field "name"
-        @field "size"
-        @field "path"
+        @field 'name'
+        @field 'size'
+        @field 'path'
       
     attachments: ->
       @metadata().attachments

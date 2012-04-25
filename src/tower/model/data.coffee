@@ -11,65 +11,65 @@
 # You can also set relations and they will be tracked here.
 # 
 # @example Set arrays
-#   post.set "tags", ["ruby", "javascript"]
-#   post.push "tags", "node"
-#   post.pushEach "tags", ["rails", "tower"]
+#   post.set 'tags', ['ruby', 'javascript']
+#   post.push 'tags', 'node'
+#   post.pushEach 'tags', ['rails', 'tower']
 # 
 # @example Set arrays through parameters
-#   post.set tags: ["ruby", "javascript"]
-#   post.set $push: tags: "node"
-#   post.set $pushEach: tags: ["rails", "tower"]
+#   post.set tags: ['ruby', 'javascript']
+#   post.set $push: tags: 'node'
+#   post.set $pushEach: tags: ['rails', 'tower']
 # 
 # @example Set nested attributes
-#   post.push "comments", message: "First comment"
-#   post.set $push: comments: {message: "First comment"}
+#   post.push 'comments', message: 'First comment'
+#   post.set $push: comments: {message: 'First comment'}
 # 
 # @example Increment attributes
-#   post.inc "likeCount", 1
+#   post.inc 'likeCount', 1
 #   post.set $inc: likeCount: 1
 # 
 # @example Decrement attributes
-#   post.inc "likeCount", -1
+#   post.inc 'likeCount', -1
 #   post.set $inc: likeCount: -1
 # 
 # @example Add item to array
-#   post.add "tags", "coffeescript"
-#   post.set $add: tags: "coffeescript"
-#   post.addEach "tags", ["javascript", "coffeescript"]
-#   post.set $addEach: tags: ["javascript", "coffeescript"]
+#   post.add 'tags', 'coffeescript'
+#   post.set $add: tags: 'coffeescript'
+#   post.addEach 'tags', ['javascript', 'coffeescript']
+#   post.set $addEach: tags: ['javascript', 'coffeescript']
 # 
 # @example Remove item from array
-#   post.remove "tags", "coffeescript"
-#   post.set $remove: tags: "coffeescript"
-#   post.removeEach "tags", ["javascript", "coffeescript"]
-#   post.set $removeEach: tags: ["javascript", "coffeescript"]
+#   post.remove 'tags', 'coffeescript'
+#   post.set $remove: tags: 'coffeescript'
+#   post.removeEach 'tags', ['javascript', 'coffeescript']
+#   post.set $removeEach: tags: ['javascript', 'coffeescript']
 # 
 # @example Pull item from array (same as remove)
-#   post.pull "tags", "coffeescript"
-#   post.set $pull: tags: "coffeescript"
-#   post.pullEach "tags", ["javascript", "coffeescript"]
-#   post.set $pullEach: tags: ["javascript", "coffeescript"]
+#   post.pull 'tags', 'coffeescript'
+#   post.set $pull: tags: 'coffeescript'
+#   post.pullEach 'tags', ['javascript', 'coffeescript']
+#   post.set $pullEach: tags: ['javascript', 'coffeescript']
 #
 # @example Each together
 #   user = App.User.first() # id == 1
-#   post = new App.Post(user: user, title: "First Post")
-#   post.get('data').get('unsavedData') #=> {userId: 1, title: "First Post"}
-#   post.set "tags", ["ruby", "javascript"]
-#   post.get('data').get('unsavedData') #=> {userId: 1, title: "First Post", tags: ["ruby", "javascript"]}
-#   post.set "comments", [new App.Comment]
+#   post = new App.Post(user: user, title: 'First Post')
+#   post.get('data').get('unsavedData') #=> {userId: 1, title: 'First Post'}
+#   post.set 'tags', ['ruby', 'javascript']
+#   post.get('data').get('unsavedData') #=> {userId: 1, title: 'First Post', tags: ['ruby', 'javascript']}
+#   post.set 'comments', [new App.Comment]
 #   post.comments().push new App.Comment
 # 
 # @example Crazy params example
 #   post.set
-#     title: "Renamed Post"
+#     title: 'Renamed Post'
 #     $add:
-#       tags: "node"
+#       tags: 'node'
 #     $removeEach:
-#       tags: ["ruby", "jasmine"]
+#       tags: ['ruby', 'jasmine']
 # 
 class Tower.Model.Data
   constructor: (record) ->
-    throw new Error("Data must be passed a record") unless record
+    throw new Error('Data must be passed a record') unless record
     
     @record       = record
     
@@ -145,7 +145,7 @@ class Tower.Model.Data
     relation      = relations[key]
     
     if typeof relation != 'undefined'
-      store       = Ember.get(@record, "store")
+      store       = Ember.get(@record, 'store')
       return store.clientIdToId[relation]
       
     value         = savedData[key] if savedData && value == `undefined`
@@ -161,7 +161,7 @@ class Tower.Model.Data
   # @private
   _set: (key, value) ->
     if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
-      @[key.replace("$", "")](value)
+      @[key.replace('$', '')](value)
     else
       Ember.set @unsavedData, key, value
 

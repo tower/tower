@@ -5,25 +5,25 @@ Tower.Model.Validations =
     #
     # @example Define one validation for one attribute
     #   class App.User extends Tower.Model
-    #     @field "email"
-    #     @validates "email", presence: true
+    #     @field 'email'
+    #     @validates 'email', presence: true
     #
     # @example Define multiple validations for one attribute
     #   class App.User extends Tower.Model
-    #     @field "email"
-    #     @validates "email", presence: true, format: /\w+@\w+\.com/
+    #     @field 'email'
+    #     @validates 'email', presence: true, format: /\w+@\w+\.com/
     #
     # @example Define multiple validations for multiple attributes
     #   class App.User extends Tower.Model
-    #     @field "name"
-    #     @field "email"
-    #     @validates "name", "email", presence: true, min: 3
+    #     @field 'name'
+    #     @field 'email'
+    #     @validates 'name', 'email', presence: true, min: 3
     #
     # @example Validation for a date
     #   class App.Deal extends Tower.Model
-    #     @field "expiresAt", type: "Date"
+    #     @field 'expiresAt', type: 'Date'
     #
-    #     @validates "expiresAt", ">=": -> _(7).days().after(@get('createdAt')), allow: blank: true, null: true
+    #     @validates 'expiresAt', '>=': -> _(7).days().after(@get('createdAt')), allow: blank: true, null: true
     #
     # @param [String] attributes
     # @param [Object] options
@@ -76,7 +76,7 @@ Tower.Model.Validations =
     validate: (callback) ->
       success         = false
 
-      @runCallbacks "validate", (block) =>
+      @runCallbacks 'validate', (block) =>
         complete        = @_callback(block, callback)
         validators      = @constructor.validators()
         errors          = @errors = {}
@@ -100,7 +100,7 @@ Tower.Model.Validations =
       
       console.log Ember.getPath @get('stateMachine'), 'currentState.path'
       
-      @runCallbacks "validate", (block) =>
+      @runCallbacks 'validate', (block) =>
         complete        = @_callback(block, callback)
         validators      = @constructor.validators()
         errors          = @errors = {}

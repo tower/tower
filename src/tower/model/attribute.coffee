@@ -12,17 +12,17 @@ class Tower.Model.Attribute
       block         = options
       options       = {}
 
-    @type           = type = options.type || "String"
+    @type           = type = options.type || 'String'
     
-    if typeof type != "string"
+    if typeof type != 'string'
       @itemType     = type[0]
-      @type         = type = "Array"
+      @type         = type = 'Array'
 
     @encodingType = switch type
-      when "Id", "Date", "Array", "String", "Integer", "Float", "BigDecimal", "Time", "DateTime", "Boolean", "Object", "Number", "Geo"
+      when 'Id', 'Date', 'Array', 'String', 'Integer', 'Float', 'BigDecimal', 'Time', 'DateTime', 'Boolean', 'Object', 'Number', 'Geo'
         type
       else
-        "Model"
+        'Model'
 
     @_setDefault(options)
     @_defineAccessors(options)
@@ -34,7 +34,7 @@ class Tower.Model.Attribute
     @_default = options.default
 
     unless @_default
-      if @type == "Geo"
+      if @type == 'Geo'
         @_default = lat: null, lng: null
       else if @type == 'Array'
         @_default = []
@@ -64,16 +64,16 @@ class Tower.Model.Attribute
     
     attribute[name] = Ember.computed((key, value) ->
       if arguments.length is 2
-        data = Ember.get(@, "data")
+        data = Ember.get(@, 'data')
         data.set key, field.encode(value, @)
         #@set key, value
       else
-        data = Ember.get(@, "data")
+        data = Ember.get(@, 'data')
         value = data.get(key)
         value = field.defaultValue(@) if value == undefined
         field.decode(value, @)
         
-    ).property("data").cacheable()
+    ).property('data').cacheable()
     
     #@owner.prototype[name] = attribute[name]
     @owner.reopen attribute
@@ -92,7 +92,7 @@ class Tower.Model.Attribute
     
     if type == 'Geo' && !options.index
       index       = {}
-      index[name] = "2d"
+      index[name] = '2d'
       options.index = index
   
     if options.index
@@ -114,7 +114,7 @@ class Tower.Model.Attribute
       _default.concat()
     else if _.isHash(_default)
       _.extend({}, _default)
-    else if typeof(_default) == "function"
+    else if typeof(_default) == 'function'
       _default.call(record)
     else
       _default
@@ -127,9 +127,9 @@ class Tower.Model.Attribute
 
   code: (type, value, binding) ->
     switch typeof type
-      when "string"
+      when 'string'
         binding[type].call binding[type], value
-      when "function"
+      when 'function'
         type.call binding, value
       else
         value

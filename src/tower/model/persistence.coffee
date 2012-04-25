@@ -9,7 +9,7 @@ Tower.Model.Persistence =
     #
     # @example Define the store from an object (uses {Tower.Model.default('store')})
     #   class App.Person extends Tower.Model
-    #     @store name: "people", type: "Person"
+    #     @store name: 'people', type: 'Person'
     #
     # @example Return the store
     #   store = App.User.store()
@@ -24,9 +24,9 @@ Tower.Model.Persistence =
 
       defaultStore = @default('store') || Tower.Store.Memory
 
-      if typeof value == "function"
+      if typeof value == 'function'
         store   = new value(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
-      else if typeof value == "object"
+      else if typeof value == 'object'
         store ||= new defaultStore(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
         _.extend store, value
       else if value
@@ -56,16 +56,16 @@ Tower.Model.Persistence =
     # Create or update the record.
     #
     # @example Default save
-    #   user.save -> console.log "saved"
+    #   user.save -> console.log 'saved'
     #
     # @example Save without validating
-    #   user.save validate: false, -> console.log "saved"
+    #   user.save validate: false, -> console.log 'saved'
     #
     # @return [void] Requires a callback.
     save: (options, callback) ->
-      throw new Error("Record is read only") if @readOnly
+      throw new Error('Record is read only') if @readOnly
 
-      if typeof options == "function"
+      if typeof options == 'function'
         callback  = options
         options   = {}
       options ||= {}
@@ -83,9 +83,9 @@ Tower.Model.Persistence =
       undefined
       
     saveWithState: (options, callback) ->
-      throw new Error("Record is read only") if @readOnly
+      throw new Error('Record is read only') if @readOnly
 
-      if typeof options == "function"
+      if typeof options == 'function'
         callback  = options
         options   = {}
       options ||= {}
@@ -135,7 +135,7 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     _save: (callback) ->
-      @runCallbacks "save", (block) =>
+      @runCallbacks 'save', (block) =>
         complete = @_callback(block, callback)
 
         if @get('isNew')
@@ -153,7 +153,7 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     _create: (callback) ->
-      @runCallbacks "create", (block) =>
+      @runCallbacks 'create', (block) =>
         complete = @_callback(block, callback)
 
         @constructor.scoped(instantiate: false).create @, (error) =>
@@ -175,10 +175,10 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     _update: (updates, callback) ->
-      @runCallbacks "update", (block) =>
+      @runCallbacks 'update', (block) =>
         complete = @_callback(block, callback)
         
-        @constructor.scoped(instantiate: false).update @get("id"), updates, (error) =>
+        @constructor.scoped(instantiate: false).update @get('id'), updates, (error) =>
           throw error if error && !callback
 
           unless error
@@ -198,7 +198,7 @@ Tower.Model.Persistence =
     _destroy: (callback) ->
       id = @get('id')
 
-      @runCallbacks "destroy", (block) =>
+      @runCallbacks 'destroy', (block) =>
         complete = @_callback(block, callback)
 
         @constructor.scoped(instantiate: false).destroy @, (error) =>

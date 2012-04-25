@@ -1,80 +1,80 @@
 # Interface to {Tower.Model.Cursor}, used to build database operations.
 class Tower.Model.Scope extends Tower.Class
   @finderMethods: [
-    "find",
-    "all",
-    "first",
-    "last",
-    "count",
-    "exists",
-    "instantiate",
-    "pluck"
+    'find',
+    'all',
+    'first',
+    'last',
+    'count',
+    'exists',
+    'instantiate',
+    'pluck'
   ]
 
   @persistenceMethods: [
-    "create",
-    "update",
-    "destroy",
-    "build"
+    'create',
+    'update',
+    'destroy',
+    'build'
   ]
 
   # These methods are added to {Tower.Model}.
   @queryMethods: [
-    "where",
-    "order",
-    "sort",
-    "asc",
-    "desc",
-    "gte",
-    "gt",
-    "lte",
-    "lt",
-    "limit",
-    "offset",
-    "select",
-    "joins",
-    "includes",
-    "excludes",
-    "paginate",
-    "page",
-    "allIn",
-    "allOf",
-    "alsoIn",
-    "anyIn",
-    "anyOf",
-    "notIn",
-    "near",
-    "within"
+    'where',
+    'order',
+    'sort',
+    'asc',
+    'desc',
+    'gte',
+    'gt',
+    'lte',
+    'lt',
+    'limit',
+    'offset',
+    'select',
+    'joins',
+    'includes',
+    'excludes',
+    'paginate',
+    'page',
+    'allIn',
+    'allOf',
+    'alsoIn',
+    'anyIn',
+    'anyOf',
+    'notIn',
+    'near',
+    'within'
   ]
 
   # Map of human readable query operators to
   # normalized query operators to pass to a {Tower.Store}.
   @queryOperators:
-    ">=":       "$gte"
-    "$gte":     "$gte"
-    ">":        "$gt"
-    "$gt":      "$gt"
-    "<=":       "$lte"
-    "$lte":     "$lte"
-    "<":        "$lt"
-    "$lt":      "$lt"
-    "$in":      "$in"
-    "$nin":     "$nin"
-    "$any":     "$any"
-    "$all":     "$all"
-    "=~":       "$regex"
-    "$m":       "$regex"
-    "$regex":   "$regex"
-    "$match":   "$match"
-    "$notMatch":   "$notMatch"
-    "!~":       "$nm"
-    "$nm":      "$nm"
-    "=":        "$eq"
-    "$eq":      "$eq"
-    "!=":       "$neq"
-    "$neq":     "$neq"
-    "$null":    "$null"
-    "$notNull": "$notNull"
+    '>=':       '$gte'
+    '$gte':     '$gte'
+    '>':        '$gt'
+    '$gt':      '$gt'
+    '<=':       '$lte'
+    '$lte':     '$lte'
+    '<':        '$lt'
+    '$lt':      '$lt'
+    '$in':      '$in'
+    '$nin':     '$nin'
+    '$any':     '$any'
+    '$all':     '$all'
+    '=~':       '$regex'
+    '$m':       '$regex'
+    '$regex':   '$regex'
+    '$match':   '$match'
+    '$notMatch':   '$notMatch'
+    '!~':       '$nm'
+    '$nm':      '$nm'
+    '=':        '$eq'
+    '$eq':      '$eq'
+    '!=':       '$neq'
+    '$neq':     '$neq'
+    '$null':    '$null'
+    '$notNull': '$notNull'
 
   init: (cursor) ->
     @_super arguments...
@@ -90,25 +90,25 @@ class Tower.Model.Scope extends Tower.Class
   # Builds one or many records based on the scope's cursor.
   #
   # @example Build single record
-  #   App.User.build(firstName: "Lance")
+  #   App.User.build(firstName: 'Lance')
   #
   # @example Build multiple records
   #   # splat arguments
-  #   App.User.build({firstName: "Lance"}, {firstName: "John"})
+  #   App.User.build({firstName: 'Lance'}, {firstName: 'John'})
   #   # or pass in an explicit array of records
-  #   App.User.build([{firstName: "Lance"}, {firstName: "John"}])
+  #   App.User.build([{firstName: 'Lance'}, {firstName: 'John'}])
   #
   # @example Build by passing in records
-  #   App.User.build(new User(firstName: "Lance"))
+  #   App.User.build(new User(firstName: 'Lance'))
   #
   # @example Build from scope
   #   # single record
-  #   App.User.where(firstName: "Lance").build()
+  #   App.User.where(firstName: 'Lance').build()
   #   # multiple records
-  #   App.User.where(firstName: "Lance").build([{lastName: "Pollard"}, {lastName: "Smith"}])
+  #   App.User.where(firstName: 'Lance').build([{lastName: 'Pollard'}, {lastName: 'Smith'}])
   #
   # @example Build without instantiating the object in memory
-  #   App.User.options(instantiate: false).where(firstName: "Lance").build()
+  #   App.User.options(instantiate: false).where(firstName: 'Lance').build()
   #
   # @return [void] Requires a callback to get the data.
   build: ->
@@ -124,25 +124,25 @@ class Tower.Model.Scope extends Tower.Class
   # Creates one or many records based on the scope's cursor.
   #
   # @example Create single record
-  #   App.User.create(firstName: "Lance")
+  #   App.User.create(firstName: 'Lance')
   #
   # @example Create multiple records
   #   # splat arguments
-  #   App.User.create({firstName: "Lance"}, {firstName: "John"})
+  #   App.User.create({firstName: 'Lance'}, {firstName: 'John'})
   #   # or pass in an explicit array of records
-  #   App.User.create([{firstName: "Lance"}, {firstName: "John"}])
+  #   App.User.create([{firstName: 'Lance'}, {firstName: 'John'}])
   #
   # @example Create by passing in records
-  #   App.User.create(new User(firstName: "Lance"))
+  #   App.User.create(new User(firstName: 'Lance'))
   #
   # @example Create from scope
   #   # single record
-  #   App.User.where(firstName: "Lance").create()
+  #   App.User.where(firstName: 'Lance').create()
   #   # multiple records
-  #   App.User.where(firstName: "Lance").create([{lastName: "Pollard"}, {lastName: "Smith"}])
+  #   App.User.where(firstName: 'Lance').create([{lastName: 'Pollard'}, {lastName: 'Smith'}])
   #
   # @example Create without instantiating the object in memory
-  #   App.User.options(instantiate: false).where(firstName: "Lance").create()
+  #   App.User.options(instantiate: false).where(firstName: 'Lance').create()
   #
   # @return [void] Requires a callback to get the data.
   create: ->
@@ -158,21 +158,21 @@ class Tower.Model.Scope extends Tower.Class
   # Updates records based on the scope's cursor.
   #
   # @example Update by id
-  #   App.User.update(1, firstName: "Lance")
-  #   App.User.update(1, 2, firstName: "Lance")
-  #   App.User.update([1, 2], firstName: "Lance")
+  #   App.User.update(1, firstName: 'Lance')
+  #   App.User.update(1, 2, firstName: 'Lance')
+  #   App.User.update([1, 2], firstName: 'Lance')
   #
   # @example Update all
-  #   App.User.update(firstName: "Lance")
+  #   App.User.update(firstName: 'Lance')
   #
   # @example Update by passing in records
-  #   App.User.update(userA, firstName: "Lance")
-  #   App.User.update(userA, userB, firstName: "Lance")
-  #   App.User.update([userA, userB], firstName: "Lance")
+  #   App.User.update(userA, firstName: 'Lance')
+  #   App.User.update(userA, userB, firstName: 'Lance')
+  #   App.User.update([userA, userB], firstName: 'Lance')
   #
   # @example Update from scope
-  #   App.User.where(firstName: "John").update(firstName: "Lance")
-  #   App.User.where(firstName: "John").update(1, 2, 3, firstName: "Lance")
+  #   App.User.where(firstName: 'John').update(firstName: 'Lance')
+  #   App.User.where(firstName: 'John').update(1, 2, 3, firstName: 'Lance')
   #
   # @return [void] Requires a callback to get the data.
   update: ->
@@ -182,7 +182,7 @@ class Tower.Model.Scope extends Tower.Class
     # for `update`, the last argument before the callback must be the updates you're making
     updates         = args.pop()
 
-    throw new Error("Must pass in updates hash") unless updates && typeof updates == "object"
+    throw new Error('Must pass in updates hash') unless updates && typeof updates == 'object'
 
     cursor.addData(updates)
 
@@ -206,8 +206,8 @@ class Tower.Model.Scope extends Tower.Class
   #   App.User.destroy([userA, userB])
   #
   # @example Update from scope
-  #   App.User.where(firstName: "John").destroy()
-  #   App.User.where(firstName: "John").destroy(1, 2, 3)
+  #   App.User.where(firstName: 'John').destroy()
+  #   App.User.where(firstName: 'John').destroy(1, 2, 3)
   #
   # @return [void] Requires a callback to get the data.
   destroy: ->
@@ -253,7 +253,7 @@ class Tower.Model.Scope extends Tower.Class
   #   App.User.find([10, 20])
   #
   # @example Create from scope
-  #   App.User.where(firstName: "Lance").find(1, 2)
+  #   App.User.where(firstName: 'Lance').find(1, 2)
   #
   # @return [undefined] Requires a callback to get the data.
   find: ->

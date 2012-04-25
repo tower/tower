@@ -38,12 +38,12 @@ Tower.Model.Metadata =
     toKey: ->
       @metadata().paramName
 
-    # @url "/posts/:postId/comment"
-    # @url parent: "post"
-    # @url (model) -> return "/something"
+    # @url '/posts/:postId/comment'
+    # @url parent: 'post'
+    # @url (model) -> return '/something'
     url: (options) ->
       @_url = switch typeof options
-        when "object"
+        when 'object'
           if options.parent
             url = "/#{Tower.Support.String.parameterize(Tower.Support.String.pluralize(options.parent))}/:#{Tower.Support.String.camelize(options.parent, true)}/#{@toParam()}"
         else
@@ -57,15 +57,15 @@ Tower.Model.Metadata =
 
     # @example All default options
     #   class App.User extends Tower.Model
-    #     @defaults store: Tower.Store.Memory, scope: @desc("createdAt")
+    #     @defaults store: Tower.Store.Memory, scope: @desc('createdAt')
     defaults: (object) ->
       @default(key, value) for key, value of object if object
       @metadata().defaults
 
     # @example All default options
     #   class App.User extends Tower.Model
-    #     @default "store", Tower.Store.Memory
-    #     @default "scope", @desc("createdAt")
+    #     @default 'store', Tower.Store.Memory
+    #     @default 'scope', @desc('createdAt')
     default: (key, value) ->
       if arguments.length == 1 # we're getting a value
         @metadata().defaults[key]
@@ -141,13 +141,13 @@ Tower.Model.Metadata =
     # Url for this model.
     toPath: ->
       result  = @constructor.toParam()
-      return "/" if result == undefined
+      return '/' if result == undefined
       param   = @toParam()
       result += "/#{param}" if param
       result
 
     toParam: ->
-      id = @get("id")
+      id = @get('id')
       if id? then String(id) else null
 
     toKey: ->

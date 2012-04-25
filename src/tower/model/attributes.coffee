@@ -7,7 +7,7 @@ Tower.Model.Attributes =
     #
     # @example String field
     #   class App.User extends Tower.Model
-    #     @field "email"
+    #     @field 'email'
     #
     # @param [String] name
     # @param [Object] options

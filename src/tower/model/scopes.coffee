@@ -3,10 +3,10 @@ Tower.Model.Scopes =
   ClassMethods:
     # Define a named scope on the model class.
     #
-    # @example All users with firstName starting with the letter "a"
+    # @example All users with firstName starting with the letter 'a'
     #   class App.User extends Tower.Model
-    #     @field "firstName"
-    #     @scope "letterA", @where(firstName: /^a/)
+    #     @field 'firstName'
+    #     @scope 'letterA', @where(firstName: /^a/)
     #
     #   App.User.letterA().all()
     #

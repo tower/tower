@@ -74,7 +74,7 @@ Tower.Model.Serialization =
     result
 
   # @private
-  _readAttributeForSerialization: (name, type = "json") ->
+  _readAttributeForSerialization: (name, type = 'json') ->
     @attributes[name]
 
 module.exports = Tower.Model.Serialization

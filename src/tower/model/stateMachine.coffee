@@ -1,16 +1,16 @@
 # helpers
 createdState = Tower.Model.State.Dirty.create
-  dirtyType: "created"
+  dirtyType: 'created'
   isNew:     true
 
   invokeLifecycleCallbacks: (stateMachine, record) ->
-    record.fire("didCreate")
+    record.fire('didCreate')
 
 updatedState = Tower.Model.State.Dirty.create
-  dirtyType: "updated"
+  dirtyType: 'updated'
 
   invokeLifecycleCallbacks: (stateMachine, record) ->
-    record.fire("didUpdate")
+    record.fire('didUpdate')
 
 createdState.states.uncommitted.reopen(Tower.Model.State.CreatedUncommitted)
 createdState.states.pending.states.uncommitted.reopen(Tower.Model.State.CreatedUncommitted)
@@ -19,7 +19,7 @@ updatedState.states.pending.states.uncommitted.reopen(Tower.Model.State.UpdatedU
 
 class Tower.Model.StateMachine extends Tower.StateMachine
   record:       null
-  initialState: "rootState"
+  initialState: 'rootState'
   states:
     rootState: Tower.State.create
       isLoaded:  false
@@ -39,7 +39,7 @@ class Tower.Model.StateMachine extends Tower.StateMachine
         #
         # Causes the stateMachine to transition to the "loading" state.
         loadingData: (stateMachine) ->
-          stateMachine.goToState("loading")
+          stateMachine.goToState('loading')
         
         # This is called when you set attributes, relations, or attachments.  
         # It's different than when the store sets initial properties on the record
@@ -48,15 +48,15 @@ class Tower.Model.StateMachine extends Tower.StateMachine
         # Both may end up with the same data, but the reasons why are different.
         didChangeData: (stateMachine) ->
           Tower.Model.State.didChangeData(stateMachine)
-          stateMachine.goToState("loaded.created")
+          stateMachine.goToState('loaded.created')
     
       # Loading state
       loading: Tower.Model.State.create
         # Called whenever you change the state out of this one
         exit: (stateMachine) ->
-          record = Ember.get(stateMachine, "record")
+          record = Ember.get(stateMachine, 'record')
           # will cause record.didLoad() to be called
-          record.fire("didLoad")
+          record.fire('didLoad')
         
         # Same as the "empty" state, if you set properties on the object,
         # and it's either not persisted or in the process of loading data asynchronously, 
@@ -68,14 +68,14 @@ class Tower.Model.StateMachine extends Tower.StateMachine
         # (Seems like this maybe should go to "loaded.updated")
         didChangeData: (stateMachine, data) ->
           Tower.Model.State.didChangeData(stateMachine)
-          stateMachine.send("loadedData")
+          stateMachine.send('loadedData')
 
         loadedData: (stateMachine) ->
-          stateMachine.goToState("loaded")
+          stateMachine.goToState('loaded')
 
       # Loaded state
       loaded: Tower.Model.State.create
-        initialState: "saved"
+        initialState: 'saved'
         isLoaded:     true
         created:      createdState
         updated:      updatedState
@@ -83,20 +83,20 @@ class Tower.Model.StateMachine extends Tower.StateMachine
         saved: Tower.Model.State.create
           setProperty: (stateMachine, context) ->
             Tower.Model.State.setProperty(stateMachine, context)
-            stateMachine.goToState("updated")
+            stateMachine.goToState('updated')
 
           setAssociation: (stateMachine, context) ->
             Tower.Model.State.setAssociation(stateMachine, context)
-            stateMachine.goToState("updated")
+            stateMachine.goToState('updated')
 
           didChangeData: Tower.Model.State.didChangeData
           
           destroy: (stateMachine) ->
-            stateMachine.goToState("deleted")
+            stateMachine.goToState('deleted')
 
           waitingOn: (stateMachine, object) ->
             Tower.Model.State.waitingOn(stateMachine, object)
-            stateMachine.goToState("updated.pending")
+            stateMachine.goToState('updated.pending')
     
       # Deleted state which starts in the `start` state (Ember does this by default).
       # 
@@ -110,28 +110,28 @@ class Tower.Model.StateMachine extends Tower.StateMachine
 
         start: Tower.Model.State.create
           enter: (stateMachine) ->
-            record  = Ember.get(stateMachine, "record")
-            store   = Ember.get(record, "store")
+            record  = Ember.get(stateMachine, 'record')
+            store   = Ember.get(record, 'store')
             
             store.removeFromCursors(record) if store
             
             record.withTransaction (t) ->
-              t.recordBecameDirty("deleted", record)
+              t.recordBecameDirty('deleted', record)
 
           willCommit: (stateMachine) ->
-            stateMachine.goToState("inFlight")
+            stateMachine.goToState('inFlight')
           
         inFlight: Tower.Model.State.create
           isSaving: true
 
           exit: (stateMachine) ->
-            record = Ember.get(stateMachine, "record")
+            record = Ember.get(stateMachine, 'record')
             
             record.withTransaction (t) ->
-              t.recordBecameClean("deleted", record)
+              t.recordBecameClean('deleted', record)
 
           didCommit: (stateMachine) ->
-            stateMachine.goToState("saved")
+            stateMachine.goToState('saved')
 
       error: Tower.Model.State.create(isError: true)
 
