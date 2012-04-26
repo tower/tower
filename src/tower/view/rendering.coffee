@@ -73,13 +73,16 @@ Tower.View.Rendering =
         hardcode        = _.extend(hardcode, tags: tags)
         locals.hardcode = hardcode
         locals._ = _
-        
+
         result = coffeekup.render string, locals
       catch error
         e = error
         console.log e.stack
 
-      callback e, result
+      if Tower.client
+        result
+      else
+        callback e, result
     else if options.type
       mint = require "mint"
       string = string() if typeof string == 'function'
@@ -116,7 +119,8 @@ Tower.View.Rendering =
       path      = store.findPath(options)
       path    ||= store.defaultPath(options)
     else
-      path      = template
+      # TODO Move this to a separate store for client-side views
+      path      = "app/views/" + prefixes.join("/") + "/" + template
     #cachePath = path.replace(/\.\w+$/, "")
     cachePath = path
     result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()

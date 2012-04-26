@@ -101,8 +101,9 @@ Tower.Controller.Rendering =
         @callback() if @callback
 
       return if @_handleRenderers(options, callback)
-      
-      @headers["Content-Type"] ||= "text/html"
+
+      if !Tower.client
+        @headers["Content-Type"] ||= "text/html"
 
       view    = new Tower.View(@)
 

@@ -17,7 +17,9 @@ Tower.Controller.HTTP =
 
     @status       = status
     @location     = Tower.urlFor(location) if location
-    @headers["Content-Type"] = Mime[formats.first] if formats
+    @headers["Content-Type"] = require("mime").lookup(@formats[0]) if @formats
     @body         = " "
+
+    @response.end()
 
 module.exports = Tower.Controller.HTTP
