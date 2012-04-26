@@ -18,11 +18,11 @@ Tower.Model.Cursor.Serialization =
     @_uniq        = options.uniq
     @_eagerLoad   = options.eagerLoad || {}
     @_near        = options.near
-    # options.findOne = conditions.id && conditions.id.hasOwnProperty("$in") && conditions.id.$in.length == 1
+    # options.findOne = conditions.id && conditions.id.hasOwnProperty('$in') && conditions.id.$in.length == 1
     
   # Get the conditions, order, limit, fields, offset, or other private variables.
   get: (key) ->
-    @["_#{key}"]    
+    @['_#{key}']    
 
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.
@@ -106,7 +106,7 @@ Tower.Model.Cursor.Serialization =
       if oldValue
         if _.isArray(oldValue)
           object[key] = oldValue.concat value
-        else if typeof oldValue == "object" && typeof value == "object"
+        else if typeof oldValue == 'object' && typeof value == 'object'
           object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
         else
           object[key] = value
@@ -133,7 +133,7 @@ Tower.Model.Cursor.Serialization =
       ids = @ids
       # tmp
       
-      if @store.constructor.className() == "Memory"
+      if @store.constructor.className() == 'Memory'
         ids = _.map ids, (id) -> id.toString()
       result.id = $in: ids
 
@@ -148,14 +148,14 @@ Tower.Model.Cursor.Serialization =
     attributes  = {}
 
     for conditions in @_where
-      ## tags: $in: ["a", "b"]
-      ## $push: tags: ["c"]
+      ## tags: $in: ['a', 'b']
+      ## $push: tags: ['c']
       for key, value of conditions
         # this check needs to be better
         if Tower.Store.isKeyword(key)
           for _key, _value of value
             attributes[_key] = _value
-        else if _.isHash(value) && value.constructor.name == "Object" && Tower.Store.hasKeyword(value)
+        else if _.isHash(value) && value.constructor.name == 'Object' && Tower.Store.hasKeyword(value)
           for _key, _value of value
             attributes[key] = _value
         else

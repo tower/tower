@@ -5,12 +5,12 @@ Tower.Model.Cursor.Operations =
   # Join commands.
   #
   # For databases that don't offer joining, it's still useful.
-  # For example, in MongoDB, we can use it for "hasMany through" relations:
+  # For example, in MongoDB, we can use it for 'hasMany through' relations:
   # where in SQL you can use JOIN for this,
   # in MongoDB we can find the ids first, then append them to our query.
   #
   # @example Join comments to Post
-  #   App.Post.joins("comments").all()
+  #   App.Post.joins('comments').all()
   #
   # @return [Object] the resulting set of joins.
   joins: (object) ->
@@ -18,7 +18,7 @@ Tower.Model.Cursor.Operations =
 
     if _.isArray(object)
       joins[key] = true for key in object
-    else if typeof object == "string"
+    else if typeof object == 'string'
       joins[object] = true
     else
       _.extend joins, object
@@ -37,7 +37,7 @@ Tower.Model.Cursor.Operations =
   # Set of conditions the database fields must satisfy.
   #
   # @example
-  #   App.Post.where(title: "First Post").all()
+  #   App.Post.where(title: 'First Post').all()
   #
   # @param [Object] conditions
   where: (conditions) ->
@@ -49,26 +49,26 @@ Tower.Model.Cursor.Operations =
   # Attribute and direction used for ordering the datastore's result set.
   #
   # @example
-  #   App.Post.order("title", "desc").all()
+  #   App.Post.order('title', 'desc').all()
   #
   # @param [String] attribute
-  # @param [String] direction ("asc") can be "asc" or "desc".
+  # @param [String] direction ('asc') can be 'asc' or 'desc'.
   #
   # @return [Array] returns the full set of order commands for this cursor.
-  order: (attribute, direction = "asc") ->
+  order: (attribute, direction = 'asc') ->
     @_order.push [attribute, direction]
 
   # Reverses the query so it can find the last one.
   reverseSort: ->
     order = @get('order')
     for set, i in order
-      set[1] = if set[1] == "asc" then "desc" else "asc"
+      set[1] = if set[1] == 'asc' then 'desc' else 'asc'
     order
 
   # Set of attributes to sort by, ascending.
   #
   # @example
-  #   App.Post.asc("title").all()
+  #   App.Post.asc('title').all()
   #
   # @param [Arguments] attributes
   #
@@ -80,13 +80,13 @@ Tower.Model.Cursor.Operations =
   # Set of attributes to sort by, descending.
   #
   # @example
-  #   App.Post.desc("title").all()
+  #   App.Post.desc('title').all()
   #
   # @param [Arguments] attributes
   #
   # @return [Array] returns the full set of order commands for this cursor.
   desc: (attributes...) ->
-    @order(attribute, "desc") for attribute in attributes
+    @order(attribute, 'desc') for attribute in attributes
     @_order
 
   # @todo
@@ -104,23 +104,23 @@ Tower.Model.Cursor.Operations =
   # Records must match all values in the array.
   #
   # @example
-  #   App.Post.allIn(tags: ["ruby", "javascript"]).all()
+  #   App.Post.allIn(tags: ['ruby', 'javascript']).all()
   #
   # @param [Object] attributes
   #
   # @return [Object] the final set of conditions for this cursor.
   allIn: (attributes) ->
-    @_whereOperator "$all", attributes
+    @_whereOperator '$all', attributes
 
   # @example
-  #   App.Post.anyIn(tags: ["ruby", "javascript"]).all()
+  #   App.Post.anyIn(tags: ['ruby', 'javascript']).all()
   anyIn: (attributes) ->
-    @_whereOperator "$any", attributes
+    @_whereOperator '$any', attributes
 
   # @example
-  #   App.Post.notIn(tags: [".net"]).all()
+  #   App.Post.notIn(tags: ['.net']).all()
   notIn: (attributes) ->
-    @_whereOperator "$nin", attributes
+    @_whereOperator '$nin', attributes
 
   # @example
   #   App.Post.offset(20).all()
@@ -133,7 +133,7 @@ Tower.Model.Cursor.Operations =
   # The set of fields we want the database to return, no more.
   #
   # @example Return only the `id` from the database.
-  #   App.User.select("id").all()
+  #   App.User.select('id').all()
   #
   # @param [Arguments] fields
   #
@@ -171,9 +171,9 @@ Tower.Model.Cursor.Operations =
 
   # @todo Make an awesome geo api.
   #
-  # @example
-  #   App.User.near(coordinates).within(5, "miles")
-  #   App.User.near(coordinates).within(distance: 5, unit: "km")
+  # @example [todo]
+  #   App.User.near(coordinates).within(5, 'miles')
+  #   App.User.near(coordinates).within(distance: 5, unit: 'km')
   #
   # @example Search within a box
   #   App.User.within([40.73083, -73.99756], [40.741404,  -73.988135])

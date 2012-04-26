@@ -44,6 +44,9 @@ Tower.Model.Attributes =
     get: (key) ->
       _.getNestedAttribute @, key
     #  Ember.get(@, key) || Ember.get(@, 'data').get(key)
+    
+    send: ->
+      @get('stateManager').send arguments...
       
 for method in Tower.Store.Modifiers.SET
   do (method) ->

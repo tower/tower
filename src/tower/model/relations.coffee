@@ -5,20 +5,20 @@ Tower.Model.Relations =
     #
     # @example Basic example
     #   class App.User extends Tower.Model
-    #     @hasOne "address"
+    #     @hasOne 'address'
     #
     #   class App.Address extends Tower.Model
-    #     @belongsTo "user"
+    #     @belongsTo 'user'
     #
     #   user    = App.User.create()
     #   address = user.createAddress()
     #
     # @example Example using all the `hasOne` options
     #   class App.User extends Tower.Model
-    #     @hasOne "location", type: "Address", embed: true, as: "addressable"
+    #     @hasOne 'location', type: 'Address', embed: true, as: 'addressable'
     #
     #   class App.Address extends Tower.Model
-    #     @belongsTo "addressable", polymorphic: true
+    #     @belongsTo 'addressable', polymorphic: true
     hasOne: (name, options = {}) ->
       @relations()[name]  = new Tower.Model.Relation.HasOne(@, name, options)
 
@@ -26,20 +26,20 @@ Tower.Model.Relations =
     #
     # @example Basic example
     #   class App.User extends Tower.Model
-    #     @hasMany "comments"
+    #     @hasMany 'comments'
     #
     #   class App.Comment extends Tower.Model
-    #     @belongsTo "user"
+    #     @belongsTo 'user'
     #
     #   user    = App.User.create()
     #   comment = user.comments().create()
     #
     # @example Example using all the `hasMany` options
     #   class App.User extends Tower.Model
-    #     @hasMany "comments", as: "commentable", embed: true
+    #     @hasMany 'comments', as: 'commentable', embed: true
     #
     #   class App.Comment extends Tower.Model
-    #     @belongsTo "commentable", polymorphic: true
+    #     @belongsTo 'commentable', polymorphic: true
     #
     # @param [String] name name of the association
     # @param [Object] options association options
@@ -48,7 +48,7 @@ Tower.Model.Relations =
     #
     # @return [Tower.Model.Relation.HasMany]
     hasMany: (name, options = {}) ->
-      if options.hasOwnProperty("through")
+      if options.hasOwnProperty('through')
         @relations()[name]  = new Tower.Model.Relation.HasManyThrough(@, name, options)
       else
         @relations()[name]  = new Tower.Model.Relation.HasMany(@, name, options)
@@ -95,7 +95,7 @@ Tower.Model.Relations =
       dependents  = []
 
       for name, relation of relations
-        if relation.dependent == true || relation.dependent == "destroy"
+        if relation.dependent == true || relation.dependent == 'destroy'
           dependents.push(name)
 
       iterator = (name, next) =>

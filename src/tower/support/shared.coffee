@@ -192,6 +192,11 @@ _.extend Tower,
           completed += 1
           if completed == array.length
             callback()
+            
+  callbackChain: (callbacks...) ->
+    (error) =>
+      for callback in callbacks
+        callback.call(@, error) if callback
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->

@@ -50,8 +50,14 @@ Tower.Model.Persistence =
       transaction
 
   InstanceMethods:
+    transaction: Ember.computed(->
+      new Tower.Store.Transaction
+    ).cacheable()
+    
     withTransaction: (block) ->
-      @constructor.transaction(block)
+      transaction = @get('transaction')
+      block.call @, transaction if block
+      transaction
     
     # Create or update the record.
     #
@@ -63,44 +69,7 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     save: (options, callback) ->
-      throw new Error('Record is read only') if @readOnly
-
-      if typeof options == 'function'
-        callback  = options
-        options   = {}
-      options ||= {}
-
-      unless options.validate == false
-        @validate (error) =>
-          if error
-            # something is wrong here...
-            callback.call @, null, false if callback
-          else
-            @_save callback
-      else
-        @_save callback
-
-      undefined
-      
-    saveWithState: (options, callback) ->
-      throw new Error('Record is read only') if @readOnly
-
-      if typeof options == 'function'
-        callback  = options
-        options   = {}
-      options ||= {}
-      
-      unless options.validate == false
-        @validateWithState (error) =>
-          if error
-            # something is wrong here...
-            callback.call @, null, false if callback
-          else
-            @_save callback
-      else
-        @_save callback
-
-      undefined
+      @send 'save', options, callback
 
     # Set attributes and save the model, all at once.
     #
@@ -110,7 +79,7 @@ Tower.Model.Persistence =
     # @return [void] Requires a callback.
     updateAttributes: (attributes, callback) ->
       @set(attributes)
-      @_update(attributes, callback)
+      @send 'update', callback
 
     # Destroy this record, if it is persistent.
     #
@@ -118,100 +87,9 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     destroy: (callback) ->
-      if @get('isNew')
-        callback.call @, null if callback
-      else
-        @_destroy callback
-      @
+      @send 'destroy', callback
 
     # @todo Haven't implemented
     reload: ->
-
-    # Implementation of the {#save} method.
-    #
-    # @private
-    #
-    # @param [Function] callback
-    #
-    # @return [void] Requires a callback.
-    _save: (callback) ->
-      @runCallbacks 'save', (block) =>
-        complete = @_callback(block, callback)
-
-        if @get('isNew')
-          @_create(complete)
-        else
-          @_update(@toUpdates(), complete)
-
-      undefined
-
-    # Saves this new record to the database.
-    #
-    # @private
-    #
-    # @param [Function] callback
-    #
-    # @return [void] Requires a callback.
-    _create: (callback) ->
-      @runCallbacks 'create', (block) =>
-        complete = @_callback(block, callback)
-
-        @constructor.scoped(instantiate: false).create @, (error) =>
-          throw error if error && !callback
-
-          unless error
-            @persistent = true
-
-          complete.call(@, error)
-
-      undefined
-
-    # Updates the database with the changes in this existing record.
-    #
-    # @private
-    #
-    # @param [Object] updates
-    # @param [Function] callback
-    #
-    # @return [void] Requires a callback.
-    _update: (updates, callback) ->
-      @runCallbacks 'update', (block) =>
-        complete = @_callback(block, callback)
-        
-        @constructor.scoped(instantiate: false).update @get('id'), updates, (error) =>
-          throw error if error && !callback
-
-          unless error
-            @persistent = true
-
-          complete.call(@, error)
-
-      undefined
-
-    # Implementation of the {#destroy} method.
-    #
-    # @private
-    #
-    # @param [Function] callback
-    #
-    # @return [void] Requires a callback.
-    _destroy: (callback) ->
-      id = @get('id')
-
-      @runCallbacks 'destroy', (block) =>
-        complete = @_callback(block, callback)
-
-        @constructor.scoped(instantiate: false).destroy @, (error) =>
-          throw error if error && !callback
-
-          unless error
-            @destroyRelations (error) =>
-              @persistent = false
-              delete @attributes.id
-              complete.call(@, error)
-          else
-            complete.call(@, error)
-
-      undefined
 
 module.exports = Tower.Model.Persistence

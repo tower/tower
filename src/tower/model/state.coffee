@@ -66,7 +66,7 @@ class Tower.Model.State extends Tower.State
   
   stateProperty = Ember.computed((key) ->
     parent = Ember.get(@, 'parentState')
-    Ember.get parent, key  if parent
+    Ember.get(parent, key)  if parent
   ).property()
   
   isLoaded:  stateProperty
@@ -83,7 +83,125 @@ class Tower.Model.State extends Tower.State
     setProperty:    @setProperty
     setAssociation: @setAssociation
     
-    destroy: (stateMachine) ->
+    save: (stateMachine, options, callback) ->
+      record = Ember.get(stateMachine, 'record')
+      
+      throw new Error('Record is read only') if record.readOnly
+      
+      if typeof options == 'function'
+        callback  = options
+        options   = {}
+      options ||= {}
+      
+      unless options.validate == false
+        stateMachine.goToState('validating', callback)
+      else
+        stateMachine.goToState('committing', callback)
+      
+    validating: Tower.Model.State.create
+      enter: (stateMachine) ->
+        record = Ember.get(stateMachine, 'record')
+        
+        record.validate (error) =>
+          if error
+            # something is wrong here...
+            callback.call(record, null, false) if callback
+          else
+            stateMachine.goToState('committing', callback)
+
+    # Called when it enters the "committing" state
+    committing: Tower.Model.State.create
+      start: Tower.Model.State.create
+        enter: (stateMachine, callback) ->
+          stateMachine.send 'willCreate', callback: callback
+      
+        willCreate: (stateMachine, callback) ->
+          record = Ember.get(stateMachine, 'record')
+
+          record.runCallbacks 'create', (block) =>
+            complete = Tower.callbackChain(block, callback)
+            
+            record.withTransaction (transaction) ->
+              transaction.create record, (error) =>
+                throw error if error && !callback
+                
+                #complete.call(@, error)
+                
+                # if "autocommit", it will have already committed
+                unless transaction.autocommit
+                  stateMachine.goToState('inTransaction')
+      
+      # the transaction called this
+      willCommit: (stateMachine) ->
+        stateMachine.goToState('inFlight')
+      
+      inTransaction: Tower.Model.State.create
+        enter: (stateMachine) ->
+          record      = Ember.get(stateMachine, 'record')
+          transaction = record.get('transaction')
+          
+          inTransaction
+  
+    # Updates the database with the changes in this existing record.
+    #
+    # @private
+    #
+    # @param [Object] updates
+    # @param [Function] callback
+    # 
+    # @return [void] Requires a callback.
+    willUpdate: (stateMachine, attributes, callback) ->
+      record = Ember.get(stateMachine, 'record')
+      
+      
+      record.runCallbacks 'update', (block) =>
+        complete = Tower.callbackChain(block, callback)
+        
+        record.withTransaction (transaction) =>
+          transaction.update(record)
+
+          complete.call(@, error)
+
+      undefined
+    
+    destroy: (stateMachine, callback) ->
+      record = Ember.get(stateMachine, 'record')
+
+      if @get('isNew')
+        callback.call @, null if callback
+      else
+        @_destroy callback
+      @
+      
+    # Implementation of the {#destroy} method.
+    #
+    # @private
+    #
+    # @param [Function] callback
+    #
+    # @return [void] Requires a callback.
+    willDestroy: (callback) ->
+      record = Ember.get(stateMachine, 'record')
+
+      id = @get('id')
+
+      @runCallbacks 'destroy', (block) =>
+        complete = Tower.callbackChain(block, callback)
+
+        @constructor.scoped(instantiate: false).destroy @, (error) =>
+          throw error if error && !callback
+
+          unless error
+            @destroyRelations (error) =>
+              @persistent = false
+              delete @attributes.id
+              complete.call(@, error)
+          else
+            complete.call(@, error)
+
+      undefined
+    
+    destroyNew: (stateMachine) ->
       @_super(stateMachine)
       
       record    = Ember.get(stateMachine, 'record')
@@ -158,7 +276,7 @@ class Tower.Model.State.Dirty extends Tower.Model.State
       stateMachine.goToState('pending')
 
     willCommit: (stateMachine) ->
-      # stateMachine.goToState('inFlight')
+      # stateMachine.goToState('inTransaction')
       stateMachine.goToState('committing')
       
   , Uncommitted
@@ -222,7 +340,7 @@ class Tower.Model.State.Dirty extends Tower.Model.State
       becameInvalid: Tower.Model.State.becameInvalid
       
       didBeforeCommit: (stateMachine) ->
-        stateMachine.goToState('inFlight')
+        stateMachine.goToState('inTransaction')
     
     after: Tower.Model.State.create
       didChangeData: Tower.Model.State.didChangeData
@@ -250,7 +368,7 @@ class Tower.Model.State.Dirty extends Tower.Model.State
     inFlight: Tower.Model.State.create
       isSaving:      true
       didChangeData: Tower.Model.State.didChangeData
-
+      
       enter: (stateMachine) ->
         dirtyType = Ember.get(@, 'dirtyType')
         record    = Ember.get(stateMachine, 'record')

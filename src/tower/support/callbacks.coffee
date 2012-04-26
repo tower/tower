@@ -72,10 +72,8 @@ Tower.Support.Callbacks =
       block.call @
       complete.call @ if complete
 
-  _callback: (callbacks...) ->
-    (error) =>
-      for callback in callbacks
-        callback.call(@, error) if callback
+  _callback: ->
+    Tower.callbackChain(arguments...)
 
 class Tower.Support.Callbacks.Chain
   constructor: (options = {}) ->

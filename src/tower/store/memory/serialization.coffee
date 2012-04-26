@@ -4,11 +4,11 @@ Tower.Store.Memory.Serialization =
 
   _updateAttribute: (attributes, key, value) ->
     field       = @schema()[key]
-    if field && field.type == "Array" && !_.isArray(value)
+    if field && field.type == 'Array' && !_.isArray(value)
       attributes[key] ||= []
       attributes[key].push value
     else if @_atomicModifier(key)
-      @["_#{key.replace("$", "")}AtomicUpdate"](attributes, value)
+      @["_#{key.replace('$', '')}AtomicUpdate"](attributes, value)
     else
       attributes[key] = value
 
@@ -54,7 +54,7 @@ Tower.Store.Memory.Serialization =
   _addToSetAtomicUpdate: (attributes, value) ->
     for _key, _value of value
       attributeValue = attributes[_key] ||= []
-      if _value && _value.hasOwnProperty("$each")
+      if _value && _value.hasOwnProperty('$each')
         for item in _value.$each
           attributeValue.push(item) if attributeValue.indexOf(item) == -1
       else

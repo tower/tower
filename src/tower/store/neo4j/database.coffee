@@ -1,7 +1,7 @@
 Tower.Store.Neo4j.Database =
   ClassMethods:
     initialize: (callback) ->
-      @database ||= new @lib().GraphDatabase("http://localhost:7474")
+      @database ||= new @lib().Database('http://localhost:7474')
       callback.call @, @database if callback
 
   database: ->

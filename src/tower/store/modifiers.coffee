@@ -1,30 +1,30 @@
 Tower.Store.Modifiers =
   MAP:  
-    "$set":         "$set"
-    "$unset":       "$unset"
-    "$push":        "$push"
-    "$pushEach":    "$pushEach"
-    "$pull":        "$pull"
-    "$pullEach":    "$pullEach"
-    "$remove":      "$pull"
-    "$removeEach":  "$pullEach"
-    "$inc":         "$inc"
-    "$pop":         "$pop"
-    "$add":         "$add"
-    "$addEach":     "$addEach"
-    "$addToSet":    "$add"
+    '$set':         '$set'
+    '$unset':       '$unset'
+    '$push':        '$push'
+    '$pushEach':    '$pushEach'
+    '$pull':        '$pull'
+    '$pullEach':    '$pullEach'
+    '$remove':      '$pull'
+    '$removeEach':  '$pullEach'
+    '$inc':         '$inc'
+    '$pop':         '$pop'
+    '$add':         '$add'
+    '$addEach':     '$addEach'
+    '$addToSet':    '$add'
   
   SET: [
-    "push"
-    "pushEach"
-    "pull"
-    "pullEach"
-    "inc"
-    "add"
-    "addEach"
-    "remove"
-    "removeEach"
-    "unset"
+    'push'
+    'pushEach'
+    'pull'
+    'pullEach'
+    'inc'
+    'add'
+    'addEach'
+    'remove'
+    'removeEach'
+    'unset'
   ]
   
   set: (key, value) ->

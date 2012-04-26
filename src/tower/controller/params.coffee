@@ -5,7 +5,7 @@ Tower.Controller.Params =
     #
     # @example
     #   class App.UsersController extends App.ApplicationController
-    #     @param "email"
+    #     @param 'email'
     #
     # @param [String] key
     # @param [Object] options
@@ -19,17 +19,17 @@ Tower.Controller.Params =
     #
     # @example Pass in an object
     #   class App.UsersController extends App.ApplicationController
-    #     @params email: "String"
+    #     @params email: 'String'
     #
     # @example Pass in strings
     #   class App.UsersController extends App.ApplicationController
-    #     @params "email", "firstName", "lastName"
+    #     @params 'email', 'firstName', 'lastName'
     #
     # @return [Object]
     params: ->
       if arguments.length
         for arg in arguments
-          if typeof arg == "object"
+          if typeof arg == 'object'
             @param(key, value) for key, value of arg
           else
             @param(arg)

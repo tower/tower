@@ -11,8 +11,8 @@ Tower.Controller.Instrumentation =
       @session  = @request.session  || {}
       
       unless @params.format
-        try @params.format = require('mime').extension(@request.header("content-type"))
-        @params.format ||= "html"
+        try @params.format = require('mime').extension(@request.header('content-type'))
+        @params.format ||= 'html'
         
       @format   = @params.format
       @action   = @params.action
@@ -29,7 +29,7 @@ Tower.Controller.Instrumentation =
         console.log "  Parameters:"
         console.log @params
 
-      @runCallbacks "action", name: @action, (callback) =>
+      @runCallbacks 'action', name: @action, (callback) =>
         @[@action].call @, callback
 
     processQuery: ->

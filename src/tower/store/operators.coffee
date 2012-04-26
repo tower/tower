@@ -1,37 +1,37 @@
 Tower.Store.Operators =
   MAP:  
-    ">=":         "$gte"
-    "$gte":       "$gte"
-    ">":          "$gt"
-    "$gt":        "$gt"
-    "<=":         "$lte"
-    "$lte":       "$lte"
-    "<":          "$lt"
-    "$lt":        "$lt"
-    "$in":        "$anyIn"
-    "$any":       "$anyIn"
-    "$anyIn":     "$anyIn"
-    "$nin":       "$notInAll"
-    "$notIn":     "$notInAll"
-    "$notInAny":  "$notInAny"
-    "$all":       "$allIn"
-    "=~":         "$match"
-    "$m":         "$match"
-    "$regex":     "$match"
-    "$match":     "$match"
-    "$notMatch":  "$notMatch"
-    "!~":         "$nm"
-    "$nm":        "$nm"
-    "==":         "$eq"
-    "$eq":        "$eq"
-    "!=":         "$neq"
-    "$neq":       "$neq"
-    "$null":      "$null"
-    "$notNull":   "$notNull"
-    "$exists":    "$exists"
-    "$size":      "$size"
-    "$elemMatch": "$matchIn"
-    "$matchIn":   "$matchIn"
+    '>=':         '$gte'
+    '$gte':       '$gte'
+    '>':          '$gt'
+    '$gt':        '$gt'
+    '<=':         '$lte'
+    '$lte':       '$lte'
+    '<':          '$lt'
+    '$lt':        '$lt'
+    '$in':        '$anyIn'
+    '$any':       '$anyIn'
+    '$anyIn':     '$anyIn'
+    '$nin':       '$notInAll'
+    '$notIn':     '$notInAll'
+    '$notInAny':  '$notInAny'
+    '$all':       '$allIn'
+    '=~':         '$match'
+    '$m':         '$match'
+    '$regex':     '$match'
+    '$match':     '$match'
+    '$notMatch':  '$notMatch'
+    '!~':         '$nm'
+    '$nm':        '$nm'
+    '==':         '$eq'
+    '$eq':        '$eq'
+    '!=':         '$neq'
+    '$neq':       '$neq'
+    '$null':      '$null'
+    '$notNull':   '$notNull'
+    '$exists':    '$exists'
+    '$size':      '$size'
+    '$elemMatch': '$matchIn'
+    '$matchIn':   '$matchIn'
     
   select: (records, conditions) ->
     _.select records, (record) => @test(record, conditions)
@@ -40,9 +40,9 @@ Tower.Store.Operators =
     success = true
     
     for key, value of conditions
-      if key == "$or"
+      if key == '$or'
         success = @or record, value
-      else if key == "$nor"
+      else if key == '$nor'
         success = @nor record, value
       else
         success = @testValue @_getValue(record, key), value
@@ -64,7 +64,7 @@ Tower.Store.Operators =
         else
           for key, value of operators
             if operator = Tower.Store.Operators.MAP[key]
-              success   = @[operator.replace("$", "")](recordValue, value)
+              success   = @[operator.replace('$', '')](recordValue, value)
             else
               success   = recordValue == operators
     
@@ -91,7 +91,7 @@ Tower.Store.Operators =
     @_comparable(recordValue) != @_comparable(value)
 
   match: (recordValue, value) ->
-    !!(recordValue? && value? && if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
+    !!(recordValue? && value? && if typeof(recordValue) == 'string' then recordValue.match(value) else recordValue.exec(value))
 
   notMatch: (recordValue, value) ->
     !@match(recordValue, value)

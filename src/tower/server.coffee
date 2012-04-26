@@ -10,7 +10,7 @@ _.mixin(require('underscore.string'))
 module.exports  = global.Tower = Tower = {}
 
 # reads and sets the latest version on startup
-Tower.version = JSON.parse(require("fs").readFileSync(require("path").normalize("#{__dirname}/../../package.json"))).version
+Tower.version = JSON.parse(require('fs').readFileSync(require('path').normalize("#{__dirname}/../../package.json"))).version
 
 Tower.logger    = _console
 
@@ -46,14 +46,14 @@ require './server/generator'
 
 Tower.watch = true
 
-Tower.View.store(new Tower.Store.FileSystem(["app/views"]))
+Tower.View.store(new Tower.Store.FileSystem(['app/views']))
 Tower.root                = process.cwd()
-Tower.publicPath          = process.cwd() + "/public"
+Tower.publicPath          = process.cwd() + '/public'
 Tower.publicCacheDuration = 60 * 1000
 Tower.render              = (string, options = {}) ->
   Tower.modules.mint.render(options.type, string, options)
 
-Tower.domain              = "localhost"
+Tower.domain              = 'localhost'
 
 Tower.run = (argv) ->
   (new Tower.Command.Server(argv)).run()

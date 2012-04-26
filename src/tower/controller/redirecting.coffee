@@ -10,19 +10,19 @@ Tower.Controller.Redirecting =
         args      = _.args(arguments)
         options   = _.extractOptions(args)
         url       = args.shift()
-        if !url && options.hasOwnProperty("action")
+        if !url && options.hasOwnProperty('action')
           url = switch options.action
-            when "index", "new"
+            when 'index', 'new'
               Tower.urlFor(@resourceType, action: options.action)
-            when "edit", "show"
+            when 'edit', 'show'
               Tower.urlFor(@resource, action: options.action)
-        url ||= "/"
+        url ||= '/'
         
         #console.log @response.redirect.toString()
         if options.action == 'index'
-          url = "/custom"
+          url = '/custom'
         else
-          url = "/custom/1"
+          url = '/custom/1'
           
         @response.redirect url
       catch error

@@ -10,7 +10,7 @@ Tower.Store.Memory.Persistence =
 
   loadOne: (record) ->
     record.persistent = true
-    @records[record.get("id").toString()] = record
+    @records[record.get('id').toString()] = record
 
   create: (criteria, callback) ->
     result    = []
@@ -49,6 +49,6 @@ Tower.Store.Memory.Persistence =
       records
 
   destroyOne: (record) ->
-    delete @records[record.get("id").toString()]
+    delete @records[record.get('id').toString()]
 
 module.exports = Tower.Store.Memory.Persistence

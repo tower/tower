@@ -20,6 +20,7 @@ updatedState.states.pending.states.uncommitted.reopen(Tower.Model.State.UpdatedU
 class Tower.Model.StateMachine extends Tower.StateMachine
   record:       null
   initialState: 'rootState'
+  #enableLogging: true
   states:
     rootState: Tower.State.create
       isLoaded:  false
@@ -32,8 +33,6 @@ class Tower.Model.StateMachine extends Tower.StateMachine
       isPending: false
       
       # Empty state, when a model is instantiated.
-      # 
-      # 
       empty: Tower.Model.State.create
         # Called by the `record.store` when it's instantiating record with data from the database.
         #

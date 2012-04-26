@@ -63,7 +63,7 @@ Tower.Support.Object =
     object
 
   defineProperty: (object, key, options = {}) ->
-    Object.defineProperty object, key, options
+    Object.defineProperty object, key, options if Object.defineProperty
 
   functionName: (fn) ->
     return fn.__name__ if fn.__name__

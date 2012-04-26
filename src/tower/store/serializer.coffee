@@ -30,8 +30,8 @@ Tower.Store.Serializer =
 
   Boolean:
     from: (serialized) ->
-      if typeof serialized == "string"
-        !!(serialized != "false")
+      if typeof serialized == 'string'
+        !!(serialized != 'false')
       else
         Boolean(serialized)
 
@@ -52,9 +52,9 @@ Tower.Store.Serializer =
 
     to: (deserialized) ->
       switch _.kind(deserialized)
-        when "array"
+        when 'array'
           lat: deserialized[0], lng: deserialized[1]
-        when "object"
+        when 'object'
           lat: deserialized.lat || deserialized.latitude
           lng: deserialized.lng || deserialized.longitude
         else

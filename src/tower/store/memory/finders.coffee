@@ -63,7 +63,7 @@ Tower.Store.Memory.Finders =
 
     result
 
-  # store.sort [{one: "two", hello: "world"}, {one: "four", hello: "sky"}], [["one", "asc"], ["hello", "desc"]]
+  # store.sort [{one: 'two', hello: 'world'}, {one: 'four', hello: 'sky'}], [['one', 'asc'], ['hello', 'desc']]
   sort: (records, sortings) ->
     _.sortBy(records, sortings...)
 
@@ -76,10 +76,10 @@ Tower.Store.Memory.Finders =
       recordValue = record.get(key)
       if _.isRegExp(value)
         success = recordValue.match(value)
-      else if typeof value == "object"
+      else if typeof value == 'object'
         success = self._matchesOperators(record, recordValue, value)
       else
-        value = value.call(record) if typeof(value) == "function"
+        value = value.call(record) if typeof(value) == 'function'
         success = recordValue == value
       return false unless success
 
@@ -93,27 +93,27 @@ Tower.Store.Memory.Finders =
       if operator = Tower.Store.queryOperators[key]
         value = value.call(record) if _.isFunction(value)
         switch operator
-          when "$in", "$any"
+          when '$in', '$any'
             success = self._anyIn(recordValue, value)
-          when "$nin"
+          when '$nin'
             success = self._notIn(recordValue, value)
-          when "$gt"
+          when '$gt'
             success = self._isGreaterThan(recordValue, value)
-          when "$gte"
+          when '$gte'
             success = self._isGreaterThanOrEqualTo(recordValue, value)
-          when "$lt"
+          when '$lt'
             success = self._isLessThan(recordValue, value)
-          when "$lte"
+          when '$lte'
             success = self._isLessThanOrEqualTo(recordValue, value)
-          when "$eq"
+          when '$eq'
             success = self._isEqualTo(recordValue, value)
-          when "$neq"
+          when '$neq'
             success = self._isNotEqualTo(recordValue, value)
-          when "$regex", "$match"
+          when '$regex', '$match'
             success = self._isMatchOf(recordValue, value)
-          when "$notMatch"
+          when '$notMatch'
             success = self._isNotMatchOf(recordValue, value)
-          when "$all"
+          when '$all'
             success = self._allIn(recordValue, value)
         return false unless success
       else
@@ -140,10 +140,10 @@ Tower.Store.Memory.Finders =
     recordValue != value
 
   _isMatchOf: (recordValue, value) ->
-    !!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
+    !!(if typeof(recordValue) == 'string' then recordValue.match(value) else recordValue.exec(value))
 
   _isNotMatchOf: (recordValue, value) ->
-    !!!(if typeof(recordValue) == "string" then recordValue.match(value) else recordValue.exec(value))
+    !!!(if typeof(recordValue) == 'string' then recordValue.match(value) else recordValue.exec(value))
 
   _anyIn: (recordValue, array) ->
     if _.isArray(recordValue)
