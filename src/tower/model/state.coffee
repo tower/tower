@@ -51,46 +51,7 @@ class Tower.Model.State extends Tower.State
 
   dirtyType: stateProperty
 
-  @Uncommitted: Ember.Mixin.create
-    setProperty:    @setProperty
-    setAssociation: @setAssociation
-
-    save: (stateMachine, context) ->
-      stateMachine.goToState('committing')
-
-      stateMachine.send('save', context)
-
-    destroy: (stateMachine) ->
-      @_super(stateMachine)
-
-      record    = Ember.get(stateMachine, 'record')
-      dirtyType = Ember.get(@, 'dirtyType')
-
-      record.withTransaction (t) ->
-        t.recordBecameClean(dirtyType, record)
-
-  @CreatedUncommitted: Ember.Mixin.create
-    destroy: (stateMachine) ->
-      @_super(stateMachine)
-
-      stateMachine.goToState('deleted.saved')
-
-  @UpdatedUncommitted: Ember.Mixin.create
-    destroy: (stateMachine) ->
-      @_super(stateMachine)
-
-      record = Ember.get(stateMachine, 'record')
-
-      record.withTransaction (t) ->
-        t.recordBecameClean('created', record)
-
-      stateMachine.goToState('deleted')
-
-Uncommitted         = Tower.Model.State.Uncommitted
-CreatedUncommitted  = Tower.Model.State.CreatedUncommitted
-UpdatedUncommitted  = Tower.Model.State.UpdatedUncommitted
-
-Tower.Model.State.Dirty = Tower.Model.State.extend
+class Tower.Model.State.Dirty extends Tower.Model.State
   initialState: 'uncommitted'
   isDirty:      true
 
@@ -114,24 +75,33 @@ Tower.Model.State.Dirty = Tower.Model.State.extend
   # This means, if it's in the "created.uncommitted" state, it will run "after create" callbacks,
   # and if it's in the "updated.updated" state, "after update" callbacks.
   uncommitted: Tower.Model.State.create
-    destroy: Ember.K
-
+    setProperty:    Tower.Model.State.setProperty
+    setAssociation: Tower.Model.State.setAssociation
+    
     enter: (stateMachine) ->
       dirtyType = Ember.get(@, 'dirtyType')
       record    = Ember.get(stateMachine, 'record')
-
+      
       record.withTransaction (t) ->
         t.recordBecameDirty(dirtyType, record)
+    
+    willCommit: (stateMachine) ->
+      stateMachine.goToState('committing')
+    
+    save: (stateMachine, callback) ->
+      stateMachine.goToState('committing')
+      stateMachine.send('save', callback)
 
+    destroy: (stateMachine) ->
+      record    = Ember.get(stateMachine, 'record')
+      dirtyType = Ember.get(@, 'dirtyType')
+
+      record.withTransaction (t) ->
+        t.recordBecameClean(dirtyType, record)
+    
     exit: (stateMachine) ->
       record = Ember.get(stateMachine, 'record')
       stateMachine.send('invokeLifecycleCallbacks', record)
-
-    willCommit: (stateMachine) ->
-      # stateMachine.goToState('inTransaction')
-      stateMachine.goToState('committing')
-
-  , Uncommitted
 
   # When you first save/delete a model (persisting to server if you're on the client),
   # it will enter this state.
@@ -159,7 +129,7 @@ Tower.Model.State.Dirty = Tower.Model.State.extend
       record.withTransaction (t) ->
         t.recordBecameClean(dirtyType, record)
 
-    willCommit: (stateMachine, options, callback) ->
+    willCommit: (stateMachine, callback) ->
       record    = Ember.get(stateMachine, 'record')
       action    = Ember.get(stateMachine, 'dirtyType')
 
@@ -169,7 +139,7 @@ Tower.Model.State.Dirty = Tower.Model.State.extend
     # Called from the store after the record is persisted.
     # The "loaded" state is as if the record was just loaded (page refresh).
     didCommit: (stateMachine) ->
-      stateMachine.goToState('after')
+      stateMachine.goToState('saved')
 
     becameInvalid: Tower.Model.State.becameInvalid
 
@@ -184,8 +154,9 @@ Tower.Model.State.Dirty = Tower.Model.State.extend
     isValid:        false
     setAssociation: Tower.Model.State.setAssociation
 
-    destroy: (stateMachine) ->
+    destroy: (stateMachine, callback) ->
       stateMachine.goToState('deleted')
+      stateMachine.send('willCommit', callback)
 
     setProperty: (stateMachine, context) ->
       Tower.Model.State.setProperty(stateMachine, context)

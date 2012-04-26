@@ -76,8 +76,11 @@ Tower.Support.Object =
   # @todo
   isA: (object, isa) ->
 
-  isHash: (object) ->
+  isHashOld: (object) ->
     @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
+    
+  isHash: (object) ->
+    object && object.constructor == Object
 
   # If the class is a direct instance of Object,
   # and not an instance of a subclass of Object, then this is true.

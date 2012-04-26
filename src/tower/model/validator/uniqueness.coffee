@@ -9,7 +9,7 @@ class Tower.Model.Validator.Uniqueness extends Tower.Model.Validator
           record,
           attribute,
           errors,
-          Tower.t("model.errors.uniqueness", attribute: attribute, value: value),
+          Tower.t('model.errors.uniqueness', attribute: attribute, value: value),
           callback
         )
       else

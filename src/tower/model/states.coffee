@@ -14,12 +14,6 @@ Tower.Model.States =
   isPending: retrieveFromCurrentState
   isValid:   retrieveFromCurrentState
   
-  # Check if this record has not yet been saved to the database.
-  #
-  # @return [Boolean]
-  #isNew: ->
-  #  !!!@isPersisted()
-  
   didLoad:    Ember.K
   didUpdate:  Ember.K
   didCreate:  Ember.K

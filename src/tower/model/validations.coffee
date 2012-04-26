@@ -92,29 +92,5 @@ Tower.Model.Validations =
         success
 
       success
-    
-    validateWithState: (callback) ->
-      success         = false
-      
-      @get('stateMachine').goToState 'committing.before'
-      
-      console.log Ember.getPath @get('stateMachine'), 'currentState.path'
-      
-      @runCallbacks 'validate', (block) =>
-        complete        = @_callback(block, callback)
-        validators      = @constructor.validators()
-        errors          = @errors = {}
-
-        iterator        = (validator, next) =>
-          validator.validateEach @, errors, next
-
-        Tower.async validators, iterator, (error) =>
-          if (!(_.isPresent(errors) || error))
-            success = true
-          complete.call(@, !success)
-
-        success
-
-      success
 
 module.exports = Tower.Model.Validations

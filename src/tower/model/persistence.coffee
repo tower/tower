@@ -81,26 +81,6 @@ Tower.Model.Persistence =
         @_save callback
 
       undefined
-      
-    saveWithState: (options, callback) ->
-      throw new Error('Record is read only') if @readOnly
-
-      if typeof options == 'function'
-        callback  = options
-        options   = {}
-      options ||= {}
-      
-      unless options.validate == false
-        @validateWithState (error) =>
-          if error
-            # something is wrong here...
-            callback.call @, null, false if callback
-          else
-            @_save callback
-      else
-        @_save callback
-
-      undefined
 
     # Set attributes and save the model, all at once.
     #

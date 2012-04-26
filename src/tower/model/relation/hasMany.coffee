@@ -18,7 +18,7 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
   validate: (callback) ->
     unless @owner.isPersisted()
-      throw new Error("You cannot call create unless the parent is saved")
+      throw new Error('You cannot call create unless the parent is saved')
 
     callback.call @
 
@@ -144,12 +144,12 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     relation        = @relation
     inverseRelation = relation.inverse()
 
-    id              = owner.get("id")
+    id              = owner.get('id')
 
     data            = {}
 
     #if relation.idCache
-    #  #defaults[relation.idCacheKey] = $in: [@owner.get("id")]
+    #  #defaults[relation.idCacheKey] = $in: [@owner.get('id')]
     #  defaults.id = $in: @owner.get(relation.idCacheKey)
     #  criteria.where(defaults)
     #else
@@ -198,7 +198,7 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     if relation.idCache
       push    = {}
-      data    = if record then record.get("id") else @store._mapKeys('id', @data)
+      data    = if record then record.get('id') else @store._mapKeys('id', @data)
       push[relation.idCacheKey] = if _.isArray(data) then {$each: data} else data
     if relation.counterCacheKey
       inc     = {}
@@ -206,8 +206,8 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     updates   = {}
     # probably should be $addToSet
-    updates["$addToSet"]  = push if push
-    updates["$inc"]   = inc if inc
+    updates['$addToSet']  = push if push
+    updates['$inc']   = inc if inc
 
     updates
 
@@ -224,8 +224,8 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     updates   = {}
     # probably should be $addToSet
-    updates["$pullAll"]  = pull if pull
-    updates["$inc"]   = inc if inc
+    updates['$pullAll']  = pull if pull
+    updates['$inc']   = inc if inc
 
     updates
 

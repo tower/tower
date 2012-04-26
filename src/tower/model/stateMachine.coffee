@@ -1,24 +1,3 @@
-# helpers
-createdState = Tower.Model.State.Dirty.create
-  dirtyType:  'created'
-  isNew:      true
-  isLoaded:   true
-
-  invokeLifecycleCallbacks: (stateMachine, record) ->
-    record.fire('didCreate')
-
-updatedState = Tower.Model.State.Dirty.create
-  dirtyType:  'updated'
-  isLoaded:   true
-
-  invokeLifecycleCallbacks: (stateMachine, record) ->
-    record.fire('didUpdate')
-
-createdState.states.uncommitted.reopen(Tower.Model.State.CreatedUncommitted)
-createdState.states.pending.states.uncommitted.reopen(Tower.Model.State.CreatedUncommitted)
-updatedState.states.uncommitted.reopen(Tower.Model.State.UpdatedUncommitted)
-updatedState.states.pending.states.uncommitted.reopen(Tower.Model.State.UpdatedUncommitted)
-
 class Tower.Model.StateMachine extends Tower.StateMachine
   record:       null
   initialState: 'rootState'
@@ -66,7 +45,7 @@ class Tower.Model.StateMachine extends Tower.StateMachine
           stateMachine.send('loadedData')
 
         loadedData: (stateMachine) ->
-          stateMachine.goToState('loaded')
+          stateMachine.goToState('saved')
 
         # Called whenever you change the state out of this one
         exit: (stateMachine) ->
@@ -74,12 +53,22 @@ class Tower.Model.StateMachine extends Tower.StateMachine
           # will cause record.didLoad() to be called
           record.fire('didLoad')
 
-      created: createdState
-      updated: updatedState
+      created: Tower.Model.State.Dirty.create
+        dirtyType:  'created'
+        isNew:      true
+        isLoaded:   true
+
+        invokeLifecycleCallbacks: (stateMachine, record) ->
+          record.fire('didCreate')
+
+        destroy: (stateMachine, callback) ->
+          @_super(stateMachine)
+          
+          stateMachine.goToState('deleted.saved')
 
       saved: Tower.Model.State.create
         isLoaded: true
-
+        
         setProperty: (stateMachine, context) ->
           Tower.Model.State.setProperty(stateMachine, context)
           stateMachine.goToState('updated')
@@ -90,35 +79,41 @@ class Tower.Model.StateMachine extends Tower.StateMachine
 
         didChangeData: Tower.Model.State.didChangeData
 
-        destroy: (stateMachine) ->
+        destroy: (stateMachine, callback) ->
           stateMachine.goToState('deleted')
+          stateMachine.send('willCommit', callback) # need to do this so you can pass the callback
+
+      updated: Tower.Model.State.Dirty.create
+        dirtyType:  'updated'
+        isLoaded:   true
+
+        destroy: (stateMachine, callback) ->
+          @_super(stateMachine)
+          
+          stateMachine.goToState('deleted')
+          stateMachine.send('willCommit', callback)
+
+        invokeLifecycleCallbacks: (stateMachine, record) ->
+          record.fire('didUpdate')
 
       # Deleted state which starts in the `start` state (Ember does this by default).
       #
       # The "deleted.saved" state basically means the record is now a new record, because
       # it enters that state after the server tells us it "didCommit" (it successfully deleted it).
       deleted: Tower.Model.State.create
-        isDeleted: true
-        isLoaded:  true
-        isDirty:   true
-        saved:     Tower.Model.State.create(isDirty: false)
-
-        start: Tower.Model.State.create
-          enter: (stateMachine) ->
-            record  = Ember.get(stateMachine, 'record')
-            store   = Ember.get(record, 'store')
-
-            store.removeFromCursors(record) if store
-
-            record.withTransaction (t) ->
-              t.recordBecameDirty('deleted', record)
-
-          willCommit: (stateMachine) ->
-            stateMachine.goToState('inFlight')
-
+        isDeleted:    true
+        isLoaded:     true
+        isDirty:      true
+        initialState: 'committing'
+        
+        saved:        Tower.Model.State.create(isDirty: false)
+        
         committing: Tower.Model.State.create
-          isSaving: true
-
+          willCommit: (stateMachine, callback) ->
+            record  = Ember.get(stateMachine, 'record')
+            record.withTransaction (transaction) ->
+              transaction.destroy(record, callback)
+              
           didCommit: (stateMachine) ->
             stateMachine.goToState('saved')
 

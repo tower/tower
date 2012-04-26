@@ -22,7 +22,7 @@ Tower.Model.Cursor.Serialization =
     
   # Get the conditions, order, limit, fields, offset, or other private variables.
   get: (key) ->
-    @['_#{key}']    
+    @["_#{key}"]    
 
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.

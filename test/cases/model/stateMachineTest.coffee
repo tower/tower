@@ -43,8 +43,8 @@ describeWith = (store) ->
         stateMachine.goToState('loaded')
         
       test 'loaded', ->  
-        stateMachine.goToState('loaded')
-        assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.saved'
+        stateMachine.goToState('saved')
+        assert.equal stateMachine.getPath('currentState.path'), 'rootState.saved'
         assert.equal stateMachine.getPath('currentState.isLoaded'), true
         assert.equal stateMachine.getPath('currentState.isDirty'), false
         assert.equal stateMachine.getPath('currentState.isSaving'), false
@@ -54,10 +54,10 @@ describeWith = (store) ->
         assert.equal stateMachine.getPath('currentState.isValid'), true
         assert.equal stateMachine.getPath('currentState.isPending'), false
         stateMachine.goToState('deleted')
-        
+
       test 'deleted', ->
         stateMachine.goToState('deleted')
-        assert.equal stateMachine.getPath('currentState.path'), 'rootState.deleted.start'
+        assert.equal stateMachine.getPath('currentState.path'), 'rootState.deleted.committing'
         assert.equal stateMachine.getPath('currentState.isLoaded'), true, 'isLoaded'
         assert.equal stateMachine.getPath('currentState.isDirty'), true, 'isDirty'
         assert.equal stateMachine.getPath('currentState.isSaving'), false, 'isSaving'
@@ -75,60 +75,37 @@ describeWith = (store) ->
         
       test '#didChangeData', (done) ->
         stateMachine.send('didChangeData')
-        assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.uncommitted'
+        assert.equal stateMachine.getPath('currentState.path'), 'rootState.updated.uncommitted'
         done()
-        
+     
     describe 'loaded state', ->
       beforeEach ->
-        stateMachine.goToState('loaded')
+        stateMachine.goToState('saved')
         
       test 'enter', ->
-        assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.saved'
+        assert.equal stateMachine.getPath('currentState.path'), 'rootState.saved'
         assert.equal stateMachine.getPath('currentState.isLoaded'), true
-        
+
       test '#setProperty', ->
         stateMachine.send 'setProperty', key: 'a key', value: 'a value'
-        assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.uncommitted'
+        assert.equal stateMachine.getPath('currentState.path'), 'rootState.updated.uncommitted'
         assert.equal stateMachine.getPath('currentState.dirtyType'), 'updated'
         
         assert.equal record.get('isDirty'), true
         assert.equal record.get('isLoaded'), true
-        
+
       describe '#willCommit', ->
         beforeEach ->
           stateMachine.send 'setProperty', key: 'a key', value: 'a value'
           stateMachine.send 'willCommit'
           
         test 'committing', ->
-          assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.committing'
-          
+          assert.equal stateMachine.getPath('currentState.path'), 'rootState.updated.committing'
+
         test '#becameInvalid', ->
           assert.equal record.get('isValid'), true
           stateMachine.send 'becameInvalid', some: "error!"
-          assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.invalid'
+          assert.equal stateMachine.getPath('currentState.path'), 'rootState.updated.invalid'
           assert.equal record.get('isValid'), false
-          
-        test 'committing then #willCommit', ->
-          stateMachine.send 'willCommit'
-          
-          # trying it this way first, to handle node's async callbacks.
-          assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.committing.before'
-          
-          stateMachine.send 'didBeforeCommit'
-          
-          assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.committing.inFlight'
-          
-          stateMachine.send 'didCommit'
-          
-          assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.updated.committing.after'
-          
-          stateMachine.send 'didAfterCommit'
-          
-          assert.equal stateMachine.getPath('currentState.path'), 'rootState.loaded.saved'
-        
-        test 'saveWithState', (done) ->
-          record.saveWithState =>
-            console.log "DONE!"
-            done()
 
 describeWith(Tower.Store.Memory)

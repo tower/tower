@@ -16,6 +16,11 @@ class Tower.Store.Transaction extends Tower.Class
       updated:  Ember.Map.create()
       deleted:  Ember.Map.create()
       
+  destroy: (record, callback) ->
+    store   = Ember.get(record, 'store')
+
+    store.removeFromCursors(record) if store
+      
   create: (record, callback) ->
     
     #@runCallbacks action, (block) =>
