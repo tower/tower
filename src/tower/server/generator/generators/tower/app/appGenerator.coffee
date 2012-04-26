@@ -155,7 +155,6 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/twitter/bootstrap/master/less/#{stylesheet}.less", "bootstrap/#{stylesheet}.less" for stylesheet in [
             "accordion",
             "alerts",
-            "badges",
             "bootstrap",
             "breadcrumbs",
             "button-groups",
@@ -168,7 +167,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
             "forms",
             "grid",
             "hero-unit",
-            "labels",
+            "labels-badges",
             "layouts",
             "mixins",
             "modals",
