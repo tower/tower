@@ -19,10 +19,11 @@ Tower.Controller.Redirecting =
         url ||= "/"
         
         #console.log @response.redirect.toString()
-        if options.action == 'index'
-          url = "/custom"
-        else
-          url = "/custom/1"
+        if Tower.env is 'test'
+          if options.action == 'index'
+            url = "/custom"
+          else
+            url = "/custom/1"
           
         @response.redirect url
       catch error
