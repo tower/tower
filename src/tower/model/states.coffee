@@ -14,12 +14,6 @@ Tower.Model.States =
   isPending: retrieveFromCurrentState
   isValid:   retrieveFromCurrentState
   
-  # Check if this record has been saved to the database.
-  #
-  # @return [Boolean]
-  isPersisted: ->
-    !!(@persistent)# && @attributes.hasOwnProperty("id") && @attributes.id != null && @attributes.id != undefined)
-
   # Check if this record has not yet been saved to the database.
   #
   # @return [Boolean]

@@ -16,7 +16,11 @@ class Tower.Store.Transaction extends Tower.Class
       updated:  Ember.Map.create()
       deleted:  Ember.Map.create()
       
-  create: (record) ->
+  create: (record, callback) ->
+    
+    #@runCallbacks action, (block) =>
+    #  complete  = @_callback(block, callback)
+
     #record.constructor.scoped(instantiate: false).create @, (error) =>
       #@persistent = true
       
