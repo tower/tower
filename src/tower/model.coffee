@@ -80,6 +80,7 @@ require './model/stateMachine'
 require './model/validator'
 require './model/validations'
 require './model/timestamp'
+require './model/transactions'
 require './model/locale/en'
 
 Tower.Model.include Tower.Support.Callbacks
@@ -95,5 +96,6 @@ Tower.Model.include Tower.Model.Relations
 Tower.Model.include Tower.Model.Validations
 Tower.Model.include Tower.Model.Attributes
 Tower.Model.include Tower.Model.Timestamp
+Tower.Model.include Tower.Model.Transactions
 
 module.exports = Tower.Model

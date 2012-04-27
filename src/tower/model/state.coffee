@@ -128,6 +128,39 @@ class Tower.Model.State.Dirty extends Tower.Model.State
 
       record.withTransaction (t) ->
         t.recordBecameClean(dirtyType, record)
+        
+    save: (stateMachine, options) ->
+      callback  = options.callback
+      record    = Ember.get(stateMachine, 'record')
+      
+      respond = (record, error) =>
+        # something is wrong here...
+        stateMachine.send('becameInvalid') if error
+        callback.call(record, error) if callback
+      
+      if record.readOnly
+        respond(record, new Error('Record is read only'))
+        return
+      
+      unless options.validate == false
+        record.validate (error) =>
+          if error
+            respond(record, null)
+          else
+            record._save (error) =>
+              respond(record, error)
+      else
+        record._save (error) =>
+          respond(record, error)
+
+    _save: (stateMachine, callback) ->
+      record    = Ember.get(stateMachine, 'record')
+      action    = Ember.get(stateMachine, 'dirtyType')
+      
+      record.runCallbacks 'save', (block) =>
+        complete = Tower.callbackChain(block, callback)
+        
+        stateMachine.send(action, complete)
 
     willCommit: (stateMachine, callback) ->
       record    = Ember.get(stateMachine, 'record')

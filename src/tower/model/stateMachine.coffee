@@ -57,6 +57,15 @@ class Tower.Model.StateMachine extends Tower.StateMachine
         dirtyType:  'created'
         isNew:      true
         isLoaded:   true
+        
+        create: (stateMachine, callback) ->
+          record = Ember.get(stateMachine, 'record')
+          
+          record.runCallbacks 'create', (block) =>
+            complete = Tower.callbackChain(block, callback)
+            
+            record.constructor.scoped(instantiate: false).create record, (error) =>
+              callback.call(record, error)
 
         invokeLifecycleCallbacks: (stateMachine, record) ->
           record.fire('didCreate')
@@ -86,6 +95,15 @@ class Tower.Model.StateMachine extends Tower.StateMachine
       updated: Tower.Model.State.Dirty.create
         dirtyType:  'updated'
         isLoaded:   true
+        
+        update: (stateMachine, callback) ->
+          record = Ember.get(stateMachine, 'record')
+          
+          record.runCallbacks 'update', (block) =>
+            complete = Tower.callbackChain(block, callback)
+
+            record.constructor.scoped(instantiate: false).update record, updates, (error) =>
+              callback.call(record, error)
 
         destroy: (stateMachine, callback) ->
           @_super(stateMachine)

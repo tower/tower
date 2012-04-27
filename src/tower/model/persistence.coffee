@@ -44,15 +44,7 @@ Tower.Model.Persistence =
     load: (records) ->
       @store().load(records)
       
-    transaction: (block) ->
-      transaction = new Tower.Store.Transaction
-      block.call @, transaction if block
-      transaction
-
   InstanceMethods:
-    withTransaction: (block) ->
-      @constructor.transaction(block)
-    
     # Create or update the record.
     #
     # @example Default save
@@ -63,24 +55,16 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     save: (options, callback) ->
-      throw new Error('Record is read only') if @readOnly
-
+      @get('transaction').adopt(@)
+        
       if typeof options == 'function'
         callback  = options
         options   = {}
       options ||= {}
-
-      unless options.validate == false
-        @validate (error) =>
-          if error
-            # something is wrong here...
-            callback.call @, null, false if callback
-          else
-            @_save callback
-      else
-        @_save callback
-
-      undefined
+      
+      options.callback = callback
+      
+      @send 'save', options
 
     # Set attributes and save the model, all at once.
     #

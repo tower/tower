@@ -19,10 +19,16 @@ class Tower.Store.Memory extends Tower.Store
 
     @records  = {}
     @lastId   = 1
+    
+    Ember.set @, 'transaction', new Tower.Store.Transaction
 
   clean: ->
     @records  = {}
     @lastId   = 1
+    
+  commit: ->
+    transaction = Ember.get @, 'transaction'
+    transaction.commit()
 
 require './memory/finders'
 require './memory/persistence'

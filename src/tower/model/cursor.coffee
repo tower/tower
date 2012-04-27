@@ -8,6 +8,9 @@ class Tower.Model.Cursor extends Tower.Collection
   init: (options = {}) ->
     @initialize options
     
+  getType: ->
+    @model
+    
   pushMatching: (records) ->
     matching = Tower.Store.Operators.select(records, @conditions())
     
