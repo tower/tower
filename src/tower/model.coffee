@@ -50,15 +50,7 @@ class Tower.Model extends Tower.Class
     @persistent     = if options.hasOwnProperty('persistent') then options.persisted else false
     
     for key, value of attrs
-      @set key, value
-      
-    stateMachine = Tower.Model.StateMachine.create(record: @)
-
-    @set 'pendingQueue', {}
-
-    @set 'stateMachine', stateMachine
-    
-    stateMachine.goToState('empty')
+      @set(key, value)
 
 require './model/scope'
 require './model/cursor'
@@ -75,8 +67,6 @@ require './model/persistence'
 require './model/scopes'
 require './model/serialization'
 require './model/states'
-require './model/state'
-require './model/stateMachine'
 require './model/validator'
 require './model/validations'
 require './model/timestamp'

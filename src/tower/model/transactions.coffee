@@ -9,10 +9,6 @@ Tower.Model.Transactions =
     transaction: Ember.computed(->
       new Tower.Store.Transaction
     ).cacheable()
-
-    use: (transaction) ->
-      transaction.adopt(@)
-      @
       
     save: ->
       @get('transaction').adopt(@)
