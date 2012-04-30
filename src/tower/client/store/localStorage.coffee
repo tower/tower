@@ -1,3 +1,7 @@
+# https://github.com/andris9/jStorage/blob/master/jstorage.js
+# https://github.com/marcuswestin/store.js
+# https://raw.github.com/marcuswestin/store.js/master/store.js
+# https://raw.github.com/marcuswestin/store.js/master/json.js
 class Tower.Store.LocalStorage extends Tower.Store.Memory
   initialize: ->
     @lastId   = 0

@@ -50,12 +50,13 @@ class Tower.Model.Attribute
 
     @get        = "get#{Tower.Support.String.camelize(name)}" if @get == true
     @set        = "set#{Tower.Support.String.camelize(name)}" if @set == true
+    
     #if Tower.accessors
     #  Object.defineProperty @owner.prototype, name,
     #    enumerable: true
     #    configurable: true
-    #    get: -> @get(key)
-    #    set: (value) -> @set(key, value)
+    #    get: -> @get(name)
+    #    set: (value) -> @set(name, value)
 
   _defineAttribute: (options) ->
     name      = @name

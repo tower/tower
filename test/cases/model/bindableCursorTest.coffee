@@ -6,19 +6,20 @@ class App.BindableCursorTest extends Tower.Model
   @field "object", type: "Object", default: {}
   @field "arrayString", type: ["String"], default: []
   @field "arrayObject", type: ["Object"], default: []
-
+###
 describe 'Tower.Model.Cursor (bindable)', ->
   cursor = null
   
   beforeEach ->
-    cursor  = Tower.Model.Cursor.create(model: App.BindableCursorTest, content: [])
+    cursor  = Tower.Model.Cursor.create(content: [])
+    cursor.make(model: App.BindableCursorTest)
     
   test 'addObserver', (done) ->
-    record = new App.BindableCursorTest
+    record = App.BindableCursorTest.new()
     
     cursor.addObserver "length", (_, key, value) ->
       assert.ok value, "addObserver length called"
-      #done()
+      done()
     
     cursor.addObject(record)
     
@@ -51,3 +52,4 @@ describe 'Tower.Model.Cursor (bindable)', ->
       done()
 
     cursor.pushMatching(records)
+###

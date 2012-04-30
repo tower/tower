@@ -10,10 +10,6 @@ Tower.Store.Callbacks =
   #
   # @return [void] Requires a callback.
   runAfterInsert: (criteria, callback) ->
-    #if criteria.throughRelation
-    #  criteria.createThroughRelation(callback)
-    #else
-    #  callback()
     callback()
 
   # Prepare the criteria before you execute {#update}.

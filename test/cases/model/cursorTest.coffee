@@ -182,7 +182,7 @@ describe 'Tower.Model.Cursor', ->
       cursor.make(model: App.CursorTest)
       
     test 'create()', (done) ->
-      cursor.create (error, result) =>
+      cursor.insert (error, result) =>
         assert.ok result instanceof Tower.Model, 'result instanceof Tower.Model'
         assert.equal undefined, result.get('integer')
         done()
@@ -190,7 +190,7 @@ describe 'Tower.Model.Cursor', ->
     test 'create(integer: 10)', (done) ->
       cursor.addData(integer: 10)
       
-      cursor.create (error, result) =>
+      cursor.insert (error, result) =>
         assert.ok result instanceof Tower.Model, 'result instanceof Tower.Model'
         assert.equal 10, result.get('integer')
         done()

@@ -45,7 +45,8 @@ Tower.Controller.Params =
     cursor: ->
       return @_cursor if @_cursor
 
-      @_cursor  = cursor = new Tower.Model.Cursor
+      @_cursor  = cursor = Tower.Model.Cursor.create()
+      cursor.make()
 
       parsers     = @constructor.params()
       params      = @params

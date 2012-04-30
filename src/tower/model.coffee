@@ -24,9 +24,11 @@ class Tower.Model extends Tower.Class
 
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
+      
+    @errors = {}
 
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
-    
+
     @readOnly       = if options.hasOwnProperty('readOnly') then options.readOnly else false
 
     for key, value of attrs

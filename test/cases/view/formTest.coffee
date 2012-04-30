@@ -2,14 +2,14 @@ view = null
 user = null
 
 describeWith = (store) ->
-  describe "Tower.View.Form (Tower.Store.#{store.name})", ->
+  describe "Tower.View.Form (Tower.Store.#{store.className()})", ->
     beforeEach ->
       App.User.store(store)
-      view = new Tower.View
+      view = Tower.View.create()
     
     describe 'form', ->
       beforeEach (done) ->
-        App.User.create firstName: "Lance", (error, record) =>
+        App.User.insert firstName: "Lance", (error, record) =>
           user = record
           done()
       

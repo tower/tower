@@ -196,7 +196,7 @@ Tower.Model.Persistence =
             @destroyRelations (error) =>
               @set('isNew', false)
               @set('isDeleted', true)
-              @get('data').set('id', undefined)
+              @set('id', undefined)
               complete.call(@, error)
           else
             complete.call(@, error)

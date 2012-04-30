@@ -1,4 +1,17 @@
+nativeIndexOf = Array.prototype.indexOf
+
 Tower.Support.Array =
+  toStringIndexOf: (array, item, isSorted) ->
+    return -1 unless array?
+    
+    i = 0
+    l = array.length
+    
+    while i < l
+      return i if i of array && array[i] && item && array[i].toString() == item.toString()
+      i++
+    -1
+
   extractOptions: (args) ->
     if typeof args[args.length - 1] == "object" then args.pop() else {}
 

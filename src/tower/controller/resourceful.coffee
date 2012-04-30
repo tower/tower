@@ -130,7 +130,7 @@ Tower.Controller.Resourceful =
 
   respondWithStatus: (success, callback) ->
     options = records: (@resource || @collection)
-
+    
     if callback && callback.length > 1
       successResponder = new Tower.Controller.Responder(@, options)
       failureResponder = new Tower.Controller.Responder(@, options)
@@ -162,9 +162,9 @@ Tower.Controller.Resourceful =
 
       resource = null
       
-      scope.create @params[@resourceName], (error, record) =>
-        @[@resourceName] = @resource = resource = record
-        callback.call @, null, resource if callback
+      scope.insert @params[@resourceName], (error, record) =>
+        @[@resourceName] = @resource = record
+        callback.call(@, null, record) if callback
 
       resource
 
@@ -233,14 +233,14 @@ Tower.Controller.Resourceful =
   # @return [void] Requires a callback.
   scoped: (callback) ->
     callbackWithScope = (error, scope) =>
-      callback.call @, error, scope.where(@criteria())
+      callback.call @, error, scope.where(@cursor())
 
     if @hasParent
       @findParent (error, parent) =>
         if error || !parent
           callbackWithScope error, Tower.constant(@resourceType)
         else
-          callbackWithScope(error, parent[@collectionName]())
+          callbackWithScope(error, parent.get(@collectionName))
     else
       callbackWithScope null, Tower.constant(@resourceType)
 

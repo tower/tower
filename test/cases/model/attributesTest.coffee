@@ -130,7 +130,7 @@ describeWith = (store) ->
       model = null
     
       beforeEach ->
-        model = new App.BaseModel
+        model = App.BaseModel.new()
     
       test '#data', ->
         assert.equal typeof(model.get('data')), "object"
@@ -160,7 +160,7 @@ describeWith = (store) ->
       #  model.attributes.custom.push "mongodb"
       #
       #  assert.equal model.get("custom"), "ruby-javascript-mongodb"
-###                       
+  ###                       
       describe 'operations', ->
         test '$push', ->
           model.set("tags", ["ruby"])
@@ -241,16 +241,16 @@ describeWith = (store) ->
                 assert.equal user.get('rating'), 3.4
 
                 done()
-                
+  ###              
   describe 'accessors', ->
     user = null
     
     beforeEach ->
-      user = new App.User
+      user = App.User.new(firstName: 'Lance')
       
     test 'string', ->
-      console.log user.getField("firstName")
-###
+      assert.equal user.firstName, 'Lance'
+      
 describeWith(Tower.Store.Memory)
 
 if Tower.client

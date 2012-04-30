@@ -8,13 +8,11 @@ Tower.Store.MongoDB.Persistence =
     
     @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
-      #record.get('data').savedData.id = doc["_id"]
+      
       record.set('isNew', !!error)
       record.set('id', doc["_id"])
 
       callback.call(@, error, record.attributes) if callback
-
-    # record.get('data').savedData.id = attributes["_id"]
 
     undefined
 

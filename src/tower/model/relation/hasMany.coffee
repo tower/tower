@@ -202,14 +202,19 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     if relation.idCache
       push    = {}
       data    = if record then record.get('id') else @store._mapKeys('id', @data)
-      push[relation.idCacheKey] = if _.isArray(data) then {$each: data} else data
+      push[relation.idCacheKey] = data
     if relation.counterCacheKey
       inc     = {}
       inc[relation.counterCacheKey] = 1
 
     updates   = {}
     # probably should be $addToSet
-    updates['$addToSet']  = push if push
+    if push
+      if _.isArray(push)
+        updates['$addEach']  = push
+      else
+        updates['$add']  = push
+        
     updates['$inc']       = inc if inc
 
     updates
@@ -227,9 +232,9 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     updates   = {}
     # probably should be $addToSet
-    updates['$pullAll']   = pull if pull
+    updates['$pullEach']   = pull if pull
     updates['$inc']       = inc if inc
-
+    
     updates
 
   # @private

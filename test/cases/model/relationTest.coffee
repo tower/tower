@@ -339,7 +339,7 @@ describeWith = (store) ->
         test 'ownerAttributes', (done) ->
           child = new App.Child(id: 20)
           
-          assert.deepEqual cursor.ownerAttributes(child), { '$addToSet': { idCacheTrue_idCacheFalseIds: child.get('id') } }
+          assert.deepEqual cursor.ownerAttributes(child), { '$add': { idCacheTrue_idCacheFalseIds: child.get('id') } }
           
           done()
           
@@ -371,7 +371,6 @@ describeWith = (store) ->
         
           test 'insert', (done) ->
             assert.equal child.get('parentId'), null
-            
             assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), child2.get('id')]
             done()
             
@@ -384,7 +383,7 @@ describeWith = (store) ->
                   assert.equal child.get('value'), null
                   
                   done()
-          
+
           test 'update()', (done) ->
             parent.get('idCacheTrue_idCacheFalse').update value: "something", =>
               App.Child.find child.get('id'), (error, child) =>
@@ -427,7 +426,7 @@ describeWith = (store) ->
                   App.Child.all (error, records) =>
                     assert.equal records.length, 4
                     done()
-                    
+###                    
           #test 'remove from set', (done) ->
           #  parent.idCacheTrue_idCacheFalse().remove child, =>
           #    App.Parent.find parent.get('id'), (error, parent) =>
@@ -441,6 +440,6 @@ describeWith = (store) ->
           #  test 'add to set', (done) ->
           #    App.Child.insert (error, child) =>
           #      child.idCacheFalse_idCacheTrue
-
+###
 describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB) unless Tower.client
+describeWith(Tower.Store.MongoDB) unless Tower.client

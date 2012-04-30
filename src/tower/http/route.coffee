@@ -67,7 +67,8 @@ class Tower.HTTP.Route extends Tower.Class
     params.action   = controller.action if controller
     request.params  = params
 
-    controller      = new (Tower.constant(Tower.namespaced(@controller.className))) if controller
+    if controller
+      controller      = Tower.constant(Tower.namespaced(@controller.className)).create()
     controller
 
   init: (options) ->

@@ -56,7 +56,7 @@ describeWith = (store) ->
 
         assert.equal validators.length, 1
         assert.equal validators[0].name, "presence"
-        
+
     describe 'format', ->
       test 'field "name", format: /^[a-z]/', ->
         field       = App.Validatable.fields()["string_format_a_z"]
@@ -70,7 +70,7 @@ describeWith = (store) ->
         
         record.set 'string_format_a_z', '1asdf'
         assert.equal validator.validate(record, 'string_format_a_z', record.errors), false
-        
+
       test 'field "name", format: "email"', ->
         field       = App.Validatable.fields()["string_formatEmail"]
         validators  = field.validators()
@@ -92,7 +92,7 @@ describeWith = (store) ->
         
         record.set 'string_formatPhone', '123'
         assert.equal validator.validate(record, 'string_formatPhone', record.errors), false
-        
+
       test 'field "name", format: "slug"', ->
         validator   = App.Validatable.validators("string_formatSlug")[0]
         
@@ -271,7 +271,7 @@ describeWith = (store) ->
           assert.equal validator.validateEach(record, record.errors), false
 
 describeWith(Tower.Store.Memory)
-if Tower.client
+if Tower.isClient
   describeWith(Tower.Store.Ajax)
 else
   describeWith(Tower.Store.MongoDB)

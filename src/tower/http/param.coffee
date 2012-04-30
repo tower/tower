@@ -26,7 +26,8 @@ class Tower.HTTP.Param
   
   toCursor: (value) ->
     nodes     = @parse(value)
-    criteria  = new Tower.Model.Cursor
+    criteria  = Tower.Model.Cursor.create()
+    criteria.make()
     for set in nodes
       for node in set
         attribute   = node.attribute

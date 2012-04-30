@@ -1,3 +1,4 @@
+###
 describeWith = (store) ->
   describe "Tower.Store.Batch (Tower.Store.#{store.className()})", ->
     record        = null
@@ -77,3 +78,4 @@ describeWith = (store) ->
         done()
       
 describeWith(Tower.Store.Memory)
+###

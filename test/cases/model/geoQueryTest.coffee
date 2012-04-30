@@ -62,7 +62,7 @@ describeWith = (store) ->
         data.push(coordinates) for name, coordinates of places
         
         iterator = (coordinates, next) ->
-          App.Address.create coordinates: coordinates, next
+          App.Address.insert coordinates: coordinates, next
         
         async.forEachSeries data, iterator, done
         
