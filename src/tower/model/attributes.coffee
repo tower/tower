@@ -1,6 +1,22 @@
 # @mixin
 Tower.Model.Attributes =
+  Serialization: {}
+
   ClassMethods:
+    dynamicFields: true
+
+    destructiveFields: [
+      'id'
+      'push'
+      'isValid'
+      'data'
+      'changes'
+      'getAttribute'
+      'setAttribute'
+      'unknownProperty'
+      'setUnknownProperty'
+    ]
+
     # Define a database field on your model.
     #
     # The field can have one of several types.
@@ -37,17 +53,31 @@ Tower.Model.Attributes =
       fields
 
   InstanceMethods:
+    dynamicFields: true
+
     data: Ember.computed(->
       new Tower.Model.Data(@)
     ).cacheable()
-    
-    get: (key) ->
-      _.getNestedAttribute @, key
-    #  Ember.get(@, key) || Ember.get(@, 'data').get(key)
-    
-    send: ->
-      @get('stateManager').send arguments...
-      
+
+    changes: Ember.computed(->
+      Ember.get(@get('data'), 'unsavedData')
+    )
+
+    getAttribute: (key) ->
+      Ember.getPath(@, key)
+
+    setAttribute: (key, value) ->
+      Ember.setPath(@, key, value)
+
+    setAttributes: (key, value) ->
+      _.oneOrMany(@, @setAttribute, key, value)
+
+    unknownProperty: (key) ->
+      @get('data').get(key) if @get('dynamicFields')
+
+    setUnknownProperty: (key, value) ->
+      @get('data').set(key, value) if @get('dynamicFields')
+
 for method in Tower.Store.Modifiers.SET
   do (method) ->
     Tower.Model.Attributes.InstanceMethods[method] = ->

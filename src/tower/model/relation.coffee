@@ -30,7 +30,7 @@ class Tower.Model.Relation extends Tower.Class
 
     @owner              = owner
     @name               = name
-    
+
     @initialize(options)
 
   initialize: (options) ->
@@ -41,14 +41,14 @@ class Tower.Model.Relation extends Tower.Class
     @ownerType          = Tower.namespaced(owner.className())
     @dependent        ||= false
     @counterCache     ||= false
-    @idCache            = false unless @hasOwnProperty("idCache")
-    @readonly           = false unless @hasOwnProperty("readonly")
-    @validate           = false unless @hasOwnProperty("validate")
-    @autosave           = false unless @hasOwnProperty("autosave")
-    @touch              = false unless @hasOwnProperty("touch")
+    @idCache            = false unless @hasOwnProperty('idCache')
+    @readonly           = false unless @hasOwnProperty('readonly')
+    @validate           = false unless @hasOwnProperty('validate')
+    @autosave           = false unless @hasOwnProperty('autosave')
+    @touch              = false unless @hasOwnProperty('touch')
     @inverseOf        ||= undefined
-    @polymorphic        = options.hasOwnProperty("as") || !!options.polymorphic
-    @default            = false unless @hasOwnProperty("default")
+    @polymorphic        = options.hasOwnProperty('as') || !!options.polymorphic
+    @default            = false unless @hasOwnProperty('default')
     @singularName       = Tower.Support.String.camelize(owner.className(), true)
     @pluralName         = Tower.Support.String.pluralize(owner.className()) # collectionName?
     @singularTargetName = Tower.Support.String.singularize(name)
@@ -59,7 +59,7 @@ class Tower.Model.Relation extends Tower.Class
       if @as
         @foreignKey = "#{@as}Id"
       else
-        if @className() == "BelongsTo"
+        if @className() == 'BelongsTo'
           @foreignKey = "#{@singularTargetName}Id"
         else
           @foreignKey = "#{@singularName}Id"
@@ -67,29 +67,40 @@ class Tower.Model.Relation extends Tower.Class
     @foreignType ||= "#{@as}Type" if @polymorphic
 
     if @idCache
-      if typeof @idCache == "string"
+      if typeof @idCache == 'string'
         @idCacheKey = @idCache
         @idCache    = true
       else
         @idCacheKey = "#{@singularTargetName}Ids"
 
-      @owner.field @idCacheKey, type: "Array", default: []
+      @owner.field @idCacheKey, type: 'Array', default: []
 
     if @counterCache
-      if typeof @counterCache == "string"
+      if typeof @counterCache == 'string'
         @counterCacheKey  = @counterCache
         @counterCache     = true
       else
         @counterCacheKey  = "#{@singularTargetName}Count"
 
-      @owner.field @counterCacheKey, type: "Integer", default: 0
+      @owner.field @counterCacheKey, type: 'Integer', default: 0
 
-    do (name) ->
-      object = {}
-      object[name] = -> @relation(name)
-      owner.reopen(object)
+    @_defineRelation(name)
       #owner.prototype.reopen ->
       #  @relation(name)
+
+  _defineRelation: (name) ->
+    object = {}
+
+    object[name] = Ember.computed((key, value) ->
+      if arguments.length is 2
+        data = Ember.get(@, 'data')
+        data.set(key, value)
+      else
+        data = Ember.get(@, 'data')
+        value = data.get(key)
+    ).property('data').cacheable()
+
+    @owner.reopen(object)
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
@@ -123,9 +134,9 @@ class Tower.Model.Relation extends Tower.Class
         return relation if relation.targetType == @ownerType
 
     null
-    
+
   _setForeignKey: ->
-    
+
   _setForeignType: ->
 
 class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
@@ -134,7 +145,7 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
 
   init: (options = {}) ->
     @_super arguments...
-    
+
     @owner        = options.owner
     @relation     = options.relation
     @records      = []
@@ -153,10 +164,10 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
   inverse: (record) ->
 
   _teardown: ->
-    _.teardown(@, "relation", "records", "owner", "model", "criteria")
+    _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
 
-for phase in ["Before", "After"]
-  for action in ["Create", "Update", "Destroy", "Find"]
+for phase in ['Before', 'After']
+  for action in ['Create', 'Update', 'Destroy', 'Find']
     do (phase, action) =>
       Tower.Model.Relation.Cursor::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
         @store["run#{phase}#{action}"](@, done)

@@ -1,18 +1,20 @@
 _.extend Tower,
-  env:        "development"
-  port:       3000
-  client:     typeof(window) != "undefined"
-  isClient:   typeof(window) != "undefined"
-  isServer:   typeof(window) == "undefined"
-  root:       "/"
-  publicPath: "/"
-  case:       "camelcase"
-  accessors:  typeof(window) == "undefined"
-  logger:     if typeof(_console) != 'undefined' then _console else console
-  structure:  "standard"
-  config:     {}
-  namespaces: {}
-  metadata:   {}
+  nativeExtensions: true
+  env:              "development"
+  port:             3000
+  client:           typeof(window) != "undefined"
+  isClient:         typeof(window) != "undefined"
+  isServer:         typeof(window) == "undefined"
+  root:             "/"
+  publicPath:       "/"
+  case:             "camelcase"
+  accessors:        typeof(window) == "undefined"
+  logger:           if typeof(_console) != 'undefined' then _console else console
+  native            
+  structure:        "standard"
+  config:           {}
+  namespaces:       {}
+  metadata:         {}
   toMixin: ->
     #mixin: ->
     #  Tower.mixin @, arguments...

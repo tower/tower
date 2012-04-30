@@ -1,84 +1,85 @@
 # Interface to {Tower.Model.Cursor}, used to build database operations.
 class Tower.Model.Scope extends Tower.Class
   @finderMethods: [
-    'find',
-    'all',
-    'first',
-    'last',
-    'count',
-    'exists',
-    'instantiate',
+    'find'
+    'all'
+    'first'
+    'last'
+    'count'
+    'exists'
+    'instantiate'
     'pluck'
   ]
 
   @persistenceMethods: [
-    'create',
-    'update',
-    'destroy',
+    'insert'
+    'create'
+    'update'
+    'destroy'
     'build'
   ]
 
   # These methods are added to {Tower.Model}.
   @queryMethods: [
-    'where',
-    'order',
-    'sort',
-    'asc',
-    'desc',
-    'gte',
-    'gt',
-    'lte',
-    'lt',
-    'limit',
-    'offset',
-    'select',
-    'joins',
-    'includes',
-    'excludes',
-    'paginate',
-    'page',
-    'allIn',
-    'allOf',
-    'alsoIn',
-    'anyIn',
-    'anyOf',
-    'notIn',
-    'near',
+    'where'
+    'order'
+    'sort'
+    'asc'
+    'desc'
+    'gte'
+    'gt'
+    'lte'
+    'lt'
+    'limit'
+    'offset'
+    'select'
+    'joins'
+    'includes'
+    'excludes'
+    'paginate'
+    'page'
+    'allIn'
+    'allOf'
+    'alsoIn'
+    'anyIn'
+    'anyOf'
+    'notIn'
+    'near'
     'within'
   ]
 
   # Map of human readable query operators to
   # normalized query operators to pass to a {Tower.Store}.
   @queryOperators:
-    '>=':       '$gte'
-    '$gte':     '$gte'
-    '>':        '$gt'
-    '$gt':      '$gt'
-    '<=':       '$lte'
-    '$lte':     '$lte'
-    '<':        '$lt'
-    '$lt':      '$lt'
-    '$in':      '$in'
-    '$nin':     '$nin'
-    '$any':     '$any'
-    '$all':     '$all'
-    '=~':       '$regex'
-    '$m':       '$regex'
-    '$regex':   '$regex'
-    '$match':   '$match'
-    '$notMatch':   '$notMatch'
-    '!~':       '$nm'
-    '$nm':      '$nm'
-    '=':        '$eq'
-    '$eq':      '$eq'
-    '!=':       '$neq'
-    '$neq':     '$neq'
-    '$null':    '$null'
-    '$notNull': '$notNull'
+    '>=':         '$gte'
+    '$gte':       '$gte'
+    '>':          '$gt'
+    '$gt':        '$gt'
+    '<=':         '$lte'
+    '$lte':       '$lte'
+    '<':          '$lt'
+    '$lt':        '$lt'
+    '$in':        '$in'
+    '$nin':       '$nin'
+    '$any':       '$any'
+    '$all':       '$all'
+    '=~':         '$regex'
+    '$m':         '$regex'
+    '$regex':     '$regex'
+    '$match':     '$match'
+    '$notMatch':  '$notMatch'
+    '!~':         '$nm'
+    '$nm':        '$nm'
+    '=':          '$eq'
+    '$eq':        '$eq'
+    '!=':         '$neq'
+    '$neq':       '$neq'
+    '$null':      '$null'
+    '$notNull':   '$notNull'
 
   init: (cursor) ->
     @_super arguments...
-    
+
     @cursor = cursor
 
   # Check if this scope or relation contains this object
@@ -112,7 +113,7 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   build: ->
-    cursor        = @compile()
+    cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
@@ -145,8 +146,8 @@ class Tower.Model.Scope extends Tower.Class
   #   App.User.options(instantiate: false).where(firstName: 'Lance').create()
   #
   # @return [void] Requires a callback to get the data.
-  create: ->
-    cursor        = @compile()
+  insert: ->
+    cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
@@ -154,6 +155,8 @@ class Tower.Model.Scope extends Tower.Class
     cursor.addData(args)
 
     cursor.create(callback)
+
+  create: @::insert
 
   # Updates records based on the scope's cursor.
   #
@@ -176,7 +179,7 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   update: ->
-    cursor        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
     # for `update`, the last argument before the callback must be the updates you're making
@@ -211,7 +214,7 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [void] Requires a callback to get the data.
   destroy: ->
-    cursor        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
@@ -221,7 +224,7 @@ class Tower.Model.Scope extends Tower.Class
 
   # Add to set.
   add: ->
-    cursor        = @compile()
+    cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
@@ -232,7 +235,7 @@ class Tower.Model.Scope extends Tower.Class
 
   # Remove from set.
   remove: ->
-    cursor        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
@@ -257,7 +260,7 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [undefined] Requires a callback to get the data.
   find: ->
-    cursor        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 

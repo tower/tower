@@ -135,10 +135,10 @@ class Tower.Model.Validator
 
     switch method.length
       when 0
-        callback.call @, null, method.call binding
+        callback.call(@, null, method.call(binding))
       else
         method.call binding, (error, result) =>
-          callback.call @, error, result
+          callback.call(@, error, result)
 
     undefined
 

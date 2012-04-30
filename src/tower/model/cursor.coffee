@@ -1,30 +1,10 @@
 # This class has plenty of room for optimization,
 # but it's now into a form I'm starting to like.
 # May rename this to Tower.Model.Cursor
-
 class Tower.Model.Cursor extends Tower.Collection
-  defaultLimit: 20
-  
   init: (options = {}) ->
-    @initialize options
-    
-  getType: ->
-    @model
-    
-  pushMatching: (records) ->
-    matching = Tower.Store.Operators.select(records, @conditions())
-    
-    @pushObjects(matching)
-      
-    matching
-    
-  pullMatching: (records) ->
-    matching = Tower.Store.Operators.select(records, @conditions())
-    
-    @pullObjects(matching)
-    
-    matching
-    
+    @initialize(options)
+
 require './cursor/finders'
 require './cursor/operations'
 require './cursor/persistence'

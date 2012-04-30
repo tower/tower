@@ -17,8 +17,8 @@ describeWith = (store) ->
   describe "Tower.Model.Data (Tower.Store.#{store.className()})", ->
     describe 'data', ->
       beforeEach ->
-        record  = new App.DataTest(data: null)
-        data    = new Tower.Model.Data(record)
+        record  = new App.DataTest
+        data    = record.get('data')#new Tower.Model.Data(record)
         
       test '#record', ->
         assert.deepEqual record, data.record
@@ -29,12 +29,59 @@ describeWith = (store) ->
       test '#unsavedData', ->
         assert.deepEqual {}, data.unsavedData
         
-      test '#relations', ->
-        assert.deepEqual {}, data.relations
+      test 'get path', ->
+        data.set(something: 'random')
+        assert.equal record.get('something'), 'random'
         
-      test '#attachments', ->
-        assert.deepEqual {}, data.attachments
+      test 'get nested path', ->
+        data.set('something': {})
+        data.set('something.deeply': {})
+        data.set('something.deeply.nested': 'random')
+        assert.equal record.get('something.deeply.nested'), 'random'
         
+      test 'dynamicFields: false', ->
+        assert.equal record.get('dynamicFields'), true
+        record.set('dynamicFields', false)
+        assert.equal record.get('dynamicFields'), false
+        record.set('something', 'random')
+        assert.equal record.get('something'), undefined
+        
+      test 'unsavedData', ->
+        record.set('something', 'random')
+        assert.deepEqual record.get('changes'), something: 'random'
+        
+      test 'setting changed attribute back to undefined', ->
+        record.set('something', 'random')
+        record.set('something', undefined)
+        assert.deepEqual record.get('changes'), {}
+        
+      test 'setting association', ->
+        items = [new App.DataItemTest]
+        record.set('dataItemTests', items)
+        assert.deepEqual record.get('dataItemTests'), items
+        
+      test 'removing association', ->
+        items = [new App.DataItemTest]
+        record.set('dataItemTests', items)
+        record.set('dataItemTests', undefined)
+        
+        assert.deepEqual record.get('changes'), {}
+        #assert.deepEqual record.get('dataItemTests'), []
+        
+      test 'getting association in changes hash', ->
+        items = [new App.DataItemTest]
+        record.set('dataItemTests', items)
+        assert.deepEqual record.get('changes'), dataItemTests: items
+        
+        record.push('dataItemTests', new App.DataItemTest)
+        assert.equal record.get('changes').dataItemTests.length, 2
+        
+      #test '#relations', ->
+      #  items = [new App.DataItemTest]
+      #  record.set('dataItemTests', items)
+      #  record.set('title', 'a title')
+      #  console.log data.unsavedData
+
       describe 'attribute modifiers', ->
         test 'set', ->
           data.set 'title', 'A Title'
@@ -55,7 +102,7 @@ describeWith = (store) ->
           
           data.set $push: tags: 'node'
           assert.deepEqual ["ruby", "javascript", "javascript", 'node'], data.get('tags')
-          
+
         test 'push undesirable', ->
           assert.deepEqual [["ruby"]], data.push("tags", ["ruby"])
           
@@ -174,10 +221,11 @@ describeWith = (store) ->
           
       #test 'set', ->
       #  console.log record.get('data')
-    
-describeWith(Tower.Store.Memory)
 
+describeWith(Tower.Store.Memory)
+###
 if Tower.client
   describeWith(Tower.Store.Ajax)
 else
   describeWith(Tower.Store.MongoDB)
+###

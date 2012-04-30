@@ -13,7 +13,7 @@ class Tower.Model.Attribute
       options       = {}
 
     @type           = type = options.type || 'String'
-    
+
     if typeof type != 'string'
       @itemType     = type[0]
       @type         = type = 'Array'
@@ -29,7 +29,7 @@ class Tower.Model.Attribute
     @_defineAttribute(options)
     @_addValidations(options)
     @_addIndex(options)
-    
+
   _setDefault: (options) ->
     @_default = options.default
 
@@ -38,16 +38,16 @@ class Tower.Model.Attribute
         @_default = lat: null, lng: null
       else if @type == 'Array'
         @_default = []
-    
+
   _defineAccessors: (options) ->
     name        = @name
     type        = @type
-    
+
     serializer  = Tower.Store.Serializer[type]
-    
+
     @get        = options.get || (serializer.from if serializer)
     @set        = options.set || (serializer.to if serializer)
-    
+
     @get        = "get#{Tower.Support.String.camelize(name)}" if @get == true
     @set        = "set#{Tower.Support.String.camelize(name)}" if @set == true
     #if Tower.accessors
@@ -56,28 +56,27 @@ class Tower.Model.Attribute
     #    configurable: true
     #    get: -> @get(key)
     #    set: (value) -> @set(key, value)
-    
+
   _defineAttribute: (options) ->
     name      = @name
     attribute = {}
     field     = @
-    
+
     attribute[name] = Ember.computed((key, value) ->
       if arguments.length is 2
         data = Ember.get(@, 'data')
-        data.set key, field.encode(value, @)
-        #@set key, value
+        data.set(key, field.encode(value, @))
       else
-        data = Ember.get(@, 'data')
+        data  = Ember.get(@, 'data')
         value = data.get(key)
         value = field.defaultValue(@) if value == undefined
         field.decode(value, @)
-        
+
     ).property('data').cacheable()
-    
+
     #@owner.prototype[name] = attribute[name]
-    @owner.reopen attribute
-    
+    @owner.reopen(attribute)
+
   _addValidations: (options) ->
     validations           = {}
 
@@ -85,16 +84,16 @@ class Tower.Model.Attribute
       validations[normalizedKey] = options[key] if options.hasOwnProperty(key)
 
     @owner.validates @name, validations if _.isPresent(validations)
-        
+
   _addIndex: (options) ->
     type  = @type
     name  = @name
-    
+
     if type == 'Geo' && !options.index
       index       = {}
       index[name] = '2d'
       options.index = index
-  
+
     if options.index
       if options.index == true
         @owner.index(@name)
@@ -109,7 +108,7 @@ class Tower.Model.Attribute
 
   defaultValue: (record) ->
     _default = @_default
-    
+
     if _.isArray(_default)
       _default.concat()
     else if _.isHash(_default)

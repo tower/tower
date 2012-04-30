@@ -62,10 +62,13 @@ Tower.Model.Validations =
     # @return [Array]
     validators: ->
       switch arguments.length
+        when 0
+          @metadata().validators
         when 1
           @fields()[arguments[0]].validators()
         else
-          @metadata().validators
+          fields = @fields()
+          _.inject(_.args(arguments), ((name) -> fields[name].validators()), {})
 
   InstanceMethods:
     # Executes validations defined for the model.
@@ -82,7 +85,7 @@ Tower.Model.Validations =
         errors          = @errors = {}
 
         iterator        = (validator, next) =>
-          validator.validateEach @, errors, next
+          validator.validateEach(@, errors, next)
 
         Tower.async validators, iterator, (error) =>
           if (!(_.isPresent(errors) || error))

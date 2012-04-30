@@ -28,7 +28,7 @@ class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.Ha
 
   init: (options = {}) ->
     @_super arguments...
-    
+
     if @relation.through
       @throughRelation  = @owner.constructor.relation(@relation.through)
       @inverseRelation  = @relation.inverseThrough(@throughRelation)
@@ -105,7 +105,7 @@ class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.Ha
       callback()
 
   createThroughRelation: (records, callback) ->
-    #record = @owner.relation(@relation.name).criteria.records
+    #record = @owner.relation(@relation.name).cursor.records
     returnArray = _.isArray(records)
     records = _.castArray(records) # may only get 1
     data    = []

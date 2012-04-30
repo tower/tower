@@ -20,7 +20,7 @@ class Tower.Store.Memory extends Tower.Store
     @records  = {}
     @lastId   = 1
     
-    Ember.set @, 'batch', new Tower.Store.Batch
+    Ember.set(@, 'batch', new Tower.Store.Batch)
 
   clean: ->
     @records  = {}

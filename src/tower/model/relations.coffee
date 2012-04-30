@@ -81,14 +81,11 @@ Tower.Model.Relations =
       relation
 
   InstanceMethods:
+    getRelation: (key) ->
+      @get(key)
+
     relation: (name) ->
       @relations[name] ||= @constructor.relation(name).scoped(@)
-
-    buildRelation: (name, attributes, callback) ->
-      @relation(name).build(attributes, callback)
-
-    createRelation: (name, attributes, callback) ->
-      @relation(name).create(attributes, callback)
 
     destroyRelations: (callback) ->
       relations   = @constructor.relations()

@@ -151,10 +151,10 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     #if relation.idCache
     #  #defaults[relation.idCacheKey] = $in: [@owner.get('id')]
     #  defaults.id = $in: @owner.get(relation.idCacheKey)
-    #  criteria.where(defaults)
+    #  cursor.where(defaults)
     #else
     #  defaults[relation.foreignKey] = $in: @owner.get('id')
-    #  criteria.where(defaults)
+    #  cursor.where(defaults)
 
     if inverseRelation && inverseRelation.idCache
       array = data[inverseRelation.idCacheKey] || []
@@ -207,7 +207,7 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     updates   = {}
     # probably should be $addToSet
     updates['$addToSet']  = push if push
-    updates['$inc']   = inc if inc
+    updates['$inc']       = inc if inc
 
     updates
 
@@ -224,14 +224,14 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     updates   = {}
     # probably should be $addToSet
-    updates['$pullAll']  = pull if pull
-    updates['$inc']   = inc if inc
+    updates['$pullAll']   = pull if pull
+    updates['$inc']       = inc if inc
 
     updates
 
   # @private
   _idCacheRecords: (records) ->
     rootRelation = @owner.relation(@relation.name)
-    rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
+    rootRelation.cursor.records = rootRelation.cursor.records.concat _.castArray(records)
 
 module.exports = Tower.Model.Relation.HasMany

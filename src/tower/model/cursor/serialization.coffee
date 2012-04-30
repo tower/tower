@@ -1,9 +1,12 @@
+# @mixin
 Tower.Model.Cursor.Serialization =
-  initialize: (options) ->  
+  defaultLimit: 20
+
+  initialize: (options) ->
     @model        = options.model
     @store        = if @model then @model.store() else undefined
     #@transaction  = options.transaction || new Tower.Store.Transaction
-    
+
     @instantiate  = options.instantiate != false
 
     @_where       = options.where || []
@@ -19,10 +22,10 @@ Tower.Model.Cursor.Serialization =
     @_eagerLoad   = options.eagerLoad || {}
     @_near        = options.near
     # options.findOne = conditions.id && conditions.id.hasOwnProperty('$in') && conditions.id.$in.length == 1
-    
+
   # Get the conditions, order, limit, fields, offset, or other private variables.
   get: (key) ->
-    @["_#{key}"]    
+    @["_#{key}"]
 
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.
@@ -31,7 +34,7 @@ Tower.Model.Cursor.Serialization =
     delete @data
     delete @returnArray
     result
-    
+
   addData: (args) ->
     if args.length && args.length > 1 || _.isArray(args[0])
       @data = _.flatten(args)
@@ -56,7 +59,7 @@ Tower.Model.Cursor.Serialization =
 
   has: (object) ->
     false
-    
+
   # ideally we can call this to free up some memory on this object.
   compile: ->
 
@@ -99,7 +102,7 @@ Tower.Model.Cursor.Serialization =
     joins:     @_joins
     eagerLoad: @_eagerLoad
     near:      @_near
-    
+
   _compileAttributes: (object, conditions) ->
     for key, value of conditions
       oldValue = result[key]
@@ -119,7 +122,7 @@ Tower.Model.Cursor.Serialization =
   conditions: ->
     result = {}
     args = _.args(arguments, 1)
-    
+
     for conditions in @_where
       _.deepMergeWithArrays(result, conditions)
 
@@ -129,10 +132,10 @@ Tower.Model.Cursor.Serialization =
         @returnArray = false
       else
         @returnArray = true
-      
+
       ids = @ids
       # tmp
-      
+
       if @store.constructor.className() == 'Memory'
         ids = _.map ids, (id) -> id.toString()
       result.id = $in: ids
@@ -181,5 +184,5 @@ Tower.Model.Cursor.Serialization =
 
   _array: (existing, orNull) ->
     if existing && existing.length then existing.concat() else (if orNull then null else [])
-    
+
 module.exports = Tower.Model.Cursor.Serialization

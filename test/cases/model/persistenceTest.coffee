@@ -6,11 +6,11 @@ describeWith = (store) ->
       store.clean =>
         App.User.store(store)
         done()
-      
+    ###
     describe 'new', ->
       test '#isNew', ->
         user = new App.User
-        assert.ok user.isNew()
+        assert.ok user.get('isNew')
 
     describe 'create', ->
       test 'with no attributes (missing required attributes)', (done) ->
@@ -19,27 +19,32 @@ describeWith = (store) ->
           
           App.User.count (error, count) =>
             assert.equal count, 0
-          
+            
             done()
 
       test 'with valid attributes', (done) ->
         App.User.create firstName: "Lance", (error, record) =>
           assert.deepEqual record.errors, {}
           
+          assert.equal record.get('firstName'), "Lance"
+          
           App.User.count (error, count) =>
             assert.equal count, 1
             
             done()
-###
+
       test 'with multiple with valid attributes as array', (done) ->
         App.User.create [{firstName: "Lance"}, {firstName: "Dane"}], (error, records) =>
           assert.equal records.length, 2
+          
+          assert.equal records[0].get('firstName'), "Lance"
+          assert.equal records[1].get('firstName'), "Dane"
           
           App.User.count (error, count) =>
             assert.equal count, 2
         
             done()
-            
+
       test 'with multiple with valid attributes as arguments', (done) ->
         App.User.create {firstName: "Lance"}, {firstName: "Dane"}, (error, records) =>
           assert.equal records.length, 2
@@ -57,21 +62,22 @@ describeWith = (store) ->
           "Record is read only"
         )
         done()
-          
+        
     describe 'update', ->
       beforeEach (done) ->
         attributes = []
         attributes.push id: 1, firstName: "Lance"
         attributes.push id: 2, firstName: "Dane"
         App.User.create(attributes, done)
-      
+
       test 'update string property', (done) ->
         App.User.update {firstName: "John"}, (error) =>
           App.User.all (error, users) =>
             assert.equal users.length, 2
+
             for user in users
               assert.equal user.get("firstName"), "John"
-            
+
             done()
 
       test 'update matching string property', (done) ->
@@ -80,19 +86,21 @@ describeWith = (store) ->
             assert.equal count, 1
             
             done()
-    
+    ###
     describe '#update', ->
       beforeEach (done) ->
-        App.User.create id: 1, firstName: "Lance", (error, record) =>
+        App.User.insert firstName: "Lance", (error, record) =>
           user = record
-          App.User.create(id: 2, firstName: "Dane", done)
+          App.User.insert(firstName: "Dane", done)
       
       test 'update string property with updateAttributes', (done) ->
         user.updateAttributes firstName: "John", (error) =>
           assert.equal user.get("firstName"), "John"
-          #assert.deepEqual user.changes, {}
           
-          done()
+          App.User.find user.get('id'), (error, user) =>
+            assert.equal user.get('firstName'), 'John'
+            
+            done()
 
       test 'update string property with save', (done) ->
         user.set "firstName", "John"
@@ -101,7 +109,7 @@ describeWith = (store) ->
           #assert.deepEqual user.changes, {}
           
           done()
-    
+###
     describe 'destroy', ->
       beforeEach (done) ->
         App.User.create id: 1, firstName: "Lance!!!", (error, result) =>
@@ -132,4 +140,4 @@ describeWith = (store) ->
       test 'reload'
 ###
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+#describeWith(Tower.Store.MongoDB) unless Tower.client

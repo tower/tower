@@ -1,3 +1,4 @@
+# @mixin
 Tower.Model.Cursor.Operations =
   eagerLoad: (object) ->
     @_eagerLoad = _.extend @_eagerLoad, object
@@ -30,7 +31,7 @@ Tower.Model.Cursor.Operations =
   # @param [Arguments] keys
   except: ->
     @_except = _.flatten _.args(arguments)
-    
+
   with: (transaction) ->
     @transaction = transaction
 
@@ -188,10 +189,10 @@ Tower.Model.Cursor.Operations =
   #   App.User.within(a : { x : 10, y : 20 }, b : { x : 15, y : 25 }, c : { x : 20, y : 20 })
   within: (bounds) ->
     @where(coordinates: $maxDistance: bounds)
-    
+
   test: (record) ->
     Tower.Store.Operators.test(record, @conditions())
-    
+
   # @private
   _whereOperator: (operator, attributes) ->
     query = {}
@@ -199,9 +200,9 @@ Tower.Model.Cursor.Operations =
       query[key] = {}
       query[key][operator] = value
     @where query
-    
+
 
   # Alias for {#order}.
 Tower.Model.Cursor.Operations.sort = Tower.Model.Cursor.Operations.order
-  
+
 module.exports = Tower.Model.Cursor.Operations

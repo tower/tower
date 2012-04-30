@@ -86,12 +86,12 @@ Tower.Model.Metadata =
       metadata                = @metadata[className]
       return metadata if metadata
       baseClassName           = @parentClass().className()
-        
+
       if baseClassName != className
         superMetadata = @parentClass().metadata()
       else
         superMetadata = {}
-        
+
       namespace               = Tower.namespace()
       name                    = Tower.Support.String.camelize(className, true)
       namePlural              = Tower.Support.String.pluralize(name)
@@ -106,7 +106,7 @@ Tower.Model.Metadata =
       relations               = if superMetadata.relations then _.clone(superMetadata.relations) else {}
       defaults                = if superMetadata.defaults then _.clone(superMetadata.defaults) else {}
       callbacks               = if superMetadata.callbacks then _.clone(superMetadata.callbacks) else {}
-      
+
       @metadata[className]    =
         name:                 name
         namePlural:           namePlural
@@ -125,7 +125,7 @@ Tower.Model.Metadata =
 
     _setDefaultScope: (scope) ->
       @metadata().defaults.scope = if scope instanceof Tower.Model.Scope then scope else @where(scope)
-      
+
     callbacks: ->
       @metadata().callbacks
 

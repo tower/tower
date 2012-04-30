@@ -24,7 +24,7 @@ Tower.Model.Hierarchical =
 
     leaves: ->
       metadata    = @metadata()
-      @where('#{metadata.rgt} - #{metadata.lft} = 1').asc(metadata.lft)
+      @where("#{metadata.rgt} - #{metadata.lft} = 1").asc(metadata.lft)
 
   isRoot: ->
     !!!@get(@metadata().parentId)
@@ -56,7 +56,7 @@ Tower.Model.Hierarchical =
 
   leaves: ->
     metadata = @metadata()
-    @descendants().where('#{metadata.rgt} - #{metadata.lft} = 1').asc(metadata.lft)
+    @descendants().where("#{metadata.rgt} - #{metadata.lft} = 1").asc(metadata.lft)
 
   level: (callback) ->
     metadata = @metadata()
@@ -72,7 +72,7 @@ Tower.Model.Hierarchical =
     @withoutSelf @selfAndDescendants()
 
   isDescendantOf: (other) ->
-    other.get('left') < @get('left') && @get('left') < @get('right') && @sameScope?(other)
+    other.get('left') < @get('left') && @get('left') < @get('right') && @isSameScope(other)
 
   moveLeft: ->
     @moveToLeftOf @leftSibling()
@@ -96,23 +96,28 @@ Tower.Model.Hierarchical =
     @runCallbacks 'move', ->
 
   isOrIsDescendantOf: (other) ->
-    other.left <= self.left && self.left < other.right && sameScope?(other)
+    other.get('left') <= @get('left') && @get('left') < other.get('right') && @isSameScope(other)
 
   isAncestorOf: (other) ->
-    self.left < other.left && other.left < self.right && sameScope?(other)
+    @get('left') < other.get('left') && other.get('left') < @get('right') && @isSameScope(other)
 
   isOrIsAncestorOf: (other) ->
-    self.left <= other.left && other.left < self.right && sameScope?(other)
+    @get('left') <= other.get('left') && other.get('left') < @get('right') && @isSameScope(other)
 
-  sameScope: (other) ->
+  isSameScope: (other) ->
     Array(actsAsNestedSetOptions.scope).all (attr) ->
-      self.send(attr) == other.send(attr)
+      @get(attr) == other.get(attr)
 
-  leftSibling: ->
-    siblings.where(["#{self.class.quotedTableName}.#{quotedLeftColumnName} < ?", left]).
-            order("#{self.class.quotedTableName}.#{quotedLeftColumnName} DESC").last
+  leftSibling: (callback) ->
+    metadata    = @constructor.metadata()
+    conditions  = {}
+    conditions[metadata.lft] = $lt: @get('left')
+    siblings.where(conditions).desc(metadata.lft).last(callback)
 
-  rightSibling: ->
-    siblings.where(["#{self.class.quotedTableName}.#{quotedLeftColumnName} > ?", left]).first
+  rightSibling: (callback) ->
+    metadata    = @constructor.metadata()
+    conditions  = {}
+    conditions[metadata.left] = $gt: @get('left')
+    siblings.where(conditions).first(callback)
 
 module.exports = Tower.Model.Hierarchical

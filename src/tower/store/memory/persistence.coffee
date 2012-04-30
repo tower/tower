@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.Store.Memory.Persistence =
   # Load models into the store (for non-persistent stores).
   #
@@ -15,7 +15,7 @@ Tower.Store.Memory.Persistence =
   create: (criteria, callback) ->
     result    = []
     
-    result.push @createOne(object) for object in criteria.data
+    result.push(@createOne(object)) for object in criteria.data
 
     result    = criteria.export(result)
 
@@ -32,7 +32,8 @@ Tower.Store.Memory.Persistence =
   update: (updates, criteria, callback) ->
     @find criteria, (error, records) =>
       return _.error(error, callback) if error
-      @updateOne(record, updates) for record in records
+      # already updated by this point.
+      #@updateOne(record, updates) for record in records
       callback.call(@, error, records) if callback
       records
 

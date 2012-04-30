@@ -1,4 +1,5 @@
-Tower.Model.Cursor.Persistence =  
+# @mixin
+Tower.Model.Cursor.Persistence =
   build: (callback) ->
     @_build(callback)
 
@@ -78,14 +79,14 @@ Tower.Model.Cursor.Persistence =
       iterator = (record, next) ->
         record.destroy(next)
 
-      @_each @, iterator, callback
+      @_each(@, iterator, callback)
     else
-      @store.destroy @, callback
-      
+      @store.destroy(@, callback)
+
   # add to set
   add: (callback) ->
 
   # remove from set
   remove: (callback) ->
-  
+
 module.exports = Tower.Model.Cursor.Persistence
