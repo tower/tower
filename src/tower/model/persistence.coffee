@@ -26,10 +26,12 @@ Tower.Model.Persistence =
       return store if arguments.length == 0 && store
 
       defaultStore = @default('store') || Tower.Store.Memory
+      
+      type = typeof value 
 
-      if typeof value == 'function'
+      if type == 'function'
         store   = new value(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
-      else if typeof value == 'object'
+      else if type == 'object'
         store ||= new defaultStore(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
         _.extend(store, value)
       else if value
@@ -63,7 +65,7 @@ Tower.Model.Persistence =
     save: (options, callback) ->
       @set('isSaving', true)
       @get('transaction').adopt(@)
-
+      
       throw new Error('Record is read only') if @readOnly
 
       if typeof options == 'function'
@@ -78,6 +80,7 @@ Tower.Model.Persistence =
             # something is wrong here...
             callback.call(@, null) if callback
           else
+            @set('isValid', true)
             @_save(callback)
       else
         @_save(callback)
@@ -90,7 +93,7 @@ Tower.Model.Persistence =
     # @return [void] Requires a callback.
     updateAttributes: (attributes, callback) ->
       @setProperties(attributes)
-      @_update(attributes, callback)
+      @save(callback)
 
     # Destroy this record, if it is persistent.
     #
@@ -102,7 +105,7 @@ Tower.Model.Persistence =
         callback.call(@, null if callback)
       else
         @_destroy(callback)
-        
+
       @
 
     # @todo Haven't implemented
@@ -122,7 +125,7 @@ Tower.Model.Persistence =
         if @get('isNew')
           @_create(complete)
         else
-          @_update({}, complete)
+          @_update(complete)
 
       undefined
 
@@ -139,12 +142,13 @@ Tower.Model.Persistence =
 
         @constructor.scoped(instantiate: false).insert @, (error) =>
           throw error if error && !callback
+          
+          @set('isSaving', false)
 
           unless error
-            @persistent = true
+            @set('isNew', false)
+            @get('data').commit()
 
-          @set('isSaving', false)
-          @set('isNew', false)
           complete.call(@, error)
 
       undefined
@@ -157,15 +161,18 @@ Tower.Model.Persistence =
     # @param [Function] callback
     #
     # @return [void] Requires a callback.
-    _update: (updates, callback) ->
+    _update: (callback) ->
       @runCallbacks 'update', (block) =>
         complete = Tower.callbackChain(block, callback)
 
-        @constructor.scoped(instantiate: false).update @, updates, (error) =>
+        @constructor.scoped(instantiate: false).update @get('id'), @, (error) =>
           throw error if error && !callback
-
+          
           @set('isSaving', false)
-          @set('isNew', false)
+          
+          unless error
+            @set('isNew', false)
+            @get('data').commit()
 
           complete.call(@, error)
 
@@ -187,8 +194,9 @@ Tower.Model.Persistence =
 
           unless error
             @destroyRelations (error) =>
-              @persistent = false
-              delete @attributes.id
+              @set('isNew', false)
+              @set('isDeleted', true)
+              @get('data').set('id', undefined)
               complete.call(@, error)
           else
             complete.call(@, error)

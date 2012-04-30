@@ -1,5 +1,5 @@
 # Interface to {Tower.Model.Cursor}, used to build database operations.
-class Tower.Model.Scope extends Tower.Class
+class Tower.Model.Scope
   @finderMethods: [
     'find'
     'all'
@@ -13,7 +13,6 @@ class Tower.Model.Scope extends Tower.Class
 
   @persistenceMethods: [
     'insert'
-    'create'
     'update'
     'destroy'
     'build'
@@ -76,10 +75,8 @@ class Tower.Model.Scope extends Tower.Class
     '$neq':       '$neq'
     '$null':      '$null'
     '$notNull':   '$notNull'
-
-  init: (cursor) ->
-    @_super arguments...
-
+    
+  constructor: (cursor) ->
     @cursor = cursor
 
   # Check if this scope or relation contains this object
@@ -125,38 +122,36 @@ class Tower.Model.Scope extends Tower.Class
   # Creates one or many records based on the scope's cursor.
   #
   # @example Create single record
-  #   App.User.create(firstName: 'Lance')
+  #   App.User.insert(firstName: 'Lance')
   #
   # @example Create multiple records
   #   # splat arguments
-  #   App.User.create({firstName: 'Lance'}, {firstName: 'John'})
+  #   App.User.insert({firstName: 'Lance'}, {firstName: 'John'})
   #   # or pass in an explicit array of records
-  #   App.User.create([{firstName: 'Lance'}, {firstName: 'John'}])
+  #   App.User.insert([{firstName: 'Lance'}, {firstName: 'John'}])
   #
   # @example Create by passing in records
-  #   App.User.create(new User(firstName: 'Lance'))
+  #   App.User.insert(new User(firstName: 'Lance'))
   #
   # @example Create from scope
   #   # single record
-  #   App.User.where(firstName: 'Lance').create()
+  #   App.User.where(firstName: 'Lance').insert()
   #   # multiple records
-  #   App.User.where(firstName: 'Lance').create([{lastName: 'Pollard'}, {lastName: 'Smith'}])
+  #   App.User.where(firstName: 'Lance').insert([{lastName: 'Pollard'}, {lastName: 'Smith'}])
   #
   # @example Create without instantiating the object in memory
-  #   App.User.options(instantiate: false).where(firstName: 'Lance').create()
+  #   App.User.options(instantiate: false).where(firstName: 'Lance').insert()
   #
   # @return [void] Requires a callback to get the data.
   insert: ->
     cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
-    # for `create`, the rest of the arguments must be records
+    # for `insert`, the rest of the arguments must be records
 
     cursor.addData(args)
-
-    cursor.create(callback)
-
-  create: @::insert
+    
+    cursor.insert(callback)
 
   # Updates records based on the scope's cursor.
   #
@@ -325,7 +320,7 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [Object] returns all of the options.
   options: (options) ->
-    _.extend @cursor.options, options
+    _.extend(@cursor.options, options)
 
   compile: ->
     @cursor.clone()

@@ -1,28 +1,29 @@
 # @module
 Tower.Store.MongoDB.Persistence =
-  # @see Tower.Store#create
-  create: (criteria, callback) ->
-    record      = @serializeModel(criteria.data[0])
-    attributes  = @serializeAttributesForCreate(record)
+  # @see Tower.Store#insert
+  insert: (criteria, callback) ->
+    record      = @serializeModel(criteria.data[0], false)
+    attributes  = @serializeAttributesForInsert(record)
     options     = @serializeOptions(criteria)
     
     @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
-      record.set("id", doc["_id"])
-      record.persistent = !!!error
+      #record.get('data').savedData.id = doc["_id"]
+      record.set('isNew', !!error)
+      record.set('id', doc["_id"])
 
       callback.call(@, error, record.attributes) if callback
 
-    record.set("id", attributes["_id"])
+    # record.get('data').savedData.id = attributes["_id"]
 
     undefined
 
   # @see Tower.Store#update
   update: (updates, criteria, callback) ->
-    updates         = @serializeAttributesForUpdate(updates)
+    updates         = @serializeAttributesForUpdate(updates.get('changes'))
     conditions      = @serializeConditions(criteria)
     options         = @serializeOptions(criteria)
-    
+
     options.safe    = true unless options.hasOwnProperty("safe")
     options.upsert  = false unless options.hasOwnProperty("upsert")
     # update multiple docs, b/c it defaults to false

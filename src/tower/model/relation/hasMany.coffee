@@ -8,6 +8,9 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
 
 class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
   isHasMany: true
+  
+  init: ->
+    @_super arguments...
 
   # @todo
   has: (object) ->
@@ -17,18 +20,18 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     return false
 
   validate: (callback) ->
-    unless @owner.isPersisted()
-      throw new Error('You cannot call create unless the parent is saved')
+    if @owner.get('isNew')
+      throw new Error('You cannot call insert unless the parent is saved')
 
     callback.call @
 
   build: (callback) ->
-    @compileForCreate()
+    @compileForInsert()
     @_build callback
 
-  create: (callback) ->
+  insert: (callback) ->
     @validate (error) =>
-      @createReferenced(callback)
+      @insertReferenced(callback)
 
   update: (callback) ->
     @validate (error) =>
@@ -70,16 +73,16 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
   #  @validate (error) =>
   #    @findReferenced(callback)
 
-  createReferenced: (callback) ->
-    @compileForCreate()
+  insertReferenced: (callback) ->
+    @compileForInsert()
 
-    @_runBeforeCreateCallbacksOnStore =>
-      @_create (error, record) =>
+    @_runBeforeInsertCallbacksOnStore =>
+      @_insert (error, record) =>
         unless error
           #@_idCacheRecords(record)
 
-          @_runAfterCreateCallbacksOnStore =>
-            # add the id to the array on the owner record after it's created
+          @_runAfterInsertCallbacksOnStore =>
+            # add the id to the array on the owner record after it's insertd
             if @updateOwnerRecord()
               @owner.updateAttributes @ownerAttributes(record), (error) =>
                 callback.call @, error, record if callback
@@ -170,7 +173,7 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     @where(data)
 
-  compileForCreate: ->
+  compileForInsert: ->
     @compile()
 
   compileForUpdate: ->

@@ -12,10 +12,10 @@ Tower.Store.Memory.Persistence =
     record.persistent = true
     @records[record.get('id').toString()] = record
 
-  create: (criteria, callback) ->
+  insert: (criteria, callback) ->
     result    = []
     
-    result.push(@createOne(object)) for object in criteria.data
+    result.push(@insertOne(object)) for object in criteria.data
 
     result    = criteria.export(result)
 
@@ -23,7 +23,7 @@ Tower.Store.Memory.Persistence =
 
     result
 
-  createOne: (record) ->
+  insertOne: (record) ->
     attributes = @deserializeModel(record)
     attributes.id ?= @generateId()
     attributes.id = attributes.id.toString()

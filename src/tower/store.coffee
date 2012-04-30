@@ -68,8 +68,8 @@ class Tower.Store extends Tower.Class
   addIndex: (name, options) ->
 
 
-  serialize: (data) ->
-    data[i] = @serializeModel(item) for item, i in data
+  serialize: (data, saved = false) ->
+    data[i] = @serializeModel(item, saved) for item, i in data
     data
 
   deserialize: (models) ->
@@ -85,7 +85,7 @@ class Tower.Store extends Tower.Class
     model
 
   deserializeModel: (data) ->
-    if data instanceof Tower.Model then data.get('data').unsavedData else data
+    if data instanceof Tower.Model then data.get('changes') else data
 
   init: (options = {}) ->
     @_super arguments...

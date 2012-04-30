@@ -3,13 +3,13 @@ Tower.Store.Callbacks =
   # perhaps for mimicking join tables in MongoDB.
   #
   # @return [void] Requires a callback.
-  runBeforeCreate: (criteria, callback) ->
+  runBeforeInsert: (criteria, callback) ->
     callback()
 
   # Process the criteria after {#create}, perhaps for eager loading.
   #
   # @return [void] Requires a callback.
-  runAfterCreate: (criteria, callback) ->
+  runAfterInsert: (criteria, callback) ->
     #if criteria.throughRelation
     #  criteria.createThroughRelation(callback)
     #else

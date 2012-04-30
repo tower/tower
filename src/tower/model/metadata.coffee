@@ -158,5 +158,17 @@ Tower.Model.Metadata =
 
     metadata: ->
       @constructor.metadata()
+      
+    toString: ->
+      attributes  = @get('data').attributes()
+      array       = []
+      if attributes.hasOwnProperty('id')
+        array.push("id=#{JSON.stringify(attributes.id)}")
+        delete attributes.id
+      result      = []
+      for key, value of attributes
+        result.push("#{key}=#{JSON.stringify(value)}")
+      result  = array.concat(result.sort()).join(', ')
+      "#<#{@constructor.toString()}:#{Ember.guidFor(@)} #{result}>"
 
 module.exports = Tower.Model.Metadata

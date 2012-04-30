@@ -9,7 +9,7 @@ describeWith = (store) ->
         (callback) =>
           store.clean(callback)
         (callback) =>
-          # maybe the store should be global...
+          # maybe the store should be global..
           App.Child.store(store)
           App.Parent.store(store)
           App.User.store(store)
@@ -18,19 +18,19 @@ describeWith = (store) ->
           App.Group.store(store)
           callback()
         (callback) =>
-          App.User.create firstName: "Lance", (error, record) =>
+          App.User.insert firstName: "Lance", (error, record) =>
             user = record
             callback()
         (callback) =>
-          App.Group.create (error, record) =>
+          App.Group.insert (error, record) =>
             group = record
             callback()
       ], done
       
     afterEach ->
-      try App.Parent.create.restore()
-      try App.Group.create.restore()
-      try App.Membership.create.restore()
+      try App.Parent.insert.restore()
+      try App.Group.insert.restore()
+      try App.Membership.insert.restore()
     
     describe 'inverseOf', ->
       test 'noInverse_noInverse', ->
@@ -46,51 +46,51 @@ describeWith = (store) ->
         assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
 
     describe 'HasMany', ->
-      describe '.create', ->
-        test 'compileForCreate', ->
-          criteria = user.memberships().criteria
-          criteria.compileForCreate()
-          assert.deepEqual criteria.conditions(), { userId: user.get('id') }
-          
-        test 'compileForCreate with cache: true', ->
-          criteria = user.cachedMemberships().criteria
-          criteria.compileForCreate()
+      describe '.insert', ->
+        test 'compileForInsert', ->
+          cursor = user.get('memberships').cursor
+          cursor.compileForInsert()
+          assert.deepEqual cursor.conditions(), { userId: user.get('id') }
 
-          assert.deepEqual criteria.conditions(), { }
+        test 'compileForInsert with cache: true', ->
+          cursor = user.get('cachedMemberships').cursor
+          cursor.compileForInsert()
+
+          assert.deepEqual cursor.conditions(), { }
+
+        test 'compileForInsert on polymorphic record', ->
+          cursor = user.get('polymorphicMemberships').cursor
+          cursor.compileForInsert()
           
-        test 'compileForCreate on polymorphic record', ->
-          criteria = user.polymorphicMemberships().criteria
-          criteria.compileForCreate()
+          assert.deepEqual cursor.conditions(), { joinableId: user.get('id'), joinableType: "User" }
           
-          assert.deepEqual criteria.conditions(), { joinableId: user.get('id'), joinableType: "User" }
-          
-        test 'create relationship model', (done) ->
-          user.memberships().create groupId: group.get('id'), (error, membership) =>
+        test 'insert relationship model', (done) ->
+          user.get('memberships').insert groupId: group.get('id'), (error, membership) =>
             assert.equal membership.get('userId').toString(), user.get('id').toString()
             assert.equal membership.get('groupId').toString(), group.get('id').toString()
             done()
-            
-        #test 'create through model automatically', (done) ->
-        #  sinon.spy App.Group.store(), "create"
-        #  sinon.spy App.Membership.store(), "create"
+
+        #test 'insert through model automatically', (done) ->
+        #  sinon.spy App.Group.store(), "insert"
+        #  sinon.spy App.Membership.store(), "insert"
         #  
-        #  user.groups().create (error, group) =>
-        #    #console.log App.Membership.store().create
+        #  user.get('groups').insert (error, group) =>
+        #    #console.log App.Membership.store().insert
         #    done()
       
       describe '.update', ->
         beforeEach (done) ->
-          App.Membership.create groupId: group.get('id'), =>
-            user.memberships().create groupId: group.get('id'), done
+          App.Membership.insert groupId: group.get('id'), =>
+            user.get('memberships').insert groupId: group.get('id'), done
         
         test 'compileForUpdate', ->
-          criteria = user.memberships().criteria
-          criteria.compileForUpdate()
+          cursor = user.get('memberships').cursor
+          cursor.compileForUpdate()
           
-          assert.deepEqual criteria.conditions(), { userId: user.get('id') }
-          
+          assert.deepEqual cursor.conditions(), { userId: user.get('id') }
+
         test 'update relationship model', (done) ->
-          user.memberships().update kind: "guest", (error, memberships) =>
+          user.get('memberships').update kind: "guest", (error, memberships) =>
             assert.equal memberships.length, 1
             assert.equal memberships[0].get('kind'), 'guest'
             App.Membership.count (error, count) =>
@@ -99,17 +99,17 @@ describeWith = (store) ->
       
       describe '.destroy', ->
         beforeEach (done) ->
-          App.Membership.create groupId: group.get('id'), =>
-            user.memberships().create groupId: group.get('id'), done
+          App.Membership.insert groupId: group.get('id'), =>
+            user.get('memberships').insert groupId: group.get('id'), done
             
         test 'compileForDestroy', ->
-          criteria = user.memberships().criteria
-          criteria.compileForDestroy()
+          cursor = user.get('memberships').cursor
+          cursor.compileForDestroy()
 
-          assert.deepEqual criteria.conditions(), { userId: user.get('id') }
+          assert.deepEqual cursor.conditions(), { userId: user.get('id') }
           
         test 'destroy relationship model', (done) ->
-          user.memberships().destroy (error, memberships) =>
+          user.get('memberships').destroy (error, memberships) =>
             assert.equal memberships.length, 1
             App.Membership.count (error, count) =>
               # since there were 2, but only one belonged to user
@@ -117,8 +117,8 @@ describeWith = (store) ->
               done()
               
         #test 'destroy relationship model if parent is destroyed (dependent: true)', (done) ->
-        #  App.User.create firstName: "Lance", (error, user) =>
-        #    user.dependentMemberships().create =>
+        #  App.User.insert firstName: "Lance", (error, user) =>
+        #    user.dependentMemberships().insert =>
         #      user.destroy =>
         #        App.DependentMembership.count (error, count) =>
         #          assert.equal count, 0
@@ -126,18 +126,18 @@ describeWith = (store) ->
 
     describe 'HasMany(through: true)', ->
 
-      describe '.create', ->
+      describe '.insert', ->
         # don't want it to have any data b/c all that data is stored on the relationship model.
-        test 'compileForCreate', ->
-          criteria = user.groups().criteria
-          criteria.compileForCreate()
+        test 'compileForInsert', ->
+          cursor = user.get('groups').cursor
+          cursor.compileForInsert()
           
-          assert.deepEqual criteria.conditions(), { }
-          
+          assert.deepEqual cursor.conditions(), { }
+
         test 'throughRelation', ->
-          criteria        = user.groups().criteria
-          relation        = criteria.relation
-          throughRelation = criteria.throughRelation
+          cursor        = user.get('groups').cursor
+          relation        = cursor.relation
+          throughRelation = cursor.throughRelation
           
           assert.equal throughRelation.type, "Membership"
           assert.equal throughRelation.targetType, "Membership"
@@ -150,153 +150,153 @@ describeWith = (store) ->
           assert.equal inverseRelation.type, "Group"
           assert.equal inverseRelation.foreignKey, "groupId"
           
-        test 'createThroughRelation', (done) ->
-          criteria        = user.groups().criteria
+        test 'insertThroughRelation', (done) ->
+          cursor        = user.get('groups').cursor
           
-          criteria.createThroughRelation group, (error, record) =>
+          cursor.insertThroughRelation group, (error, record) =>
             assert.equal record.constructor.className(), "Membership"
             assert.equal record.get('groupId').toString(), group.get('id').toString()
             assert.equal record.get('userId').toString(), user.get('id').toString()
             done()
 
-        test 'all together now, create through model', (done) ->
-          user.groups().create (error, group) =>
+        test 'all together now, insert through model', (done) ->
+          user.get('groups').insert (error, group) =>
             #assert.equal group.get('id'), 2
-            user.memberships().all (error, memberships) =>
+            user.get('memberships').all (error, memberships) =>
               assert.equal memberships.length, 1
               record = memberships[0]
               assert.equal record.get('groupId').toString(), group.get('id').toString()
               assert.equal record.get('userId').toString(), user.get('id').toString()
               
-              user.groups().all (error, groups) =>
+              user.get('groups').all (error, groups) =>
                 assert.equal groups.length, 1
               
                 done()
   
-        test 'create 2 models and 2 through models as Arguments', (done) ->
-          user.groups().create {}, {}, (error, groups) =>
+        test 'insert 2 models and 2 through models as Arguments', (done) ->
+          user.get('groups').insert {}, {}, (error, groups) =>
             assert.equal groups.length, 2
             
             App.Group.count (error, count) =>
               assert.equal count, 3
               
-              user.memberships().count (error, count) =>
+              user.get('memberships').count (error, count) =>
                 assert.equal count, 2
               
-                user.groups().count (error, count) =>
+                user.get('groups').count (error, count) =>
                   assert.equal count, 2
                 
                   done()
 
       describe '.update', ->
         beforeEach (done) ->
-          user.groups().create {name: "Starbucks"}, {}, done
+          user.get('groups').insert {name: "Starbucks"}, {}, done
         
         test 'update all groups', (done) ->
-          user.groups().update name: "Peet's", =>
-            user.groups().all (error, groups) =>
+          user.get('groups').update name: "Peet's", =>
+            user.get('groups').all (error, groups) =>
               assert.equal groups.length, 2
               for group in groups
                 assert.equal group.get('name'), "Peet's"
               done()
               
         test 'update matching groups', (done) ->
-          user.groups().where(name: "Starbucks").update name: "Peet's", =>
-            user.groups().where(name: "Peet's").count (error, count) =>
+          user.get('groups').where(name: "Starbucks").update name: "Peet's", =>
+            user.get('groups').where(name: "Peet's").count (error, count) =>
               assert.equal count, 1
-              user.memberships().count (error, count) =>
+              user.get('memberships').count (error, count) =>
                 assert.equal count, 2
                 done()
       
       describe '.destroy', ->
         beforeEach (done) ->
-          user.groups().create {name: "Starbucks"}, {}, done
+          user.get('groups').insert {name: "Starbucks"}, {}, done
         
         test 'destroy all groups', (done) ->
-          user.groups().destroy =>
-            user.groups().count (error, count) =>
+          user.get('groups').destroy =>
+            user.get('groups').count (error, count) =>
               assert.equal count, 0
               done()
         
         #describe 'through relation has dependent: "destroy"', ->
         #  test 'destroy all through relations', (done) ->
-        #    user.groups().destroy =>
-        #      user.memberships().count (error, count) =>
+        #    user.get('groups').destroy =>
+        #      user.get('memberships').count (error, count) =>
         #        assert.equal count, 0
         #        done()
-      
+
       describe '.find', ->
         beforeEach (done) ->
-          App.Group.create =>
-            App.Membership.create =>
-              user.memberships().create groupId: group.get('id'), (error, record) =>
+          App.Group.insert =>
+            App.Membership.insert =>
+              user.get('memberships').insert groupId: group.get('id'), (error, record) =>
                 membership = record
                 done()
           
         test 'appendThroughConditions', (done) ->
-          criteria        = user.groups().criteria
+          cursor        = user.get('groups').cursor
           
-          assert.deepEqual criteria.conditions(), { }
+          assert.deepEqual cursor.conditions(), { }
           
-          criteria.appendThroughConditions =>
-            assert.deepEqual criteria.conditions(), { id: $in: [group.get('id')] }
+          cursor.appendThroughConditions =>
+            assert.deepEqual cursor.conditions(), { id: $in: [group.get('id')] }
             done()
 
       describe 'finders', ->
         beforeEach (done) ->
-          App.Group.create =>
-            App.Membership.create =>
-              user.groups().create {name: "A"}, {name: "B"}, {name: "C"}, done
+          App.Group.insert =>
+            App.Membership.insert =>
+              user.get('groups').insert {name: "A"}, {name: "B"}, {name: "C"}, done
         
         describe 'relation (groups)', ->
           test 'all', (done) ->
-            user.groups().all (error, records) =>
+            user.get('groups').all (error, records) =>
               assert.equal records.length, 3
               done()
 
           test 'first', (done) ->
-            user.groups().desc("name").first (error, record) =>
+            user.get('groups').desc("name").first (error, record) =>
               assert.equal record.get('name'), "C"
               done()
 
           test 'last', (done) ->
-            user.groups().desc("name").last (error, record) =>
+            user.get('groups').desc("name").last (error, record) =>
               assert.equal record.get('name'), "A"
               done()
 
           test 'count', (done) ->
-            user.groups().count (error, count) =>
+            user.get('groups').count (error, count) =>
               assert.equal count, 3
               done()
 
           test 'exists', (done) ->
-            user.groups().exists (error, value) =>
+            user.get('groups').exists (error, value) =>
               assert.equal value, true
               done()
               
         describe 'through relation (memberships)', ->
           test 'all', (done) ->
-            user.memberships().all (error, records) =>
+            user.get('memberships').all (error, records) =>
               assert.equal records.length, 3
               done()
 
           test 'first', (done) ->
-            user.memberships().first (error, record) =>
+            user.get('memberships').first (error, record) =>
               assert.ok record
               done()
 
           test 'last', (done) ->
-            user.memberships().last (error, record) =>
+            user.get('memberships').last (error, record) =>
               assert.ok record
               done()
 
           test 'count', (done) ->
-            user.memberships().count (error, count) =>
+            user.get('memberships').count (error, count) =>
               assert.equal count, 3
               done()
 
           test 'exists', (done) ->
-            user.memberships().exists (error, value) =>
+            user.get('memberships').exists (error, value) =>
               assert.equal value, true
               done()
     
@@ -305,18 +305,18 @@ describeWith = (store) ->
       
       beforeEach (done) ->
         async.series [
-          (next) => App.Parent.create (error, record) =>
+          (next) => App.Parent.insert (error, record) =>
             parent = record
             next()
         ], done
         
       describe 'Parent.idCacheTrue_idCacheFalse', ->
-        criteria  = null
+        cursor  = null
         relation  = null
         
         beforeEach ->
           relation = App.Parent.relations().idCacheTrue_idCacheFalse
-          criteria = parent.idCacheTrue_idCacheFalse().criteria
+          cursor = parent.get('idCacheTrue_idCacheFalse').cursor
           
         test 'relation', ->
           assert.equal relation.idCache, true
@@ -325,21 +325,21 @@ describeWith = (store) ->
         test 'default for idCacheKey should be array', ->
           assert.ok _.isArray App.Parent.fields()[relation.idCacheKey]._default
           
-        test 'compileForCreate', (done) ->
-          criteria.compileForCreate()
+        test 'compileForInsert', (done) ->
+          cursor.compileForInsert()
           
-          # not sure if we want this or not... { parentId: parent.get('id') }
-          assert.deepEqual criteria.conditions(), {  }
+          # not sure if we want this or not.. { parentId: parent.get('id') }
+          assert.deepEqual cursor.conditions(), {  }
           
           done()
-          
+
         test 'updateOwnerRecord', ->
-          assert.equal criteria.updateOwnerRecord(), true
+          assert.equal cursor.updateOwnerRecord(), true
           
         test 'ownerAttributes', (done) ->
           child = new App.Child(id: 20)
           
-          assert.deepEqual criteria.ownerAttributes(child), { '$addToSet': { idCacheTrue_idCacheFalseIds: child.get('id') } }
+          assert.deepEqual cursor.ownerAttributes(child), { '$addToSet': { idCacheTrue_idCacheFalseIds: child.get('id') } }
           
           done()
           
@@ -351,16 +351,16 @@ describeWith = (store) ->
           beforeEach (done) ->
             async.series [
               (next) =>
-                parent.idCacheTrue_idCacheFalse().create (error, record) =>
+                parent.get('idCacheTrue_idCacheFalse').insert (error, record) =>
                   child = record
                   next()
               (next) =>
-                parent.idCacheTrue_idCacheFalse().create (error, record) =>
+                parent.get('idCacheTrue_idCacheFalse').insert (error, record) =>
                   child2 = record
                   next()
               (next) =>
-                # create one without a parent at all
-                App.Child.create (error, record) =>
+                # insert one without a parent at all
+                App.Child.insert (error, record) =>
                   child3 = record
                   next()
               (next) =>
@@ -369,13 +369,14 @@ describeWith = (store) ->
                   next()
             ], done
         
-          test 'create', (done) ->
+          test 'insert', (done) ->
             assert.equal child.get('parentId'), null
+            
             assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), child2.get('id')]
             done()
             
           test 'update(1)', (done) ->
-            parent.idCacheTrue_idCacheFalse().update child.get('id'), value: "something", =>
+            parent.get('idCacheTrue_idCacheFalse').update child.get('id'), value: "something", =>
               App.Child.find child.get('id'), (error, child) =>
                 assert.equal child.get('value'), 'something'
                 
@@ -385,7 +386,7 @@ describeWith = (store) ->
                   done()
           
           test 'update()', (done) ->
-            parent.idCacheTrue_idCacheFalse().update value: "something", =>
+            parent.get('idCacheTrue_idCacheFalse').update value: "something", =>
               App.Child.find child.get('id'), (error, child) =>
                 assert.equal child.get('value'), 'something'
 
@@ -395,7 +396,7 @@ describeWith = (store) ->
                   done()
             
           test 'destroy(1)', (done) ->
-            parent.idCacheTrue_idCacheFalse().destroy child.get('id'), =>
+            parent.get('idCacheTrue_idCacheFalse').destroy child.get('id'), =>
               App.Parent.find parent.get('id'), (error, parent) =>
                 assert.deepEqual parent.get(relation.idCacheKey), [child2.get('id')]
                 
@@ -404,7 +405,7 @@ describeWith = (store) ->
                   done()
                 
           test 'destroy()', (done) ->
-            parent.idCacheTrue_idCacheFalse().destroy =>
+            parent.get('idCacheTrue_idCacheFalse').destroy =>
               App.Parent.find parent.get('id'), (error, parent) =>
                 assert.deepEqual parent.get(relation.idCacheKey), []
                 
@@ -413,13 +414,13 @@ describeWith = (store) ->
                   done()
                 
           test 'all', (done) ->
-            parent.idCacheTrue_idCacheFalse().all (error, records) =>
+            parent.get('idCacheTrue_idCacheFalse').all (error, records) =>
               assert.equal records.length, 2
               done()
               
           test 'add to set', (done) ->
-            App.Child.create (error, newChild) =>
-              parent.idCacheTrue_idCacheFalse().add newChild, =>
+            App.Child.insert (error, newChild) =>
+              parent.get('idCacheTrue_idCacheFalse').add newChild, =>
                 App.Parent.find parent.get('id'), (error, parent) =>
                   assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), child2.get('id'), newChild.get('id')])
                   
@@ -438,8 +439,8 @@ describeWith = (store) ->
           
           #describe 'inverseOf', ->
           #  test 'add to set', (done) ->
-          #    App.Child.create (error, child) =>
+          #    App.Child.insert (error, child) =>
           #      child.idCacheFalse_idCacheTrue
-          
+
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+#describeWith(Tower.Store.MongoDB) unless Tower.client

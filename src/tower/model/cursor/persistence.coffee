@@ -14,7 +14,7 @@ Tower.Model.Cursor.Persistence =
 
     for item in data
       if item instanceof Tower.Model
-        _.extend(item.attributes, attributes, item.attributes)
+        item.setProperties(attributes)
       else
         item = store.serializeModel(_.extend({}, attributes, item))
 
@@ -26,10 +26,10 @@ Tower.Model.Cursor.Persistence =
 
     result
 
-  create: (callback) ->
-    @_create(callback)
+  insert: (callback) ->
+    @_insert(callback)
 
-  _create: (callback) ->
+  _insert: (callback) ->
     records = undefined
 
     if @instantiate
@@ -45,6 +45,8 @@ Tower.Model.Cursor.Persistence =
           next()
 
       Tower.async records, iterator, (error) =>
+        Tower.cb(error, records)
+        
         unless callback
           throw error if error
           records = records[0] if !returnArray
@@ -53,16 +55,16 @@ Tower.Model.Cursor.Persistence =
           records = records[0] if !returnArray
           callback(error, records)
     else
-      @store.create @, callback
+      @store.insert @, callback
 
-    records
+    @
 
   update: (callback) ->
-    @_update callback
+    @_update(callback)
 
   _update: (callback) ->
-    updates = @data[0]
-
+    updates     = @data[0]
+    
     if @instantiate
       iterator = (record, next) =>
         record.updateAttributes(updates, next)
@@ -70,6 +72,8 @@ Tower.Model.Cursor.Persistence =
       @_each @, iterator, callback
     else
       @store.update updates, @, callback
+      
+    @
 
   destroy: (callback) ->
     @_destroy callback
@@ -82,6 +86,8 @@ Tower.Model.Cursor.Persistence =
       @_each(@, iterator, callback)
     else
       @store.destroy(@, callback)
+      
+    @
 
   # add to set
   add: (callback) ->

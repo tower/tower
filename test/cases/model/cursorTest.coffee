@@ -12,7 +12,8 @@ class App.CursorTest extends Tower.Model
 
 describe 'Tower.Model.Cursor', ->
   beforeEach ->
-    cursor = new Tower.Model.Cursor
+    cursor = Tower.Model.Cursor.create()
+    cursor.make()
     
   afterEach ->
     cursor = null
@@ -144,12 +145,13 @@ describe 'Tower.Model.Cursor', ->
     
   describe '#test', ->
     beforeEach ->
-      cursor  = new Tower.Model.Cursor(model: App.CursorTest)
+      cursor  = Tower.Model.Cursor.create()
+      cursor.make(model: App.CursorTest)
       
     test 'eq', ->
       cursor.where(string: 'a string')
       
-      assert.isTrue cursor.test(new App.CursorTest(string: 'a string'))
+      assert.isTrue cursor.test(App.CursorTest.new(string: 'a string'))
       
       assert.isFalse cursor.test(new App.CursorTest(string: 'a strin'))
       
@@ -176,7 +178,8 @@ describe 'Tower.Model.Cursor', ->
       
   describe '#create', ->
     beforeEach ->
-      cursor  = new Tower.Model.Cursor(model: App.CursorTest)
+      cursor  = Tower.Model.Cursor.create()
+      cursor.make(model: App.CursorTest)
       
     test 'create()', (done) ->
       cursor.create (error, result) =>

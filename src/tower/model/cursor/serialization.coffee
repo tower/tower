@@ -2,11 +2,13 @@
 Tower.Model.Cursor.Serialization =
   defaultLimit: 20
 
-  initialize: (options) ->
-    @model        = options.model
+  make: (options = {}) ->
+    _.extend @, options
+    @model      ||= options.model
     @store        = if @model then @model.store() else undefined
+    
     #@transaction  = options.transaction || new Tower.Store.Transaction
-
+    
     @instantiate  = options.instantiate != false
 
     @_where       = options.where || []
@@ -34,6 +36,7 @@ Tower.Model.Cursor.Serialization =
     delete @data
     delete @returnArray
     result
+    
 
   addData: (args) ->
     if args.length && args.length > 1 || _.isArray(args[0])
@@ -71,7 +74,10 @@ Tower.Model.Cursor.Serialization =
   #
   # @return [Tower.Model.Criteria]
   clone: ->
-    (new @constructor(model: @model, instantiate: @instantiate)).merge(@)
+    clone = @constructor.create()
+    clone.make(model: @model, instantiate: @instantiate)
+    clone.merge(@)
+    clone
 
   # Merge this cursor with another cursor.
   #
@@ -135,11 +141,11 @@ Tower.Model.Cursor.Serialization =
 
       ids = @ids
       # tmp
-
+      
       if @store.constructor.className() == 'Memory'
         ids = _.map ids, (id) -> id.toString()
       result.id = $in: ids
-
+    
     result
 
   # Compiled result from the {#where} arguments, but formatted for creating a model.

@@ -160,7 +160,7 @@ describeWith = (store) ->
       #  model.attributes.custom.push "mongodb"
       #
       #  assert.equal model.get("custom"), "ruby-javascript-mongodb"
-          
+###                       
       describe 'operations', ->
         test '$push', ->
           model.set("tags", ["ruby"])
@@ -169,7 +169,7 @@ describeWith = (store) ->
           assert.deepEqual model.get("tags"), ["ruby", "javascript"]
           model.push tags: ["mongodb"]
           assert.deepEqual model.get("tags"), ["ruby", "javascript", ["mongodb"]]
-###             
+
         test '$pushAll', ->
           assert.deepEqual model.get("tags"), []
           model.pushAll tags: ["ruby"]

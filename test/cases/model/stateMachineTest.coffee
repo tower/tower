@@ -1,3 +1,4 @@
+###
 describeWith = (store) ->
   describe "Tower.Model.StateMachine (Tower.Store.#{store.className()})", ->
     record        = null
@@ -109,3 +110,4 @@ describeWith = (store) ->
           assert.equal record.get('isValid'), false
 
 describeWith(Tower.Store.Memory)
+###

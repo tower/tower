@@ -18,12 +18,12 @@ describe 'Tower.Model.Cursor (bindable)', ->
     
     cursor.addObserver "length", (_, key, value) ->
       assert.ok value, "addObserver length called"
-      done()
+      #done()
     
     cursor.addObject(record)
     
     assert.equal cursor.indexOf(record), 0
-    
+
   test 'pushMatching (blank records)', (done) ->
     records = [
       new App.BindableCursorTest

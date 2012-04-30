@@ -10,8 +10,8 @@ Tower.Model.Relations =
     #   class App.Address extends Tower.Model
     #     @belongsTo 'user'
     #
-    #   user    = App.User.create()
-    #   address = user.createAddress()
+    #   user    = App.User.insert()
+    #   address = user.get('address').insert()
     #
     # @example Example using all the `hasOne` options
     #   class App.User extends Tower.Model
@@ -32,7 +32,7 @@ Tower.Model.Relations =
     #     @belongsTo 'user'
     #
     #   user    = App.User.create()
-    #   comment = user.comments().create()
+    #   comment = user.get('comments').insert()
     #
     # @example Example using all the `hasMany` options
     #   class App.User extends Tower.Model
@@ -96,7 +96,7 @@ Tower.Model.Relations =
           dependents.push(name)
 
       iterator = (name, next) =>
-        @[name]().destroy(next)
+        @get(name).destroy(next)
 
       Tower.async dependents, iterator, callback
 

@@ -1,11 +1,13 @@
 # @module
 Tower.Store.MongoDB.Serialization =
-  serializeModel: (attributes) ->
+  serializeModel: (attributes, saved = false) ->
     return attributes if attributes instanceof Tower.Model
     klass = Tower.constant(@className)
     attributes.id ||= attributes._id
     delete attributes._id
-    model = new klass(attributes)
+    model = klass.new()
+    model.set('isNew', false) if saved
+    model.setProperties(attributes)
     model
 
   generateId: ->
@@ -32,7 +34,7 @@ Tower.Store.MongoDB.Serialization =
 
     result
 
-  serializeAttributesForCreate: (record) ->
+  serializeAttributesForInsert: (record) ->
     result      = {}
     schema      = @schema()
     attributes  = @deserializeModel(record)
@@ -60,10 +62,12 @@ Tower.Store.MongoDB.Serialization =
   serializeConditions: (criteria) ->
     schema  = @schema()
     result  = {}
+    
     query   = @deserializeModel(criteria.conditions())
-
+    
     for key, value of query
       field = schema[key]
+      
       key   = "_id" if key == "id"
       if _.isRegExp(value)
         result[key] = value

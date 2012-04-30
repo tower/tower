@@ -42,8 +42,8 @@ if typeof Ember != 'undefined'
   # need to put in a place where you can set this before it reaches here.
   Ember.NATIVE_EXTENSIONS = Tower.nativeExtensions
   
-  if Tower.nativeExtensions
-    _.extend(Function.prototype, coffeescriptMixin, towerMixin)
+  #if Tower.nativeExtensions
+  #  _.extend(Function.prototype, coffeescriptMixin, towerMixin)
 else
   class Tower.Class
     

@@ -40,7 +40,7 @@ Tower.Model.Serialization =
   _serializableHash: (options = {}) ->
     result = {}
 
-    attributeNames = _.keys(@attributes)
+    attributeNames = _.keys(@constructor.fields())
 
     if only = options.only
       attributeNames = _.union(_.toArray(only), attributeNames)
@@ -75,6 +75,6 @@ Tower.Model.Serialization =
 
   # @private
   _readAttributeForSerialization: (name, type = 'json') ->
-    @attributes[name]
+    @get(name)
 
 module.exports = Tower.Model.Serialization

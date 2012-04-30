@@ -26,6 +26,8 @@ class Tower.Model.Relation extends Tower.Class
   #
   # @see Tower.Model.Relations.ClassMethods#hasMany
   init: (owner, name, options = {}) ->
+    @_super()
+    
     @[key] = value for key, value of options
 
     @owner              = owner
@@ -90,7 +92,7 @@ class Tower.Model.Relation extends Tower.Class
 
   _defineRelation: (name) ->
     object = {}
-
+    
     object[name] = Ember.computed((key, value) ->
       if arguments.length is 2
         data = Ember.get(@, 'data')
@@ -98,13 +100,17 @@ class Tower.Model.Relation extends Tower.Class
       else
         data = Ember.get(@, 'data')
         value = data.get(key)
+        value ||= @constructor.relation(name).scoped(@)
+        value
     ).property('data').cacheable()
-
+    
     @owner.reopen(object)
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
-    new Tower.Model.Scope(new @constructor.Cursor(model: @klass(), owner: record, relation: @))
+    cursor = @constructor.Cursor.create()
+    cursor.make(model: @klass(), owner: record, relation: @)
+    new Tower.Model.Scope(cursor)
 
   # @return [Function]
   targetKlass: ->
@@ -151,7 +157,9 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
     @records      = []
 
   clone: ->
-    (new @constructor(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)).merge(@)
+    cursor = @constructor.create()
+    cursor.make(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)
+    (cursor).merge(@)
 
   setInverseInstance: (record) ->
     if record && @invertibleFor(record)
@@ -167,7 +175,7 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
     _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
 
 for phase in ['Before', 'After']
-  for action in ['Create', 'Update', 'Destroy', 'Find']
+  for action in ['Insert', 'Update', 'Destroy', 'Find']
     do (phase, action) =>
       Tower.Model.Relation.Cursor::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
         @store["run#{phase}#{action}"](@, done)

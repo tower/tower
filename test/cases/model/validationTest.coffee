@@ -1,15 +1,15 @@
-scope     = null
-criteria  = null
-user      = null
-record    = null
-
 describeWith = (store) ->
+  scope     = null
+  criteria  = null
+  user      = null
+  record    = null
+
   describe "Tower.Model.Validation (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
       App.User.store(store)
       App.Validatable.store(store)
-      user    = new App.User(id: 1)
-      record  = new App.Validatable()
+      user    = App.User.new(id: 1)
+      record  = App.Validatable.new()
       
       done()
     

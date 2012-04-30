@@ -1,6 +1,6 @@
 # This class encapsulates all the logic for modifying attributes, relations, and attachments on a record.
 #
-# When a record is first loaded, `data.savedAttributes` is set to the initial values.
+# When a record is first loaded, `data.savedData` is set to the initial values.
 # Then when you change an attribute, the model enters the `uncommitted` state
 # and starts adding to the `data.changes` object.  This allows us to rollback changes,
 # and only send the changed attributes to the database.
@@ -84,15 +84,39 @@ class Tower.Model.Data
   #
   # @return [Object]
   get: (key) ->
-    result = Ember.getPath(@unsavedData, key)
-    result = Ember.getPath(@savedData, key) if result == undefined
+    result = Ember.get(@unsavedData, key)
+    result = Ember.get(@savedData, key) if result == undefined
     result
 
   set: (key, value) ->
-    _.oneOrMany(@, @_set, key, value)
-    # Ember.get(@, 'record').hashWasUpdated()
-    # Ember.get(@, 'record').notifyPropertyChange('data')
+    # need a better way to do this...
+    if !@record.get('isNew') && key == 'id'
+      return @savedData[key] = value
 
+    if value == undefined || @savedData[key] == value
+      # TODO Ember.deletePath
+      delete @unsavedData[key]
+    else
+      @unsavedData[key] = value
+      
+    @record.set('isDirty', _.isPresent(@unsavedData))
+    
+    value
+    
+  setSavedAttributes: (object) ->
+    _.extend(@savedData, object)
+  
+  commit: ->
+    _.extend(@savedData, @unsavedData)
+    @record.set('isDirty', false)
+    @unsavedData = {}
+
+  rollback: ->
+    @unsavedData = {}
+    
+  attributes: ->
+    _.extend(@savedData, @unsavedData)
+    
   unsavedRelations: ->
     relations = @record.constructor.relations()
     result    = {}
@@ -102,7 +126,7 @@ class Tower.Model.Data
         result[key] = value
 
     result
-
+  ###
   push: (key, value) ->
     _.oneOrMany(@, @_push, key, value)
 
@@ -131,13 +155,6 @@ class Tower.Model.Data
     keys = _.flatten _.args(arguments)
     delete @[key] for key in keys
     undefined
-
-  commit: ->
-    _.extend(@savedAttributes, @unsavedData)
-    @unsavedData = {}
-
-  rollback: ->
-    @unsavedData = {}
 
   # @private
   _set: (key, value) ->
@@ -198,7 +215,7 @@ class Tower.Model.Data
     currentValue += value
 
     Ember.set(@unsavedData, key, currentValue)
-
+  ###
   _getField: (key) ->
     @record.constructor.fields()[key]
 

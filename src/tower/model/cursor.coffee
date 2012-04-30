@@ -2,8 +2,8 @@
 # but it's now into a form I'm starting to like.
 # May rename this to Tower.Model.Cursor
 class Tower.Model.Cursor extends Tower.Collection
-  init: (options = {}) ->
-    @initialize(options)
+  init: ->
+    @_super arguments...
 
 require './cursor/finders'
 require './cursor/operations'

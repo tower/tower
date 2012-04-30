@@ -68,6 +68,9 @@ Tower.Model.Attributes =
 
     setAttribute: (key, value) ->
       Ember.setPath(@, key, value)
+      
+    setSavedAttributes: (object) ->
+      @get('data').setSavedAttributes(object)
 
     setAttributes: (key, value) ->
       _.oneOrMany(@, @setAttribute, key, value)

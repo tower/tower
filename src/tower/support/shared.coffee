@@ -10,11 +10,11 @@ _.extend Tower,
   case:             "camelcase"
   accessors:        typeof(window) == "undefined"
   logger:           if typeof(_console) != 'undefined' then _console else console
-  native            
   structure:        "standard"
   config:           {}
   namespaces:       {}
   metadata:         {}
+  cb: ->
   toMixin: ->
     #mixin: ->
     #  Tower.mixin @, arguments...
