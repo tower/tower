@@ -6,4 +6,5 @@ class App extends Tower.Application
     
   bootstrap: (data) ->
 
-window.App = (new App).initialize()
+window.App = App
+App.initialize()

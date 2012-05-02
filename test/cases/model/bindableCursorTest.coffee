@@ -6,12 +6,12 @@ class App.BindableCursorTest extends Tower.Model
   @field "object", type: "Object", default: {}
   @field "arrayString", type: ["String"], default: []
   @field "arrayObject", type: ["Object"], default: []
-###
+
 describe 'Tower.Model.Cursor (bindable)', ->
   cursor = null
   
   beforeEach ->
-    cursor  = Tower.Model.Cursor.create(content: [])
+    cursor  = Tower.Model.Cursor.create(content: Ember.A([]))
     cursor.make(model: App.BindableCursorTest)
     
   test 'addObserver', (done) ->
@@ -21,7 +21,7 @@ describe 'Tower.Model.Cursor (bindable)', ->
       assert.ok value, "addObserver length called"
       done()
     
-    cursor.addObject(record)
+    cursor.addObjects([record])
     
     assert.equal cursor.indexOf(record), 0
 
@@ -52,4 +52,3 @@ describe 'Tower.Model.Cursor (bindable)', ->
       done()
 
     cursor.pushMatching(records)
-###

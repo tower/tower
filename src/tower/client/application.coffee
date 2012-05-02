@@ -5,6 +5,13 @@
 #  false
 
 class Tower.Application extends Tower.Engine
+  @_callbacks: {}
+  
+  @extended: ->
+    console.log "EXTENDED #{@className()}"
+    console.log global
+    global[@className()] = new @
+  
   @before 'initialize', 'setDefaults'
 
   setDefaults: ->
@@ -40,7 +47,9 @@ class Tower.Application extends Tower.Engine
     #@server.stack.length = 0 # remove middleware
     Tower.Route.reload()
 
-  constructor: (middlewares = []) ->
+  init: (middlewares = []) ->
+    @_super arguments...
+    
     throw new Error("Already initialized application") if Tower.Application._instance
     Tower.Application._instance = @
     Tower.Application.middleware ||= []
@@ -48,7 +57,7 @@ class Tower.Application extends Tower.Engine
     @io       = global["io"]
     @History  = global["History"]
     @stack    = []
-
+    
     @use(middleware) for middleware in middlewares
 
   initialize: ->

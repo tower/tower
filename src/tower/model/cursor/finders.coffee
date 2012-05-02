@@ -35,15 +35,17 @@ Tower.Model.Cursor.Finders =
 
   pushMatching: (records) ->
     matching = Tower.Store.Operators.select(records, @conditions())
-
-    @pushObjects(matching)
+    
+    # see https://github.com/emberjs/ember.js/issues/773
+    @addObjects(matching)
 
     matching
 
   pullMatching: (records) ->
     matching = Tower.Store.Operators.select(records, @conditions())
 
-    @pullObjects(matching)
+    # see https://github.com/emberjs/ember.js/issues/773
+    @removeObjects(matching)
 
     matching
 

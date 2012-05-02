@@ -45,11 +45,12 @@ if typeof Ember != 'undefined'
   #if Tower.nativeExtensions
   #  _.extend(Function.prototype, coffeescriptMixin, towerMixin)
 else
-  class Tower.Class
-    
-  _.extend Tower.Class, Tower.toMixin()
-  
-  class Tower.Namespace extends Tower.Class
-  class Tower.Collection extends Tower.Class
+  throw new Error("Must include Ember.js")
+  #class Tower.Class
+  #  
+  #_.extend Tower.Class, Tower.toMixin()
+  #
+  #class Tower.Namespace extends Tower.Class
+  #class Tower.Collection extends Tower.Class
 
 module.exports = Tower.Class
