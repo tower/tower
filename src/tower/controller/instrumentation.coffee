@@ -62,7 +62,14 @@ Tower.Controller.Instrumentation =
       @session  = @request.session  || {}
       
       unless @params.format
-        try @params.format = require('mime').extension(@request.header("content-type"))
+        accept = @request?.headers?["accept"]
+        acceptFormat = accept?.split(",")
+
+        if accept is undefined
+          try @params.format = require('mime').extension(@request.header("content-type"))
+        else
+          try @params.format = require('mime').extension(acceptFormat[0])
+        
         @params.format ||= "html"
         
       @format   = @params.format
