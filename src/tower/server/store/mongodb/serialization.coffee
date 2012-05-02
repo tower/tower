@@ -71,7 +71,7 @@ Tower.Store.MongoDB.Serialization =
       key   = "_id" if key == "id"
       if _.isRegExp(value)
         result[key] = value
-      else if _.isBaseObject(value)
+      else if _.isHash(value)
         result[key] = {}
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]

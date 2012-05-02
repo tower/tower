@@ -3,6 +3,8 @@ Tower.Model.Persistence =
   ClassMethods:
     # Construct a new instance of the model
     new: Ember.Object.create
+    # Construct a new instance of the model
+    build: Ember.Object.create
 
     # Define or get the data store for this model.
     #

@@ -30,7 +30,7 @@ class Tower.Model.Validator
     for key, value of validations
       validatorOptions = _.clone(options)
 
-      if _.isBaseObject(value)
+      if _.isHash(value)
         validatorOptions = _.moveProperties(validatorOptions, value, 'on', 'if', 'unless', 'allow')
 
       validators.push Tower.Model.Validator.create(key, value, attributes, validatorOptions)

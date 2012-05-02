@@ -20,11 +20,11 @@ Tower.Controller.Metadata =
       resourceType            = _.singularize(className.replace(/(Controller)$/, ''))
       resourceName            = @_compileResourceName(resourceType)
       collectionName          = Tower.Support.String.camelize(className.replace(/(Controller)$/, ''), true)
-      params                  = if superMetadata.params then _.clone(superMetadata.params) else {}
-      renderers               = if superMetadata.renderers then _.clone(superMetadata.renderers) else {}
+      params                  = _.copyObject(superMetadata.params)
+      renderers               = _.copyObject(superMetadata.renderers)
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
-      helpers                 = if superMetadata.helpers then superMetadata.helpers.concat() else []
-      belongsTo               = if superMetadata.belongsTo then superMetadata.belongsTo.concat() else []
+      helpers                 = _.copyArray(superMetadata.helpers)
+      belongsTo               = _.copyArray(superMetadata.belongsTo)
       
       callbacks               = {}
       

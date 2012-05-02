@@ -30,9 +30,8 @@ class Tower.Model extends Tower.Class
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
     @readOnly       = if options.hasOwnProperty('readOnly') then options.readOnly else false
-
-    for key, value of attrs
-      @set(key, value)
+    
+    @setProperties(attrs)
 
 require './model/scope'
 require './model/cursor'

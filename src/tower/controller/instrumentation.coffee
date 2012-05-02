@@ -21,8 +21,6 @@ Tower.Controller.Instrumentation =
       @process()
 
     process: ->
-      @processQuery()
-
       # hacking in logging for now
       unless Tower.env.match(/(test|production)/)
         console.log "  Processing by #{@constructor.className()}##{@action} as #{@format.toUpperCase()}"
@@ -31,8 +29,6 @@ Tower.Controller.Instrumentation =
 
       @runCallbacks 'action', name: @action, (callback) =>
         @[@action].call @, callback
-
-    processQuery: ->
 
     clear: ->
       @request  = null

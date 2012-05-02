@@ -72,22 +72,30 @@ Tower.Support.Object =
 
   castArray: (object) ->
     if _.isArray(object) then object else [object]
+    
+  copy: (object) ->
+    if _.isArray(object)
+      object.concat()
+    else if _.isHash(object)
+      _.extend({}, object)
+    else
+      Object.create(object)
+      
+  copyArray: (object) ->
+    if object then object.concat() else []
+    
+  copyObject: (object) ->
+    if object then _.clone(object) else {}
 
   # @todo
   isA: (object, isa) ->
-
-  isHashOld: (object) ->
-    @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
-    
-  isHash: (object) ->
-    object && object.constructor == Object
 
   # If the class is a direct instance of Object,
   # and not an instance of a subclass of Object, then this is true.
   #
   # @return [Boolean]
-  isBaseObject: (object) ->
-    object && object.constructor && object.constructor.name == "Object"
+  isHash: (object) ->
+    object && object.constructor == Object
 
   # A more robust implementation of `typeof`.
   #

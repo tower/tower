@@ -81,7 +81,7 @@ class Tower.Store extends Tower.Class
     klass = Tower.constant(@className)
     #new klass(attributes)
     model = klass.new()
-    model.setAttributes(attributes)
+    model.setProperties(attributes)
     model
 
   deserializeModel: (data) ->

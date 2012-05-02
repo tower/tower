@@ -63,17 +63,8 @@ Tower.Model.Attributes =
       Ember.get(@get('data'), 'unsavedData')
     )
 
-    getAttribute: (key) ->
-      Ember.getPath(@, key)
-
-    setAttribute: (key, value) ->
-      Ember.setPath(@, key, value)
-      
     setSavedAttributes: (object) ->
       @get('data').setSavedAttributes(object)
-
-    setAttributes: (key, value) ->
-      _.oneOrMany(@, @setAttribute, key, value)
 
     unknownProperty: (key) ->
       @get('data').get(key) if @get('dynamicFields')

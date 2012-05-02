@@ -85,11 +85,11 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
             # add the id to the array on the owner record after it's insertd
             if @updateOwnerRecord()
               @owner.updateAttributes @ownerAttributes(record), (error) =>
-                callback.call @, error, record if callback
+                callback.call(@, error, record) if callback
             else
-              callback.call @, error, record if callback
+              callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   updateReferenced: (callback) ->
     @compileForUpdate()
@@ -98,9 +98,9 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
       @_update (error, record) =>
         unless error
           @_runAfterUpdateCallbacksOnStore =>
-            callback.call @, error, record if callback
+            callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   destroyReferenced: (callback) ->
     @compileForDestroy()
@@ -111,11 +111,11 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
           @_runAfterDestroyCallbacksOnStore =>
             if @updateOwnerRecord()
               @owner.updateAttributes @ownerAttributesForDestroy(record), (error) =>
-                callback.call @, error, record if callback
+                callback.call(@, error, record) if callback
             else
-              callback.call @, error, record if callback
+              callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   findReferenced: (callback) ->
     @compileForFind()
@@ -124,9 +124,9 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
       @_find (error, record) =>
         unless error
           @_runAfterFindCallbacksOnStore =>
-            callback.call @, error, record if callback
+            callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   # add to set
   add: (callback) ->
