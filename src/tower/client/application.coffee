@@ -8,10 +8,8 @@ class Tower.Application extends Tower.Engine
   @_callbacks: {}
   
   @extended: ->
-    console.log "EXTENDED #{@className()}"
-    console.log global
     global[@className()] = new @
-  
+
   @before 'initialize', 'setDefaults'
 
   setDefaults: ->

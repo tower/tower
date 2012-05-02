@@ -4,7 +4,7 @@ describeWith = (store) ->
   user      = null
   record    = null
 
-  describe "Tower.Model.Validation (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Validation (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       App.User.store(store)
       App.Validatable.store(store)

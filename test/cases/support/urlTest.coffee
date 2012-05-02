@@ -43,3 +43,71 @@ describe 'Tower.Support.Url', ->
     test 'urlFor(route: "login")', ->
       url = Tower.urlFor(route: 'login')
       assert.equal url, "/sign-in"
+      
+    #test 'urlFor(modelThatWasRenamed)', ->
+    #  url = Tower.urlFor(route: 'login')
+    #  assert.equal url, "/sign-in"
+      
+  describe 'urlFor with params', ->
+    post = null
+    
+    beforeEach ->
+      post = App.Post.create(id: 10)
+      
+    describe 'strings', ->
+      test 'urlFor(post, params: title: "Node")', ->
+        url = Tower.urlFor(post, params: title: "Node")
+        assert.equal url, "/posts/10?title=Node"
+      
+      test 'urlFor(post, params: title: /^a-z/)', ->
+        url = Tower.urlFor(post, params: title: /^a-z/)
+        assert.equal url, "/posts/10?title=/^a-z/"
+    
+    describe 'numbers', ->
+      test 'urlFor(post, params: likes: 10)', ->
+        url = Tower.urlFor(post, params: likes: 10)
+        assert.equal url, "/posts/10?likes=10"
+        
+      test 'urlFor(post, params: likes: ">=": 10)', ->
+        url = Tower.urlFor(post, params: likes: '>=': 10)
+        assert.equal url, "/posts/10?likes=10..n"
+        
+      test 'urlFor(post, params: likes: "<=": 20)', ->
+        url = Tower.urlFor(post, params: likes: '<=': 20)
+        assert.equal url, "/posts/10?likes=n..20"
+        
+      test 'urlFor(post, params: likes: ">=": 10, "<=": 20)', ->
+        url = Tower.urlFor(post, params: likes: '>=': 10, '<=': 20)
+        assert.equal url, "/posts/10?likes=10..20"
+        
+    describe 'dates', ->
+      test 'urlFor(post, params: createdAt: _("Dec 25, 2011").toDate())', ->
+        url = Tower.urlFor(post, params: createdAt: _("Dec 25, 2011").toDate())
+        assert.equal url, "/posts/10?createdAt=2011-12-25"
+
+      test 'urlFor(post, params: createdAt: ">=": _("Dec 25, 2011").toDate())', ->
+        url = Tower.urlFor(post, params: createdAt: '>=': _("Dec 25, 2011").toDate())
+        assert.equal url, "/posts/10?createdAt=2011-12-25..t"
+
+      test 'urlFor(post, params: createdAt: "<=": _("Dec 25, 2011").toDate())', ->
+        url = Tower.urlFor(post, params: createdAt: '<=': _("Dec 25, 2011").toDate())
+        assert.equal url, "/posts/10?createdAt=t..2011-12-25"
+
+      test 'urlFor(post, params: createdAt: ">=": _("Dec 25, 2011").toDate(), "<=": _("Dec 25, 2012").toDate())', ->
+        url = Tower.urlFor(post, params: createdAt: '>=': _("Dec 25, 2011").toDate(), '<=': _("Dec 25, 2012").toDate())
+        assert.equal url, "/posts/10?createdAt=2011-12-25..2012-12-25"
+        
+    test 'date, number, and string', ->
+      params =
+        createdAt: 
+          '>=': _("Dec 25, 2011").toDate()
+          '<=': _("Dec 25, 2012").toDate()
+        likes:
+          '>=': 10
+          '<=': 20
+        title: "Node"
+        
+      url = Tower.urlFor(post, params: params)
+      assert.equal url, "/posts/10?createdAt=2011-12-25..2012-12-25&likes=10..20&title=Node"
+  
+  test 'trailing slash'
