@@ -176,12 +176,12 @@ Tower.Support.Url =
     options ||= args.pop()
 
     result    = ""
-
+    
     if options.route
       route = Tower.Route.find(options.route)
       result = route.urlFor() if route
     else if options.controller && options.action
-      route   = Tower.Route.find(name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
+      route   = Tower.Route.findByControllerOptions(name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
       if route
         result  = "/" + Tower.Support.String.parameterize(options.controller)
     else

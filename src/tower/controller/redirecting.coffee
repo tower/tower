@@ -19,7 +19,6 @@ Tower.Controller.Redirecting =
               Tower.urlFor(@resource, action: options.action)
         url ||= '/'
         
-        #console.log @response.redirect.toString()
         if Tower.env == 'test'
           if options.action == 'index'
             url = '/custom'

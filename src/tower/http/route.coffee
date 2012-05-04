@@ -11,6 +11,18 @@ class Tower.HTTP.Route extends Tower.Class
 
   @find: (name) ->
     @byName[name]
+  
+  # tmp name
+  @findByControllerOptions: (options) ->
+    for route in @all()
+      controller  = route.controller
+      success     = true
+      for key, value of options
+        success = controller[key] == value
+        break unless success
+        
+      return route if success
+    null
 
   @all: ->
     @store()

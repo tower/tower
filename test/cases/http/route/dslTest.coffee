@@ -220,38 +220,3 @@ describe "Tower.Dispatch.Route.DSL", ->
       assert.equal editRoute.name, "editAdminPostDescription"
       assert.equal editRoute.path, "/admin/posts/:postId/description/edit.:format?"
       assert.equal editRoute.methods[0], "GET"
-
-    #it 'should have "get"', ->
-    #  routes = Tower.Route.all()[32..35]
-    #  
-    #  route = routes[routes.length - 1]
-    #  
-    #  assert.equal route.name, "/admin/posts/:postId/dashboard.:format?"
-    #  assert.equal route.path, "adminPostDashboard"
-    
-  #describe 'params', ->
-  #  it 'should parse string', ->
-  #    param   = new Tower.Dispatch.Param.String("title", modelName: "User")
-  #    
-  #    result  = param.parse("-Hello+World")
-  #    result  = result[0]
-  #    
-  #    assert.equal result[0].value, "Hello"
-  #    assert.equal result[0].operators, ["!~"]
-  #    
-  #    assert.equal result[1].key, "title"
-  #    assert.equal result[1].value, "World"
-  #    assert.equal result[1].operators, ["=~"]
-  #    
-  #    Tower.Controller.params limit: 20, ->
-  #      @param "title"
-  #
-  #    controller  = new Tower.Controller
-  #    controller.params.title = "Hello+World"
-  #    criteria    = controller.criteria()
-  #    assert.equal criteria.query, {title: "=~": "Hello World"}
-  #    
-  #describe 'url builder', ->
-  #  it 'should build a url from a model class', ->
-  #    url = Tower.urlFor
-  #
