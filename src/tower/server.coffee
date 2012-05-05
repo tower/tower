@@ -1,6 +1,7 @@
-require 'ember-metal'
-require 'ember-runtime'
-require 'ember-states'
+# until ember supports npm...
+require 'ember-metal-node'
+require 'ember-runtime-node'
+require 'ember-states-node'
 
 require 'underscore.logger'
 

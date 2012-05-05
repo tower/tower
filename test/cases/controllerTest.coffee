@@ -1,9 +1,9 @@
-controller  = null
-user        = null
-router      = null
-
 describeWith = (store) ->
-  describe "Tower.Controller (Tower.Store.#{store.name})", ->
+  describe "Tower.Controller (Tower.Store.#{store.className()})", ->
+    controller  = null
+    user        = null
+    router      = null
+    
     beforeEach (done) ->
       Tower.Route.draw ->
         @match "/custom",  to: "custom#index"
@@ -21,5 +21,5 @@ describeWith = (store) ->
       
 describeWith(Tower.Store.Memory)
 
-unless Tower.client
+unless Tower.isClient
   describeWith(Tower.Store.MongoDB)
