@@ -55,7 +55,7 @@ _.extend Tower,
     object.InstanceMethods  = InstanceMethods
     object.ClassMethods     = ClassMethods
 
-    included.apply(object) if included
+    included.apply(self) if included
 
     object
     
