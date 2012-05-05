@@ -41,4 +41,3 @@ describe 'Tower.Support.String', ->
       assert.equal support.singularize("people"), "person"
       assert.equal support.singularize("person"), "person"
   
->>>>>>> origin/development
