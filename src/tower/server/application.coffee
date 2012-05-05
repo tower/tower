@@ -3,6 +3,11 @@ File    = require('pathfinder').File
 server  = null
 io      = null
 
+process.on 'uncaughtException', (error) ->
+  handlers = Tower.Application.instance().currentErrorHandlers
+  for handler in handlers
+    handler(error)
+
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
