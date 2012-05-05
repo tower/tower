@@ -34,8 +34,9 @@ class Tower.Command.Server
   run: ->
     program     = @program
     Tower.watch = !!!program.static
-    Tower.env   = program.environment || "development"
-    Tower.port  = program.port      = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
+    Tower.env   = program.environment || process.env.NODE_ENV || "development"
+    process.env.NODE_ENV = Tower.env
+    Tower.port  = program.port = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
 
     Tower.Application.instance().run()
 
