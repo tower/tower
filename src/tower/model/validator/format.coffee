@@ -18,7 +18,7 @@ class Tower.Model.Validator.Format extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.format", attribute: attribute, value: @value.toString())
+        Tower.t('model.errors.format', attribute: attribute, value: @value.toString())
         callback
       )
     else

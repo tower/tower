@@ -5,7 +5,7 @@ class Tower.Model.Validator.Presence extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.presence", attribute: attribute),
+        Tower.t('model.errors.presence', attribute: attribute),
         callback
       )
     @success(callback)

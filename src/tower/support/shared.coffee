@@ -1,16 +1,64 @@
 _.extend Tower,
-  env:        "development"
-  port:       3000
-  client:     typeof(window) != "undefined"
-  root:       "/"
-  publicPath: "/"
-  case:       "camelcase"
-  accessors:  typeof(window) == "undefined"
-  logger:     if typeof(_console) != 'undefined' then _console else console
-  structure:  "standard"
-  config:     {}
-  namespaces: {}
-  metadata:   {}
+  nativeExtensions: true
+  env:              "development"
+  port:             3000
+  client:           typeof(window) != "undefined"
+  isClient:         typeof(window) != "undefined"
+  isServer:         typeof(window) == "undefined"
+  root:             "/"
+  publicPath:       "/"
+  case:             "camelcase"
+  accessors:        typeof(window) == "undefined"
+  logger:           if typeof(_console) != 'undefined' then _console else console
+  structure:        "standard"
+  config:           {}
+  namespaces:       {}
+  metadata:         {}
+  cb: ->
+  toMixin: ->
+    #mixin: ->
+    #  Tower.mixin @, arguments...
+
+    #extend: ->
+    #  Tower.extend @, arguments...
+
+    include: ->
+      Tower.include @, arguments...
+
+    className: ->
+      _.functionName(@)
+
+  #extend: (self, object) ->
+  #  extended = object.extended
+  #  delete object.extended
+  #  
+  #  self.reopenClass object
+  #  
+  #  extended.apply(object) if extended
+  #
+  #  object
+
+  include: (self, object) ->
+    included        = object.included
+    ClassMethods    = object.ClassMethods
+    InstanceMethods = object.InstanceMethods
+    
+    delete object.included
+    delete object.ClassMethods
+    delete object.InstanceMethods
+    
+    self.reopenClass(ClassMethods) if ClassMethods
+    self.include(InstanceMethods) if InstanceMethods
+    
+    self.reopen object
+    
+    object.InstanceMethods  = InstanceMethods
+    object.ClassMethods     = ClassMethods
+
+    included.apply(object) if included
+
+    object
+    
   metadataFor: (name) ->
     @metadata[name] ||= {}
 
@@ -70,7 +118,7 @@ _.extend Tower,
         Tower.Support.String.camelcase(string)
 
   namespace:  ->
-    Tower.Application.instance().constructor.name
+    Tower.Application.instance().constructor.className()
 
   module: (namespace) ->
     node    = Tower.namespaces[namespace]
@@ -148,6 +196,11 @@ _.extend Tower,
           completed += 1
           if completed == array.length
             callback()
+            
+  callbackChain: (callbacks...) ->
+    (error) =>
+      for callback in callbacks
+        callback.call(@, error) if callback
 
 if Tower.client
   Tower.request = (method, path, options, callback) ->

@@ -8,7 +8,7 @@ Tower.Store.MongoDB.Finders =
   find: (criteria, callback) ->
     conditions  = @serializeConditions(criteria)
     options     = @serializeOptions(criteria)
-
+    
     @collection().find(conditions, options).toArray (error, docs) =>
       unless error
         unless criteria.raw
@@ -16,10 +16,10 @@ Tower.Store.MongoDB.Finders =
             doc.id = doc["_id"]
             delete doc["_id"]
 
-          docs = @serialize(docs)
-
+          docs = @serialize(docs, true)
+          
           for model in docs
-            model.persistent = true
+            model.set('isNew', false)
 
       callback.call(@, error, docs) if callback
 

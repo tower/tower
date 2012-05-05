@@ -12,9 +12,9 @@ describeWith = (store) ->
           App.Admin.store(store)
           callback()
         (callback) => 
-          App.User.create id: 1, firstName: "Lance", callback
+          App.User.insert id: 1, firstName: "Lance", callback
         (callback) =>
-          App.User.create id: 2, firstName: "Dane", callback
+          App.User.insert id: 2, firstName: "Dane", callback
       ], done
     
     test 'where(firstName: "Lance")', (done) ->
@@ -48,11 +48,11 @@ describeWith = (store) ->
       beforeEach (done) ->
         async.series [
           (next) =>
-            App.User.create firstName: "Baldwin", likes: 10, next
+            App.User.insert firstName: "Baldwin", likes: 10, next
           (next) =>
-            App.Admin.create firstName: "An Admin", likes: 20, next
+            App.Admin.insert firstName: "An Admin", likes: 20, next
           (next) =>
-            App.Admin.create firstName: "An Admin without likes", likes: 0, next
+            App.Admin.insert firstName: "An Admin without likes", likes: 0, next
         ], done
     
       test 'named scopes', (done) ->
@@ -69,6 +69,37 @@ describeWith = (store) ->
 
           done()
           
+    describe 'returning cursor', ->
+      test '.insert', (done) ->
+        cursor = App.User.insert firstName: "Baldwin", likes: 10, (error, user) =>
+          process.nextTick =>
+            assert.isTrue cursor instanceof Tower.Model.Cursor, 'cursor instanceof Tower.Model.Cursor'
+            done()
+      
+      test '.update', (done) ->
+        cursor = App.User.update firstName: "Baldwin", (error, user) =>
+          process.nextTick =>
+            assert.isTrue cursor instanceof Tower.Model.Cursor, 'cursor instanceof Tower.Model.Cursor'
+            done()
+      
+      test '.destroy', (done) ->
+        cursor = App.User.destroy (error, user) =>
+          process.nextTick =>
+            assert.isTrue cursor instanceof Tower.Model.Cursor, 'cursor instanceof Tower.Model.Cursor'
+            done()
+          
+    describe 'global callback', ->
+      beforeEach ->
+        Tower.cb = ->
+          assert.ok arguments.length > 0
+      
+      afterEach ->
+        Tower.cb = ->
+      
+      test '.insert', (done) ->
+        App.User.insert firstName: "Baldwin", likes: 10, =>
+          done()
+
 describeWith(Tower.Store.Memory)
 unless Tower.client
   describeWith(Tower.Store.MongoDB)

@@ -1,194 +1,194 @@
-# Interface to {Tower.Model.Criteria}, used to build database operations.
-class Tower.Model.Scope extends Tower.Class
+# Interface to {Tower.Model.Cursor}, used to build database operations.
+class Tower.Model.Scope
   @finderMethods: [
-    "find",
-    "all",
-    "first",
-    "last",
-    "count",
-    "exists",
-    "instantiate",
-    "pluck"
+    'find'
+    'all'
+    'first'
+    'last'
+    'count'
+    'exists'
+    'instantiate'
+    'pluck'
   ]
 
   @persistenceMethods: [
-    "create",
-    "update",
-    "destroy",
-    "build"
+    'insert'
+    'update'
+    'destroy'
+    'build'
   ]
 
   # These methods are added to {Tower.Model}.
   @queryMethods: [
-    "where",
-    "order",
-    "sort",
-    "asc",
-    "desc",
-    "gte",
-    "gt",
-    "lte",
-    "lt",
-    "limit",
-    "offset",
-    "select",
-    "joins",
-    "includes",
-    "excludes",
-    "paginate",
-    "page",
-    "allIn",
-    "allOf",
-    "alsoIn",
-    "anyIn",
-    "anyOf",
-    "notIn",
-    "near",
-    "within"
+    'where'
+    'order'
+    'sort'
+    'asc'
+    'desc'
+    'gte'
+    'gt'
+    'lte'
+    'lt'
+    'limit'
+    'offset'
+    'select'
+    'joins'
+    'includes'
+    'excludes'
+    'paginate'
+    'page'
+    'allIn'
+    'allOf'
+    'alsoIn'
+    'anyIn'
+    'anyOf'
+    'notIn'
+    'near'
+    'within'
   ]
 
   # Map of human readable query operators to
   # normalized query operators to pass to a {Tower.Store}.
   @queryOperators:
-    ">=":       "$gte"
-    "$gte":     "$gte"
-    ">":        "$gt"
-    "$gt":      "$gt"
-    "<=":       "$lte"
-    "$lte":     "$lte"
-    "<":        "$lt"
-    "$lt":      "$lt"
-    "$in":      "$in"
-    "$nin":     "$nin"
-    "$any":     "$any"
-    "$all":     "$all"
-    "=~":       "$regex"
-    "$m":       "$regex"
-    "$regex":   "$regex"
-    "$match":   "$match"
-    "$notMatch":   "$notMatch"
-    "!~":       "$nm"
-    "$nm":      "$nm"
-    "=":        "$eq"
-    "$eq":      "$eq"
-    "!=":       "$neq"
-    "$neq":     "$neq"
-    "$null":    "$null"
-    "$notNull": "$notNull"
-
-  constructor: (criteria) ->
-    @criteria = criteria
+    '>=':         '$gte'
+    '$gte':       '$gte'
+    '>':          '$gt'
+    '$gt':        '$gt'
+    '<=':         '$lte'
+    '$lte':       '$lte'
+    '<':          '$lt'
+    '$lt':        '$lt'
+    '$in':        '$in'
+    '$nin':       '$nin'
+    '$any':       '$any'
+    '$all':       '$all'
+    '=~':         '$regex'
+    '$m':         '$regex'
+    '$regex':     '$regex'
+    '$match':     '$match'
+    '$notMatch':  '$notMatch'
+    '!~':         '$nm'
+    '$nm':        '$nm'
+    '=':          '$eq'
+    '$eq':        '$eq'
+    '!=':         '$neq'
+    '$neq':       '$neq'
+    '$null':      '$null'
+    '$notNull':   '$notNull'
+    
+  constructor: (cursor) ->
+    @cursor = cursor
 
   # Check if this scope or relation contains this object
   #
   # @param [Object] object an object or array of objects.
   has: (object) ->
-    @criteria.has(object)
+    @cursor.has(object)
 
-  # Builds one or many records based on the scope's criteria.
+  # Builds one or many records based on the scope's cursor.
   #
   # @example Build single record
-  #   App.User.build(firstName: "Lance")
+  #   App.User.build(firstName: 'Lance')
   #
   # @example Build multiple records
   #   # splat arguments
-  #   App.User.build({firstName: "Lance"}, {firstName: "John"})
+  #   App.User.build({firstName: 'Lance'}, {firstName: 'John'})
   #   # or pass in an explicit array of records
-  #   App.User.build([{firstName: "Lance"}, {firstName: "John"}])
+  #   App.User.build([{firstName: 'Lance'}, {firstName: 'John'}])
   #
   # @example Build by passing in records
-  #   App.User.build(new User(firstName: "Lance"))
+  #   App.User.build(new User(firstName: 'Lance'))
   #
   # @example Build from scope
   #   # single record
-  #   App.User.where(firstName: "Lance").build()
+  #   App.User.where(firstName: 'Lance').build()
   #   # multiple records
-  #   App.User.where(firstName: "Lance").build([{lastName: "Pollard"}, {lastName: "Smith"}])
+  #   App.User.where(firstName: 'Lance').build([{lastName: 'Pollard'}, {lastName: 'Smith'}])
   #
   # @example Build without instantiating the object in memory
-  #   App.User.options(instantiate: false).where(firstName: "Lance").build()
+  #   App.User.options(instantiate: false).where(firstName: 'Lance').build()
   #
   # @return [void] Requires a callback to get the data.
   build: ->
-    criteria        = @compile()
+    cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
 
-    criteria.addData(args)
+    cursor.addData(args)
 
-    criteria.build(callback)
+    cursor.build(callback)
 
-  # Creates one or many records based on the scope's criteria.
+  # Creates one or many records based on the scope's cursor.
   #
   # @example Create single record
-  #   App.User.create(firstName: "Lance")
+  #   App.User.insert(firstName: 'Lance')
   #
   # @example Create multiple records
   #   # splat arguments
-  #   App.User.create({firstName: "Lance"}, {firstName: "John"})
+  #   App.User.insert({firstName: 'Lance'}, {firstName: 'John'})
   #   # or pass in an explicit array of records
-  #   App.User.create([{firstName: "Lance"}, {firstName: "John"}])
+  #   App.User.insert([{firstName: 'Lance'}, {firstName: 'John'}])
   #
   # @example Create by passing in records
-  #   App.User.create(new User(firstName: "Lance"))
+  #   App.User.insert(new User(firstName: 'Lance'))
   #
   # @example Create from scope
   #   # single record
-  #   App.User.where(firstName: "Lance").create()
+  #   App.User.where(firstName: 'Lance').insert()
   #   # multiple records
-  #   App.User.where(firstName: "Lance").create([{lastName: "Pollard"}, {lastName: "Smith"}])
+  #   App.User.where(firstName: 'Lance').insert([{lastName: 'Pollard'}, {lastName: 'Smith'}])
   #
   # @example Create without instantiating the object in memory
-  #   App.User.options(instantiate: false).where(firstName: "Lance").create()
+  #   App.User.options(instantiate: false).where(firstName: 'Lance').insert()
   #
   # @return [void] Requires a callback to get the data.
-  create: ->
-    criteria        = @compile()
+  insert: ->
+    cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
-    # for `create`, the rest of the arguments must be records
+    # for `insert`, the rest of the arguments must be records
 
-    criteria.addData(args)
+    cursor.addData(args)
+    
+    cursor.insert(callback)
 
-    criteria.create(callback)
-
-  # Updates records based on the scope's criteria.
+  # Updates records based on the scope's cursor.
   #
   # @example Update by id
-  #   App.User.update(1, firstName: "Lance")
-  #   App.User.update(1, 2, firstName: "Lance")
-  #   App.User.update([1, 2], firstName: "Lance")
+  #   App.User.update(1, firstName: 'Lance')
+  #   App.User.update(1, 2, firstName: 'Lance')
+  #   App.User.update([1, 2], firstName: 'Lance')
   #
   # @example Update all
-  #   App.User.update(firstName: "Lance")
+  #   App.User.update(firstName: 'Lance')
   #
   # @example Update by passing in records
-  #   App.User.update(userA, firstName: "Lance")
-  #   App.User.update(userA, userB, firstName: "Lance")
-  #   App.User.update([userA, userB], firstName: "Lance")
+  #   App.User.update(userA, firstName: 'Lance')
+  #   App.User.update(userA, userB, firstName: 'Lance')
+  #   App.User.update([userA, userB], firstName: 'Lance')
   #
   # @example Update from scope
-  #   App.User.where(firstName: "John").update(firstName: "Lance")
-  #   App.User.where(firstName: "John").update(1, 2, 3, firstName: "Lance")
+  #   App.User.where(firstName: 'John').update(firstName: 'Lance')
+  #   App.User.where(firstName: 'John').update(1, 2, 3, firstName: 'Lance')
   #
   # @return [void] Requires a callback to get the data.
   update: ->
-    criteria        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
     # for `update`, the last argument before the callback must be the updates you're making
     updates         = args.pop()
 
-    throw new Error("Must pass in updates hash") unless updates && typeof updates == "object"
+    throw new Error('Must pass in updates hash') unless updates && typeof updates == 'object'
 
-    criteria.addData(updates)
+    cursor.addData(updates)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.update(callback)
+    cursor.update(callback)
 
-  # Deletes records based on the scope's criteria.
+  # Deletes records based on the scope's cursor.
   #
   # @example Destroy by id
   #   App.User.destroy(1)
@@ -204,41 +204,41 @@ class Tower.Model.Scope extends Tower.Class
   #   App.User.destroy([userA, userB])
   #
   # @example Update from scope
-  #   App.User.where(firstName: "John").destroy()
-  #   App.User.where(firstName: "John").destroy(1, 2, 3)
+  #   App.User.where(firstName: 'John').destroy()
+  #   App.User.where(firstName: 'John').destroy(1, 2, 3)
   #
   # @return [void] Requires a callback to get the data.
   destroy: ->
-    criteria        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.destroy(callback)
+    cursor.destroy(callback)
 
   # Add to set.
   add: ->
-    criteria        = @compile()
+    cursor          = @compile()
     args            = _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
 
-    criteria.addData(args)
+    cursor.addData(args)
 
-    criteria.add(callback)
+    cursor.add(callback)
 
   # Remove from set.
   remove: ->
-    criteria        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.remove(callback)
+    cursor.remove(callback)
 
-  # Updates one or many records based on the scope's criteria.
+  # Updates one or many records based on the scope's cursor.
   #
   # @example Find single record
   #   # find record with `id` 45
@@ -251,34 +251,34 @@ class Tower.Model.Scope extends Tower.Class
   #   App.User.find([10, 20])
   #
   # @example Create from scope
-  #   App.User.where(firstName: "Lance").find(1, 2)
+  #   App.User.where(firstName: 'Lance').find(1, 2)
   #
   # @return [undefined] Requires a callback to get the data.
   find: ->
-    criteria        = @compile()
+    cursor          = @compile()
     args            = _.flatten _.args(arguments)
     callback        = _.extractBlock(args)
 
-    criteria.addIds(args)
+    cursor.addIds(args)
 
-    criteria.find(callback)
+    cursor.find(callback)
 
-  # Find the first record matching this scope's criteria.
+  # Find the first record matching this scope's cursor.
   #
   # @param [Function] callback
   first: (callback) ->
-    criteria = @compile()
-    criteria.findOne(callback)
+    cursor = @compile()
+    cursor.findOne(callback)
 
-  # Find the last record matching this scope's criteria.
+  # Find the last record matching this scope's cursor.
   #
   # @param [Function] callback
   last: (callback) ->
-    criteria = @compile()
-    criteria.reverseSort()
-    criteria.findOne(callback)
+    cursor = @compile()
+    cursor.reverseSort()
+    cursor.findOne(callback)
 
-  # Find all the records matching this scope's criteria.
+  # Find all the records matching this scope's cursor.
   #
   # @param [Function] callback
   all: (callback) ->
@@ -295,13 +295,13 @@ class Tower.Model.Scope extends Tower.Class
   explain: ->
     @compile().explain(callback)
 
-  # Count the number of records matching this scope's criteria.
+  # Count the number of records matching this scope's cursor.
   #
   # @param [Function] callback
   count: (callback) ->
     @compile().count(callback)
 
-  # Check if a record exists that matches this scope's criteria.
+  # Check if a record exists that matches this scope's cursor.
   #
   # @param [Function] callback
   exists: (callback) ->
@@ -320,22 +320,22 @@ class Tower.Model.Scope extends Tower.Class
   #
   # @return [Object] returns all of the options.
   options: (options) ->
-    _.extend @criteria.options, options
+    _.extend(@cursor.options, options)
 
   compile: ->
-    @criteria.clone()
+    @cursor.clone()
 
   # Clone this scope (and the critera attached to it).
   #
   # @return [Tower.Model.Scope]
   clone: ->
-    new @constructor(@criteria.clone())
+    new @constructor(@cursor.clone())
 
 for key in Tower.Model.Scope.queryMethods
   do (key) =>
     Tower.Model.Scope::[key] = ->
       clone = @clone()
-      clone.criteria[key](arguments...)
+      clone.cursor[key](arguments...)
       clone
 
 module.exports = Tower.Model.Scope

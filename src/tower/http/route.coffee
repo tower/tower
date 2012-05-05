@@ -11,6 +11,18 @@ class Tower.HTTP.Route extends Tower.Class
 
   @find: (name) ->
     @byName[name]
+  
+  # tmp name
+  @findByControllerOptions: (options) ->
+    for route in @all()
+      controller  = route.controller
+      success     = true
+      for key, value of options
+        success = controller[key] == value
+        break unless success
+        
+      return route if success
+    null
 
   @all: ->
     @store()
@@ -67,10 +79,11 @@ class Tower.HTTP.Route extends Tower.Class
     params.action   = controller.action if controller
     request.params  = params
 
-    controller      = new (Tower.constant(Tower.namespaced(@controller.className))) if controller
+    if controller
+      controller      = Tower.constant(Tower.namespaced(@controller.className)).create()
     controller
 
-  constructor: (options) ->
+  init: (options) ->
     options     ||= options
     @path         = options.path
     @name         = options.name
@@ -85,6 +98,8 @@ class Tower.HTTP.Route extends Tower.Class
     @id           = @path
     if @controller
       @id += @controller.name + @controller.action
+      
+    @_super()
 
   get: (name) ->
     @[name]

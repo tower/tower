@@ -5,6 +5,11 @@ io      = null
 
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
+  @_callbacks: {}
+  
+  @extended: ->
+    global[@className()] = new @
+  
   @before "initialize", "setDefaults"
 
   setDefaults: ->
@@ -59,12 +64,13 @@ class Tower.Application extends Tower.Engine
   @initializers: ->
     @_initializers ||= []
 
-  constructor: ->
+  init: ->
     throw new Error("Already initialized application") if Tower.Application._instance
     @server ||= require('express').createServer()
     Tower.Application.middleware ||= []
     Tower.Application._instance = @
-    global[@constructor.name] = @
+    #global[@constructor.className()] = null#@
+    @_super arguments...
 
   initialize: (complete) ->
     require "#{Tower.root}/config/application"

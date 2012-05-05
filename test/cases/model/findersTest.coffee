@@ -1,5 +1,5 @@
 describeWith = (store) ->
-  describe "Tower.Model.Finders (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Finders (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       store.clean =>
         App.Post.store(store)
@@ -16,7 +16,7 @@ describeWith = (store) ->
     
     describe 'basics', ->
       beforeEach (done) ->
-        App.Post.create [{rating: 8}, {rating: 10}], done
+        App.Post.insert [{rating: 8}, {rating: 10}], done
       
       test 'all', (done) ->
         App.Post.all (error, records) =>
@@ -46,7 +46,7 @@ describeWith = (store) ->
     describe '$gt', ->
       describe 'integer > value (8, 10)', ->
         beforeEach (done) ->
-          App.Post.create [{rating: 8}, {rating: 10}], =>
+          App.Post.insert [{rating: 8}, {rating: 10}], =>
             done()
           
         test 'where(rating: ">": 10)', (done) ->
@@ -64,9 +64,9 @@ describeWith = (store) ->
             assert.equal count, 2
             done()
 
-      describe 'date > value (' + _.strftime('MMM D, YYYY') + ')', ->
+      describe 'date > value', ->
         beforeEach (done) ->
-          App.Post.create rating: 1, someDate: new Date, done
+          App.Post.insert rating: 1, someDate: new Date, done
         
         test 'where(someDate: ">": Dec 25, 1995)', (done) ->
           App.Post.where(someDate: ">": _.toDate("Dec 25, 1995")).count (error, count) =>
@@ -86,7 +86,7 @@ describeWith = (store) ->
     describe '$gte', ->
       describe 'integer >= value (8, 10)', ->
         beforeEach (done) ->
-          App.Post.create [{rating: 8}, {rating: 10}], done
+          App.Post.insert [{rating: 8}, {rating: 10}], done
         
         test 'where(rating: ">=": 11)', (done) ->
           App.Post.where(rating: ">=": 11).count (error, count) =>
@@ -111,7 +111,7 @@ describeWith = (store) ->
     describe '$lt', ->
       describe "integer < value", ->
         beforeEach (done) ->
-          App.Post.create [{rating: 8}, {rating: 10}], =>
+          App.Post.insert [{rating: 8}, {rating: 10}], =>
             done()
           
         test 'where(rating: "<": 11)', (done) ->
@@ -129,9 +129,9 @@ describeWith = (store) ->
             assert.equal count, 0
             done()
       
-      describe 'date < value (' + _.toDate('MMM D, YYYY') + ')', ->
+      describe 'date < value', ->
         beforeEach (done) ->
-          App.Post.create rating: 1, someDate: new Date, done
+          App.Post.insert rating: 1, someDate: new Date, done
         
         test 'where(someDate: "<": Dec 25, 2050)', (done) ->
           App.Post.where(someDate: "<": _.toDate("Dec 25, 2050")).count (error, count) =>
@@ -154,7 +154,7 @@ describeWith = (store) ->
           attributes = []
           attributes.push rating: 8
           attributes.push rating: 10
-          App.Post.create(attributes, done)
+          App.Post.insert(attributes, done)
         
         test 'where(rating: "<=": 11)', (done) ->
           App.Post.where(rating: "<=": 11).count (error, count) =>
@@ -178,7 +178,7 @@ describeWith = (store) ->
       
       test 'date <= value', ->
         beforeEach (done) ->
-          App.Post.create(rating: 1, someDate: new Date, done)
+          App.Post.insert(rating: 1, someDate: new Date, done)
           
         test 'where(someDate: "<=": Dec 25, 2050)', (done) ->
           App.Post.where(someDate: "<=": _.toDate("Dec 25, 2050")).count (error, count) =>
@@ -205,7 +205,7 @@ describeWith = (store) ->
           attributes = []
           attributes.push rating: 8, tags: ["ruby", "javascript"]
           attributes.push rating: 9, tags: ["nodejs", "javascript"]
-          App.Post.create(attributes, done)
+          App.Post.insert(attributes, done)
         
         test 'where(tags: "$in": ["javascript"])', (done) ->
           App.Post.where(tags: "$in": ["javascript"]).count (error, count) =>
@@ -228,7 +228,7 @@ describeWith = (store) ->
           attributes = []
           attributes.push rating: 8, tags: ["ruby", "javascript"]
           attributes.push rating: 9, tags: ["nodejs", "javascript"]
-          App.Post.create(attributes, done)
+          App.Post.insert(attributes, done)
         
         test 'anyIn(tags: ["javascript"])', (done) ->
           App.Post.anyIn(tags: ["javascript"]).count (error, count) =>
@@ -260,7 +260,7 @@ describeWith = (store) ->
         attributes = []
         attributes.push rating: 8, tags: ["ruby", "javascript"]
         attributes.push rating: 9, tags: ["nodejs", "javascript"]
-        App.Post.create(attributes, done)
+        App.Post.insert(attributes, done)
       
       test 'notIn(tags: ["javascript"])', (done) ->
         App.Post.notIn(tags: ["javascript"]).count (error, count) =>
@@ -282,7 +282,7 @@ describeWith = (store) ->
         attributes = []
         attributes.push rating: 8, tags: ["ruby", "javascript"]
         attributes.push rating: 9, tags: ["nodejs", "javascript"]
-        App.Post.create(attributes, done)
+        App.Post.insert(attributes, done)
         
       describe 'string in array', ->
         test 'allIn(tags: ["javascript"])', (done) ->
@@ -320,7 +320,7 @@ describeWith = (store) ->
           attributes = []
           attributes.push title: "Ruby", rating: 8
           attributes.push title: "JavaScript", rating: 10
-          App.Post.create(attributes, done)
+          App.Post.insert(attributes, done)
           
         test 'where(title: $eq: "Ruby")', (done) ->
           App.Post.where(title: $eq: "Ruby").count (error, count) =>
@@ -341,7 +341,7 @@ describeWith = (store) ->
 
     describe 'pagination', ->
       beforeEach (done) ->
-        Tower.Model.Criteria::defaultLimit = 5
+        Tower.Model.Cursor::defaultLimit = 5
         
         callbacks = []
         i = 0
@@ -350,13 +350,13 @@ describeWith = (store) ->
           do (i) ->
             callbacks.push (next) =>
               title = (new Array(i + 1)).join("a")
-              App.Post.create title: title, rating: 8, (error, post) =>
+              App.Post.insert title: title, rating: 8, (error, post) =>
                 next()
         
         _.series callbacks, done
         
       afterEach ->
-        Tower.Model.Criteria::defaultLimit = 20
+        Tower.Model.Cursor::defaultLimit = 20
       
       test 'limit(1)', (done) ->
         App.Post.limit(1).all (error, posts) =>
@@ -373,6 +373,7 @@ describeWith = (store) ->
           assert.equal posts.length, 5
           assert.equal posts[0].get('title').length, 6
           assert.equal posts[4].get('title').length, 10
+          
           done()
       
       test 'page(4) end of set', (done) ->
@@ -401,5 +402,6 @@ describeWith = (store) ->
           done()
 
 describeWith(Tower.Store.Memory)
+
 unless Tower.client
   describeWith(Tower.Store.MongoDB)

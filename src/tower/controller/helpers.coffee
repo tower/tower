@@ -13,6 +13,6 @@ Tower.Controller.Helpers =
   InstanceMethods:
     layout: ->
       layout = @constructor._layout
-      if typeof(layout) == "function" then layout.call(@) else layout
+      if typeof(layout) == 'function' then layout.call(@) else layout
 
 module.exports = Tower.Controller.Helpers

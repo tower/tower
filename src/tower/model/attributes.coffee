@@ -1,13 +1,29 @@
 # @mixin
 Tower.Model.Attributes =
+  Serialization: {}
+
   ClassMethods:
+    dynamicFields: true
+
+    destructiveFields: [
+      'id'
+      'push'
+      'isValid'
+      'data'
+      'changes'
+      'getAttribute'
+      'setAttribute'
+      'unknownProperty'
+      'setUnknownProperty'
+    ]
+
     # Define a database field on your model.
     #
     # The field can have one of several types.
     #
     # @example String field
     #   class App.User extends Tower.Model
-    #     @field "email"
+    #     @field 'email'
     #
     # @param [String] name
     # @param [Object] options
@@ -37,182 +53,28 @@ Tower.Model.Attributes =
       fields
 
   InstanceMethods:
-    # Get a value defined by a {Tower.Model.field}.
-    #
-    # @note It will try to get a default value for you the first time it is retrieved.
-    #
-    # @param [name]
-    #
-    # @return [Object]
-    get: (name) ->
-      field = @constructor.fields()[name]
+    dynamicFields: true
 
-      unless @has(name)
-        @attributes[name] = field.defaultValue(@) if field
+    data: Ember.computed(->
+      new Tower.Model.Data(@)
+    ).cacheable()
 
-      if field
-        field.decode @attributes[name], @
-      else
-        @attributes[name]
+    changes: Ember.computed(->
+      Ember.get(@get('data'), 'unsavedData')
+    )
 
-    assignAttributes: (attributes) ->
-      for key, value of attributes
-        delete @changes[key]
-        @attributes[key] = value
-      @
+    setSavedAttributes: (object) ->
+      @get('data').setSavedAttributes(object)
 
-    # Check if an attribute is defined.
-    #
-    # @return [Boolean]
-    has: (key) ->
-      @attributes.hasOwnProperty(key)
+    unknownProperty: (key) ->
+      @get('data').get(key) if @get('dynamicFields')
 
-    # Set values on the {Tower.Model#attributes} hash.
-    #
-    # @example
-    #   post.set $pushAll: tags: ["ruby"]
-    #   post.set $pushAll: tags: ["javascript"]
-    #   post.attributes["tags"] #=> ["ruby", "javascript"]
-    #   post.changes["tags"]    #=> [[], ["ruby", "javascript"]]
-    #   post.set $pop: tags: "ruby"
-    #   post.attributes["tags"] #=> ["javascript"]
-    #   post.changes["tags"]    #=> [[], ["javascript"]]
-    #   if the changes looked like this:
-    #     post.changes["tags"]    #=> [["ruby", "javascript"], ["javascript", "node.js"]]
-    #   then the updates would be
-    #     post.toUpdates()        #=> {$popAll: {tags: ["ruby"]}, $pushAll: {tags: ["node.js"]}}
-    #     popAll  = _.difference(post.changes["tags"][0], post.changes["tags"][1])
-    #     pushAll = _.difference(post.changes["tags"][1], post.changes["tags"][0])
-    set: (key, value) ->
-      @operation => _.oneOrMany(@, @_set, key, value)
+    setUnknownProperty: (key, value) ->
+      @get('data').set(key, value) if @get('dynamicFields')
 
-    push: (key, value) ->
-      @operation => _.oneOrMany(@, @_push, key, value)
-
-    pushAll: (key, value) ->
-      @operation => _.oneOrMany(@, @_push, key, value, true)
-
-    pull: (key, value) ->
-      @operation => _.oneOrMany(@, @_pull, key, value)
-
-    pullAll: (key, value) ->
-      @operation => _.oneOrMany(@, @_pull, key, value, true)
-
-    inc: (key, value) ->
-      @operation => _.oneOrMany(@, @_inc, key, value)
-
-    addToSet: (key, value) ->
-      @operation => _.oneOrMany(@, @_addToSet, key, value)
-
-    unset: ->
-      keys = _.flatten Tower.args(arguments)
-      delete @attributes[key] for key in keys
-      undefined
-
-    # @private
-    _set: (key, value) ->
-      if Tower.Store.atomicModifiers.hasOwnProperty(key)
-        @[key.replace(/^\$/, "")](value)
-      else
-        fields            = @constructor.fields()
-        field             = fields[key]
-        value             = field.encode(value, @) if field
-        {before, after}   = @changes
-
-        @_attributeChange(key, value)
-        before[key]       = @get(key) unless before.hasOwnProperty(key)
-        after.$set      ||= {}
-        after.$set[key]   = value
-
-        if operation = @_currentOperation
-          operation.$set ||= {}
-          operation.$set[key] = value
-
-        #@_attributeChange(key, value)
-        @attributes[key]  = value
-
-    # @private
-    _push: (key, value, array = false) ->
-      fields            = @constructor.fields()
-      value             = fields[key].encode(value) if key in fields
-      {before, after}   = @changes
-      push              = after.$push ||= {}
-
-      before[key]     ||= @get(key)
-      current           = @get(key) || []
-      push[key]       ||= current.concat()
-
-      if array == true && _.isArray(value)
-        push[key] = push[key].concat(value)
-      else
-        push[key].push(value)
-
-      if operation = @_currentOperation
-        operation.$push ||= {}
-        operation.$push[key] = value
-
-      @attributes[key]  = push[key]
-
-    # @private
-    _pull: (key, value, array = false) ->
-      fields            = @constructor.fields()
-      value             = fields[key].encode(value) if key in fields
-      {before, after}   = @changes
-      pull              = after.$pull ||= {}
-
-      before[key]     ||= @get(key)
-      current           = @get(key) || []
-      pull[key]       ||= current.concat()
-
-      if array && _.isArray(value)
-        pull[key].splice(pull[key].indexOf(item), 1) for item in value
-      else
-        pull[key].splice(pull[key].indexOf(value), 1)
-
-      if operation = @_currentOperation
-        operation.$pull ||= {}
-        operation.$pull[key] = value
-
-      @attributes[key]  = pull[key]
-
-    # @private
-    _inc: (key, value) ->
-      fields            = @constructor.fields()
-      value             = fields[key].encode(value) if key in fields
-      {before, after}   = @changes
-      inc               = after.$inc ||= {}
-
-      before[key]       = @get(key) unless before.hasOwnProperty(key)
-      inc[key]          = @get(key) || 0
-      inc[key]         += value
-
-      if operation      = @_currentOperation
-        operation.$before ||= {}
-        operation.$before[key] = @get(key) unless operation.$before.hasOwnProperty(key)
-        operation.$inc    ||= {}
-        operation.$inc[key] = value
-        operation.$after  ||= {}
-        operation.$after[key] = inc[key]
-
-      @attributes[key]  = inc[key]
-
-    # @private
-    _addToSet: (key, value) ->
-      fields            = @constructor.fields()
-      value             = fields[key].encode(value) if key in fields
-      {before, after}   = @changes
-      addToSet          = after.$addToSet ||= {}
-
-      before[key]     ||= @get(key)
-      current           = @get(key) || []
-      addToSet[key]   ||= current.concat()
-
-      if value && value.hasOwnProperty("$each")
-        for item in value.$each
-          addToSet[key].push(item) if addToSet[key].indexOf(item) == -1
-      else
-        addToSet[key].push(value) if addToSet[key].indexOf(value) == -1
-
-      @attributes[key]  = addToSet[key]
+for method in Tower.Store.Modifiers.SET
+  do (method) ->
+    Tower.Model.Attributes.InstanceMethods[method] = ->
+      Ember.get(@, 'data')[method] arguments...
 
 module.exports = Tower.Model.Attributes

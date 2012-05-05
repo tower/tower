@@ -6,8 +6,11 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 
-class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteria
+class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
   isHasMany: true
+  
+  init: ->
+    @_super arguments...
 
   # @todo
   has: (object) ->
@@ -17,18 +20,18 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
     return false
 
   validate: (callback) ->
-    unless @owner.isPersisted()
-      throw new Error("You cannot call create unless the parent is saved")
+    if @owner.get('isNew')
+      throw new Error('You cannot call insert unless the parent is saved')
 
     callback.call @
 
   build: (callback) ->
-    @compileForCreate()
+    @compileForInsert()
     @_build callback
 
-  create: (callback) ->
+  insert: (callback) ->
     @validate (error) =>
-      @createReferenced(callback)
+      @insertReferenced(callback)
 
   update: (callback) ->
     @validate (error) =>
@@ -70,23 +73,23 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
   #  @validate (error) =>
   #    @findReferenced(callback)
 
-  createReferenced: (callback) ->
-    @compileForCreate()
+  insertReferenced: (callback) ->
+    @compileForInsert()
 
-    @_runBeforeCreateCallbacksOnStore =>
-      @_create (error, record) =>
+    @_runBeforeInsertCallbacksOnStore =>
+      @_insert (error, record) =>
         unless error
           #@_idCacheRecords(record)
 
-          @_runAfterCreateCallbacksOnStore =>
-            # add the id to the array on the owner record after it's created
+          @_runAfterInsertCallbacksOnStore =>
+            # add the id to the array on the owner record after it's insertd
             if @updateOwnerRecord()
               @owner.updateAttributes @ownerAttributes(record), (error) =>
-                callback.call @, error, record if callback
+                callback.call(@, error, record) if callback
             else
-              callback.call @, error, record if callback
+              callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   updateReferenced: (callback) ->
     @compileForUpdate()
@@ -95,9 +98,9 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
       @_update (error, record) =>
         unless error
           @_runAfterUpdateCallbacksOnStore =>
-            callback.call @, error, record if callback
+            callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   destroyReferenced: (callback) ->
     @compileForDestroy()
@@ -108,11 +111,11 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
           @_runAfterDestroyCallbacksOnStore =>
             if @updateOwnerRecord()
               @owner.updateAttributes @ownerAttributesForDestroy(record), (error) =>
-                callback.call @, error, record if callback
+                callback.call(@, error, record) if callback
             else
-              callback.call @, error, record if callback
+              callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   findReferenced: (callback) ->
     @compileForFind()
@@ -121,9 +124,9 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
       @_find (error, record) =>
         unless error
           @_runAfterFindCallbacksOnStore =>
-            callback.call @, error, record if callback
+            callback.call(@, error, record) if callback
         else
-          callback.call @, error, record if callback
+          callback.call(@, error, record) if callback
 
   # add to set
   add: (callback) ->
@@ -144,17 +147,17 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
     relation        = @relation
     inverseRelation = relation.inverse()
 
-    id              = owner.get("id")
+    id              = owner.get('id')
 
     data            = {}
 
     #if relation.idCache
-    #  #defaults[relation.idCacheKey] = $in: [@owner.get("id")]
+    #  #defaults[relation.idCacheKey] = $in: [@owner.get('id')]
     #  defaults.id = $in: @owner.get(relation.idCacheKey)
-    #  criteria.where(defaults)
+    #  cursor.where(defaults)
     #else
     #  defaults[relation.foreignKey] = $in: @owner.get('id')
-    #  criteria.where(defaults)
+    #  cursor.where(defaults)
 
     if inverseRelation && inverseRelation.idCache
       array = data[inverseRelation.idCacheKey] || []
@@ -163,14 +166,14 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
     else if relation.foreignKey && !relation.idCache
       data[relation.foreignKey]     = id if id != undefined
       # must check here if owner is instance of foreignType
-      data[relation.foreignType]  ||= owner.constructor.name if relation.foreignType
+      data[relation.foreignType]  ||= owner.constructor.className() if relation.foreignType
 
     if inverseRelation && inverseRelation.counterCacheKey
       data[inverseRelation.counterCacheKey] = 1
 
     @where(data)
 
-  compileForCreate: ->
+  compileForInsert: ->
     @compile()
 
   compileForUpdate: ->
@@ -198,16 +201,21 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
 
     if relation.idCache
       push    = {}
-      data    = if record then record.get("id") else @store._mapKeys('id', @data)
-      push[relation.idCacheKey] = if _.isArray(data) then {$each: data} else data
+      data    = if record then record.get('id') else @store._mapKeys('id', @data)
+      push[relation.idCacheKey] = data
     if relation.counterCacheKey
       inc     = {}
       inc[relation.counterCacheKey] = 1
 
     updates   = {}
     # probably should be $addToSet
-    updates["$addToSet"]  = push if push
-    updates["$inc"]   = inc if inc
+    if push
+      if _.isArray(push)
+        updates['$addEach']  = push
+      else
+        updates['$add']  = push
+        
+    updates['$inc']       = inc if inc
 
     updates
 
@@ -224,14 +232,14 @@ class Tower.Model.Relation.HasMany.Criteria extends Tower.Model.Relation.Criteri
 
     updates   = {}
     # probably should be $addToSet
-    updates["$pullAll"]  = pull if pull
-    updates["$inc"]   = inc if inc
-
+    updates['$pullEach']   = pull if pull
+    updates['$inc']       = inc if inc
+    
     updates
 
   # @private
   _idCacheRecords: (records) ->
     rootRelation = @owner.relation(@relation.name)
-    rootRelation.criteria.records = rootRelation.criteria.records.concat _.castArray(records)
+    rootRelation.cursor.records = rootRelation.cursor.records.concat _.castArray(records)
 
 module.exports = Tower.Model.Relation.HasMany

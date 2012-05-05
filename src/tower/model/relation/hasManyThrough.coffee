@@ -1,6 +1,6 @@
 class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
-  initialize: (options) ->
-    super
+  init: (options) ->
+    @_super arguments...
 
     if @through && !options.type
       @throughRelation = throughRelation = @owner.relation(@through)
@@ -23,11 +23,12 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
       for name, relation of relations
         return relation if relation.targetType == type
 
-class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.HasMany.Criteria
+class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.HasMany.Cursor
   isHasManyThrough: true
 
-  constructor: (options = {}) ->
-    super
+  make: (options = {}) ->
+    @_super arguments...
+    
     if @relation.through
       @throughRelation  = @owner.constructor.relation(@relation.through)
       @inverseRelation  = @relation.inverseThrough(@throughRelation)
@@ -41,19 +42,19 @@ class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.
   #build: (callback) ->
   #  @_build (error, records) =>
   #    for record in _.castArray(records)
-  #      record._throughCriteria = @ if record
+  #      record._throughCursor = @ if record
   #
   #    callback.call @, error, records if callback
   #    records
 
-  create: (callback) ->
-    @_runBeforeCreateCallbacksOnStore =>
-      @_create (error, record) =>
+  insert: (callback) ->
+    @_runBeforeInsertCallbacksOnStore =>
+      @_insert (error, record) =>
         unless error
           #@_idCacheRecords(record)
 
-          @_runAfterCreateCallbacksOnStore =>
-            @createThroughRelation record, (error, throughRecord) =>
+          @_runAfterInsertCallbacksOnStore =>
+            @insertThroughRelation record, (error, throughRecord) =>
               callback.call @, error, record if callback
         else
           callback.call @, error, record if callback
@@ -62,7 +63,7 @@ class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.
   add: (callback) ->
     @_build (error, record) =>
       unless error
-        @createThroughRelation record, (error, throughRecord) =>
+        @insertThroughRelation record, (error, throughRecord) =>
           callback.call @, error, record if callback
       else
         callback.call @, error, record if callback
@@ -95,7 +96,7 @@ class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.
   appendThroughConditions: (callback) ->
     # @inverseRelation.foreignKey
 
-    @owner[@relation.through]().all (error, records) =>
+    @owner.get(@relation.through).all (error, records) =>
       ids = @store._mapKeys(@inverseRelation.foreignKey, records)
 
       # @addIds ???
@@ -103,8 +104,8 @@ class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.
 
       callback()
 
-  createThroughRelation: (records, callback) ->
-    #record = @owner.relation(@relation.name).criteria.records
+  insertThroughRelation: (records, callback) ->
+    #record = @owner.relation(@relation.name).cursor.records
     returnArray = _.isArray(records)
     records = _.castArray(records) # may only get 1
     data    = []
@@ -116,7 +117,7 @@ class Tower.Model.Relation.HasManyThrough.Criteria extends Tower.Model.Relation.
       attributes[key] = record.get('id')
       data.push attributes
 
-    @owner[@relation.through]().create data, (error, throughRecords) =>
+    @owner.get(@relation.through).insert data, (error, throughRecords) =>
       throughRecords = throughRecords[0] unless returnArray
       callback.call @, error, throughRecords if callback
 

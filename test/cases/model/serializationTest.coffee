@@ -7,7 +7,9 @@ describe 'Tower.Model.Serialization', ->
     App.User.store(new Tower.Store.Memory(firstName: "users", type: "User"))
     
   test "instance.toJSON", ->
-    assert.deepEqual (new App.User(firstName: "Lance")).toJSON(),
+    json = App.User.new(firstName: "Lance").toJSON()
+    
+    assert.deepEqual json,
       id:                  undefined,
       createdAt:           undefined,
       likes:               0,

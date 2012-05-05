@@ -4,16 +4,16 @@
 Tower.Model.Hierarchical =
   ClassMethods:
     hierarchical: (options = {}) ->
-      @metadata().lft       = options.lft ||= "lft"
-      @metadata().rgt       = options.rgt ||= "rgt"
-      @metadata().parentId  = options.parentId ||= "parentId"
+      @metadata().lft       = options.lft ||= 'lft'
+      @metadata().rgt       = options.rgt ||= 'rgt'
+      @metadata().parentId  = options.parentId ||= 'parentId'
 
-      @field options.lft, type: "Integer"
-      @field options.rgt, type: "Integer"
-      @field options.parentId, type: "Integer"
+      @field options.lft, type: 'Integer'
+      @field options.rgt, type: 'Integer'
+      @field options.parentId, type: 'Integer'
 
     root: (callback) ->
-      @roots.first(callback)
+      @roots().first(callback)
 
     roots: ->
       metadata    = @metadata()
@@ -37,8 +37,8 @@ Tower.Model.Hierarchical =
 
   selfAndAncestors: ->
     @nestedSetScope().where(
-      lft: "<=": @get("lft")
-      rgt: ">=": @get("rgt")
+      lft: '<=': @get('lft')
+      rgt: '>=': @get('rgt')
     )
 
   ancestors: ->
@@ -64,15 +64,15 @@ Tower.Model.Hierarchical =
 
   selfAndDescendants: ->
     @nestedSetScope().where(
-      lft: ">=": @get("lft")
-      rgt: "<=": @get("rgt")
+      lft: '>=': @get('lft')
+      rgt: '<=': @get('rgt')
     )
 
   descendants: ->
     @withoutSelf @selfAndDescendants()
 
   isDescendantOf: (other) ->
-    other.get("left") < @get("left") && @get("left") < @get("right") && @sameScope?(other)
+    other.get('left') < @get('left') && @get('left') < @get('right') && @isSameScope(other)
 
   moveLeft: ->
     @moveToLeftOf @leftSibling()
@@ -81,38 +81,43 @@ Tower.Model.Hierarchical =
     @moveToRightOf @rightSibling()
 
   moveToLeftOf: (node) ->
-    @moveTo node, "left"
+    @moveTo node, 'left'
 
   moveToRightOf: (node) ->
-    @moveTo node, "right"
+    @moveTo node, 'right'
 
   moveToChildOf: (node) ->
-    @moveTo node, "child"
+    @moveTo node, 'child'
 
   moveToRoot: ->
-    @moveTo null, "root"
+    @moveTo null, 'root'
 
   moveTo: (target, position) ->
-    @runCallbacks "move", ->
+    @runCallbacks 'move', ->
 
   isOrIsDescendantOf: (other) ->
-    other.left <= self.left && self.left < other.right && sameScope?(other)
+    other.get('left') <= @get('left') && @get('left') < other.get('right') && @isSameScope(other)
 
   isAncestorOf: (other) ->
-    self.left < other.left && other.left < self.right && sameScope?(other)
+    @get('left') < other.get('left') && other.get('left') < @get('right') && @isSameScope(other)
 
   isOrIsAncestorOf: (other) ->
-    self.left <= other.left && other.left < self.right && sameScope?(other)
+    @get('left') <= other.get('left') && other.get('left') < @get('right') && @isSameScope(other)
 
-  sameScope: (other) ->
+  isSameScope: (other) ->
     Array(actsAsNestedSetOptions.scope).all (attr) ->
-      self.send(attr) == other.send(attr)
+      @get(attr) == other.get(attr)
 
-  leftSibling: ->
-    siblings.where(["#{self.class.quotedTableName}.#{quotedLeftColumnName} < ?", left]).
-            order("#{self.class.quotedTableName}.#{quotedLeftColumnName} DESC").last
+  leftSibling: (callback) ->
+    metadata    = @constructor.metadata()
+    conditions  = {}
+    conditions[metadata.lft] = $lt: @get('left')
+    siblings.where(conditions).desc(metadata.lft).last(callback)
 
-  rightSibling: ->
-    siblings.where(["#{self.class.quotedTableName}.#{quotedLeftColumnName} > ?", left]).first
+  rightSibling: (callback) ->
+    metadata    = @constructor.metadata()
+    conditions  = {}
+    conditions[metadata.left] = $gt: @get('left')
+    siblings.where(conditions).first(callback)
 
 module.exports = Tower.Model.Hierarchical

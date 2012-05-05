@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Conversion =
+Tower.Model.Metadata =
   ClassMethods:
     # The class in the superclass hierarchy that directly subclasses Tower.Model
     #
@@ -24,7 +24,7 @@ Tower.Model.Conversion =
         @
 
     isSubClass: ->
-      @baseClass().name != @name
+      @baseClass().className() != @className()
 
     # The name of this class, parameterized and pluralized.
     #
@@ -38,12 +38,12 @@ Tower.Model.Conversion =
     toKey: ->
       @metadata().paramName
 
-    # @url "/posts/:postId/comment"
-    # @url parent: "post"
-    # @url (model) -> return "/something"
+    # @url '/posts/:postId/comment'
+    # @url parent: 'post'
+    # @url (model) -> return '/something'
     url: (options) ->
       @_url = switch typeof options
-        when "object"
+        when 'object'
           if options.parent
             url = "/#{Tower.Support.String.parameterize(Tower.Support.String.pluralize(options.parent))}/:#{Tower.Support.String.camelize(options.parent, true)}/#{@toParam()}"
         else
@@ -57,15 +57,15 @@ Tower.Model.Conversion =
 
     # @example All default options
     #   class App.User extends Tower.Model
-    #     @defaults store: Tower.Store.Memory, scope: @desc("createdAt")
+    #     @defaults store: Tower.Store.Memory, scope: @desc('createdAt')
     defaults: (object) ->
       @default(key, value) for key, value of object if object
       @metadata().defaults
 
     # @example All default options
     #   class App.User extends Tower.Model
-    #     @default "store", Tower.Store.Memory
-    #     @default "scope", @desc("createdAt")
+    #     @default 'store', Tower.Store.Memory
+    #     @default 'scope', @desc('createdAt')
     default: (key, value) ->
       if arguments.length == 1 # we're getting a value
         @metadata().defaults[key]
@@ -82,10 +82,10 @@ Tower.Model.Conversion =
     #
     # @return [Object]
     metadata: ->
-      className               = @name
+      className               = @className()
       metadata                = @metadata[className]
       return metadata if metadata
-      baseClassName           = @parentClass().name
+      baseClassName           = @parentClass().className()
 
       if baseClassName != className
         superMetadata = @parentClass().metadata()
@@ -105,6 +105,7 @@ Tower.Model.Conversion =
       validators              = if superMetadata.validators then _.clone(superMetadata.validators) else []
       relations               = if superMetadata.relations then _.clone(superMetadata.relations) else {}
       defaults                = if superMetadata.defaults then _.clone(superMetadata.defaults) else {}
+      callbacks               = if superMetadata.callbacks then _.clone(superMetadata.callbacks) else {}
 
       @metadata[className]    =
         name:                 name
@@ -120,9 +121,13 @@ Tower.Model.Conversion =
         fields:               fields
         relations:            relations
         defaults:             defaults
+        callbacks:            callbacks
 
     _setDefaultScope: (scope) ->
       @metadata().defaults.scope = if scope instanceof Tower.Model.Scope then scope else @where(scope)
+
+    callbacks: ->
+      @metadata().callbacks
 
   InstanceMethods:
     # A label for this model when rendered to a string.
@@ -136,13 +141,13 @@ Tower.Model.Conversion =
     # Url for this model.
     toPath: ->
       result  = @constructor.toParam()
-      return "/" if result == undefined
+      return '/' if result == undefined
       param   = @toParam()
       result += "/#{param}" if param
       result
 
     toParam: ->
-      id = @get("id")
+      id = @get('id')
       if id? then String(id) else null
 
     toKey: ->
@@ -153,5 +158,17 @@ Tower.Model.Conversion =
 
     metadata: ->
       @constructor.metadata()
+      
+    toString: ->
+      attributes  = @get('data').attributes()
+      array       = []
+      if attributes.hasOwnProperty('id')
+        array.push("id=#{JSON.stringify(attributes.id)}")
+        delete attributes.id
+      result      = []
+      for key, value of attributes
+        result.push("#{key}=#{JSON.stringify(value)}")
+      result  = array.concat(result.sort()).join(', ')
+      "#<#{@constructor.toString()}:#{Ember.guidFor(@)} #{result}>"
 
-module.exports = Tower.Model.Conversion
+module.exports = Tower.Model.Metadata

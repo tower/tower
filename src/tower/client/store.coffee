@@ -1,2 +1,2 @@
 require './store/ajax'
-require './store/local'
+require './store/localStorage'

@@ -1,77 +1,4 @@
 class Tower.Model.Attribute
-  @string:
-    from: (serialized) ->
-      if _.none(serialized) then null else String(serialized)
-
-    to: (deserialized) ->
-      if _.none(deserialized) then null else String(deserialized)
-
-  @number:
-    from: (serialized) ->
-      if _.none(serialized) then null else Number(serialized)
-
-    to: (deserialized) ->
-      if _.none(deserialized) then null else Number(deserialized)
-
-  @integer:
-    from: (serialized) ->
-      if _.none(serialized) then null else parseInt(serialized)
-
-    to: (deserialized) ->
-      if _.none(deserialized) then null else parseInt(deserialized)
-
-  @float:
-    from: (serialized) ->
-      parseFloat(serialized)
-
-    to: (deserialized) ->
-      deserialized
-
-  @decimal: @float
-
-  @boolean:
-    from: (serialized) ->
-      if typeof serialized == "string"
-        !!(serialized != "false")
-      else
-        Boolean(serialized)
-
-    to: (deserialized) ->
-      Tower.Model.Attribute.boolean.from(deserialized)
-
-  @date:
-    # from ember.js, tmp
-    from: (date) ->
-      date
-
-    to: (date) ->
-      _.toDate(date)
-
-  @time: @date
-  @datetime: @date
-
-  @geo:
-    from: (serialized) ->
-      serialized
-
-    to: (deserialized) ->
-      switch _.kind(deserialized)
-        when "array"
-          lat: deserialized[0], lng: deserialized[1]
-        when "object"
-          lat: deserialized.lat || deserialized.latitude
-          lng: deserialized.lng || deserialized.longitude
-        else
-          deserialized = deserialized.split(/,\ */)
-          lat: parseFloat(deserialized[0]), lng: parseFloat(deserialized[1])
-
-  @array:
-    from: (serialized) ->
-      if _.none(serialized) then null else _.castArray(serialized)
-
-    to: (deserialized) ->
-      Tower.Model.Attribute.array.from(deserialized)
-
   # @option options [Boolean|String|Function] set If `set` is a boolean, it will look for a method
   #   named `"set#{field.name}"` on the prototype.  If it's a string, it will call that method on the prototype.
   #   If it's a function, it will call that function as if it were on the prototype.
@@ -85,57 +12,92 @@ class Tower.Model.Attribute
       block         = options
       options       = {}
 
-    @type         = options.type || "String"
+    @type           = type = options.type || 'String'
 
-    if typeof @type != "string"
-      @itemType = @type[0]
-      @type     = "Array"
+    if typeof type != 'string'
+      @itemType     = type[0]
+      @type         = type = 'Array'
 
-    @encodingType = switch @type
-      when "Id", "Date", "Array", "String", "Integer", "Float", "BigDecimal", "Time", "DateTime", "Boolean", "Object", "Number", "Geo"
-        @type
+    @encodingType = switch type
+      when 'Id', 'Date', 'Array', 'String', 'Integer', 'Float', 'BigDecimal', 'Time', 'DateTime', 'Boolean', 'Object', 'Number', 'Geo'
+        type
       else
-        "Model"
+        'Model'
 
-    serializer = Tower.Model.Attribute[Tower.Support.String.camelize(@type, true)]
+    @_setDefault(options)
+    @_defineAccessors(options)
+    @_defineAttribute(options)
+    @_addValidations(options)
+    @_addIndex(options)
 
+  _setDefault: (options) ->
     @_default = options.default
 
     unless @_default
-      if @type == "Geo"
+      if @type == 'Geo'
         @_default = lat: null, lng: null
       else if @type == 'Array'
         @_default = []
 
-    if @type == 'Geo' && !options.index
-      index       = {}
-      index[name] = "2d"
-      options.index = index
+  _defineAccessors: (options) ->
+    name        = @name
+    type        = @type
 
-    @get      = options.get || (serializer.from if serializer)
-    @set      = options.set || (serializer.to if serializer)
+    serializer  = Tower.Store.Serializer[type]
 
-    @get = "get#{Tower.Support.String.camelize(name)}" if @get == true
-    @set = "set#{Tower.Support.String.camelize(name)}" if @set == true
+    @get        = options.get || (serializer.from if serializer)
+    @set        = options.set || (serializer.to if serializer)
 
-    if Tower.accessors
-      Object.defineProperty @owner.prototype, name,
-        enumerable: true
-        configurable: true
-        get: -> @get(key)
-        set: (value) -> @set(key, value)
+    @get        = "get#{Tower.Support.String.camelize(name)}" if @get == true
+    @set        = "set#{Tower.Support.String.camelize(name)}" if @set == true
+    
+    #if Tower.accessors
+    #  Object.defineProperty @owner.prototype, name,
+    #    enumerable: true
+    #    configurable: true
+    #    get: -> @get(name)
+    #    set: (value) -> @set(name, value)
 
+  _defineAttribute: (options) ->
+    name      = @name
+    attribute = {}
+    field     = @
 
+    attribute[name] = Ember.computed((key, value) ->
+      if arguments.length is 2
+        data = Ember.get(@, 'data')
+        data.set(key, field.encode(value, @))
+      else
+        data  = Ember.get(@, 'data')
+        value = data.get(key)
+        value = field.defaultValue(@) if value == undefined
+        field.decode(value, @)
+
+    ).property('data').cacheable()
+
+    #@owner.prototype[name] = attribute[name]
+    @owner.reopen(attribute)
+
+  _addValidations: (options) ->
     validations           = {}
 
     for key, normalizedKey of Tower.Model.Validator.keys
       validations[normalizedKey] = options[key] if options.hasOwnProperty(key)
 
-    @owner.validates name, validations if _.isPresent(validations)
+    @owner.validates @name, validations if _.isPresent(validations)
+
+  _addIndex: (options) ->
+    type  = @type
+    name  = @name
+
+    if type == 'Geo' && !options.index
+      index       = {}
+      index[name] = '2d'
+      options.index = index
 
     if options.index
       if options.index == true
-        @owner.index(name)
+        @owner.index(@name)
       else
         @owner.index(options.index)
 
@@ -147,12 +109,12 @@ class Tower.Model.Attribute
 
   defaultValue: (record) ->
     _default = @_default
-    
+
     if _.isArray(_default)
       _default.concat()
     else if _.isHash(_default)
       _.extend({}, _default)
-    else if typeof(_default) == "function"
+    else if typeof(_default) == 'function'
       _default.call(record)
     else
       _default
@@ -165,9 +127,9 @@ class Tower.Model.Attribute
 
   code: (type, value, binding) ->
     switch typeof type
-      when "string"
+      when 'string'
         binding[type].call binding[type], value
-      when "function"
+      when 'function'
         type.call binding, value
       else
         value

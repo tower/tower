@@ -3,10 +3,10 @@ Tower.Model.Scopes =
   ClassMethods:
     # Define a named scope on the model class.
     #
-    # @example All users with firstName starting with the letter "a"
+    # @example All users with firstName starting with the letter 'a'
     #   class App.User extends Tower.Model
-    #     @field "firstName"
-    #     @scope "letterA", @where(firstName: /^a/)
+    #     @field 'firstName'
+    #     @scope 'letterA', @where(firstName: /^a/)
     #
     #   App.User.letterA().all()
     #
@@ -17,27 +17,28 @@ Tower.Model.Scopes =
     scope: (name, scope) ->
       scope   = if scope instanceof Tower.Model.Scope then scope else @where(scope)
       @[name] = ->
-        @scoped().where(scope.criteria)
+        @scoped().where(scope.cursor)
 
-    # Returns a {Tower.Model.Scope} with default criteria for the model class.
+    # Returns a {Tower.Model.Scope} with default cursor for the model class.
     #
     # @return [Tower.Model.Scope]
     scoped: (options) ->
-      criteria      = @criteria(options)
+      cursor        = @cursor(options)
       defaultScope  = @defaults().scope
       if defaultScope
-        defaultScope.where(criteria)
+        defaultScope.where(cursor)
       else
-        new Tower.Model.Scope(criteria)
+        new Tower.Model.Scope(cursor)
 
-    # Return a {Tower.Model.Criteria} to be used in building a query.
+    # Return a {Tower.Model.Cursor} to be used in building a query.
     #
-    # @return [Tower.Model.Criteria]
-    criteria: (options = {}) ->
+    # @return [Tower.Model.Cursor]
+    cursor: (options = {}) ->
       options.model = @
-      criteria = new Tower.Model.Criteria(options)
-      criteria.where(type: @name) if @baseClass().name != @name
-      criteria
+      cursor = Tower.Model.Cursor.create()
+      cursor.make(options)
+      cursor.where(type: @className()) if @baseClass().className() != @className()
+      cursor
 
 for key in Tower.Model.Scope.queryMethods
   do (key) ->

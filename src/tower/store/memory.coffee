@@ -9,19 +9,25 @@ class Tower.Store.Memory extends Tower.Store
 
     callback()
 
-  constructor: (options) ->
-    super(options)
+  init: (options) ->
+    @_super arguments...
+    
     @initialize()
 
   initialize: ->
     @constructor.stores().push @
 
     @records  = {}
-    @lastId   = 0
+    @lastId   = 1
+    
+    Ember.set(@, 'batch', new Tower.Store.Batch)
 
   clean: ->
     @records  = {}
-    @lastId   = 0
+    @lastId   = 1
+    
+  commit: ->
+    Ember.get(@, 'batch').commit()
 
 require './memory/finders'
 require './memory/persistence'

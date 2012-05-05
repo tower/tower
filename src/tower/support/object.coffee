@@ -63,7 +63,7 @@ Tower.Support.Object =
     object
 
   defineProperty: (object, key, options = {}) ->
-    Object.defineProperty object, key, options
+    Object.defineProperty object, key, options if Object.defineProperty
 
   functionName: (fn) ->
     return fn.__name__ if fn.__name__
@@ -72,19 +72,30 @@ Tower.Support.Object =
 
   castArray: (object) ->
     if _.isArray(object) then object else [object]
+    
+  copy: (object) ->
+    if _.isArray(object)
+      object.concat()
+    else if _.isHash(object)
+      _.extend({}, object)
+    else
+      Object.create(object)
+      
+  copyArray: (object) ->
+    if object then object.concat() else []
+    
+  copyObject: (object) ->
+    if object then _.clone(object) else {}
 
   # @todo
   isA: (object, isa) ->
-
-  isHash: (object) ->
-    @isObject(object) && !(@isFunction(object) || @isArray(object) || _.isDate(object) || _.isRegExp(object))
 
   # If the class is a direct instance of Object,
   # and not an instance of a subclass of Object, then this is true.
   #
   # @return [Boolean]
-  isBaseObject: (object) ->
-    object && object.constructor && object.constructor.name == "Object"
+  isHash: (object) ->
+    object && object.constructor == Object
 
   # A more robust implementation of `typeof`.
   #
@@ -194,5 +205,25 @@ Tower.Support.Object =
       to[property] = from[property] unless from[property] == undefined
       delete from[property]
     to
+    
+  isEmptyObject: (object) ->
+    for name of object
+      return false  if object.hasOwnProperty(name)
+    true
+    
+  hasDefinedProperties: (object) ->
+    for name of object
+      return true  if object.hasOwnProperty(name) and object[name]
+    false
+    
+  getNestedAttribute: (object, key) ->
+    parts = key.split('.')
+    return Ember.get(object, key) if parts.length == 1
+    
+    for part in parts
+      object = Ember.get(object, part) # object[key]
+      break unless object
+        
+    object
 
 module.exports = Tower.Support.Object

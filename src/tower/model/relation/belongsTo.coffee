@@ -1,34 +1,29 @@
 class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
-  constructor: (owner, name, options = {}) ->
-    super(owner, name, options)
+  init: (owner, name, options = {}) ->
+    @_super arguments...
 
     @foreignKey = "#{name}Id"
-    owner.field @foreignKey, type: "Id"
+    
+    owner.field(@foreignKey, type: "Id")
 
     if @polymorphic
       @foreignType = "#{name}Type"
-      owner.field @foreignType, type: "String"
+      owner.field(@foreignType, type: 'String')
 
     owner.prototype[name] = ->
       @relation(name)
 
-    owner.prototype["build#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
-      @buildRelation(name, attributes, callback)
+class Tower.Model.Relation.BelongsTo.Cursor extends Tower.Model.Relation.Cursor
+  isBelongsTo: true
+  # need to do something here about Reflection
 
-    owner.prototype["create#{Tower.Support.String.camelize(name)}"] = (attributes, callback) ->
-      @createRelation(name, attributes, callback)
+  toCursor: ->
+    cursor  = super
+    relation  = @relation
 
-  class @Criteria extends Tower.Model.Relation.Criteria
-    isBelongsTo: true
-    # need to do something here about Reflection
+    # @todo shouldn't have to do $in here...
+    cursor.where(id: $in: [@owner.get(relation.foreignKey)])
 
-    toCriteria: ->
-      criteria  = super
-      relation  = @relation
-
-      # @todo shouldn't have to do $in here...
-      criteria.where(id: $in: [@owner.get(relation.foreignKey)])
-
-      criteria
+    cursor
 
 module.exports = Tower.Model.Relation.BelongsTo

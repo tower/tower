@@ -25,7 +25,9 @@ class Tower.Model.Relation extends Tower.Class
   #   otherwise it's `"#{singularTargetName}Count"`.
   #
   # @see Tower.Model.Relations.ClassMethods#hasMany
-  constructor: (owner, name, options = {}) ->
+  init: (owner, name, options = {}) ->
+    @_super()
+    
     @[key] = value for key, value of options
 
     @owner              = owner
@@ -38,57 +40,77 @@ class Tower.Model.Relation extends Tower.Class
     name                = @name
     # @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
     @type               = options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name))
-    @ownerType          = Tower.namespaced(owner.name)
+    @ownerType          = Tower.namespaced(owner.className())
     @dependent        ||= false
     @counterCache     ||= false
-    @idCache            = false unless @hasOwnProperty("idCache")
-    @readonly           = false unless @hasOwnProperty("readonly")
-    @validate           = false unless @hasOwnProperty("validate")
-    @autosave           = false unless @hasOwnProperty("autosave")
-    @touch              = false unless @hasOwnProperty("touch")
+    @idCache            = false unless @hasOwnProperty('idCache')
+    @readonly           = false unless @hasOwnProperty('readonly')
+    @validate           = false unless @hasOwnProperty('validate')
+    @autosave           = false unless @hasOwnProperty('autosave')
+    @touch              = false unless @hasOwnProperty('touch')
     @inverseOf        ||= undefined
-    @polymorphic        = options.hasOwnProperty("as") || !!options.polymorphic
-    @default            = false unless @hasOwnProperty("default")
-    @singularName       = Tower.Support.String.camelize(owner.name, true)
-    @pluralName         = Tower.Support.String.pluralize(owner.name) # collectionName?
+    @polymorphic        = options.hasOwnProperty('as') || !!options.polymorphic
+    @default            = false unless @hasOwnProperty('default')
+    @singularName       = Tower.Support.String.camelize(owner.className(), true)
+    @pluralName         = Tower.Support.String.pluralize(owner.className()) # collectionName?
     @singularTargetName = Tower.Support.String.singularize(name)
     @pluralTargetName   = Tower.Support.String.pluralize(name)
     @targetType         = @type
-
     # hasMany "posts", foreignKey: "postId", idCacheKey: "postIds"
     unless @foreignKey
       if @as
         @foreignKey = "#{@as}Id"
       else
-        @foreignKey = "#{@singularName}Id"
+        if @className() == 'BelongsTo'
+          @foreignKey = "#{@singularTargetName}Id"
+        else
+          @foreignKey = "#{@singularName}Id"
 
     @foreignType ||= "#{@as}Type" if @polymorphic
 
     if @idCache
-      if typeof @idCache == "string"
+      if typeof @idCache == 'string'
         @idCacheKey = @idCache
         @idCache    = true
       else
         @idCacheKey = "#{@singularTargetName}Ids"
 
-      @owner.field @idCacheKey, type: "Array", default: []
+      @owner.field @idCacheKey, type: 'Array', default: []
 
     if @counterCache
-      if typeof @counterCache == "string"
+      if typeof @counterCache == 'string'
         @counterCacheKey  = @counterCache
         @counterCache     = true
       else
         @counterCacheKey  = "#{@singularTargetName}Count"
 
-      @owner.field @counterCacheKey, type: "Integer", default: 0
+      @owner.field @counterCacheKey, type: 'Integer', default: 0
 
-    do (name) ->
-      owner.prototype[name] = ->
-        @relation(name)
+    @_defineRelation(name)
+      #owner.prototype.reopen ->
+      #  @relation(name)
+
+  _defineRelation: (name) ->
+    object = {}
+    
+    object[name] = Ember.computed((key, value) ->
+      if arguments.length is 2
+        data = Ember.get(@, 'data')
+        data.set(key, value)
+      else
+        data = Ember.get(@, 'data')
+        value = data.get(key)
+        value ||= @constructor.relation(name).scoped(@)
+        value
+    ).property('data').cacheable()
+    
+    @owner.reopen(object)
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
-    new Tower.Model.Scope(new @constructor.Criteria(model: @klass(), owner: record, relation: @))
+    cursor = @constructor.Cursor.create()
+    cursor.make(model: @klass(), owner: record, relation: @)
+    new Tower.Model.Scope(cursor)
 
   # @return [Function]
   targetKlass: ->
@@ -119,18 +141,25 @@ class Tower.Model.Relation extends Tower.Class
 
     null
 
-class Tower.Model.Relation.Criteria extends Tower.Model.Criteria
+  _setForeignKey: ->
+
+  _setForeignType: ->
+
+class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
   isConstructable: ->
     !!!@relation.polymorphic
 
-  constructor: (options = {}) ->
-    super(options)
+  init: (options = {}) ->
+    @_super arguments...
+
     @owner        = options.owner
     @relation     = options.relation
     @records      = []
 
   clone: ->
-    (new @constructor(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)).merge(@)
+    cursor = @constructor.create()
+    cursor.make(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)
+    (cursor).merge(@)
 
   setInverseInstance: (record) ->
     if record && @invertibleFor(record)
@@ -143,12 +172,12 @@ class Tower.Model.Relation.Criteria extends Tower.Model.Criteria
   inverse: (record) ->
 
   _teardown: ->
-    _.teardown(@, "relation", "records", "owner", "model", "criteria")
+    _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
 
-for phase in ["Before", "After"]
-  for action in ["Create", "Update", "Destroy", "Find"]
+for phase in ['Before', 'After']
+  for action in ['Insert', 'Update', 'Destroy', 'Find']
     do (phase, action) =>
-      Tower.Model.Relation.Criteria::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
+      Tower.Model.Relation.Cursor::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
         @store["run#{phase}#{action}"](@, done)
 
 require './relation/belongsTo'

@@ -16,6 +16,7 @@ _.mixin Tower.Support.String
 try _.string.isBlank = Tower.Support.Object
 
 require './support/callbacks'
+require './support/shared'
 require './support/class'
 require './support/eventEmitter'
 require './support/i18n'

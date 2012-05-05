@@ -3,12 +3,12 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
     super
 
     @validate = switch name
-      when "min" then @validateMinimum
-      when "max" then @validateMaximum
-      when "gte" then @validateGreaterThanOrEqual
-      when "gt" then @validateGreaterThan
-      when "lte" then @validateLessThanOrEqual
-      when "lt" then @validateLessThan
+      when 'min' then @validateMinimum
+      when 'max' then @validateMaximum
+      when 'gte' then @validateGreaterThanOrEqual
+      when 'gt' then @validateGreaterThan
+      when 'lte' then @validateLessThanOrEqual
+      when 'lt' then @validateLessThan
       else
         @validateLength
 
@@ -19,7 +19,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.minimum", attribute: attribute, value: @value),
+        Tower.t('model.errors.minimum', attribute: attribute, value: @value),
         callback
       )
     @success(callback)
@@ -31,7 +31,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.minimum", attribute: attribute, value: @value),
+        Tower.t('model.errors.minimum', attribute: attribute, value: @value),
         callback
       )
     @success(callback)
@@ -43,7 +43,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.minimum", attribute: attribute, value: @value),
+        Tower.t('model.errors.minimum', attribute: attribute, value: @value),
         callback
       )
     @success(callback)
@@ -55,7 +55,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.minimum", attribute: attribute, value: @value),
+        Tower.t('model.errors.minimum', attribute: attribute, value: @value),
         callback
       )
     @success(callback)
@@ -67,7 +67,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.minimum", attribute: attribute, value: @value),
+        Tower.t('model.errors.minimum', attribute: attribute, value: @value),
         callback
       )
     @success(callback)
@@ -80,7 +80,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.maximum", attribute: attribute, value: @value),
+        Tower.t('model.errors.maximum', attribute: attribute, value: @value),
         callback
       )
     @success(callback)
@@ -92,7 +92,7 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         record,
         attribute,
         errors,
-        Tower.t("model.errors.length", attribute: attribute, value: @value)
+        Tower.t('model.errors.length', attribute: attribute, value: @value)
         callback
       )
     @success(callback)

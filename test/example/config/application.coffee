@@ -17,4 +17,4 @@ class App extends Tower.Application
     
     @use Tower.Middleware.Router
 
-module.exports = global.App = new App
+module.exports = App

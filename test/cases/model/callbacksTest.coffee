@@ -1,7 +1,7 @@
 user      = null
 
 describeWith = (store) ->
-  describe "Tower.Model.Callbacks (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Callbacks (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       App.User.store(new store(name: "users", type: "App.User"))
       

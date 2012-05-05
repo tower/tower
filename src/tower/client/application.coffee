@@ -1,6 +1,3 @@
-# include underscore.string mixins
-_.mixin(_.string.exports())
-
 # tmp hack, make all links run through history.pushState
 # $("a").click ->
 #  History.pushState null, null, $(this).attr("href")
@@ -8,6 +5,11 @@ _.mixin(_.string.exports())
 #  false
 
 class Tower.Application extends Tower.Engine
+  @_callbacks: {}
+  
+  @extended: ->
+    global[@className()] = new @
+
   @before 'initialize', 'setDefaults'
 
   setDefaults: ->
@@ -43,7 +45,9 @@ class Tower.Application extends Tower.Engine
     #@server.stack.length = 0 # remove middleware
     Tower.Route.reload()
 
-  constructor: (middlewares = []) ->
+  init: (middlewares = []) ->
+    @_super arguments...
+    
     throw new Error("Already initialized application") if Tower.Application._instance
     Tower.Application._instance = @
     Tower.Application.middleware ||= []
@@ -51,7 +55,7 @@ class Tower.Application extends Tower.Engine
     @io       = global["io"]
     @History  = global["History"]
     @stack    = []
-
+    
     @use(middleware) for middleware in middlewares
 
   initialize: ->

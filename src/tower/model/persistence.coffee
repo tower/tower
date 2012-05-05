@@ -1,6 +1,11 @@
 # @mixin
 Tower.Model.Persistence =
   ClassMethods:
+    # Construct a new instance of the model
+    new: Ember.Object.create
+    # Construct a new instance of the model
+    build: Ember.Object.create
+
     # Define or get the data store for this model.
     #
     # @example Define the store from a store class
@@ -9,7 +14,7 @@ Tower.Model.Persistence =
     #
     # @example Define the store from an object (uses {Tower.Model.default('store')})
     #   class App.Person extends Tower.Model
-    #     @store name: "people", type: "Person"
+    #     @store name: 'people', type: 'Person'
     #
     # @example Return the store
     #   store = App.User.store()
@@ -23,16 +28,18 @@ Tower.Model.Persistence =
       return store if arguments.length == 0 && store
 
       defaultStore = @default('store') || Tower.Store.Memory
+      
+      type = typeof value 
 
-      if typeof value == "function"
-        store   = new value(name: @metadata().namePlural, type: Tower.namespaced(@name))
-      else if typeof value == "object"
-        store ||= new defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
-        _.extend store, value
+      if type == 'function'
+        store   = new value(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
+      else if type == 'object'
+        store ||= new defaultStore(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
+        _.extend(store, value)
       else if value
         store   = value
 
-      store ||= new defaultStore(name: @metadata().namePlural, type: Tower.namespaced(@name))
+      store ||= new defaultStore(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
 
       metadata.store = store
 
@@ -45,19 +52,25 @@ Tower.Model.Persistence =
       @store().load(records)
 
   InstanceMethods:
+    store: Ember.computed ->
+      @constructor.store()
+
     # Create or update the record.
     #
     # @example Default save
-    #   user.save -> console.log "saved"
+    #   user.save -> console.log 'saved'
     #
     # @example Save without validating
-    #   user.save validate: false, -> console.log "saved"
+    #   user.save validate: false, -> console.log 'saved'
     #
     # @return [void] Requires a callback.
     save: (options, callback) ->
-      throw new Error("Record is read only") if @readOnly
+      @set('isSaving', true)
+      @get('transaction').adopt(@)
+      
+      throw new Error('Record is read only') if @readOnly
 
-      if typeof options == "function"
+      if typeof options == 'function'
         callback  = options
         options   = {}
       options ||= {}
@@ -65,14 +78,14 @@ Tower.Model.Persistence =
       unless options.validate == false
         @validate (error) =>
           if error
+            @set('isValid', false)
             # something is wrong here...
-            callback.call @, null, false if callback
+            callback.call(@, null) if callback
           else
-            @_save callback
+            @set('isValid', true)
+            @_save(callback)
       else
-        @_save callback
-
-      undefined
+        @_save(callback)
 
     # Set attributes and save the model, all at once.
     #
@@ -81,8 +94,8 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     updateAttributes: (attributes, callback) ->
-      @set(attributes)
-      @_update(attributes, callback)
+      @setProperties(attributes)
+      @save(callback)
 
     # Destroy this record, if it is persistent.
     #
@@ -90,32 +103,15 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     destroy: (callback) ->
-      if @isNew()
-        callback.call @, null if callback
+      if @get('isNew')
+        callback.call(@, null if callback)
       else
-        @_destroy callback
+        @_destroy(callback)
+
       @
-
-    # Check if this record has been saved to the database.
-    #
-    # @return [Boolean]
-    isPersisted: ->
-      !!(@persistent)# && @attributes.hasOwnProperty("id") && @attributes.id != null && @attributes.id != undefined)
-
-    # Check if this record has not yet been saved to the database.
-    #
-    # @return [Boolean]
-    isNew: ->
-      !!!@isPersisted()
 
     # @todo Haven't implemented
     reload: ->
-
-    # Returns the data store associated with this model's class.
-    #
-    # @return [Tower.Store]
-    store: ->
-      @constructor.store()
 
     # Implementation of the {#save} method.
     #
@@ -125,13 +121,13 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     _save: (callback) ->
-      @runCallbacks "save", (block) =>
-        complete = @_callback(block, callback)
+      @runCallbacks 'save', (block) =>
+        complete = Tower.callbackChain(block, callback)
 
-        if @isNew()
+        if @get('isNew')
           @_create(complete)
         else
-          @_update(@toUpdates(), complete)
+          @_update(complete)
 
       undefined
 
@@ -143,15 +139,17 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     _create: (callback) ->
-      @runCallbacks "create", (block) =>
-        complete = @_callback(block, callback)
+      @runCallbacks 'create', (block) =>
+        complete = Tower.callbackChain(block, callback)
 
-        @constructor.scoped(instantiate: false).create @, (error) =>
+        @constructor.scoped(instantiate: false).insert @, (error) =>
           throw error if error && !callback
+          
+          @set('isSaving', false)
 
           unless error
-            @_resetChanges()
-            @persistent = true
+            @set('isNew', false)
+            @get('data').commit()
 
           complete.call(@, error)
 
@@ -165,16 +163,18 @@ Tower.Model.Persistence =
     # @param [Function] callback
     #
     # @return [void] Requires a callback.
-    _update: (updates, callback) ->
-      @runCallbacks "update", (block) =>
-        complete = @_callback(block, callback)
-        
-        @constructor.scoped(instantiate: false).update @get("id"), updates, (error) =>
-          throw error if error && !callback
+    _update: (callback) ->
+      @runCallbacks 'update', (block) =>
+        complete = Tower.callbackChain(block, callback)
 
+        @constructor.scoped(instantiate: false).update @get('id'), @, (error) =>
+          throw error if error && !callback
+          
+          @set('isSaving', false)
+          
           unless error
-            @_resetChanges()
-            @persistent = true
+            @set('isNew', false)
+            @get('data').commit()
 
           complete.call(@, error)
 
@@ -188,19 +188,17 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     _destroy: (callback) ->
-      id = @get('id')
-
-      @runCallbacks "destroy", (block) =>
-        complete = @_callback(block, callback)
+      @runCallbacks 'destroy', (block) =>
+        complete = Tower.callbackChain(block, callback)
 
         @constructor.scoped(instantiate: false).destroy @, (error) =>
           throw error if error && !callback
 
           unless error
             @destroyRelations (error) =>
-              @persistent = false
-              @_resetChanges()
-              delete @attributes.id
+              @set('isNew', false)
+              @set('isDeleted', true)
+              @set('id', undefined)
               complete.call(@, error)
           else
             complete.call(@, error)
