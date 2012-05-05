@@ -65,6 +65,6 @@ Tower.Support.String =
     found
     
   parameterize: (string) ->
-    Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "-").replace(/^-+|-+$/g, '')
+    Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, '')
 
 module.exports = Tower.Support.String
