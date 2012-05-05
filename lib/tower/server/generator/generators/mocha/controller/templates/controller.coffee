@@ -4,7 +4,7 @@ describe '<%= model.classNamePlural %>Controller', ->
   url = undefined
   
   beforeEach (done) ->
-    controller = <%= project.namespace %>.<%= model.classNamePlural %>Controller.create()
+    controller = <%= app.namespace %>.<%= model.classNamePlural %>Controller.create()
     agent.controller = controller
     Tower.start(done)
     
@@ -14,19 +14,19 @@ describe '<%= model.classNamePlural %>Controller', ->
     
   describe 'routes', ->
     test 'index', ->
-      assert.equal urlFor(<%= project.namespace %>.<%= model.className %>), "/<%= model.pluralName %>"
+      assert.equal urlFor(<%= app.namespace %>.<%= model.className %>), "/<%= model.namePlural %>"
         
     test 'new', ->
-      <%= model.name %> = new <%= project.namespace %>.<%= model.className %>
-      assert.equal urlFor(<%= model.name %>, action: 'new'), "/<%= model.pluralName %>/new"
+      <%= model.name %> = new <%= app.namespace %>.<%= model.className %>
+      assert.equal urlFor(<%= model.name %>, action: 'new'), "/<%= model.namePlural %>/new"
 
     test 'show', ->
-      <%= model.name %> = new <%= project.namespace %>.<%= model.className %>(id: 1)
-      assert.equal urlFor(<%= model.name %>), "/<%= model.pluralName %>/#{<%= model.name %>.get('id')}"
+      <%= model.name %> = new <%= app.namespace %>.<%= model.className %>(id: 1)
+      assert.equal urlFor(<%= model.name %>), "/<%= model.namePlural %>/#{<%= model.name %>.get('id')}"
 
     test 'edit', ->
-      <%= model.name %> = new <%= project.namespace %>.<%= model.className %>(id: 1)
-      assert.equal urlFor(<%= model.name %>, action: 'edit'), "/<%= model.pluralName %>/#{<%= model.name %>.get('id')}/edit"
+      <%= model.name %> = new <%= app.namespace %>.<%= model.className %>(id: 1)
+      assert.equal urlFor(<%= model.name %>, action: 'edit'), "/<%= model.namePlural %>/#{<%= model.name %>.get('id')}/edit"
   
   describe '#index', ->  
     beforeEach (done) ->
@@ -35,7 +35,7 @@ describe '<%= model.classNamePlural %>Controller', ->
         done()
     
     test 'render json', (done) ->
-      get urlFor(<%= project.namespace %>.<%= model.className %>), format: "json", (request) ->
+      get urlFor(<%= app.namespace %>.<%= model.className %>), format: "json", (request) ->
         assert.equal @headers["Content-Type"], 'application/json'
         
         done()
@@ -44,13 +44,13 @@ describe '<%= model.classNamePlural %>Controller', ->
   
   describe '#create', ->
     beforeEach ->
-      url = urlFor(<%= project.namespace %>.<%= model.className %>)
+      url = urlFor(<%= app.namespace %>.<%= model.className %>)
 
     test 'params', (done) ->
       params = {}
       
       post url, format: "json", params: params, (response) ->
-        <%= project.namespace %>.<%= model.className %>.count (error, count) =>
+        <%= app.namespace %>.<%= model.className %>.count (error, count) =>
           assert.equal count, 1
           done()
   

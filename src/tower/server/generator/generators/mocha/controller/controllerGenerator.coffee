@@ -3,6 +3,6 @@ class Tower.Generator.Mocha.ControllerGenerator extends Tower.Generator
 
   run: ->
     @directory "test/controllers"
-    @template "controllers.coffee", "test/controllers/#{@model.name}Test.coffee", ->
+    @template "controller.coffee", "test/controllers/#{@model.namePlural}ControllerTest.coffee", ->
 
 module.exports = Tower.Generator.Mocha.ControllerGenerator

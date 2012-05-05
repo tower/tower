@@ -10,5 +10,6 @@ class Tower.Generator.ControllerGenerator extends Tower.Generator
     @locale /links: */, """\n    #{@model.namePlural}: "#{@model.humanName}"
 """
     @asset "/app/client/controllers/#{@controller.directory}/#{@controller.name}".replace(/\/+/g, "/")
+    @generate "mocha:controller"
 
 module.exports = Tower.Generator.ControllerGenerator
