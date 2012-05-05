@@ -58,7 +58,7 @@ describe 'Tower.Support.Url', ->
     post = null
     
     beforeEach ->
-      post = App.Post.create(id: 10)
+      post = App.Post.build(id: 10)
       
     describe 'strings', ->
       test 'urlFor(post, params: title: "Node")', ->

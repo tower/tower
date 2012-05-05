@@ -14,6 +14,7 @@ class Tower.Model.Scope
   @persistenceMethods: [
     'insert'
     'update'
+    'create'
     'destroy'
     'build'
   ]
@@ -152,6 +153,8 @@ class Tower.Model.Scope
     cursor.addData(args)
     
     cursor.insert(callback)
+    
+  create: @::insert
 
   # Updates records based on the scope's cursor.
   #

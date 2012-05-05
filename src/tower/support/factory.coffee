@@ -7,10 +7,10 @@ class Tower.Factory
   @define: (name, options, callback) ->
     @definitions[name] = new Tower.Factory(name, options, callback)
   
-  @create: (name, options) ->
+  @create: (name, options, callback) ->
     factory = Tower.Factory.definitions[name]
     throw new Error("Factory '#{name}' doesn't exist.") unless factory
-    factory.create(options)
+    factory.create(options, callback)
     
   constructor: (name, options = {}, callback) ->
     return Tower.Factory.create(name, options) unless @constructor == Tower.Factory
@@ -44,8 +44,14 @@ class Tower.Factory
     
     @createAttributes overrides, (error, attributes) =>
       klass         = @toClass()
-      result        = new klass(attributes)
-      callback.call @, error, result if callback
+      result        = klass.build()
+      result.setProperties(attributes)
+      if result.save
+        result.save =>
+          callback.call @, error, result if callback
+      else
+        callback.call @, error, result if callback
+        
       result
       
   createAttributes: (overrides, callback) ->
