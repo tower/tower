@@ -110,6 +110,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
 
       @inside "vendor", ->
         @inside "javascripts", ->
+          twitterBootstrapCommit = "aaabe2a46c64e7d9ffd5735dba2db4f3cf9906f5"
+          
           # https://github.com/phiggins42/has.js
           # https://github.com/eriwen/javascript-stacktrace
           # https://github.com/madrobby/keymaster
@@ -132,76 +134,100 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "http://sinonjs.org/releases/sinon-1.3.1.js", "sinon.js"
           @get "https://raw.github.com/logicalparadox/chai/master/chai.js", "chai.js"
           @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
-          @get "https://raw.github.com/emberjs/starter-kit/master/js/libs/ember-0.9.6.js", "ember.js"
+          @get "https://raw.github.com/emberjs/starter-kit/4c946d0ab2d13976bc22ca0c1f5ec8d3fbcd192b/js/libs/ember-0.9.7.1.js", "ember.js"
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js", "prettify.js"
           @get "https://raw.github.com/Marak/Faker.js/master/Faker.js", "faker.js"
           @get "https://raw.github.com/viatropos/factory.js/master/lib/factory.js", "factory.js"
           @get "http://html5shiv.googlecode.com/svn/trunk/html5.js", "html5.js"
           @directory "bootstrap"
-          @get "https://raw.github.com/twitter/bootstrap/master/js/#{javascript}", "bootstrap/#{javascript}" for javascript in [
-            "bootstrap-alert.js",
-            "bootstrap-button.js",
-            "bootstrap-carousel.js",
-            "bootstrap-collapse.js",
-            "bootstrap-dropdown.js",
-            "bootstrap-modal.js",
-            "bootstrap-popover.js",
-            "bootstrap-scrollspy.js",
-            "bootstrap-tab.js",
-            "bootstrap-tooltip.js",
-            "bootstrap-transition.js",
-            "bootstrap-typeahead.js"
+          @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/js/#{javascript}.js", "bootstrap/#{javascript}" for javascript in [
+            "bootstrap-alert"
+            "bootstrap-button"
+            "bootstrap-carousel"
+            "bootstrap-collapse"
+            "bootstrap-dropdown"
+            "bootstrap-modal"
+            "bootstrap-popover"
+            "bootstrap-scrollspy"
+            "bootstrap-tab"
+            "bootstrap-tooltip"
+            "bootstrap-transition"
+            "bootstrap-typeahead"
           ]
         @inside "stylesheets", ->
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css", "prettify.css"
           @get "https://raw.github.com/visionmedia/mocha/master/mocha.css", "mocha.css"
           @directory "bootstrap"
-          @get "https://raw.github.com/twitter/bootstrap/master/less/#{stylesheet}.less", "bootstrap/#{stylesheet}.less" for stylesheet in [
-            "accordion",
-            "alerts",
-            "badges",
-            "bootstrap",
-            "breadcrumbs",
-            "button-groups",
-            "buttons",
-            "carousel",
-            "close",
-            "code",
-            "component-animations",
-            "dropdowns",
-            "forms",
-            "grid",
-            "hero-unit",
-            "labels",
-            "layouts",
-            "mixins",
-            "modals",
-            "navbar",
-            "navs",
-            "pager",
-            "pagination",
-            "popovers",
-            "progress-bars",
-            "reset",
-            "responsive",
-            "scaffolding",
-            "sprites",
-            "tables",
-            "thumbnails",
-            "tooltip",
-            "type",
-            "utilities",
-            "variables",
+          ###
+          adm   = require("adm-zip")
+          agent = require("superagent")
+          fs    = require("fs")
+          tmp   = "tmp/twitter-bootstrap.zip"
+          url   = "https://github.com/twitter/bootstrap/zipball/v2.0.3"
+          
+          agent.get url, (response) ->
+            fs.writeFileSync(tmp, response.text)
+            zip         = new adm(tmp)
+            zipEntries  = zip.getEntries()
+            
+            zipEntries.forEach (zipEntry) ->
+              consolelog zipEntry.toString()
+          ###
+          @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/less/#{stylesheet}.less", "bootstrap/#{stylesheet}.less" for stylesheet in [
+            "accordion"
+            "alerts"
+            "bootstrap"
+            "breadcrumbs"
+            "button-groups"
+            "buttons"
+            "carousel"
+            "close"
+            "code"
+            "component-animations"
+            "dropdowns"
+            "forms"
+            "grid"
+            "hero-unit"
+            "labels-badges"
+            "layouts"
+            "mixins"
+            "modals"
+            "navbar"
+            "navs"
+            "pager"
+            "pagination"
+            "popovers"
+            "progress-bars"
+            "reset"
+            "responsive-1200px-min"
+            "responsive-767px-max"
+            "responsive-768px-979px"
+            "responsive-navbar"
+            "responsive-utilities"
+            "responsive"
+            "scaffolding"
+            "sprites"
+            "tables"
+            "thumbnails"
+            "tooltip"
+            "type"
+            "utilities"
+            "variables"
             "wells"
           ]
       @inside "public/images", ->
-        @get "https://github.com/twitter/bootstrap/blob/master/img/glyphicons-halflings.png", "glyphicons-halflings.png"
-        @get "https://github.com/twitter/bootstrap/blob/master/img/glyphicons-halflings-white.png", "glyphicons-halflings-white.png"
-
+        @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/img/glyphicons-halflings.png", "glyphicons-halflings.png"
+        @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/img/glyphicons-halflings-white.png", "glyphicons-halflings-white.png"
+        
       @inside "public/swfs", ->
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMainInsecure.swf", "WebSocketMainInsecure.swf"
 
       @template "watch", "Watchfile"
+      
+      # github wiki
+      @inside "wiki", ->
+        @template "home"
+        @template "_sidebar"
 
 module.exports = Tower.Generator.AppGenerator

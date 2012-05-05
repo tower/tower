@@ -3,8 +3,6 @@ if typeof Ember != 'undefined'
     __extend: (child) ->
       object = Ember.Object.extend.apply @
       object.__name__ = child.name
-      #Tower.Class.extend.call object, @
-      #object.reopenClass(coreMixins)
       @extended.call object if @extended
       object
 

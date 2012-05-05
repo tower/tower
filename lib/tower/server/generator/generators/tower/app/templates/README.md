@@ -23,7 +23,7 @@ Read up on [testing Tower.js apps](http://towerjs.org/guides/testing).
 
 ## Deploy
 
-Read [How to deploy Tower Apps to Heroku](http://towerjs.org/guides/deployment#heroku).
+[How to deploy Tower Apps to Heroku](http://towerjs.org/guides/deployment#heroku).
 
 ## Documentation
 

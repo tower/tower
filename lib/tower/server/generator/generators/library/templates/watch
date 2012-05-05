@@ -1,7 +1,5 @@
 require('design.io').extension('watchfile')
 
-async = require('async')
-File  = require('pathfinder').File
 mint  = require('mint')
 
 require("design.io-stylesheets") /(app\/client|lib\/stylesheets|vendor\/stylesheets)/
