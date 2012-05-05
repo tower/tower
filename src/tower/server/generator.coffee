@@ -67,5 +67,7 @@ require './generator/generators/tower/assets/assetsGenerator'
 require './generator/generators/tower/mailer/mailerGenerator'
 require './generator/generators/tower/scaffold/scaffoldGenerator'
 require './generator/generators/mocha/model/modelGenerator'
+require './generator/generators/mocha/controller/controllerGenerator'
+require './generator/generators/library/libraryGenerator'
 
 module.exports = Tower.Generator

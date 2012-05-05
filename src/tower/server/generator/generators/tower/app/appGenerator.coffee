@@ -11,6 +11,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
     app
 
   run: ->
+    twitterBootstrapCommit = "aaabe2a46c64e7d9ffd5735dba2db4f3cf9906f5"
+      
     @inside @app.name, '.', ->
       @template "gitignore", ".gitignore" unless @program.skipGitfile
       @template "npmignore", ".npmignore"
@@ -110,8 +112,6 @@ class Tower.Generator.AppGenerator extends Tower.Generator
 
       @inside "vendor", ->
         @inside "javascripts", ->
-          twitterBootstrapCommit = "aaabe2a46c64e7d9ffd5735dba2db4f3cf9906f5"
-          
           # https://github.com/phiggins42/has.js
           # https://github.com/eriwen/javascript-stacktrace
           # https://github.com/madrobby/keymaster
@@ -140,7 +140,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/viatropos/factory.js/master/lib/factory.js", "factory.js"
           @get "http://html5shiv.googlecode.com/svn/trunk/html5.js", "html5.js"
           @directory "bootstrap"
-          @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/js/#{javascript}.js", "bootstrap/#{javascript}" for javascript in [
+          @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/js/#{javascript}.js", "bootstrap/#{javascript}.js" for javascript in [
             "bootstrap-alert"
             "bootstrap-button"
             "bootstrap-carousel"
@@ -227,7 +227,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       
       # github wiki
       @inside "wiki", ->
-        @template "home"
-        @template "_sidebar"
+        @template "home.md"
+        @template "_sidebar.md"
 
 module.exports = Tower.Generator.AppGenerator
