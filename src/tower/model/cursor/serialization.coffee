@@ -74,7 +74,7 @@ Tower.Model.Cursor.Serialization =
   #
   # @return [Tower.Model.Criteria]
   clone: ->
-    clone = @constructor.create()
+    clone = @constructor.create(content: Ember.A([]))
     clone.make(model: @model, instantiate: @instantiate)
     clone.merge(@)
     clone

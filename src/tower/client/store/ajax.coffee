@@ -19,7 +19,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   @toJSON: (record, method, format) ->
     data          = {}
-    data[Tower.Support.String.camelize(record.constructor.name, true)] = record
+    data[Tower.Support.String.camelize(record.constructor.className(), true)] = record
     data._method  = method
     data.format   = format
     JSON.stringify(data)
@@ -76,9 +76,9 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   toJSON: ->
     @constructor.toJSON arguments...
 
-  create: (criteria, callback) ->
+  insert: (criteria, callback) ->
     unless criteria.sync == false
-      super criteria, (error, records) =>
+      @_super criteria, (error, records) =>
         callback.call @, error, records if callback
         @createRequest records, criteria
     else
@@ -86,7 +86,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   update: (updates, criteria, callback) ->
     if criteria.sync == true
-      super updates, criteria, (error, result) =>
+      @_super updates, criteria, (error, result) =>
         callback.call @, error, result if callback
         @updateRequest result, criteria
     else
@@ -94,15 +94,15 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   destroy: (criteria, callback) ->
     unless criteria.sync == false
-      super criteria, (error, result) =>
+      @_super criteria, (error, result) =>
         @destroyRequest result, criteria
         callback.call @, error, result if callback
     else
       super
 
   createRequest: (records, options = {}) ->
-    json = @toJSON(records)
-    Tower.urlFor(records.constructor)
+    json  = @toJSON(records)
+    url   = Tower.urlFor(records.constructor)
     @queue =>
       params =
         url:  url

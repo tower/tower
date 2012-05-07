@@ -6,7 +6,7 @@
  * MIT License.
  * http://towerjs.org/license
  *
- * Date: Wed, 02 May 2012 17:53:33 GMT
+ * Date: Mon, 07 May 2012 21:40:47 GMT
  */
 (function() {
   var Tower, action, coffeescriptMixin, key, method, module, nativeIndexOf, phase, specialProperties, towerMixin, _fn, _fn1, _fn2, _fn3, _fn4, _fn5, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _m, _n, _o, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6,
@@ -166,6 +166,12 @@
     },
     isFloat: function(n) {
       return n === +n && n !== (n | 0);
+    },
+    randomSortOrder: function() {
+      return Math.round(Math.random()) - 0.5;
+    },
+    randomIntBetween: function(min, max) {
+      return min + Math.floor(Math.random() * ((max - min) + 1));
     }
   };
 
@@ -484,7 +490,8 @@
   Tower.Support.RegExp = {
     regexpEscape: function(string) {
       return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    }
+    },
+    regexpUnion: function() {}
   };
 
   Tower.Support.String = {
@@ -492,9 +499,6 @@
     capitalize_rx: /(^|\s)([a-z])/g,
     underscore_rx1: /([A-Z]+)([A-Z][a-z])/g,
     underscore_rx2: /([a-z\d])([A-Z])/g,
-    parameterize: function(string) {
-      return Tower.Support.String.underscore(string).replace("_", "-");
-    },
     constantize: function(string, scope) {
       if (scope == null) {
         scope = global;
@@ -515,18 +519,10 @@
       return string.replace(this.underscore_rx1, '$1_$2').replace(this.underscore_rx2, '$1_$2').replace('-', '_').toLowerCase();
     },
     singularize: function(string) {
-      var len;
-      len = string.length;
-      if (string.substr(len - 3) === 'ies') {
-        return string.substr(0, len - 3) + 'y';
-      } else if (string.substr(len - 1) === 's') {
-        return string.substr(0, len - 1);
-      } else {
-        return string;
-      }
+      var _ref;
+      return (_ref = Tower.modules.inflector).singularize.apply(_ref, arguments);
     },
     pluralize: function(count, string) {
-      var lastLetter, len;
       if (string) {
         if (count === 1) {
           return string;
@@ -534,15 +530,7 @@
       } else {
         string = count;
       }
-      len = string.length;
-      lastLetter = string.substr(len - 1);
-      if (lastLetter === 'y') {
-        return "" + (string.substr(0, len - 1)) + "ies";
-      } else if (lastLetter === 's') {
-        return string;
-      } else {
-        return "" + string + "s";
-      }
+      return Tower.modules.inflector.pluralize(string);
     },
     capitalize: function(string) {
       return string.replace(this.capitalize_rx, function(m, p1, p2) {
@@ -582,272 +570,10 @@
         return _.map(found, iterator, context);
       }
       return found;
+    },
+    parameterize: function(string) {
+      return Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, '');
     }
-  };
-
-  Tower.Support.String.toQueryValue = function(value, negate) {
-    var item, items, result, _i, _len;
-    if (negate == null) {
-      negate = "";
-    }
-    if (_.isArray(value)) {
-      items = [];
-      for (_i = 0, _len = value.length; _i < _len; _i++) {
-        item = value[_i];
-        result = negate;
-        result += item;
-        items.push(result);
-      }
-      result = items.join(",");
-    } else {
-      result = negate;
-      result += value.toString();
-    }
-    result = result.replace(" ", "+").replace(/[#%\"\|<>]/g, function(_) {
-      return encodeURIComponent(_);
-    });
-    return result;
-  };
-
-  Tower.Support.String.toQuery = function(object, schema) {
-    var data, key, negate, param, range, result, set, type, value;
-    if (schema == null) {
-      schema = {};
-    }
-    result = [];
-    for (key in object) {
-      value = object[key];
-      param = "" + key + "=";
-      type = schema[key] || "string";
-      negate = type === "string" ? "-" : "^";
-      if (_.isHash(value)) {
-        data = {};
-        if (value.hasOwnProperty(">=")) {
-          data.min = value[">="];
-        }
-        if (value.hasOwnProperty(">")) {
-          data.min = value[">"];
-        }
-        if (value.hasOwnProperty("<=")) {
-          data.max = value["<="];
-        }
-        if (value.hasOwnProperty("<")) {
-          data.max = value["<"];
-        }
-        if (value.hasOwnProperty("=~")) {
-          data.match = value["=~"];
-        }
-        if (value.hasOwnProperty("!~")) {
-          data.notMatch = value["!~"];
-        }
-        if (value.hasOwnProperty("==")) {
-          data.eq = value["=="];
-        }
-        if (value.hasOwnProperty("!=")) {
-          data.neq = value["!="];
-        }
-        data.range = data.hasOwnProperty("min") || data.hasOwnProperty("max");
-        set = [];
-        if (data.range && !(data.hasOwnProperty("eq") || data.hasOwnProperty("match"))) {
-          range = "";
-          if (data.hasOwnProperty("min")) {
-            range += Tower.Support.String.toQueryValue(data.min);
-          } else {
-            range += "n";
-          }
-          range += "..";
-          if (data.hasOwnProperty("max")) {
-            range += Tower.Support.String.toQueryValue(data.max);
-          } else {
-            range += "n";
-          }
-          set.push(range);
-        }
-        if (data.hasOwnProperty("eq")) {
-          set.push(Tower.Support.String.toQueryValue(data.eq));
-        }
-        if (data.hasOwnProperty("match")) {
-          set.push(Tower.Support.String.toQueryValue(data.match));
-        }
-        if (data.hasOwnProperty("neq")) {
-          set.push(Tower.Support.String.toQueryValue(data.neq, negate));
-        }
-        if (data.hasOwnProperty("notMatch")) {
-          set.push(Tower.Support.String.toQueryValue(data.notMatch, negate));
-        }
-        param += set.join(",");
-      } else {
-        param += Tower.Support.String.toQueryValue(value);
-      }
-      result.push(param);
-    }
-    return result.sort().join("&");
-  };
-
-  Tower.Support.String.extractDomain = function(host, tldLength) {
-    var parts;
-    if (tldLength == null) {
-      tldLength = 1;
-    }
-    if (!this.namedHost(host)) {
-      return null;
-    }
-    parts = host.split('.');
-    return parts.slice(0, (parts.length - 1 - 1 + tldLength) + 1 || 9e9).join(".");
-  };
-
-  Tower.Support.String.extractSubdomains = function(host, tldLength) {
-    var parts;
-    if (tldLength == null) {
-      tldLength = 1;
-    }
-    if (!this.namedHost(host)) {
-      return [];
-    }
-    parts = host.split('.');
-    return parts.slice(0, (-(tldLength + 2)) + 1 || 9e9);
-  };
-
-  Tower.Support.String.extractSubdomain = function(host, tldLength) {
-    if (tldLength == null) {
-      tldLength = 1;
-    }
-    return this.extractSubdomains(host, tldLength).join('.');
-  };
-
-  Tower.Support.String.namedHost = function(host) {
-    return !!!(host === null || /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.exec(host));
-  };
-
-  Tower.Support.String.rewriteAuthentication = function(options) {
-    if (options.user && options.password) {
-      return "" + (encodeURI(options.user)) + ":" + (encodeURI(options.password)) + "@";
-    } else {
-      return "";
-    }
-  };
-
-  Tower.Support.String.hostOrSubdomainAndDomain = function(options) {
-    var host, subdomain, tldLength;
-    if (options.subdomain === null && options.domain === null) {
-      return options.host;
-    }
-    tldLength = options.tldLength || 1;
-    host = "";
-    if (options.subdomain !== false) {
-      subdomain = options.subdomain || this.extractSubdomain(options.host, tldLength);
-      if (subdomain) {
-        host += "" + subdomain + ".";
-      }
-    }
-    host += options.domain || this.extractDomain(options.host, tldLength);
-    return host;
-  };
-
-  Tower.Support.String.urlFor = function(options) {
-    var params, path, port, result, schema;
-    if (!(options.host || options.onlyPath)) {
-      throw new Error('Missing host to link to! Please provide the :host parameter, set defaultUrlOptions[:host], or set :onlyPath to true');
-    }
-    result = "";
-    params = options.params || {};
-    path = (options.path || "").replace(/\/+/, "/");
-    schema = options.schema || {};
-    delete options.path;
-    delete options.schema;
-    if (!options.onlyPath) {
-      port = options.port;
-      delete options.port;
-      if (options.protocol !== false) {
-        result += options.protocol || "http";
-        if (!result.match(Tower.Support.RegExp.regexpEscape(":|//"))) {
-          result += ":";
-        }
-      }
-      if (!result.match("//")) {
-        result += "//";
-      }
-      result += this.rewriteAuthentication(options);
-      result += this.hostOrSubdomainAndDomain(options);
-      if (port) {
-        result += ":" + port;
-      }
-    }
-    if (options.trailingSlash) {
-      result += path.replace(/\/$/, "/");
-    } else {
-      result += path;
-    }
-    if (!_.isBlank(params)) {
-      result += "?" + (Tower.Support.String.toQuery(params, schema));
-    }
-    if (options.anchor) {
-      result += "#" + (Tower.Support.String.toQuery(options.anchor));
-    }
-    return result;
-  };
-
-  Tower.urlFor = function() {
-    var args, item, last, options, result, route, _i, _len;
-    args = _.args(arguments);
-    if (!args[0]) {
-      return null;
-    }
-    if (args[0] instanceof Tower.Model || (typeof args[0]).match(/(string|function)/)) {
-      last = args[args.length - 1];
-      if (last instanceof Tower.Model || (typeof last).match(/(string|function)/)) {
-        options = {};
-      } else {
-        options = args.pop();
-      }
-    }
-    options || (options = args.pop());
-    result = "";
-    if (options.route) {
-      route = Tower.Route.find(options.route);
-      if (route) {
-        result = route.urlFor();
-      }
-    } else if (options.controller && options.action) {
-      route = Tower.Route.find({
-        name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"),
-        action: options.action
-      });
-      if (route) {
-        result = "/" + Tower.Support.String.parameterize(options.controller);
-      }
-    } else {
-      for (_i = 0, _len = args.length; _i < _len; _i++) {
-        item = args[_i];
-        result += "/";
-        if (typeof item === "string") {
-          result += item;
-        } else if (item instanceof Tower.Model) {
-          result += item.toPath();
-        } else if (typeof item === "function") {
-          result += item.toParam();
-        }
-      }
-    }
-    result += (function() {
-      switch (options.action) {
-        case "new":
-          return "/new";
-        case "edit":
-          return "/edit";
-        default:
-          return "";
-      }
-    })();
-    if (!options.hasOwnProperty("onlyPath")) {
-      options.onlyPath = true;
-    }
-    options.path = result;
-    return Tower.Support.String.urlFor(options);
-  };
-
-  Tower.Support.String.parameterize = function(string) {
-    return Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "-").replace(/^-+|-+$/g, '');
   };
 
   _.mixin(Tower.Support.Array);
@@ -1073,6 +799,10 @@
     config: {},
     namespaces: {},
     metadata: {},
+    subscribe: function() {
+      var _ref;
+      return (_ref = Tower.Application.instance()).subscribe.apply(_ref, arguments);
+    },
     cb: function() {},
     toMixin: function() {
       return {
@@ -1102,7 +832,7 @@
       object.InstanceMethods = InstanceMethods;
       object.ClassMethods = ClassMethods;
       if (included) {
-        included.apply(object);
+        included.apply(self);
       }
       return object;
     },
@@ -1313,6 +1043,7 @@
     };
     Ember.Object.reopenClass(coffeescriptMixin);
     Ember.Namespace.reopenClass(coffeescriptMixin);
+    Ember.Application.reopenClass(coffeescriptMixin);
     Ember.ArrayProxy.reopenClass(coffeescriptMixin);
     Ember.State.reopenClass(coffeescriptMixin);
     Ember.StateManager.reopenClass(coffeescriptMixin);
@@ -1328,9 +1059,16 @@
     towerMixin = Tower.toMixin();
     Tower.Class.reopenClass(towerMixin);
     Tower.Namespace.reopenClass(towerMixin);
+    Ember.Application.reopenClass(towerMixin);
     Tower.Collection.reopenClass(towerMixin);
     Tower.State.reopenClass(towerMixin);
     Tower.StateMachine.reopenClass(towerMixin);
+    if (Ember.View) {
+      Ember.View.reopenClass(coffeescriptMixin);
+      Ember.View.reopenClass(towerMixin);
+      Ember.CollectionView.reopenClass(coffeescriptMixin);
+      Ember.CollectionView.reopenClass(towerMixin);
+    }
     Ember.NATIVE_EXTENSIONS = Tower.nativeExtensions;
   } else {
     throw new Error("Must include Ember.js");
@@ -1495,7 +1233,273 @@
 
   Tower.Support.I18n.t = Tower.Support.I18n.translate;
 
-  Tower.Support.Url = {};
+  Tower.Support.Url = {
+    toQueryValue: function(value, type, negate) {
+      var item, items, result, _i, _len;
+      if (negate == null) {
+        negate = "";
+      }
+      if (_.isArray(value)) {
+        items = [];
+        for (_i = 0, _len = value.length; _i < _len; _i++) {
+          item = value[_i];
+          result = negate;
+          result += item;
+          items.push(result);
+        }
+        result = items.join(",");
+      } else {
+        result = negate;
+        if (type === 'date') {
+          result += _(value).strftime('YYYY-MM-DD');
+        } else {
+          result += value.toString();
+        }
+      }
+      result = result.replace(" ", "+").replace(/[#%\"\|<>]/g, function(_) {
+        return encodeURIComponent(_);
+      });
+      return result;
+    },
+    toQuery: function(object, schema) {
+      var data, key, negate, param, range, rangeIdentifier, result, set, type, value;
+      if (schema == null) {
+        schema = {};
+      }
+      result = [];
+      for (key in object) {
+        value = object[key];
+        param = "" + key + "=";
+        type = schema[key] ? schema[key].type.toLowerCase() : 'string';
+        negate = type === "string" ? "-" : "^";
+        if (_.isHash(value)) {
+          data = {};
+          if (value.hasOwnProperty(">=")) {
+            data.min = value[">="];
+          }
+          if (value.hasOwnProperty(">")) {
+            data.min = value[">"];
+          }
+          if (value.hasOwnProperty("<=")) {
+            data.max = value["<="];
+          }
+          if (value.hasOwnProperty("<")) {
+            data.max = value["<"];
+          }
+          if (value.hasOwnProperty("=~")) {
+            data.match = value["=~"];
+          }
+          if (value.hasOwnProperty("!~")) {
+            data.notMatch = value["!~"];
+          }
+          if (value.hasOwnProperty("==")) {
+            data.eq = value["=="];
+          }
+          if (value.hasOwnProperty("!=")) {
+            data.neq = value["!="];
+          }
+          data.range = data.hasOwnProperty("min") || data.hasOwnProperty("max");
+          set = [];
+          if (data.range && !(data.hasOwnProperty("eq") || data.hasOwnProperty("match"))) {
+            range = "";
+            rangeIdentifier = type === 'date' ? 't' : 'n';
+            if (data.hasOwnProperty("min")) {
+              range += Tower.Support.Url.toQueryValue(data.min, type);
+            } else {
+              range += rangeIdentifier;
+            }
+            range += "..";
+            if (data.hasOwnProperty("max")) {
+              range += Tower.Support.Url.toQueryValue(data.max, type);
+            } else {
+              range += rangeIdentifier;
+            }
+            set.push(range);
+          }
+          if (data.hasOwnProperty("eq")) {
+            set.push(Tower.Support.Url.toQueryValue(data.eq, type));
+          }
+          if (data.hasOwnProperty("match")) {
+            set.push(Tower.Support.Url.toQueryValue(data.match, type));
+          }
+          if (data.hasOwnProperty("neq")) {
+            set.push(Tower.Support.Url.toQueryValue(data.neq, type, negate));
+          }
+          if (data.hasOwnProperty("notMatch")) {
+            set.push(Tower.Support.Url.toQueryValue(data.notMatch, type, negate));
+          }
+          param += set.join(",");
+        } else {
+          param += Tower.Support.Url.toQueryValue(value, type);
+        }
+        result.push(param);
+      }
+      return result.sort().join("&");
+    },
+    extractDomain: function(host, tldLength) {
+      var parts;
+      if (tldLength == null) {
+        tldLength = 1;
+      }
+      if (!this.namedHost(host)) {
+        return null;
+      }
+      parts = host.split('.');
+      return parts.slice(0, (parts.length - 1 - 1 + tldLength) + 1 || 9e9).join(".");
+    },
+    extractSubdomains: function(host, tldLength) {
+      var parts;
+      if (tldLength == null) {
+        tldLength = 1;
+      }
+      if (!this.namedHost(host)) {
+        return [];
+      }
+      parts = host.split('.');
+      return parts.slice(0, (-(tldLength + 2)) + 1 || 9e9);
+    },
+    extractSubdomain: function(host, tldLength) {
+      if (tldLength == null) {
+        tldLength = 1;
+      }
+      return this.extractSubdomains(host, tldLength).join('.');
+    },
+    namedHost: function(host) {
+      return !!!(host === null || /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.exec(host));
+    },
+    rewriteAuthentication: function(options) {
+      if (options.user && options.password) {
+        return "" + (encodeURI(options.user)) + ":" + (encodeURI(options.password)) + "@";
+      } else {
+        return "";
+      }
+    },
+    hostOrSubdomainAndDomain: function(options) {
+      var host, subdomain, tldLength;
+      if (options.subdomain === null && options.domain === null) {
+        return options.host;
+      }
+      tldLength = options.tldLength || 1;
+      host = "";
+      if (options.subdomain !== false) {
+        subdomain = options.subdomain || this.extractSubdomain(options.host, tldLength);
+        if (subdomain) {
+          host += "" + subdomain + ".";
+        }
+      }
+      host += options.domain || this.extractDomain(options.host, tldLength);
+      return host;
+    },
+    urlForBase: function(options) {
+      var params, path, port, result, schema;
+      if (!(options.host || options.onlyPath)) {
+        throw new Error('Missing host to link to! Please provide the :host parameter, set defaultUrlOptions[:host], or set :onlyPath to true');
+      }
+      result = "";
+      params = options.params || {};
+      path = (options.path || "").replace(/\/+/, "/");
+      schema = options.schema || {};
+      delete options.path;
+      delete options.schema;
+      if (!options.onlyPath) {
+        port = options.port;
+        delete options.port;
+        if (options.protocol !== false) {
+          result += options.protocol || "http";
+          if (!result.match(Tower.Support.RegExp.regexpEscape(":|//"))) {
+            result += ":";
+          }
+        }
+        if (!result.match("//")) {
+          result += "//";
+        }
+        result += this.rewriteAuthentication(options);
+        result += this.hostOrSubdomainAndDomain(options);
+        if (port) {
+          result += ":" + port;
+        }
+      }
+      if (options.trailingSlash) {
+        result += path.replace(/\/$/, "/");
+      } else {
+        result += path;
+      }
+      if (!_.isBlank(params)) {
+        result += "?" + (Tower.Support.Url.toQuery(params, schema));
+      }
+      if (options.anchor) {
+        result += "#" + (Tower.Support.Url.toQuery(options.anchor));
+      }
+      return result;
+    },
+    urlFor: function() {
+      var args, item, last, options, result, route, _i, _len;
+      args = _.args(arguments);
+      if (!args[0]) {
+        return null;
+      }
+      if (args[0] instanceof Tower.Model || (typeof args[0]).match(/(string|function)/)) {
+        last = args[args.length - 1];
+        if (last instanceof Tower.Model || (typeof last).match(/(string|function)/)) {
+          options = {};
+        } else {
+          options = args.pop();
+        }
+      }
+      options || (options = args.pop());
+      result = "";
+      if (options.route) {
+        route = Tower.Route.find(options.route);
+        if (route) {
+          result = route.urlFor();
+        }
+      } else if (options.controller && options.action) {
+        route = Tower.Route.findByControllerOptions({
+          name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"),
+          action: options.action
+        });
+        if (route) {
+          result = "/" + Tower.Support.String.parameterize(options.controller);
+        }
+      } else {
+        for (_i = 0, _len = args.length; _i < _len; _i++) {
+          item = args[_i];
+          result += "/";
+          if (typeof item === "string") {
+            result += item;
+          } else if (item instanceof Tower.Model) {
+            result += item.toPath();
+          } else if (typeof item === "function") {
+            result += item.toParam();
+          }
+        }
+      }
+      result += (function() {
+        switch (options.action) {
+          case "new":
+            return "/new";
+          case "edit":
+            return "/edit";
+          default:
+            return "";
+        }
+      })();
+      last = args[args.length - 1];
+      if (last && options.params && !options.schema && last instanceof Tower.Model) {
+        options.schema = last.constructor.fields();
+      }
+      if (!options.hasOwnProperty("onlyPath")) {
+        options.onlyPath = true;
+      }
+      options.path = result;
+      return this.urlForBase(options);
+    }
+  };
+
+  Tower.urlFor = function() {
+    var _ref;
+    return (_ref = Tower.Support.Url).urlFor.apply(_ref, arguments);
+  };
 
   Tower.Support.I18n.load({
     date: {
@@ -1807,13 +1811,13 @@
       return this.definitions[name] = new Tower.Factory(name, options, callback);
     });
 
-    __defineStaticProperty(Factory,  "create", function(name, options) {
+    __defineStaticProperty(Factory,  "create", function(name, options, callback) {
       var factory;
       factory = Tower.Factory.definitions[name];
       if (!factory) {
         throw new Error("Factory '" + name + "' doesn't exist.");
       }
-      return factory.create(options);
+      return factory.create(options, callback);
     });
 
     function Factory(name, options, callback) {
@@ -1860,9 +1864,18 @@
       return this.createAttributes(overrides, function(error, attributes) {
         var klass, result;
         klass = _this.toClass();
-        result = new klass(attributes);
-        if (callback) {
-          callback.call(_this, error, result);
+        result = klass.build();
+        result.setProperties(attributes);
+        if (result.save) {
+          result.save(function() {
+            if (callback) {
+              return callback.call(_this, error, result);
+            }
+          });
+        } else {
+          if (callback) {
+            callback.call(_this, error, result);
+          }
         }
         return result;
       });
@@ -1896,7 +1909,7 @@
 
     return Hook;
 
-  })(Tower.Namespace);
+  })(Ember.Application);
 
   Tower.Engine = (function(_super) {
     var Engine;
@@ -1922,11 +1935,7 @@
 
     __defineStaticProperty(Application,  "_callbacks", {});
 
-    __defineStaticProperty(Application,  "extended", function() {
-      console.log("EXTENDED " + (this.className()));
-      console.log(global);
-      return global[this.className()] = new this;
-    });
+    __defineStaticProperty(Application,  "extended", function() {});
 
     Application.before('initialize', 'setDefaults');
 
@@ -1997,6 +2006,16 @@
       this.applyMiddleware();
       this.setDefaults();
       return this;
+    });
+
+    __defineProperty(Application,  "subscribe", function(key, block) {
+      Tower.Model.Cursor.subscriptions.push(key);
+      return this[key] = typeof block === 'function' ? block() : block;
+    });
+
+    __defineProperty(Application,  "unsubscribe", function(key) {
+      Tower.Model.Cursor.subscriptions.push(key).splice(_.indexOf(key), 1);
+      return delete this[key];
     });
 
     __defineProperty(Application,  "applyMiddleware", function() {
@@ -3272,7 +3291,7 @@
     __defineStaticProperty(Ajax,  "toJSON", function(record, method, format) {
       var data;
       data = {};
-      data[Tower.Support.String.camelize(record.constructor.name, true)] = record;
+      data[Tower.Support.String.camelize(record.constructor.className(), true)] = record;
       data._method = method;
       data.format = format;
       return JSON.stringify(data);
@@ -3366,24 +3385,24 @@
       return (_ref = this.constructor).toJSON.apply(_ref, arguments);
     });
 
-    __defineProperty(Ajax,  "create", function(criteria, callback) {
+    __defineProperty(Ajax,  "insert", function(criteria, callback) {
       var _this = this;
       if (criteria.sync !== false) {
-        return Ajax.__super__[ "create"].call(this, criteria, function(error, records) {
+        return this._super(criteria, function(error, records) {
           if (callback) {
             callback.call(_this, error, records);
           }
           return _this.createRequest(records, criteria);
         });
       } else {
-        return Ajax.__super__[ "create"].apply(this, arguments);
+        return Ajax.__super__[ "insert"].apply(this, arguments);
       }
     });
 
     __defineProperty(Ajax,  "update", function(updates, criteria, callback) {
       var _this = this;
       if (criteria.sync === true) {
-        return Ajax.__super__[ "update"].call(this, updates, criteria, function(error, result) {
+        return this._super(updates, criteria, function(error, result) {
           if (callback) {
             callback.call(_this, error, result);
           }
@@ -3397,7 +3416,7 @@
     __defineProperty(Ajax,  "destroy", function(criteria, callback) {
       var _this = this;
       if (criteria.sync !== false) {
-        return Ajax.__super__[ "destroy"].call(this, criteria, function(error, result) {
+        return this._super(criteria, function(error, result) {
           _this.destroyRequest(result, criteria);
           if (callback) {
             return callback.call(_this, error, result);
@@ -3409,13 +3428,13 @@
     });
 
     __defineProperty(Ajax,  "createRequest", function(records, options) {
-      var json,
+      var json, url,
         _this = this;
       if (options == null) {
         options = {};
       }
       json = this.toJSON(records);
-      Tower.urlFor(records.constructor);
+      url = Tower.urlFor(records.constructor);
       return this.queue(function() {
         var params;
         params = {
@@ -3655,7 +3674,7 @@
 
     __defineStaticProperty(Scope,  "finderMethods", ['find', 'all', 'first', 'last', 'count', 'exists', 'instantiate', 'pluck']);
 
-    __defineStaticProperty(Scope,  "persistenceMethods", ['insert', 'update', 'destroy', 'build']);
+    __defineStaticProperty(Scope,  "persistenceMethods", ['insert', 'update', 'create', 'destroy', 'build']);
 
     __defineStaticProperty(Scope,  "queryMethods", ['where', 'order', 'sort', 'asc', 'desc', 'gte', 'gt', 'lte', 'lt', 'limit', 'offset', 'select', 'joins', 'includes', 'excludes', 'paginate', 'page', 'allIn', 'allOf', 'alsoIn', 'anyIn', 'anyOf', 'notIn', 'near', 'within']);
 
@@ -3712,6 +3731,8 @@
       cursor.addData(args);
       return cursor.insert(callback);
     });
+
+    __defineProperty(Scope,  "create", Scope.prototype.insert);
 
     __defineProperty(Scope,  "update", function() {
       var args, callback, cursor, updates;
@@ -3852,15 +3873,37 @@
   })(Tower.Collection);
 
   Tower.Model.Cursor.Finders = {
+    ClassMethods: {
+      subscriptions: [],
+      pushMatching: function(records) {
+        return this.applyMatching('pushMatching', records);
+      },
+      pullMatching: function(records) {
+        return this.applyMatching('pullMatching', records);
+      },
+      applyMatching: function(method, records) {
+        var app, key, subscriptions, _j, _len1;
+        subscriptions = Tower.Model.Cursor.subscriptions;
+        if (!subscriptions.length) {
+          return;
+        }
+        app = Tower.Application.instance();
+        for (_j = 0, _len1 = subscriptions.length; _j < _len1; _j++) {
+          key = subscriptions[_j];
+          app[key][method](records);
+        }
+        return;
+      }
+    },
     find: function(callback) {
       return this._find(callback);
     },
     _find: function(callback) {
       var _this = this;
       if (this.one) {
-        return this.store.findOne(this, callback);
+        this.store.findOne(this, callback);
       } else {
-        return this.store.find(this, function(error, records) {
+        this.store.find(this, function(error, records) {
           if (!error && records.length) {
             records = _this["export"](records);
           }
@@ -3870,6 +3913,7 @@
           return records;
         });
       }
+      return this;
     },
     findOne: function(callback) {
       this.limit(1);
@@ -4108,6 +4152,7 @@
           }
         });
       } else {
+        Tower.Model.Cursor.pushMatching(this.data);
         this.store.insert(this, callback);
       }
       return this;
@@ -8302,6 +8347,69 @@
     }
   };
 
+  Tower.View.EmberHelper = {
+    hEach: function() {
+      return hBlock.apply(null, ['each'].concat(__slice.call(arguments)));
+    },
+    hWith: function() {
+      return hBlock.apply(null, ['with'].concat(__slice.call(arguments)));
+    },
+    hIf: function() {
+      return hBlock.apply(null, ['if'].concat(__slice.call(arguments)));
+    },
+    hElse: function() {
+      return text('{{else}}');
+    },
+    hUnless: function() {
+      return hBlock.apply(null, ['unless'].concat(__slice.call(arguments)));
+    },
+    hView: function() {
+      return hBlock.apply(null, ['view'].concat(__slice.call(arguments)));
+    },
+    hBindAttr: function() {
+      return hAttr.apply(null, ['bindAttr'].concat(__slice.call(arguments)));
+    },
+    hAction: function() {
+      return hAttr.apply(null, ['action'].concat(__slice.call(arguments)));
+    },
+    hAttr: function(key, string, options) {
+      var k, v;
+      if (typeof string === 'object') {
+        options = string;
+        string = "";
+      } else {
+        string = " \"" + string + "\"";
+      }
+      if (options) {
+        for (k in options) {
+          v = options[k];
+          string += " " + k + "=\"" + v + "\"";
+        }
+      }
+      return text("{{" + key + string + "}}");
+    },
+    hBlock: function(key, string, options, block) {
+      var k, v;
+      if (typeof options === 'function') {
+        block = options;
+        options = {};
+      }
+      options || (options = {});
+      if (!_.isBlank(string)) {
+        string = " " + string;
+        for (k in options) {
+          v = options[k];
+          string += " " + k + "=\"" + v + "\"";
+        }
+      }
+      text("{{#" + key + string + "}}" + (block ? "\n" : ""));
+      if (block) {
+        block();
+        return text("{{/" + key + "}}");
+      }
+    }
+  };
+
   Tower.View.HeadHelper = {
     metaTag: function(name, content) {
       return meta({
@@ -8653,6 +8761,8 @@
 
   Tower.View.include(Tower.View.ComponentHelper);
 
+  Tower.View.include(Tower.View.EmberHelper);
+
   Tower.View.include(Tower.View.HeadHelper);
 
   Tower.View.include(Tower.View.RenderingHelper);
@@ -8662,6 +8772,8 @@
   Tower.View.helpers.push(Tower.View.AssetHelper);
 
   Tower.View.helpers.push(Tower.View.ComponentHelper);
+
+  Tower.View.helpers.push(Tower.View.EmberHelper);
 
   Tower.View.helpers.push(Tower.View.HeadHelper);
 
@@ -8817,6 +8929,26 @@
       }
     }
   };
+
+  Tower.Controller.Errors = {
+    ClassMethods: {
+      rescue: function(type, method, options) {
+        var app, handlers,
+          _this = this;
+        app = Tower.Application.instance();
+        handlers = app.currentErrorHandlers || (app.currentErrorHandlers = []);
+        return handlers.push(function(error) {
+          var errorType;
+          errorType = typeof type === 'string' ? global[type] : type;
+          if (error instanceof errorType) {
+            return _this.instance()[method](error);
+          }
+        });
+      }
+    }
+  };
+
+  Tower.Controller.Errors.ClassMethods.rescueFrom = Tower.Controller.Errors.ClassMethods.rescue;
 
   Tower.Controller.Helpers = {
     ClassMethods: {
@@ -9782,6 +9914,8 @@
 
   Tower.Controller.include(Tower.Controller.Callbacks);
 
+  Tower.Controller.include(Tower.Controller.Errors);
+
   Tower.Controller.include(Tower.Controller.Helpers);
 
   Tower.Controller.include(Tower.Controller.Instrumentation);
@@ -10421,6 +10555,27 @@
 
     __defineStaticProperty(Route,  "find", function(name) {
       return this.byName[name];
+    });
+
+    __defineStaticProperty(Route,  "findByControllerOptions", function(options) {
+      var controller, key, route, success, value, _len7, _p, _ref7;
+      _ref7 = this.all();
+      for (_p = 0, _len7 = _ref7.length; _p < _len7; _p++) {
+        route = _ref7[_p];
+        controller = route.controller;
+        success = true;
+        for (key in options) {
+          value = options[key];
+          success = controller[key] === value;
+          if (!success) {
+            break;
+          }
+        }
+        if (success) {
+          return route;
+        }
+      }
+      return null;
     });
 
     __defineStaticProperty(Route,  "all", function() {

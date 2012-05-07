@@ -31,13 +31,19 @@ if typeof Ember != 'undefined'
   Tower.StateMachine  = Ember.StateManager.extend()
 
   towerMixin        = Tower.toMixin()
-
+  
   Tower.Class.reopenClass(towerMixin)
   Tower.Namespace.reopenClass(towerMixin)
   Ember.Application.reopenClass(towerMixin)
   Tower.Collection.reopenClass(towerMixin)
   Tower.State.reopenClass(towerMixin)
   Tower.StateMachine.reopenClass(towerMixin)
+  
+  if Ember.View
+    Ember.View.reopenClass(coffeescriptMixin)
+    Ember.View.reopenClass(towerMixin)
+    Ember.CollectionView.reopenClass(coffeescriptMixin)
+    Ember.CollectionView.reopenClass(towerMixin)
   
   # need to put in a place where you can set this before it reaches here.
   Ember.NATIVE_EXTENSIONS = Tower.nativeExtensions

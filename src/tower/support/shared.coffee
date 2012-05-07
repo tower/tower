@@ -14,6 +14,9 @@ _.extend Tower,
   config:           {}
   namespaces:       {}
   metadata:         {}
+  subscribe: ->
+    Tower.Application.instance().subscribe arguments...
+  
   cb: ->
   toMixin: ->
     #mixin: ->

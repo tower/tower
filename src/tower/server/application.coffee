@@ -14,7 +14,7 @@ class Tower.Application extends Tower.Engine
   @_callbacks: {}
   
   @extended: ->
-    global[@className()] = new @
+    global[@className()] = @create()
   
   @before "initialize", "setDefaults"
 
@@ -77,6 +77,15 @@ class Tower.Application extends Tower.Engine
     Tower.Application._instance = @
     #global[@constructor.className()] = null#@
     @_super arguments...
+    
+  subscribe: (key, block) ->
+    Tower.Model.Cursor.subscriptions.push(key)
+    @[key] = if typeof block == 'function' then block() else block
+
+  # @todo
+  unsubscribe: (key) ->
+    Tower.Model.Cursor.subscriptions.push(key).splice(_.indexOf(key), 1)
+    delete @[key]
 
   initialize: (complete) ->
     require "#{Tower.root}/config/application"

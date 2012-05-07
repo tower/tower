@@ -36,6 +36,12 @@ Tower.Store.Operators =
   select: (records, conditions) ->
     _.select records, (record) => @test(record, conditions)
     
+  matching: (records, conditions) ->
+    _.select records, (record) => @test(record, conditions)
+    
+  notMatching: (records, conditions) ->
+    _.select records, (record) => !@test(record, conditions)
+    
   test: (record, conditions) ->
     success = true
     

@@ -5,7 +5,8 @@ Tower.Store.Memory.Persistence =
   # @return [Array] Returns array of added records.
   load: (data) ->
     records = _.castArray(data)
-    @loadOne(@serializeModel(record)) for record in records
+    for record, i in records
+      records[i] = @loadOne(@serializeModel(record))
     records
 
   loadOne: (record) ->
