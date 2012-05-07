@@ -72,7 +72,7 @@ describe "Tower.View.EmberHelper", ->
   test 'hAction("anAction", target: "App.viewStates")', ->
     template = ->
       hAction("anAction", target: "App.viewStates")
-    
+
     view.render template: template, (error, result) ->
       assert.equal result, """
 {{action "anAction" target="App.viewStates"}}
