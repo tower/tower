@@ -19,6 +19,7 @@ if typeof Ember != 'undefined'
 
   Ember.Object.reopenClass(coffeescriptMixin)
   Ember.Namespace.reopenClass(coffeescriptMixin)
+  Ember.Application.reopenClass(coffeescriptMixin)
   Ember.ArrayProxy.reopenClass(coffeescriptMixin)
   Ember.State.reopenClass(coffeescriptMixin)
   Ember.StateManager.reopenClass(coffeescriptMixin)
@@ -33,6 +34,7 @@ if typeof Ember != 'undefined'
 
   Tower.Class.reopenClass(towerMixin)
   Tower.Namespace.reopenClass(towerMixin)
+  Ember.Application.reopenClass(towerMixin)
   Tower.Collection.reopenClass(towerMixin)
   Tower.State.reopenClass(towerMixin)
   Tower.StateMachine.reopenClass(towerMixin)

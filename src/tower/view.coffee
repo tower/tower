@@ -106,6 +106,7 @@ require './view/form'
 require './view/helpers/assetHelper'
 require './view/helpers/componentHelper'
 require './view/helpers/elementHelper'
+require './view/helpers/emberHelper'
 require './view/helpers/headHelper'
 require './view/helpers/renderingHelper'
 require './view/helpers/stringHelper'
@@ -113,12 +114,14 @@ require './view/helpers/stringHelper'
 Tower.View.include Tower.View.Rendering
 Tower.View.include Tower.View.AssetHelper
 Tower.View.include Tower.View.ComponentHelper
+Tower.View.include Tower.View.EmberHelper
 Tower.View.include Tower.View.HeadHelper
 Tower.View.include Tower.View.RenderingHelper
 Tower.View.include Tower.View.StringHelper
 
 Tower.View.helpers.push Tower.View.AssetHelper
 Tower.View.helpers.push Tower.View.ComponentHelper
+Tower.View.helpers.push Tower.View.EmberHelper
 Tower.View.helpers.push Tower.View.HeadHelper
 Tower.View.helpers.push Tower.View.RenderingHelper
 Tower.View.helpers.push Tower.View.StringHelper
