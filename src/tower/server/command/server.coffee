@@ -7,6 +7,7 @@ class Tower.Command.Server
       .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)')
       .option('-p, --port <n>', 'port for the application')
       .option('--static', 'disable-watch')
+      .option('--single', 'Single page app')
       .option('-v, --version')
       .option '-h, --help', '''
 \ \ Usage:
@@ -26,6 +27,8 @@ class Tower.Command.Server
       program.parse(argv)
 
       program.help ||= program.rawArgs.length == 3
+      
+      Tower.isSinglePage = !!program.single
 
       if program.help
         console.log program.options[program.options.length - 1].description
@@ -37,7 +40,7 @@ class Tower.Command.Server
     Tower.env   = program.environment || process.env.NODE_ENV || "development"
     process.env.NODE_ENV = Tower.env
     Tower.port  = program.port = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
-
+    
     Tower.Application.instance().run()
 
 module.exports = Tower.Command.Server

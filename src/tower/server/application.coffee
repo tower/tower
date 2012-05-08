@@ -1,5 +1,7 @@
+
 connect = require('express')
 File    = require('pathfinder').File
+fs      = require('fs')
 server  = null
 io      = null
 
@@ -40,28 +42,42 @@ class Tower.Application extends Tower.Engine
     "routes"
   ]
 
-  @defaultStack: ->
-    @use connect.favicon(Tower.publicPath + "/favicon.ico")
+  defaultStack: ->
+    #@use connect.favicon(Tower.publicPath + "/favicon.ico")
     @use connect.static(Tower.publicPath, maxAge: Tower.publicCacheDuration)
     @use connect.profiler() if Tower.env != "production"
     @use connect.logger()
-    @use connect.query()
-    @use connect.cookieParser(Tower.cookieSecret)
-    @use connect.session secret: Tower.sessionSecret
-    @use connect.bodyParser()
-    @use connect.csrf()
-    @use connect.methodOverride("_method")
+    #@use connect.query()
+    #@use connect.cookieParser(Tower.cookieSecret)
+    #@use connect.session secret: Tower.sessionSecret
+    #@use connect.bodyParser()
+    #@use connect.csrf()
+    #@use connect.methodOverride("_method")
     @use Tower.Middleware.Agent
     @use Tower.Middleware.Location
     if Tower.httpCredentials
       @use connect.basicAuth(Tower.httpCredentials.username, Tower.httpCredentials.password)
-    @use Tower.Middleware.Router
+    #@use Tower.Middleware.Router
+    @server.get '/', (request, response) =>
+      view = new Tower.View({})
+      fs.readFile "#{Tower.root}/index.coffee", 'utf-8', (error, result) =>
+        view.render template: result, inline: true, type: 'coffee', (error, result) =>
+          if error
+            response.writeHead(404, {})
+            response.write(error.stack || error.toString())
+          else
+            response.writeHead(200, {'Content-Type': 'text/html'})
+            response.write(result)
+          response.end()
     @middleware
 
   @instance: ->
     unless @_instance
-      ref = require "#{Tower.root}/config/application"
-      @_instance ||= new ref
+      if Tower.isSinglePage
+        @_instance = @create()
+      else
+        ref = require "#{Tower.root}/config/application"
+        @_instance ||= new ref
     @_instance
 
   @configure: (block) ->
@@ -185,7 +201,10 @@ class Tower.Application extends Tower.Engine
         @watch() if Tower.watch
 
   run: ->
-    @initialize()
+    if Tower.isSinglePage
+      @defaultStack()
+    else
+      @initialize()
     @listen()
 
   watch: ->
