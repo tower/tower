@@ -5,17 +5,17 @@ Tower.Controller.Resourceful =
     #
     # @example Pass in a string
     #   class App.UsersController extends App.ApplicationController
-    #     @resource "person"
+    #     @resource 'person'
     #
     # @example Pass in an object
     #   class App.UsersController extends App.ApplicationController
-    #     @resource name: "person", type: "User", collectionName: "people"
+    #     @resource name: 'person', type: 'User', collectionName: 'people'
     #
     # @return [Function] Return this controller.
     resource: (options) ->
       metadata = @metadata()
 
-      if typeof options == "string"
+      if typeof options == 'string'
         options                 =
           name: options
           type: Tower.Support.String.camelize(options)
@@ -36,11 +36,11 @@ Tower.Controller.Resourceful =
     #
     # @example
     #   class App.CommentsController extends App.ApplicationController
-    #     @belongsTo "post" # /posts/1/comments
+    #     @belongsTo 'post' # /posts/1/comments
     #
     # @example With options
     #   class App.CommentsController extends App.ApplicationController
-    #     @belongsTo "article", type: "Post"
+    #     @belongsTo 'article', type: 'Post'
     #
     # @return [Array<Object>] Returns belongsTo array
     belongsTo: (key, options) ->
@@ -62,12 +62,12 @@ Tower.Controller.Resourceful =
     actions: ->
       args = _.args(arguments)
 
-      if typeof args[args.length - 1] == "object"
+      if typeof args[args.length - 1] == 'object'
         options = args.pop()
       else
         options = {}
 
-      actions         = ["index", "new", "create", "show", "edit", "update", "destroy"]
+      actions         = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy']
       actionsToRemove = _.difference(actions, args, options.except || [])
 
       for action in actionsToRemove
@@ -76,46 +76,46 @@ Tower.Controller.Resourceful =
 
       @
 
-  # Default implementation for the "index" action.
+  # Default implementation for the 'index' action.
   index: ->
     @_index (format) =>
-      format.html => @render "index"
+      format.html => @render 'index'
       format.json => @render json: @collection, status: 200
 
-  # Default implementation for the "new" action.
+  # Default implementation for the 'new' action.
   new: ->
     @_new (format) =>
-      format.html => @render "new"
+      format.html => @render 'new'
       format.json => @render json: @resource, status: 200
 
-  # Default implementation for the "create" action.
+  # Default implementation for the 'create' action.
   create: (callback) ->
     @_create (format) =>
-      format.html => @redirectTo action: "show"
+      format.html => @redirectTo action: 'show'
       format.json => @render json: @resource, status: 200
 
-  # Default implementation for the "show" action.
+  # Default implementation for the 'show' action.
   show: ->
     @_show (format) =>
-      format.html => @render "show"
+      format.html => @render 'show'
       format.json => @render json: @resource, status: 200
 
-  # Default implementation for the "edit" action.
+  # Default implementation for the 'edit' action.
   edit: ->
     @_edit (format) =>
-      format.html => @render "edit"
+      format.html => @render 'edit'
       format.json => @render json: @resource, status: 200
 
-  # Default implementation for the "update" action.
+  # Default implementation for the 'update' action.
   update: ->
     @_update (format) =>
-      format.html => @redirectTo action: "show"
+      format.html => @redirectTo action: 'show'
       format.json => @render json: @resource, status: 200
 
-  # Default implementation for the "destroy" action.
+  # Default implementation for the 'destroy' action.
   destroy: ->
     @_destroy (format) =>
-      format.html => @redirectTo action: "index"
+      format.html => @redirectTo action: 'index'
       format.json => @render json: @resource, status: 200
 
   # Helper method to give you the {Tower.Model.Scope} and a new record.
@@ -152,7 +152,10 @@ Tower.Controller.Resourceful =
   buildResource: (callback) ->
     @scoped (error, scope) =>
       return callback.call @, error, null if error
-      @[@resourceName] = @resource = resource = scope.build(@params[@resourceName])
+      resource = scope.build(@params[@resourceName])
+      @set 'resource', resource
+      @set @resourceName, resource
+      # @[@resourceName] = @resource = scope.build(@params[@resourceName])
       callback.call @, null, resource if callback
       resource
 
@@ -162,9 +165,11 @@ Tower.Controller.Resourceful =
 
       resource = null
       
-      scope.insert @params[@resourceName], (error, record) =>
-        @[@resourceName] = @resource = record
-        callback.call(@, null, record) if callback
+      scope.insert @params[@resourceName], (error, resource) =>
+        @set 'resource', resource
+        @set @resourceName, resource
+        # @[@resourceName] = @resource = resource
+        callback.call(@, null, resource) if callback
 
       resource
 
@@ -177,7 +182,9 @@ Tower.Controller.Resourceful =
     @scoped (error, scope) =>
       return callback.call @, error, null if error
       scope.find @params.id, (error, resource) =>
-        @[@resourceName]  = @resource = resource
+        @set 'resource', resource
+        @set @resourceName, resource
+        #@[@resourceName]  = @resource = resource
         callback.call @, error, resource
 
   # Returns the set of records for the scope.
@@ -189,7 +196,9 @@ Tower.Controller.Resourceful =
     @scoped (error, scope) =>
       return callback.call @, error, null if error
       scope.all (error, collection) =>
-        @[@collectionName]  = @collection = collection
+        @set 'collection', collection
+        @set @collectionName, collection
+        #@[@collectionName]  = @collection = collection
         callback.call @, error, collection if callback
 
   # Finds the parent if `belongsTo` was defined for this controller.
@@ -205,7 +214,9 @@ Tower.Controller.Resourceful =
       parentClass.find @params[relation.param], (error, parent) =>
         throw error if error && !callback
         unless error
-          @parent = @[relation.key] = parent
+          @set 'parent', parent
+          @set relation.key, parent
+          #@parent = @[relation.key] = parent
         callback.call @, error, parent if callback
     else
       callback.call @, null, false if callback

@@ -6,7 +6,7 @@ Tower.Model.Serialization =
       records = [records] unless records instanceof Array
 
       for record, i in records
-        records[i] = new @(record)
+        records[i] = @build(record)
 
       records
 
@@ -32,7 +32,7 @@ Tower.Model.Serialization =
   clone: ->
     attributes = Tower.clone(@attributes)
     delete attributes.id
-    new @constructor(attributes)
+    @constructor.build(attributes)
 
   # Implementation of the {#toJSON} method.
   #

@@ -4,14 +4,14 @@ Tower.Controller.Rendering =
     # Add a render for a specific mime type.
     #
     # @example Add a json renderer
-    #   Tower.Controller.addRenderer "json", (json, options, callback) ->
-    #     unless typeof(json) == "string"
-    #       if @params.prettify && @params.prettify.toString() == "true"
+    #   Tower.Controller.addRenderer 'json', (json, options, callback) ->
+    #     unless typeof(json) == 'string'
+    #       if @params.prettify && @params.prettify.toString() == 'true'
     #         json = JSON.stringify(json, null, 2)
     #       else
     #         json = JSON.stringify(json)
-    #     json = "#{options.callback}(#{json})" if options.callback
-    #     @headers["Content-Type"] ||= require("mime").lookup("json")
+    #     json = '#{options.callback}(#{json})' if options.callback
+    #     @headers['Content-Type'] ||= require('mime').lookup('json')
     #     callback null, json if callback
     #     json
     #
@@ -29,13 +29,13 @@ Tower.Controller.Rendering =
     # @example Add a json renderer
     #   Tower.Controller.addRenderer
     #     json: (json, options, callback) ->
-    #       unless typeof(json) == "string"
-    #         if @params.prettify && @params.prettify.toString() == "true"
+    #       unless typeof(json) == 'string'
+    #         if @params.prettify && @params.prettify.toString() == 'true'
     #           json = JSON.stringify(json, null, 2)
     #         else
     #           json = JSON.stringify(json)
-    #       json = "#{options.callback}(#{json})" if options.callback
-    #       @headers["Content-Type"] ||= require("mime").lookup("json")
+    #       json = '#{options.callback}(#{json})' if options.callback
+    #       @headers['Content-Type'] ||= require('mime').lookup('json')
     #       callback null, json if callback
     #       json
     #
@@ -57,11 +57,11 @@ Tower.Controller.Rendering =
     #
     # @example Render HTML for the index action on the users controller.
     #   # full path
-    #   @render "users/index"
+    #   @render 'users/index'
     #   # action
-    #   @render "index"
+    #   @render 'index'
     #   # with variables for the template
-    #   @render "index", locals: {hello: "world"}
+    #   @render 'index', locals: {hello: 'world'}
     #
     # @example Render JSON
     #   @render json: user.toJSON()
@@ -102,7 +102,7 @@ Tower.Controller.Rendering =
 
       return if @_handleRenderers(options, callback)
       
-      @headers["Content-Type"] ||= "text/html"
+      @headers['Content-Type'] ||= 'text/html'
 
       view    = new Tower.View(@)
 
@@ -122,8 +122,8 @@ Tower.Controller.Rendering =
     # @private
     _processRenderOptions: (options = {}) ->
       @status                   = options.status if options.status
-      @headers["Content-Type"]  = options.contentType if options.contentType
-      @headers["Location"]      = @urlFor(options.location) if options.location
+      @headers['Content-Type']  = options.contentType if options.contentType
+      @headers['Location']      = @urlFor(options.location) if options.location
       @
 
     # @private
@@ -133,17 +133,17 @@ Tower.Controller.Rendering =
     # @private
     _normalizeArgs: ->
       args = _.args(arguments)
-      if typeof args[0] == "string"
+      if typeof args[0] == 'string'
         action    = args.shift()
-      if typeof args[0] == "object"
+      if typeof args[0] == 'object'
         options   = args.shift()
-      if typeof args[0] == "function"
+      if typeof args[0] == 'function'
         callback  = args.shift()
 
       options         ||= {}
 
       if action
-        key             = if !!action.match(/\//) then "file" else "action"
+        key             = if !!action.match(/\//) then 'file' else 'action'
         options[key]    = action
 
       options.callback  = callback if callback

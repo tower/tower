@@ -4,20 +4,20 @@ Tower.Controller.Responding =
     # Defines mime types that are rendered by default when invoking {#respondWith}.
     #
     # @example
-    #   @respondTo "html", "json", "csv", "pdf"
+    #   @respondTo 'html', 'json', 'csv', 'pdf'
     #
     # @example Only certain actions
-    #   @respondTo "json", only: "edit"
+    #   @respondTo 'json', only: 'edit'
     #
     # @example Except certain actions
-    #   @respondTo "json", except: ["create", "destroy"]
+    #   @respondTo 'json', except: ['create', 'destroy']
     #
     # @return [Function] Return this controller.
     respondTo: ->
       mimes     = @mimes()
       args      = _.args(arguments)
 
-      if typeof args[args.length - 1] == "object"
+      if typeof args[args.length - 1] == 'object'
         options = args.pop()
       else
         options = {}
@@ -75,15 +75,15 @@ Tower.Controller.Responding =
     #     App.User.all (error, users) =>
     #       @respondWith users, (success, failure) =>
     #         success.json => @render json: users
-    #         failure.json => @render text: "Error!", status: 404
+    #         failure.json => @render text: 'Error!', status: 404
     respondWith: ->
       args      = _.args(arguments)
       callback  = null
 
-      if typeof(args[args.length - 1]) == "function"
+      if typeof(args[args.length - 1]) == 'function'
         callback  = args.pop()
 
-      if typeof(args[args.length - 1]) == "object" && !(args[args.length - 1] instanceof Tower.Model)
+      if typeof(args[args.length - 1]) == 'object' && !(args[args.length - 1] instanceof Tower.Model)
         options   = args.pop()
       else
         options   = {}

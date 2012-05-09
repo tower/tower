@@ -19,6 +19,4 @@ Tower.callback "initialize", name: "Tower.Store.MongoDB.initialize", (done) ->
   try Tower.Store.MongoDB.configure Tower.config.databases.mongodb
   Tower.Store.MongoDB.initialize done
 
-# Tower.trigger "Tower.Store.MongoDB"
-
 module.exports = Tower.Store.MongoDB
