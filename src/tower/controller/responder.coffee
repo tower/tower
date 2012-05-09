@@ -46,9 +46,9 @@ class Tower.Controller.Responder
     if get?
       @display resource
     else if post?
-      @display resource, status: "created", location: @apiLocation
+      @display resource, status: 'created', location: @apiLocation
     else
-      @head "noContent"
+      @head 'noContent'
 
   isResourceful: ->
     @resource.hasOwnProperty("to#{@format.toUpperCase()}")
@@ -63,10 +63,10 @@ class Tower.Controller.Responder
     @controller.render _.extend givenOptions, @options, format: @resource
 
   displayErrors: ->
-    @controller.render format: @resourceErrors, status: "unprocessableEntity"
+    @controller.render format: @resourceErrors, status: 'unprocessableEntity'
 
   hasErrors: ->
-    @resource.respondTo?("errors") && !@resource.errors.empty?
+    @resource.respondTo?('errors') && !@resource.errors.empty?
 
   defaultAction: ->
     @action ||= ACTIONS_FOR_VERBS[request.requestMethodSymbol]

@@ -8,6 +8,11 @@
 #   Query conditions
 class Tower.Model extends Tower.Class
   @reopen Ember.Evented
+  
+  #if Tower.isServer
+  #  @extended: ->
+  #    for path in require('pathfinder').File.files("#{Tower.root}/app/concerns/#{@metadata().name}")
+  #      require(path) if path.match(/\.(coffee|js|iced)$/)
 
   errors: null
 

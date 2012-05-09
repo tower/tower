@@ -30,7 +30,8 @@ class Tower.Command.Console
 
   run: ->
     return @runCoffee() if @program.coffee
-    client = require("repl").start("tower> ").context
+    repl    = require("repl")
+    client  = repl.start("tower> ").context
 
     client.reload = ->
       app = Tower.Application.instance()
@@ -39,6 +40,16 @@ class Tower.Command.Console
       client.Tower  = Tower
       client._      = _
       client[Tower.namespace()] = app
+      client._r = (name) ->
+        (error, value) ->
+          #args = Tower.Support.Array.args(arguments)
+          #error = args.shift()
+          if error
+            console.log(error)
+          else
+            client[name] = value
+            process.stdout.write(value)
+          #console.log('tower> ')
 
     client._c = ->
       l       = arguments.length
