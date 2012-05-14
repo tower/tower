@@ -1,9 +1,9 @@
 Tower.View.ComponentHelper =
   formFor: ->
-    Tower.View.Form.render(__ck, arguments...)
+    Tower.View.Form.render(__cc, arguments...)
 
   tableFor: ->
-    Tower.View.Table.render(__ck, arguments...)
+    Tower.View.Table.render(__cc, arguments...)
 
   widget: ->
 

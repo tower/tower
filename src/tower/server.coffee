@@ -27,6 +27,7 @@ Tower.modules =
   mime:       require 'mime'
   mint:       require 'mint'
   kue:        try require 'kue'
+  coffeecup:  require 'coffeecup'
 
 require './support'
 require './application'

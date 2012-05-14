@@ -59,22 +59,19 @@ Tower.View.Rendering =
       e       = null
       result  = null
       # tmp hack
-      coffeekup = if Tower.client then global.CoffeeKup else require("coffeekup")
+      coffeecup = Tower.modules.coffeecup
       try
         locals          = options.locals
         locals.renderWithEngine = @renderWithEngine
         locals._readTemplate = @_readTemplate
         locals.cache    = Tower.env != "development"
         locals.format   = true
-        hardcode        = {}
-        for helper in Tower.View.helpers
-          hardcode      = _.extend(hardcode, helper)
-        tags = coffeekup.tags
-        hardcode        = _.extend(hardcode, tags: tags)
+        hardcode        = Tower.View.helpers
+        hardcode        = _.extend(hardcode, tags: Tower.View.coffeecupTags)#_.inject(tags, ((hash, i) -> hash[i] = true; hash), {}))
         locals.hardcode = hardcode
         locals._ = _
         
-        result = coffeekup.render string, locals
+        result = coffeecup.render string, locals
       catch error
         e = error
         console.log e.stack

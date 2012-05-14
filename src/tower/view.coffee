@@ -80,7 +80,7 @@ class Tower.View extends Tower.Class
     localizeWithNestedModel:                    false
     localizeWithInheritance:                    true
     defaultComponentHeaderLevel:                3
-    helpers:                                    []
+    helpers:                                    {}
     metaTags: [
       'description',
       'keywords',
@@ -93,6 +93,9 @@ class Tower.View extends Tower.Class
       @_store = store if store
       @_store ||= new Tower.Store.Memory(name: 'view')
     renderers: {}
+    coffeecupTags: _.map(Tower.modules.coffeecup.tags, (i) -> Tower.Support.String.camelize(i, true))
+    helper: (object) ->
+      _.extend(Tower.View.helpers, object)
 
   init: (context = {}) ->
     @_super arguments...
@@ -119,11 +122,11 @@ Tower.View.include Tower.View.HeadHelper
 Tower.View.include Tower.View.RenderingHelper
 Tower.View.include Tower.View.StringHelper
 
-Tower.View.helpers.push Tower.View.AssetHelper
-Tower.View.helpers.push Tower.View.ComponentHelper
-Tower.View.helpers.push Tower.View.EmberHelper
-Tower.View.helpers.push Tower.View.HeadHelper
-Tower.View.helpers.push Tower.View.RenderingHelper
-Tower.View.helpers.push Tower.View.StringHelper
+Tower.View.helper Tower.View.AssetHelper
+Tower.View.helper Tower.View.ComponentHelper
+Tower.View.helper Tower.View.EmberHelper
+Tower.View.helper Tower.View.HeadHelper
+Tower.View.helper Tower.View.RenderingHelper
+Tower.View.helper Tower.View.StringHelper
 
 module.exports = Tower.View

@@ -13,6 +13,7 @@ Tower.modules =
   geo:        global.geolib
   inflector:  global.inflector # https://github.com/gmosx/inflection
   async:      global.async # https://github.com/gmosx/inflection
+  coffeecup:  global.CoffeeCup
 
 require './support'
 require './application'

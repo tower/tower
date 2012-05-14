@@ -54,7 +54,7 @@
     "express":            "2.x",
     "socket.io":          ">= 0.8.7",
     "coffee-script":      "git://github.com/viatropos/coffee-script.git",
-    "coffeekup":          ">= 0.3.1",
+    "coffeecup":          ">= 0.3.11",
     "useragent":          ">= 1.0.5",
     "URIjs":              ">= 1.4.2",
     "moment":             ">= 1.5.1",

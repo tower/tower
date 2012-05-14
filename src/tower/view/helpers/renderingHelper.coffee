@@ -46,9 +46,9 @@ Tower.View.RenderingHelper =
     if typeof value == "function"
       eval("(#{String(value)})()")
     else
-      #__ck.indent()
+      #__cc.indent()
       ending = if value.match(/\n$/) then "\n" else ""
-      text(value.replace(/\n$/, "").replace(/^(?!\s+$)/mg, __ck.repeat('  ', __ck.tabs)) + ending)
+      text(value.replace(/\n$/, "").replace(/^(?!\s+$)/mg, __cc.repeat('  ', __cc.tabs)) + ending)
     null
 
   hasContentFor: (key) ->
