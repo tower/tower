@@ -77,3 +77,14 @@ describe "Tower.View.EmberHelper", ->
       assert.equal result, """
 {{action "anAction" target="App.viewStates"}}
 """
+  
+  test 'a "{{action "select" target="App"}}", href: "#"', (done) ->
+    template = ->
+      a '{{action "select" target="App"}}', href: '#', 'Select'
+    
+    view.render template: template, (error, result) ->
+      assert.equal result, """
+<a href="#" {{action "select" target="App"}}>Select</a>
+
+"""
+      done()
