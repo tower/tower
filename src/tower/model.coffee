@@ -47,6 +47,7 @@ require './model/inheritance'
 require './model/metadata'
 require './model/relation'
 require './model/relations'
+require './model/attachment'
 require './model/attribute'
 require './model/attributes'
 require './model/persistence'
@@ -70,6 +71,7 @@ Tower.Model.include Tower.Model.Serialization
 Tower.Model.include Tower.Model.States
 Tower.Model.include Tower.Model.Relations
 Tower.Model.include Tower.Model.Validations
+Tower.Model.include Tower.Model.Attachment
 Tower.Model.include Tower.Model.Attributes
 Tower.Model.include Tower.Model.Timestamp
 Tower.Model.include Tower.Model.Transactions

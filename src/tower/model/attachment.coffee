@@ -1,7 +1,7 @@
 # @todo
 # @mixin
 Tower.Model.Attachment =
-  ClassMethod:
+  ClassMethods:
     # @example
     #   class App.User extends Tower.Model
     #     @attachment 'photo'

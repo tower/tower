@@ -14,6 +14,7 @@ _.extend Tower,
   config:           {}
   namespaces:       {}
   metadata:         {}
+  _:                _
   subscribe: ->
     Tower.Application.instance().subscribe arguments...
   
@@ -204,12 +205,18 @@ _.extend Tower,
     (error) =>
       for callback in callbacks
         callback.call(@, error) if callback
-
-if Tower.client
-  Tower.request = (method, path, options, callback) ->
-    if typeof options == "function"
-      callback      = options
-      options       = {}
-    options       ||= {}
-    url             = path
-    History.pushState(null, null, url)
+  
+  get: ->
+    Tower.request 'get', arguments...
+        
+  post: ->
+    Tower.request 'post', arguments...
+        
+  put: ->
+    Tower.request 'put', arguments...
+        
+  destroy: ->
+    Tower.request 'destroy', arguments...
+    
+  request: ->
+    Tower.agent.request arguments...

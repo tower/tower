@@ -15,11 +15,11 @@ class Tower.Factory
   constructor: (name, options = {}, callback) ->
     return Tower.Factory.create(name, options) unless @constructor == Tower.Factory
     
-    if typeof(options) == "function"
+    if typeof(options) == 'function'
       callback  = options
       options   = {}
     
-    throw new Error("Expected function callback for Factory '#{name}'") unless typeof(callback) == "function"
+    throw new Error("Expected function callback for Factory '#{name}'") unless typeof(callback) == 'function'
     
     @name             = name
     @className        = Tower.namespaced(Tower.Support.String.camelize(options.className || name))
@@ -31,12 +31,12 @@ class Tower.Factory
     fn    = global
     fn    = fn[node] for node in parts
     
-    throw new Error("Class #{string} not found") if typeof(fn) != "function"
+    throw new Error("Class #{string} not found") if typeof(fn) != 'function'
     
     fn
     
   create: (overrides, callback) ->
-    if typeof overrides == "function"
+    if typeof overrides == 'function'
       callback      = overrides
       overrides     = {}
 

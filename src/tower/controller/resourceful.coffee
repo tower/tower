@@ -60,12 +60,8 @@ Tower.Controller.Resourceful =
       belongsTo.length > 0
 
     actions: ->
-      args = _.args(arguments)
-
-      if typeof args[args.length - 1] == 'object'
-        options = args.pop()
-      else
-        options = {}
+      args    = _.flatten(_.args(arguments))
+      options = _.extractOptions(args)
 
       actions         = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy']
       actionsToRemove = _.difference(actions, args, options.except || [])

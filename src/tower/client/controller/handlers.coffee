@@ -1,6 +1,6 @@
 Tower.Controller.Handlers =
   ClassMethods:
-    submitHandler: (name, handler, options) ->
+    submitHandler2: (name, handler, options) ->
       $(@dispatcher).on name, (event) =>
         target    = $(event.target)
         form      = target.closest("form")
@@ -12,7 +12,9 @@ Tower.Controller.Handlers =
         params.action = action
 
         elements  = _.extend {target: target, form: form}, {}#, @extractElements(target, options)
+        
+        event.data = elements: elements, params: params
 
-        @_dispatch handler, elements: elements, params: params
+        @_dispatch event, handler, event.data
 
 module.exports = Tower.Controller.Handlers

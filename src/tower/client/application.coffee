@@ -1,8 +1,11 @@
-# tmp hack, make all links run through history.pushState
-# $("a").click ->
-#  History.pushState null, null, $(this).attr("href")
-#  #Tower.get($(this).attr("href"))
-#  false
+# compile pattern for location?
+# location = new RegExp(window.location.hostname)
+
+if typeof History != 'undefined'
+  Tower.history     = History
+  Tower.forward     = History.forward
+  Tower.back        = History.back
+  Tower.go          = History.go
 
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
@@ -53,25 +56,21 @@ class Tower.Application extends Tower.Engine
     Tower.Application.middleware ||= []
 
     @io       = global["io"]
-    @History  = global["History"]
     @stack    = []
     
     @use(middleware) for middleware in middlewares
+    
+  ready: ->
+    @_super arguments...
+    
+    $("a").on 'click', ->
+      Tower.get($(this).attr("href"))
 
   initialize: ->
     @extractAgent()
     @applyMiddleware()
     @setDefaults()
     @
-    
-  subscribe: (key, block) ->
-    Tower.Model.Cursor.subscriptions.push(key)
-    @[key] = if typeof block == 'function' then block() else block
-
-  # @todo
-  unsubscribe: (key) ->
-    Tower.Model.Cursor.subscriptions.push(key).splice(_.indexOf(key), 1)
-    delete @[key]
 
   applyMiddleware: ->
     middlewares = @constructor.middleware
@@ -100,19 +99,17 @@ class Tower.Application extends Tower.Engine
     Tower.agent   = new Tower.HTTP.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
 
   listen: ->
-    self = @
     return if @listening
     @listening = true
-
-    if @History && @History.enabled
-      @History.Adapter.bind global, "statechange", ->
+    
+    if Tower.history && Tower.history.enabled
+      Tower.history.Adapter.bind global, "statechange", =>
         state     = History.getState()
         location  = new Tower.HTTP.Url(state.url)
         request   = new Tower.HTTP.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
         response  = new Tower.HTTP.Response(url: state.url, location: location)
-        # History.log State.data, State.title, State.url
-        self.handle request, response
-      $(global).trigger "statechange"
+        @handle(request, response)
+      $(global).trigger("statechange")
     else
       console.warn "History not enabled"
 

@@ -1,22 +1,22 @@
 # @module
 Tower.Support.I18n =
   PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g
-  defaultLanguage: "en"
+  defaultLanguage: 'en'
 
   load: (pathOrObject, language = @defaultLanguage) ->
     store     = @store()
     language  = store[language] ||= {}
-    _.deepMerge(language, if typeof(pathOrObject) == "string" then require(pathOrObject) else pathOrObject)
+    _.deepMerge(language, if typeof(pathOrObject) == 'string' then require(pathOrObject) else pathOrObject)
     @
 
   translate: (key, options = {}) ->
-    if options.hasOwnProperty("tense")
+    if options.hasOwnProperty('tense')
       key += ".#{options.tense}"
-    if options.hasOwnProperty("count")
+    if options.hasOwnProperty('count')
       switch options.count
-        when 0 then key += ".none"
-        when 1 then key += ".one"
-        else key += ".other"
+        when 0 then key += '.none'
+        when 1 then key += '.one'
+        else key += '.other'
 
     @interpolate(@lookup(key, options.language), options)
 
@@ -24,7 +24,7 @@ Tower.Support.I18n =
     @translate arguments...
 
   lookup: (key, language = @defaultLanguage) ->
-    parts   = key.split(".")
+    parts   = key.split('.')
     result  = @store()[language]
 
     try

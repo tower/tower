@@ -25,6 +25,7 @@ Tower.Controller.Metadata =
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
       helpers                 = _.copyArray(superMetadata.helpers)
       belongsTo               = _.copyArray(superMetadata.belongsTo)
+      subscriptions           = _.copyArray(superMetadata.subscriptions)
       
       callbacks               = {}
       
@@ -43,6 +44,7 @@ Tower.Controller.Metadata =
         callbacks:            callbacks
         helpers:              helpers
         belongsTo:            belongsTo
+        subscriptions:        subscriptions
 
       result
 

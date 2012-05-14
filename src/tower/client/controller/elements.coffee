@@ -19,23 +19,20 @@ Tower.Controller.Elements =
 
     submitHandler: (name, handler, options) ->
       $(@dispatcher).on name, options.target, (event) =>
-        try
-          target    = $(event.target)
-          form      = target.closest("form")
-          action    = form.attr("action")
-          method    = (form.attr("data-method") || form.attr("method")).toUpperCase()
-          params    = form.serializeParams()
+        target    = $(event.target)
+        form      = target.closest("form")
+        action    = form.attr("action")
+        method    = (form.attr("data-method") || form.attr("method")).toUpperCase()
+        params    = form.serializeParams()
 
-          params.method = method
-          params.action = action
+        params.method = method
+        params.action = action
 
-          elements  = _.extend {target: target, form: form}, {}#, @extractElements(target, options)
+        elements  = _.extend {target: target, form: form}, {}#, @extractElements(target, options)
+        
+        event.data = elements: elements, params: params
 
-          @_dispatch event, handler, elements: elements, params: params
-        catch error
-          console.log error
-
-        return false
+        @_dispatch event, handler, event.data
 
     invalidForm: ->
       element = $("##{@resourceName}-#{@elementName}")

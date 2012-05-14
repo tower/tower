@@ -1,9 +1,8 @@
 Tower.HTTP.Agent::request = (method, path, options, callback) ->
   if typeof options == "function"
-    callback  = options
-    options   = {}
-  options   ||= {}
-  headers     = options.headers || {}
-  params      = options.params  || {}
+    callback      = options
+    options       = {}
+  options       ||= {}
+  url             = path
   
-  History.pushState
+  History.pushState(null, null, url)

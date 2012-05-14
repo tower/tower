@@ -12,14 +12,14 @@ Tower.Model.Cursor.Finders =
     applyMatching: (method, records) ->
       subscriptions = Tower.Model.Cursor.subscriptions
       
-      return unless subscriptions.length
+      return records unless subscriptions.length
       
       app = Tower.Application.instance()
       
       for key in subscriptions
         app[key][method](records)
         
-      undefined
+      records
       
   find: (callback) ->
     @_find(callback)
