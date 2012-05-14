@@ -59,7 +59,7 @@ describeWith = (store) ->
     describe 'persistence', ->    
       beforeEach (done) ->
         data = []
-        data.push(coordinates) for name, coordinates of places
+        data.push(placeCoordinates) for name, placeCoordinates of places
         
         iterator = (coordinates, next) ->
           App.Address.insert coordinates: coordinates, next
