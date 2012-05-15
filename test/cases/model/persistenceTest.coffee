@@ -156,4 +156,4 @@ describeWith = (store) ->
       test 'reload'
 
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+describeWith(Tower.Store.Mongodb) unless Tower.client

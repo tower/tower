@@ -21,7 +21,6 @@ class Tower.Application extends Tower.Engine
   @before "initialize", "setDefaults"
 
   setDefaults: ->
-    Tower.Model.default "store", Tower.Store.MongoDB
     Tower.Model.field "id", type: "Id"
     true
 
@@ -126,7 +125,7 @@ class Tower.Application extends Tower.Engine
           config  = {}
 
         Tower.config[key] = config if _.isPresent(config)
-
+      
       Tower.Application.Assets.loadManifest()
 
       paths = File.files("#{Tower.root}/config/locales")
@@ -138,6 +137,7 @@ class Tower.Application extends Tower.Engine
 
       requirePaths File.files("#{Tower.root}/config/initializers")
 
+      self.configureStores Tower.config.databases
       self.stack()
       
       requirePaths File.files("#{Tower.root}/app/helpers")
@@ -148,7 +148,7 @@ class Tower.Application extends Tower.Engine
       for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
-      done()
+      done() if done
 
     @runCallbacks "initialize", initializer, complete
 
@@ -169,10 +169,26 @@ class Tower.Application extends Tower.Engine
     else
       @server.use args...
 
+  configureStores: (configuration = {}) ->
+    defaultStoreSet = false
+    
+    for databaseName, databaseConfig of configuration
+      store = Tower.constant("Tower.Store.#{Tower.Support.String.camelize(databaseName)}")
+      
+      if !defaultStoreSet || databaseConfig.default
+        Tower.Model.default( "store", store )
+        defaultStoreSet = true
+      
+      Tower.callback "initialize", name: "#{store.className}.initialize", (done) ->
+        try store.configure Tower.config.databases[databaseName][Tower.env]
+        store.initialize done
+
+    
   stack: ->
     configs     = @constructor.initializers()
     self        = @
     
+      
     #@server.configure ->
     for config in configs
       config.call(self)
