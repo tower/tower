@@ -13,17 +13,6 @@ class Tower.Controller extends Tower.Class
   @reopenClass Tower.Support.EventEmitter
   @include  Tower.Support.EventEmitter
   
-  if Tower.isClient
-    @extended: ->
-      object  = {}
-      name    = @className()
-    
-      object[Tower.Support.String.camelize(name, true)] = Ember.computed(->
-        Tower.namespace()[name].create()
-      ).cacheable()
-    
-      Tower.namespace().reopen(object)
-  
   @instance: ->
     @_instance ||= new @
 

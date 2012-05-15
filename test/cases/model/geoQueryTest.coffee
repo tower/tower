@@ -13,9 +13,11 @@ coordinates =
   paris:  places["Eiffel Tower, Paris"]
   moscow: places["Kremlin, Moscow"]
   london: places["London Eye"]
+  
+placeCoordinates = coordinates.paris
 
 describeWith = (store) ->
-  describe "Tower.Geo (Tower.Store.#{store.name})", ->
+  describe "Tower.Geo (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       store.clean =>
         App.Address.store(store)
@@ -67,7 +69,7 @@ describeWith = (store) ->
         async.forEachSeries data, iterator, done
         
       test 'near', (done) ->
-        paris = coordinates.paris
+        paris = placeCoordinates
         
         App.Address.near(lat: paris.latitude, lng: paris.longitude).all (error, records) =>
           assert.equal records.length, 7

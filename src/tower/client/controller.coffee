@@ -2,6 +2,16 @@ require './controller/elements'
 require './controller/events'
 require './controller/handlers'
 
+Tower.Controller.reopenClass extended: ->
+  object  = {}
+  name    = @className()
+
+  object[Tower.Support.String.camelize(name, true)] = Ember.computed(->
+    Tower.namespace()[name].create()
+  ).cacheable()
+
+  Tower.namespace().reopen(object)
+
 Tower.Controller.include Tower.Controller.Elements
 Tower.Controller.include Tower.Controller.Events
 Tower.Controller.include Tower.Controller.Handlers
