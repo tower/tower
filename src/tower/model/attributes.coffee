@@ -32,6 +32,7 @@ Tower.Model.Attributes =
     #
     # @return [Tower.Model.Attribute]
     field: (name, options) ->
+      # @todo convert this to Ember.Map so it's an ordered set
       @fields()[name] = new Tower.Model.Attribute(@, name, options)
 
     # The set of fields for the model.
