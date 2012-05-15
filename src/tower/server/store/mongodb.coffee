@@ -7,7 +7,6 @@ require './mongodb/finders'
 require './mongodb/persistence'
 require './mongodb/serialization'
 
-Tower.Store.MongoDB.include Tower.Store.Memory.Serialization
 Tower.Store.MongoDB.include Tower.Store.MongoDB.Configuration
 Tower.Store.MongoDB.include Tower.Store.MongoDB.Database
 Tower.Store.MongoDB.include Tower.Store.MongoDB.Finders
