@@ -10,7 +10,7 @@ Tower.View.AssetHelper =
     return null
 
   javascript: ->
-    javascripts.apply @, arguments
+    javascripts.apply(@, arguments)
 
   stylesheets: ->
     sources = _.args(arguments)

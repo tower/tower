@@ -35,6 +35,12 @@ sudo npm install design.io -g
 npm install tower -g
 ```
 
+If you want to hack around in the Tower source, install design.io locally.  It's not included in Tower's `package.json` because I haven't found a way for places like Heroku to ignore `"devDependencies"`, and it has a ruby dependency so I'm leaving it out for now.  Run this in the root directory of your locally cloned Tower repo:
+
+```
+npm install design.io design.io-javascripts
+```
+
 ## Generate
 
 ``` bash

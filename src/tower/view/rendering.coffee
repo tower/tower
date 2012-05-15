@@ -26,7 +26,7 @@ Tower.View.Rendering =
     @_renderString(template, options, callback)
 
   renderWithEngine: (template, engine) ->
-    if Tower.client
+    if Tower.isClient
       "(#{template}).call(this);"
     else
       mint = require("mint")
@@ -56,29 +56,9 @@ Tower.View.Rendering =
   # @private
   _renderString: (string, options = {}, callback) ->
     if !!options.type.match(/coffee/)
-      e       = null
-      result  = null
-      # tmp hack
-      coffeecup = Tower.modules.coffeecup
-      try
-        locals          = options.locals
-        locals.renderWithEngine = @renderWithEngine
-        locals._readTemplate = @_readTemplate
-        locals.cache    = Tower.env != "development"
-        locals.format   = true
-        hardcode        = Tower.View.helpers
-        hardcode        = _.extend(hardcode, tags: Tower.View.coffeecupTags)#_.inject(tags, ((hash, i) -> hash[i] = true; hash), {}))
-        locals.hardcode = hardcode
-        locals._ = _
-        
-        result = coffeecup.render string, locals
-      catch error
-        e = error
-        console.log e.stack
-
-      callback e, result
+      @_renderCoffeecupString(string, options, callback)
     else if options.type
-      mint = require "mint"
+      mint = require("mint")
       string = string() if typeof string == 'function'
       engine = mint.engine(options.type)
       # need to fix this on mint.js repo
@@ -87,10 +67,32 @@ Tower.View.Rendering =
       else
         mint[engine](string, options.locals, callback)
     else
-      mint = require "mint"
       engine = require("mint")
       options.locals.string = string
       engine.render(options.locals, callback)
+      
+  _renderCoffeecupString: (string, options, callback) ->
+    e       = null
+    result  = null
+    # tmp hack
+    coffeecup = Tower.modules.coffeecup
+    try
+      locals          = options.locals
+      locals.renderWithEngine = @renderWithEngine
+      locals._readTemplate = @_readTemplate
+      locals.cache    = Tower.env != "development"
+      locals.format   = true
+      hardcode        = Tower.View.helpers
+      hardcode        = _.extend(hardcode, tags: Tower.View.coffeecupTags)#_.inject(tags, ((hash, i) -> hash[i] = true; hash), {}))
+      locals.hardcode = hardcode
+      locals._ = _
+      
+      result = coffeecup.render string, locals
+    catch error
+      e = error
+      console.log e.stack
+
+    callback(e, result)
 
   # @private
   _renderingContext: (options) ->
