@@ -1,4 +1,7 @@
 module.exports =
+  memory:
+    test:
+      default: true
   mongodb:
     development:
       name: "client-development"

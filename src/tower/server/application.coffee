@@ -173,8 +173,13 @@ class Tower.Application extends Tower.Engine
     defaultStoreSet = false
     
     for databaseName, databaseConfig of configuration
-      store = Tower.constant("Tower.Store.#{Tower.Support.String.camelize(databaseName)}")
+      storeClassName = "Tower.Store.#{Tower.Support.String.camelize(databaseName)}"
       
+      try 
+        store = Tower.constant(storeClassName) # This will find Tower.Store.Memory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
+      catch error
+        store = require "./store/#{databaseName}"
+
       if !defaultStoreSet || databaseConfig.default
         Tower.Model.default( "store", store )
         defaultStoreSet = true
