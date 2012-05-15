@@ -46,7 +46,56 @@ describe 'Tower.Store', ->
       
   test '.defaultLimit', ->
     assert.equal Tower.Store.defaultLimit, 100
+  
+  describe 'configuration', ->
+    withReconfiguredDatabase = (configuration, block) ->
+      Tower.Application.configNames = _.without Tower.Application.configNames, "databases"
+      Tower.Application.instance().initialize
+      Tower.config.databases = configuration
+      
+      block.call
+      
+      Tower.Application.configNames.push 'databases'
+      
+    test 'should set the default model store to Tower.Store.Memory if no databases are in the config', ->
+      configuration = {}
+      withReconfiguredDatabase configuration, =>
+        assert.equal Tower.Store.Memory, Tower.Model.default('store')
     
+    test 'should set the default model store to the first database seen in the database config for the current environment if none are marked as default', ->
+      configuration =
+        mongodb:
+          production:
+            name: "client-production"
+            port: 27017
+            host: "127.0.0.1"
+        redis:
+          production:
+            name: "client-production"
+            host: "127.0.0.1"
+            port: 6837
+      
+      withReconfiguredDatabase configuration, =>
+        assert.equal Tower.Store.Mongodb, Tower.Model.default('store')
+
+    test 'should set the default model store to the database marked as default in the database config for the current environment', ->
+      configuration =
+        redis:
+          production:
+            name: "client-production"
+            host: "127.0.0.1"
+            port: 6837
+        mongodb:
+          production:
+            name: "client-production"
+            port: 27017
+            host: "127.0.0.1"
+            default: true
+      
+      withReconfiguredDatabase configuration, =>
+        assert.equal Tower.Store.Mongodb, Tower.Model.default('store')
+      
+  
   describe '#update', ->
     test '{ $push : { field : value }'
 

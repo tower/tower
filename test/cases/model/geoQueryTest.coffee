@@ -61,7 +61,7 @@ describeWith = (store) ->
     describe 'persistence', ->    
       beforeEach (done) ->
         data = []
-        data.push(coordinates) for name, coordinates of places
+        data.push(placeCoordinates) for name, placeCoordinates of places
         
         iterator = (coordinates, next) ->
           App.Address.insert coordinates: coordinates, next
@@ -80,5 +80,5 @@ describeWith = (store) ->
         test 'within(5, "miles")'
         test 'within(distance: 5, unit: "miles")'
 
-describeWith(Tower.Store.MongoDB) unless Tower.client
+describeWith(Tower.Store.Mongodb) unless Tower.client
 # describeWith(Tower.Store.Memory)

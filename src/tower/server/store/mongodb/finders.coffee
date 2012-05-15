@@ -1,5 +1,5 @@
 # @module
-Tower.Store.MongoDB.Finders =
+Tower.Store.Mongodb.Finders =
   # Find and return an array of documents.
   #
   # @param [Tower.Model.Scope] criteria A criteria object with all of the query information.
@@ -57,4 +57,4 @@ Tower.Store.MongoDB.Finders =
 
     undefined
 
-module.exports = Tower.Store.MongoDB.Finders
+module.exports = Tower.Store.Mongodb.Finders

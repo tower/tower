@@ -6,9 +6,9 @@ Tower.Model.Cursor.Operations =
   # Join commands.
   #
   # For databases that don't offer joining, it's still useful.
-  # For example, in MongoDB, we can use it for 'hasMany through' relations:
+  # For example, in Mongodb, we can use it for 'hasMany through' relations:
   # where in SQL you can use JOIN for this,
-  # in MongoDB we can find the ids first, then append them to our query.
+  # in Mongodb we can find the ids first, then append them to our query.
   #
   # @example Join comments to Post
   #   App.Post.joins('comments').all()

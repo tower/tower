@@ -67,7 +67,7 @@ _.extend Tower,
     @metadata[name] ||= {}
 
   # @example
-  #     Tower.hook "Tower.Store.MongoDB.load", after: "config.locales"
+  #     Tower.hook "Tower.Store.Mongodb.load", after: "config.locales"
   #     Tower.callback "initialize", name: "addRoutingPaths", after: "config.locales"
   # Uses Tower.Support.Callback internally
   callback: ->
@@ -119,7 +119,7 @@ _.extend Tower,
       when "snakecase"
         Tower.Support.String.underscore(string)
       else
-        Tower.Support.String.camelcase(string)
+        Tower.Support.String.camelize(string)
 
   namespace:  ->
     Tower.Application.instance().constructor.className()

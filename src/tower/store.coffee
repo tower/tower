@@ -63,10 +63,18 @@ class Tower.Store extends Tower.Class
     0:            false
     0.0:          false
 
-  supports: {}
+  @configure: (options) ->
+    @config = options
+
+  @initialize: (callback) ->
+    callback() if callback
+
+  @env: ->
+    @config
+
+  supports: {}  
 
   addIndex: (name, options) ->
-
 
   serialize: (data, saved = false) ->
     data[i] = @serializeModel(item, saved) for item, i in data

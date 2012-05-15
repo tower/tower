@@ -10,7 +10,7 @@ Tower.Model.Persistence =
     #
     # @example Define the store from a store class
     #   class App.User extends Tower.Model
-    #     @store Tower.Store.MongoDB
+    #     @store Tower.Store.Mongodb
     #
     # @example Define the store from an object (uses {Tower.Model.default('store')})
     #   class App.Person extends Tower.Model

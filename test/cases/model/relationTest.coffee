@@ -442,4 +442,4 @@ describeWith = (store) ->
           #      child.idCacheFalse_idCacheTrue
 ###
 describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.MongoDB) unless Tower.client
+describeWith(Tower.Store.Mongodb) unless Tower.client
