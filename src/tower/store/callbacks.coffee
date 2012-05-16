@@ -1,6 +1,6 @@
 Tower.Store.Callbacks =  
   # Prepare the criteria before you execute {#create},
-  # perhaps for mimicking join tables in MongoDB.
+  # perhaps for mimicking join tables in Mongodb.
   #
   # @return [void] Requires a callback.
   runBeforeInsert: (criteria, callback) ->

@@ -1,5 +1,5 @@
 # @module
-Tower.Store.MongoDB.Serialization =
+Tower.Store.Mongodb.Serialization =
   serializeModel: (attributes, saved = false) ->
     return attributes if attributes instanceof Tower.Model
     klass = Tower.constant(@className)
@@ -200,4 +200,4 @@ Tower.Store.MongoDB.Serialization =
   decodeId: (value) ->
     value.toString()
 
-module.exports = Tower.Store.MongoDB.Serialization
+module.exports = Tower.Store.Mongodb.Serialization

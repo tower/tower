@@ -44,7 +44,7 @@ Tower.Model.Relations =
     # @param [String] name name of the association
     # @param [Object] options association options
     # @option options [String] as polymorphic key, if the associated object's relationship is polymorphic
-    # @option options [Boolean] embed if true, the data store will try to embed the data in the record (MongoDB currently)
+    # @option options [Boolean] embed if true, the data store will try to embed the data in the record (Mongodb currently)
     #
     # @return [Tower.Model.Relation.HasMany]
     hasMany: (name, options = {}) ->
@@ -58,7 +58,7 @@ Tower.Model.Relations =
     # @param [String] name name of the association
     # @param [Object] options association options
     # @option options [String] as polymorphic key, if the associated object's relationship is polymorphic
-    # @option options [Boolean] embed if true, the data store will try to embed the data in the record (MongoDB currently)
+    # @option options [Boolean] embed if true, the data store will try to embed the data in the record (Mongodb currently)
     #
     # @return [Tower.Model.Relation.BelongsTo]
     belongsTo: (name, options) ->

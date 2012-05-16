@@ -127,4 +127,4 @@ describeWith = (store) ->
   
 describeWith(Tower.Store.Memory)
 unless Tower.client
-  describeWith(Tower.Store.MongoDB)
+  describeWith(Tower.Store.Mongodb)

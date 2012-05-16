@@ -274,4 +274,4 @@ describeWith(Tower.Store.Memory)
 if Tower.isClient
   describeWith(Tower.Store.Ajax)
 else
-  describeWith(Tower.Store.MongoDB)
+  describeWith(Tower.Store.Mongodb)

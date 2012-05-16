@@ -218,4 +218,4 @@ describeWith = (store) ->
             done()
   ###  
 #describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.Store.Mongodb)

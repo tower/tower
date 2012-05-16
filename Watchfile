@@ -11,8 +11,6 @@ require("design.io-javascripts")
   compress: false
   debug:    false
   ignore:   /(lib\/|public|node_modules|server\.js|spec|test|dist|generators\/.+\/templates)/
-  #outputPath: (path) ->
-  #  "spec/tmp/test.css"
   write: (path, string) ->
     path = path.replace(/^(src)/, "lib").replace(/\.(js|coffee)/, ".js")
     try

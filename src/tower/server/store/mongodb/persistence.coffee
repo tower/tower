@@ -1,5 +1,5 @@
 # @module
-Tower.Store.MongoDB.Persistence =
+Tower.Store.Mongodb.Persistence =
   # @see Tower.Store#insert
   insert: (criteria, callback) ->
     record      = @serializeModel(criteria.data[0], false)
@@ -42,4 +42,4 @@ Tower.Store.MongoDB.Persistence =
 
     undefined
 
-module.exports = Tower.Store.MongoDB.Persistence
+module.exports = Tower.Store.Mongodb.Persistence
