@@ -38,3 +38,4 @@ test/example/public/javascripts
 tmp
 lib/
 dist/
+config.json
