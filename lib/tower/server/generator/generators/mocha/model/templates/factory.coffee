@@ -1,2 +1,0 @@
-Tower.Factory '<%= model.name %>', ->
-  
