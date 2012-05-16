@@ -25,6 +25,6 @@ class Tower.HTTP.Cookies
     new @(result)
 
   constructor: (attributes = {}) ->
-    @[key] = value for key, value of attributes
+    _.extend(@, attributes)
 
 module.exports = Tower.HTTP.Cookies

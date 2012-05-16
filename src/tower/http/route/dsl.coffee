@@ -4,7 +4,8 @@ class Tower.HTTP.Route.DSL
 
   match: ->
     @scope ||= {}
-    Tower.HTTP.Route.create(new Tower.HTTP.Route(@_extractOptions(arguments...)))
+    route = new Tower.HTTP.Route(@_extractOptions(arguments...))
+    Tower.HTTP.Route.create(route)
 
   get: ->
     @matchMethod("get", _.args(arguments))
@@ -17,6 +18,8 @@ class Tower.HTTP.Route.DSL
 
   delete: ->
     @matchMethod("delete", _.args(arguments))
+    
+  destroy: @::delete
 
   matchMethod: (method, args) ->
     if typeof args[args.length - 1] == "object"
@@ -29,7 +32,7 @@ class Tower.HTTP.Route.DSL
     options.action  = name
     options.name    = name
     if @_scope.name
-      options.name = @_scope.name + Tower.Support.String.camelize(options.name)
+      options.name = @_scope.name + _.camelize(options.name)
 
     path = "/#{name}"
     path = @_scope.path + path if @_scope.path
@@ -39,9 +42,9 @@ class Tower.HTTP.Route.DSL
 
   scope: (options = {}, block) ->
     originalScope = @_scope ||= {}
-    @_scope = _.extend {}, originalScope, options
+    @_scope       = _.extend({}, originalScope, options)
     block.call(@)
-    @_scope = originalScope
+    @_scope       = originalScope
     @
 
   controller: (controller, options, block) ->
@@ -58,7 +61,7 @@ class Tower.HTTP.Route.DSL
     options = _.extend(name: path, path: path, as: path, module: path, shallowPath: path, shallowPrefix: path, options)
 
     if options.name && @_scope.name
-      options.name = @_scope.name + Tower.Support.String.camelize(options.name)
+      options.name = @_scope.name + _.camelize(options.name)
 
     @scope(options, block)
 
@@ -74,43 +77,48 @@ class Tower.HTTP.Route.DSL
     path = @_scope.path + path if @_scope.path
 
     if @_scope.name
-      name = @_scope.name + Tower.Support.String.camelize(name)
+      name = @_scope.name + _.camelize(name)
+      
+    camelName = _.camelize(name)
 
-    @match "#{path}/new", _.extend({name: "new#{Tower.Support.String.camelize(name)}", action: "new"}, options)
-    @match "#{path}", _.extend({action: "create", method: "POST"}, options)
-    @match "#{path}", _.extend({name:name, action: "show"}, options)
-    @match "#{path}/edit", _.extend({name:"edit#{Tower.Support.String.camelize(name)}", action: "edit"}, options)
-    @match "#{path}", _.extend({action: "update", method: "PUT"}, options)
-    @match "#{path}", _.extend({action: "destroy", method: "DELETE"}, options)
+    @match "#{path}/new",   _.extend(action: "new",     state: "#{name}.new",     name: "new#{camelName}", options)
+    @match path,            _.extend(action: "create",  state: "#{name}.create",  method: "POST", options)
+    @match path,            _.extend(action: "show",    state: "#{name}.show",    name: name, options)
+    @match "#{path}/edit",  _.extend(action: "edit",    state: "#{name}.edit",    name:"edit#{camelName}", options)
+    @match path,            _.extend(action: "update",  state: "#{name}.update",  method: "PUT", options)
+    @match path,            _.extend(action: "destroy", state: "#{name}.destroy", method: "DELETE", options)
 
-  resources: (name, options, callback) ->
+  resources: (name, options, block) ->
     if typeof options == 'function'
-      callback = options
-      options  = {}
+      block     = options
+      options   = {}
     else
-      options  = {}
+      options   = {}
     options.controller ||= name
 
     path = "/#{name}"
     path = @_scope.path + path if @_scope.path
 
     if @_scope.name
-      many = @_scope.name + Tower.Support.String.camelize(name)
+      many = @_scope.name + _.camelize(name)
     else
       many = name
+      
+    one   = _.singularize(many)
 
-    one   = Tower.Support.String.singularize(many)
+    camelOne = _.camelize(one)
 
-    @match "#{path}", _.extend({name: "#{many}", action: "index"}, options)
-    @match "#{path}/new", _.extend({name: "new#{Tower.Support.String.camelize(one)}", action: "new"}, options)
-    @match "#{path}", _.extend({action: "create", method: "POST"}, options)
-    @match "#{path}/:id", _.extend({name: "#{one}", action: "show"}, options)
-    @match "#{path}/:id/edit", _.extend({name: "edit#{Tower.Support.String.camelize(one)}", action: "edit"}, options)
-    @match "#{path}/:id", _.extend({action: "update", method: "PUT"}, options)
-    @match "#{path}/:id", _.extend({action: "destroy", method: "DELETE"}, options)
+    @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, options)
+    @match "#{path}/new",       _.extend(action: "new",     state: "#{many}.new",     name: "new#{camelOne}", options)
+    @match path,                _.extend(action: "create",  state: "#{many}.create",  method: "POST", options)
+    @match "#{path}/:id",       _.extend(action: "show",    state: "#{many}.show",    name: one, options)
+    @match "#{path}/:id/edit",  _.extend(action: "edit",    state: "#{many}.edit",    name: "edit#{camelOne}", options)
+    @match "#{path}/:id",       _.extend(action: "update",  state: "#{many}.update",  method: "PUT", options)
+    @match "#{path}/:id",       _.extend(action: "destroy", state: "#{many}.destroy", method: "DELETE", options)
 
-    if callback
-      @scope _.extend({path: "#{path}/:#{Tower.Support.String.singularize(name)}Id", name: one}, options), callback
+    if block
+      @scope _.extend(path: "#{path}/:#{_.singularize(name)}Id", name: one, options), block
+
     @
 
   collection: ->
@@ -149,6 +157,7 @@ class Tower.HTTP.Route.DSL
       controller:     controller
       anchor:         anchor
       ip:             options.ip
+      state:          options.state
 
     options
 
@@ -187,8 +196,7 @@ class Tower.HTTP.Route.DSL
 
     throw new Error("No controller was specified for the route #{options.path}") unless controller
 
-    controller  = Tower.Support.String.camelize(controller).replace(/(?:[cC]ontroller)?$/, "Controller")
-    #action      = action.toLowerCase()
+    controller  = _.camelize(controller).replace(/(?:[cC]ontroller)?$/, "Controller")
 
     name: controller, action: action, className: controller
 

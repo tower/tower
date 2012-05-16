@@ -96,6 +96,7 @@ class Tower.HTTP.Route extends Tower.Class
     @keys         = []
     @pattern      = @extractPattern(@path)
     @id           = @path
+    @state        = options.state
     if @controller
       @id += @controller.name + @controller.action
       
@@ -173,10 +174,5 @@ class Tower.HTTP.Route extends Tower.Class
 Tower.Route = Tower.HTTP.Route
 
 require './route/dsl'
-require './route/urls'
-require './route/polymorphicUrls'
-
-Tower.HTTP.Route.include Tower.HTTP.Route.Urls
-Tower.HTTP.Route.include Tower.HTTP.Route.PolymorphicUrls
 
 module.exports = Tower.HTTP.Route

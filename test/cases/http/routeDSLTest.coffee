@@ -393,3 +393,39 @@ describe "Tower.Dispatch.Route.DSL", ->
   describe 'namespace', ->
   
   test 'root'
+###  
+  describe 'states', ->
+    beforeEach ->
+      Tower.Route.clear()
+      
+    test 'explicit paths like /login and /some/path', ->
+      Tower.Route.draw ->
+        @match '/login', to: 'sessions#create', as: 'login'
+        @match '/logout', to: 'sessions#destroy', as: 'logout'
+        
+        @match '/some/path', to: 'sessions#update'
+
+      assert.equal Tower.stateManager.getPath('currentState.name'), 'root'
+      
+      Tower.stateManager.goToState('login')
+      
+      assert.equal Tower.stateManager.getPath('currentState.name'), 'login'
+      
+      Tower.stateManager.goToState('some.path')
+      
+      assert.equal Tower.stateManager.getPath('currentState.name'), 'path'
+      assert.equal Tower.stateManager.getPath('currentState.path'), 'some.path'
+      
+    test 'resourceful routes', ->
+      Tower.Route.draw ->
+        @resources 'posts'
+
+      Tower.stateManager.goToState('posts.index')
+      assert.equal Tower.stateManager.getPath('currentState.path'), 'posts.index'
+
+      Tower.stateManager.goToState('posts.new')
+      assert.equal Tower.stateManager.getPath('currentState.path'), 'posts.new'
+
+      Tower.stateManager.goToState('posts.create')
+      assert.equal Tower.stateManager.getPath('currentState.path'), 'posts.create'
+###

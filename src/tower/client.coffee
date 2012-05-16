@@ -27,3 +27,6 @@ require './controller'
 require './client/controller'
 require './http'
 require './middleware'
+
+Tower.goTo = (string, params) ->
+  History.pushState(params, params.title, string)

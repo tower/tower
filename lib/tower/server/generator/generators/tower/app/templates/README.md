@@ -35,3 +35,7 @@ Read up on [testing Tower.js apps](http://towerjs.org/guides/testing).
 - [Stylus](http://learnboost.github.com/stylus/)
 
 If all else fails, see the [Rails Guides](http://guides.rubyonrails.org/), should be fairly close.
+
+---
+
+Built on Tower.js

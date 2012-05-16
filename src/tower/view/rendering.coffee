@@ -55,6 +55,10 @@ Tower.View.Rendering =
 
   # @private
   _renderString: (string, options = {}, callback) ->
+    ###
+    if Tower.isClient
+      Tower.stateManager.set('currentView', Ember.View.create(template: Ember.compile(string)))
+    ###
     if !!options.type.match(/coffee/)
       @_renderCoffeecupString(string, options, callback)
     else if options.type
@@ -77,7 +81,7 @@ Tower.View.Rendering =
     # tmp hack
     coffeecup = Tower.modules.coffeecup
     try
-      locals          = options.locals
+      locals          = options.locals || {}
       locals.renderWithEngine = @renderWithEngine
       locals._readTemplate = @_readTemplate
       locals.cache    = Tower.env != "development"
@@ -96,17 +100,17 @@ Tower.View.Rendering =
 
   # @private
   _renderingContext: (options) ->
-    locals  = this
-    _ref    = @_context
-    for key of _ref
-      value = _ref[key]
-      locals[key] = value  unless key.match(/^(constructor|head)/)
+    locals  = @
+    context = @_context
+    for key, value of context
+      locals[key] = value unless key.match(/^(constructor|head)/)
     locals = _.modules(locals, options.locals)
     locals.pretty = true  if @constructor.prettyPrint
     locals
 
   # @private
   _readTemplate: (template, prefixes, ext) ->
+    # can be a string or function
     return template unless typeof template == "string"
     options   = {path: template, ext: ext, prefixes: prefixes}
     store     = @constructor.store()

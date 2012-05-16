@@ -9,6 +9,7 @@ class Tower.Model.Scope
     'exists'
     'instantiate'
     'pluck'
+    'live'
   ]
 
   @persistenceMethods: [
@@ -85,6 +86,11 @@ class Tower.Model.Scope
   # @param [Object] object an object or array of objects.
   has: (object) ->
     @cursor.has(object)
+  
+  # tells us we want to register it to the cursors list
+  # might rename to [live, subscribe, publish, io]
+  live: ->
+    @
 
   # Builds one or many records based on the scope's cursor.
   #

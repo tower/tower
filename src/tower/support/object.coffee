@@ -139,7 +139,7 @@ Tower.Support.Object =
   #
   # @return [Boolean]
   isPresent: (object) ->
-    !@isBlank(object)
+    !Tower.Support.Object.isBlank(object)
 
   # Checks if the object is "blank", defined below.
   #

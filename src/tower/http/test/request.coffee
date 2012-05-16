@@ -1,1 +1,0 @@
-class Tower.HTTP.Test.Request extends Tower.HTTP.Request
