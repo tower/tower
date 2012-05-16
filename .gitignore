@@ -36,4 +36,4 @@ test/example/README.md
 test/example/package.json
 test/example/public/javascripts
 tmp
-lib/
+lib
