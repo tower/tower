@@ -77,6 +77,7 @@ class Tower.Model.Scope
     '$neq':       '$neq'
     '$null':      '$null'
     '$notNull':   '$notNull'
+    '$near':      '$near'
     
   constructor: (cursor) ->
     @cursor = cursor

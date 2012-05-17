@@ -1,13 +1,13 @@
 address = null
 
 places =
-  "Brandenburg Gate, Berlin":    {latitude: 52.516272, longitude: 13.377722}
-  "Dortmund U-Tower":            {latitude: 51.515, longitude: 7.453619}
-  "London Eye":                  {latitude: 51.503333, longitude: -0.119722}
-  "Kremlin, Moscow":             {latitude: 55.751667, longitude: 37.617778}
-  "Eiffel Tower, Paris":         {latitude: 48.8583, longitude: 2.2945}
-  "Riksdag building, Stockholm": {latitude: 59.3275, longitude: 18.0675}
-  "Royal Palace, Oslo":          {latitude: 59.916911, longitude: 10.727567}
+  "Brandenburg Gate, Berlin":    {lat: 52.516272, lng: 13.377722}
+  "Dortmund U-Tower":            {lat: 51.515, lng: 7.453619}
+  "London Eye":                  {lat: 51.503333, lng: -0.119722}
+  "Kremlin, Moscow":             {lat: 55.751667, lng: 37.617778}
+  "Eiffel Tower, Paris":         {lat: 48.8583, lng: 2.2945}
+  "Riksdag building, Stockholm": {lat: 59.3275, lng: 18.0675}
+  "Royal Palace, Oslo":          {lat: 59.916911, lng: 10.727567}
   
 coordinates =
   paris:  places["Eiffel Tower, Paris"]
@@ -68,17 +68,19 @@ describeWith = (store) ->
         
         async.forEachSeries data, iterator, done
         
-      test 'near', (done) ->
-        paris = placeCoordinates
-        
-        App.Address.near(lat: paris.latitude, lng: paris.longitude).all (error, records) =>
+      test 'near', ->
+        App.Address.near(lat: placeCoordinates.lat, lng: placeCoordinates.lng).all (error, records) =>
           assert.equal records.length, 7
-          done()
+          assert.deepEqual records[0].get('coordinates'), placeCoordinates
           
       describe 'within', ->
-        test 'within(5)'
+        test 'within(5)', ->
+          App.Address.near(lat: placeCoordinates.lat, lng: placeCoordinates.lng).within(5).all (error, records) => 
+            assert.equal records.length, 1
+            assert.deepEqual records[0].get('coordinates'), placeCoordinates
+          
         test 'within(5, "miles")'
         test 'within(distance: 5, unit: "miles")'
 
 describeWith(Tower.Store.Mongodb) unless Tower.client
-# describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.Memory)

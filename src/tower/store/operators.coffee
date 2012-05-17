@@ -32,6 +32,7 @@ Tower.Store.Operators =
     '$size':      '$size'
     '$elemMatch': '$matchIn'
     '$matchIn':   '$matchIn'
+    '$maxDistance': '$maxDistance'
     
   select: (records, conditions) ->
     _.select records, (record) => @test(record, conditions)
@@ -41,7 +42,7 @@ Tower.Store.Operators =
     
   notMatching: (records, conditions) ->
     _.select records, (record) => !@test(record, conditions)
-    
+  
   test: (record, conditions) ->
     success = true
     
@@ -51,15 +52,14 @@ Tower.Store.Operators =
       else if key == '$nor'
         success = @nor record, value
       else
-        success = @testValue @_getValue(record, key), value
+        success = @testValue @_getValue(record, key), value, record
       
       return false unless success
     
     success
     
-  testValue: (recordValue, operators) ->
+  testValue: (recordValue, operators, record) ->
     success = true
-    self    = @
     
     switch typeof operators
       when 'number', 'string', 'undefined', 'null', 'NaN'
@@ -70,7 +70,7 @@ Tower.Store.Operators =
         else
           for key, value of operators
             if operator = Tower.Store.Operators.MAP[key]
-              success   = @[operator.replace('$', '')](recordValue, value)
+              success   = @[operator.replace('$', '')](recordValue, value, record)
             else
               success   = recordValue == operators
     
@@ -154,7 +154,10 @@ Tower.Store.Operators =
       return true if @test(item, value)
     
     false
-    
+  
+  maxDistance: (recordValue, distance, record) ->
+    distance? && record? && record.__distance? && record.__distance <= distance
+  
   exists: (recordValue) ->
     recordValue != undefined
   

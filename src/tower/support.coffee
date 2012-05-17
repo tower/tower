@@ -27,4 +27,6 @@ require './support/format'
 
 require './support/factory'
 
+Tower.Support.Geo = require('geolib')
+
 module.exports = Tower.Support
