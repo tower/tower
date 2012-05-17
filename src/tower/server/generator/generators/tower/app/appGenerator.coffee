@@ -23,7 +23,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "app", ->
         @inside "client", ->
           @inside "config", ->
-            @template "application.coffee"
+            @template "bootstrap.coffee"
           @directory "helpers"
           @inside "stylesheets", ->
             @template "application.styl"
@@ -54,6 +54,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "config", ->
         @template "application.coffee"
         @template "assets.coffee"
+        @template "bootstrap.coffee"
         @template "credentials.coffee"
         @template "databases.coffee"
         @template "routes.coffee"

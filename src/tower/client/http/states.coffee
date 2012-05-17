@@ -18,7 +18,7 @@ Tower.stateManager = Ember.StateManager.create
       enter: (manager, transition) ->
         @_super(manager, transition)
         
-        console.log "enter: #{@name}"
+        console.log "enter: #{@name}" if Tower.debug
         app         = Tower.Application.instance() #=> App
         controller  = Ember.get(app, name)
         
@@ -33,7 +33,9 @@ Tower.stateManager = Ember.StateManager.create
       
       exit: (manager, transition) ->
         @_super(manager, transition)
-        console.log "exit: #{@name}"
+        
+        console.log "exit: #{@name}" if Tower.debug
+        
         app         = Tower.Application.instance() #=> App
         controller  = Ember.get(app, name)
         
@@ -63,7 +65,6 @@ Tower.stateManager = Ember.StateManager.create
     n       = r.length
     
     while i < n
-      
       states = Ember.get(state, 'states')
       
       if !states

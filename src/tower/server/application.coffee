@@ -1,16 +1,9 @@
-
 connect = require('express')
 File    = require('pathfinder').File
 fs      = require('fs')
 server  = null
 io      = null
 
-###
-process.on 'uncaughtException', (error) ->
-  handlers = Tower.Application.instance().currentErrorHandlers
-  for handler in handlers
-    handler(error)
-###
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
@@ -81,6 +74,9 @@ class Tower.Application extends Tower.Engine
 
   @configure: (block) ->
     @initializers().push block
+    
+  configure: (block) ->
+    @constructor.configure(block)
 
   @initializers: ->
     @_initializers ||= []
@@ -104,6 +100,7 @@ class Tower.Application extends Tower.Engine
 
   initialize: (complete) ->
     require "#{Tower.root}/config/application"
+    require "#{Tower.root}/config/bootstrap"
     #@runCallbacks "initialize", null, complete
     configNames = @constructor.configNames
     reloadMap   = @constructor.reloadMap

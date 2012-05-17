@@ -30,3 +30,12 @@ require './middleware'
 
 Tower.goTo = (string, params) ->
   History.pushState(params, params.title, string)
+
+# compile pattern for location?
+# location = new RegExp(window.location.hostname)
+
+if typeof History != 'undefined'
+  Tower.history     = History
+  Tower.forward     = History.forward
+  Tower.back        = History.back
+  Tower.go          = History.go

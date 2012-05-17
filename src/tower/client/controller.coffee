@@ -5,12 +5,12 @@ require './controller/handlers'
 Tower.Controller.reopenClass extended: ->
   object  = {}
   name    = @className()
-
-  object[Tower.Support.String.camelize(name, true)] = Ember.computed(->
-    Tower.namespace()[name].create()
+  
+  object[_.camelize(name, true)] = Ember.computed(->
+    Tower.Application.instance()[name].create()
   ).cacheable()
 
-  Tower.namespace().reopen(object)
+  Tower.Application.instance().reopen(object)
 
 Tower.Controller.include Tower.Controller.Elements
 Tower.Controller.include Tower.Controller.Events

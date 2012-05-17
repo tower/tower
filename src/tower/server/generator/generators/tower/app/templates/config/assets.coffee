@@ -1,7 +1,8 @@
 module.exports =
   javascripts:
     application: [
-      "/app/client/config/application"
+      "/config/application"
+      "/app/client/config/bootstrap"
       "/config/routes"
       "/app/views/templates"
     ]

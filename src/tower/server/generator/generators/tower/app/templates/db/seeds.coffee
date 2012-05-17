@@ -22,9 +22,7 @@
 #         callback()
 #   ]
 
-async = require('async')
-
-async.series [
+_.series [
   
 ], (error) =>
   if error
