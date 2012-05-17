@@ -6,6 +6,9 @@ html ->
   body role: "application", ->
     #if browserIs "ie"
     #  javascriptTag "http://html5shiv.googlecode.com/svn/trunk/html5.js"
+    
+    script type: 'text/x-handlebars', 'data-template-name': 'posts/index', ->
+      p 'A TEMPLATE!'
       
     if hasContentFor "templates"
       yields "templates"

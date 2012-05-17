@@ -10,7 +10,20 @@ Tower.View.Rendering =
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
-
+    
+    # tmp
+    if Tower.isClient
+      try
+        view = @renderEmberView(options.template)
+        if view
+          callback.call(@, null, '') if callback
+          return
+        #else
+        #  callback.call(@, 'ERROR, no ember view', '') if callback
+      catch error
+        console.log(error.stack || error)
+        # callback.call(@, error) if callback
+      
     @_renderBody options, (error, body) =>
       return callback(error, body) if error
       @_renderLayout(body, options, callback)
