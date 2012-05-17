@@ -12,16 +12,18 @@ if Tower.isClient
     test '#renderEmberView', ->  
       view.renderEmberView('posts/index')
       
-      assert.ok Tower.stateManager.get('currentView')
+      assert.ok Tower.stateManager.get('_currentView')
       
     describe 'ember', ->
       # @todo
       test 'index', ->
+        return
+        App.Post.destroy()
         Ember.TEMPLATES['posts/index'] = Ember.Handlebars.compile """
 <ul id="posts-list">
-  {{each App.postsController.all}}
+  {{#each App.postsController.all}}
     <li>
-      <a href="#" {{action show}}>{{title}}</a>
+      <a href="#" {{action "show"}}>{{title}}</a>
     </li>
   {{/each}}
 </ul>
@@ -34,7 +36,7 @@ if Tower.isClient
 
         App.subscribe 'posts', App.Post.all()
         
-        App.setPath('postsController', App.posts)
+        App.setPath('postsController.all', App.posts)
         
         view.renderEmberView('posts/index')
         

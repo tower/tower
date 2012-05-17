@@ -1,5 +1,5 @@
 Tower.Store.Neo4j.Persistence =
-  create: (criteria, callback) ->
+  insert: (criteria, callback) ->
     if criteria.relationship
       @_createRelationship(criteria, callback)
     else
@@ -9,9 +9,13 @@ Tower.Store.Neo4j.Persistence =
     attributes = criteria.data[0]
     
     @database().node attributes, (error, node) =>
-      node = @serializeModel(node) unless error
-      callback.call @, error, node if callback
-      node
+      unless error
+        record = @serializeModel(node)
+        record.set('isNew', !!error)
+        console.log node.getId()
+        record.set('id', node.getId())
+      
+      callback.call @, error, record if callback
     
     undefined
     

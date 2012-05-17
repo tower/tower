@@ -133,6 +133,7 @@ class Tower.Store extends Tower.Class
 require './store/callbacks'
 require './store/batch'
 require './store/memory'
+require './store/neo4j'
 require './store/modifiers'
 require './store/operators'
 require './store/serializer'
