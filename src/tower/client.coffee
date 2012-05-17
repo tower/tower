@@ -30,7 +30,7 @@ require './client/http'
 require './middleware'
 
 Tower.goTo = (string, params) ->
-  History.pushState(params, params.title, string)
+  History.pushState(params, params?.title, string)
 
 # compile pattern for location?
 # location = new RegExp(window.location.hostname)

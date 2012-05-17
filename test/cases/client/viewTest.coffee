@@ -14,7 +14,7 @@ if Tower.isClient
       
       assert.ok Tower.stateManager.get('currentView')
       
-    describe 'ember'
+    describe 'ember', ->
       # @todo
       test 'index', ->
         Ember.TEMPLATES['posts/index'] = Ember.Handlebars.compile """
@@ -26,10 +26,9 @@ if Tower.isClient
   {{/each}}
 </ul>
 """
-        ### going to look something like this in a day or two
-        class App.PostsController extends Tower.Controller
-          all: App.Post.all()
-        ###
+        # going to look something like this in a day or two
+        # class App.PostsController extends Tower.Controller
+        #   all: App.Post.all()
         
         App.Post.create(rating: 8, title: "First Post!")
 

@@ -1,4 +1,4 @@
-Tower.history.enabled = false;
+# Tower.history.enabled = false
 App.bootstrap = (data) ->
 
 #window.App = App

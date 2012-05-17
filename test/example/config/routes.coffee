@@ -41,4 +41,6 @@ Tower.Route.draw ->
   @match "/custom/:id", to: "custom#update", via: ["put"]
   @match "/custom/:id", to: "custom#destroy", via: ["delete"]
   
+  @resources 'posts'
+  
   @match "/", to: "application#welcome"
