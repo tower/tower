@@ -61,17 +61,19 @@ describeWith = (store) ->
     describe 'persistence', ->    
       beforeEach (done) ->
         data = []
-        data.push(placeCoordinates) for name, placeCoordinates of places
+        data.push(_placeCoordinates) for name, _placeCoordinates of places
         
         iterator = (coordinates, next) ->
           App.Address.insert coordinates: coordinates, next
         
         async.forEachSeries data, iterator, done
         
-      test 'near', ->
+      test 'near', (done) ->
         App.Address.near(lat: placeCoordinates.lat, lng: placeCoordinates.lng).all (error, records) =>
           assert.equal records.length, 7
           assert.deepEqual records[0].get('coordinates'), placeCoordinates
+          
+          done()
           
       describe 'within', ->
         test 'within(5)', ->
@@ -82,5 +84,5 @@ describeWith = (store) ->
         test 'within(5, "miles")'
         test 'within(distance: 5, unit: "miles")'
 
-describeWith(Tower.Store.Mongodb) unless Tower.client
+#describeWith(Tower.Store.Mongodb) unless Tower.isClient
 describeWith(Tower.Store.Memory)
