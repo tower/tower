@@ -74,54 +74,6 @@ compileEach = (root, check, callback) ->
     unless error
       fs.writeFile "./dist/tower/#{root}.min.js", mint.uglifyjs(result, {})
 
-obscurify = (content) ->
-  replacements = {}
-  replacements[process.env.NS || "Tower"] = "Tower" # use "M" for ultimate compression
-  replacements["_C"]  = "ClassMethods"
-  replacements["_I"]  = "InstanceMethods"
-  replacements["_"]   = /Tower\.Support\.(String|Object|Number|Array|RegExp)/
-
-  for replacement, lookup of replacements
-    content = content.replace(lookup, replacement)
-
-  content
-
-task 'to-underscore', ->
-  _modules  = ["string", "object", "number", "array", "regexp"]
-  result    = "_.mixin\n"
-
-  for _module in _modules
-    content = fs.readFileSync("./src/tower/support/#{_module}.coffee", "utf-8") + "\n"
-    content = content.replace(/Tower\.Support\.\w+\ *=\ */g, "")
-    result += content
-
-  path  = "dist/tower.support.underscore.js"
-  sizes = []
-
-  result = obscurify(result)
-
-  mint.coffee result, {}, (error, result) ->
-    return console.log(error) if error
-
-    fs.writeFileSync(path, result)
-
-    sizes.push "Normal: #{fs.statSync(path).size}"
-    exec "mate #{path}"
-    #compressor = new Shift.UglifyJS
-    #
-    #compressor.render result, (error, result) ->
-    #  fs.writeFileSync(path, result)
-    #
-    #  sizes.push "Minfied: #{fs.statSync(path).size}"
-
-      #gzip result, (error, result) ->
-      #
-      #  fs.writeFileSync(path, result)
-      #
-      #  sizes.push "Minified & Gzipped: #{fs.statSync(path).size}"
-      #
-      #  console.log sizes.join("\n")
-
 task 'build', ->
   content = compileFile("./src/tower", "./src/tower/client.coffee").replace /Tower\.version *= *.+\n/g, (_) ->
     version = """

@@ -42,7 +42,6 @@ require './controller/tst'
 require './http'
 require './server/mailer'
 require './middleware'
-require './server/middleware'
 require './server/command'
 require './server/generator'
 
