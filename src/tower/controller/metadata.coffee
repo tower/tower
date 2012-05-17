@@ -19,7 +19,7 @@ Tower.Controller.Metadata =
 
       resourceType            = _.singularize(className.replace(/(Controller)$/, ''))
       resourceName            = @_compileResourceName(resourceType)
-      collectionName          = Tower.Support.String.camelize(className.replace(/(Controller)$/, ''), true)
+      collectionName          = _.camelize(className.replace(/(Controller)$/, ''), true)
       params                  = _.copyObject(superMetadata.params)
       renderers               = _.copyObject(superMetadata.renderers)
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
@@ -50,6 +50,6 @@ Tower.Controller.Metadata =
 
     _compileResourceName: (type) ->
       parts                   = type.split('.')
-      resourceName            = Tower.Support.String.camelize(parts[parts.length - 1], true)
+      resourceName            = _.camelize(parts[parts.length - 1], true)
       
 module.exports = Tower.Controller.Metadata

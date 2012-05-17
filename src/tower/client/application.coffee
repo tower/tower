@@ -31,7 +31,7 @@ class Tower.Application extends Tower.Engine
     
     Tower.Application._instance = @
 
-    @io = global["io"]
+    @io = global.io
     
   ready: ->
     @_super arguments...

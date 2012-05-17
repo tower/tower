@@ -171,7 +171,7 @@ class Tower.Application extends Tower.Engine
     defaultStoreSet = false
     
     for databaseName, databaseConfig of configuration
-      storeClassName = "Tower.Store.#{Tower.Support.String.camelize(databaseName)}"
+      storeClassName = "Tower.Store.#{_.camelize(databaseName)}"
       
       try 
         store = Tower.constant(storeClassName) # This will find Tower.Store.Memory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
@@ -182,9 +182,10 @@ class Tower.Application extends Tower.Engine
         Tower.Model.default('store', store)
         defaultStoreSet = true
       
-      Tower.callback 'initialize', name: "#{store.className}.initialize", (done) ->
-        try store.configure Tower.config.databases[databaseName][Tower.env]
-        store.initialize done
+      do (store, databaseName) ->
+        Tower.callback 'initialize', name: "#{store.className()}.initialize", (done) ->
+          try store.configure Tower.config.databases[databaseName][Tower.env]
+          store.initialize done
 
   stack: ->
     configs     = @constructor.initializers()

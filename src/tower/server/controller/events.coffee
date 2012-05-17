@@ -11,7 +11,7 @@ Tower.Controller.Events =
       @addSocketEventHandler name, handler for name, handler of @_socketHandlers
 
     socketNamespace: ->
-      Tower.Support.String.pluralize(Tower.Support.String.camelize(@name.replace(/(Controller)$/, ''), false))
+      _.pluralize(_.camelize(@className().replace(/(Controller)$/, ''), false))
 
     addSocketEventHandler: (name, handler, options) ->
       unless @io
@@ -21,16 +21,18 @@ Tower.Controller.Events =
 
     registerHandler: (socket, eventType, handler) ->
       # Register all event handlers besides connection and disconnect
-      if eventType isnt 'connection' and eventType isnt 'disconnect'
+      if eventType != 'connection' && eventType != 'disconnect'
         socket.on eventType, (data) =>
           @_dispatch socket, handler, _.extend data
 
       # Immediately call the 'connection' handler
-      else if eventType is 'connection'
+      else if eventType == 'connection'
         @_dispatch socket, handler
 
     _dispatch: (event, handler, locals = {}) ->
-      controller = new @
+      # we should think about having 1 controller instance per connected user
+      # such as Tower.connections[sessionId] == {postsController: instance, commentsController: instance, etc.}
+      controller = @create()
 
       for key, value of locals
         controller.params[key] = value

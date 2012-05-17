@@ -46,6 +46,8 @@ if typeof Ember != 'undefined'
     Ember.View.reopenClass(towerMixin)
     Ember.CollectionView.reopenClass(coffeescriptMixin)
     Ember.CollectionView.reopenClass(towerMixin)
+    Ember.ContainerView.reopenClass(coffeescriptMixin)
+    Ember.ContainerView.reopenClass(towerMixin)
   
   # need to put in a place where you can set this before it reaches here.
   Ember.NATIVE_EXTENSIONS = Tower.nativeExtensions
