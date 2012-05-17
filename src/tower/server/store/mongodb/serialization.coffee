@@ -20,7 +20,7 @@ Tower.Store.Mongodb.Serialization =
     schema  = @schema()
 
     for key, value of attributes
-      continue if key == "id" && value == undefined || value == null
+      continue if key == 'id' && value == undefined || value == null
       operator              = @constructor.atomicModifiers[key]
 
       if operator
@@ -29,8 +29,8 @@ Tower.Store.Mongodb.Serialization =
         for _key, _value of value
           result[key][_key] = @encode schema[_key], _value, operator
       else
-        result["$set"]    ||= {}
-        result["$set"][key] = @encode schema[key], value
+        result['$set']    ||= {}
+        result['$set'][key] = @encode schema[key], value
 
     result
 
@@ -40,8 +40,8 @@ Tower.Store.Mongodb.Serialization =
     attributes  = @deserializeModel(record)
 
     for key, value of attributes
-      continue if key == "id" && value == undefined || value == null
-      realKey = if key == "id" then "_id" else key
+      continue if key == 'id' && value == undefined || value == null
+      realKey = if key == 'id' then '_id' else key
       operator              = @constructor.atomicModifiers[key]
       unless operator
         result[realKey]     = @encode schema[key], value
@@ -57,8 +57,8 @@ Tower.Store.Mongodb.Serialization =
 
     attributes
 
-  # title: "santa"
-  # createdAt: "<": new Date()
+  # title: 'santa'
+  # createdAt: '<': new Date()
   serializeConditions: (criteria) ->
     schema  = @schema()
     result  = {}
@@ -68,18 +68,18 @@ Tower.Store.Mongodb.Serialization =
     for key, value of query
       field = schema[key]
       
-      key   = "_id" if key == "id"
+      key   = '_id' if key == 'id'
       if _.isRegExp(value)
         result[key] = value
       else if _.isHash(value)
         result[key] = {}
         for _key, _value of value
           operator  = @constructor.queryOperators[_key]
-          if operator == "$eq"
+          if operator == '$eq'
             result[key] = @encode field, _value, _key
           else
             _key      = operator if operator
-            if _key == "$in"
+            if _key == '$in'
               _value = _.castArray(_value)
             result[key][_key] = @encode field, _value, _key
       else
@@ -99,7 +99,7 @@ Tower.Store.Mongodb.Serialization =
     if sort.length
       options.sort  = _.map sort, (set) ->
         [
-          if set[0] == "id" then "_id" else set[0],
+          if set[0] == 'id' then '_id' else set[0],
           if set[1] == 'asc' then 1 else -1
         ]
     options.skip  = offset if offset
@@ -110,7 +110,7 @@ Tower.Store.Mongodb.Serialization =
 
     method = @["encode#{field.encodingType}"]
     value = method.call(@, value, operation) if method
-    value = [value] if operation == "$in" && !_.isArray(value)
+    value = [value] if operation == '$in' && !_.isArray(value)
     value
 
   decode: (field, value, operation) ->

@@ -35,12 +35,12 @@ Tower.Controller.Elements =
         @_dispatch event, handler, event.data
 
     invalidForm: ->
-      element = $("##{@resourceName}-#{@elementName}")
-
-      for attribute, errors of @resource.errors
-        field = $("##{@resourceName}-#{attribute}-field")
-        if field.length
-          field.css("background", "yellow")
-          $("input", field).after("<output class='error'>#{errors.join("\n")}</output>")
+      #element = $("##{@resourceName}-#{@elementName}")
+      #
+      #for attribute, errors of @resource.errors
+      #  field = $("##{@resourceName}-#{attribute}-field")
+      #  if field.length
+      #    field.css("background", "yellow")
+      #    $("input", field).after("<output class='error'>#{errors.join("\n")}</output>")
 
 module.exports = Tower.Controller.Elements

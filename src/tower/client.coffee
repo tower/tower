@@ -13,7 +13,7 @@ Tower.modules =
   geo:        global.geolib
   inflector:  global.inflector # https://github.com/gmosx/inflection
   async:      global.async # https://github.com/gmosx/inflection
-  coffeecup:  global.CoffeeCup
+  coffeecup:  if global.CoffeeCup then global.CoffeeCup else global.CoffeeKup
 
 require './support'
 require './application'
@@ -26,6 +26,7 @@ require './client/view'
 require './controller'
 require './client/controller'
 require './http'
+require './client/http'
 require './middleware'
 
 Tower.goTo = (string, params) ->

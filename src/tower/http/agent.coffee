@@ -12,22 +12,22 @@ class Tower.HTTP.Agent
     name:     @name
   
   get: ->
-    @request "get", arguments...
+    @request 'get', arguments...
 
   post: ->
-    @request "post", arguments...
+    @request 'post', arguments...
 
   head: ->
-    @request "head", arguments...
+    @request 'head', arguments...
 
   put: ->
-    @request "put", arguments...
+    @request 'put', arguments...
 
   destroy: ->
-    @request "del", arguments...
+    @request 'del', arguments...
 
   request: (method, path, options, callback) ->
-    if typeof options == "function"
+    if typeof options == 'function'
       callback  = options
       options   = {}
     options   ||= {}
@@ -35,7 +35,7 @@ class Tower.HTTP.Agent
     params      = options.params  || {}
     redirects   = options.redirects || 5
     auth        = options.auth
-    format      = options.format# || "form-data"
+    format      = options.format# || 'form-data'
     
     newRequest = Tower.modules.superagent[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
       .set(headers)

@@ -2,7 +2,7 @@ Tower.Middleware.Router = (request, response, callback) ->
   Tower.Middleware.Router.find request, response, (controller) ->
     if controller
       # need a more robust way to check if headers were sent
-      Tower.Controller.testCase = controller if Tower.env == "test"
+      Tower.Controller.testCase = controller if Tower.env == 'test'
       unless response.statusCode == 302
         response.controller = controller
         response.writeHead(controller.status, controller.headers)
@@ -25,7 +25,7 @@ _.extend Tower.Middleware.Router,
     request.location ||= new Tower.HTTP.Url(request.url)
 
   processAgent: (request, response) ->
-    request.userAgent ||= request.headers["user-agent"] if request.headers
+    request.userAgent ||= request.headers['user-agent'] if request.headers
 
   error: (request, response) ->
     if response

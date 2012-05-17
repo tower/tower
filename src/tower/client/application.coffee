@@ -2,7 +2,7 @@ class Tower.Application extends Tower.Engine
   @_callbacks: {}
   
   @extended: ->
-    # global[@className()] = @create()
+    global[@className()] = @create()
 
   @before 'initialize', 'setDefaults'
 
@@ -31,13 +31,13 @@ class Tower.Application extends Tower.Engine
     
     Tower.Application._instance = @
 
-    @io       = global["io"]
+    @io = global["io"]
     
   ready: ->
     @_super arguments...
     
-    $("a").on 'click', ->
-      Tower.get($(this).attr("href"))
+    #$("a").on 'click', ->
+    #  Tower.get($(this).attr("href"))
 
   initialize: ->
     @extractAgent()

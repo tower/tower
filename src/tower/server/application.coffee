@@ -11,40 +11,41 @@ class Tower.Application extends Tower.Engine
   @extended: ->
     global[@className()] = @create()
   
-  @before "initialize", "setDefaults"
-
+  @before 'initialize', 'setDefaults'
+  
+  # This is a hack
   setDefaults: ->
-    Tower.Model.field "id", type: "Id"
+    Tower.Model.field 'id', type: 'Id'
     true
 
   @autoloadPaths: [
-    "app/helpers",
-    "app/models",
-    "app/controllers",
-    "app/presenters",
-    "app/mailers",
-    "app/middleware"
+    'app/helpers'
+    'app/models'
+    'app/controllers'
+    'app/presenters'
+    'app/mailers'
+    'app/middleware'
   ]
 
   @configNames: [
-    "session"
-    "assets"
-    "credentials"
-    "databases"
-    "routes"
+    'session'
+    'assets'
+    'credentials'
+    'databases'
+    'routes'
   ]
 
   defaultStack: ->
-    #@use connect.favicon(Tower.publicPath + "/favicon.ico")
+    #@use connect.favicon(Tower.publicPath + '/favicon.ico')
     @use connect.static(Tower.publicPath, maxAge: Tower.publicCacheDuration)
-    @use connect.profiler() if Tower.env != "production"
+    @use connect.profiler() if Tower.env != 'production'
     @use connect.logger()
     #@use connect.query()
     #@use connect.cookieParser(Tower.cookieSecret)
     #@use connect.session secret: Tower.sessionSecret
     #@use connect.bodyParser()
     #@use connect.csrf()
-    #@use connect.methodOverride("_method")
+    #@use connect.methodOverride('_method')
     @use Tower.Middleware.Agent
     @use Tower.Middleware.Location
     if Tower.httpCredentials
@@ -82,7 +83,7 @@ class Tower.Application extends Tower.Engine
     @_initializers ||= []
 
   init: ->
-    throw new Error("Already initialized application") if Tower.Application._instance
+    throw new Error('Already initialized application') if Tower.Application._instance
     @server ||= require('express').createServer()
     Tower.Application.middleware ||= []
     Tower.Application._instance = @
@@ -142,12 +143,12 @@ class Tower.Application extends Tower.Engine
 
       require "#{Tower.root}/app/controllers/applicationController"
 
-      for path in ["controllers", "mailers", "observers", "presenters", "middleware"]
+      for path in ['controllers', 'mailers', 'observers', 'presenters', 'middleware']
         requirePaths File.files("#{Tower.root}/app/#{path}")
 
       done() if done
 
-    @runCallbacks "initialize", initializer, complete
+    @runCallbacks 'initialize', initializer, complete
 
   teardown: ->
     @server.stack.length = 0 # remove middleware
@@ -160,7 +161,7 @@ class Tower.Application extends Tower.Engine
   use: ->
     args        = _.args(arguments)
 
-    if typeof args[0] == "string"
+    if typeof args[0] == 'string'
       middleware  = args.shift()
       @server.use connect[middleware] args...
     else
@@ -178,19 +179,17 @@ class Tower.Application extends Tower.Engine
         store = require "./store/#{databaseName}"
 
       if !defaultStoreSet || databaseConfig.default
-        Tower.Model.default( "store", store )
+        Tower.Model.default('store', store)
         defaultStoreSet = true
       
-      Tower.callback "initialize", name: "#{store.className}.initialize", (done) ->
+      Tower.callback 'initialize', name: "#{store.className}.initialize", (done) ->
         try store.configure Tower.config.databases[databaseName][Tower.env]
         store.initialize done
 
-    
   stack: ->
     configs     = @constructor.initializers()
     self        = @
-    
-      
+
     #@server.configure ->
     for config in configs
       config.call(self)
@@ -207,10 +206,10 @@ class Tower.Application extends Tower.Engine
     @server.put arguments...
 
   listen: ->
-    unless Tower.env == "test"
-      @server.on "error", (error) ->
-        if error.errno == "EADDRINUSE"
-          console.log("   Try using a different port: `node server -p 3001`")
+    unless Tower.env == 'test'
+      @server.on 'error', (error) ->
+        if error.errno == 'EADDRINUSE'
+          console.log('   Try using a different port: `node server -p 3001`')
         #console.log(error.stack)
       @io     ||= require('socket.io').listen(@server)
       @server.listen Tower.port, =>

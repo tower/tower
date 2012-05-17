@@ -13,8 +13,8 @@ Tower.Store.Mongodb.Finders =
       unless error
         unless criteria.raw
           for doc in docs
-            doc.id = doc["_id"]
-            delete doc["_id"]
+            doc.id = doc['_id']
+            delete doc['_id']
 
           docs = @serialize(docs, true)
           

@@ -9,8 +9,8 @@ class Tower.Generator extends Tower.Class
     klass   = Tower.Generator
     # tower generate model
     # tower generate mocha:model
-    nodes   = type.split(":")
-    nodes[nodes.length - 1] += "Generator"
+    nodes   = type.split(':')
+    nodes[nodes.length - 1] += 'Generator'
 
     for node, i in nodes
       klass = klass[Tower.Support.String.camelize(node)]
@@ -24,12 +24,12 @@ class Tower.Generator extends Tower.Class
     _.extend @, options
 
     unless @appName
-      name = process.cwd().split("/")
+      name = process.cwd().split('/')
       @appName = name[name.length - 1]
 
     @destinationRoot  ||= process.cwd()
 
-    @currentSourceDirectory = @currentDestinationDirectory = "."
+    @currentSourceDirectory = @currentDestinationDirectory = '.'
 
     unless @app
       @app          = @buildApp()

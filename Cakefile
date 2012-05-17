@@ -148,34 +148,6 @@ Tower.version = "#{VERSION}"
 
           fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
 
-task 'build-generic', ->
-  paths   = findit.sync('./src')
-  result  = ''
-
-  iterate = (path, next) ->
-    if path.match(/\.coffee$/) && !path.match(/(middleware|application|generator|asset|command|spec|store|path)/)
-      fs.readFile path, 'utf-8', (error, data) ->
-        if !data || data.match(/Bud1/)
-          console.log path
-        else
-          data = data.replace(/module\.exports\s*=.*\s*/g, "")
-          result += data + "\n"
-        next()
-    else
-      next()
-
-  async.forEachSeries paths, iterate, ->
-    fs.writeFile './dist/tower.coffee', result
-    mint.coffee result, {}, (error, result) ->
-      console.log error
-      fs.writeFile './dist/tower.js', result
-      # fs.writeFileSync './test/apps/client/public/javascripts/vendor/javascripts/tower.js', result
-      unless error
-        fs.writeFile './dist/tower.min.js', mint.uglifyjs(result, {})
-        #compressor.render result, (error, result) ->
-        #  console.log error
-        #  fs.writeFile './dist/tower.min.js', result
-
 task 'docs', 'Build the docs', ->
   exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->
     throw err if err

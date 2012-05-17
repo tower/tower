@@ -1,3 +1,4 @@
+# This isn't being used yet, but is an idea.
 class Tower.Application.Configuration extends Tower.Class
   @include Tower.Support.Callbacks
 

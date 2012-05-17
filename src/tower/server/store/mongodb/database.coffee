@@ -45,7 +45,7 @@ Tower.Store.Mongodb.Database =
             applyIndexes =>
               callback() if callback
 
-        process.on "exit", =>
+        process.on 'exit', =>
           @database.close() if @database
       else
         callback() if callback

@@ -11,11 +11,11 @@ Tower.Controller.Events =
       @addSocketEventHandler name, handler for name, handler of @_socketHandlers
 
     socketNamespace: ->
-      Tower.Support.String.pluralize(Tower.Support.String.camelize(@name.replace(/(Controller)$/, ""), false))
+      Tower.Support.String.pluralize(Tower.Support.String.camelize(@name.replace(/(Controller)$/, ''), false))
 
     addSocketEventHandler: (name, handler, options) ->
       unless @io
-        @io = Tower.Application.instance().io.of("/" + @socketNamespace()).on "connection", (socket) =>
+        @io = Tower.Application.instance().io.of('/' + @socketNamespace()).on 'connection', (socket) =>
           @socket = socket
           @registerHandler(socket, eventType, handler) for eventType, handler of @_socketHandlers
 
@@ -25,8 +25,8 @@ Tower.Controller.Events =
         socket.on eventType, (data) =>
           @_dispatch socket, handler, _.extend data
 
-      # Immediately call the "connection" handler
-      else if eventType is "connection"
+      # Immediately call the 'connection' handler
+      else if eventType is 'connection'
         @_dispatch socket, handler
 
     _dispatch: (event, handler, locals = {}) ->
@@ -35,7 +35,7 @@ Tower.Controller.Events =
       for key, value of locals
         controller.params[key] = value
 
-      if typeof handler == "string"
+      if typeof handler == 'string'
         controller[handler].call controller, event
       else
         handler.call controller, event

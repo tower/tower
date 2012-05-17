@@ -5,9 +5,9 @@ Tower.Store.Mongodb.Configuration =
 
     # Provide some defaults
     config:
-      name: "development"
+      name: 'development'
       port: 27017
-      host: "127.0.0.1"
+      host: '127.0.0.1'
 
     configure: (options) ->
       _.deepMerge(@config, options)
@@ -17,6 +17,5 @@ Tower.Store.Mongodb.Configuration =
 
     lib: ->
       require 'mongodb'
-
 
 module.exports = Tower.Store.Mongodb.Configuration

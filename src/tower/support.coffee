@@ -5,6 +5,7 @@ require './support/number'
 require './support/object'
 require './support/regexp'
 require './support/string'
+require './support/geo'
 
 _.mixin Tower.Support.Array
 _.mixin Tower.Support.Number
@@ -26,7 +27,5 @@ require './support/locale/en'
 require './support/format'
 
 require './support/factory'
-
-Tower.Support.Geo = require('geolib')
 
 module.exports = Tower.Support

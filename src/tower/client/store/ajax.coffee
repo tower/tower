@@ -3,8 +3,8 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   @enabled:  true
   @pending:  false
 
-  constructor: ->
-    super
+  init: ->
+    @_super(arguments...)
 
     @deleted = {}
 

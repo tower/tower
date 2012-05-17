@@ -1,14 +1,14 @@
 class Tower.HTTP.Param
   @perPage:       20
-  @sortDirection: "ASC"
-  @sortKey:       "sort"                 # or "order", etc.
-  @limitKey:      "limit"                # or "perPage", etc.
-  @pageKey:       "page"
-  @separator:     "_"                    # or "-"
+  @sortDirection: 'ASC'
+  @sortKey:       'sort'                 # or 'order', etc.
+  @limitKey:      'limit'                # or 'perPage', etc.
+  @pageKey:       'page'
+  @separator:     '_'                    # or '-'
 
   @create: (key, options = {}) ->
-    options = type: options if typeof options == "string"
-    options.type ||= "String"
+    options = type: options if typeof options == 'string'
+    options.type ||= 'String'
     new Tower.HTTP.Param[options.type](key, options)
 
   constructor: (key, options = {}) ->
@@ -33,7 +33,7 @@ class Tower.HTTP.Param
         attribute   = node.attribute
         operator    = node.operators[0]
         conditions  = {}
-        if operator == "$eq"
+        if operator == '$eq'
           conditions[attribute] = node.value
         else
           conditions[attribute] = {}
@@ -46,7 +46,7 @@ class Tower.HTTP.Param
     namespace: @namespace, key: @key, operators: operators, value: value, attribute: @attribute
 
   _clean: (string) ->
-    string.replace(/^-/, "").replace(/^\+-/, "").replace(/^'|'$/, "").replace("+", " ").replace(/^\^/, "").replace(/\$$/, "").replace(/^\s+|\s+$/, "")
+    string.replace(/^-/, '').replace(/^\+-/, '').replace(/^'|'$/, '').replace('+', ' ').replace(/^\^/, '').replace(/\$$/, '').replace(/^\s+|\s+$/, '')
 
 require './param/array'
 require './param/date'

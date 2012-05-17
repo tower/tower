@@ -11,6 +11,8 @@ Tower.Controller.reopenClass extended: ->
   ).cacheable()
 
   Tower.Application.instance().reopen(object)
+  
+  @
 
 Tower.Controller.include Tower.Controller.Elements
 Tower.Controller.include Tower.Controller.Events

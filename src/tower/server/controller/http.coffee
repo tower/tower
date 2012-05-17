@@ -2,11 +2,11 @@
 Tower.Controller.HTTP =
   # @todo
   head: (status, options = {}) ->
-    if typeof status == "object"
+    if typeof status == 'object'
       options = status
       status  = null
 
-    status  ||= options.status || "ok"
+    status  ||= options.status || 'ok'
     location  = options.location
 
     delete options.status
@@ -17,7 +17,7 @@ Tower.Controller.HTTP =
 
     @status       = status
     @location     = Tower.urlFor(location) if location
-    @headers["Content-Type"] = Mime[formats.first] if formats
-    @body         = " "
+    @headers['Content-Type'] = Mime[formats.first] if formats
+    @body         = ' '
 
 module.exports = Tower.Controller.HTTP

@@ -10,7 +10,7 @@ Tower.Store.Mongodb.Persistence =
       doc       = docs[0]
       
       record.set('isNew', !!error)
-      record.set('id', doc["_id"])
+      record.set('id', doc['_id'])
 
       callback.call(@, error, record.attributes) if callback
 
@@ -22,10 +22,10 @@ Tower.Store.Mongodb.Persistence =
     conditions      = @serializeConditions(criteria)
     options         = @serializeOptions(criteria)
 
-    options.safe    = true unless options.hasOwnProperty("safe")
-    options.upsert  = false unless options.hasOwnProperty("upsert")
+    options.safe    = true unless options.hasOwnProperty('safe')
+    options.upsert  = false unless options.hasOwnProperty('upsert')
     # update multiple docs, b/c it defaults to false
-    options.multi   = true unless options.hasOwnProperty("multi")
+    options.multi   = true unless options.hasOwnProperty('multi')
     
     @collection().update conditions, updates, options, (error) =>
       callback.call(@, error) if callback
