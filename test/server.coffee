@@ -1,7 +1,5 @@
 require '../index.js'
 File  = require('pathfinder').File
-# require './secrets'
-# `npm install debug` for node 0.4.x
 
 global.chai   = require 'chai'
 global.assert = chai.assert
@@ -18,56 +16,6 @@ Tower.View.loadPaths  = ["./test/example/app/views"]
 Tower.port            = 3001
 
 require '../src/tower/server/generator/tst'
-
-Tower.requestOLD = (method, action, options, callback) ->
-  if typeof options == "function"
-    callback      = options
-    options       = {}
-  options       ||= {}
-  params          = _.extend {}, options
-  params.action   = action
-  url             = "http://example.com/#{action}"
-  location        = new Tower.HTTP.Url(url)
-  controller      = options.controller || new App.CustomController()
-  delete options.controller
-  request         = new Tower.HTTP.Request(url: url, location: location, method: method)
-  response        = new Tower.HTTP.Response(url: url, location: location, method: method)
-  request.params  = params
-  # extend actual http request to make this fully realistic!
-  #Tower.Application.instance().handle request, response, ->
-  #  console.log response.controller
-  controller.call request, response, (error, result) ->
-    callback.call @, @response
-
-# redirectTo action: "show"
-Tower.Controller::redirectToOld = (options = {}) ->
-  callback  = @callback
-  
-  if typeof options == "string"
-    string  = options
-    options = {}
-    if string.match(/[\/:]/)
-      options.path    = string
-    else
-      options.action  = string
-      
-  if options.action
-    options.path = switch options.action
-      when "show"
-        "show"
-      else
-        options.action
-        
-  params = @params
-  params.id = @resource.get("id") if @resource
-  
-  process.nextTick =>
-    if params.hasOwnProperty("id")
-      params = {id: params.id}
-    else
-      params = {}
-      
-    Tower.get options.path, params, callback
 
 app = Tower.Application.instance()
 

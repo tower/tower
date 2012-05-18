@@ -57,6 +57,8 @@ Tower.Model.Cursor.Finders =
 
   # on create or update
   pushMatching: (records) ->
+    return [] if records.length == 0 || records[0].constructor.toString() != @store.className
+    
     matching = Tower.Store.Operators.select(records, @conditions())
     
     # see https://github.com/emberjs/ember.js/issues/773
@@ -66,6 +68,8 @@ Tower.Model.Cursor.Finders =
   
   # on destroy
   pullMatching: (records) ->
+    return [] if records.length == 0 || records[0].constructor.toString() != @store.className
+    
     matching = Tower.Store.Operators.select(records, @conditions())
 
     # see https://github.com/emberjs/ember.js/issues/773
@@ -75,6 +79,8 @@ Tower.Model.Cursor.Finders =
   
   # on update
   pullNotMatching: (records) ->
+    return [] if records.length == 0 || records[0].constructor.toString() != @store.className
+    
     notMatching = Tower.Store.Operators.notMatching(records, @conditions())
 
     # see https://github.com/emberjs/ember.js/issues/773

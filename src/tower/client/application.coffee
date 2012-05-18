@@ -7,16 +7,10 @@ class Tower.Application extends Tower.Engine
   @before 'initialize', 'setDefaults'
 
   setDefaults: ->
-    Tower.Model.default "store", Tower.Store.Ajax
+    #Tower.Model.default "store", Tower.Store.Ajax
     #Tower.Model.field "id", type: "Id"
 
     true
-
-  @configure: (block) ->
-    @initializers().push block
-
-  @initializers: ->
-    @_initializers ||= []
 
   @instance: ->
     @_instance

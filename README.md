@@ -43,7 +43,7 @@ npm install design.io design.io-javascripts
 
 ## Generate
 
-``` bash
+```
 tower new app
 cd app
 sudo npm install
@@ -65,7 +65,7 @@ forever server.js
 
 Here's how you might organize a blog:
 
-``` bash
+```
 .
 |-- app
 |   |-- client

@@ -72,31 +72,15 @@ class Tower.Application extends Tower.Engine
         ref = require "#{Tower.root}/config/application"
         @_instance ||= new ref
     @_instance
-
-  @configure: (block) ->
-    @initializers().push block
     
-  configure: (block) ->
-    @constructor.configure(block)
-
   @initializers: ->
     @_initializers ||= []
 
   init: ->
     throw new Error('Already initialized application') if Tower.Application._instance
     @server ||= require('express').createServer()
-    Tower.Application.middleware ||= []
     Tower.Application._instance = @
     @_super arguments...
-    
-  subscribe: (key, block) ->
-    Tower.Model.Cursor.subscriptions.push(key)
-    @[key] = if typeof block == 'function' then block() else block
-
-  # @todo
-  unsubscribe: (key) ->
-    Tower.Model.Cursor.subscriptions.push(key).splice(_.indexOf(key), 1)
-    delete @[key]
 
   initialize: (complete) ->
     require "#{Tower.root}/config/application"

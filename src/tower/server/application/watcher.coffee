@@ -1,3 +1,5 @@
+File    = require('pathfinder').File
+
 # @module
 Tower.Application.Watcher =  
   reloadMap:
@@ -46,7 +48,30 @@ Tower.Application.Watcher =
     # this is a tmp solution, more robust coming later.
     if path.match(/app\/views/)
       Tower.View.cache = {}
-    return unless path.match(/app\/(models|controllers)/)
+    else if path.match(/config\/assets.coffee/)
+      @reloadPath path, (error, config) =>
+        Tower.config.assets = config || {}
+        Tower.Application.Assets.loadManifest()
+    else if path.match(/(?:app\/(?:models|controllers)|routes)\.(?:coffee|js|iced)/)
+      @reloadPath(path)
+    else if path.match(/config\/locales\/(\w+)\.(?:coffee|js|iced)/)
+      language = RegExp.$1
+      @reloadPath path, (error, locale) =>
+        Tower.Support.I18n.load(locale, language)
+    else if path.match(/app\/helpers/)
+      @reloadPath path, =>
+        @reloadPaths "#{Tower.root}/app/controllers"
+      
+  reloadPath: (path, callback) ->
     path = require.resolve("#{Tower.root}/#{path}")
     delete require.cache[path]
-    process.nextTick -> require(path)
+    process.nextTick ->
+      result = require(path)
+      callback(null, result) if callback
+      
+  requirePaths: (directory, callback) ->
+    @reloadPath(path) for path in File.files(directory) if path.match(/\.(?:coffee|js|iced)$/)
+    
+    if callback
+      process.nextTick ->
+        callback()
