@@ -1,6 +1,7 @@
 require '../index.js'
 File  = require('pathfinder').File
 # require './secrets'
+# `npm install debug` for node 0.4.x
 
 global.chai   = require 'chai'
 global.assert = chai.assert
