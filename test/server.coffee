@@ -16,7 +16,7 @@ Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/example/app/views"]
 Tower.port            = 3001
 
-require '../lib/tower/server/generator/tst'
+require '../src/tower/server/generator/tst'
 
 Tower.requestOLD = (method, action, options, callback) ->
   if typeof options == "function"
