@@ -9,12 +9,10 @@ describeWith = (store) ->
       App.User.destroy =>
         App.User.insert firstName: "Lance", (error, record) =>
           user = record
-          console.log "done"
           done()
         
-    beforeEach (done2) ->
-      console.log 'done2'
-      Tower.start(done2)
+    beforeEach (done) ->
+      Tower.start(done)
 
     afterEach ->
       Tower.stop()
