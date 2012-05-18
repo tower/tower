@@ -28,8 +28,8 @@ Tower.Model.Persistence =
       return store if arguments.length == 0 && store
 
       defaultStore = @default('store') || Tower.Store.Memory
-      
-      type = typeof value 
+
+      type = typeof value
 
       if type == 'function'
         store   = new value(name: metadata.namePlural, type: Tower.namespaced(metadata.className))
@@ -67,7 +67,7 @@ Tower.Model.Persistence =
     save: (options, callback) ->
       @set('isSaving', true)
       @get('transaction').adopt(@)
-      
+
       throw new Error('Record is read only') if @readOnly
 
       if typeof options == 'function'
@@ -144,7 +144,7 @@ Tower.Model.Persistence =
 
         @constructor.scoped(instantiate: false).insert @, (error) =>
           throw error if error && !callback
-          
+
           @set('isSaving', false)
 
           unless error
@@ -169,9 +169,9 @@ Tower.Model.Persistence =
 
         @constructor.scoped(instantiate: false).update @get('id'), @, (error) =>
           throw error if error && !callback
-          
+
           @set('isSaving', false)
-          
+
           unless error
             @set('isNew', false)
             @get('data').commit()

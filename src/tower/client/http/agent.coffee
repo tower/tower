@@ -4,5 +4,5 @@ Tower.HTTP.Agent::request = (method, path, options, callback) ->
     options       = {}
   options       ||= {}
   url             = path
-  
+
   History.pushState(null, null, url)

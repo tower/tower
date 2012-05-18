@@ -3,4 +3,3 @@ Tower.Controller.Authentication =
     # @example
     #   authenticated name: "Lance", password: "Pollard", only: "search"
     authenticated: (options = {}) ->
-      

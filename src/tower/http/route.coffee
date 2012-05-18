@@ -11,7 +11,7 @@ class Tower.HTTP.Route extends Tower.Class
 
   @find: (name) ->
     @byName[name]
-  
+
   # tmp name
   @findByControllerOptions: (options) ->
     for route in @all()
@@ -20,7 +20,7 @@ class Tower.HTTP.Route extends Tower.Class
       for key, value of options
         success = controller[key] == value
         break unless success
-        
+
       return route if success
     null
 
@@ -29,7 +29,7 @@ class Tower.HTTP.Route extends Tower.Class
 
   @clear: ->
     @_store = []
-    
+
   @reload: ->
     @clear()
     @draw()
@@ -63,10 +63,10 @@ class Tower.HTTP.Route extends Tower.Class
     keys    = @keys
     params  = _.extend({}, @defaults, request.query || {}, request.body || {})
     match   = match[1..-1]
-    
+
     for capture, i in match
       key = keys[i].name
-      
+
       if capture && !params[key]?
         capture = decodeURIComponent(capture)
         # need a way to convert :id to integer if it's an integer...
@@ -99,7 +99,7 @@ class Tower.HTTP.Route extends Tower.Class
     @state        = options.state
     if @controller
       @id += @controller.name + @controller.action
-      
+
     @_super()
 
   get: (name) ->
@@ -108,7 +108,7 @@ class Tower.HTTP.Route extends Tower.Class
   match: (requestOrPath) ->
     if typeof requestOrPath == "string" then return @pattern.exec(requestOrPath)
     path    = requestOrPath.location.path
-    
+
     return null unless _.indexOf(@methods, requestOrPath.method.toUpperCase()) > -1
     match = @pattern.exec(path)
     return null unless match

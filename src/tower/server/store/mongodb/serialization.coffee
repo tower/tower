@@ -62,12 +62,12 @@ Tower.Store.Mongodb.Serialization =
   serializeConditions: (criteria) ->
     schema  = @schema()
     result  = {}
-    
+
     query   = @deserializeModel(criteria.conditions())
-    
+
     for key, value of query
       field = schema[key]
-      
+
       key   = '_id' if key == 'id'
       if _.isRegExp(value)
         result[key] = value

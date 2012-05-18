@@ -1,4 +1,4 @@
-Tower.Store.Callbacks =  
+Tower.Store.Callbacks =
   # Prepare the criteria before you execute {#create},
   # perhaps for mimicking join tables in Mongodb.
   #
@@ -56,5 +56,5 @@ Tower.Store.Callbacks =
   # @return [void] Requires a callback.
   runAfterFind: (criteria, callback) ->
     callback()
-    
+
 module.exports = Tower.Store.Callbacks

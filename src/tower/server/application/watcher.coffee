@@ -1,7 +1,7 @@
 File    = require('pathfinder').File
 
 # @module
-Tower.Application.Watcher =  
+Tower.Application.Watcher =
   reloadMap:
     models:
       pattern:  /app\/models/
@@ -12,11 +12,11 @@ Tower.Application.Watcher =
     helpers:
       pattern:  /app\/helpers/
       paths:    []
-      
+
   watch: ->
     # this should use hook.io so we don't have to parse the log file...
     forever = require('forever')
-    
+
     child = new (forever.Monitor)('node_modules/design.io/bin/design.io',
       max:    1
       silent: false
@@ -61,17 +61,17 @@ Tower.Application.Watcher =
     else if path.match(/app\/helpers/)
       @reloadPath path, =>
         @reloadPaths "#{Tower.root}/app/controllers"
-      
+
   reloadPath: (path, callback) ->
     path = require.resolve("#{Tower.root}/#{path}")
     delete require.cache[path]
     process.nextTick ->
       result = require(path)
       callback(null, result) if callback
-      
+
   requirePaths: (directory, callback) ->
     @reloadPath(path) for path in File.files(directory) if path.match(/\.(?:coffee|js|iced)$/)
-    
+
     if callback
       process.nextTick ->
         callback()

@@ -3,12 +3,12 @@
   GitHub:     <%= user.username %>
   Twitter:    -
   Location:   -
-  
+
   Backend:    <%= user.name %>
   GitHub:     <%= user.username %>
   Twitter:    -
   Location:   -
-  
+
   Mobile:     <%= user.name %>
   GitHub:     <%= user.username %>
   Twitter:    -

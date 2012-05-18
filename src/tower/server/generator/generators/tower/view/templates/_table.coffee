@@ -6,7 +6,7 @@ tableFor "<%= model.namePlural %>", (t) ->
     for <%= model.name %> in @<%= model.namePlural %>
       t.row class: "<%= model.name %>", "data-id": <%= model.name %>.get('id').toString(), -><% for (var i = 0; i < model.attributes.length; i++) { %>
         t.cell -> <%= model.name %>.get("<%= model.attributes[i].name %>")<% } %>
-        t.cell -> 
+        t.cell ->
           linkTo 'Show', urlFor(<%= model.name %>)
           span "|"
           linkTo 'Edit', urlFor(<%= model.name %>, action: "edit")

@@ -15,7 +15,7 @@ Tower.Store.Memory.Persistence =
 
   insert: (criteria, callback) ->
     result    = []
-    
+
     result.push(@insertOne(object)) for object in criteria.data
 
     result    = criteria.export(result)
@@ -29,7 +29,7 @@ Tower.Store.Memory.Persistence =
     attributes.id ?= @generateId()
     attributes.id = attributes.id.toString()
     @loadOne(@serializeModel(record))
-  
+
   update: (updates, criteria, callback) ->
     @find criteria, (error, records) =>
       return _.error(error, callback) if error

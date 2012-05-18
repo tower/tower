@@ -23,7 +23,7 @@ class Tower.HTTP.Param
   parse: (value) -> value
 
   render: (value) -> value
-  
+
   toCursor: (value) ->
     nodes     = @parse(value)
     criteria  = Tower.Model.Cursor.create()

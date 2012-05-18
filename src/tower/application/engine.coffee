@@ -4,7 +4,7 @@ class Tower.Engine extends Tower.Hook
 
   @initializers: ->
     @_initializers ||= []
-    
+
   configure: (block) ->
     @constructor.configure(block)
 

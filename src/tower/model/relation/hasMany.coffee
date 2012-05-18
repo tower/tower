@@ -8,7 +8,7 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
 
 class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
   isHasMany: true
-  
+
   init: ->
     @_super arguments...
 
@@ -214,7 +214,7 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
         updates['$addEach']  = push
       else
         updates['$add']  = push
-        
+
     updates['$inc']       = inc if inc
 
     updates
@@ -234,7 +234,7 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     # probably should be $addToSet
     updates['$pullEach']   = pull if pull
     updates['$inc']       = inc if inc
-    
+
     updates
 
   # @private

@@ -48,5 +48,5 @@ Tower.Generator.Helpers =
 
   inRoot: (block) ->
     @inside ".", block
-    
+
 module.exports = Tower.Generator.Helpers

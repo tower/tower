@@ -4,27 +4,27 @@ class Tower.Store.Transaction extends Tower.Class
   init: ->
     # Ember.set @, 'records', Ember.Map.create()
     @records = []
-  
+
   add: (record) ->
     @records.push(record)
-    
+
   remove: (record) ->
     @records.splice(1, _.indexOf(@records, record))
-    
+
   adopt: (record) ->
     transaction = record.get('transaction')
     unless transaction == @
       transaction.remove(record)
       @add(record)
-    
+
   committed: ->
     records = @records
-    
+
     for record in records
       record.committed()
-    
+
   rollback: ->
     records = @records
-    
+
     for record in records
       record.rollback()

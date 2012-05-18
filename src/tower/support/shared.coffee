@@ -17,7 +17,7 @@ _.extend Tower,
   _:                _
   subscribe: ->
     Tower.Application.instance().subscribe arguments...
-  
+
   cb: ->
   toMixin: ->
     #mixin: ->
@@ -35,9 +35,9 @@ _.extend Tower,
   #extend: (self, object) ->
   #  extended = object.extended
   #  delete object.extended
-  #  
+  #
   #  self.reopenClass object
-  #  
+  #
   #  extended.apply(object) if extended
   #
   #  object
@@ -46,23 +46,23 @@ _.extend Tower,
     included        = object.included
     ClassMethods    = object.ClassMethods
     InstanceMethods = object.InstanceMethods
-    
+
     delete object.included
     delete object.ClassMethods
     delete object.InstanceMethods
-    
+
     self.reopenClass(ClassMethods) if ClassMethods
     self.include(InstanceMethods) if InstanceMethods
-    
+
     self.reopen object
-    
+
     object.InstanceMethods  = InstanceMethods
     object.ClassMethods     = ClassMethods
 
     included.apply(self) if included
 
     object
-    
+
   metadataFor: (name) ->
     @metadata[name] ||= {}
 
@@ -103,7 +103,7 @@ _.extend Tower,
   #  request.query   = location.params
   #  Tower.Application.instance().handle request, response, ->
   #    callback.call @, @response
-  
+
   raise: ->
     throw new Error(Tower.t(arguments...))
 
@@ -200,23 +200,23 @@ _.extend Tower,
           completed += 1
           if completed == array.length
             callback()
-            
+
   callbackChain: (callbacks...) ->
     (error) =>
       for callback in callbacks
         callback.call(@, error) if callback
-  
+
   get: ->
     Tower.request 'get', arguments...
-        
+
   post: ->
     Tower.request 'post', arguments...
-        
+
   put: ->
     Tower.request 'put', arguments...
-        
+
   destroy: ->
     Tower.request 'destroy', arguments...
-    
+
   request: ->
     Tower.agent.request arguments...

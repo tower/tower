@@ -1,4 +1,4 @@
-Tower.Controller.Metadata =  
+Tower.Controller.Metadata =
   ClassMethods:
     baseClass: ->
       if @__super__ && @__super__.constructor.baseClass && @__super__.constructor != Tower.Controller
@@ -26,9 +26,9 @@ Tower.Controller.Metadata =
       helpers                 = _.copyArray(superMetadata.helpers)
       belongsTo               = _.copyArray(superMetadata.belongsTo)
       subscriptions           = _.copyArray(superMetadata.subscriptions)
-      
+
       callbacks               = {}
-      
+
       if superMetadata.callbacks
         for action, callbackChain of superMetadata.callbacks
           callbacks[action] = callbackChain.clone()
@@ -51,5 +51,5 @@ Tower.Controller.Metadata =
     _compileResourceName: (type) ->
       parts                   = type.split('.')
       resourceName            = _.camelize(parts[parts.length - 1], true)
-      
+
 module.exports = Tower.Controller.Metadata

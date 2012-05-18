@@ -6,16 +6,16 @@ task 'assets:upload', ->
 
 task 'assets:upload:s3', ->
   invoke 'environment'
-  
+
   client  = knox.createClient Tower.secrets.s3
-  
+
   Tower.Application.Assets.upload (from, to, headers, callback) ->
     client.putFile from, to, headers, callback
 
 task 'assets:bundle', ->
   invoke 'environment'
   Tower.Application.Assets.bundle()
-  
+
 task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset sizes', ->
   invoke 'environment'
   Tower.Application.Assets.stats()
@@ -27,7 +27,7 @@ task 'db:seed', ->
 task 'environment', ->
   Tower.env = 'production'
   Tower.Application.instance().initialize()
-  
+
 task 'routes', ->
   invoke 'environment'
 

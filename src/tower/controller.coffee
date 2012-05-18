@@ -12,7 +12,7 @@ class Tower.Controller extends Tower.Class
   @include  Tower.Support.Callbacks
   @reopenClass Tower.Support.EventEmitter
   @include  Tower.Support.EventEmitter
-  
+
   @instance: ->
     @_instance ||= new @
 

@@ -2,7 +2,7 @@ Tower.Store.Neo4j.Database =
   ClassMethods:
     initialize: (callback) ->
       return callback.call @, @database if @initialized
-      
+
       @initialized  = true
       neo4j         = @lib()
       try

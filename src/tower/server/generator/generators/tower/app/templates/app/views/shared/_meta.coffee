@@ -25,12 +25,12 @@ link href: "/favicon.png", rel: "icon shortcut-icon favicon"
 #  yield "headStyleSheets"
 
 javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
-  
+
 #if contentFor "headJavaScripts"
 #  yield "headJavaScripts"
 
-contentFor "bottom", ->  
-  javascripts "vendor" 
+contentFor "bottom", ->
+  javascripts "vendor"
   if Tower.env == "development"
     javascripts "development"
   javascripts "lib", "application"

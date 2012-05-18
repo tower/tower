@@ -5,10 +5,10 @@ Tower.Store.Mongodb.Persistence =
     record      = @serializeModel(criteria.data[0], false)
     attributes  = @serializeAttributesForInsert(record)
     options     = @serializeOptions(criteria)
-    
+
     @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
-      
+
       record.set('isNew', !!error)
       record.set('id', doc['_id'])
 
@@ -26,7 +26,7 @@ Tower.Store.Mongodb.Persistence =
     options.upsert  = false unless options.hasOwnProperty('upsert')
     # update multiple docs, b/c it defaults to false
     options.multi   = true unless options.hasOwnProperty('multi')
-    
+
     @collection().update conditions, updates, options, (error) =>
       callback.call(@, error) if callback
 

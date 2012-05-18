@@ -3,7 +3,7 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     @_super arguments...
 
     @foreignKey = "#{name}Id"
-    
+
     owner.field(@foreignKey, type: "Id")
 
     if @polymorphic

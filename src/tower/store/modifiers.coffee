@@ -1,5 +1,5 @@
 Tower.Store.Modifiers =
-  MAP:  
+  MAP:
     '$set':         '$set'
     '$unset':       '$unset'
     '$push':        '$push'
@@ -13,7 +13,7 @@ Tower.Store.Modifiers =
     '$add':         '$add'
     '$addEach':     '$addEach'
     '$addToSet':    '$add'
-  
+
   SET: [
     'push'
     'pushEach'
@@ -26,10 +26,10 @@ Tower.Store.Modifiers =
     'removeEach'
     'unset'
   ]
-  
+
   set: (key, value) ->
     _.oneOrMany(@, @_set, key, value)
-  
+
   push: (key, value) ->
     _.oneOrMany(@, @_push, key, value)
 
@@ -67,7 +67,7 @@ Tower.Store.Modifiers =
 
   # @private
   _add: (key, value) ->
-    
+
   _remove: (key, value) ->
 
 module.exports = Tower.Store.Modifiers

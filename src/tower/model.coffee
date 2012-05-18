@@ -8,7 +8,7 @@
 #   Query conditions
 class Tower.Model extends Tower.Class
   @reopen Ember.Evented
-  
+
   #if Tower.isServer
   #  @extended: ->
   #    for path in require('pathfinder').File.files("#{Tower.root}/app/concerns/#{@metadata().name}")
@@ -29,13 +29,13 @@ class Tower.Model extends Tower.Class
 
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
-      
+
     @errors = {}
 
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
     @readOnly       = if options.hasOwnProperty('readOnly') then options.readOnly else false
-    
+
     @setProperties(attrs)
 
 require './model/scope'

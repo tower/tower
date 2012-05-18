@@ -95,20 +95,20 @@ class Tower.Model.Data
       # need a better way to do this...
       if !@record.get('isNew') && key == 'id'
         return @savedData[key] = value
-    
+
       if value == undefined || @savedData[key] == value
         # TODO Ember.deletePath
         delete @unsavedData[key]
       else
         @unsavedData[key] = value
-      
+
     @record.set('isDirty', _.isPresent(@unsavedData))
-    
+
     value
-    
+
   setSavedAttributes: (object) ->
     _.extend(@savedData, object)
-  
+
   commit: ->
     _.extend(@savedData, @unsavedData)
     @record.set('isDirty', false)
@@ -116,10 +116,10 @@ class Tower.Model.Data
 
   rollback: ->
     @unsavedData = {}
-    
+
   attributes: ->
     _.extend(@savedData, @unsavedData)
-    
+
   unsavedRelations: ->
     relations = @record.constructor.relations()
     result    = {}
@@ -187,13 +187,13 @@ class Tower.Model.Data
   _pull: (key, value, array = false) ->
     currentValue = @get(key)
     return null unless currentValue
-    
+
     if array
       for item in _.castArray(value)
         currentValue.splice(_.toStringIndexOf(currentValue, item), 1)
     else
       currentValue.splice(_.toStringIndexOf(currentValue, value), 1)
-    
+
     # probably shouldn't reset it, need to consider
     Ember.set(@unsavedData, key, currentValue)
 

@@ -78,7 +78,7 @@ class Tower.Model.Scope
     '$null':      '$null'
     '$notNull':   '$notNull'
     '$near':      '$near'
-    
+
   constructor: (cursor) ->
     @cursor = cursor
 
@@ -87,7 +87,7 @@ class Tower.Model.Scope
   # @param [Object] object an object or array of objects.
   has: (object) ->
     @cursor.has(object)
-  
+
   # tells us we want to register it to the cursors list
   # might rename to [live, subscribe, publish, io]
   live: ->
@@ -158,9 +158,9 @@ class Tower.Model.Scope
     # for `insert`, the rest of the arguments must be records
 
     cursor.addData(args)
-    
+
     cursor.insert(callback)
-    
+
   create: @::insert
 
   # Updates records based on the scope's cursor.

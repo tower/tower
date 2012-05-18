@@ -9,7 +9,7 @@ class Tower.HTTP.Request
     @body       = data.body     || {}
     @headers    = data.headers  || {}
     @method     = data.method   || "GET"
-    
+
   header: ->
 
 module.exports = Tower.HTTP.Request

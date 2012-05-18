@@ -67,7 +67,7 @@ Tower.Store.Serializer =
 
     to: (deserialized) ->
       Tower.Store.Serializer.Array.from(deserialized)
-      
+
 Tower.Store.Serializer.Decimal  = Tower.Store.Serializer.Float
 Tower.Store.Serializer.Time     = Tower.Store.Serializer.Date
 Tower.Store.Serializer.DateTime = Tower.Store.Serializer.Date

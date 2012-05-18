@@ -28,7 +28,7 @@ class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.Ha
 
   make: (options = {}) ->
     @_super arguments...
-    
+
     if @relation.through
       @throughRelation  = @owner.constructor.relation(@relation.through)
       @inverseRelation  = @relation.inverseThrough(@throughRelation)

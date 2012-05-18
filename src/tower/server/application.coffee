@@ -7,12 +7,12 @@ io      = null
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
-  
+
   @extended: ->
     global[@className()] = @create()
-  
+
   @before 'initialize', 'setDefaults'
-  
+
   # This is a hack
   setDefaults: ->
     true
@@ -72,7 +72,7 @@ class Tower.Application extends Tower.Engine
         ref = require "#{Tower.root}/config/application"
         @_instance ||= new ref
     @_instance
-    
+
   @initializers: ->
     @_initializers ||= []
 
@@ -88,7 +88,6 @@ class Tower.Application extends Tower.Engine
     #@runCallbacks "initialize", null, complete
     configNames = @constructor.configNames
     reloadMap   = @constructor.reloadMap
-    self        = @
 
     initializer = (done) =>
       requirePaths = (paths) ->
@@ -106,7 +105,7 @@ class Tower.Application extends Tower.Engine
           config  = {}
 
         Tower.config[key] = config if _.isPresent(config)
-      
+
       Tower.Application.Assets.loadManifest()
 
       paths = File.files("#{Tower.root}/config/locales")
@@ -118,16 +117,16 @@ class Tower.Application extends Tower.Engine
 
       requirePaths File.files("#{Tower.root}/config/initializers")
 
-      self.configureStores Tower.config.databases
-      self.stack()
-      
+      @configureStores(Tower.config.databases)
+      @stack()
+
       requirePaths File.files("#{Tower.root}/app/helpers")
       requirePaths File.files("#{Tower.root}/app/models")
 
       require "#{Tower.root}/app/controllers/applicationController"
 
-      for path in ['controllers', 'mailers', 'observers', 'presenters', 'middleware']
-        requirePaths File.files("#{Tower.root}/app/#{path}")
+      for path in @constructor.autoloadPaths
+        requirePaths File.files("#{Tower.root}/#{path}")
 
       done() if done
 
@@ -152,11 +151,11 @@ class Tower.Application extends Tower.Engine
 
   configureStores: (configuration = {}) ->
     defaultStoreSet = false
-    
+
     for databaseName, databaseConfig of configuration
       storeClassName = "Tower.Store.#{_.camelize(databaseName)}"
-      
-      try 
+
+      try
         store = Tower.constant(storeClassName) # This will find Tower.Store.Memory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
       catch error
         store = require "./store/#{databaseName}"
@@ -164,7 +163,7 @@ class Tower.Application extends Tower.Engine
       if !defaultStoreSet || databaseConfig.default
         Tower.Model.default('store', store)
         defaultStoreSet = true
-      
+
       do (store, databaseName) ->
         Tower.callback 'initialize', name: "#{store.className()}.initialize", (done) ->
           try store.configure Tower.config.databases[databaseName][Tower.env]
@@ -172,11 +171,10 @@ class Tower.Application extends Tower.Engine
 
   stack: ->
     configs     = @constructor.initializers()
-    self        = @
 
     #@server.configure ->
     for config in configs
-      config.call(self)
+      config.call(@)
 
     @
 

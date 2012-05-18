@@ -24,7 +24,7 @@ Tower.Support.String =
       return string if count is 1
     else
       string = count
-    
+
     Tower.modules.inflector.pluralize string
 
   capitalize: (string) -> string.replace Tower.Support.String.capitalize_rx, (m, p1, p2) -> p1 + p2.toUpperCase()
@@ -50,7 +50,7 @@ Tower.Support.String =
     , context)
     return _.map(found, iterator, context) if iterator
     found
-    
+
   parameterize: (string) ->
     Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, '')
 

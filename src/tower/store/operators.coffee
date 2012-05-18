@@ -1,5 +1,5 @@
 Tower.Store.Operators =
-  MAP:  
+  MAP:
     '>=':         '$gte'
     '$gte':       '$gte'
     '>':          '$gt'
@@ -33,19 +33,19 @@ Tower.Store.Operators =
     '$elemMatch': '$matchIn'
     '$matchIn':   '$matchIn'
     '$maxDistance': '$maxDistance'
-    
+
   select: (records, conditions) ->
     _.select records, (record) => @test(record, conditions)
-    
+
   matching: (records, conditions) ->
     _.select records, (record) => @test(record, conditions)
-    
+
   notMatching: (records, conditions) ->
     _.select records, (record) => !@test(record, conditions)
-  
+
   test: (record, conditions) ->
     success = true
-    
+
     for key, value of conditions
       if key == '$or'
         success = @or record, value
@@ -53,14 +53,14 @@ Tower.Store.Operators =
         success = @nor record, value
       else
         success = @testValue @_getValue(record, key), value, record
-      
+
       return false unless success
-    
+
     success
-    
+
   testValue: (recordValue, operators, record) ->
     success = true
-    
+
     switch typeof operators
       when 'number', 'string', 'undefined', 'null', 'NaN'
         success = recordValue == operators
@@ -73,11 +73,11 @@ Tower.Store.Operators =
               success   = @[operator.replace('$', '')](recordValue, value, record)
             else
               success   = recordValue == operators
-    
+
             return false unless success
-    
+
     success
-    
+
   gt: (recordValue, value) ->
     value? && recordValue? && recordValue > value
 
@@ -104,7 +104,7 @@ Tower.Store.Operators =
 
   anyIn: (recordValue, array) ->
     array = _.castArray(array)
-    
+
     if _.isArray(recordValue)
       for value in array
         return true if recordValue.indexOf(value) != -1
@@ -115,7 +115,7 @@ Tower.Store.Operators =
 
   allIn: (recordValue, array) ->
     array = _.castArray(array)
-    
+
     if _.isArray(recordValue)
       for value in array
         return false if _.indexOf(recordValue, value) == -1
@@ -126,19 +126,19 @@ Tower.Store.Operators =
 
   notInAny: (recordValue, array) ->
     array = _.castArray(array)
-    
+
     if _.isArray(recordValue)
       for value in array
         return true if _.indexOf(recordValue, value) != -1
     else
       for value in array
         return true if recordValue == value
-        
+
     false
 
   notInAll: (recordValue, array) ->
     array = _.castArray(array)
-    
+
     if _.isArray(recordValue)
       for value in array
         return false if _.indexOf(recordValue, value) != -1
@@ -146,37 +146,37 @@ Tower.Store.Operators =
       for value in array
         return false if recordValue == value
     true
-    
+
   matchIn: (recordValue, value) ->
     return false unless _.isArray(recordValue)
-    
+
     for item in recordValue
       return true if @test(item, value)
-    
+
     false
-  
+
   maxDistance: (recordValue, distance, record) ->
     distance? && record? && record.__distance? && record.__distance <= distance
-  
+
   exists: (recordValue) ->
     recordValue != undefined
-  
+
   # need to enforce being array
   size: (recordValue, value) ->
     _.isArray(recordValue) && recordValue.length == value
-        
+
   or: (record, array) ->
     for conditions in array
       return true if @test(record, conditions)
-      
+
     false
-    
+
   nor: (record, array) ->
     for conditions in array
       return false if @test(record, conditions)
-      
+
     true
-    
+
   _comparable: (value) ->
     if _.isDate(value)
       value.getTime()
@@ -184,13 +184,13 @@ Tower.Store.Operators =
       value.toString()
     else
       value
-      
+
   _getValue: (recordOrObject, key) ->
     if typeof recordOrObject.get == 'function'
       recordOrObject.get(key)
     else
       _.getNestedAttribute recordOrObject, key
-    
+
 Tower.Store.Operators.notIn = Tower.Store.Operators.notInAny
 
 module.exports = Tower.Store.Operators

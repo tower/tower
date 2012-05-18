@@ -1,6 +1,6 @@
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
-  
+
   @extended: ->
     global[@className()] = @create()
 
@@ -20,16 +20,16 @@ class Tower.Application extends Tower.Engine
 
   init: ->
     @_super arguments...
-    
+
     throw new Error("Already initialized application") if Tower.Application._instance
-    
+
     Tower.Application._instance = @
 
     @io = global.io
-    
+
   ready: ->
     @_super arguments...
-    
+
     #$("a").on 'click', ->
     #  Tower.get($(this).attr("href"))
 
@@ -45,7 +45,7 @@ class Tower.Application extends Tower.Engine
   listen: ->
     return if @listening
     @listening = true
-    
+
     if Tower.history && Tower.history.enabled
       Tower.history.Adapter.bind global, "statechange", =>
         state     = Tower.history.getState()

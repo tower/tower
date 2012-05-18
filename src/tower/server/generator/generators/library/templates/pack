@@ -14,7 +14,7 @@
     "email":                  "<%= user.email %>"
   }],
   "contributors": [
-  
+
   ],
   "licenses": [
     {
@@ -34,7 +34,7 @@
     "npm":                    "1"
   },
   "dependencies": {
-    
+
   },
   "devDependencies": {
     "coffee-script":          ">= 1.1.3",

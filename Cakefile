@@ -131,5 +131,5 @@ task 'stats', 'Build files and report on their sizes', ->
 
 task 'clean', 'remove trailing whitespace', ->
   findit.find "./src", (file) ->
-    if File.isFile(file)
+    if !file.match('command') && File.isFile(file)
       fs.writeFileSync(file, fs.readFileSync(file, "utf-8").toString().replace(/[ \t]+$/mg, ""))

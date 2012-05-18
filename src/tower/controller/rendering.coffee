@@ -101,7 +101,7 @@ Tower.Controller.Rendering =
         @callback() if @callback
 
       return if @_handleRenderers(options, callback)
-      
+
       @headers['Content-Type'] ||= 'text/html'
 
       view    = new Tower.View(@)
@@ -133,7 +133,7 @@ Tower.Controller.Rendering =
     # @private
     _normalizeArgs: ->
       args = _.args(arguments)
-      
+
       if typeof args[0] == 'string'
         action    = args.shift()
       if typeof args[0] == 'object'

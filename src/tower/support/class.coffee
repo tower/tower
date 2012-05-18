@@ -1,5 +1,5 @@
 if typeof Ember != 'undefined'
-  coffeescriptMixin = 
+  coffeescriptMixin =
     __extend: (child) ->
       object = Ember.Object.extend.apply @
       object.__name__ = child.name
@@ -33,14 +33,14 @@ if typeof Ember != 'undefined'
   Tower.StateMachine  = Ember.StateManager.extend()
 
   towerMixin        = Tower.toMixin()
-  
+
   Tower.Class.reopenClass(towerMixin)
   Tower.Namespace.reopenClass(towerMixin)
   Ember.Application.reopenClass(towerMixin)
   Tower.Collection.reopenClass(towerMixin)
   Tower.State.reopenClass(towerMixin)
   Tower.StateMachine.reopenClass(towerMixin)
-  
+
   if Ember.View
     Ember.View.reopenClass(coffeescriptMixin)
     Ember.View.reopenClass(towerMixin)
@@ -48,16 +48,16 @@ if typeof Ember != 'undefined'
     Ember.CollectionView.reopenClass(towerMixin)
     Ember.ContainerView.reopenClass(coffeescriptMixin)
     Ember.ContainerView.reopenClass(towerMixin)
-  
+
   # need to put in a place where you can set this before it reaches here.
   Ember.NATIVE_EXTENSIONS = Tower.nativeExtensions
-  
+
   #if Tower.nativeExtensions
   #  _.extend(Function.prototype, coffeescriptMixin, towerMixin)
 else
   throw new Error('Must include Ember.js')
   #class Tower.Class
-  #  
+  #
   #_.extend Tower.Class, Tower.toMixin()
   #
   #class Tower.Namespace extends Tower.Class

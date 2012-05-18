@@ -27,7 +27,7 @@ class Tower.Model.Relation extends Tower.Class
   # @see Tower.Model.Relations.ClassMethods#hasMany
   init: (owner, name, options = {}) ->
     @_super()
-    
+
     @[key] = value for key, value of options
 
     @owner              = owner
@@ -92,7 +92,7 @@ class Tower.Model.Relation extends Tower.Class
 
   _defineRelation: (name) ->
     object = {}
-    
+
     object[name] = Ember.computed((key, value) ->
       if arguments.length is 2
         data = Ember.get(@, 'data')
@@ -103,7 +103,7 @@ class Tower.Model.Relation extends Tower.Class
         value ||= @constructor.relation(name).scoped(@)
         value
     ).property('data').cacheable()
-    
+
     @owner.reopen(object)
 
   # @return [Tower.Model.Relation.Scope]

@@ -10,14 +10,13 @@ assert.file = (path, arg) ->
     assert.ok false, "#{path} exists"
     arg() if typeof arg == "function"
     return
-    
+
   return unless arg
-  
+
   content = fs.readFileSync(path, "utf-8")
-  
+
   switch _.kind(arg)
     when "regex"
       assert.match content, arg
     else
       arg.call @, content
-      

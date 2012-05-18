@@ -6,18 +6,18 @@
 # [{method: "PUT", to: "/posts", id: "10", data: {"title": "A Post"}}]
 class Tower.Store.Batch extends Tower.Class
   # By default the store will persist the data.
-  # 
+  #
   # If you set this to false, then you have full control
   # over when the data is finally committed to the database.
   autocommit: Tower.isServer
-  
+
   # If bulk is true, and there are multiple records preparing, it
   # will try and group them into optimal batch database operations.
   bulk:       false
-  
+
   init: ->
     @_super arguments...
-    
+
     Ember.set @, 'buckets',
       clean:    Ember.Map.create()
       created:  Ember.Map.create()
@@ -26,11 +26,11 @@ class Tower.Store.Batch extends Tower.Class
 
   removeCleanRecords: ->
     clean = @getBucket("clean")
-    
+
     clean.forEach (type, records) =>
       records.forEach (record) =>
         @remove(record)
-  
+
   add: (record) ->
     # Tower.assert !Ember.get(record, 'isDirty'), 'store.transaction.dirty'
 
@@ -47,9 +47,9 @@ class Tower.Store.Batch extends Tower.Class
 
   adopt: (record) ->
     oldTransaction = record.get('transaction')
-    
+
     oldTransaction.removeFromBucket('clean', record) if oldTransaction
-    
+
     @addToBucket 'clean', record
 
     record.set('transaction', @)
@@ -59,11 +59,11 @@ class Tower.Store.Batch extends Tower.Class
     bucket    = Ember.get(Ember.get(@, 'buckets'), kind)
     type      = @getType(record)
     records   = bucket.get(type)
-    
+
     unless records
       records = Ember.OrderedSet.create()
       bucket.set(type, records)
-    
+
     records.add(record)
 
   # @private
@@ -71,12 +71,12 @@ class Tower.Store.Batch extends Tower.Class
     bucket    = @getBucket(kind)
     type      = @getType(record)
     records   = bucket.get(type)
-    
+
     records.remove(record) if records
-    
+
   getBucket: (kind) ->
     Ember.get(Ember.get(@, 'buckets'), kind)
-    
+
   getType: (recordOrCursor) ->
     if recordOrCursor instanceof Tower.Model.Cursor
       recordOrCursor.getType()
@@ -87,17 +87,17 @@ class Tower.Store.Batch extends Tower.Class
     @removeFromBucket kind, record
 
     defaultTransaction = Ember.getPath(@, 'store.defaultTransaction')
-    
+
     defaultTransaction.adopt(record) if defaultTransaction
-    
+
   recordBecameDirty: (kind, record) ->
     @removeFromBucket 'clean', record
     @addToBucket kind, record
-    
+
   commit: (callback) ->
     iterate = (bucketType, fn, binding) =>
       dirty = @getBucket(bucketType)
-      
+
       dirty.forEach (type, records) ->
         return if records.isEmpty()
         array = []
@@ -121,9 +121,9 @@ class Tower.Store.Batch extends Tower.Class
           iterate("deleted", fn, binding)
 
     @removeCleanRecords()
-    
+
     store   = Ember.get(@, "store")
-    
+
     store.commit(commitDetails, callback)
-    
+
 module.exports = Tower.Store.Batch

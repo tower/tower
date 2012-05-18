@@ -18,7 +18,7 @@ class Tower.HTTP.Route.DSL
 
   delete: ->
     @matchMethod("delete", _.args(arguments))
-    
+
   destroy: @::delete
 
   matchMethod: (method, args) ->
@@ -78,7 +78,7 @@ class Tower.HTTP.Route.DSL
 
     if @_scope.name
       name = @_scope.name + _.camelize(name)
-      
+
     camelName = _.camelize(name)
 
     @match "#{path}/new",   _.extend(action: "new",     state: "#{name}.new",     name: "new#{camelName}", options)
@@ -103,7 +103,7 @@ class Tower.HTTP.Route.DSL
       many = @_scope.name + _.camelize(name)
     else
       many = name
-      
+
     one   = _.singularize(many)
 
     camelOne = _.camelize(one)

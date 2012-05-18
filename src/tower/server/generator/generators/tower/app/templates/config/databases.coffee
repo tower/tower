@@ -16,7 +16,7 @@ module.exports =
       name: "<%= app.paramName %>-production"
       port: 27017
       host: "127.0.0.1"
-    
+
   redis:
     development:
       name: "<%= app.paramName %>-development"

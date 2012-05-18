@@ -126,7 +126,7 @@ Tower.Controller.Resourceful =
 
   respondWithStatus: (success, callback) ->
     options = records: (@resource || @collection)
-    
+
     if callback && callback.length > 1
       successResponder = new Tower.Controller.Responder(@, options)
       failureResponder = new Tower.Controller.Responder(@, options)
@@ -160,7 +160,7 @@ Tower.Controller.Resourceful =
       return callback.call @, error, null if error
 
       resource = null
-      
+
       scope.insert @params[@resourceName], (error, resource) =>
         @set 'resource', resource
         @set @resourceName, resource

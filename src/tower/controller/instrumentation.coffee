@@ -9,11 +9,11 @@ Tower.Controller.Instrumentation =
       @cookies  = @request.cookies  || {}
       @query    = @request.query    || {}
       @session  = @request.session  || {}
-      
+
       unless @params.format
         try @params.format = require('mime').extension(@request.header('content-type'))
         @params.format ||= 'html'
-        
+
       @format   = @params.format
       @action   = @params.action
       @headers  = {}

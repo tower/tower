@@ -29,7 +29,7 @@ Tower.Controller.Elements =
         params.action = action
 
         elements  = _.extend {target: target, form: form}, {}#, @extractElements(target, options)
-        
+
         event.data = elements: elements, params: params
 
         @_dispatch event, handler, event.data

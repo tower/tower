@@ -50,7 +50,7 @@ class Tower.Model.Attribute
 
     @get        = "get#{_.camelize(name)}" if @get == true
     @set        = "set#{_.camelize(name)}" if @set == true
-    
+
     #if Tower.accessors
     #  Object.defineProperty @owner.prototype, name,
     #    enumerable: true

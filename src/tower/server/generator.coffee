@@ -19,7 +19,7 @@ class Tower.Generator extends Tower.Class
 
   init: (options = {}) ->
     @_super arguments...
-    
+
     options.program ||= {}
     _.extend @, options
 
@@ -41,7 +41,7 @@ class Tower.Generator extends Tower.Class
           @view       = @buildView(@modelName)
           @controller = @buildController(@modelName)
         @run()
-        
+
   run: ->
 
 require './generator/actions'

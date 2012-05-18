@@ -46,7 +46,7 @@ Tower.Model.Cursor.Persistence =
 
       Tower.async records, iterator, (error) =>
         Tower.cb(error, records)
-        
+
         unless callback
           throw error if error
           records = records[0] if !returnArray
@@ -56,7 +56,7 @@ Tower.Model.Cursor.Persistence =
           callback(error, records)
     else
       Tower.Model.Cursor.pushMatching(@data)
-      
+
       @store.insert @, callback
 
     @
@@ -66,7 +66,7 @@ Tower.Model.Cursor.Persistence =
 
   _update: (callback) ->
     updates     = @data[0]
-    
+
     if @instantiate
       iterator = (record, next) =>
         record.updateAttributes(updates, next)
@@ -74,7 +74,7 @@ Tower.Model.Cursor.Persistence =
       @_each @, iterator, callback
     else
       @store.update updates, @, callback
-      
+
     @
 
   destroy: (callback) ->
@@ -88,7 +88,7 @@ Tower.Model.Cursor.Persistence =
       @_each(@, iterator, callback)
     else
       @store.destroy(@, callback)
-      
+
     @
 
   # add to set

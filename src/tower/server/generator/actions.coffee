@@ -47,7 +47,7 @@ Tower.Generator.Actions =
 
   injectIntoFile: (path, options, callback) ->
     string = ""
-    
+
     if typeof options == "string"
       string    = options
       options   = callback
@@ -55,7 +55,7 @@ Tower.Generator.Actions =
     if typeof options == "function"
       callback  = options
       options   = {}
-      
+
     options ||= {}
 
     path    = @destinationPath(path)
@@ -222,7 +222,7 @@ Tower.Generator.Actions =
 
   findInSourcePaths: (path) ->
     File.expandPath(File.join(@sourceRoot, "templates", @currentSourceDirectory, path))
-    
+
 Tower.Generator.Actions.file = Tower.Generator.Actions.createFile
 Tower.Generator.Actions.directory = Tower.Generator.Actions.createDirectory
 

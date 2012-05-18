@@ -97,12 +97,12 @@ Tower.Model.Metadata =
       classNamePlural         = Tower.Support.String.pluralize(className)
       paramName               = Tower.Support.String.parameterize(name)
       paramNamePlural         = Tower.Support.String.parameterize(namePlural)
-      
+
       if baseClassName != className
         namespace               = Tower.namespace()
         modelName               = "#{namespace}.#{className}"
         controllerName          = "#{namespace}.#{classNamePlural}Controller"
-          
+
       fields                  = if superMetadata.fields then _.clone(superMetadata.fields) else {}
       indexes                 = if superMetadata.indexes then _.clone(superMetadata.indexes) else {}
       validators              = if superMetadata.validators then _.clone(superMetadata.validators) else []
@@ -161,7 +161,7 @@ Tower.Model.Metadata =
 
     metadata: ->
       @constructor.metadata()
-      
+
     toString: ->
       attributes  = @get('data').attributes()
       array       = []

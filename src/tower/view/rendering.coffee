@@ -10,7 +10,7 @@ Tower.View.Rendering =
     options.type        ||= @constructor.engine
     options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
     options.locals      = @_renderingContext(options)
-    
+
     # tmp
     if Tower.isClient
       try
@@ -23,7 +23,7 @@ Tower.View.Rendering =
       catch error
         console.log(error.stack || error)
         # callback.call(@, error) if callback
-      
+
     @_renderBody options, (error, body) =>
       return callback(error, body) if error
       @_renderLayout(body, options, callback)
@@ -87,7 +87,7 @@ Tower.View.Rendering =
       engine = require("mint")
       options.locals.string = string
       engine.render(options.locals, callback)
-      
+
   _renderCoffeecupString: (string, options, callback) ->
     e       = null
     result  = null
@@ -103,7 +103,7 @@ Tower.View.Rendering =
       hardcode        = _.extend(hardcode, tags: Tower.View.coffeecupTags)#_.inject(tags, ((hash, i) -> hash[i] = true; hash), {}))
       locals.hardcode = hardcode
       locals._ = _
-      
+
       result = coffeecup.render string, locals
     catch error
       e = error

@@ -12,7 +12,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
 
   run: ->
     twitterBootstrapCommit = "aaabe2a46c64e7d9ffd5735dba2db4f3cf9906f5"
-      
+
     @inside @app.name, '.', ->
       @template "gitignore", ".gitignore" unless @program.skipGitfile
       @template "npmignore", ".npmignore"
@@ -163,12 +163,12 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           fs    = require("fs")
           tmp   = "tmp/twitter-bootstrap.zip"
           url   = "https://github.com/twitter/bootstrap/zipball/v2.0.3"
-          
+
           agent.get url, (response) ->
             fs.writeFileSync(tmp, response.text)
             zip         = new adm(tmp)
             zipEntries  = zip.getEntries()
-            
+
             zipEntries.forEach (zipEntry) ->
               consolelog zipEntry.toString()
           ###
@@ -217,13 +217,13 @@ class Tower.Generator.AppGenerator extends Tower.Generator
       @inside "public/images", ->
         @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/img/glyphicons-halflings.png", "glyphicons-halflings.png"
         @get "https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/img/glyphicons-halflings-white.png", "glyphicons-halflings-white.png"
-        
+
       @inside "public/swfs", ->
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMainInsecure.swf", "WebSocketMainInsecure.swf"
 
       @template "watch", "Watchfile"
-      
+
       # github wiki
       @inside "wiki", ->
         @template "home.md"

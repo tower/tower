@@ -33,7 +33,7 @@ Tower.Support.Url =
       param   = "#{key}="
       type    = if schema[key] then schema[key].type.toLowerCase() else 'string'
       negate  = if type == "string" then "-" else "^"
-      
+
       if _.isHash(value)
         data          = {}
         data.min      = value[">="] if value.hasOwnProperty(">=")
@@ -176,7 +176,7 @@ Tower.Support.Url =
     options ||= args.pop()
 
     result    = ""
-    
+
     if options.route
       route = Tower.Route.find(options.route)
       result = route.urlFor() if route
@@ -199,8 +199,8 @@ Tower.Support.Url =
       when "edit" then "/edit"
       else
         ""
-    
-    last = args[args.length - 1] 
+
+    last = args[args.length - 1]
     if last && options.params && !options.schema && last instanceof Tower.Model
       options.schema = last.constructor.fields()
 
@@ -208,7 +208,7 @@ Tower.Support.Url =
     options.path = result
 
     @urlForBase(options)
-    
+
 Tower.urlFor = -> Tower.Support.Url.urlFor arguments...
 
 module.exports = Tower.Support.Url

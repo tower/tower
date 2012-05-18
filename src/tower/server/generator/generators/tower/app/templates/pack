@@ -14,7 +14,7 @@
     "email":                  "<%= user.email %>"
   }],
   "contributors": [
-  
+
   ],
   "licenses": [
     {

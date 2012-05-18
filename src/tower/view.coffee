@@ -99,7 +99,7 @@ class Tower.View extends Tower.Class
 
   init: (context = {}) ->
     @_super arguments...
-    
+
     @_context = context
 
 require './view/rendering'
