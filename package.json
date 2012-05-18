@@ -3,7 +3,7 @@
   "version":              "0.4.0-9",
   "description":          "Full Stack Web Framework for Node.js and the Browser",
   "homepage":             "http://viatropos.github.com/tower",
-  "main":                 "lib/tower.js",
+  "main":                 "./index.js",
   "author":               "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
     "framework",

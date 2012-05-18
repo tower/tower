@@ -1,4 +1,4 @@
-require '../lib/tower'
+require '../index.js'
 File  = require('pathfinder').File
 # require './secrets'
 
