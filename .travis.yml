@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 0.4
   - 0.6
-install: npm install ; npm install mongodb ; npm install git://github.com/viatropos/coffeecup.git ; npm install git://github.com/viatropos/coffee-script.git --force ; npm install git://github.com/viatropos/neo4js.git
+install: npm install ; npm install mongodb
 #before_script:
 #  - "export DISPLAY=:99.0"
 #  - "sh -e /etc/init.d/xvfb start"
