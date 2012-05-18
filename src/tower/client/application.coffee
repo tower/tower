@@ -8,7 +8,7 @@ class Tower.Application extends Tower.Engine
 
   setDefaults: ->
     Tower.Model.default "store", Tower.Store.Ajax
-    Tower.Model.field "id", type: "Id"
+    #Tower.Model.field "id", type: "Id"
 
     true
 

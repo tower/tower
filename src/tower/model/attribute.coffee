@@ -48,8 +48,8 @@ class Tower.Model.Attribute
     @get        = options.get || (serializer.from if serializer)
     @set        = options.set || (serializer.to if serializer)
 
-    @get        = "get#{Tower.Support.String.camelize(name)}" if @get == true
-    @set        = "set#{Tower.Support.String.camelize(name)}" if @set == true
+    @get        = "get#{_.camelize(name)}" if @get == true
+    @set        = "set#{_.camelize(name)}" if @set == true
     
     #if Tower.accessors
     #  Object.defineProperty @owner.prototype, name,

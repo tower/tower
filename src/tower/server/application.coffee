@@ -15,12 +15,12 @@ class Tower.Application extends Tower.Engine
   
   # This is a hack
   setDefaults: ->
-    Tower.Model.field 'id', type: 'Id'
     true
 
   @autoloadPaths: [
     'app/helpers'
     'app/models'
+    'app/concerns'
     'app/controllers'
     'app/presenters'
     'app/mailers'
@@ -87,7 +87,6 @@ class Tower.Application extends Tower.Engine
     @server ||= require('express').createServer()
     Tower.Application.middleware ||= []
     Tower.Application._instance = @
-    #global[@constructor.className()] = null#@
     @_super arguments...
     
   subscribe: (key, block) ->

@@ -92,14 +92,17 @@ Tower.Model.Metadata =
       else
         superMetadata = {}
 
-      namespace               = Tower.namespace()
       name                    = Tower.Support.String.camelize(className, true)
       namePlural              = Tower.Support.String.pluralize(name)
       classNamePlural         = Tower.Support.String.pluralize(className)
       paramName               = Tower.Support.String.parameterize(name)
       paramNamePlural         = Tower.Support.String.parameterize(namePlural)
-      modelName               = "#{namespace}.#{className}"
-      controllerName          = "#{namespace}.#{classNamePlural}Controller"
+      
+      if baseClassName != className
+        namespace               = Tower.namespace()
+        modelName               = "#{namespace}.#{className}"
+        controllerName          = "#{namespace}.#{classNamePlural}Controller"
+          
       fields                  = if superMetadata.fields then _.clone(superMetadata.fields) else {}
       indexes                 = if superMetadata.indexes then _.clone(superMetadata.indexes) else {}
       validators              = if superMetadata.validators then _.clone(superMetadata.validators) else []

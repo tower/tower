@@ -76,4 +76,6 @@ Tower.Model.include Tower.Model.Attributes
 Tower.Model.include Tower.Model.Timestamp
 Tower.Model.include Tower.Model.Transactions
 
+Tower.Model.field('id', type: 'Id')
+
 module.exports = Tower.Model
