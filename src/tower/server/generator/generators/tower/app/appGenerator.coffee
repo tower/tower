@@ -128,7 +128,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/viatropos/node.inflection/master/lib/inflection.js", "inflection.js"
           @get "https://raw.github.com/josscrowcroft/accounting.js/master/accounting.js", "accounting.js"
           @get "http://sinonjs.org/releases/sinon-1.3.1.js", "sinon.js"
-          @get "https://raw.github.com/logicalparadox/chai/master/chai.js", "chai.js"
+          @get "https://raw.github.com/chaijs/chai/master/chai.js", "chai.js"
           @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
           @get "https://raw.github.com/emberjs/starter-kit/cf5c6fa7c21c476f9441c220b16a63f37fe2cdc1/js/libs/ember-0.9.6.js", "ember.js"
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js", "prettify.js"
