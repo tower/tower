@@ -49,7 +49,8 @@ Tower.Model.Persistence =
     #
     # @return [Array] will return the array of models.
     load: (records) ->
-      Tower.Model.Cursor.pushMatching @store().load(records)
+      # Tower.Model.Cursor.pushMatching @store().load(records)
+      @store().load(records)
 
   InstanceMethods:
     store: Ember.computed ->

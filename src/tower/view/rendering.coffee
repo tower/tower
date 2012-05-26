@@ -135,6 +135,9 @@ Tower.View.Rendering =
       path      = template
     #cachePath = path.replace(/\.\w+$/, "")
     cachePath = path
+    if Tower.isClient
+      cachePath = 'app/views/' + cachePath
+      
     result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
     throw new Error("Template '#{template}' was not found.") unless result
     result

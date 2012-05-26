@@ -1,9 +1,11 @@
 Tower.View.ComponentHelper =
   formFor: ->
-    Tower.View.Form.render(__cc, arguments...)
+    _c = if typeof(__cc) == 'undefined' then __ck else __cc
+    Tower.View.Form.render(_c, arguments...)
 
   tableFor: ->
-    Tower.View.Table.render(__cc, arguments...)
+    _c = if typeof(__cc) == 'undefined' then __ck else __cc
+    Tower.View.Table.render(_c, arguments...)
 
   widget: ->
 
@@ -13,5 +15,9 @@ Tower.View.ComponentHelper =
   navItem: (title, path, options = {}) ->
     li ->
       linkTo title, path, options
+      
+  term: (key, value) ->
+    dt key
+    dd value
 
 module.exports = Tower.View.ComponentHelper

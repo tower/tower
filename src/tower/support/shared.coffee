@@ -31,6 +31,11 @@ _.extend Tower,
 
     className: ->
       _.functionName(@)
+      
+    computed: (key, block) ->
+      object = {}
+      object[key] = Ember.computed(block)
+      @reopen(object)
 
   #extend: (self, object) ->
   #  extended = object.extended

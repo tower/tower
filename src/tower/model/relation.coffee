@@ -87,8 +87,6 @@ class Tower.Model.Relation extends Tower.Class
       @owner.field @counterCacheKey, type: 'Integer', default: 0
 
     @_defineRelation(name)
-      #owner.prototype.reopen ->
-      #  @relation(name)
 
   _defineRelation: (name) ->
     object = {}

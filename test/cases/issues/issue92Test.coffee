@@ -1,7 +1,7 @@
 attr = Tower.Model.Attribute
 
 describeWith = (store) ->
-  describe "Testing Issue #92. (Tower.Store.#{store.name})", ->
+  describe "Testing Issue #92. (Tower.Store.#{store.className()})", ->
     issue = null
 
     beforeEach ->

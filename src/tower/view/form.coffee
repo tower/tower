@@ -4,8 +4,8 @@ class Tower.View.Form extends Tower.View.Component
     @model      = args.shift() || new Tower.Model
 
     if typeof @model == "string"
-      klass     = Tower.constant(Tower.Support.String.camelize(@model))
-      @model    = if klass then new klass else null
+      klass     = try Tower.constant(Tower.Support.String.camelize(@model))
+      @model    = new klass if klass
 
     @attributes = @_extractAttributes(options)
 

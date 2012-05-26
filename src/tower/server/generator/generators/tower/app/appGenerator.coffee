@@ -117,6 +117,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/documentcloud/underscore/master/underscore.js", "underscore.js"
           @get "https://raw.github.com/epeli/underscore.string/master/lib/underscore.string.js", "underscore.string.js"
           @get "https://raw.github.com/caolan/async/master/lib/async.js", "async.js"
+          # https://github.com/viatropos/tiny-require.js
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js", "socket.io.js"
           @get "https://raw.github.com/viatropos/design.io/master/design.io.js", "design.io.js"
           @get "https://raw.github.com/viatropos/tower/master/dist/tower.js", "tower.js"
@@ -135,7 +136,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/emberjs/starter-kit/4c946d0ab2d13976bc22ca0c1f5ec8d3fbcd192b/js/libs/ember-0.9.7.1.js", "ember.js"
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js", "prettify.js"
           @get "https://raw.github.com/Marak/Faker.js/master/Faker.js", "faker.js"
-          @get "https://raw.github.com/madrobby/keymaster/c61b3fef9767d4899a1732b089ca70512c9d4261/keymaster.js"
+          @get "https://raw.github.com/madrobby/keymaster/c61b3fef9767d4899a1732b089ca70512c9d4261/keymaster.js", "keymaster.js"
           @get "https://raw.github.com/mrdoob/stats.js/master/src/Stats.js", "stats.js"
           @get "http://html5shiv.googlecode.com/svn/trunk/html5.js", "html5.js"
           @directory "bootstrap"

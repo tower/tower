@@ -1,3 +1,4 @@
+# Soon this should handle batch requests.
 class Tower.Store.Ajax extends Tower.Store.Memory
   @requests: []
   @enabled:  true
@@ -19,7 +20,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   @toJSON: (record, method, format) ->
     data          = {}
-    data[Tower.Support.String.camelize(record.constructor.className(), true)] = record
+    data[_.camelize(record.constructor.className(), true)] = record
     data._method  = method
     data.format   = format
     JSON.stringify(data)
@@ -75,6 +76,8 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   toJSON: ->
     @constructor.toJSON arguments...
+    
+  find: (criteria, callback) ->
 
   insert: (criteria, callback) ->
     unless criteria.sync == false
@@ -82,7 +85,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
         callback.call @, error, records if callback
         @createRequest records, criteria
     else
-      super
+      @_super(criteria, callback)
 
   update: (updates, criteria, callback) ->
     if criteria.sync == true
@@ -167,7 +170,6 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   destroyFailure: (record) ->
     (xhr, statusText, error) =>
 
-
   findRequest: (options) ->
     @queue =>
       params =
@@ -186,7 +188,6 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   findFailure: (record) ->
     (xhr, statusText, error) =>
 
-
   findOneRequest: (options, callback) ->
     @queue =>
       params =
@@ -203,22 +204,76 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   findOneFailure: (options) ->
     (xhr, statusText, error) =>
 
-  sync = ->
-    @all (error, records) =>
-      changes =
-        create:   []
-        update:   []
-        destroy:  []
-
-      for record in records
-        changes[record.syncAction].push(record) if record.syncAction
-
-      @createRequest  changes.create if changes.create?
-      @updateRequest  changes.update if changes.update?
-      @destroyRequest changes.destroy if changes.destroy?
-
-      true
-
+  # @todo Removes all models and fetches new ones.
+  # 
+  # It has to manage all of the published cursors as well.
   refresh: ->
+    
+  # Makes a request with JSON like this:
+  #     {
+  #       "sort": ["firstName", "asc"],
+  #       "page": 2,
+  #       "limit": 20,
+  #       "conditions": [{"firstName": {"=~": "/^[az]/i"}}]
+  #     }
+  # 
+  # And you get a response back like this:
+  #     {
+  #       "sort": ["firstName", "asc"],
+  #       "page": 2,
+  #       "limit": 20,
+  #       "conditions": [{"firstName": {"=~": "/^[az]/i"}}],
+  #       "count": 337,
+  #       "data": [{"firstName": "Andy"}, {"firstName": "Zach"}, ...]
+  #     }
+  # 
+  # If you want to just `count` the records, or test if they exist,
+  # you can add a boolean key to the JSON request:
+  #     {"count": true}
+  # 
+  # @todo Once you reach the end of your paginated collection,
+  #   it should no longer make requests.
+  #
+  # Say you first search for all users with `firstName` starting with the letter "a",
+  # then you search for all users with `firstName` starting with either letter "a" or "b".
+  # When you do the first search, say it returns the first page of 20 records.
+  # Then when you do the next search, what should happen?  It's not smart enough
+  # to know it's already fetched those records, so it will return them again.
+  # There is the possibility that we test all the records currently on the client against the
+  # fetching criteria, and append the ids of the matching records to the `conditions` field.
+  # This way that "a" or "b" request might look like this:
+  #     {
+  #       "page": 1,
+  #       "limit": 20,
+  #       "conditions": [{"firstName": {"=~": "/^[ab]/i"}, "id": {"$notIn": [1, 2, 3...]}}]
+  #     }
+  # 
+  # ... we'll have to run performance tests to see if this kind of optimization actually helps.
+  # It would be preventing the serialization of, in this case, 20 records we already have on the client, 
+  # which decreases the amount of data we have to send over the wire.  But the extra complexity of
+  # that `$notIn` query might slow the query down enough to nullify benefit you'd get from decreasing
+  # the size of the data sent over the wire.
+  # 
+  # Ooh, this just made me think.  One way to be able to do real-time pub/sub from client to server
+  # is to have the server TCP request a list of ids or `updatedAt` values from the client to do the diff...
+  fetch: (criteria, callback) ->
+    params        = {}
+    
+    sort          = criteria.get('sort')
+    conditions    = criteria.conditions()
+    page          = criteria.get('page')
+    limit         = criteria.get('limit')
+    
+    params.sort       = sort if sort
+    params.conditions = conditions if conditions
+    params.page       = page if page
+    params.limit      = limit if limit
+    
+    @queue =>
+      params =
+        type: "POST"
+        data: params
 
-  fetch: ->
+      @ajax({}, params)
+        .success(@findSuccess(options))
+        .error(@findFailure(options))

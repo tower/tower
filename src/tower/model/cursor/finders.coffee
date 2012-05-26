@@ -20,6 +20,30 @@ Tower.Model.Cursor.Finders =
         app[key][method](records)
 
       records
+      
+  hasNext: false
+  hasPrevious: false
+  hasNextPage: false
+  hasPreviousPage: false
+  totalCount: 0
+  totalPageCount: 0
+  currentPage: 1
+  
+  firstPage: (callback) ->
+    @page(1)
+    @
+  
+  lastPage: (callback) ->
+    @page(@totalPageCount)
+    @
+  
+  nextPage: (callback) ->
+    @page(@currentPage + 1)
+    @
+    
+  previousPage: (callback) ->
+    @page(@currentPage - 1)
+    @
 
   find: (callback) ->
     @_find(callback)

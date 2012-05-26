@@ -7,7 +7,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     result.join(" ")
 
   toId: (options = {}) ->
-    result = Tower.Support.String.parameterize(@model.constructor.className())#@model.toKey()
+    result = if typeof(@model) == 'object' then Tower.Support.String.parameterize(@model.constructor.className()) else @model
     result += "-#{options.parentIndex}" if options.parentIndex
     result += "-#{Tower.Support.String.parameterize(@attribute)}"
     result += "-#{options.type || "field"}"
@@ -15,7 +15,7 @@ class Tower.View.Form.Field extends Tower.View.Component
     result
 
   toParam: (options = {}) ->
-    result = Tower.Support.String.camelize(@model.constructor.className(), true)#@model.toKey()
+    result = if typeof(@model) == 'object' then Tower.Support.String.camelize(@model.constructor.className(), true) else @model
     result += "[#{options.parentIndex}]" if options.parentIndex
     result += "[#{@attribute}]"
     result += "[#{@index}]" if @index?
@@ -31,7 +31,7 @@ class Tower.View.Form.Field extends Tower.View.Component
 
     # input type
 
-    field           = @model.constructor.fields()[@attribute]
+    field           = @model.constructor.fields()[@attribute] if typeof(@model) == 'object' # || new Tower.Model.Attribute
 
     options.as    ||= if field then Tower.Support.String.camelize(field.type, true) else "string"
     @inputType      = inputType = options.as
@@ -40,10 +40,10 @@ class Tower.View.Form.Field extends Tower.View.Component
     # class
     classes = [Tower.View.fieldClass, inputType]
     unless ["submit", "fieldset"].indexOf(inputType) > -1
-      classes.push if field.required then Tower.View.requiredClass else Tower.View.optionalClass
-      classes.push if field.errors then Tower.View.errorClass else Tower.View.validClass
+      classes.push if field && field.required then Tower.View.requiredClass else Tower.View.optionalClass
+      classes.push if field && field.errors then Tower.View.errorClass else Tower.View.validClass
 
-      if options.validate != false && field.validations
+      if options.validate != false && field && field.validations
         classes.push Tower.View.validateClass
 
     @fieldHTML.class = @addClass @fieldHTML.class, classes
@@ -80,11 +80,11 @@ class Tower.View.Form.Field extends Tower.View.Component
     classes         = [inputType, Tower.Support.String.parameterize(@attribute), @inputHTML.class]
 
     unless ["submit", "fieldset"].indexOf(inputType) > -1
-      classes.push if field.required then Tower.View.requiredClass else Tower.View.optionalClass
-      classes.push if field.errors then Tower.View.errorClass else Tower.View.validClass
+      classes.push if field && field.required then Tower.View.requiredClass else Tower.View.optionalClass
+      classes.push if field && field.errors then Tower.View.errorClass else Tower.View.validClass
       classes.push "input"
 
-      if options.validate != false && field.validations
+      if options.validate != false && field && field.validations
         classes.push Tower.View.validateClass
 
     # class
@@ -99,7 +99,7 @@ class Tower.View.Form.Field extends Tower.View.Component
 
     if !value && @inputHTML.hasOwnProperty('value')
       value = @inputHTML.value
-    value ||= @model.get(@attribute)
+    value ||= @model.get(@attribute) if typeof(@model) == 'object'
 
     if value
       if @inputType == "array"
@@ -115,6 +115,8 @@ class Tower.View.Form.Field extends Tower.View.Component
     # expressions
     pattern                       = options.match
     pattern                       = pattern.toString() if _.isRegExp(pattern)
+    @bind                         = options.bind
+    @inputHTML.size = options.size if options.size?
     @inputHTML["data-match"]      = pattern if pattern?
     @inputHTML["aria-required"]   = @required.toString()
 
@@ -137,6 +139,7 @@ class Tower.View.Form.Field extends Tower.View.Component
   input: (args...) ->
     options = _.extend @inputHTML, _.extractOptions(args)
     key     = args.shift() || @attribute
+    # inline  = 
     @["#{@inputType}Input"](key, options)
 
   checkboxInput: (key, options) ->

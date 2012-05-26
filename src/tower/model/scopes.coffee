@@ -25,6 +25,7 @@ Tower.Model.Scopes =
     scoped: (options) ->
       cursor        = @cursor(options)
       defaultScope  = @defaults().scope
+
       if defaultScope
         defaultScope.where(cursor)
       else

@@ -10,8 +10,8 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
       @foreignType = "#{name}Type"
       owner.field(@foreignType, type: 'String')
 
-    owner.prototype[name] = ->
-      @relation(name)
+    #owner.prototype[name] = ->
+    #  @relation(name)
 
 class Tower.Model.Relation.BelongsTo.Cursor extends Tower.Model.Relation.Cursor
   isBelongsTo: true
