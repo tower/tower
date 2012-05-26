@@ -21,6 +21,7 @@ Tower.stateManager = Ember.StateManager.create
         console.log "enter: #{@name}" if Tower.debug
         app         = Tower.Application.instance() #=> App
         controller  = Ember.get(app, name)
+        controller.format = 'html'
 
         if controller
           controllerAction = controller[action]

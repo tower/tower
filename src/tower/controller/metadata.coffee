@@ -26,7 +26,8 @@ Tower.Controller.Metadata =
       helpers                 = _.copyArray(superMetadata.helpers)
       belongsTo               = _.copyArray(superMetadata.belongsTo)
       subscriptions           = _.copyArray(superMetadata.subscriptions)
-
+      layout                  = superMetadata.layout
+      
       callbacks               = {}
 
       if superMetadata.callbacks
@@ -45,6 +46,7 @@ Tower.Controller.Metadata =
         helpers:              helpers
         belongsTo:            belongsTo
         subscriptions:        subscriptions
+        layout:               layout
 
       result
 

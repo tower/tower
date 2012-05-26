@@ -1,10 +1,10 @@
 class <%= app.namespace %>.ApplicationController extends Tower.Controller
-  @layout "application"
+  @layout 'application'
 
-  @beforeAction "bootstrap"#, only: "welcome"
+  @beforeAction 'bootstrap'#, only: 'welcome'
 
   welcome: ->
-    @render "welcome", locals: {@bootstrapData}
+    @render 'welcome', locals: {@bootstrapData}
 
   # Example of how you might bootstrap a one-page application.
   bootstrap: (callback) ->

@@ -1,7 +1,7 @@
 # @mixin
 Tower.Model.Cursor.Finders =
   ClassMethods:
-    subscriptions: []
+    subscriptions: Ember.A([])
 
     pushMatching: (records) ->
       @applyMatching('pushMatching', records)
@@ -29,6 +29,9 @@ Tower.Model.Cursor.Finders =
   totalPageCount: 0
   currentPage: 1
   
+  publish: ->
+    @constructor.subscriptions.pushObject(@)
+
   firstPage: (callback) ->
     @page(1)
     @

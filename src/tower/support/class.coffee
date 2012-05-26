@@ -3,10 +3,8 @@ if typeof Ember != 'undefined'
     __extend: (child) ->
       object = Ember.Object.extend.apply @
       object.__name__ = child.name
-      if @extended
-        @extended.call(object)
-      else
-        object
+      @extended.call(object) if @extended
+      object
 
     __defineStaticProperty: (key, value) ->
       object = {}

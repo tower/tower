@@ -32,7 +32,7 @@ class Tower.Controller extends Tower.Class
     @resourceType         = metadata.resourceType
     @collectionName       = metadata.collectionName
 
-    @formats              = _.keys(metadata.mimes)
+    @formats              = if Tower.isClient then ['html'] else _.keys(metadata.mimes)
     @hasParent            = @constructor.hasParent()
 
 require './controller/callbacks'

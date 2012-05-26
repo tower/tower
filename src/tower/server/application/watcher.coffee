@@ -31,7 +31,9 @@ Tower.Application.Watcher =
         # [Sat, 18 Feb 2012 22:49:33 GMT] INFO updated public/stylesheets/vendor/stylesheets/bootstrap/reset.css
         data.replace /\[([^\]]+)\] (\w+) (\w+) (.+)/, (_, date, type, action, path) =>
           path  = path.split('\u001b[0m')[0]
+          console.log path
           ext   = path.match(/\.(\w+)$/g)
+          console.log ext
           ext   = ext[0] if ext
           if ext && ext.match(/(js|coffee|iced)/) && !path.match(/^public/) && action.match(/(updated|deleted)/)
             @fileChanged(path)

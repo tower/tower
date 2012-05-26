@@ -75,6 +75,7 @@ Tower.Generator.Resources =
     paramName             = Tower.Support.String.parameterize(name)
     paramNamePlural       = Tower.Support.String.parameterize(namePlural)
     humanName             = _.humanize(className)
+    humanNamePlural       = _.pluralize(humanName)
     attributes            = []
     relations             = []
 
@@ -98,6 +99,7 @@ Tower.Generator.Resources =
     paramName:            paramName
     paramNamePlural:      paramNamePlural
     humanName:            humanName
+    humanNamePlural:      humanNamePlural
     attributes:           attributes
     relations:            relations
     namespacedDirectory:  namespaces.join("/")

@@ -17,8 +17,8 @@ Tower.Generator.Helpers =
   bootstrap: (model) ->
     @inRoot =>
       # bootstrap into client side
-      @injectIntoFile "app/client/config/application.coffee",
-        "    @#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n", after: /bootstrap\: *\(data\) *-\> *\n/i
+      @injectIntoFile "app/client/config/bootstrap.coffee",
+        "  #{@app.namespace}.#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n", after: /bootstrap\ = *\(data\) *-\> *\n/i
 
       # bootstrap into server side
       string = """

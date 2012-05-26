@@ -8,11 +8,11 @@ Tower.Controller.Helpers =
       @metadata().helpers
 
     layout: (layout) ->
-      @_layout = layout
+      @metadata().layout = layout
 
   InstanceMethods:
     layout: ->
-      layout = @constructor._layout
+      layout = @constructor.metadata().layout
       if typeof(layout) == 'function' then layout.call(@) else layout
 
 module.exports = Tower.Controller.Helpers
