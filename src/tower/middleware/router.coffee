@@ -19,10 +19,10 @@ _.extend Tower.Middleware.Router,
     @processHost  request, response
     @processAgent request, response
 
-    Tower.HTTP.Route.findController(request, response, callback)
+    Tower.Net.Route.findController(request, response, callback)
 
   processHost: (request, response) ->
-    request.location ||= new Tower.HTTP.Url(request.url)
+    request.location ||= new Tower.Net.Url(request.url)
 
   processAgent: (request, response) ->
     request.userAgent ||= request.headers['user-agent'] if request.headers

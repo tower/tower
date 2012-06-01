@@ -1,5 +1,5 @@
 # @todo Make this more like a {Tower.Model}
-class Tower.HTTP.Route extends Tower.Class
+class Tower.Net.Route extends Tower.Class
   @store: ->
     @_store ||= []
 
@@ -17,11 +17,13 @@ class Tower.HTTP.Route extends Tower.Class
     for route in @all()
       controller  = route.controller
       success     = true
+
       for key, value of options
         success = controller[key] == value
         break unless success
 
       return route if success
+      
     null
 
   @all: ->
@@ -37,7 +39,7 @@ class Tower.HTTP.Route extends Tower.Class
   @draw: (callback) ->
     @_defaultCallback ||= callback
     callback = @_defaultCallback unless callback
-    callback.apply(new Tower.HTTP.Route.DSL(@))
+    callback.apply(new Tower.Net.Route.DSL(@))
 
   @findController: (request, response, callback) ->
     routes      = Tower.Route.all()
@@ -171,8 +173,8 @@ class Tower.HTTP.Route extends Tower.Class
 
     new RegExp('^' + path + '$', if !!caseSensitive then '' else 'i')
 
-Tower.Route = Tower.HTTP.Route
+Tower.Route = Tower.Net.Route
 
 require './route/dsl'
 
-module.exports = Tower.HTTP.Route
+module.exports = Tower.Net.Route

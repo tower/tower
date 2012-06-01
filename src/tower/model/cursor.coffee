@@ -86,6 +86,8 @@
 # 
 # Whenever the `currentUser` leaves your app, all the cursors defined for that current user 
 # will be destroyed. 
+# 
+# I want this to be an array now, no longer a cursor.
 class Tower.Model.Cursor extends Tower.Collection
   init: ->
     @_super arguments...

@@ -30,6 +30,7 @@ Tower.Model.Cursor.Operations =
   #
   # @param [Arguments] keys
   except: ->
+    # @criteria.
     @_except = _.flatten _.args(arguments)
 
   with: (transaction) ->
@@ -150,15 +151,16 @@ Tower.Model.Cursor.Operations =
 
   # @example
   #   App.Post.page(2).all()
+  # 
+  # If you call `page` (rather than manually calling `limit` and `offset`),
+  # you have now setup a paging operation.  This means in addition to making a query
+  # for records, it will also make an _additional_ query 
+  # to get the total count of matching records.
+  # 
+  # @todo Maybe we should make the `count` query part of the `paginate` method instead.
   page: (page) ->
     limit = @limit(@_limit || @defaultLimit)
     @offset((Math.max(1, page) - 1) * limit)
-
-  paginate: (options) ->
-    limit   = options.perPage || options.limit
-    page    = options.page || 1
-    @limit(limit)
-    @offset((page - 1) * limit)
 
   # https://github.com/manuelbieh/Geolib/blob/master/geolib.js
   # @example Find near specific coordinates.

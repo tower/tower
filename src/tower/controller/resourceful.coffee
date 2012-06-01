@@ -1,4 +1,9 @@
 # @mixin
+# @todo Most of this stuff is only really relevant for the server,
+# so consider moving it to the server folder.  The only reason you'd want
+# this on the client is to demo what the server can do from the client
+# (think in-browser console or something).  In that case we need to figure
+# out how to include specific files in the browser manually.
 Tower.Controller.Resourceful =
   ClassMethods:
     # Set information about resource/model for this controller.

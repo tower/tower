@@ -22,6 +22,7 @@ Tower.Controller.Metadata =
       collectionName          = _.camelize(className.replace(/(Controller)$/, ''), true)
       params                  = _.copyObject(superMetadata.params)
       renderers               = _.copyObject(superMetadata.renderers)
+      scopes                  = _.copyObject(superMetadata.scopes)
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
       helpers                 = _.copyArray(superMetadata.helpers)
       belongsTo               = _.copyArray(superMetadata.belongsTo)
@@ -47,6 +48,7 @@ Tower.Controller.Metadata =
         belongsTo:            belongsTo
         subscriptions:        subscriptions
         layout:               layout
+        scopes:               scopes
 
       result
 

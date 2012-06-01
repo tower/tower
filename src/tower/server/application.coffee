@@ -20,7 +20,7 @@ class Tower.Application extends Tower.Engine
   @autoloadPaths: [
     'app/helpers'
     'app/models'
-    'app/concerns'
+    #'app/concerns'
     'app/controllers'
     'app/presenters'
     'app/mailers'

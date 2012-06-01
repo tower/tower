@@ -1,3 +1,4 @@
+# Don't need this for the client, @todo, remove for client.
 class Tower.Controller.Responder
   @respond: (controller, options, callback) ->
     responder = new @(controller, options)

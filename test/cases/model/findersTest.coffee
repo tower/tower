@@ -385,11 +385,6 @@ describeWith = (store) ->
         App.Post.page(20).all (error, posts) =>
           assert.equal posts.length, 0
           done()
-          
-      test 'paginate(page: 4, perPage: 5) end of set', (done) ->
-        App.Post.paginate(page: 4, perPage: 5).asc("title").all (error, posts) =>
-          assert.equal posts.length, 3
-          done()
 
       test 'desc', (done) ->
         App.Post.page(2).desc('title').all (error, posts) =>

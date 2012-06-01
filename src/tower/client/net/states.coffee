@@ -3,7 +3,7 @@ Tower.stateManager = Ember.StateManager.create
   root: Ember.State.create()
 
   handleUrl: (url, options) ->
-    route = Tower.HTTP.Route.find(url)
+    route = Tower.Net.Route.find(url)
 
     if route
       Tower.stateManager.goToState(route.state)

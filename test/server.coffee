@@ -32,7 +32,7 @@ beforeEach (done) ->
   Tower.View.store().loadPaths  = ["test/example/app/views"]
   
   Tower.Application.instance().initialize ->
-    done()
+    Tower.Store.Mongodb.clean(done)
 
 after (done) ->
   return done()

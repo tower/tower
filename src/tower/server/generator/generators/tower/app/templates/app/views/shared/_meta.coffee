@@ -30,7 +30,7 @@ ENV.VIEW_PRESERVES_CONTEXT = true;
 ENV.CP_DEFAULT_CACHEABLE = true;
 """
 
-javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"
 
 #if contentFor "headJavaScripts"
 #  yield "headJavaScripts"

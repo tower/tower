@@ -1,10 +1,10 @@
 describeWith = (store) ->
   param = null
   
-  describe 'Tower.HTTP.Param', ->
+  describe 'Tower.Net.Param', ->
     describe 'String', ->
       beforeEach ->
-        param = Tower.HTTP.Param.create("title", type: "String")
+        param = Tower.Net.Param.create("title", type: "String")
       
       test 'match string', ->
         cursor  = param.toCursor("Hello+World")
@@ -24,7 +24,7 @@ describeWith = (store) ->
     
     describe 'Array', ->
       beforeEach ->
-        param = Tower.HTTP.Param.create("tags", type: "Array")
+        param = Tower.Net.Param.create("tags", type: "Array")
       
       test '$allIn', ->
         cursor  = param.toCursor("[ruby,javascript]")
@@ -57,7 +57,7 @@ describeWith = (store) ->
     describe 'Date', ->
       param = null
       beforeEach ->
-        param = Tower.HTTP.Param.create("createdAt", type: "Date")
+        param = Tower.Net.Param.create("createdAt", type: "Date")
   
       test 'exact date', ->
         cursor  = param.toCursor("12-25-2012")
@@ -88,7 +88,7 @@ describeWith = (store) ->
       param = null
   
       beforeEach ->
-        param = Tower.HTTP.Param.create("likeCount", type: "Number")
+        param = Tower.Net.Param.create("likeCount", type: "Number")
   
       test 'exact number `12`', ->
         cursor  = param.toCursor("12")
@@ -149,6 +149,38 @@ describeWith = (store) ->
       #  asc:            ["+", ""]
       #  desc:           "-"
       #  geo:            ":lat,:lng,:radius"   # geo=20,-50,7
+
+    describe 'Order', ->
+      param = null
+  
+      beforeEach ->
+        param = Tower.Net.Param.create("sort", type: "Order")
+  
+      test 'ascending (default)', ->
+        values = param.parse('createdAt')
+        assert.deepEqual ['createdAt', 'ASC'], values
+        #cursor  = param.toCursor("createdAt")
+        #assert.deepEqual cursor.conditions(), { "sort": ["createdAt", "ASC"] }
+
+      test 'ascending (+)', ->
+        values = param.parse('createdAt+')
+        assert.deepEqual ['createdAt', 'ASC'], values
+
+      test 'ascending (-)', ->
+        values = param.parse('createdAt-')
+        assert.deepEqual ['createdAt', 'DESC'], values
+
+      test 'ascending/descending (default/-)', ->
+        values = param.parse('createdAt,likeCount-')
+        assert.deepEqual ['createdAt', 'ASC', 'likeCount', 'DESC'], values
+
+      test 'ascending/descending (+/-)', ->
+        values = param.parse('createdAt+,likeCount-')
+        assert.deepEqual ['createdAt', 'ASC', 'likeCount', 'DESC'], values
+
+      test 'descending/descending (-/-)', ->
+        values = param.parse('createdAt-,likeCount-')
+        assert.deepEqual ['createdAt', 'DESC', 'likeCount', 'DESC'], values
 
 describeWith(Tower.Store.Memory)
 #unless Tower.client

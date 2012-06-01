@@ -1,7 +1,7 @@
-class Tower.HTTP.Param.Number extends Tower.HTTP.Param
+class Tower.Net.Param.Number extends Tower.Net.Param
   parse: (value) ->
     values  = []
-    array   = value.toString().split(/[,\|]/)
+    array   = value.split(/[,\|]/)
 
     for string in array
       isRange   = false
@@ -23,4 +23,4 @@ class Tower.HTTP.Param.Number extends Tower.HTTP.Param
   parseValue: (value, operators) ->
     super(parseFloat(value), operators)
 
-module.exports = Tower.HTTP.Param.Number
+module.exports = Tower.Net.Param.Number

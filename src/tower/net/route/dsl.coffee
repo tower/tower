@@ -1,11 +1,11 @@
-class Tower.HTTP.Route.DSL
+class Tower.Net.Route.DSL
   constructor: ->
     @_scope = {}
 
   match: ->
     @scope ||= {}
-    route = new Tower.HTTP.Route(@_extractOptions(arguments...))
-    Tower.HTTP.Route.create(route)
+    route = new Tower.Net.Route(@_extractOptions(arguments...))
+    Tower.Net.Route.create(route)
 
   get: ->
     @matchMethod("get", _.args(arguments))
@@ -108,7 +108,7 @@ class Tower.HTTP.Route.DSL
 
     camelOne = _.camelize(one)
 
-    @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, options)
+    @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, method: ['GET', 'POST'], options)
     @match "#{path}/new",       _.extend(action: "new",     state: "#{many}.new",     name: "new#{camelOne}", options)
     @match path,                _.extend(action: "create",  state: "#{many}.create",  method: "POST", options)
     @match "#{path}/:id",       _.extend(action: "show",    state: "#{many}.show",    name: one, options)

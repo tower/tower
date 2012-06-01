@@ -42,8 +42,8 @@ class Tower.Application extends Tower.Engine
     @
 
   extractAgent: ->
-    Tower.cookies = Tower.HTTP.Cookies.parse()
-    Tower.agent   = new Tower.HTTP.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
+    Tower.cookies = Tower.Net.Cookies.parse()
+    Tower.agent   = new Tower.Net.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
 
   listen: ->
     return if @listening
@@ -52,9 +52,9 @@ class Tower.Application extends Tower.Engine
     if Tower.history && Tower.history.enabled
       Tower.history.Adapter.bind global, "statechange", =>
         state     = Tower.history.getState()
-        location  = new Tower.HTTP.Url(state.url)
-        request   = new Tower.HTTP.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
-        response  = new Tower.HTTP.Response(url: state.url, location: location)
+        location  = new Tower.Net.Url(state.url)
+        request   = new Tower.Net.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
+        response  = new Tower.Net.Response(url: state.url, location: location)
         Tower.Middleware.Router request, response, (error) =>
           console.log error if error
       $(global).trigger("statechange")

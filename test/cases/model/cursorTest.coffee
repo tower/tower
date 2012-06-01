@@ -97,21 +97,6 @@ describe 'Tower.Model.Cursor', ->
       assert.deepEqual cursor.get('offset'), 100
       
   describe '#paginate', ->
-    test 'pagination', ->
-      cursor.paginate perPage: 20, page: 20
-      
-      assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('limit'), 20
-      assert.deepEqual cursor.get('offset'), 380
-      
-    test 'override pagination', ->
-      cursor.paginate perPage: 20, page: 20
-      cursor.paginate perPage: 20, page: 2
-      
-      assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('limit'), 20
-      assert.deepEqual cursor.get('offset'), 20
-      
     test 'page', ->
       cursor.page(20)
       
@@ -125,7 +110,8 @@ describe 'Tower.Model.Cursor', ->
       cursor.where name: "!~": /[a-z]/
       cursor.where name: "=~": /[0-9]/
       cursor.order "name", "asc"
-      cursor.paginate perPage: 20, page: 2
+      cursor.limit(20)
+      cursor.page(2)
       
       # this doesn't work in node 0.4 b/c regular expressions aren't "equal" so to speak
       # assert.deepEqual cursor.conditions(), { id: { '$in': [1, 2, 3, 4, 5, 6] }, name: { '!~': /[a-z]/, '=~': /[0-9]/ } }
@@ -140,6 +126,9 @@ describe 'Tower.Model.Cursor', ->
       
   test '#clone', ->
     assert.ok cursor.clone()
+
+  test '#compile', ->
+    
     
   test '#allIn', ->
     

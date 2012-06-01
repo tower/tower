@@ -19,6 +19,13 @@ _.extend Tower,
     Tower.Application.instance().subscribe arguments...
 
   cb: ->
+
+  notifyConnections: (action, records) ->
+    for sessionId, connection of Tower.connections
+      connection.notify(action, records)
+
+  connections: {}
+
   toMixin: ->
     #mixin: ->
     #  Tower.mixin @, arguments...
@@ -102,9 +109,9 @@ _.extend Tower,
   #    options       = {}
   #  options       ||= {}
   #  url             = path
-  #  location        = new Tower.HTTP.Url(url)
-  #  request         = new Tower.HTTP.Request(url: url, location: location, method: method)
-  #  response        = new Tower.HTTP.Response(url: url, location: location, method: method)
+  #  location        = new Tower.Net.Url(url)
+  #  request         = new Tower.Net.Request(url: url, location: location, method: method)
+  #  response        = new Tower.Net.Response(url: url, location: location, method: method)
   #  request.query   = location.params
   #  Tower.Application.instance().handle request, response, ->
   #    callback.call @, @response

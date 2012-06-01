@@ -1,4 +1,4 @@
-class Tower.HTTP.Url
+class Tower.Net.Url
   @key: ["source", "protocol", "host", "userInfo", "user", "password", "hostname", "port", "relative", "path", "directory", "file", "query", "fragment"]
   @aliases:
     anchor: "fragment"
@@ -49,4 +49,4 @@ class Tower.HTTP.Url
 
     @parse(url)
 
-module.exports = Tower.HTTP.Url
+module.exports = Tower.Net.Url

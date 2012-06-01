@@ -2,7 +2,7 @@
 #   /?tags=[rails],-[-node,javascript],-[grails],-java,[male,-female]
 #   /?tags=rails,node
 #   /?tags=rails,-[flex,.net]
-class Tower.HTTP.Param.Array extends Tower.HTTP.Param
+class Tower.Net.Param.Array extends Tower.Net.Param
   parse: (value) ->
     values    = []
     # [rails],-[-node,javascript],-[grails],-java,[male,-female]
@@ -47,4 +47,4 @@ class Tower.HTTP.Param.Array extends Tower.HTTP.Param
 
     values
 
-module.exports = Tower.HTTP.Param.Array
+module.exports = Tower.Net.Param.Array

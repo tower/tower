@@ -37,7 +37,6 @@ Tower.Model.Cursor.Serialization =
     delete @returnArray
     result
 
-
   addData: (args) ->
     if args.length && args.length > 1 || _.isArray(args[0])
       @data = _.flatten(args)

@@ -13,7 +13,7 @@ Tower.Middleware.Agent = (request, response, next) ->
     windows:  !!agent.os.match(/win/i)
     linux:    !!agent.os.match(/linux/i)
 
-  request.agent = new Tower.HTTP.Agent(attributes)
+  request.agent = new Tower.Net.Agent(attributes)
 
   # so we can easily parse it out
   # response.cookie("user-agent", JSON.stringify(attributes))

@@ -1,4 +1,4 @@
-class Tower.HTTP.Response
+class Tower.Net.Response
   constructor: (data = {}) ->
     @url        = data.url
     @location   = data.location
@@ -31,4 +31,4 @@ class Tower.HTTP.Response
   redirect: (path, options = {}) ->
     global.History.push options, null, path if global.History
 
-module.exports = Tower.HTTP.Response
+module.exports = Tower.Net.Response

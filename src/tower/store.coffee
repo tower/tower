@@ -106,6 +106,12 @@ class Tower.Store extends Tower.Class
 
   load: (records) ->
 
+  # Notifies connections, which notify controllers,
+  # which notify matching cursors, of the created/updated/deleted records.
+  notifyConnections: (action, records) ->
+    for connection in Tower.connections
+      connection.notify(action, records)
+
   fetch: ->
 
   schema: ->

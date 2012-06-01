@@ -1,33 +1,39 @@
-class Tower.HTTP.Param
+# Defines how to parse a specific URL query parameter into a database criteria.
+# 
+# 
+class Tower.Net.Param
   @perPage:       20
   @sortDirection: 'ASC'
   @sortKey:       'sort'                 # or 'order', etc.
   @limitKey:      'limit'                # or 'perPage', etc.
   @pageKey:       'page'
-  @separator:     '_'                    # or '-'
+  @separator:     '-'                    # or '-'
 
   @create: (key, options = {}) ->
     options = type: options if typeof options == 'string'
     options.type ||= 'String'
-    new Tower.HTTP.Param[options.type](key, options)
+    new Tower.Net.Param[options.type](key, options)
 
   constructor: (key, options = {}) ->
     @controller = options.controller
     @key        = key
     @attribute  = options.as || @key
     @modelName  = options.modelName
-    @namespace  = Tower.Support.String.pluralize(@modelName) if modelName?
+    @namespace  = _.pluralize(@modelName) if modelName?
     @exact      = options.exact || false
     @default    = options.default
 
-  parse: (value) -> value
+  parse: (value) -> 
+    value
 
-  render: (value) -> value
+  render: (value) -> 
+    value
 
   toCursor: (value) ->
     nodes     = @parse(value)
     criteria  = Tower.Model.Cursor.create()
     criteria.make()
+
     for set in nodes
       for node in set
         attribute   = node.attribute
@@ -40,6 +46,7 @@ class Tower.HTTP.Param
           conditions[attribute][operator] = node.value
 
         criteria.where(conditions)
+
     criteria
 
   parseValue: (value, operators) ->
@@ -51,6 +58,7 @@ class Tower.HTTP.Param
 require './param/array'
 require './param/date'
 require './param/number'
+require './param/order'
 require './param/string'
 
-module.exports = Tower.HTTP.Param
+module.exports = Tower.Net.Param

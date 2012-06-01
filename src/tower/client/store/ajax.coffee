@@ -1,4 +1,7 @@
 # Soon this should handle batch requests.
+# 
+# Perhaps this Ajax store is not really a "store", but more of a "sync" protocol.
+# Then, you can have an Ajax sync method for both Memory and LocalStorage.
 class Tower.Store.Ajax extends Tower.Store.Memory
   @requests: []
   @enabled:  true
@@ -82,7 +85,7 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   insert: (criteria, callback) ->
     unless criteria.sync == false
       @_super criteria, (error, records) =>
-        callback.call @, error, records if callback
+        callback.call(@, error, records) if callback
         @createRequest records, criteria
     else
       @_super(criteria, callback)

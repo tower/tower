@@ -1,4 +1,4 @@
-class Tower.HTTP.Param.String extends Tower.HTTP.Param
+class Tower.Net.Param.String extends Tower.Net.Param
   parse: (value) ->
     arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/g)
 
@@ -33,4 +33,4 @@ class Tower.HTTP.Param.String extends Tower.HTTP.Param
 
     arrays
 
-module.exports = Tower.HTTP.Param.String
+module.exports = Tower.Net.Param.String

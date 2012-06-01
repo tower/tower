@@ -1,4 +1,4 @@
-class Tower.HTTP.Agent
+class Tower.Net.Agent
   constructor: (attributes = {}) ->
     _.extend @, attributes
 
@@ -51,4 +51,4 @@ class Tower.HTTP.Agent
     else
       newRequest
 
-module.exports = Tower.HTTP.Agent
+module.exports = Tower.Net.Agent

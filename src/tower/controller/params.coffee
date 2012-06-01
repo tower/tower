@@ -11,9 +11,9 @@ Tower.Controller.Params =
     # @param [Object] options
     # @option options [String] type
     #
-    # @return [Tower.HTTP.Param]
+    # @return [Tower.Net.Param]
     param: (key, options) ->
-      @params()[key] = Tower.HTTP.Param.create(key, options)
+      @params()[key] = Tower.Net.Param.create(key, options)
 
     # Return all params, or define multiple params at once.
     #
@@ -53,7 +53,14 @@ Tower.Controller.Params =
 
       for name, parser of parsers
         if params.hasOwnProperty(name)
-          cursor.where(parser.toCursor(params[name]))
+          if params[name] && typeof params[name] == 'string'
+            cursor.where(parser.toCursor(params[name]))
+          else if name == 'sort'
+            cursor.order(params[name])
+          else
+            object = {}
+            object[name] = params[name]
+            cursor.where(object)
 
       cursor
 
