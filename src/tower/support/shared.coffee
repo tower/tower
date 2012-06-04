@@ -26,8 +26,8 @@ _.extend Tower,
 
   connections: {}
 
-  createConnection: ->
-    connection = new Tower.Net.Connection
+  createConnection: (socket) ->
+    connection = Tower.Net.Connection.create().setProperties(socket: socket)
     @connections[connection.toString()] = connection
 
   toMixin: ->

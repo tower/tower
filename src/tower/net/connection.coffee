@@ -3,12 +3,46 @@
 # 
 # This doesn't need to be used on the client.  The client just needs a set of cursors.
 # e_dub: One way you could handle when to let go of the memory is when the user changes resources. so let's say the user is flipping through a list of users, and you keep that stuff in memory, then when they find the user they want, they click on that users posts, now you let go of your users list and start hanging onto the posts
+# 
+# This class should store the currentUser and currentAbility objects
+# so there's a quick way to filter data by user and role.
 class Tower.Net.Connection extends Tower.Class
-  @transports: []
+  @transports:  []
   @controllers: []
+  @all:         {}
+  @handlers:    Ember.Map.create()
 
-  toString: ->
-    1
+  # Try socket.io, then sockjs
+  @initialize: ->
+    try
+      require('socket.io')
+      @reopenClass Tower.Net.Connection.Socketio
+    catch error
+      try
+        require('sockjs')
+        @reopenClass Tower.Net.Connection.Sockjs
+      catch error
+        @
+
+  @connect: (socket) ->
+    @all[@getId(socket)] = connection = Tower.Net.Connection.create(socket: socket)
+
+    connection.registerHandlers()
+
+    connection
+
+  @disconnect: (socket) ->
+    connection = @all[@getId(socket)]
+    connection.destroy =>
+      delete @all[@getId(socket)]
+
+  # @addHandler '/posts/something'
+  @addHandler: (name, handler) ->
+    @handlers.set(name, handler)
+
+  registerHandlers: ->
+    @constructor.handlers.forEach (eventType, handler) =>
+      @registerHandler(eventType, handler)
 
   # all records must be of the same type for now.
   notify: (action, records) ->
@@ -42,8 +76,12 @@ class Tower.Net.Connection extends Tower.Class
     message =
       data: records
       url:  url
-
-    @socket.write message, (error, data) =>
+    return
+    @constructor.emit message, (error, data) =>
       callback.call(@, error, data)
+
+  # @todo
+  destroy: (callback) ->
+    callback()
 
 module.exports = Tower.Net.Connection

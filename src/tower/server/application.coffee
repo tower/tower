@@ -193,7 +193,11 @@ class Tower.Application extends Tower.Engine
         if error.errno == 'EADDRINUSE'
           console.log('   Try using a different port: `node server -p 3001`')
         #console.log(error.stack)
-      @io     ||= require('socket.io').listen(@server)
+      
+      unless @io
+        Tower.Connection.initialize()
+        @io   = Tower.Connection.listen(@server)
+
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
