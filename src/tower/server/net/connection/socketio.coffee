@@ -16,13 +16,16 @@ Tower.Net.Connection.Socketio =
     @_super(socket)
 
   disconnect: (socket) ->
+    @_super(socket)
 
   registerHandler: (socket, eventType, handler) ->
     socket.on eventType, (data) =>
       handler.call(@, data, @)
 
-  emit: (data, sockets...) ->
+  emit: (socket, data) ->
+    socket.emit(data)
 
   broadcast: (data) ->
+    socket.broadcast(data)
 
 module.exports = Tower.Net.Connection.Socketio
