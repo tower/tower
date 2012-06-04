@@ -46,6 +46,7 @@ require './controller/rendering'
 require './controller/resourceful'
 require './controller/responder'
 require './controller/responding'
+require './controller/scopes'
 
 Tower.Controller.include Tower.Controller.Callbacks
 Tower.Controller.include Tower.Controller.Errors
@@ -57,5 +58,6 @@ Tower.Controller.include Tower.Controller.Redirecting
 Tower.Controller.include Tower.Controller.Rendering
 Tower.Controller.include Tower.Controller.Resourceful
 Tower.Controller.include Tower.Controller.Responding
+Tower.Controller.include Tower.Controller.Scopes
 
 module.exports = Tower.Controller

@@ -4,3 +4,5 @@ class App.PostsController extends Tower.Controller
   @param 'rating', type: 'Number'
   @param 'title'
   @param 'sort', type: 'Order'
+
+  @scope App.Post

@@ -17,7 +17,9 @@ Tower.Controller.reopenClass extended: ->
     Tower.Application.instance()[name].create()
   ).cacheable()
 
-  #Tower.Net.Connection.reopen(object)
+  Tower.Net.Connection.controllers.push(camelName)
+
+  Tower.Net.Connection.reopen(object)
 
   @
 

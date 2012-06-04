@@ -1,7 +1,7 @@
 # @mixin
 Tower.Model.Cursor.Operations =
   eagerLoad: (object) ->
-    @_eagerLoad = _.extend @_eagerLoad, object
+    @_eagerLoad = _.extend(@_eagerLoad, object)
 
   # Join commands.
   #

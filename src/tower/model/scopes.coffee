@@ -41,6 +41,9 @@ Tower.Model.Scopes =
       cursor.where(type: @className()) if @baseClass().className() != @className()
       cursor
 
+    toCursor: ->
+      @cursor(arguments...)
+
 for key in Tower.Model.Scope.queryMethods
   do (key) ->
     Tower.Model.Scopes.ClassMethods[key] = ->

@@ -55,8 +55,8 @@ Tower.Model.Cursor.Persistence =
           records = records[0] if !returnArray
           callback(error, records)
     else
-      #Tower.Model.Cursor.pushMatching(@data)
-      # Tower.notifyConnections('create', @data)
+      Tower.notifyConnections('created', @data)
+
       @store.insert @, callback
 
     @

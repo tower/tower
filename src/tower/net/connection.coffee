@@ -3,19 +3,23 @@
 # 
 # This doesn't need to be used on the client.  The client just needs a set of cursors.
 # e_dub: One way you could handle when to let go of the memory is when the user changes resources. so let's say the user is flipping through a list of users, and you keep that stuff in memory, then when they find the user they want, they click on that users posts, now you let go of your users list and start hanging onto the posts
-class Tower.Net.Connection
+class Tower.Net.Connection extends Tower.Class
   @transports: []
+  @controllers: []
+
+  toString: ->
+    1
 
   # all records must be of the same type for now.
   notify: (action, records) ->
     record    = records[0]
     return unless record
     matches   = []
-    
-    iterator  = (controller, next) ->
-      controller.matchAgainstCursors(records, matches, next)
-    
-    Tower.series @controllers, iterator, (error) =>
+
+    iterator  = (controller, next) =>
+      @get(controller).matchAgainstCursors(records, matches, next)
+
+    Tower.series @constructor.controllers, iterator, (error) =>
       @[action](matches)
 
   # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
@@ -40,7 +44,6 @@ class Tower.Net.Connection
       url:  url
 
     @socket.write message, (error, data) =>
-      console.log arguments
       callback.call(@, error, data)
 
 module.exports = Tower.Net.Connection

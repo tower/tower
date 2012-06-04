@@ -26,6 +26,10 @@ _.extend Tower,
 
   connections: {}
 
+  createConnection: ->
+    connection = new Tower.Net.Connection
+    @connections[connection.toString()] = connection
+
   toMixin: ->
     #mixin: ->
     #  Tower.mixin @, arguments...

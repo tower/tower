@@ -102,6 +102,8 @@ Tower.Model.Cursor.Finders =
             hasLastPage:      !!records.length
             currentPage:      records.length
 
+          @addObjects(records) if Tower.isClient
+
         callback.call(@, error, records) if callback
         records
     @
