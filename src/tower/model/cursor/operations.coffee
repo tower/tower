@@ -160,6 +160,7 @@ Tower.Model.Cursor.Operations =
   # @todo Maybe we should make the `count` query part of the `paginate` method instead.
   page: (page) ->
     limit = @limit(@_limit || @defaultLimit)
+    Ember.set @, 'currentPage', page
     @offset((Math.max(1, page) - 1) * limit)
 
   # https://github.com/manuelbieh/Geolib/blob/master/geolib.js

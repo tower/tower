@@ -1,3 +1,13 @@
+###
+global error handling
+
+$(window).error (event) ->
+  try
+    App.errorHandler(event)
+  catch error
+    console.log(error)
+###
+
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
 

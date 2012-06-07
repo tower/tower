@@ -7,9 +7,10 @@ describe 'Tower.Net.Connection', ->
   test 'constructor', ->
     assert.ok connection instanceof Tower.Net.Connection
 
-  test 'lazily instantiates controllers', ->
-    assert.ok !(connection.postsController instanceof App.PostsController)
-    assert.ok connection.get('postsController') instanceof App.PostsController
+  if Tower.isServer
+    test 'lazily instantiates controllers', ->
+      assert.ok !(connection.postsController instanceof App.PostsController)
+      assert.ok connection.get('postsController') instanceof App.PostsController
 
   test 'scopes', ->
     scope = connection.getPath('postsController.all')

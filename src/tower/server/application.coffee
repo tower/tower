@@ -195,8 +195,8 @@ class Tower.Application extends Tower.Engine
         #console.log(error.stack)
       
       unless @io
-        Tower.Connection.initialize()
-        @io   = Tower.Connection.listen(@server)
+        Tower.Net.Connection.initialize()
+        @io   = Tower.Net.Connection.listen(@server)
 
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")

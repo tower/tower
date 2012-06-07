@@ -1,34 +1,25 @@
-# Soon this should handle batch requests.
-# 
-# Perhaps this Ajax store is not really a "store", but more of a "sync" protocol.
-# Then, you can have an Ajax sync method for both Memory and LocalStorage.
-class Tower.Store.Ajax extends Tower.Store.Memory
-  @requests: []
-  @enabled:  true
-  @pending:  false
+Tower.Store.Transport.Ajax =
+  requests: []
+  enabled:  true
+  pending:  false
 
-  init: ->
-    @_super(arguments...)
-
-    @deleted = {}
-
-  @defaults:
+  defaults:
     contentType: 'application/json'
     dataType:    'json'
     processData: false
     headers:     {'X-Requested-With': 'XMLHttpRequest'}
 
-  @ajax: (params, defaults) ->
+  ajax: (params, defaults) ->
     $.ajax($.extend({}, @defaults, defaults, params))
 
-  @toJSON: (record, method, format) ->
+  toJSON: (record, method, format) ->
     data          = {}
-    data[_.camelize(record.constructor.className(), true)] = record
+    data[record.constructor.toKey()] = record
     data._method  = method
     data.format   = format
     JSON.stringify(data)
 
-  @disable: (callback) ->
+  disable: (callback) ->
     if @enabled
       @enabled = false
       do callback
@@ -36,23 +27,25 @@ class Tower.Store.Ajax extends Tower.Store.Memory
     else
       do callback
 
-  @requestNext: ->
+  requestNext: ->
     next = @requests.shift()
     if next
       @request(next)
     else
       @pending = false
 
-  @request: (callback) ->
+  request: (callback) ->
     (do callback).complete(=> do @requestNext)
 
-  @queue: (callback) ->
+  queue: (callback) ->
     return unless @enabled
+
     if @pending
       @requests.push(callback)
     else
       @pending = true
       @request(callback)
+
     callback
 
   success: (record, options = {}) ->
@@ -67,57 +60,18 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   failure: (record, options = {}) ->
     (xhr, statusText, error) =>
       options.error?.apply(record)
-
-  queue: (callback) ->
-    @constructor.queue callback
-
-  request: ->
-    @constructor.request arguments...
-
-  ajax: ->
-    @constructor.ajax arguments...
-
-  toJSON: ->
-    @constructor.toJSON arguments...
     
-  find: (criteria, callback) ->
-
-  insert: (criteria, callback) ->
-    unless criteria.sync == false
-      @_super criteria, (error, records) =>
-        callback.call(@, error, records) if callback
-        @createRequest records, criteria
-    else
-      @_super(criteria, callback)
-
-  update: (updates, criteria, callback) ->
-    if criteria.sync == true
-      @_super updates, criteria, (error, result) =>
-        callback.call @, error, result if callback
-        @updateRequest result, criteria
-    else
-      super
-
-  destroy: (criteria, callback) ->
-    unless criteria.sync == false
-      @_super criteria, (error, result) =>
-        @destroyRequest result, criteria
-        callback.call @, error, result if callback
-    else
-      super
-
-  createRequest: (records, options = {}) ->
+  willCreateRecords: (records, options = {}) ->
     json  = @toJSON(records)
     url   = Tower.urlFor(records.constructor)
+    
     @queue =>
       params =
         url:  url
         type: "POST"
         data: json
 
-      @ajax(options, params)
-        .success(@createSuccess(records))
-        .error(@createFailure(records))
+      @ajax(options, params).success(@createSuccess(records)).error(@createFailure(records))
 
   createSuccess: (record) ->
     (data, status, xhr) =>
@@ -129,6 +83,8 @@ class Tower.Store.Ajax extends Tower.Store.Memory
 
   createFailure: (record) ->
     @failure(record)
+
+  didCreateRecords: (records) ->
 
   updateRequest: (record, options, callback) ->
     @queue =>
@@ -173,45 +129,17 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   destroyFailure: (record) ->
     (xhr, statusText, error) =>
 
-  findRequest: (options) ->
-    @queue =>
-      params =
-        type: "GET"
-        data: @toJSON(record)
-
-      @ajax({}, params)
-        .success(@findSuccess(options))
-        .error(@findFailure(options))
-
-  findSuccess: (options) ->
+  findSuccess: (criteria, callback) ->
+    # `data` will look like this:
+    # {users: [user1, user1...], conditions: {}, page: 2, limit: 20, sort: []}
+    # and all we need to do is load it back into the criteria
     (data, status, xhr) =>
       if _.isPresent(data)
         @load(data)
 
-  findFailure: (record) ->
+  findFailure: (criteria, callback) ->
     (xhr, statusText, error) =>
 
-  findOneRequest: (options, callback) ->
-    @queue =>
-      params =
-        type: "GET"
-        data: @toJSON(record)
-
-      @ajax({}, params)
-        .success(@findSuccess(options))
-        .error(@findFailure(options))
-
-  findOneSuccess: (options) ->
-    (data, status, xhr) =>
-
-  findOneFailure: (options) ->
-    (xhr, statusText, error) =>
-
-  # @todo Removes all models and fetches new ones.
-  # 
-  # It has to manage all of the published cursors as well.
-  refresh: ->
-    
   # Makes a request with JSON like this:
   #     {
   #       "sort": ["firstName", "asc"],
@@ -259,24 +187,20 @@ class Tower.Store.Ajax extends Tower.Store.Memory
   # 
   # Ooh, this just made me think.  One way to be able to do real-time pub/sub from client to server
   # is to have the server TCP request a list of ids or `updatedAt` values from the client to do the diff...
-  fetch: (criteria, callback) ->
-    params        = {}
-    
-    sort          = criteria.get('sort')
-    conditions    = criteria.conditions()
-    page          = criteria.get('page')
-    limit         = criteria.get('limit')
-    
-    params.sort       = sort if sort
-    params.conditions = conditions if conditions
-    params.page       = page if page
-    params.limit      = limit if limit
+  find: (criteria, callback) ->
+    params = @serializeParamsForFind(criteria)
     
     @queue =>
-      params =
-        type: "POST"
-        data: params
-
       @ajax({}, params)
-        .success(@findSuccess(options))
-        .error(@findFailure(options))
+        .success(@findSuccess(criteria, callback))
+        .error(@findFailure(criteria, callback))
+
+  serializeParamsForFind: (criteria) ->
+    url     = Tower.urlFor(criteria.model)
+    data    = criteria.toJSON()
+
+    type: 'POST'
+    data: JSON.stringify(data)
+    url:  url
+
+module.exports = Tower.Store.Transport.Ajax

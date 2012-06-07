@@ -28,6 +28,8 @@ Tower.modules =
   mint:       require 'mint'
   kue:        try require 'kue'
   coffeecup:  require 'coffeecup'
+  socketio:   try require 'socket.io'
+  sockjs:     try require 'sockjs'
 
 require './support'
 require './application'

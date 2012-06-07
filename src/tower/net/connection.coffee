@@ -14,18 +14,17 @@ class Tower.Net.Connection extends Tower.Class
 
   # Try socket.io, then sockjs
   @initialize: ->
-    try
-      require('socket.io')
+    if Tower.modules.socketio
       @reopenClass Tower.Net.Connection.Socketio
-    catch error
-      try
-        require('sockjs')
-        @reopenClass Tower.Net.Connection.Sockjs
-      catch error
-        @
+    else
+      @reopenClass Tower.Net.Connection.Sockjs
 
   @connect: (socket) ->
     @all[@getId(socket)] = connection = Tower.Net.Connection.create(socket: socket)
+
+    # tmp solution to get data syncing working, then will refactor/robustify
+    connection.registerHandler 'sync', (data) ->
+      @serverDidChange(data.action, data.records)
 
     connection.registerHandlers()
 
@@ -40,31 +39,45 @@ class Tower.Net.Connection extends Tower.Class
   @addHandler: (name, handler) ->
     @handlers.set(name, handler)
 
+  notify: ->
+
   registerHandlers: ->
     @constructor.handlers.forEach (eventType, handler) =>
       @registerHandler(eventType, handler)
 
+  # This is called when a record is modified from the client
+  # 
   # all records must be of the same type for now.
-  notify: (action, records) ->
+  clientDidChange: (action, records) ->
+    @resolve action, records, (error, matches) =>
+      @["clientDid#{_.camelize(action)}"](matches)
+
+  # This is called when the server record changed
+  serverDidChange: (action, records) ->
+    @resolve(action, records)
+
+  resolve: (action, records, callback) ->
     record    = records[0]
     return unless record
     matches   = []
 
     iterator  = (controller, next) =>
-      @get(controller).matchAgainstCursors(records, matches, next)
+      @get(controller).resolveAgainstCursors(action, records, matches, next)
 
     Tower.series @constructor.controllers, iterator, (error) =>
-      @[action](matches)
+      callback(error, matches) if callback
+
+    matches
 
   # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
   # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
-  created: (records, url, callback) ->
+  clientDidCreate: (records, url, callback) ->
     @write(records)
 
-  updated: (records) ->
+  clientDidUpdate: (records) ->
     @write(records)
 
-  deleted: (records) ->
+  clientDidDelete: (records) ->
     @write(records)
 
   # This then gets handled by client-side controllers
@@ -76,12 +89,15 @@ class Tower.Net.Connection extends Tower.Class
     message =
       data: records
       url:  url
-    return
-    @constructor.emit message, (error, data) =>
+
+    @constructor.emit @, message, (error, data) =>
       callback.call(@, error, data)
 
   # @todo
   destroy: (callback) ->
     callback()
+
+  on: (eventType, handler) ->
+    @registerHandler(eventType, handler)
 
 module.exports = Tower.Net.Connection

@@ -26,7 +26,7 @@ unless Tower.isClient
             done()
 
         test 'rating: 8', (done) ->
-          params = rating: 8
+          params = conditions: rating: 8
           
           _.post '/posts', params: params, (response) ->
             posts = response.controller.get('posts')
@@ -34,7 +34,7 @@ unless Tower.isClient
             done()
 
         test 'rating: >=: 7', (done) ->
-          params = rating: '>=': 7
+          params = conditions: rating: '>=': 7
           
           _.post '/posts', params: params, (response) ->
             posts = response.controller.get('posts')

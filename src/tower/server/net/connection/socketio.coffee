@@ -5,7 +5,9 @@ Tower.Net.Connection.Socketio =
   getSessionId: (socket) ->
 
   listen: (server) ->
-    io = require('socket.io').listen(server)
+    # if client
+    # socket = global.io.connect(domain)
+    io = Tower.modules.socketio.listen(server)
 
     io.on 'connection', (socket) =>
       @connect(socket)
@@ -22,8 +24,8 @@ Tower.Net.Connection.Socketio =
     socket.on eventType, (data) =>
       handler.call(@, data, @)
 
-  emit: (socket, data) ->
-    socket.emit(data)
+  emit: (connection, data) ->
+    connection.socket.emit(data)
 
   broadcast: (data) ->
     socket.broadcast(data)

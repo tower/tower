@@ -14,6 +14,8 @@ Tower.modules =
   inflector:  global.inflector # https://github.com/gmosx/inflection
   async:      global.async # https://github.com/gmosx/inflection
   coffeecup:  if global.CoffeeCup then global.CoffeeCup else global.CoffeeKup
+  socketio:   try global.io
+  sockjs:     try global.SockJS
 
 require './support'
 require './application'
@@ -25,8 +27,8 @@ require './view'
 require './client/view'
 require './controller'
 require './client/controller'
-require './http'
-require './client/http'
+require './net'
+require './client/net'
 require './middleware'
 
 Tower.goTo = (string, params) ->

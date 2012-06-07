@@ -45,9 +45,35 @@ Tower.Controller.Params =
     cursor: ->
       return @_cursor if @_cursor
 
-      @_cursor  = cursor = Tower.Model.Cursor.create()
+      cursor = Tower.Model.Cursor.create()
       cursor.make()
 
+      if @request.method.toUpperCase() == 'POST'
+        @_cursor = @_buildCursorFromPost(cursor)
+      else
+        @_cursor = @_buildCursorFromGet(cursor)
+
+      @_cursor
+
+    _buildCursorFromPost: (cursor) ->
+      parsers     = @constructor.params()
+      params      = @params
+      conditions  = @params.conditions
+      page        = @params.page
+      limit       = @params.limit
+      sort        = @params.sort
+
+      for key, value of conditions
+        delete conditions[key] unless parsers.hasOwnProperty(key)
+
+      cursor.where(conditions)
+      cursor.order(sort)  if sort && sort.length
+      cursor.limit(limit) if limit
+      cursor.page(page)   if page
+
+      cursor
+
+    _buildCursorFromGet: (cursor) ->
       parsers     = @constructor.params()
       params      = @params
 

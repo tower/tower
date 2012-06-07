@@ -91,22 +91,26 @@ Tower.Model.Cursor.Serialization =
     @_fields    = cursor._fields
     @_except    = cursor._except
     @_includes  = cursor._includes
+    @currentPage = cursor.currentPage
     @_joins     = _.extend {}, cursor._joins
     @_eagerLoad = _.extend {}, cursor._eagerLoad
     @_near      = cursor._near
     @
 
   toJSON: ->
-    where:     @_where
-    order:     @_order
-    offset:    @_offset
-    limit:     @_limit
-    fields:    @_fields
-    except:    @_except
-    includes:  @_includes
-    joins:     @_joins
-    eagerLoad: @_eagerLoad
-    near:      @_near
+    data          = {}
+    
+    sort          = @get('order')
+    conditions    = @conditions()
+    page          = @currentPage
+    limit         = @get('limit')
+    
+    data.sort       = sort if sort && sort.length
+    data.conditions = conditions if conditions
+    data.page       = page if page
+    data.limit      = limit if limit
+
+    data
 
   _compileAttributes: (object, conditions) ->
     for key, value of conditions

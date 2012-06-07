@@ -13,6 +13,8 @@ Tower.Controller.reopenClass extended: ->
 
   Tower.Application.instance().reopen(object)
 
+  Tower.Net.Connection.controllers.push(camelName)
+
   @
 
   instance: ->

@@ -130,6 +130,16 @@ Tower.Model.Cursor.Finders =
       Ember.set(@, 'isEmpty', !exists)
       callback.apply @, arguments
 
+  mergeCreatedRecords: (records) ->
+    @pushMatching(records)
+
+  mergeUpdatedRecords: (records) ->
+    @pushMatching(records)
+    # @pullNotMatching(records)
+
+  mergeDeletedRecords: (records) ->
+    @pullMatching(records)
+
   # on create or update
   pushMatching: (records) ->
     return [] if records.length == 0 || records[0].constructor.toString() != @store.className
