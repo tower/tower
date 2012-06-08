@@ -60,51 +60,69 @@ Tower.Store.Transport.Ajax =
   failure: (record, options = {}) ->
     (xhr, statusText, error) =>
       options.error?.apply(record)
-    
-  willCreateRecords: (records, options = {}) ->
-    json  = @toJSON(records)
-    url   = Tower.urlFor(records.constructor)
-    
-    @queue =>
-      params =
-        url:  url
-        type: "POST"
-        data: json
+  
+  # This is called from {Tower.Net.Connection#clientDidCreate}.
+  # 
+  # It will iterate through an array of records and create 1
+  # Ajax request for each. This will soon be optimized to be single
+  # batch request, but it's all about iterative development.
+  create: (records, callback) ->
+    records = _.castArray(records)
 
-      @ajax(options, params).success(@createSuccess(records)).error(@createFailure(records))
+    # need a better way to do this, using batch requests
+    for record in records
+      do (record) ->
+        json  = @toJSON(record)
+        url   = Tower.urlFor(records.constructor)
+        
+        @queue =>
+          params =
+            url:  url
+            type: "POST"
+            data: json
 
-  createSuccess: (record) ->
+          @ajax(options, params).success(@createSuccess(record, callback)).error(@createFailure(record, callback))
+
+  # Called if a record was successfully created on the server.
+  # 
+  # The server sends back JSON of the attributes for the single record
+  # (will potentially return an array once we get batch requests going).
+  # We then have to replace the temporary "client id" with the permanent
+  # "server id", and update the record's attributes. To update attributes on a
+  # record _without_ saving, use {Tower.Model#setProperties} instead of
+  # {Tower.Model#updateAttributes}.
+  # 
+  # Before it even makes the request, the browser pretends the record has been 'created'.
+  # This means it's in the `isSaved` state.
+  createSuccess: (record, callback) ->
     (data, status, xhr) =>
-      id = record.id
-      record = @find(id)
-      @records[data.id] = record
-      delete @records[id]
-      record.updateAttributes data
+      record.setProperties(data) # will cause cursors to update automatically, through events
 
-  createFailure: (record) ->
-    @failure(record)
+      callback.call(@, null, record) if callback
 
-  didCreateRecords: (records) ->
+  createFailure: (record, callback) ->
+    @failure(record, callback)
 
-  updateRequest: (record, options, callback) ->
+  update: (record, callback) ->
     @queue =>
       params =
         type: "PUT"
         data: @toJSON(record)
 
       @ajax({}, params)
-        .success(@updateSuccess(record))
-        .error(@updateFailure(record))
+        .success(@updateSuccess(record, callback))
+        .error(@updateFailure(record, callback))
 
-  updateSuccess: (record) ->
+  updateSuccess: (record, callback) ->
     (data, status, xhr) =>
-      record = Tower.constant(@className).find(record.id)
-      record.updateAttributes(data)
+      record.setProperties(data)
 
-  updateFailure: (record) ->
-    (xhr, statusText, error) =>
+      callback.call(@, null, record) if callback
 
-  destroyRequest: (record, criteria) ->
+  updateFailure: (record, callback) ->
+    @failure(record, callback)
+
+  destroy: (record, callback) ->
     @queue =>
       # haven't yet handled arrays.
       record  = record[0] if _.isArray(record)
@@ -119,15 +137,15 @@ Tower.Store.Transport.Ajax =
         )
 
       @ajax({}, params)
-        .success(@destroySuccess(record))
-        .error(@destroyFailure(record))
+        .success(@destroySuccess(record, callback))
+        .error(@destroyFailure(record, callback))
 
-  destroySuccess: (data) ->
+  # @todo
+  destroySuccess: (record, callback) ->
     (data, status, xhr) =>
-      delete @deleted[data.id]
-
-  destroyFailure: (record) ->
-    (xhr, statusText, error) =>
+      
+  destroyFailure: (record, callback) ->
+    @failure(record, callback)
 
   findSuccess: (criteria, callback) ->
     # `data` will look like this:

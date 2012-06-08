@@ -7,7 +7,8 @@
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
 class Tower.Net.Connection extends Tower.Class
-  @transports:  []
+  # still figuring out how to organize this stuff...
+  @transport:   undefined
   @controllers: []
   @all:         {}
   @handlers:    Ember.Map.create()
@@ -71,27 +72,17 @@ class Tower.Net.Connection extends Tower.Class
 
   # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
   # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
-  clientDidCreate: (records, url, callback) ->
-    @write(records)
+  clientDidCreate: (records) ->
+    @notifyTransport('create', records)
 
   clientDidUpdate: (records) ->
-    @write(records)
+    @notifyTransport('update', records)
 
   clientDidDelete: (records) ->
-    @write(records)
+    @notifyTransport('destroy', records)
 
-  # This then gets handled by client-side controllers
-  # 
-  # This connection is unique to a user, so it may send some records to one user and not to another.
-  write: (records, url, callback) ->
-    return unless records.length
-
-    message =
-      data: records
-      url:  url
-
-    @constructor.emit @, message, (error, data) =>
-      callback.call(@, error, data)
+  notifyTransport: (action, records) ->
+    @constructor.transport[action](records, callback) if @constructor.transport?
 
   # @todo
   destroy: (callback) ->

@@ -55,6 +55,9 @@ class Tower.Application extends Tower.Engine
     Tower.cookies = Tower.Net.Cookies.parse()
     Tower.agent   = new Tower.Net.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
 
+    # going to make this work with sockets in just a minute
+    Tower.connections["1"] = Tower.Net.Connection.create()
+
   listen: ->
     return if @listening
     @listening = true
