@@ -37,31 +37,68 @@ if Tower.isClient
         test 'success', (done) ->
           user = App.User.build(firstName: 'Lance')
 
-          Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
+          Tower.Store.Transport.Ajax.create [user], (error, updatedUser) =>
+            console.log updatedUser.get('id')
             assert.ok !error
             done()
 
-        test 'failure', (done) ->
-          user = App.User.build()
-
-          Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
-            assert.ok !error
-            done()
-
-        test 'error (before it even makes a request)', (done) ->
-          user = {}
-
-          Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
-            assert.ok !error
-            done()
+        #test 'failure', (done) ->
+        #  user = App.User.build()
+#
+        #  Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
+        #    assert.ok !error
+        #    done()
+#
+        #test 'error (before it even makes a request)', (done) ->
+        #  user = {}
+#
+        #  Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
+        #    assert.ok !error
+        #   done()
 
       describe 'update', ->
-        test 'success'
+        user = null
+
+        # need to create some records on the server first...
+        beforeEach (done) ->
+          user = App.User.build(firstName: 'Lance')
+
+          Tower.Store.Transport.Ajax.create [user], (error, updatedUser) =>
+            user = updatedUser
+
+            done()
+
+        test 'success', (done) ->
+          user.set('firstName', 'John')
+
+          console.log user
+
+          Tower.Store.Transport.Ajax.update user, (error, updatedUser) =>
+            console.log error
+            console.log updatedUser
+            done()
+
         test 'failure'
         test 'error'
 
       describe 'destroy', ->
-        test 'success'
+        user = null
+
+        # need to create some records on the server first...
+        beforeEach (done) ->
+          user = App.User.build(firstName: 'Lance')
+
+          Tower.Store.Transport.Ajax.create [user], (error, updatedUser) =>
+            user = updatedUser
+
+            done()
+
+        test 'success', (done) ->
+          Tower.Store.Transport.Ajax.destroy user, (error, destroyedUser) =>
+            console.log error
+            console.log destroyedUser
+            done()
+
         test 'failure'
         test 'error'
 

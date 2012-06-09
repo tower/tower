@@ -16,27 +16,27 @@ unless Tower.isClient
         Tower.stop()
 
       describe '#index', ->
-        test 'POST', (done) ->
+        test 'GET', (done) ->
           params = {}
           
-          _.post '/posts', params: params, (response) ->
+          _.get '/posts', params: params, (response) ->
             posts = response.controller.get('posts')
             assert.equal 2, posts.length
             assert.deepEqual ['First Post', 'Second Post'], _.map posts, (i) -> i.get('title')
             done()
 
         test 'rating: 8', (done) ->
-          params = conditions: rating: 8
+          params = conditions: JSON.stringify(rating: 8)
           
-          _.post '/posts', params: params, (response) ->
+          _.get '/posts', params: params, (response) ->
             posts = response.controller.get('posts')
             assert.equal 1, posts.length
             done()
 
         test 'rating: >=: 7', (done) ->
-          params = conditions: rating: '>=': 7
+          params = conditions: JSON.stringify(rating: '>=': 7)
           
-          _.post '/posts', params: params, (response) ->
+          _.get '/posts', params: params, (response) ->
             posts = response.controller.get('posts')
             assert.equal 2, posts.length
             done()
@@ -44,7 +44,7 @@ unless Tower.isClient
         test 'sort: ["title", "DESC"]', (done) ->
           params = sort: ["title", "DESC"]
           
-          _.post '/posts', params: params, (response) ->
+          _.get '/posts', params: params, (response) ->
             posts = response.controller.get('posts')
             assert.equal 2, posts.length
             assert.deepEqual ['Second Post', 'First Post'], _.map posts, (i) -> i.get('title')

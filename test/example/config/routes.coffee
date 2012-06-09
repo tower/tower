@@ -43,6 +43,6 @@ Tower.Route.draw ->
   
   @resources 'posts'
   @resources 'users'
-  @match '/users', via: ['post'], to: 'users#index'
+  #@match '/users', via: ['post'], to: 'users#index'
   
   @match "/", to: "application#welcome"

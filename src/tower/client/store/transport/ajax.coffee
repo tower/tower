@@ -67,13 +67,14 @@ Tower.Store.Transport.Ajax =
   # Ajax request for each. This will soon be optimized to be single
   # batch request, but it's all about iterative development.
   create: (records, callback) ->
-    records = _.castArray(records)
-
+    records = _.toArray(records)
     # need a better way to do this, using batch requests
     for record in records
-      do (record) ->
+      do (record) =>
+        # need to setup clientId
+        record.set('id', undefined)
         json  = @toJSON(record)
-        url   = Tower.urlFor(records.constructor)
+        url   = Tower.urlFor(record.constructor)
         
         @queue =>
           params =
@@ -81,7 +82,7 @@ Tower.Store.Transport.Ajax =
             type: "POST"
             data: json
 
-          @ajax(options, params)
+          @ajax({}, params)
             .success(@createSuccess(record, callback))
             .error(@createFailure(record, callback))
 
@@ -110,6 +111,7 @@ Tower.Store.Transport.Ajax =
       params =
         type: "PUT"
         data: @toJSON(record)
+        url: Tower.urlFor(record)
 
       @ajax({}, params)
         .success(@updateSuccess(record, callback))
@@ -127,7 +129,6 @@ Tower.Store.Transport.Ajax =
   destroy: (record, callback) ->
     @queue =>
       # haven't yet handled arrays.
-      record  = record[0] if _.isArray(record)
       url     = Tower.urlFor(record)
 
       params  =
@@ -145,6 +146,7 @@ Tower.Store.Transport.Ajax =
   # @todo
   destroySuccess: (record, callback) ->
     (data, status, xhr) =>
+      callback.call(@, null, record) if callback
       
   destroyFailure: (record, callback) ->
     @failure(record, callback)
@@ -219,7 +221,7 @@ Tower.Store.Transport.Ajax =
     url     = Tower.urlFor(criteria.model)
     data    = criteria.toJSON()
 
-    type: 'POST'
+    type: 'GET'
     data: JSON.stringify(data)
     url:  url
 

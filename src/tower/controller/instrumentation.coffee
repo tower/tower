@@ -9,6 +9,8 @@ Tower.Controller.Instrumentation =
       @cookies  = @request.cookies  || {}
       @query    = @request.query    || {}
       @session  = @request.session  || {}
+      # tmp, but need to think about his more
+      @params.conditions = JSON.parse(@params.conditions) if typeof @params.conditions == 'string'
 
       unless @params.format
         try @params.format = require('mime').extension(@request.header('content-type'))
@@ -23,7 +25,7 @@ Tower.Controller.Instrumentation =
     process: ->
       # hacking in logging for now
       unless Tower.env.match(/(test|production)/)
-        console.log "  Processing by #{@constructor.className()}##{@action} as #{@format.toUpperCase()}"
+        console.log "  Processing by #{@constructor.className()}##{@action} as #{@format.toUpperCase()} (#{@request.method})"
         console.log "  Parameters:"
         console.log @params
 

@@ -108,7 +108,7 @@ class Tower.Net.Route.DSL
 
     camelOne = _.camelize(one)
 
-    @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, method: ['GET', 'POST'], options)
+    @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, method: ['GET'], options)
     @match "#{path}/new",       _.extend(action: "new",     state: "#{many}.new",     name: "new#{camelOne}", options)
     @match path,                _.extend(action: "create",  state: "#{many}.create",  method: "POST", options)
     @match "#{path}/:id",       _.extend(action: "show",    state: "#{many}.show",    name: one, options)

@@ -13,8 +13,8 @@ class Tower.Net.Connection extends Tower.Net.Connection
     @all[@getId(socket)] = connection = Tower.Net.Connection.create(socket: socket)
 
     # tmp solution to get data syncing working, then will refactor/robustify
-    connection.on 'sync', (data) ->
-      @serverDidChange(data.action, data.records)
+    #connection.on 'sync', (data) ->
+    #  @serverDidChange(data.action, data.records)
 
     connection.registerHandlers()
 
