@@ -7,6 +7,7 @@ class Tower.Model.Scope
     'last'
     'count'
     'exists'
+    'fetch'
     'instantiate'
     'pluck'
     'live'
@@ -317,12 +318,12 @@ class Tower.Model.Scope
   exists: (callback) ->
     @compile().exists(callback)
 
+  fetch: (callback) ->
+    @compile().fetch(callback)
+
   # @todo
   batch: ->
     @
-
-  # @todo
-  fetch: ->
 
   # Metadata.
   #

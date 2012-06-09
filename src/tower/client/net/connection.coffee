@@ -7,10 +7,14 @@
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
 class Tower.Net.Connection extends Tower.Net.Connection
-  @connect: (socket) ->
-    connection = Tower.Net.Connection.create(socket: socket).connect()
-    Tower.connection = connection
-    Tower.connections[@getId(socket)] = connection
+  @connect: (socket, callback) ->
+    socket.on 'connect', =>
+      id = @getId(socket)
+      connection = Tower.Net.Connection.create(socket: socket).connect()
+      connection.id = id
+      Tower.connection = connection
+      Tower.connections[id] = connection
+      callback(null, connection) if callback
 
   @disconnect: ->
     return unless Tower.connection

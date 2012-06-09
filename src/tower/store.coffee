@@ -181,7 +181,7 @@ class Tower.Store extends Tower.Class
   # Ooh, this just made me think.  One way to be able to do real-time pub/sub from client to server
   # is to have the server TCP request a list of ids or `updatedAt` values from the client to do the diff...
   fetch: (criteria, callback) ->
-    @constructor.transport.find criteria, (error, records) =>
+    Tower.Net.Connection.transport.find criteria, (error, records) =>
       @load(records)
 
       callback(error, records)

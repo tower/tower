@@ -75,7 +75,11 @@ Tower.Model.Cursor.Persistence =
 
       @_each @, iterator, callback
     else
-      @store.update updates, @, callback
+      @store.update updates, @, (error, records) =>
+        callback.call(@, error, records) if callback
+        # this should go into some Ember runLoop thing
+        # it should also be moved to the store
+        Tower.notifyConnections('update', records) unless error
 
     @
 
@@ -89,7 +93,11 @@ Tower.Model.Cursor.Persistence =
 
       @_each(@, iterator, callback)
     else
-      @store.destroy(@, callback)
+      @store.destroy @, (error, records) =>
+        callback.call(@, error, records) if callback
+        # this should go into some Ember runLoop thing
+        # it should also be moved to the store
+        Tower.notifyConnections('destroy', records) unless error
 
     @
 

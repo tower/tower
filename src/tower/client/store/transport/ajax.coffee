@@ -17,6 +17,10 @@ Tower.Store.Transport.Ajax =
     data          = {}
     data[record.constructor.toKey()] = record
     data._method  = method
+    # need to some how keep track of session so you don't send the model back to the current client.
+    # this might be pretty complicated because everything on the server must be in the context of the saved record
+    # and that just about seems impossible.
+    # data._socketId = Tower.connection.id
     data.format   = format
     JSON.stringify(data)
 
@@ -29,7 +33,6 @@ Tower.Store.Transport.Ajax =
       do callback
 
   requestNext: ->
-    console.log("COMPLETE")
     next = @requests.shift()
     if next
       @request(next)
@@ -37,7 +40,6 @@ Tower.Store.Transport.Ajax =
       @pending = false
 
   request: (callback) ->
-    console.log("REQUEST")
     (do callback).complete(=> do @requestNext)
 
   queue: (callback) ->
@@ -160,9 +162,11 @@ Tower.Store.Transport.Ajax =
     # and all we need to do is load it back into the criteria
     (data, status, xhr) =>
       try
-        callback(null, criteria.build(data))
+        #callback(null, criteria.build(data))
+        data = criteria.model.load(data)
+        #callback(null, data) if callback
       catch error
-        callback(error)
+        callback(error) if callback
 
   findFailure: (criteria, callback) ->
     @failure(criteria, callback)
