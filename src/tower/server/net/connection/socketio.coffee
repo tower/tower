@@ -24,10 +24,10 @@ Tower.Net.Connection.Socketio =
     socket.on eventType, (data) =>
       handler.call(@, data, @)
 
-  emit: (connection, data) ->
-    connection.socket.emit(data)
+  emit: (socket, data, key = 'sync') ->
+    socket.emit(key, data)
 
-  broadcast: (data) ->
+  broadcast: (socket, data) ->
     socket.broadcast(data)
 
 module.exports = Tower.Net.Connection.Socketio

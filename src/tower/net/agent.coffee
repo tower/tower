@@ -1,3 +1,5 @@
+# This should eventually be _the_ interface to sending and receiving messages
+# from client to server.
 class Tower.Net.Agent
   constructor: (attributes = {}) ->
     _.extend @, attributes

@@ -10,7 +10,6 @@ class Tower.Net.Connection extends Tower.Class
   # still figuring out how to organize this stuff...
   @transport:   undefined
   @controllers: []
-  @all:         {}
   @handlers:    Ember.Map.create()
 
   # Try socket.io, then sockjs
@@ -20,42 +19,13 @@ class Tower.Net.Connection extends Tower.Class
     else
       @reopenClass Tower.Net.Connection.Sockjs
 
-  @connect: (socket) ->
-    @all[@getId(socket)] = connection = Tower.Net.Connection.create(socket: socket)
-
-    # tmp solution to get data syncing working, then will refactor/robustify
-    connection.registerHandler 'sync', (data) ->
-      @serverDidChange(data.action, data.records)
-
-    connection.registerHandlers()
-
-    connection
-
-  @disconnect: (socket) ->
-    connection = @all[@getId(socket)]
-    connection.destroy =>
-      delete @all[@getId(socket)]
-
   # @addHandler '/posts/something'
   @addHandler: (name, handler) ->
     @handlers.set(name, handler)
 
-  notify: ->
-
   registerHandlers: ->
     @constructor.handlers.forEach (eventType, handler) =>
-      @registerHandler(eventType, handler)
-
-  # This is called when a record is modified from the client
-  # 
-  # all records must be of the same type for now.
-  clientDidChange: (action, records) ->
-    @resolve action, records, (error, matches) =>
-      @["clientDid#{_.camelize(action)}"](matches)
-
-  # This is called when the server record changed
-  serverDidChange: (action, records) ->
-    @resolve(action, records)
+      @on(eventType, handler)
 
   resolve: (action, records, callback) ->
     record    = records[0]
@@ -70,17 +40,6 @@ class Tower.Net.Connection extends Tower.Class
 
     matches
 
-  # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
-  # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
-  clientDidCreate: (records) ->
-    @notifyTransport('create', records)
-
-  clientDidUpdate: (records) ->
-    @notifyTransport('update', records)
-
-  clientDidDelete: (records) ->
-    @notifyTransport('destroy', records)
-
   notifyTransport: (action, records) ->
     @constructor.transport[action](records, callback) if @constructor.transport?
 
@@ -89,6 +48,6 @@ class Tower.Net.Connection extends Tower.Class
     callback()
 
   on: (eventType, handler) ->
-    @registerHandler(eventType, handler)
+    @constructor.registerHandler(@socket, eventType, handler)
 
 module.exports = Tower.Net.Connection

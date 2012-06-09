@@ -6,12 +6,12 @@
 Tower.Net = {}
 
 require './net/agent'
-require './net/connection'
 require './net/cookies'
 require './net/param'
 require './net/route'
 require './net/request'
 require './net/response'
 require './net/url'
+require './net/connection'
 
 module.exports = Tower.Net

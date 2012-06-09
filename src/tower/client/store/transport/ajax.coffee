@@ -50,16 +50,16 @@ Tower.Store.Transport.Ajax =
 
   success: (record, options = {}) ->
     (data, status, xhr) =>
-      Ajax.disable =>
+      @disable =>
         if data && !_.isBlank(data)
           record.updateAttributes(data, sync: false)
 
       #@record.trigger('ajaxSuccess', data, status, xhr)
       options.success?.apply(@record)
 
-  failure: (record, options = {}) ->
+  failure: (data, callback) ->
     (xhr, statusText, error) =>
-      options.error?.apply(record)
+      callback.call(@, error) if callback
   
   # This is called from {Tower.Net.Connection#clientDidCreate}.
   # 
@@ -81,7 +81,9 @@ Tower.Store.Transport.Ajax =
             type: "POST"
             data: json
 
-          @ajax(options, params).success(@createSuccess(record, callback)).error(@createFailure(record, callback))
+          @ajax(options, params)
+            .success(@createSuccess(record, callback))
+            .error(@createFailure(record, callback))
 
   # Called if a record was successfully created on the server.
   # 
@@ -156,7 +158,7 @@ Tower.Store.Transport.Ajax =
         @load(data)
 
   findFailure: (criteria, callback) ->
-    (xhr, statusText, error) =>
+    @failure(record, callback)
 
   # Makes a request with JSON like this:
   #     {
