@@ -23,14 +23,17 @@ Tower.Controller.Scopes =
           scope = name # App.Post
           name  = 'all' # might try to make this 'content', so you can do `{{#each App.postsController}}`
 
-      scope = scope.toCursor() if scope.toCursor
+      try
+        scope = scope.toCursor() if scope.toCursor
 
-      @metadata().scopes[name] = scope
+        @metadata().scopes[name] = scope
 
-      object = {}
-      object[name] = scope
+        object = {}
+        object[name] = scope
 
-      @reopen(object)
+        @reopen(object)
+      catch error
+        console.log(error)
 
   resolveAgainstCursors: (action, records, matches, callback) ->
     cursors   = @constructor.metadata().scopes

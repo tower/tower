@@ -27,6 +27,25 @@ class Tower.Net.Connection extends Tower.Net.Connection
 
     @
 
+  notify: (action, records) ->
+    # @todo
+    records = [records] unless records instanceof Array
+
+    @clientDidChange(action, records)
+
+  resolve: (action, records, callback) ->
+    record    = records[0]
+    return unless record
+    matches   = []
+
+    iterator  = (controller, next) =>
+      App.get(controller).resolveAgainstCursors(action, records, matches, next)
+
+    Tower.series @constructor.controllers, iterator, (error) =>
+      callback(error, records) if callback
+
+    matches
+
   # This is called when a record is modified from the client
   # 
   # all records must be of the same type for now.
@@ -49,7 +68,7 @@ class Tower.Net.Connection extends Tower.Net.Connection
   clientDidDelete: (records) ->
     @notifyTransport('destroy', records)
 
-  notifyTransport: (action, records) ->
+  notifyTransport: (action, records, callback) ->
     @constructor.transport[action](records, callback) if @constructor.transport?
 
 require './connection/socketio'
