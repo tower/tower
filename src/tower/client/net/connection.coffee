@@ -21,6 +21,8 @@ class Tower.Net.Connection extends Tower.Net.Connection
   connect: ->
     # tmp solution to get data syncing working, then will refactor/robustify
     @on 'sync', (data) =>
+      console.log "SERVER CHANGED!"
+      console.log data
       @serverDidChange(data.action, data.records)
 
     @registerHandlers()

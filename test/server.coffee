@@ -19,6 +19,9 @@ require '../src/tower/server/generator/tst'
 
 app = Tower.Application.instance()
 
+# tmp until figure out how to test this syncing functionality...
+Tower.Net.Connection.reopen(notify: ->)
+
 before (done) ->
   app.initialize done
   # App.Address.store().collection().ensureIndex {coordinates:"2d"}, done

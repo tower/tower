@@ -10,13 +10,18 @@ class Tower.Net.Connection extends Tower.Net.Connection
   @all: {}
 
   @connect: (socket) ->
-    @all[@getId(socket)] = connection = Tower.Net.Connection.create(socket: socket)
+    id = @getId(socket)
+
+    Tower.connections[id] = connection = Tower.Net.Connection.create(socket: socket)
 
     # tmp solution to get data syncing working, then will refactor/robustify
     #connection.on 'sync', (data) ->
     #  @serverDidChange(data.action, data.records)
 
     connection.registerHandlers()
+
+    connection.on 'disconnect', =>
+      delete Tower.connections[id]
 
     connection
 
@@ -25,7 +30,11 @@ class Tower.Net.Connection extends Tower.Net.Connection
     connection.destroy =>
       delete @all[@getId(socket)]
 
-  notify: ->
+  notify: (action, records) ->
+    # @todo
+    records = [records] unless records instanceof Array
+
+    @serverDidChange(action, records)
 
   # This is called when a record is modified from the client.
   # Not implemented yet, we're just using Ajax right now. This may go away
@@ -37,7 +46,7 @@ class Tower.Net.Connection extends Tower.Net.Connection
   # This is called when the server record changed
   serverDidChange: (action, records) ->
     @resolve action, records, (error, matches) =>
-      @["serverDid#{_.camelize(action)}"](matches)
+      @["serverDid#{_.camelize(action)}"](records)
 
   # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
   # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
