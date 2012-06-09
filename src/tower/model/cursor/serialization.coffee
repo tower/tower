@@ -23,6 +23,7 @@ Tower.Model.Cursor.Serialization =
     @_uniq        = options.uniq
     @_eagerLoad   = options.eagerLoad || {}
     @_near        = options.near
+    Ember.set(@, 'content', Ember.A([])) if Tower.isClient
     # options.findOne = conditions.id && conditions.id.hasOwnProperty('$in') && conditions.id.$in.length == 1
 
   # Get the conditions, order, limit, fields, offset, or other private variables.

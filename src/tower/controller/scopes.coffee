@@ -33,7 +33,7 @@ Tower.Controller.Scopes =
 
         @reopen(object)
       catch error
-        console.log(error)
+        console.log(error.stack || error)
 
   resolveAgainstCursors: (action, records, matches, callback) ->
     cursors   = @constructor.metadata().scopes

@@ -13,6 +13,10 @@ testModels  = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) -
   
 testModels  = _.select testModels, (path) ->
   path.match(/model|application|controller/) && !path.match('client')
+
+testModels = testModels.concat [
+  "/app/client/controllers/testUsersController"
+]
   
 module.exports =
   javascripts:
