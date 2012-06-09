@@ -104,10 +104,10 @@ if Tower.isClient
 
       describe 'find', ->
         test 'conditions', (done) ->
-          criteria  = App.User.where(firstName: '=~': 'L').compile()
+          criteria  = App.User.where(firstName: 'L').compile()
           
           Tower.Store.Transport.Ajax.find criteria, (error, data) =>
-            console.log error
+            console.log error.stack if error
             console.log data
             done()
 

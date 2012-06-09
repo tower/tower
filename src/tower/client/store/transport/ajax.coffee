@@ -10,6 +10,7 @@ Tower.Store.Transport.Ajax =
     headers:     {'X-Requested-With': 'XMLHttpRequest'}
 
   ajax: (params, defaults) ->
+    console.log($.extend({}, @defaults, defaults, params))
     $.ajax($.extend({}, @defaults, defaults, params))
 
   toJSON: (record, method, format) ->
@@ -28,6 +29,7 @@ Tower.Store.Transport.Ajax =
       do callback
 
   requestNext: ->
+    console.log("COMPLETE")
     next = @requests.shift()
     if next
       @request(next)
@@ -35,6 +37,7 @@ Tower.Store.Transport.Ajax =
       @pending = false
 
   request: (callback) ->
+    console.log("REQUEST")
     (do callback).complete(=> do @requestNext)
 
   queue: (callback) ->
@@ -156,11 +159,13 @@ Tower.Store.Transport.Ajax =
     # {users: [user1, user1...], conditions: {}, page: 2, limit: 20, sort: []}
     # and all we need to do is load it back into the criteria
     (data, status, xhr) =>
-      if _.isPresent(data)
-        @load(data)
+      try
+        callback(null, criteria.build(data))
+      catch error
+        callback(error)
 
   findFailure: (criteria, callback) ->
-    @failure(record, callback)
+    @failure(criteria, callback)
 
   # Makes a request with JSON like this:
   #     {
@@ -213,16 +218,19 @@ Tower.Store.Transport.Ajax =
     params = @serializeParamsForFind(criteria)
     
     @queue =>
-      @ajax({}, params)
+      @ajax(params)
         .success(@findSuccess(criteria, callback))
         .error(@findFailure(criteria, callback))
 
   serializeParamsForFind: (criteria) ->
     url     = Tower.urlFor(criteria.model)
     data    = criteria.toJSON()
+    # tmp until we figure out a better way
+    #data.conditions = JSON.stringify(data.conditions) if data.conditions
+    data.format = 'json'
 
     type: 'GET'
-    data: JSON.stringify(data)
+    data: $.param(data)
     url:  url
 
 module.exports = Tower.Store.Transport.Ajax

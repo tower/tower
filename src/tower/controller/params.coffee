@@ -47,7 +47,7 @@ Tower.Controller.Params =
 
       cursor = Tower.Model.Cursor.create()
       cursor.make()
-
+      
       if @params.conditions # @request.method.toUpperCase() == 'POST'
         @_cursor = @_buildCursorFromPost(cursor)
       else
