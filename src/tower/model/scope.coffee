@@ -336,6 +336,9 @@ class Tower.Model.Scope
   compile: ->
     @cursor.clone()
 
+  toCursor: ->
+    @compile()
+
   # Clone this scope (and the critera attached to it).
   #
   # @return [Tower.Model.Scope]

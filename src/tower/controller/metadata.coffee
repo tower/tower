@@ -23,6 +23,7 @@ Tower.Controller.Metadata =
       params                  = _.copyObject(superMetadata.params)
       renderers               = _.copyObject(superMetadata.renderers)
       scopes                  = _.copyObject(superMetadata.scopes)
+      scopeNames              = _.copyArray(superMetadata.scopeNames)
       mimes                   = if superMetadata.mimes then _.clone(superMetadata.mimes) else {json: {}, html: {}}
       helpers                 = _.copyArray(superMetadata.helpers)
       belongsTo               = _.copyArray(superMetadata.belongsTo)
@@ -49,6 +50,7 @@ Tower.Controller.Metadata =
         subscriptions:        subscriptions
         layout:               layout
         scopes:               scopes
+        scopeNames:           scopeNames
 
       result
 
