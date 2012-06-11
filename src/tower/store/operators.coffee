@@ -58,6 +58,11 @@ Tower.Store.Operators =
 
     success
 
+  testEach: (records, conditions, callback) ->
+    for record in records
+      callback.call(record, @test(record, conditions), record)
+    undefined
+
   testValue: (recordValue, operators, record) ->
     success = true
 

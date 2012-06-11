@@ -54,6 +54,9 @@ describe 'Tower.Controller.Scopes', ->
       beforeEach ->
         C.scope 'all'
 
-      #test 'created', ->
-      #  post = App.Post.build(rating: 8)
-      # C.instance().resolveAgainstCursors('created', [post], [])
+      test 'any', ->
+        post = App.Post.build(id: 5, rating: 8)
+        
+        assert.equal C.instance().resolveAgainstCursors('created', [post]).toArray().length, 1
+        assert.equal C.instance().resolveAgainstCursors('updated', [post]).toArray().length, 1
+        assert.equal C.instance().resolveAgainstCursors('deleted', [post]).toArray().length, 1

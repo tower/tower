@@ -30,12 +30,13 @@ class Tower.Net.Connection extends Tower.Class
   resolve: (action, records, callback) ->
     record    = records[0]
     return unless record
-    matches   = []
+    matches   = Ember.Map.create() unless Tower.isClient
 
     iterator  = (controller, next) =>
       @get(controller).resolveAgainstCursors(action, records, matches, next)
 
     Tower.series @constructor.controllers, iterator, (error) =>
+      matches = if Tower.isClient then records else matches.toArray()
       callback(error, matches) if callback
 
     matches

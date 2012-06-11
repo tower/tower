@@ -1,3 +1,6 @@
+Ember.Map::toArray = ->
+  _.values(@values)
+
 _.extend Tower,
   nativeExtensions: true
   env:              "development"

@@ -196,6 +196,11 @@ Tower.Model.Cursor.Operations =
   test: (record) ->
     Tower.Store.Operators.test(record, @conditions())
 
+  testEach: (records, callback) ->
+    conditions = @conditions()
+    delete conditions.type # need to come back to STI
+    Tower.Store.Operators.testEach(records, conditions, callback)
+
   # @private
   _whereOperator: (operator, attributes) ->
     query = {}

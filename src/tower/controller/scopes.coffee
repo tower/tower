@@ -44,8 +44,10 @@ Tower.Controller.Scopes =
       catch error
         console.log(error.stack || error)
 
+  # need to break this up into client/server implementations
   resolveAgainstCursors: (action, records, matches, callback) ->
     cursors   = @constructor.metadata().scopes
+    matches   ||= Ember.Map.create() unless Tower.isClient
 
     keys      = _.keys(cursors)
 
@@ -63,7 +65,9 @@ Tower.Controller.Scopes =
         cursor[cursorMethod](records)
         next()
       else
-        matches = cursor.test(records)
+        cursor.testEach records, (success, record) =>
+          matches.set(record.get('id'), record) if success
+
         next()
 
     Tower.parallel(keys, iterator, callback)

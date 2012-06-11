@@ -21,3 +21,5 @@ describe 'Tower.Net.Connection', ->
     App.Post.create rating: 8, (error, post) =>
       
       done()
+
+  # test 'resolve'
