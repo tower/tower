@@ -22,4 +22,7 @@ describe 'Tower.Net.Connection', ->
       
       done()
 
-  # test 'resolve'
+  test 'resolve', ->
+    post = App.Post.build(id: 5, rating: 8)
+    
+    assert.deepEqual connection.resolve('create', [post])[0], post
