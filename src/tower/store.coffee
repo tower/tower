@@ -183,8 +183,10 @@ class Tower.Store extends Tower.Class
   fetch: (criteria, callback) ->
     Tower.Net.Connection.transport.find criteria, (error, records) =>
       #records = @load(records)
-
-      callback(error, records) if callback
+      if callback
+        callback(error, records)
+      else if Tower.debug
+        console.log(records)
 
       records
 

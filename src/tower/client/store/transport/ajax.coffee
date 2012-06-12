@@ -110,16 +110,18 @@ Tower.Store.Transport.Ajax =
   createFailure: (record, callback) ->
     @failure(record, callback)
 
-  update: (record, callback) ->
-    @queue =>
-      params =
-        type: "PUT"
-        data: @toJSON(record)
-        url: Tower.urlFor(record)
+  update: (records, callback) ->
+    for record in records
+      do (record) =>
+        params =
+          type: "PUT"
+          data: @toJSON(record)
+          url: Tower.urlFor(record)
 
-      @ajax({}, params)
-        .success(@updateSuccess(record, callback))
-        .error(@updateFailure(record, callback))
+        @queue =>
+          @ajax({}, params)
+            .success(@updateSuccess(record, callback))
+            .error(@updateFailure(record, callback))
 
   updateSuccess: (record, callback) ->
     (data, status, xhr) =>
@@ -130,22 +132,24 @@ Tower.Store.Transport.Ajax =
   updateFailure: (record, callback) ->
     @failure(record, callback)
 
-  destroy: (record, callback) ->
-    @queue =>
-      # haven't yet handled arrays.
-      url     = Tower.urlFor(record)
+  destroy: (records, callback) ->
+    for record in records
+      do (record) =>
+        url     = Tower.urlFor(record)
 
-      params  =
-        url:        url
-        type:       'POST'
-        data:       JSON.stringify(
-          format:   'json'
-          _method:  'DELETE'
-        )
+        params  =
+          url:        url
+          type:       'POST'
+          data:       JSON.stringify(
+            format:   'json'
+            _method:  'DELETE'
+          )
 
-      @ajax({}, params)
-        .success(@destroySuccess(record, callback))
-        .error(@destroyFailure(record, callback))
+        @queue =>
+          # haven't yet handled arrays.
+          @ajax({}, params)
+            .success(@destroySuccess(record, callback))
+            .error(@destroyFailure(record, callback))
 
   # @todo
   destroySuccess: (record, callback) ->

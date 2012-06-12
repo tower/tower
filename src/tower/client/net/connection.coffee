@@ -81,7 +81,7 @@ class Tower.Net.Connection extends Tower.Net.Connection
   clientDidUpdate: (records) ->
     @notifyTransport('update', records)
 
-  clientDidDelete: (records) ->
+  clientDidDestroy: (records) ->
     @notifyTransport('destroy', records)
 
   notifyTransport: (action, records, callback) ->

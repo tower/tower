@@ -18,6 +18,7 @@ Tower.Store.Memory.Persistence =
 
   loadOne: (record) ->
     record.persistent = true
+    record.set('isNew', false)
     @records[record.get('id').toString()] = record
 
   insert: (criteria, callback) ->
