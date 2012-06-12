@@ -2,6 +2,7 @@ Tower.Store.Transport.Ajax =
   requests: []
   enabled:  true
   pending:  false
+  requesting: false
 
   defaults:
     contentType: 'application/json'
@@ -39,7 +40,11 @@ Tower.Store.Transport.Ajax =
       @pending = false
 
   request: (callback) ->
-    (do callback).complete(=> do @requestNext)
+    @requesting = true
+
+    callback().complete =>
+      @requesting = false
+      @requestNext()
 
   queue: (callback) ->
     return unless @enabled
