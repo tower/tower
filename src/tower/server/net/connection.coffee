@@ -63,6 +63,7 @@ class Tower.Net.Connection extends Tower.Net.Connection
     data =
       action:   action
       records:  records
+      type:     try records[0].constructor.className()
 
     @constructor.emit(@socket, data)
     #@constructor.transport[action](records, callback) if @constructor.transport?

@@ -12,7 +12,7 @@ Tower.Store.Mongodb.Persistence =
       record.set('isNew', !!error)
       record.set('id', doc['_id'])
 
-      callback.call(@, error, record.attributes) if callback
+      callback.call(@, error, record) if callback
 
     undefined
 

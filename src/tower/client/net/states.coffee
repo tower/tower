@@ -2,17 +2,21 @@ Tower.stateManager = Ember.StateManager.create
   initialState: 'root'
   root: Ember.State.create()
 
-  handleUrl: (url, options) ->
-    route = Tower.Net.Route.find(url)
+  handleUrl: (url, params = {}) ->
+    route = Tower.Net.Route.findByUrl(url)
 
     if route
+      params = route.toControllerData(url, params)
+      Ember.set(@, 'params', params)
       Tower.stateManager.goToState(route.state)
     else
       console.log "No route for #{url}"
 
   # createStatesByRoute(Tower.stateManager, 'posts.show.comments.index')
   createControllerActionState: (name, action) ->
-    name = Tower.Support.String.camelize(name, true) #=> postsController
+    name = _.camelize(name, true) #=> postsController
+    # isIndexActive, isShowActive
+    booleanName = "is#{_.camelize(action)}Active"
 
     Ember.State.create
       enter: (manager, transition) ->
@@ -21,7 +25,13 @@ Tower.stateManager = Ember.StateManager.create
         console.log "enter: #{@name}" if Tower.debug
         app         = Tower.Application.instance() #=> App
         controller  = Ember.get(app, name)
+
+        Ember.changeProperties ->
+          controller.set('isActive', true)
+          controller.set(booleanName, true)
+
         controller.format = 'html'
+        controller.params = Ember.get(manager, 'params')
 
         if controller
           controllerAction = controller[action]
@@ -32,6 +42,8 @@ Tower.stateManager = Ember.StateManager.create
             when 'function'
               controllerAction.call(controller)
 
+        delete controller.params
+
       exit: (manager, transition) ->
         @_super(manager, transition)
 
@@ -39,6 +51,10 @@ Tower.stateManager = Ember.StateManager.create
 
         app         = Tower.Application.instance() #=> App
         controller  = Ember.get(app, name)
+
+        Ember.changeProperties ->
+          controller.set('isActive', false)
+          controller.set(booleanName, false)
 
         if controller
           controllerAction = controller[action]

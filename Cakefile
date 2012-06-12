@@ -86,6 +86,7 @@ Tower.version = "#{VERSION}"
     _console.error error.stack if error
     fs.writeFileSync "./dist/tower.js", result
     fs.writeFileSync './test/example/public/javascripts/vendor/javascripts/tower.js', result
+    return
     unless error
       #result = obscurify(result)
 

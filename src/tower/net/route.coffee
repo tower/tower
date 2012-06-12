@@ -12,6 +12,12 @@ class Tower.Net.Route extends Tower.Class
   @find: (name) ->
     @byName[name]
 
+  @findByUrl: (url) ->
+    for route in @all()
+      if route.match(url)
+        return route
+    null
+
   # tmp name
   @findByControllerOptions: (options) ->
     for route in @all()
@@ -55,6 +61,30 @@ class Tower.Net.Route extends Tower.Class
       callback(null)
 
     controller
+
+  # tmp hack for client
+  toControllerData: (url, params = {}) ->
+    match   = @match(url)
+
+    return null unless match
+    keys    = @keys
+    match   = match[1..-1]
+
+    for capture, i in match
+      key = keys[i].name
+
+      if capture && !params[key]?
+        capture = decodeURIComponent(capture)
+        # need a way to convert :id to integer if it's an integer...
+        try
+          params[key] = JSON.parse(capture)
+        catch error
+          params[key] = capture
+
+    controller      = @controller
+    params.action   = controller.action if controller
+    
+    params
 
   toController: (request) ->
     match = @match(request)

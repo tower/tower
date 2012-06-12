@@ -4,9 +4,16 @@ Tower.Store.Memory.Persistence =
   #
   # @return [Array] Returns array of added records.
   load: (data) ->
+    records = @_load(data)
+    Tower.notifyConnections('load', records)
+    records
+
+  _load: (data) ->
     records = _.castArray(data)
+    
     for record, i in records
       records[i] = @loadOne(@serializeModel(record))
+
     records
 
   loadOne: (record) ->

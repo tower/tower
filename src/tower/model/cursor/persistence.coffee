@@ -55,11 +55,11 @@ Tower.Model.Cursor.Persistence =
           records = records[0] if !returnArray
           callback(error, records)
     else
-      @store.insert @, (error, records) =>
-        callback.call(@, error, records) if callback
+      @store.insert @, (error, __records) =>
+        callback.call(@, error, __records) if callback
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
-        Tower.notifyConnections('create', records) unless error
+        Tower.notifyConnections('create', __records) unless error
 
     @
 

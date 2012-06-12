@@ -63,11 +63,11 @@ class Tower.Application extends Tower.Engine
     if Tower.history && Tower.history.enabled
       Tower.history.Adapter.bind global, "statechange", =>
         state     = Tower.history.getState()
+        params    = _.extend(title: state.title, (state.data || {}))
         location  = new Tower.Net.Url(state.url)
-        request   = new Tower.Net.Request(url: state.url, location: location, params: _.extend(title: state.title, (state.data || {})))
+        request   = new Tower.Net.Request(url: state.url, location: location, params: params)
         response  = new Tower.Net.Response(url: state.url, location: location)
-        Tower.Middleware.Router request, response, (error) =>
-          console.log error if error
+        Tower.stateManager.handleUrl(state.url, params)
       $(global).trigger("statechange")
     else
       console.warn "History not enabled"

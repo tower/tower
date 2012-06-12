@@ -58,8 +58,20 @@ class Tower.Net.Connection extends Tower.Net.Connection
       @["clientDid#{_.camelize(action)}"](matches)
 
   # This is called when the server record changed
-  serverDidChange: (action, records) ->
-    @resolve(action, records)
+  serverDidChange: (data) ->
+    @["serverDid#{_.camelize(data.action)}"](data)
+
+  serverDidCreate: (data) ->
+    try Tower.constant(data.type).load(data.records)
+
+  serverDidUpdate: (data) ->
+    try Tower.constant(data.type).load(data.records)
+
+  serverDidDestroy: (data) ->
+    # todo
+
+  clientDidLoad: (records) ->
+    @resolve('create', records)
 
   # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
   # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
