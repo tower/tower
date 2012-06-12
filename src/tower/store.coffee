@@ -182,9 +182,11 @@ class Tower.Store extends Tower.Class
   # is to have the server TCP request a list of ids or `updatedAt` values from the client to do the diff...
   fetch: (criteria, callback) ->
     Tower.Net.Connection.transport.find criteria, (error, records) =>
-      @load(records)
+      #records = @load(records)
 
-      callback(error, records)
+      callback(error, records) if callback
+
+      records
 
 require './store/callbacks'
 require './store/batch'

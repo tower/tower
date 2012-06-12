@@ -1,5 +1,9 @@
 # @mixin
 Tower.Model.Cursor.Operations =
+  # @todo will refresh this cursor after x milliseconds,
+  # useful when you have a cursor with dates in the conditions.
+  refreshInterval: (milliseconds) ->
+
   eagerLoad: (object) ->
     @_eagerLoad = _.extend(@_eagerLoad, object)
 
@@ -93,15 +97,19 @@ Tower.Model.Cursor.Operations =
 
   # @todo
   gte: ->
+    @_whereOperator '$gte', arguments...
 
   # @todo
   lte: ->
+    @_whereOperator '$lte', arguments...
 
   # @todo
   gt: ->
+    @_whereOperator '$gt', arguments...
 
   # @todo
   lt: ->
+    @_whereOperator '$lt', arguments...
 
   # Records must match all values in the array.
   #

@@ -53,7 +53,7 @@ Tower.Controller.Scopes =
 
     if Tower.isClient
       cursorMethod  = switch action
-        when 'create' then 'mergeCreatedRecords'
+        when 'create', 'load' then 'mergeCreatedRecords'
         when 'update' then 'mergeUpdatedRecords'
         when 'delete' then 'mergeDeletedRecords'
 

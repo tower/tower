@@ -31,6 +31,12 @@ require './net'
 require './client/net'
 require './middleware'
 
+_.extend T,
+  M: T.Model
+  V: T.View
+  C: T.Controller
+  S: T.Store
+
 Tower.goTo = (string, params) ->
   History.pushState(params, params?.title, string)
 

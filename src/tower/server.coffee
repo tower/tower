@@ -48,6 +48,12 @@ require './middleware'
 require './server/command'
 require './server/generator'
 
+_.extend T,
+  M: T.Model
+  V: T.View
+  C: T.Controller
+  S: T.Store
+
 Tower.watch = true
 
 Tower.View.store(new Tower.Store.FileSystem(['app/views']))

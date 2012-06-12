@@ -67,7 +67,7 @@ class Tower.Application extends Tower.Engine
         location  = new Tower.Net.Url(state.url)
         request   = new Tower.Net.Request(url: state.url, location: location, params: params)
         response  = new Tower.Net.Response(url: state.url, location: location)
-        Tower.stateManager.handleUrl(state.url, params)
+        Tower.stateManager.handleUrl(location.path, params)
       $(global).trigger("statechange")
     else
       console.warn "History not enabled"

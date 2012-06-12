@@ -10,7 +10,6 @@ Tower.Store.Transport.Ajax =
     headers:     {'X-Requested-With': 'XMLHttpRequest'}
 
   ajax: (params, defaults) ->
-    console.log($.extend({}, @defaults, defaults, params))
     $.ajax($.extend({}, @defaults, defaults, params))
 
   toJSON: (record, method, format) ->
@@ -164,7 +163,7 @@ Tower.Store.Transport.Ajax =
       try
         #callback(null, criteria.build(data))
         data = criteria.model.load(data)
-        #callback(null, data) if callback
+        callback(null, data) if callback
       catch error
         callback(error) if callback
 
@@ -225,6 +224,8 @@ Tower.Store.Transport.Ajax =
       @ajax(params)
         .success(@findSuccess(criteria, callback))
         .error(@findFailure(criteria, callback))
+
+    undefined
 
   serializeParamsForFind: (criteria) ->
     url     = Tower.urlFor(criteria.model)

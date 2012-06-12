@@ -1,6 +1,8 @@
 Ember.Map::toArray = ->
   _.values(@values)
 
+global.T = Tower
+
 _.extend Tower,
   nativeExtensions: true
   env:              "development"
@@ -22,6 +24,7 @@ _.extend Tower,
     Tower.Application.instance().subscribe arguments...
 
   cb: ->
+
 
   notifyConnections: (action, records) ->
     for sessionId, connection of Tower.connections

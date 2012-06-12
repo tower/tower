@@ -82,6 +82,9 @@ Tower.Model.Cursor.Finders =
     @page(@currentPage - 1)
     @
 
+  all: (callback) ->
+    @find(callback)
+
   find: (callback) ->
     @_find(callback)
 
@@ -91,6 +94,8 @@ Tower.Model.Cursor.Finders =
     else
       @store.find @, (error, records) =>
         records = @export(records) if !error && records.length
+
+        @clear() if Tower.isClient
 
         # need to do something like this...
         if _.isArray(records)
@@ -120,7 +125,7 @@ Tower.Model.Cursor.Finders =
   _count: (callback) ->
     @store.count @, (error, count) =>
       Ember.set(@, 'totalCount', count)
-      callback.apply @, arguments
+      callback.apply(@, arguments) if callback
 
   exists: (callback) ->
     @_exists(callback)
@@ -128,7 +133,7 @@ Tower.Model.Cursor.Finders =
   _exists: (callback) ->
     @store.exists @, (error, exists) =>
       Ember.set(@, 'isEmpty', !exists)
-      callback.apply @, arguments
+      callback.apply(@, arguments) if callback
 
   fetch: (callback) ->
     @store.fetch(@, callback)
