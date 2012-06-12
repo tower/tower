@@ -52,6 +52,10 @@ Tower.Model.Persistence =
       # Tower.Model.Cursor.pushMatching @store().load(records)
       @store().load(records)
 
+    # Only use on memory store for now
+    empty: ->
+      @store().clean()
+
   InstanceMethods:
     store: Ember.computed ->
       @constructor.store()

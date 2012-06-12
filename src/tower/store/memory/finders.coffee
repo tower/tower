@@ -3,7 +3,7 @@ Tower.Store.Memory.Finders =
   # @see Tower.Store#find
   find: (criteria, callback) ->
     result      = []
-    records     = @records
+    records     = @records.toArray()
     conditions  = criteria.conditions()
     usingGeo    = @_conditionsUseGeo(conditions)
     options     = criteria
@@ -14,10 +14,10 @@ Tower.Store.Memory.Finders =
       @_prepareConditionsForTesting(conditions)
 
     if _.isPresent(conditions)
-      for key, record of records
+      for record in records
         result.push(record) if Tower.Store.Operators.test(record, conditions)
     else
-      for key, record of records
+      for record in records
         result.push(record)
 
     sort        = if usingGeo then @_getGeoSortCriteria() else options.get('order')
@@ -80,7 +80,7 @@ Tower.Store.Memory.Finders =
   # TODO: Unhardcode coordinates field
   _calculateDistances: (records, nearCoordinate) ->
     center = {latitude: nearCoordinate.lat, longitude: nearCoordinate.lng}
-    for index, record of records
+    for record in records
       coordinates = record.get('coordinates')
       coordinates = {latitude: coordinates.lat, longitude: coordinates.lng}
 

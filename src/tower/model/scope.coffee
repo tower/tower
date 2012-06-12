@@ -11,6 +11,7 @@ class Tower.Model.Scope
     'instantiate'
     'pluck'
     'live'
+    'toArray'
   ]
 
   @persistenceMethods: [
@@ -294,6 +295,9 @@ class Tower.Model.Scope
   # @param [Function] callback
   all: (callback) ->
     @compile().find(callback)
+
+  toArray: ->
+    @all().toArray()
 
   # Returns an array of column values directly from the underlying table/collection.
   # This also works with serialized attributes.

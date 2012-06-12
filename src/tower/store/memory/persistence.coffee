@@ -19,7 +19,8 @@ Tower.Store.Memory.Persistence =
   loadOne: (record) ->
     record.persistent = true
     record.set('isNew', false)
-    @records[record.get('id').toString()] = record
+    # @todo now that this is an Ember.Map we don't have to make it a string
+    @records.set(record.get('id'), record)
 
   insert: (criteria, callback) ->
     result    = []
@@ -59,6 +60,6 @@ Tower.Store.Memory.Persistence =
       records
 
   destroyOne: (record) ->
-    delete @records[record.get('id').toString()]
+    @records.remove(record.get('id'))
 
 module.exports = Tower.Store.Memory.Persistence

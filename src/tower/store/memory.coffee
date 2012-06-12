@@ -17,13 +17,13 @@ class Tower.Store.Memory extends Tower.Store
   initialize: ->
     @constructor.stores().push @
 
-    @records  = {}
+    @records  = Ember.Map.create()
     @lastId   = 1
 
     Ember.set(@, 'batch', new Tower.Store.Batch)
 
   clean: ->
-    @records  = {}
+    @records  = Ember.Map.create()
     @lastId   = 1
 
   commit: ->
