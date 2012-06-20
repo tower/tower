@@ -1,4 +1,5 @@
 require './view/emberHelper'
 require './view/formHelper'
+require './view/jqueryHelpers'
 require './view/metaHelper'
 #require './view/validationHelper'

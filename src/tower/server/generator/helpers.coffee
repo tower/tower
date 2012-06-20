@@ -32,11 +32,11 @@ Tower.Generator.Helpers =
   asset: (path, options = {}) ->
     bundle = options.bundle || "application"
     @inRoot =>
-      @injectIntoFile "config/assets.coffee", "      \"#{path}\"\n", after: new RegExp("\\s*#{bundle}: *\\[[^\\]]+\\n", "i")
+      @injectIntoFile "config/assets.coffee", "      \'#{path}\'\n", after: new RegExp("\\s*#{bundle}: *\\[[^\\]]+\\n", "i")
 
   navigation: (key, path) ->
     pattern = /div *class: *"nav-collapse" *, *->\s+ul *class: *"nav", *-> */
-    content = """\n    navItem t("links.#{key}"), #{path}
+    content = """\n    navItem t('links.#{key}'), #{path}
 """
 
     @inRoot =>

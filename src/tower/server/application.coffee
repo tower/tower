@@ -8,8 +8,8 @@ io      = null
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
 
-  @extended: ->
-    global[@className()] = @create()
+  #@extended: ->
+  #  global[@className()] = @create()
 
   @before 'initialize', 'setDefaults'
 
@@ -117,18 +117,18 @@ class Tower.Application extends Tower.Engine
 
       requirePaths File.files("#{Tower.root}/config/initializers")
 
-      @configureStores(Tower.config.databases)
-      @stack()
+      @configureStores Tower.config.databases, =>
+        @stack()
 
-      requirePaths File.files("#{Tower.root}/app/helpers")
-      requirePaths File.files("#{Tower.root}/app/models")
+        requirePaths File.files("#{Tower.root}/app/helpers")
+        requirePaths File.files("#{Tower.root}/app/models")
 
-      require "#{Tower.root}/app/controllers/applicationController"
+        require "#{Tower.root}/app/controllers/applicationController"
 
-      for path in @constructor.autoloadPaths
-        requirePaths File.files("#{Tower.root}/#{path}")
+        for path in @constructor.autoloadPaths
+          requirePaths File.files("#{Tower.root}/#{path}")
 
-      done() if done
+        done() if done
 
     @runCallbacks 'initialize', initializer, complete
 
@@ -149,10 +149,14 @@ class Tower.Application extends Tower.Engine
     else
       @server.use args...
 
-  configureStores: (configuration = {}) ->
+  configureStores: (configuration = {}, callback) ->
     defaultStoreSet = false
 
-    for databaseName, databaseConfig of configuration
+    databaseNames = _.keys(configuration)
+
+    iterator = (databaseName, next) ->
+      databaseConfig = configuration[databaseName]
+
       storeClassName = "Tower.Store.#{_.camelize(databaseName)}"
 
       try
@@ -164,10 +168,13 @@ class Tower.Application extends Tower.Engine
         Tower.Model.default('store', store)
         defaultStoreSet = true
 
-      do (store, databaseName) ->
-        Tower.callback 'initialize', name: "#{store.className()}.initialize", (done) ->
-          try store.configure Tower.config.databases[databaseName][Tower.env]
-          store.initialize done
+      #Tower.callback 'initialize', name: "#{store.className()}.initialize", (done) ->
+      #  try store.configure Tower.config.databases[databaseName][Tower.env]
+      #  store.initialize done
+      try store.configure Tower.config.databases[databaseName][Tower.env]
+      store.initialize(next)
+
+    Tower.parallel databaseNames, iterator, callback
 
   stack: ->
     configs     = @constructor.initializers()

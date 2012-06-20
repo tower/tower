@@ -204,6 +204,7 @@ describe 'Tower.Support.Format', ->
   describe 'inflection', ->
     test 'pluralize', ->
       assert.equal _.pluralize("entry"), "entries"
+      assert.equal _.pluralize("address"), "addresses"
       assert.equal _.pluralize("business"), "businesses"
       assert.equal _.pluralize("people"), "people"
       assert.equal _.pluralize("person"), "people"
@@ -212,3 +213,4 @@ describe 'Tower.Support.Format', ->
       assert.equal _.singularize("businesses"), "business"
       assert.equal _.singularize("people"), "person"
       assert.equal _.singularize("person"), "person"
+      assert.equal _.singularize("address"), "address"

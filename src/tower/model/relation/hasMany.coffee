@@ -159,17 +159,10 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     #  defaults[relation.foreignKey] = $in: @owner.get('id')
     #  cursor.where(defaults)
 
-    if inverseRelation && inverseRelation.idCache
-      array = data[inverseRelation.idCacheKey] || []
-      array.push(id) if array.indexOf(id) == -1
-      data[inverseRelation.idCacheKey] = array
-    else if relation.foreignKey && !relation.idCache
+    if relation.foreignKey
       data[relation.foreignKey]     = id if id != undefined
       # must check here if owner is instance of foreignType
       data[relation.foreignType]  ||= owner.constructor.className() if relation.foreignType
-
-    if inverseRelation && inverseRelation.counterCacheKey
-      data[inverseRelation.counterCacheKey] = 1
 
     @where(data)
 
@@ -198,6 +191,13 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
   ownerAttributes: (record) ->
     relation = @relation
+
+    #if inverseRelation && inverseRelation.idCache
+    #  array = data[inverseRelation.idCacheKey] || []
+    #  array.push(id) if array.indexOf(id) == -1
+    #  data[inverseRelation.idCacheKey] = array
+    #if inverseRelation && inverseRelation.counterCacheKey
+    #  data[inverseRelation.counterCacheKey] = 1
 
     if relation.idCache
       push    = {}

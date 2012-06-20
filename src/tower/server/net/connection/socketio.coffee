@@ -8,7 +8,7 @@ Tower.Net.Connection.Socketio =
     # if client
     # socket = global.io.connect(domain)
     io = Tower.modules.socketio.listen(server)
-
+    
     io.on 'connection', (socket) =>
       @connect(socket)
 

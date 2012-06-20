@@ -64,6 +64,10 @@ Tower.Model.Attributes =
       Ember.get(@get('data'), 'unsavedData')
     )
 
+    #attributes: Ember.computed(->
+    #  @get('data')
+    #)
+
     setSavedAttributes: (object) ->
       @get('data').setSavedAttributes(object)
 

@@ -39,6 +39,8 @@ class Tower.Model extends Tower.Class
     @setProperties(attrs)
 
 require './model/scope'
+require './model/massAssignment'
+require './model/authentication'
 require './model/cursor'
 require './model/data'
 require './model/dirty'
@@ -64,6 +66,8 @@ Tower.Model.include Tower.Support.Callbacks
 Tower.Model.include Tower.Model.Metadata
 Tower.Model.include Tower.Model.Dirty
 Tower.Model.include Tower.Model.Indexing
+Tower.Model.include Tower.Model.Authentication
+Tower.Model.include Tower.Model.MassAssignment
 Tower.Model.include Tower.Model.Scopes
 Tower.Model.include Tower.Model.Persistence
 Tower.Model.include Tower.Model.Inheritance

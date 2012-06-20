@@ -5,6 +5,7 @@ module.exports =
       '/app/client/config/bootstrap'
       '/config/routes'
       '/app/views/templates'
+      '/app/client/views/layouts/application'
     ]
 
     lib: [
@@ -19,12 +20,10 @@ module.exports =
       '/vendor/javascripts/validator'
       '/vendor/javascripts/accounting'
       '/vendor/javascripts/inflection'
-      '/vendor/javascripts/coffeekup'
       '/vendor/javascripts/prettify'
       '/vendor/javascripts/async'
       '/vendor/javascripts/socket.io'
-      '/vendor/javascripts/history'
-      '/vendor/javascripts/history.adapter.jquery'
+      '/vendor/javascripts/handlebars'
       '/vendor/javascripts/ember'
       '/vendor/javascripts/tower'
       '/vendor/javascripts/bootstrap/bootstrap-transition'

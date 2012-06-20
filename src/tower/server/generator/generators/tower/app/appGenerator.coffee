@@ -4,7 +4,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
   buildApp: (name = @appName) ->
     app = super(name)
 
-    app.title       = @program.title || _.titleize(app.name)
+    app.title       = @program.title || _.titleize(_.humanize(app.name))
     app.description = @program.description
     app.keywords    = @program.keywords
 
@@ -24,19 +24,16 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @inside "client", ->
           @inside "config", ->
             @template "bootstrap.coffee"
-          @directory "helpers"
           @inside "stylesheets", ->
             @template "application.styl"
           @inside "controllers", ->
             @template "applicationController.coffee"
+          @inside "views", ->
+            @inside "layouts", ->
+              @template "application.coffee"
 
         @inside "controllers", ->
           @template "applicationController.coffee"
-
-        @inside "helpers", ->
-          @template "applicationHelper.coffee"
-
-        @directory "mailers"
 
         @directory "models"
 
@@ -45,6 +42,7 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @inside "layouts", ->
             @template "application.coffee"
           @inside "shared", ->
+            @template "_body.coffee"
             @template "_footer.coffee"
             @template "_header.coffee"
             @template "_meta.coffee"
@@ -121,8 +119,10 @@ class Tower.Generator.AppGenerator extends Tower.Generator
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js", "socket.io.js"
           @get "https://raw.github.com/viatropos/design.io/master/design.io.js", "design.io.js"
           @get "https://raw.github.com/viatropos/tower/master/dist/tower.js", "tower.js"
-          @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
-          @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.adapter.jquery.js", "history.adapter.jquery.js"
+          # Trying out ember's history implementation, which is much lighter
+          # @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
+          # @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.adapter.jquery.js", "history.adapter.jquery.js"
+          # https://github.com/paulmillr/es6-shim
           @get "https://raw.github.com/timrwood/moment/master/moment.js", "moment.js"
           @get "https://raw.github.com/medialize/URI.js/gh-pages/src/URI.js", "uri.js"
           @get "https://raw.github.com/visionmedia/mocha/master/mocha.js", "mocha.js"

@@ -1,6 +1,6 @@
 window.global       ||= window
 module                = global.module || {}
-global.Tower = Tower  = {}
+global.Tower = Tower  = Ember.Namespace.create()
 Tower.version         = "0.0.0" # this is dynamically modified so it doesn't really matter what it is.
 Tower.logger          = console
 # include underscore.string mixins
@@ -31,11 +31,11 @@ require './net'
 require './client/net'
 require './middleware'
 
-_.extend T,
-  M: T.Model
-  V: T.View
-  C: T.Controller
-  S: T.Store
+#_.extend T,
+#  M: T.Model
+#  V: T.View
+#  C: T.Controller
+#  S: T.Store
 
 Tower.goTo = (string, params) ->
   History.pushState(params, params?.title, string)

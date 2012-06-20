@@ -228,8 +228,9 @@
     pluralize: ->
       inflector.pluralize(arguments...)
 
-    singularize: ->
-      inflector.singularize(arguments...)
+    singularize: (name) ->
+      return name if name.match(/ss$/) # tmp hack for address
+      inflector.singularize(name)
 
     camelCase: (value) ->
       Tower.Support.String.camelize(value)

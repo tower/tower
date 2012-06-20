@@ -21,12 +21,13 @@ if typeof Ember != 'undefined'
   Ember.Namespace.reopenClass(coffeescriptMixin)
   Ember.Application.reopenClass(coffeescriptMixin)
   Ember.ArrayProxy.reopenClass(coffeescriptMixin)
+  Ember.ArrayController.reopenClass(coffeescriptMixin)
   Ember.State.reopenClass(coffeescriptMixin)
   Ember.StateManager.reopenClass(coffeescriptMixin)
 
   Tower.Class       = Ember.Object.extend(className: -> @constructor.className())
   Tower.Namespace   = Ember.Namespace.extend()
-  Tower.Collection  = Ember.ArrayProxy.extend()
+  Tower.Collection  = Ember.ArrayController.extend()
   Tower.State       = Ember.State.extend()
   Tower.StateMachine  = Ember.StateManager.extend()
 

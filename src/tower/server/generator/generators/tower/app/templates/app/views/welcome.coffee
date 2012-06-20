@@ -1,1 +1,1 @@
-h1 "Welcome to Tower.js"
+h1 'Welcome to Tower.js'

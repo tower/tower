@@ -89,8 +89,9 @@
 # 
 # I want this to be an array now, no longer a cursor.
 class Tower.Model.Cursor extends Tower.Collection
-  init: ->
-    @_super arguments...
+  init: (attr = {}) ->
+    attr.content ||= Ember.A([]) if Tower.isClient
+    @_super(attr)
 
 require './cursor/finders'
 require './cursor/operations'

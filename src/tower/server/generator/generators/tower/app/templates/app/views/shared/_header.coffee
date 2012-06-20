@@ -1,1 +1,1 @@
-h1 id: "title", -> t("title")
+h1 id: 'title', -> t('title')

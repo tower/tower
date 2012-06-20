@@ -8,7 +8,7 @@
 # @include Tower.Controller.Rendering
 # @include Tower.Controller.Resourceful
 # @include Tower.Controller.Responding
-class Tower.Controller extends Tower.Class
+class Tower.Controller extends Tower.Collection
   @include  Tower.Support.Callbacks
   @reopenClass Tower.Support.EventEmitter
   @include  Tower.Support.EventEmitter

@@ -40,3 +40,7 @@ public/stylesheets/
 npm-debug.log
 tmp/
 wiki/
+
+# config/credentials*
+# config/secrets*
+# config/databases*

@@ -21,6 +21,7 @@ Tower.Store.Memory.Persistence =
     record.set('isNew', false)
     # @todo now that this is an Ember.Map we don't have to make it a string
     @records.set(record.get('id'), record)
+    record
 
   insert: (criteria, callback) ->
     result    = []

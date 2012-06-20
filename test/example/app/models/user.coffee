@@ -9,8 +9,12 @@ class App.User extends Tower.Model
   @scope "byBaldwin", firstName: "=~": "Baldwin"
   @scope "thisWeek", @where createdAt: ">=": -> require('moment')().subtract('days', 7)
   
+  # need to change this...
   @hasMany "posts", type: "Page", idCache: true # postIds
+  @hasMany 'articles', type: 'Post', idCache: true
   @hasMany "comments", source: "commenter"
+
+  @hasOne 'address'
   
   @hasMany "memberships"
   @hasMany "groups", through: "memberships"

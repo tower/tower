@@ -1,67 +1,52 @@
-Tower.stateManager = Ember.StateManager.create
+Tower.router = Ember.Router.create
   initialState: 'root'
-  root: Ember.State.create()
+  location: 'history'
 
+  root: Ember.State.create(route: '/')
+
+  # Don't need this with the latest version of ember.
   handleUrl: (url, params = {}) ->
     route = Tower.Net.Route.findByUrl(url)
 
     if route
       params = route.toControllerData(url, params)
-      Ember.set(@, 'params', params)
-      Tower.stateManager.goToState(route.state)
+      Tower.stateManager.transitionTo(route.state, params)
     else
       console.log "No route for #{url}"
 
   # createStatesByRoute(Tower.stateManager, 'posts.show.comments.index')
   createControllerActionState: (name, action) ->
     name = _.camelize(name, true) #=> postsController
+
     # isIndexActive, isShowActive
-    booleanName = "is#{_.camelize(action)}Active"
+    # actionMethod  = "#{action}#{_.camelize(name).replace(/Controller$/, '')}"
+    # 
+    # Tower.stateManager.indexPosts = Ember.State.transitionTo('root.posts.index')
+    # Need to think about this more...
+    # Tower.stateManager[actionMethod] = Ember.State.transitionTo("root.#{_.camelize(name, true).replace(/Controller$/, '')}.#{action}")
 
     Ember.State.create
-      enter: (manager, transition) ->
-        @_super(manager, transition)
+      enter: (router, transition) ->
+        @_super(router, transition)
 
         console.log "enter: #{@name}" if Tower.debug
-        app         = Tower.Application.instance() #=> App
-        controller  = Ember.get(app, name)
+        controller  = Ember.get(Tower.Application.instance(), name)
 
-        Ember.changeProperties ->
-          controller.set('isActive', true)
-          controller.set(booleanName, true)
+        controller.enter(action) if controller
 
-        controller.format = 'html'
-        controller.params = Ember.get(manager, 'params')
+      connectOutlets: (router, params) ->
+        console.log "connectOutlets: #{@name}" if Tower.debug
+        controller  = Ember.get(Tower.Application.instance(), name)
 
-        if controller
-          controllerAction = controller[action]
-          switch typeof controllerAction
-            when 'object'
-              if controllerAction.enter
-                controllerAction.enter.call(controller)
-            when 'function'
-              controllerAction.call(controller)
+        controller.call(router, params) if controller
 
-        delete controller.params
-
-      exit: (manager, transition) ->
-        @_super(manager, transition)
+      exit: (router, transition) ->
+        @_super(router, transition)
 
         console.log "exit: #{@name}" if Tower.debug
+        controller  = Ember.get(Tower.Application.instance(), name)
 
-        app         = Tower.Application.instance() #=> App
-        controller  = Ember.get(app, name)
-
-        Ember.changeProperties ->
-          controller.set('isActive', false)
-          controller.set(booleanName, false)
-
-        if controller
-          controllerAction = controller[action]
-          switch typeof controllerAction
-            when 'object'
-              if controllerAction.exit
-                controllerAction.exit.call(controller)
+        controller.exit(action) if controller
 
   insertRoute: (route) ->
     if route.state

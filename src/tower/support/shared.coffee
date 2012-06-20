@@ -1,7 +1,7 @@
 Ember.Map::toArray = ->
   _.values(@values)
 
-global.T = Tower
+#global.T = Tower
 
 _.extend Tower,
   nativeExtensions: true
@@ -144,7 +144,7 @@ _.extend Tower,
         Tower.Support.String.camelize(string)
 
   namespace:  ->
-    Tower.Application.instance().constructor.className()
+    Tower.Application.instance().toString()#.constructor.className()
 
   module: (namespace) ->
     node    = Tower.namespaces[namespace]

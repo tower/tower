@@ -17,13 +17,14 @@ class Tower.Model.Relation.BelongsTo.Cursor extends Tower.Model.Relation.Cursor
   isBelongsTo: true
   # need to do something here about Reflection
 
-  toCursor: ->
-    cursor  = super
+  find: ->
+    @compile()
+
+    @_super(arguments...)
+
+  compile: ->
     relation  = @relation
-
     # @todo shouldn't have to do $in here...
-    cursor.where(id: $in: [@owner.get(relation.foreignKey)])
-
-    cursor
+    @where(id: $in: [@owner.get(relation.foreignKey)])
 
 module.exports = Tower.Model.Relation.BelongsTo

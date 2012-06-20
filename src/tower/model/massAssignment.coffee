@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.MassAssigment =
+Tower.Model.MassAssignment =
   ClassMethods:
     # Attributes named in this macro are protected from mass-assignment
     # whenever attributes are sanitized before assignment.
@@ -31,4 +31,4 @@ Tower.Model.MassAssigment =
       args    = _.args(arguments)
       options = _.extractOptions(arguments)
 
-module.exports = Tower.Model.MassAssigment
+module.exports = Tower.Model.MassAssignment

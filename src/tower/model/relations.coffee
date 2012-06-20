@@ -80,12 +80,59 @@ Tower.Model.Relations =
       throw new Error("Relation '#{name}' does not exist on '#{@name}'") unless relation
       relation
 
+    # tmp until this is figured out more,
+    # need to handle subclassing in associations better.
+    shouldIncludeTypeInScope: ->
+      @baseClass().className() != @className()
+
   InstanceMethods:
     getRelation: (key) ->
       @get(key)
 
+    getAssociation: (key) ->
+      @get(key + 'Association')
+
+    # Currently only used for the `belongsTo` association.
+    # 
+    # It will make the async database call.
+    # 
+    # @example You must use `fetch` on the server b/c Mongodb is async.
+    #   class App.Post extends Tower.Model
+    #     @belongsTo 'user'
+    #   
+    #   App.Post.first (error, post) =>
+    #     # fetch will set the 'user' property on post, 
+    #     # so you can do `post.get('user')` next call.
+    #     post.fetch 'user', (error, user) =>
+    #
+    # @example If you've loaded the record already on the client, use `get`
+    #   App.Post.first (error, post) =>
+    #     post.get('user')
+    fetch: (key, callback) ->
+      #record = @get(key)
+      record = undefined
+      
+      #if record
+      #  callback.call(@, null, record) if callback
+      #else
+      @getAssociation(key).first (error, result) =>
+        record = result
+        @set(key, record) if record && !error
+        callback.call(@, error, record)
+        record
+      
+      record
+
     relation: (name) ->
       @relations[name] ||= @constructor.relation(name).scoped(@)
+
+    createAssocation: (name, args...) ->
+      association = @getAssociation(name)
+      association.create.apply(association, args)
+
+    buildAssocation: (name, args...) ->
+      association = @getAssociation(name)
+      association.build.apply(association, args)
 
     destroyRelations: (callback) ->
       relations   = @constructor.relations()

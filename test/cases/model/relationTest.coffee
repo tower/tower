@@ -56,7 +56,7 @@ describeWith = (store) ->
           cursor = user.get('cachedMemberships').cursor
           cursor.compileForInsert()
 
-          assert.deepEqual cursor.conditions(), { }
+          assert.deepEqual cursor.conditions(), { userId: user.get('id') }
 
         test 'compileForInsert on polymorphic record', ->
           cursor = user.get('polymorphicMemberships').cursor
@@ -131,7 +131,7 @@ describeWith = (store) ->
         test 'compileForInsert', ->
           cursor = user.get('groups').cursor
           cursor.compileForInsert()
-          
+
           assert.deepEqual cursor.conditions(), { }
 
         test 'throughRelation', ->
@@ -139,15 +139,15 @@ describeWith = (store) ->
           relation        = cursor.relation
           throughRelation = cursor.throughRelation
           
-          assert.equal throughRelation.type, "Membership"
-          assert.equal throughRelation.targetType, "Membership"
+          assert.equal throughRelation.type, "App.Membership"
+          assert.equal throughRelation.targetType, "App.Membership"
           assert.equal throughRelation.name, "memberships"
           assert.equal throughRelation.ownerType, "App.User"
           assert.equal throughRelation.foreignKey, "userId"
           
           inverseRelation = relation.inverseThrough(throughRelation)
           assert.equal inverseRelation.name, "group"
-          assert.equal inverseRelation.type, "Group"
+          assert.equal inverseRelation.type, "App.Group"
           assert.equal inverseRelation.foreignKey, "groupId"
           
         test 'insertThroughRelation', (done) ->
@@ -328,8 +328,7 @@ describeWith = (store) ->
         test 'compileForInsert', (done) ->
           cursor.compileForInsert()
           
-          # not sure if we want this or not.. { parentId: parent.get('id') }
-          assert.deepEqual cursor.conditions(), {  }
+          assert.deepEqual cursor.conditions(), { parentId: parent.get('id') }
           
           done()
 
@@ -370,7 +369,7 @@ describeWith = (store) ->
             ], done
         
           test 'insert', (done) ->
-            assert.equal child.get('parentId'), null
+            assert.equal child.get('parentId').toString(), parent.get('id').toString()
             assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), child2.get('id')]
             done()
             

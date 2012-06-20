@@ -1,21 +1,21 @@
 module.exports =
   facebook:
-    key:    ""
-    secret: ""
+    key:    ''
+    secret: ''
 
     development:
-      key:    ""
-      secret: ""
+      key:    ''
+      secret: ''
 
     production:
-      key: ""
-      secret: ""
+      key: ''
+      secret: ''
 
   twitter:
-    key: ""
-    secret: ""
+    key: ''
+    secret: ''
 
   s3:
-    key:    ""
-    secret: ""
-    bucket: "cloud.<%= app.paramName %>.com"
+    key:    ''
+    secret: ''
+    bucket: 'cloud.<%= app.paramName %>.com'

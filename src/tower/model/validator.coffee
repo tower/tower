@@ -114,6 +114,7 @@ class Tower.Model.Validator
     true
 
   # Default implementation of handling failure for this validator.
+  # 
   #
   # @param [Function] callback
   #

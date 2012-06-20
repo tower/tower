@@ -11,12 +11,6 @@ $(window).error (event) ->
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
 
-  @extended: ->
-    __app   = @create()
-    __name  = @className()
-    try eval("#{__name} = __app") # b/c of variable scoping
-    global[__name] = __app
-
   @before 'initialize', 'setDefaults'
 
   setDefaults: ->

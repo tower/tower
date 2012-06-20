@@ -54,4 +54,7 @@ Tower.Support.String =
   parameterize: (string) ->
     Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, '')
 
+  toStateName: (string) ->
+    "is#{_.camelize(string)}Active"
+
 module.exports = Tower.Support.String

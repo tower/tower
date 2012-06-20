@@ -8,7 +8,7 @@ require 'underscore.logger'
 global._ = require 'underscore'
 _.mixin(require('underscore.string'))
 
-module.exports  = global.Tower = Tower = {}
+module.exports  = global.Tower = Tower = Ember.Namespace.create()
 
 # reads and sets the latest version on startup
 Tower.version = JSON.parse(require('fs').readFileSync(require('path').normalize("#{__dirname}/../../package.json"))).version
@@ -47,12 +47,6 @@ require './server/mailer'
 require './middleware'
 require './server/command'
 require './server/generator'
-
-_.extend T,
-  M: T.Model
-  V: T.View
-  C: T.Controller
-  S: T.Store
 
 Tower.watch = true
 

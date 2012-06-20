@@ -19,12 +19,15 @@ Master branch will always be functional, and for the most part in sync with the 
 
 ## Default Development Stack
 
+- Ember
+- jQuery
+- Handlebars (templating)
+- Stylus (LESS is also supported)
 - MongoDB (database)
 - Redis (background jobs)
-- CoffeeScript
-- Stylus (LESS is also supported)
 - Mocha (tests)
-- jQuery
+- CoffeeScript
+- Twitter Bootstrap
 
 Includes a database-agnostic ORM with browser (memory and ajax) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.
 
@@ -127,23 +130,7 @@ Here's how you might organize a blog:
 
 ``` coffeescript
 # config/application.coffee
-class App extends Tower.Application
-  @configure ->
-    @use "favicon", Tower.publicPath + "/favicon.ico"
-    @use "static",  Tower.publicPath, maxAge: Tower.publicCacheDuration
-    @use "profiler" if Tower.env != "production"
-    @use "logger"
-    @use "query"
-    @use "cookieParser", Tower.session.secret
-    @use "session", Tower.session.key
-    @use "bodyParser"
-    @use "csrf"
-    @use "methodOverride", "_method"
-    @use Tower.Middleware.Agent
-    @use Tower.Middleware.Location
-    @use Tower.Middleware.Router
-
-module.exports = global.App = App
+global.App = Tower.Application.create()
 ```
 
 ## Models
@@ -239,7 +226,7 @@ user  = post.author()
 ### Validations
 
 ``` coffeescript
-user = new User
+user = App.User.build()
 user.save() #=> false
 user.errors #=> {"email": ["Email must be present"]}
 user.email  = "me@gmail.com"
@@ -251,7 +238,7 @@ user.errors #=> {}
 
 ``` coffeescript
 # config/routes.coffee
-Tower.Route.draw ->
+App.routes ->
   @match "/login", "sessions#new", via: "get", as: "login"
   @match "/logout", "sessions#destroy", via: "get", as: "logout"
   
@@ -276,21 +263,22 @@ Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/
 
 ### Forms
 
-``` coffeescript
-# app/views/posts/new.coffee
-formFor "post", (f) ->
-  f.fieldset (fields) ->
-    fields.field "title", as: "string"
-    fields.field "body", as: "text"
-  
-  f.fieldset (fields) ->
-    fields.submit "Submit"
+``` html
+# app/client/templates/posts/new.ejs
+<form>
+  <fieldset>
+    <legend></legend>
+    <input name="post[title]" />
+    <textarea name="post[body]" ></textarea>
+    <input type="submit" />
+  </fieldset>
+</form>
 ```
 
 ### Tables
 
-``` coffeescript
-# app/views/posts/index.coffee
+``` html
+<!--  app/client/templates/posts/index.hbs -->
 tableFor "posts", (t) ->
   t.head ->
     t.row ->
@@ -312,58 +300,30 @@ tableFor "posts", (t) ->
 
 ### Layouts
 
-``` coffeescript
-# app/views/layouts/application.coffee
-doctype 5
-html ->
-  head ->
-    meta charset: "utf-8"
+``` html
+<!DOCTYPE html>
+<html>
+  <head>  
+    {{meta charset="utf-8"}}
+    {{title}}
+    {{meta name=description contentLocale="description"}}
+    {{meta name=keywords contentLocale="keywords"}}
+    {{meta name=robots contentLocale="robots"}}
+    {{meta name=author contentLocale="author"}}
+    {{link href=/favicon.png rel="icon shortcut-icon favicon"}} 
 
-    title t("title")
-
-    meta name: "description", content: t("description")
-    meta name: "keywords", content: t("keywords")
-    meta name: "robots", content: t("robots")
-    meta name: "author", content: t("author")
-
-    csrfMetaTag()
-
-    appleViewportMetaTag width: "device-width", max: 1, scalable: false
-    
-    stylesheets "lib", "vendor", "application"
-
-    javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
-    javascripts "vendor", "lib", "application"
-  
-  body role: "application", ->
-    if hasContentFor "templates"
-      yield "templates"
-      
-    nav id: "navigation", role: "navigation", ->
-      div class: "frame", ->
-        partial "shared/navigation"
-        
-    header id: "header", role: "banner", ->
-      div class: "frame", ->
-        partial "shared/header"
-        
-    section id: "body", role: "main", ->
-      div class: "frame", ->
-        yields "body"
-        aside id: "sidebar", role: "complementary", ->
-          if hasContentFor "sidebar"
-            yields "sidebar"
-            
-    footer id: "footer", role: "contentinfo", ->
-      div class: "frame", ->
-        partial "shared/footer"
-        
-  if hasContentFor "popups"
-    aside id: "popups", ->
-      yields "popups"
-      
-  if hasContentFor "bottom"
-    yields "bottom"
+    {{stylesheets application}}
+    {{javascripts vendor lib application}}
+    {{#if Tower.isDevelopment}}
+      {{javascripts development}}
+    {{/if}}
+  </head>
+  <body>
+    <script>
+      App.bootstrap({{json bootstrapData}})
+    </script>
+  </body>
+</html>
 ```
 
 The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.

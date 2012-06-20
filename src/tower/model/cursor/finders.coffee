@@ -93,7 +93,11 @@ Tower.Model.Cursor.Finders =
       @store.findOne(@, callback)
     else
       @store.find @, (error, records) =>
-        records = @export(records) if !error && records.length
+        if records
+          if @returnArray == false && !records.length
+            records = null
+          else
+            records = @export(records) if !error && records.length
 
         @clear() if Tower.isClient
 

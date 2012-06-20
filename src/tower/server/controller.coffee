@@ -1,8 +1,10 @@
+require './controller/actions'
 require './controller/caching'
 require './controller/events'
 require './controller/net'
 require './controller/sockets'
 
+Tower.Controller.include Tower.Controller.Actions
 Tower.Controller.include Tower.Controller.Caching
 Tower.Controller.include Tower.Controller.Events
 Tower.Controller.include Tower.Controller.Net

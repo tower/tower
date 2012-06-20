@@ -1,1 +1,1 @@
-class <%= app.namespace %> extends Tower.Application
+global.<%= app.namespace %> = Tower.Application.create()

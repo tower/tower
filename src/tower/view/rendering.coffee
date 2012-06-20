@@ -14,7 +14,7 @@ Tower.View.Rendering =
     # tmp
     if Tower.isClient
       try
-        view = @renderEmberView(options.template)
+        view = @renderEmberView(options)
         if view
           callback.call(@, null, '') if callback
           return

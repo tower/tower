@@ -39,7 +39,7 @@ class Tower.Model.Relation extends Tower.Class
     owner               = @owner
     name                = @name
     # @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
-    @type               = options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name))
+    @type               = Tower.namespaced(options.type || _.camelize(_.singularize(name)))
     @ownerType          = Tower.namespaced(owner.className())
     @dependent        ||= false
     @counterCache     ||= false
@@ -91,16 +91,23 @@ class Tower.Model.Relation extends Tower.Class
   _defineRelation: (name) ->
     object = {}
 
-    object[name] = Ember.computed((key, value) ->
-      if arguments.length is 2
-        data = Ember.get(@, 'data')
-        data.set(key, value)
-      else
-        data = Ember.get(@, 'data')
-        value = data.get(key)
-        value ||= @constructor.relation(name).scoped(@)
-        value
-    ).property('data').cacheable()
+    isHasMany = !@className().match(/HasOne|BelongsTo/)
+
+    if isHasMany
+      object[name] = Ember.computed((key, value) ->
+        if arguments.length is 2
+          data = Ember.get(@, 'data')
+          data.set(key, value)
+        else
+          data = Ember.get(@, 'data')
+          value = data.get(key)
+          value ||= @constructor.relation(name).scoped(@)
+          value
+      ).property('data').cacheable()
+    else
+      object[name + 'Association'] = Ember.computed((key) ->
+        @constructor.relation(name).scoped(@)
+      ).cacheable()
 
     @owner.reopen(object)
 
@@ -108,6 +115,8 @@ class Tower.Model.Relation extends Tower.Class
   scoped: (record) ->
     cursor = @constructor.Cursor.create()
     cursor.make(model: @klass(), owner: record, relation: @)
+    klass = @targetKlass()
+    cursor.where(type: klass.className()) if klass.shouldIncludeTypeInScope()
     new Tower.Model.Scope(cursor)
 
   # @return [Function]

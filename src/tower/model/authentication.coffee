@@ -7,10 +7,10 @@ Tower.Model.Authentication =
       @field 'lastLoginAt', type: 'Date'
       @field 'lastLoginAt', type: 'Date'
 
-      @validates 'password', confirmation: true
+      # @validates 'password', confirmation: true
       @validates 'passwordDigest', presence: true
 
-      @before 'validate', '_setPasswordDigest'
+      #@before 'validate', '_setPasswordDigest'
 
       # attributes protected by default
       @protected 'passwordDigest', 'passwordSalt'
@@ -33,8 +33,10 @@ Tower.Model.Authentication =
     _generatePasswordSalt: ->
       Math.round((new Date().valueOf() * Math.random())).toString()
 
-    _setPasswordDigest: ->
-      if password = @get('password')
+    _setPasswordDigest: (password) ->
+      password ||= @get('password')
+
+      if password
         @set('passwordSalt', @_generatePasswordSalt())
         @set('passwordDigest', @_encryptedPassword(password))
 
