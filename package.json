@@ -53,7 +53,6 @@
     "commander":          ">= 0.4.0",
     "express":            "2.x",
     "socket.io":          ">= 0.8.7",
-    "coffee-script":      "https://github.com/viatropos/coffee-script/tarball/master",
     "useragent":          ">= 1.0.5",
     "URIjs":              ">= 1.4.2",
     "moment":             ">= 1.5.1",
@@ -90,6 +89,6 @@
   "scripts": {
     "test":               "node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
     "docs":               "codo",
-    "postinstall":        "npm install https://github.com/viatropos/coffeecup/tarball/master --force --production ; npm install https://github.com/viatropos/coffee-script/tarball/master --force --production"
+    "postinstall":        "npm install git://github.com/viatropos/coffeecup.git --force --production ; npm install git://github.com/viatropos/coffee-script.git --force --production"
   }
 }
