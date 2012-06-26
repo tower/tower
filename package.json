@@ -90,6 +90,6 @@
   "scripts": {
     "test":               "node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
     "docs":               "codo",
-    "postinstall":        "npm install git://github.com/viatropos/coffeecup.git --force ; npm install git://github.com/viatropos/coffee-script.git --force"
+    "postinstall":        "npm install git://github.com/viatropos/coffeecup.git --force --production ; npm install git://github.com/viatropos/coffee-script.git --force --production"
   }
 }
