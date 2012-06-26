@@ -51,8 +51,17 @@ Tower.Support.String =
     return _.map(found, iterator, context) if iterator
     found
 
+  # This should have a maxSize option or something
   parameterize: (string) ->
-    Tower.Support.String.underscore(string).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, '')
+    # What do you do with a string like this:
+    # > This week's http://t.co/f2HvvZ1u
+    # 1. "this-weeks-tco"
+    # 2. "this-weeks-httptco"
+    Tower.Support.String.underscore(string)
+      #.replace(/'/, '') # week's => weeks
+      .replace(/\.([^\.])/, (_, $1) -> $1) # node.js => nodejs (instead of node-js)
+      .replace(/[^a-z0-9]+/g, "-") # replace every other non-word character with "-"
+      .replace(/^-+|-+$/g, '') # remove hyphens from beginning and end
 
   toStateName: (string) ->
     "is#{_.camelize(string)}Active"

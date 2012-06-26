@@ -71,8 +71,10 @@ Tower.Application.Watcher =
       result = require(path)
       callback(null, result) if callback
 
-  requirePaths: (directory, callback) ->
-    @reloadPath(path) for path in File.files(directory) if path.match(/\.(?:coffee|js|iced)$/)
+  reloadPaths: (directory, callback) ->
+    for path in File.files(directory)
+      if path.match(/\.(?:coffee|js|iced)$/)
+        @reloadPath(path)
 
     if callback
       process.nextTick ->

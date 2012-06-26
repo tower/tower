@@ -1,5 +1,5 @@
 {
-  "name":                 "tower",
+  "name":                 "tower-edge",
   "version":              "0.4.1",
   "description":          "Full Stack Web Framework for Node.js and the Browser",
   "homepage":             "http://viatropos.github.com/tower",

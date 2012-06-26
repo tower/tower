@@ -18,19 +18,19 @@ describeWith = (store) ->
           App.Group.store(store)
           callback()
         (callback) =>
-          App.User.insert firstName: "Lance", (error, record) =>
+          App.User.create firstName: "Lance", (error, record) =>
             user = record
             callback()
         (callback) =>
-          App.Group.insert (error, record) =>
+          App.Group.create (error, record) =>
             group = record
             callback()
       ], done
       
     afterEach ->
-      try App.Parent.insert.restore()
-      try App.Group.insert.restore()
-      try App.Membership.insert.restore()
+      try App.Parent.create.restore()
+      try App.Group.create.restore()
+      try App.Membership.create.restore()
     
     describe 'inverseOf', ->
       test 'noInverse_noInverse', ->
@@ -46,7 +46,7 @@ describeWith = (store) ->
         assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
 
     describe 'HasMany', ->
-      describe '.insert', ->
+      describe '.create', ->
         test 'compileForInsert', ->
           cursor = user.get('memberships').cursor
           cursor.compileForInsert()
@@ -65,7 +65,7 @@ describeWith = (store) ->
           assert.deepEqual cursor.conditions(), { joinableId: user.get('id'), joinableType: "User" }
           
         test 'insert relationship model', (done) ->
-          user.get('memberships').insert groupId: group.get('id'), (error, membership) =>
+          user.get('memberships').create groupId: group.get('id'), (error, membership) =>
             assert.equal membership.get('userId').toString(), user.get('id').toString()
             assert.equal membership.get('groupId').toString(), group.get('id').toString()
             done()
@@ -74,14 +74,14 @@ describeWith = (store) ->
         #  sinon.spy App.Group.store(), "insert"
         #  sinon.spy App.Membership.store(), "insert"
         #  
-        #  user.get('groups').insert (error, group) =>
-        #    #console.log App.Membership.store().insert
+        #  user.get('groups').create (error, group) =>
+        #    #console.log App.Membership.store().create
         #    done()
       
       describe '.update', ->
         beforeEach (done) ->
-          App.Membership.insert groupId: group.get('id'), =>
-            user.get('memberships').insert groupId: group.get('id'), done
+          App.Membership.create groupId: group.get('id'), =>
+            user.get('memberships').create groupId: group.get('id'), done
         
         test 'compileForUpdate', ->
           cursor = user.get('memberships').cursor
@@ -99,8 +99,8 @@ describeWith = (store) ->
       
       describe '.destroy', ->
         beforeEach (done) ->
-          App.Membership.insert groupId: group.get('id'), =>
-            user.get('memberships').insert groupId: group.get('id'), done
+          App.Membership.create groupId: group.get('id'), =>
+            user.get('memberships').create groupId: group.get('id'), done
             
         test 'compileForDestroy', ->
           cursor = user.get('memberships').cursor
@@ -117,16 +117,15 @@ describeWith = (store) ->
               done()
               
         #test 'destroy relationship model if parent is destroyed (dependent: true)', (done) ->
-        #  App.User.insert firstName: "Lance", (error, user) =>
-        #    user.dependentMemberships().insert =>
+        #  App.User.create firstName: "Lance", (error, user) =>
+        #    user.dependentMemberships().create =>
         #      user.destroy =>
         #        App.DependentMembership.count (error, count) =>
         #          assert.equal count, 0
         #          done()
 
     describe 'HasMany(through: true)', ->
-
-      describe '.insert', ->
+      describe '.create', ->
         # don't want it to have any data b/c all that data is stored on the relationship model.
         test 'compileForInsert', ->
           cursor = user.get('groups').cursor
@@ -160,7 +159,7 @@ describeWith = (store) ->
             done()
 
         test 'all together now, insert through model', (done) ->
-          user.get('groups').insert (error, group) =>
+          user.get('groups').create (error, group) =>
             #assert.equal group.get('id'), 2
             user.get('memberships').all (error, memberships) =>
               assert.equal memberships.length, 1
@@ -174,7 +173,7 @@ describeWith = (store) ->
                 done()
   
         test 'insert 2 models and 2 through models as Arguments', (done) ->
-          user.get('groups').insert {}, {}, (error, groups) =>
+          user.get('groups').create {}, {}, (error, groups) =>
             assert.equal groups.length, 2
             
             App.Group.count (error, count) =>
@@ -190,7 +189,7 @@ describeWith = (store) ->
 
       describe '.update', ->
         beforeEach (done) ->
-          user.get('groups').insert {name: "Starbucks"}, {}, done
+          user.get('groups').create {name: "Starbucks"}, {}, done
         
         test 'update all groups', (done) ->
           user.get('groups').update name: "Peet's", =>
@@ -210,7 +209,7 @@ describeWith = (store) ->
       
       describe '.destroy', ->
         beforeEach (done) ->
-          user.get('groups').insert {name: "Starbucks"}, {}, done
+          user.get('groups').create {name: "Starbucks"}, {}, done
         
         test 'destroy all groups', (done) ->
           user.get('groups').destroy =>
@@ -227,9 +226,9 @@ describeWith = (store) ->
 
       describe '.find', ->
         beforeEach (done) ->
-          App.Group.insert =>
-            App.Membership.insert =>
-              user.get('memberships').insert groupId: group.get('id'), (error, record) =>
+          App.Group.create =>
+            App.Membership.create =>
+              user.get('memberships').create groupId: group.get('id'), (error, record) =>
                 membership = record
                 done()
           
@@ -244,9 +243,9 @@ describeWith = (store) ->
 
       describe 'finders', ->
         beforeEach (done) ->
-          App.Group.insert =>
-            App.Membership.insert =>
-              user.get('groups').insert {name: "A"}, {name: "B"}, {name: "C"}, done
+          App.Group.create =>
+            App.Membership.create =>
+              user.get('groups').create {name: "A"}, {name: "B"}, {name: "C"}, done
         
         describe 'relation (groups)', ->
           test 'all', (done) ->
@@ -305,7 +304,7 @@ describeWith = (store) ->
       
       beforeEach (done) ->
         async.series [
-          (next) => App.Parent.insert (error, record) =>
+          (next) => App.Parent.create (error, record) =>
             parent = record
             next()
         ], done
@@ -350,16 +349,16 @@ describeWith = (store) ->
           beforeEach (done) ->
             async.series [
               (next) =>
-                parent.get('idCacheTrue_idCacheFalse').insert (error, record) =>
+                parent.get('idCacheTrue_idCacheFalse').create (error, record) =>
                   child = record
                   next()
               (next) =>
-                parent.get('idCacheTrue_idCacheFalse').insert (error, record) =>
+                parent.get('idCacheTrue_idCacheFalse').create (error, record) =>
                   child2 = record
                   next()
               (next) =>
                 # insert one without a parent at all
-                App.Child.insert (error, record) =>
+                App.Child.create (error, record) =>
                   child3 = record
                   next()
               (next) =>
@@ -417,7 +416,7 @@ describeWith = (store) ->
               done()
               
           test 'add to set', (done) ->
-            App.Child.insert (error, newChild) =>
+            App.Child.create (error, newChild) =>
               parent.get('idCacheTrue_idCacheFalse').add newChild, =>
                 App.Parent.find parent.get('id'), (error, parent) =>
                   assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), child2.get('id'), newChild.get('id')])
@@ -437,7 +436,7 @@ describeWith = (store) ->
           
           #describe 'inverseOf', ->
           #  test 'add to set', (done) ->
-          #    App.Child.insert (error, child) =>
+          #    App.Child.create (error, child) =>
           #      child.idCacheFalse_idCacheTrue
 ###
 describeWith(Tower.Store.Memory)

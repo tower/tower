@@ -7,7 +7,7 @@ Tower.Controller.addRenderers
 
   json: (json, options, callback) ->
     unless typeof(json) == 'string'
-      if @params.prettify && @params.prettify.toString() == 'true'
+      if @params.pretty && @params.pretty.toString() == 'true'
         json = JSON.stringify(json, null, 2)
       else
         json = JSON.stringify(json)

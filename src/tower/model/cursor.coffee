@@ -93,6 +93,9 @@ class Tower.Model.Cursor extends Tower.Collection
     attr.content ||= Ember.A([]) if Tower.isClient
     @_super(attr)
 
+# https://github.com/emberjs/ember.js/issues/1051
+Tower.Model.Cursor.toString = -> 'Tower.Model.Cursor'
+
 require './cursor/finders'
 require './cursor/operations'
 require './cursor/persistence'

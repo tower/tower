@@ -27,8 +27,12 @@ Tower.Model.Cursor.Serialization =
     # options.findOne = conditions.id && conditions.id.hasOwnProperty('$in') && conditions.id.$in.length == 1
 
   # Get the conditions, order, limit, fields, offset, or other private variables.
+  # @todo remove this old helper
   get: (key) ->
-    @["_#{key}"]
+    if key == 'content'
+      Ember.get(@, key)
+    else
+      @["_#{key}"]
 
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.

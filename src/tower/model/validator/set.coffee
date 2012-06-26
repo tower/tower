@@ -8,9 +8,9 @@ class Tower.Model.Validator.Set extends Tower.Model.Validator
 
     success = switch @name
       when 'in'
-        testValue.indexOf(value) > -1
+        _.indexOf(testValue, value) > -1
       when 'notIn'
-        testValue.indexOf(value) == -1
+        _.indexOf(testValue, value) == -1
       else
         false
 

@@ -15,6 +15,7 @@ class Tower.Model.Validator
     lt:         'lt'
     '<':        'lt'
     format:     'format'
+    uniq:       'uniqueness'
     unique:     'uniqueness'
     uniqueness: 'uniqueness'
     in:         'in'
@@ -52,8 +53,10 @@ class Tower.Model.Validator
         new @Length(name, value, attributes, options)
       when 'format'
         new @Format(name, value, attributes, options)
-      when 'in', 'except', 'only', 'notIn', 'values', 'accepts'
-        new @Set(name, value, attributes, options)
+      when 'in', 'only', 'values', 'accepts'
+        new @Set('in', value, attributes, options)
+      when 'except', 'notIn'
+        new @Set('notIn', value, attributes, options)
       when 'uniqueness', 'unique'
         new @Uniqueness(name, value, attributes, options)
 

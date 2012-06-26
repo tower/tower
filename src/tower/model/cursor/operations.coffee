@@ -44,11 +44,16 @@ Tower.Model.Cursor.Operations =
   #
   # @example
   #   App.Post.where(title: 'First Post').all()
+  #   App.Post.where('title', 'First Post').all()
   #
   # @param [Object] conditions
   where: (conditions) ->
     if conditions instanceof Tower.Model.Cursor
       @merge(conditions)
+    else if arguments.length == 2
+      object = {}
+      object[arguments[0]] = arguments[1]
+      @_where.push(conditions)
     else
       @_where.push(conditions)
 

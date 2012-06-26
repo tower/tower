@@ -86,9 +86,14 @@ class Tower.Store extends Tower.Class
 
   serializeModel: (attributes) ->
     return attributes if attributes instanceof Tower.Model
-    klass = Tower.constant(@className)
-    #new klass(attributes)
-    model = klass.new()
+    
+    model = @records.get(attributes.id) if attributes.id? && @records
+
+    unless model
+      klass = Tower.constant(@className)
+      #new klass(attributes)
+      model = klass.new()
+
     model.setProperties(attributes)
     model
 

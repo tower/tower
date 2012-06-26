@@ -27,21 +27,21 @@ describe 'Tower.Model.Cursor (bindable)', ->
 
   test 'pushMatching (blank records)', (done) ->
     records = [
-      new App.BindableCursorTest
-      new App.BindableCursorTest
+      App.BindableCursorTest.build()
+      App.BindableCursorTest.build()
     ]
     
     cursor.addObserver "length", (_, key, value) ->
       assert.ok value, "addObserver length called"
       assert.equal cursor.content.length, 2
       done()
-      
+
     cursor.pushMatching(records)
     
   test 'pushMatching (select 1 of 2)', (done) ->
     records = [
-      new App.BindableCursorTest
-      new App.BindableCursorTest(string: 'a string')
+      App.BindableCursorTest.build()
+      App.BindableCursorTest.build(string: 'a string')
     ]
     
     cursor.where(string: /string/)
@@ -52,3 +52,19 @@ describe 'Tower.Model.Cursor (bindable)', ->
       done()
 
     cursor.pushMatching(records)
+
+  ###
+  test 'sort', (done) ->
+    records = [
+      App.BindableCursorTest.build(string: 'ZZZ')
+      App.BindableCursorTest.build(string: 'BBB')
+      App.BindableCursorTest.build(string: 'AAA')
+    ]
+
+    cursor.addObserver "content", (_, key, value) ->
+      assert.deepEqual cursor.getEach('string'), ['AAA', 'BBB', 'ZZZ']
+      done()
+
+    cursor.pushMatching(records)
+    cursor.commit()
+  ###

@@ -147,7 +147,7 @@ Tower.Model.Cursor.Finders =
 
   mergeUpdatedRecords: (records) ->
     @pushMatching(records)
-    # @pullNotMatching(records)
+    @pullNotMatching(records)
 
   mergeDeletedRecords: (records) ->
     @pullMatching(records)
@@ -159,7 +159,13 @@ Tower.Model.Cursor.Finders =
     matching = Tower.Store.Operators.select(records, @conditions())
 
     # see https://github.com/emberjs/ember.js/issues/773
-    @addObjects(matching)
+    # need to change this so it works with model.get('id')
+    Ember.beginPropertyChanges(@)
+
+    for item in matching
+      @addObject(item) unless @contains(item)
+
+    Ember.endPropertyChanges(@)
 
     matching
 
@@ -184,5 +190,13 @@ Tower.Model.Cursor.Finders =
     @removeObjects(notMatching)
 
     notMatching
+
+  # not sure if this will happen automtically yet, on the client
+  commit: ->
+    Ember.beginPropertyChanges(@)
+    content = @get('content')
+    @mergeUpdatedRecords(content)
+    # Ember.SortableMixin
+    Ember.endPropertyChanges(@)
 
 module.exports = Tower.Model.Cursor.Finders

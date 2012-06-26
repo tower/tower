@@ -1,9 +1,7 @@
 class Tower.Model.Validator.Uniqueness extends Tower.Model.Validator
   validate: (record, attribute, errors, callback) ->
     value       = record.get(attribute)
-    conditions  = {}
-    conditions[attribute] = value
-    record.constructor.where(conditions).exists (error, result) =>
+    record.constructor.where(attribute, value).exists (error, result) =>
       if result
         return @failure(
           record,

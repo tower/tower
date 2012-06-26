@@ -149,7 +149,7 @@ class Tower.Net.Route extends Tower.Class
 
   matchConstraints: (request) ->
     constraints = @constraints
-
+    
     switch typeof(constraints)
       when "object"
         for key, value of constraints

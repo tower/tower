@@ -15,6 +15,8 @@ Tower.Controller.Scopes =
     # @example You can also use the `collection` method instead of `scope`
     #   class App.PostsController extends Tower.Controller
     #     @collection 'recent', App.Post.recent()
+    #
+    # This method is a mess
     scope: (name, scope) ->
       name ||= 'all'
 
@@ -22,13 +24,24 @@ Tower.Controller.Scopes =
 
       unless scope
         if typeof name == 'string'
-          scope = Tower.constant(metadata.resourceType)
+          chain = Tower.constant(metadata.resourceType)
 
           unless name == 'all'
-            scope = scope[name]()
+            if Tower.isClient
+              scope = Ember.computed(-> chain[name]().all())
+            else
+              scope = chain[name]()
+          else
+            if Tower.isClient
+              scope = Ember.computed(-> chain.all())
+            else
+              scope = chain
         else
           scope = name # App.Post
           name  = 'all' # might try to make this 'content', so you can do `{{#each App.postsController}}`
+      else
+        if Tower.isClient && typeof scope == 'function'
+          scope = Ember.computed(scope)
 
       try
         # maybe we don't want to convert it to a cursor by this point...
@@ -58,13 +71,13 @@ Tower.Controller.Scopes =
         when 'destroy' then 'mergeDeletedRecords'
 
     # still doesn't quite handle async in the controller
-    iterator  = (name, next) =>
-      cursor = @getCursor(cursors[name])
-
+    iterator  = (name, next) =>      
       if Tower.isClient
+        cursor = @get(name)
         cursor[cursorMethod](records)
         next()
       else
+        cursor = @getCursor(cursors[name])
         cursor.testEach records, (success, record) =>
           matches.set(record.get('id'), record) if success
 
