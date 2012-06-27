@@ -38,7 +38,14 @@ class Tower.Command.Server
     program     = @program
     Tower.env   = program.environment || process.env.NODE_ENV || "development"
     process.env.NODE_ENV = Tower.env
-    Tower.watch = !!Tower.env.match(/development/) || !!!program.static
+    
+    if !!program.static # if true
+      Tower.watch = false
+    else if Tower.env != 'development'
+      Tower.watch = false
+    else
+      Tower.watch = true
+
     Tower.port  = program.port = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
     
     Tower.Application.instance().run()

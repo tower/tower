@@ -96,7 +96,9 @@ Tower.Application.Assets =
 
     assetCache  = if File.exists(cachePath) then JSON.parse(File.read(cachePath)) else {}
 
-    _console.debug "Uploading to #{Tower.secrets.s3.bucket}"
+    config = try Tower.config.credentials.s3
+    if config && config.bucket
+      _console.debug "Uploading to #{config.bucket}"
 
     images      = _.select File.files("public/images"), (path) -> !!path.match(/\.(gif|ico|png|jpg)$/i)
     fonts       = _.select File.files("public/fonts"), (path) -> !!path.match(/\.(tff|woff|svg|eot)$/i)
