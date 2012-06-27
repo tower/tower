@@ -20,16 +20,9 @@ Tower.Store.Mongodb.Database =
             done()
 
         @initialized = true
-        env   = @env()
+        
         mongo = @lib()
-
-        if env.url
-          url = new Tower.Dispatch.Url(env.url)
-          env.name      = url.segments[0] || url.user
-          env.host      = url.hostname
-          env.port      = url.port
-          env.username  = url.user
-          env.password  = url.password
+        env   = @parseEnv()
 
         new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) =>
           throw error if error

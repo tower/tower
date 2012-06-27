@@ -23,8 +23,18 @@ Tower.Store.Mongodb.Configuration =
     configure: (options) ->
       _.deepMerge(@config, options)
 
-    env: ->
-      @config
+    parseEnv: ->
+      env = @config
+
+      if env.url
+        url           = new Tower.Net.Url(env.url)
+        env.name      = url.segments[0]
+        env.host      = url.hostname
+        env.port      = url.port
+        env.username  = url.user
+        env.password  = url.password
+
+      env
 
     lib: ->
       require 'mongodb'
