@@ -12,6 +12,12 @@ Tower.Support.Array =
       i++
     -1
 
+  equals: (a, b) ->
+    if a instanceof Tower.Model
+      a.equals(b)
+    else
+      _.isEqual(a, b)
+
   extractOptions: (args) ->
     if typeof args[args.length - 1] == "object" then args.pop() else {}
 

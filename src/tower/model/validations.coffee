@@ -96,4 +96,11 @@ Tower.Model.Validations =
 
       success
 
+    # Need to establish a better comparison API/approach
+    equals: (object) ->
+      if object instanceof Tower.Model
+        @get('id').toString() == object.get('id').toString()
+      else
+        false
+
 module.exports = Tower.Model.Validations

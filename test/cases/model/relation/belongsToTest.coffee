@@ -139,9 +139,8 @@ describeWith = (store) ->
 
               membership = user.get('memberships').all().toArray()[0]
 
-              # need a better way to compare objects...
-              assert.equal membership.get('group').get('id').toString(), group.get('id').toString()
-              assert.equal membership.get('user').get('id').toString(), user.get('id').toString()
+              assert.ok membership.get('group').equals(group), 'membership.group == group'
+              assert.ok membership.get('user').equals(user), 'membership.user == user'
 
               done()
 
