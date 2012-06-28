@@ -79,6 +79,52 @@ describeWith = (store) ->
                   # and id portion:
                   # foundAddress.get('userId')
                   done()
+
+    test 'belongsTo accepts model, not just modelId', (done) ->
+      App.User.create firstName: 'Lance', (error, user) =>
+        App.Group.create title: 'A Group', (error, group) =>
+          App.Membership.create user: user, group: group, (error, membership) =>
+            assert.equal membership.get('userId').toString(), user.get('id').toString()
+            assert.equal membership.get('groupId').toString(), group.get('id').toString()
+
+            assert.equal membership.get('user').get('id').toString(), user.get('id').toString()
+            assert.equal membership.get('group').get('id').toString(), group.get('id').toString()
+            done()
+
+
+    test 'belongsTo with eager loading', (done) ->
+      assert.deepEqual App.Membership.includes('user', 'group').compile().toJSON().includes, ['user', 'group']
+
+      App.User.create firstName: 'Lance', (error, user) =>
+        App.Group.create title: 'A Group', (error, group) =>
+          App.Membership.create user: user, group: group, (error, membership) =>
+
+            # model.reload isn't setup yet.
+            App.Membership.includes('user', 'group').find membership.get('id'), (error, membership) =>
+              assert.equal membership.get('user').get('id').toString(), user.get('id').toString()
+              assert.equal membership.get('group').get('id').toString(), group.get('id').toString()
+              done()
+
+    #test 'hasMany with eager loading', (done) ->
+    #  assert.deepEqual App.User.includes('memberships').compile().toJSON().includes, ['memberships']
+    #
+    #  App.User.create firstName: 'Lance', (error, user) =>
+    #    App.Group.create title: 'A Group', (error, group) =>
+    #      App.Membership.create user: user, group: group, (error, membership) =>
+    #
+    #        # model.reload isn't setup yet.
+    #        App.User.includes('memberships').find user.get('id'), (error, user) =>
+    #          console.log user.get('memberships').all()
+    #          done()
+
+    test 'hasOne with eager loading', (done) ->
+      App.User.create firstName: 'Lance', (error, user) ->
+        user.createAssocation 'address', city: 'San Francisco', (error, createdAddress) =>
+          assert.equal user.get('id').toString(), createdAddress.get('userId').toString()
+          App.User.includes('address').find user.get('id'), (error, user) =>
+            assert.equal user.get('address').get('id').toString(), createdAddress.get('id').toString()
+            done()
+
     ###
     describe 'belongsTo', ->
       user = null
@@ -95,4 +141,5 @@ describeWith = (store) ->
         done()
     ###
    
+describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.Mongodb) unless Tower.isClient

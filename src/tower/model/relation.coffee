@@ -108,6 +108,19 @@ class Tower.Model.Relation extends Tower.Class
       object[name + 'Association'] = Ember.computed((key) ->
         @constructor.relation(name).scoped(@)
       ).cacheable()
+      if @className() == 'BelongsTo'
+        object[name] = Ember.computed((key, value) ->
+          if arguments.length is 2
+            data = Ember.get(@, 'data')
+            if value instanceof Tower.Model
+              data.set("#{key}Id", value.get('id'))
+            else
+              data.set(key, value)
+            value
+          else
+            data = Ember.get(@, 'data')
+            value = data.get(key)
+        ).property('data').cacheable()
 
     @owner.reopen(object)
 
@@ -180,12 +193,6 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
 
   _teardown: ->
     _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
-
-for phase in ['Before', 'After']
-  for action in ['Insert', 'Update', 'Destroy', 'Find']
-    do (phase, action) =>
-      Tower.Model.Relation.Cursor::["_run#{phase}#{action}CallbacksOnStore"] = (done) ->
-        @store["run#{phase}#{action}"](@, done)
 
 require './relation/belongsTo'
 require './relation/hasMany'

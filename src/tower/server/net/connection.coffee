@@ -63,6 +63,7 @@ class Tower.Net.Connection extends Tower.Net.Connection
     data =
       action:   action
       records:  records
+      port:     Tower.port # to get around multiple client connection socket problem (todo)
       type:     try records[0].constructor.className()
 
     @constructor.emit(@socket, data)

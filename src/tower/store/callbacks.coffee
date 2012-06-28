@@ -54,7 +54,15 @@ Tower.Store.Callbacks =
   # Process the criteria after {#find}.
   #
   # @return [void] Requires a callback.
-  runAfterFind: (criteria, callback) ->
-    callback()
+  #runAfterFind: (criteria, callback) ->
+  #  callback()
+  # this needs to definitely be refactored, but trying out anyways.
+  # there should ideally be an identity map, but because of node.js'
+  # async callbacks, it seems impossible in a single request/response cycle.
+  runAfterFind: (criteria, callback, records) ->
+    if criteria.get('includes') && criteria.get('includes').length
+      criteria.eagerLoad(records, callback)
+    else
+      callback()
 
 module.exports = Tower.Store.Callbacks

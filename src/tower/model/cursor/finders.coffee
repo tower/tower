@@ -86,7 +86,11 @@ Tower.Model.Cursor.Finders =
     @find(callback)
 
   find: (callback) ->
-    @_find(callback)
+    @_runBeforeFindCallbacksOnStore =>
+      @_find (error, records) =>
+        done = =>
+          callback.call(@, error, records)
+        @_runAfterFindCallbacksOnStore done, _.castArray(records)
 
   _find: (callback) ->
     if @one
@@ -198,5 +202,11 @@ Tower.Model.Cursor.Finders =
     @mergeUpdatedRecords(content)
     # Ember.SortableMixin
     Ember.endPropertyChanges(@)
+
+for phase in ['Before', 'After']
+  for action in ['Insert', 'Update', 'Destroy', 'Find']
+    do (phase, action) =>
+      Tower.Model.Cursor.Finders["_run#{phase}#{action}CallbacksOnStore"] = (done, records) ->
+        @store["run#{phase}#{action}"](@, done, records)
 
 module.exports = Tower.Model.Cursor.Finders

@@ -1,4 +1,6 @@
 class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
+  isBelongsTo: true
+  
   init: (owner, name, options = {}) ->
     @_super arguments...
 

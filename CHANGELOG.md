@@ -18,7 +18,7 @@ curl http://npmjs.org/install.sh | sh
 npm -v # should be >= 1.1.32
 npm uninstall design.io forever tower daemon -g
 npm cache clean -g
-npm install daemon -g
+# npm install daemon -g
 npm install git://github.com/nodejitsu/forever#node-0.8 -g
 npm install design.io -g
 npm install tower -g

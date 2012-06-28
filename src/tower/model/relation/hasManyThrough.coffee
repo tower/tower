@@ -1,4 +1,6 @@
 class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
+  isHasManyThrough: true
+
   init: (options) ->
     @_super arguments...
 

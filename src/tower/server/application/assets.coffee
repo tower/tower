@@ -47,10 +47,12 @@ Tower.Application.Assets =
             fs.writeFileSync "public/assets/#{name}#{extension}", content
 
             process.nextTick ->
-              compressor content, {}, (error, result) ->
-                if error
-                  console.log error
-                  return next(error)
+              #compressor content, {}, (error, result) ->
+                #if error
+                #  console.log error
+                #  return next(error)
+              do (content) =>
+                result = content
                 digestPath  = File.digestFile("public/assets/#{name}#{extension}")
 
                 manifest["#{name}#{extension}"]  = File.basename(digestPath)
@@ -156,7 +158,7 @@ Tower.Application.Assets =
 
         block "public/#{path.replace(/^(stylesheets|javascripts)/, "assets")}", "/#{path}", headers, (error, result) ->
           console.log error if error
-          
+
           process.nextTick ->
             assetCache[path] = cached
             next(error)

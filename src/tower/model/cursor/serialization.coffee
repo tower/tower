@@ -109,11 +109,13 @@ Tower.Model.Cursor.Serialization =
     conditions    = @conditions()
     page          = @currentPage
     limit         = @get('limit')
+    includes      = @get('includes')
     
     data.sort       = sort if sort && sort.length
     data.conditions = conditions if conditions
     data.page       = page if page
     data.limit      = limit if limit
+    data.includes   = includes if includes && includes.length
 
     data
 

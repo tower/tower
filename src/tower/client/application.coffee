@@ -50,9 +50,14 @@ class Tower.Application extends Tower.Engine
   listen: ->
     return if @listening
     @listening = true
+
+    Tower.url ||= "#{window.location.protocol}//#{window.location.host}"
+    # Clients can only be connected to 1 connection in certain browser, this is a known hack I guess!
+    # see https://groups.google.com/forum/#!msg/socket_io/eNSAXgE9FjA/wv5zN0OpKpkJ
+    Tower.socketUrl ||= "#{window.location.protocol}://io-#{Tower.port}.#{window.location.host}"
     
     Tower.Net.Connection.initialize()
-    Tower.Net.Connection.listen('http://localhost:3000')
+    Tower.Net.Connection.listen(Tower.socketUrl)
 
     if Tower.history && Tower.history.enabled
       Tower.history.Adapter.bind global, "statechange", =>

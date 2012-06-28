@@ -4,9 +4,6 @@ Tower.Model.Cursor.Operations =
   # useful when you have a cursor with dates in the conditions.
   refreshInterval: (milliseconds) ->
 
-  eagerLoad: (object) ->
-    @_eagerLoad = _.extend(@_eagerLoad, object)
-
   # Join commands.
   #
   # For databases that don't offer joining, it's still useful.
@@ -124,18 +121,18 @@ Tower.Model.Cursor.Operations =
   # @param [Object] attributes
   #
   # @return [Object] the final set of conditions for this cursor.
-  allIn: (attributes) ->
-    @_whereOperator '$all', attributes
+  allIn: ->
+    @_whereOperator '$all', arguments...
 
   # @example
   #   App.Post.anyIn(tags: ['ruby', 'javascript']).all()
-  anyIn: (attributes) ->
-    @_whereOperator '$any', attributes
+  anyIn: ->
+    @_whereOperator '$any', arguments...
 
   # @example
   #   App.Post.notIn(tags: ['.net']).all()
-  notIn: (attributes) ->
-    @_whereOperator '$nin', attributes
+  notIn: ->
+    @_whereOperator '$nin', arguments...
 
   # @example
   #   App.Post.offset(20).all()
@@ -217,11 +214,50 @@ Tower.Model.Cursor.Operations =
   # @private
   _whereOperator: (operator, attributes) ->
     query = {}
+    
+    if typeof attributes == 'string'
+      attrs = {}
+      attrs[arguments[1]] = arguments[2]
+      attributes = attrs
+
     for key, value of attributes
       query[key] = {}
       query[key][operator] = value
     @where query
 
+  eagerLoad: (records, callback) ->
+    return callback() unless records && records.length
+
+    includes = @get('includes')
+
+    return callback() unless includes && includes.length
+
+    eagerLoad = (key, done) =>
+      relation = @model.relations()[key]
+      if relation.isHasOne
+        ids = records.getEach('id')
+        relation.klass().anyIn(relation.foreignKey, ids).all (error, associated) =>
+          for record in records
+            for item in associated
+              if record.get('id').toString() == item.get(relation.foreignKey).toString()
+                record.set(relation.name, item)
+          # this needs to actually check the relation
+          # klass = Tower.constant(_.camelize(key))
+          # records[]
+          done()
+      else
+        ids = records.getEach(relation.foreignKey)
+        relation.klass().anyIn(id: ids).all (error, associated) =>
+          for record in records
+            for item in associated
+              if record.get(relation.foreignKey).toString() == item.get('id').toString()
+                record.set(relation.name, item)
+          # this needs to actually check the relation
+          # klass = Tower.constant(_.camelize(key))
+          # records[]
+          done()
+
+    Tower.parallel includes, eagerLoad, callback
 
   # Alias for {#order}.
 Tower.Model.Cursor.Operations.sort = Tower.Model.Cursor.Operations.order

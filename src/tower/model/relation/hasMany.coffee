@@ -3,6 +3,7 @@
 # @note Thinking about making ./referenced and ./embedded copies,
 #   similar to how Mongoid does it.
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
+  isHasMany: true
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 

@@ -34,15 +34,17 @@ Tower.View.AssetHelper =
   _extractAssetPaths: (sources, options = {}) ->
     namespace = options.namespace
     extension = options.extension
+    assets    = Tower.config.assets[namespace]
     result    = []
 
     if Tower.env == "production"
       manifest  = Tower.assetManifest
       for source in sources
         unless !!source.match(/^(http|\/{2})/)
+          continue unless assets[source]?
           source    = "#{source}.#{extension}"
           source    = manifest[source] if manifest[source]
-          source    = "/#{namespace}/#{source}?1"
+          source    = "/#{namespace}/#{source}"
           source    = "#{Tower.assetHost}#{source}" if Tower.assetHost
         result.push(source)
     else
@@ -50,7 +52,7 @@ Tower.View.AssetHelper =
         if !!source.match(/^(http|\/{2})/)
           result.push(source)
         else
-          paths   = Tower.config.assets[namespace][source]
+          paths   = assets[source]
           if paths
             for path in paths
               result.push("/#{namespace}#{path}.#{extension}")
