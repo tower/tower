@@ -94,7 +94,11 @@ Tower.Application.Assets =
 
     fs.mkdirSync "tmp" unless _path.existsSync("tmp")
 
-    assetCache  = if File.exists(cachePath) then JSON.parse(File.read(cachePath)) else {}
+    try
+      assetCache  = if File.exists(cachePath) then JSON.parse(File.read(cachePath)) else {}
+    catch error
+      console.log error.message
+      assetCache  = {}
 
     config = try Tower.config.credentials.s3
     if config && config.bucket
@@ -117,12 +121,14 @@ Tower.Application.Assets =
       "Cache-Control":  "public"
       "Expires":        expirationDate.toUTCString()
 
-    gzipHeaders     =
-      "Content-Encoding": "gzip"
-      "Vary":             "Accept-Encoding"
+    gzipHeaders     = {}
+      #"Content-Encoding": "gzip"
+      #"Vary":             "Accept-Encoding"
 
     process.on 'exit', ->
+      # :) this should use the not createWriteStream API (https://gist.github.com/2947293)
       File.write(cachePath, JSON.stringify(assetCache, null, 2))
+
     process.on 'SIGINT', ->
       process.exit()
 
@@ -137,7 +143,14 @@ Tower.Application.Assets =
       else
         headers = _.extend headers, {"Etag": File.digest("public/#{path}")}
 
+      # This won't do anything for assets with md5 hash, 
+      # since old bundles are removed. Need to make more robust.
+      # Also, the asset-cache.json file should be updated whenever a file is removed.
+      # Should also maybe ping S3 first, to see if file on S3 is older than current file
+      # (it would be ideal if you could do this all in 1 request, with "if not match" or whatever).
       cached    = assetCache[path]
+
+      console.log path
 
       unless !!(cached && cached["Etag"] == headers["Etag"])
         cached = _.extend {}, headers
@@ -151,8 +164,16 @@ Tower.Application.Assets =
 
     Tower.async paths, upload, (error) ->
       console.log(error) if error
-
+      # change this, it causes cake command to freeze (well, not exit).
       File.write(cachePath, JSON.stringify(assetCache, null, 2))
+
+  # Make sure you install knox
+  uploadToS3: (callback) ->
+    knox    = require('knox')
+    client  = knox.createClient Tower.config.credentials.s3
+
+    @upload (from, to, headers, next) ->
+      client.putFile from, to, headers, next
 
   stats: ->
     Table     = require 'cli-table'

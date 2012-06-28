@@ -6,7 +6,7 @@ task 'assets:upload', ->
 
 task 'assets:upload:s3', ->
   invoke 'environment'
-
+  
   client  = knox.createClient Tower.config.credentials.s3
 
   Tower.Application.Assets.upload (from, to, headers, callback) ->

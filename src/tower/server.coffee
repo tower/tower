@@ -61,4 +61,3 @@ Tower.domain              = 'localhost'
 
 Tower.run = (argv) ->
   (new Tower.Command.Server(argv)).run()
-
