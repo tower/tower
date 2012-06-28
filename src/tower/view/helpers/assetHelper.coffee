@@ -42,7 +42,7 @@ Tower.View.AssetHelper =
         unless !!source.match(/^(http|\/{2})/)
           source    = "#{source}.#{extension}"
           source    = manifest[source] if manifest[source]
-          source    = "/#{namespace}/#{source}"
+          source    = "/#{namespace}/#{source}?1"
           source    = "#{Tower.assetHost}#{source}" if Tower.assetHost
         result.push(source)
     else

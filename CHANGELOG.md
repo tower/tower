@@ -106,16 +106,4 @@ not this:
 }
 ```
 
-## Asset Uploading
-
-When you upload compressed assets to S3, they are gzipped so you can't go to this path:
-
-```
-http://cloud.example.com/javascripts/lib-47ea7d6d770095d68325d0a928874301.js
-```
-
-You have to append `.gz`:
-
-```
-http://cloud.example.com/javascripts/lib-47ea7d6d770095d68325d0a928874301.js.gz
-```
+Other notes... It takes forever to deploy a larger app on Heroku! Like 2-3 minutes. Wondering if there is a way to push small updates that only take a second or two...

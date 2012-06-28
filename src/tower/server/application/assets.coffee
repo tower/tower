@@ -56,8 +56,8 @@ Tower.Application.Assets =
                 manifest["#{name}#{extension}"]  = File.basename(digestPath)
 
                 #gzip result, (error, result) ->
-                fs.writeFileSync digestPath, result
-                next()
+                fs.writeFile digestPath, result, ->
+                  next()
 
           assetBlocks = []
 
@@ -79,8 +79,9 @@ Tower.Application.Assets =
           Tower.async bundles, bundleIterator, (error) ->
             throw error if error
             _console.debug "Writing public/assets/manifest.json"
-            fs.writeFileSync "public/assets/manifest.json", JSON.stringify(manifest, null, 2)
-            process.exit()
+            fs.writeFile "public/assets/manifest.json", JSON.stringify(manifest, null, 2), ->
+              process.nextTick ->
+                process.exit()
             #process.nextTick ->
             #  invoke 'stats'
 
@@ -150,12 +151,12 @@ Tower.Application.Assets =
       # (it would be ideal if you could do this all in 1 request, with "if not match" or whatever).
       cached    = assetCache[path]
 
-      console.log path
-
       unless !!(cached && cached["Etag"] == headers["Etag"])
         cached = _.extend {}, headers
 
         block "public/#{path.replace(/^(stylesheets|javascripts)/, "assets")}", "/#{path}", headers, (error, result) ->
+          console.log error if error
+          
           process.nextTick ->
             assetCache[path] = cached
             next(error)
@@ -165,7 +166,10 @@ Tower.Application.Assets =
     Tower.async paths, upload, (error) ->
       console.log(error) if error
       # change this, it causes cake command to freeze (well, not exit).
-      File.write(cachePath, JSON.stringify(assetCache, null, 2))
+      process.nextTick ->
+        fs.writeFile cachePath, JSON.stringify(assetCache, null, 2), ->
+          process.nextTick ->
+            process.exit()
 
   # Make sure you install knox
   uploadToS3: (callback) ->
