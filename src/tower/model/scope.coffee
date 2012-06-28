@@ -250,6 +250,14 @@ class Tower.Model.Scope
 
     cursor.remove(callback)
 
+  # Used for hasMany association only right now.
+  # Probably should be moved to cursor class.
+  load: (records) ->
+    @cursor.load(records)
+
+  reset: ->
+    @cursor.reset()
+
   # Updates one or many records based on the scope's cursor.
   #
   # @example Find single record
@@ -337,8 +345,8 @@ class Tower.Model.Scope
   options: (options) ->
     _.extend(@cursor.options, options)
 
-  compile: ->
-    @cursor.clone()
+  compile: (cloneContent = true) ->
+    @cursor.clone(cloneContent)
 
   toCursor: ->
     @compile()
@@ -347,7 +355,7 @@ class Tower.Model.Scope
   #
   # @return [Tower.Model.Scope]
   clone: ->
-    new @constructor(@cursor.clone())
+    new @constructor(@cursor.clone(false))
 
 for key in Tower.Model.Scope.queryMethods
   do (key) =>

@@ -105,17 +105,45 @@ describeWith = (store) ->
               assert.equal membership.get('group').get('id').toString(), group.get('id').toString()
               done()
 
-    #test 'hasMany with eager loading', (done) ->
-    #  assert.deepEqual App.User.includes('memberships').compile().toJSON().includes, ['memberships']
-    #
-    #  App.User.create firstName: 'Lance', (error, user) =>
-    #    App.Group.create title: 'A Group', (error, group) =>
-    #      App.Membership.create user: user, group: group, (error, membership) =>
-    #
-    #        # model.reload isn't setup yet.
-    #        App.User.includes('memberships').find user.get('id'), (error, user) =>
-    #          console.log user.get('memberships').all()
-    #          done()
+    test 'hasMany with eager loading', (done) ->
+      assert.deepEqual App.User.includes('memberships').compile().toJSON().includes, ['memberships']
+    
+      App.User.create firstName: 'Lance', (error, user) =>
+        App.Group.create title: 'A Group', (error, group) =>
+          App.Membership.create user: user, group: group, (error, membership) =>
+    
+            # model.reload isn't setup yet.
+            App.User.includes('memberships').find user.get('id'), (error, user) =>
+              assert.ok user.get('memberships').all()._hasContent()
+
+              assert.deepEqual user.get('memberships').all().toArray().getEach('id'), [membership.get('id')]
+
+              user.get('memberships').reset()
+
+              assert.ok !user.get('memberships').all()._hasContent()
+
+              user.get('memberships').all =>
+                assert.ok user.get('memberships').all()._hasContent()
+                assert.deepEqual user.get('memberships').all().toArray().getEach('id'), [membership.get('id')]
+
+                done()
+
+    test 'hasMany + nested belongsTo with eager loading', (done) ->
+      App.User.create firstName: 'Lance', (error, user) =>
+        App.Group.create title: 'A Group', (error, group) =>
+          App.Membership.create user: user, group: group, (error, membership) =>
+    
+            # model.reload isn't setup yet.
+            App.User.includes(memberships: 'group').find user.get('id'), (error, user) =>
+              assert.equal user.get('memberships').all().toArray().length, 1
+
+              membership = user.get('memberships').all().toArray()[0]
+
+              # need a better way to compare objects...
+              assert.equal membership.get('group').get('id').toString(), group.get('id').toString()
+              assert.equal membership.get('user').get('id').toString(), user.get('id').toString()
+
+              done()
 
     test 'hasOne with eager loading', (done) ->
       App.User.create firstName: 'Lance', (error, user) ->
@@ -141,5 +169,5 @@ describeWith = (store) ->
         done()
     ###
    
-describeWith(Tower.Store.Memory)
+#describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.Mongodb) unless Tower.isClient

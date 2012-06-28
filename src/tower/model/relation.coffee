@@ -176,10 +176,35 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
     @relation     = options.relation
     @records      = []
 
-  clone: ->
-    cursor = @constructor.create()
-    cursor.make(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)
-    (cursor).merge(@)
+  clone: (cloneContent = true) ->
+    clone = @constructor.create()
+    if cloneContent
+      content = Ember.get(@, 'content') || Ember.A([])
+      clone.setProperties(content: content) if content
+    unless content
+      clone.setProperties(content: Ember.A([]))
+    clone.make(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)
+    clone.merge(@)
+    clone
+
+  load: (records) ->
+    owner     = @owner
+    relation  = @relation.inverse()
+
+    for record in records
+      record.set(relation.name, owner)
+
+    @_super(records)
+
+  reset: ->
+    owner     = @owner
+    relation  = @relation.inverse()
+    records   = Ember.get(@, 'content')
+
+    for record in records
+      record.set(relation.name, undefined)
+
+    @_super()
 
   setInverseInstance: (record) ->
     if record && @invertibleFor(record)

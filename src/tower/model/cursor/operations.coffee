@@ -228,15 +228,29 @@ Tower.Model.Cursor.Operations =
   eagerLoad: (records, callback) ->
     return callback() unless records && records.length
 
-    includes = @get('includes')
+    includes  = @get('includes')
 
-    return callback() unless includes && includes.length
+    return callback() if _.isBlank(includes)
+
+    # keys      = if _.isArray(includes) then includes else _.keys(includes)
+    hash = {}
+
+    for item in _.flatten(includes)
+      if typeof item == 'string'
+        hash[item] = null
+      else
+        _.extend(hash, item)
+
+    keys = _.keys(hash)
 
     eagerLoad = (key, done) =>
-      relation = @model.relations()[key]
+      childKeys = hash[key]
+      relation  = @model.relations()[key]
       if relation.isHasOne
         ids = records.getEach('id')
-        relation.klass().anyIn(relation.foreignKey, ids).all (error, associated) =>
+        scope = relation.klass().anyIn(relation.foreignKey, ids)
+        scope = scope.includes(childKeys) if childKeys
+        scope.all (error, associated) =>
           for record in records
             for item in associated
               if record.get('id').toString() == item.get(relation.foreignKey).toString()
@@ -245,9 +259,30 @@ Tower.Model.Cursor.Operations =
           # klass = Tower.constant(_.camelize(key))
           # records[]
           done()
+      else if relation.isHasMany && !relation.isHasManyThrough
+        ids = records.getEach('id')
+
+        scope = relation.klass().anyIn(relation.foreignKey, ids)
+        scope = scope.includes(childKeys) if childKeys
+        scope.all (error, associated) =>
+          for record in records
+            matches = []
+            
+            for item in associated
+              if record.get('id').toString() == item.get(relation.foreignKey).toString()
+                matches.push(item)
+
+            record.get(relation.name).load(matches)
+          # this needs to actually check the relation
+          # klass = Tower.constant(_.camelize(key))
+          # records[]
+          done()
       else
         ids = records.getEach(relation.foreignKey)
-        relation.klass().anyIn(id: ids).all (error, associated) =>
+        
+        scope = relation.klass().anyIn(id: ids)
+        scope = scope.includes(childKeys) if childKeys
+        scope.all (error, associated) =>
           for record in records
             for item in associated
               if record.get(relation.foreignKey).toString() == item.get('id').toString()
@@ -257,7 +292,7 @@ Tower.Model.Cursor.Operations =
           # records[]
           done()
 
-    Tower.parallel includes, eagerLoad, callback
+    Tower.parallel keys, eagerLoad, callback
 
   # Alias for {#order}.
 Tower.Model.Cursor.Operations.sort = Tower.Model.Cursor.Operations.order

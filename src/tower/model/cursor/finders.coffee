@@ -85,7 +85,17 @@ Tower.Model.Cursor.Finders =
   all: (callback) ->
     @find(callback)
 
+  _hasContent: (callback) ->
+    records = Ember.get(@, 'content')
+    if records && records.length
+      callback.call(@, null, records) if callback
+      true
+    else
+      false
+
   find: (callback) ->
+    return @ if @_hasContent(callback)
+
     @_runBeforeFindCallbacksOnStore =>
       @_find (error, records) =>
         done = =>

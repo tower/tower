@@ -77,11 +77,20 @@ Tower.Model.Cursor.Serialization =
   # Clone this cursor.
   #
   # @return [Tower.Model.Criteria]
-  clone: ->
-    clone = @constructor.create(content: Ember.A([]))
+  clone: (cloneContent = true) ->
+    clone = @constructor.create()
+    if cloneContent
+      content = Ember.get(@, 'content') || Ember.A([])
+      clone.setProperties(content: content) if content
     clone.make(model: @model, instantiate: @instantiate)
     clone.merge(@)
     clone
+
+  load: (records) ->
+    Ember.set(@, 'content', records)
+
+  reset: ->
+    Ember.set(@, 'content', [])
 
   # Merge this cursor with another cursor.
   #

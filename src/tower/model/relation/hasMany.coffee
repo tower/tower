@@ -43,6 +43,8 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
       @destroyReferenced(callback)
 
   find: (callback) ->
+    return @ if @_hasContent(callback)
+
     @validate (error) =>
       @findReferenced(callback)
 
@@ -122,12 +124,14 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
     @compileForFind()
 
     @_runBeforeFindCallbacksOnStore =>
-      @_find (error, record) =>
+      @_find (error, records) =>
         unless error
-          @_runAfterFindCallbacksOnStore =>
-            callback.call(@, error, record) if callback
+          done = =>
+            @owner.get(@relation.name).load(_.castArray(records))
+            callback.call(@, error, records) if callback
+          @_runAfterFindCallbacksOnStore done, records
         else
-          callback.call(@, error, record) if callback
+          callback.call(@, error, records) if callback
 
   # add to set
   add: (callback) ->
