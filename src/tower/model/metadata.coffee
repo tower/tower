@@ -127,7 +127,13 @@ Tower.Model.Metadata =
         callbacks:            callbacks
 
     _setDefaultScope: (scope) ->
-      @metadata().defaults.scope = if scope instanceof Tower.Model.Scope then scope else @where(scope)
+      defaults = @metadata().defaults
+      if scope instanceof Tower.Model.Scope
+        defaults.scope = scope
+      else if scope
+        defaults.scope = @where(scope)
+      else
+        delete defaults.scope
 
     callbacks: ->
       @metadata().callbacks

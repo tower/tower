@@ -99,7 +99,8 @@ Tower.Model.Cursor.Finders =
     @_runBeforeFindCallbacksOnStore =>
       @_find (error, records) =>
         done = =>
-          callback.call(@, error, records)
+          callback.call(@, error, records) if callback
+          records
         @_runAfterFindCallbacksOnStore done, _.castArray(records)
 
   _find: (callback) ->

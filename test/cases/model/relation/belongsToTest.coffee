@@ -152,6 +152,21 @@ describeWith = (store) ->
             assert.equal user.get('address').get('id').toString(), createdAddress.get('id').toString()
             done()
 
+    afterEach ->
+      App.Membership.default('scope', undefined)
+
+    test 'eager loading in default scope', (done) ->
+      App.Membership.default('scope', App.Membership.includes('user', 'group'))
+
+      App.User.create firstName: 'Lance', (error, user) =>
+        App.Group.create title: 'A Group', (error, group) =>
+          App.Membership.create user: user, group: group, (error, membership) =>
+            App.Membership.find membership.get('id'), (error, membership) =>
+              assert.ok membership.get('user').equals(user), 'membership.user == user'
+              assert.ok membership.get('group').equals(group), 'membership.group == group'
+
+              done()
+
     ###
     describe 'belongsTo', ->
       user = null

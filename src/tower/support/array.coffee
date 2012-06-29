@@ -13,7 +13,7 @@ Tower.Support.Array =
     -1
 
   equals: (a, b) ->
-    if a instanceof Tower.Model
+    if a && typeof a.equals == 'function'
       a.equals(b)
     else
       _.isEqual(a, b)

@@ -22,9 +22,10 @@ Tower.Model.Scopes =
     # Returns a {Tower.Model.Scope} with default cursor for the model class.
     #
     # @return [Tower.Model.Scope]
-    scoped: (options) ->
+    scoped: (options = {}) ->
       cursor        = @cursor(options)
-      defaultScope  = @defaults().scope
+      # default scopes aren't 100% yet
+      defaultScope  = @defaults().scope unless options.noDefault
 
       if defaultScope
         defaultScope.where(cursor)
