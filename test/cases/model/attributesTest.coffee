@@ -251,10 +251,12 @@ describeWith = (store) ->
     test 'string', ->
       assert.equal user.firstName, 'Lance'
 
-  describe 'cleaning up', ->
-    test 'unsavedData is gone after saving and finding', (done) ->
+  describe 'other', ->
+    user = null
+    beforeEach ->
       user = App.User.build(firstName: 'Lance')
 
+    test 'unsavedData is gone after saving and finding', (done) ->
       assert.deepEqual user.get('data').unsavedData, {firstName: 'Lance'}
 
       user.save =>
@@ -262,7 +264,46 @@ describeWith = (store) ->
 
         App.User.find user.get('id'), (error, user) =>
           assert.deepEqual user.get('data').unsavedData, {}
+
+          user.set('firstName', 'Dane')
+          user.set('lastName', 'Pollard')
+          assert.deepEqual user.get('data').unsavedData, {firstName: 'Dane', lastName: 'Pollard'}
+
+          user.save =>
+            assert.equal user.get('firstName'), 'Dane'
+            assert.equal user.get('lastName'), 'Pollard'
+            assert.deepEqual user.get('data').unsavedData, {}
+            done()
+
+    test 'Object attribute type', (done) ->
+      meta = {a: 'b', nesting: {one: 'two'}}
+
+      user.set('meta', meta)
+
+      assert.deepEqual user.get('data').unsavedData.meta, meta
+
+      user.save =>
+        assert.deepEqual user.get('data').unsavedData, {}
+
+        App.User.find user.get('id'), (error, user) =>
+          assert.deepEqual user.get('data').unsavedData, {}
+
+          assert.deepEqual user.get('meta'), meta
+
           done()
+
+    # need to solve this soon.
+    #test 'nested properties', (done) ->
+    #  meta = {a: 'b', nesting: {one: 'two'}}
+    #  user.set('meta', meta)
+    #
+    #  user.save =>
+    #    App.User.find user.get('id'), (error, user) =>
+    #      user.setPath('meta.nesting.one', 'ten')
+    #
+    #      assert.deepEqual user.get('data').unsavedData.meta, {'one': 'ten'}
+    #
+    #      done()
       
 #describeWith(Tower.Store.Memory)
 
