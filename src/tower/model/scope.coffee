@@ -351,6 +351,9 @@ class Tower.Model.Scope
   toCursor: ->
     @compile()
 
+  toJSON: ->
+    @cursor.toJSON()
+
   # Clone this scope (and the critera attached to it).
   #
   # @return [Tower.Model.Scope]

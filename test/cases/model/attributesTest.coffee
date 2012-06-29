@@ -250,10 +250,20 @@ describeWith = (store) ->
       
     test 'string', ->
       assert.equal user.firstName, 'Lance'
-      
-describeWith(Tower.Store.Memory)
 
-if Tower.client
-  describeWith(Tower.Store.Ajax)
-else
-  describeWith(Tower.Store.Mongodb)
+  describe 'cleaning up', ->
+    test 'unsavedData is gone after saving and finding', (done) ->
+      user = App.User.build(firstName: 'Lance')
+
+      assert.deepEqual user.get('data').unsavedData, {firstName: 'Lance'}
+
+      user.save =>
+        assert.deepEqual user.get('data').unsavedData, {}
+
+        App.User.find user.get('id'), (error, user) =>
+          assert.deepEqual user.get('data').unsavedData, {}
+          done()
+      
+#describeWith(Tower.Store.Memory)
+
+describeWith(Tower.Store.Mongodb) unless Tower.isClient

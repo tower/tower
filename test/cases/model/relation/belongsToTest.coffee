@@ -167,6 +167,22 @@ describeWith = (store) ->
 
               done()
 
+    # You can't do this easily with MongoDB:
+    # "find all memberships where user firstName equals 'Lance'",
+    # because it requires joining two collections. Either use embedded docs,
+    # or (todo) checkout DBref: http://stackoverflow.com/questions/6502541/mongodb-query-multiple-collections-at-once
+    # Maybe you can hack this in there using mongodb's streaming api,
+    # then do two queries back and forth in chunks: get 1000 memberships, get users matching, then redo if haven't met limit.
+    #test 'querying through belongsTo', (done) ->
+    #  App.User.create firstName: 'Lance', (error, user) =>
+    #    App.Group.create title: 'A Group', (error, group) =>
+    #      App.Membership.create user: user, group: group, (error, membership) =>
+    #
+    #        console.log App.Membership.where('user.firstName': 'Lance').toJSON()
+    #        App.Membership.where('user.firstName': 'Lance').all (error, memberships) =>
+    #          console.log memberships
+    #          done()
+
     ###
     describe 'belongsTo', ->
       user = null

@@ -6,8 +6,11 @@ Tower.Store.Mongodb.Serialization =
     attributes.id ||= attributes._id
     delete attributes._id
     model = klass.new()
-    model.set('isNew', false) if saved
-    model.setProperties(attributes)
+    if saved
+      model.set('isNew', false)
+      model.setSavedAttributes(attributes)
+    else
+      model.setProperties(attributes)
     model
 
   generateId: ->
