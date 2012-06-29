@@ -293,18 +293,28 @@ describeWith = (store) ->
           done()
 
     # need to solve this soon.
-    #test 'nested properties', (done) ->
-    #  meta = {a: 'b', nesting: {one: 'two'}}
-    #  user.set('meta', meta)
-    #
-    #  user.save =>
-    #    App.User.find user.get('id'), (error, user) =>
-    #      user.setPath('meta.nesting.one', 'ten')
-    #
-    #      assert.deepEqual user.get('data').unsavedData.meta, {'one': 'ten'}
-    #
-    #      done()
+    test 'nested properties', (done) ->
+      meta = {a: 'b', nesting: {one: 'two'}}
+      user.set('meta', meta)
+    
+      user.save =>
+        App.User.find user.get('id'), (error, user) =>
+          # should it be like this?
+          # user.set('meta.nesting.one', 'ten')
+          # or this:
+          # user.set('meta', {'nesting.one': 'ten'})
+          # or just plain:
+          user.set('meta', {'nesting': 'one': 'ten'})
+    
+          assert.deepEqual user.get('data').unsavedData.meta, {nesting: one: 'ten'}
+
+          user.save =>
+            assert.deepEqual user.get('data').savedData.meta, {a: 'b', nesting: {one: 'ten'}}
+
+            App.User.find user.get('id'), (error, user) =>
+              assert.deepEqual user.get('data').savedData.meta, {a: 'b', nesting: {one: 'ten'}}
+              done()
       
-#describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.Memory)
 
 describeWith(Tower.Store.Mongodb) unless Tower.isClient

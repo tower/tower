@@ -35,7 +35,25 @@ Tower.Store.Mongodb.Serialization =
         result['$set']    ||= {}
         result['$set'][key] = @encode schema[key], value
 
+    for operator, value of result
+      @_flattenObject(value)
+
     result
+
+  # I think there might be an Ember helper for this already.
+  _flattenObject: (object) ->
+    for key, value of object
+      @_flattenValue(object, key, value)
+
+    object
+
+  _flattenValue: (host, key, value) ->
+    if _.isHash(value)
+      delete host[key]
+      for _key, _value of value
+        @_flattenValue(host, "#{key}.#{_key}", _value)
+    else
+      host[key] = value
 
   serializeAttributesForInsert: (record) ->
     result      = {}

@@ -100,7 +100,8 @@ class Tower.Model.Data
         # TODO Ember.deletePath
         delete @unsavedData[key]
       else
-        @unsavedData[key] = value
+        #@unsavedData[key] = value
+        Ember.setPath(@unsavedData, key, value)
 
     @record.set('isDirty', _.isPresent(@unsavedData))
 
@@ -110,7 +111,7 @@ class Tower.Model.Data
     _.extend(@savedData, object)
 
   commit: ->
-    _.extend(@savedData, @unsavedData)
+    @attributes()
     @record.set('isDirty', false)
     @unsavedData = {}
 
@@ -118,7 +119,8 @@ class Tower.Model.Data
     @unsavedData = {}
 
   attributes: ->
-    _.extend(@savedData, @unsavedData)
+    # _.extend(@savedData, @unsavedData)
+    _.deepMerge(@savedData, @unsavedData)
 
   unsavedRelations: ->
     relations = @record.constructor.relations()

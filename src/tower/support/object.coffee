@@ -38,7 +38,7 @@ Tower.Support.Object =
     args = _.args(arguments, 1)
     for node in args
       for key, value of node when key not in specialProperties
-        if object[key] && typeof value == 'object'
+        if object[key] && _.isHash(value)# && typeof value == 'object'
           object[key] = Tower.Support.Object.deepMerge(object[key], value)
         else
           object[key] = value
