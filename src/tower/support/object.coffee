@@ -104,6 +104,8 @@ Tower.Support.Object =
   #
   # @return [String]
   kind: (object) ->
+    _ = Tower.modules._
+    
     type = typeof(object)
     switch type
       when "object"
@@ -151,7 +153,7 @@ Tower.Support.Object =
   #
   # @return [Boolean]
   isBlank: (object) ->
-    switch _.kind(object)
+    switch Tower.modules._.kind(object)
       when "object"
         return false for key, value of object
         return true

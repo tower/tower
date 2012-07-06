@@ -30,6 +30,7 @@ Tower.modules =
   coffeecup:  require 'coffeecup'
   socketio:   try require 'socket.io'
   sockjs:     try require 'sockjs'
+  _:          _
 
 require './support'
 require './application'

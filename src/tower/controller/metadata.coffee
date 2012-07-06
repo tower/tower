@@ -7,8 +7,10 @@ Tower.Controller.Metadata =
         @
 
     metadata: ->
+      @_metadata ||= {}
+
       className               = @className()
-      metadata                = @metadata[className]
+      metadata                = @_metadata[className]
       return metadata if metadata
       baseClassName           = @baseClass().className()
 
@@ -36,7 +38,7 @@ Tower.Controller.Metadata =
         for action, callbackChain of superMetadata.callbacks
           callbacks[action] = callbackChain.clone()
 
-      result = @metadata[className]    =
+      result = @_metadata[className]    =
         className:            className
         resourceName:         resourceName
         resourceType:         resourceType

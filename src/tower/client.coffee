@@ -16,6 +16,7 @@ Tower.modules =
   coffeecup:  if global.CoffeeCup then global.CoffeeCup else global.CoffeeKup
   socketio:   try global.io
   sockjs:     try global.SockJS
+  _:          _
 
 require './support'
 require './application'

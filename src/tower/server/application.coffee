@@ -104,7 +104,8 @@ class Tower.Application extends Tower.Engine
         catch error
           config  = {}
 
-        Tower.config[key] = config if _.isPresent(config)
+        # need a way to get _ to work in the console, which uses _ for last returned value
+        Tower.config[key] = config if Tower.modules._.isPresent(config)
 
       Tower.Application.Assets.loadManifest()
 
@@ -141,7 +142,7 @@ class Tower.Application extends Tower.Engine
     @server.handle arguments...
 
   use: ->
-    args        = _.args(arguments)
+    args        = Tower.modules._.args(arguments)
 
     if typeof args[0] == 'string'
       middleware  = args.shift()
@@ -152,12 +153,12 @@ class Tower.Application extends Tower.Engine
   configureStores: (configuration = {}, callback) ->
     defaultStoreSet = false
 
-    databaseNames = _.keys(configuration)
+    databaseNames = Tower.modules._.keys(configuration)
 
     iterator = (databaseName, next) ->
       databaseConfig = configuration[databaseName]
 
-      storeClassName = "Tower.Store.#{_.camelize(databaseName)}"
+      storeClassName = "Tower.Store.#{Tower.modules._.camelize(databaseName)}"
 
       try
         store = Tower.constant(storeClassName) # This will find Tower.Store.Memory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…

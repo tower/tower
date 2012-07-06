@@ -6,7 +6,7 @@ Tower.Support.I18n =
   load: (pathOrObject, language = @defaultLanguage) ->
     store     = @store()
     language  = store[language] ||= {}
-    _.deepMerge(language, if typeof(pathOrObject) == 'string' then require(pathOrObject) else pathOrObject)
+    Tower.modules._.deepMerge(language, if typeof(pathOrObject) == 'string' then require(pathOrObject) else pathOrObject)
     @
 
   translate: (key, options = {}) ->

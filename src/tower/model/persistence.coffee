@@ -84,8 +84,13 @@ Tower.Model.Persistence =
         @validate (error) =>
           if error
             @set('isValid', false)
+            @set('isSaving', false)
             # something is wrong here...
-            callback.call(@, null) if callback
+            if callback
+              callback.call(@, null)
+            else
+              # something like this if no callback is passed
+              throw new Error(_.flatten(_.values(@errors)).join('. '))
           else
             @set('isValid', true)
             @_save(callback)

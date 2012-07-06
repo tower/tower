@@ -19,6 +19,9 @@ Tower.Support.String =
   singularize: (string) ->
     Tower.modules.inflector.singularize arguments...
 
+  repeat: (string, number) ->
+    new Array(number + 1).join(string)
+
   pluralize: (count, string) ->
     if string
       return string if count is 1
