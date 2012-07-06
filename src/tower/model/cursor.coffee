@@ -89,21 +89,40 @@
 # 
 # I want this to be an array now, no longer a cursor.
 class Tower.Model.Cursor extends Tower.Collection
+  @make: ->
+    if Ember.EXTEND_PROTOTYPES
+      array = []
+      array.isCursor = true
+      array
+      #Tower.Model.CursorMixin.apply([])
+    else
+      @create()
+
   init: (attr = {}) ->
     attr.content ||= Ember.A([]) if Tower.isClient
     @_super(attr)
 
 # https://github.com/emberjs/ember.js/issues/1051
 Tower.Model.Cursor.toString = -> 'Tower.Model.Cursor'
+# @todo refactor this
+Tower.Model.Cursor::defaultLimit = 20
+
 
 require './cursor/finders'
 require './cursor/operations'
 require './cursor/persistence'
 require './cursor/serialization'
 
-Tower.Model.Cursor.include Tower.Model.Cursor.Finders
-Tower.Model.Cursor.include Tower.Model.Cursor.Operations
-Tower.Model.Cursor.include Tower.Model.Cursor.Persistence
-Tower.Model.Cursor.include Tower.Model.Cursor.Serialization
+Tower.Model.CursorMixin = Ember.Mixin.create(
+  Tower.Model.Cursor.Finders,
+  Tower.Model.Cursor.Operations,
+  Tower.Model.Cursor.Persistence,
+  Tower.Model.Cursor.Serialization
+)
+
+if Ember.EXTEND_PROTOTYPES
+  Tower.Model.CursorMixin.without.apply(Tower.Model.CursorMixin, ['length', 'isCursor']).apply(Array.prototype)
+
+Tower.Model.Cursor.include(Tower.Model.CursorMixin)
 
 module.exports = Tower.Model.Cursor

@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Cursor.Persistence =
+Tower.Model.Cursor.Persistence = Ember.Mixin.create
   build: (callback) ->
     @_build(callback)
 
@@ -56,12 +56,13 @@ Tower.Model.Cursor.Persistence =
           callback(error, records)
     else
       @store.insert @, (error, __records) =>
+        records = __records
         callback.call(@, error, __records) if callback
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
         Tower.notifyConnections('create', __records) unless error
 
-    @
+    if Tower.isClient then records else @ # tmp solution
 
   update: (callback) ->
     @_update(callback)

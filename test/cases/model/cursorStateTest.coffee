@@ -15,7 +15,7 @@ describeWith = (store) ->
           assert.equal false, exists
           # thinking about putting the cursor as `this`
           assert.equal true, @isEmpty
-          assert.equal 'Cursor', @constructor.className()
+          assert.isTrue @isCursor, 'isCursor'
           done()
 
       test 'if records are present', (done) ->

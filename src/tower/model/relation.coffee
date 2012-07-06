@@ -126,7 +126,7 @@ class Tower.Model.Relation extends Tower.Class
 
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
-    cursor = @constructor.Cursor.create()
+    cursor = @constructor.Cursor.make()
     cursor.make(model: @klass(), owner: record, relation: @)
     klass = @targetKlass()
     cursor.where(type: klass.className()) if klass.shouldIncludeTypeInScope()
@@ -165,27 +165,28 @@ class Tower.Model.Relation extends Tower.Class
 
   _setForeignType: ->
 
-class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
+Tower.Model.Relation.CursorMixin = Ember.Mixin.create
   isConstructable: ->
     !!!@relation.polymorphic
 
-  init: (options = {}) ->
-    @_super arguments...
-
-    @owner        = options.owner
-    @relation     = options.relation
-    @records      = []
-
   clone: (cloneContent = true) ->
-    clone = @constructor.create()
-    if cloneContent
-      content = Ember.get(@, 'content') || Ember.A([])
-      clone.setProperties(content: content) if content
-    unless content
-      clone.setProperties(content: Ember.A([]))
-    clone.make(model: @model, owner: @owner, relation: @relation, records: @records.concat(), instantiate: @instantiate)
+    if Ember.EXTEND_PROTOTYPES
+      clone = @clonePrototype()
+    else
+      clone = @constructor.create()
+      if cloneContent
+        content = Ember.get(@, 'content') || Ember.A([])
+        clone.setProperties(content: content) if content
+      unless content
+        clone.setProperties(content: Ember.A([]))
+    clone.make(model: @model, owner: @owner, relation: @relation, instantiate: @instantiate)
     clone.merge(@)
     clone
+
+  clonePrototype: ->
+    clone = @concat()
+    clone.isCursor = true
+    Tower.Model.Relation.CursorMixin.apply(clone)
 
   load: (records) ->
     owner     = @owner
@@ -199,7 +200,7 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
   reset: ->
     owner     = @owner
     relation  = @relation.inverse()
-    records   = Ember.get(@, 'content')
+    records   = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
 
     for record in records
       record.set(relation.name, undefined)
@@ -218,6 +219,14 @@ class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
 
   _teardown: ->
     _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
+
+class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
+  @make: ->
+    array = []
+    array.isCursor = true
+    Tower.Model.Relation.CursorMixin.apply(array)
+
+  @include Tower.Model.Relation.CursorMixin
 
 require './relation/belongsTo'
 require './relation/hasMany'

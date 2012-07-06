@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Cursor.Operations =
+Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @todo will refresh this cursor after x milliseconds,
   # useful when you have a cursor with dates in the conditions.
   refreshInterval: (milliseconds) ->
@@ -45,7 +45,7 @@ Tower.Model.Cursor.Operations =
   #
   # @param [Object] conditions
   where: (conditions) ->
-    if conditions instanceof Tower.Model.Cursor
+    if conditions.isCursor
       @merge(conditions)
     else if arguments.length == 2
       object = {}
@@ -169,7 +169,7 @@ Tower.Model.Cursor.Operations =
   # 
   # @todo Maybe we should make the `count` query part of the `paginate` method instead.
   page: (page) ->
-    limit = @limit(@_limit || @defaultLimit)
+    limit = @limit(@_limit || Tower.Model.Cursor::defaultLimit)
     Ember.set @, 'currentPage', page
     @offset((Math.max(1, page) - 1) * limit)
 

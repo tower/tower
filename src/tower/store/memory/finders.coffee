@@ -1,18 +1,20 @@
 # @module
 Tower.Store.Memory.Finders =
   # @see Tower.Store#find
-  find: (criteria, callback) ->
+  find: (cursor, callback) ->
     result      = []
     records     = @records.toArray()
-    conditions  = criteria.conditions()
+    conditions  = cursor.conditions()
+
     usingGeo    = @_conditionsUseGeo(conditions)
-    options     = criteria
+
+    options     = cursor
 
     # If $near, calculate and add __distance to all records. Remove $near from conditions
     if usingGeo
       @_calculateDistances(records, @_getCoordinatesFromConditions(conditions))
       @_prepareConditionsForTesting(conditions)
-
+    
     if _.isPresent(conditions)
       for record in records
         result.push(record) if Tower.Store.Operators.test(record, conditions)
@@ -35,32 +37,32 @@ Tower.Store.Memory.Finders =
     result
 
   # @see Tower.Store#findOne
-  findOne: (criteria, callback) ->
+  findOne: (cursor, callback) ->
     record = undefined
 
-    criteria.limit(1)
+    cursor.limit(1)
 
-    @find criteria, (error, records) =>
+    @find cursor, (error, records) =>
       record = records[0] || null
       callback.call(@, error, record) if callback
 
     record
 
   # @see Tower.Store#count
-  count: (criteria, callback) ->
+  count: (cursor, callback) ->
     result = undefined
 
-    @find criteria, (error, records) =>
+    @find cursor, (error, records) =>
       result = records.length
       callback.call(@, error, result) if callback
 
     result
 
   # @see Tower.Store#exists
-  exists: (criteria, callback) ->
+  exists: (cursor, callback) ->
     result = undefined
 
-    @count criteria, (error, record) =>
+    @count cursor, (error, record) =>
       result = !!record
       callback.call(@, error, result) if callback
 

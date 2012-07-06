@@ -95,6 +95,7 @@ describeWith = (store) ->
             assert.equal memberships[0].get('kind'), 'guest'
             App.Membership.count (error, count) =>
               assert.equal count, 2
+
               done()
       
       describe '.destroy', ->
@@ -160,7 +161,10 @@ describeWith = (store) ->
 
         test 'all together now, insert through model', (done) ->
           user.get('groups').create (error, group) =>
-            #assert.equal group.get('id'), 2
+            assert.ok user.get('memberships').all() instanceof Array, 'user.memberships.all instanceof Array'
+            assert.ok user.get('memberships').all().isCursor, 'user.memberships.all.isCursor'
+            assert.ok user.get('memberships').all().isHasMany, 'user.memberships.all.isHasManyThrough'
+
             user.get('memberships').all (error, memberships) =>
               assert.equal memberships.length, 1
               record = memberships[0]
@@ -173,6 +177,8 @@ describeWith = (store) ->
                 done()
   
         test 'insert 2 models and 2 through models as Arguments', (done) ->
+          assert.isTrue user.get('groups').all().isHasManyThrough, 'user.groups.isHasManyThrough'
+
           user.get('groups').create {}, {}, (error, groups) =>
             assert.equal groups.length, 2
             

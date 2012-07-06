@@ -37,7 +37,7 @@ Tower.Model.Scopes =
     # @return [Tower.Model.Cursor]
     cursor: (options = {}) ->
       options.model = @
-      cursor = Tower.Model.Cursor.create()
+      cursor = Tower.Model.Cursor.make()
       cursor.make(options)
       cursor.where(type: @className()) if @baseClass().className() != @className()
       cursor

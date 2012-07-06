@@ -37,7 +37,7 @@ Tower.Store.Memory.Persistence =
   insertOne: (record) ->
     attributes = @deserializeModel(record)
     attributes.id ?= @generateId()
-    attributes.id = attributes.id.toString()
+    #attributes.id = attributes.id#.toString()
     @loadOne(@serializeModel(record))
 
   update: (updates, criteria, callback) ->

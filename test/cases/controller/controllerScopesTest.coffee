@@ -20,26 +20,26 @@ describe 'Tower.Controller.Scopes', ->
       C.scope App.Post
 
       assert.deepEqual _.keys(C.metadata().scopes), ['all']
-      assert.ok C.metadata().scopes['all'] instanceof Tower.Model.Cursor
+      assert.isTrue C.metadata().scopes['all'].isCursor, "scope instanceof Tower.Model.Cursor"
 
     test '"all"', ->
       C.scope 'all'
 
       assert.deepEqual C.metadata().scopeNames, ['all']
-      assert.ok C.metadata().scopes['all'] instanceof Tower.Model.Cursor
+      assert.isTrue C.metadata().scopes['all'].isCursor, "scope instanceof Tower.Model.Cursor"
 
     test '"highlyRated"', ->
       C.scope 'highlyRated'
 
       assert.deepEqual _.keys(C.metadata().scopes), ['highlyRated']
-      assert.ok C.metadata().scopes['highlyRated'] instanceof Tower.Model.Cursor
+      assert.isTrue C.metadata().scopes['highlyRated'].isCursor, "scope instanceof Tower.Model.Cursor"
       assert.deepEqual C.metadata().scopes['highlyRated'].conditions(), {type: 'Post', rating: '>=': 8}
 
   describe 'instance', ->
     test 'default', ->
       C.scope()
 
-      assert.ok C.instance().get('all') instanceof Tower.Model.Cursor
+      assert.isTrue C.instance().get('all').isCursor, "scope instanceof Tower.Model.Cursor"
 
     test '"writtenBy(currentUser)"', ->
       C.scope 'writtenBy', -> App.Post.where(userId: @getPath('currentUser.id'))

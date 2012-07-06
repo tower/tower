@@ -25,8 +25,14 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
       for name, relation of relations
         return relation if relation.targetType == type
 
-class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.HasMany.Cursor
+Tower.Model.Relation.HasManyThrough.CursorMixin = Ember.Mixin.create Tower.Model.Relation.HasMany.CursorMixin,
   isHasManyThrough: true
+
+  clonePrototype: ->
+    clone = @concat()
+    clone.isCursor = true
+    Tower.Model.Relation.CursorMixin.apply(clone)
+    Tower.Model.Relation.HasManyThrough.CursorMixin.apply(clone)
 
   make: (options = {}) ->
     @_super arguments...
@@ -122,5 +128,14 @@ class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.Ha
     @owner.get(@relation.through).insert data, (error, throughRecords) =>
       throughRecords = throughRecords[0] unless returnArray
       callback.call @, error, throughRecords if callback
+
+class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.Cursor
+  @make: ->
+    array = []
+    array.isCursor = true
+    Tower.Model.Relation.CursorMixin.apply(array)
+    Tower.Model.Relation.HasManyThrough.CursorMixin.apply(array)
+
+  @include Tower.Model.Relation.HasManyThrough.CursorMixin
 
 module.exports = Tower.Model.Relation.HasManyThrough

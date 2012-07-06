@@ -12,7 +12,7 @@ class App.CursorTest extends Tower.Model
 
 describe 'Tower.Model.Cursor', ->
   beforeEach ->
-    cursor = Tower.Model.Cursor.create()
+    cursor = Tower.Model.Cursor.make()
     cursor.make()
     
   afterEach ->
@@ -99,7 +99,6 @@ describe 'Tower.Model.Cursor', ->
   describe '#paginate', ->
     test 'page', ->
       cursor.page(20)
-      
       assert.deepEqual cursor.conditions(), {}
       assert.deepEqual cursor.get('offset'), 380
       

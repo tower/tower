@@ -14,7 +14,7 @@ describe 'Tower.Net.Connection', ->
 
   test 'scopes', ->
     scope = connection.getPath('postsController.all')
-    assert.ok scope instanceof Tower.Model.Cursor
+    assert.isTrue scope.isCursor, 'scope instanceof Tower.Model.Cursor'
   
   test 'notify -> matchAgainstCursors', (done) ->
     # spyon connection.created

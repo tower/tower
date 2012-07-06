@@ -1,6 +1,6 @@
 # @mixin
-Tower.Model.Cursor.Serialization =
-  defaultLimit: 20
+Tower.Model.Cursor.Serialization = Ember.Mixin.create
+  isCursor: true
 
   make: (options = {}) ->
     _.extend @, options
@@ -78,19 +78,32 @@ Tower.Model.Cursor.Serialization =
   #
   # @return [Tower.Model.Criteria]
   clone: (cloneContent = true) ->
-    clone = @constructor.create()
-    if cloneContent
-      content = Ember.get(@, 'content') || Ember.A([])
-      clone.setProperties(content: content) if content
+    if Ember.EXTEND_PROTOTYPES
+      clone = @concat()#Tower.Model.CursorMixin.apply(@concat())
+      clone.isCursor = true
+    else
+      clone = @constructor.create()
+      if cloneContent
+        content = Ember.get(@, 'content') || Ember.A([])
+        clone.setProperties(content: content) if content
+
     clone.make(model: @model, instantiate: @instantiate)
     clone.merge(@)
     clone
 
   load: (records) ->
-    Ember.set(@, 'content', records)
+    if Ember.EXTEND_PROTOTYPES
+      @clear()
+      @addObjects(records)
+    else
+     Ember.set(@, 'content', records)
 
   reset: ->
-    Ember.set(@, 'content', [])
+    if Ember.EXTEND_PROTOTYPES
+      @clear()
+      @
+    else
+      Ember.set(@, 'content', [])
 
   # Merge this cursor with another cursor.
   #
@@ -111,7 +124,7 @@ Tower.Model.Cursor.Serialization =
     @_near      = cursor._near
     @
 
-  toJSON: ->
+  toParams: ->
     data          = {}
     
     sort          = @get('order')
@@ -146,11 +159,11 @@ Tower.Model.Cursor.Serialization =
   # @return [Object]
   conditions: ->
     result = {}
-    args = _.args(arguments, 1)
 
     for conditions in @_where
       _.deepMergeWithArrays(result, conditions)
 
+    # @todo refactor
     if @ids && @ids.length
       delete result.id
       if @ids.length == 1
@@ -159,10 +172,6 @@ Tower.Model.Cursor.Serialization =
         @returnArray = true
 
       ids = @ids
-      # tmp
-
-      if @store.constructor.className() == 'Memory'
-        ids = _.map ids, (id) -> id.toString()
       result.id = $in: ids
 
     result

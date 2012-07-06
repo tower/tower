@@ -3,7 +3,7 @@ criteria  = null
 user      = null
 
 describeWith = (store) ->
-  describe "Tower.Model.Scope (Tower.Store.#{store.name})", ->
+  describe "Tower.Model.Scope (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
       async.series [
         (callback) => store.clean(callback)
@@ -73,19 +73,19 @@ describeWith = (store) ->
       test '.insert', (done) ->
         cursor = App.User.insert firstName: "Baldwin", likes: 10, (error, user) =>
           process.nextTick =>
-            assert.isTrue cursor instanceof Tower.Model.Cursor, 'cursor instanceof Tower.Model.Cursor'
+            assert.isTrue cursor.isCursor, 'cursor instanceof Tower.Model.Cursor'
             done()
       
       test '.update', (done) ->
         cursor = App.User.update firstName: "Baldwin", (error, user) =>
           process.nextTick =>
-            assert.isTrue cursor instanceof Tower.Model.Cursor, 'cursor instanceof Tower.Model.Cursor'
+            assert.isTrue cursor.isCursor, 'cursor instanceof Tower.Model.Cursor'
             done()
       
       test '.destroy', (done) ->
         cursor = App.User.destroy (error, user) =>
           process.nextTick =>
-            assert.isTrue cursor instanceof Tower.Model.Cursor, 'cursor instanceof Tower.Model.Cursor'
+            assert.isTrue cursor.isCursor, 'cursor instanceof Tower.Model.Cursor'
             done()
           
     describe 'global callback', ->

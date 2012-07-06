@@ -7,11 +7,14 @@ class Tower.Model.Relation.HasMany extends Tower.Model.Relation
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 
-class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
+Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
   isHasMany: true
 
-  init: ->
-    @_super arguments...
+  clonePrototype: ->
+    clone = @concat()
+    clone.isCursor = true
+    Tower.Model.Relation.CursorMixin.apply(clone)
+    Tower.Model.Relation.HasMany.CursorMixin.apply(clone)
 
   # @todo
   has: (object) ->
@@ -47,6 +50,8 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
 
     @validate (error) =>
       @findReferenced(callback)
+
+    @
 
   count: (callback) ->
     @validate (error) =>
@@ -246,5 +251,14 @@ class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
   _idCacheRecords: (records) ->
     rootRelation = @owner.relation(@relation.name)
     rootRelation.cursor.records = rootRelation.cursor.records.concat _.castArray(records)
+
+class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
+  @make: ->
+    array = []
+    array.isCursor = true
+    Tower.Model.Relation.CursorMixin.apply(array)
+    Tower.Model.Relation.HasMany.CursorMixin.apply(array)
+
+  @include Tower.Model.Relation.HasMany.CursorMixin
 
 module.exports = Tower.Model.Relation.HasMany

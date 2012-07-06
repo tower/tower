@@ -86,7 +86,7 @@ Tower.Model.Cursor.Finders =
     @find(callback)
 
   _hasContent: (callback) ->
-    records = Ember.get(@, 'content')
+    records = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
     if records && records.length
       callback.call(@, null, records) if callback
       true
@@ -115,7 +115,6 @@ Tower.Model.Cursor.Finders =
             records = @export(records) if !error && records.length
 
         @clear() if Tower.isClient
-
         # need to do something like this...
         if _.isArray(records)
 
@@ -126,7 +125,7 @@ Tower.Model.Cursor.Finders =
             hasLastPage:      !!records.length
             currentPage:      records.length
 
-          @addObjects(records) if Tower.isClient
+          @addObjects(records)# if Tower.isClient
 
         callback.call(@, error, records) if callback
         records
@@ -219,5 +218,7 @@ for phase in ['Before', 'After']
     do (phase, action) =>
       Tower.Model.Cursor.Finders["_run#{phase}#{action}CallbacksOnStore"] = (done, records) ->
         @store["run#{phase}#{action}"](@, done, records)
+
+Tower.Model.Cursor.Finders = Ember.Mixin.create(Tower.Model.Cursor.Finders)
 
 module.exports = Tower.Model.Cursor.Finders

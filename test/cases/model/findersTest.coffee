@@ -396,6 +396,17 @@ describeWith = (store) ->
           assert.equal posts[0].get('title').length, 6
           done()
 
+      if store.className() == 'Memory'
+        test 'returns array/cursor', ->
+          posts = App.Post.all()#page(2).asc('title').all()
+          assert.equal posts.length, 18
+          assert.isTrue posts.isCursor, 'posts.isCursor'
+          # assert iterate
+          for post, index in posts
+            assert.ok post instanceof Tower.Model
+
+          assert.equal index, 18
+
 describeWith(Tower.Store.Memory)
 
 unless Tower.client

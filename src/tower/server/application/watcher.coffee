@@ -73,7 +73,7 @@ Tower.Application.Watcher =
 
       @reloadPath path, =>
         @reloadPaths subclasses
-    else if path.match(/|config\/routes\.(?:coffee|js|iced)/)
+    else if path.match(/config\/routes\.(?:coffee|js|iced)/)
       @reloadPath(path)
     else if path.match(/config\/locales\/(\w+)\.(?:coffee|js|iced)/)
       language = RegExp.$1

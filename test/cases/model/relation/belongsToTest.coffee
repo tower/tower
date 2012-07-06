@@ -52,7 +52,7 @@ describeWith = (store) ->
                 assert.deepEqual foundUser.get('id').toString(), user.get('id').toString()
                 assert.deepEqual foundPost.get('user').get('id').toString(), user.get('id').toString()
                 done()
-
+    
     # user.getAssociation('address').create
     # user.get('address')
     # user.createAssociation('address')
@@ -60,6 +60,7 @@ describeWith = (store) ->
     test 'create from hasOne', (done) ->
       App.User.create firstName: 'Lance', (error, user) ->
         user.createAssocation 'address', city: 'San Francisco', (error, createdAddress) =>
+
           App.Address.first (error, foundAddress) =>
             assert.deepEqual createdAddress.get('id').toString(), foundAddress.get('id').toString()
 
@@ -79,7 +80,7 @@ describeWith = (store) ->
                   # and id portion:
                   # foundAddress.get('userId')
                   done()
-
+    
     test 'belongsTo accepts model, not just modelId', (done) ->
       App.User.create firstName: 'Lance', (error, user) =>
         App.Group.create title: 'A Group', (error, group) =>
@@ -91,9 +92,9 @@ describeWith = (store) ->
             assert.equal membership.get('group').get('id').toString(), group.get('id').toString()
             done()
 
-
+    
     test 'belongsTo with eager loading', (done) ->
-      assert.deepEqual App.Membership.includes('user', 'group').compile().toJSON().includes, ['user', 'group']
+      assert.deepEqual App.Membership.includes('user', 'group').compile().toParams().includes, ['user', 'group']
 
       App.User.create firstName: 'Lance', (error, user) =>
         App.Group.create title: 'A Group', (error, group) =>
@@ -106,12 +107,11 @@ describeWith = (store) ->
               done()
 
     test 'hasMany with eager loading', (done) ->
-      assert.deepEqual App.User.includes('memberships').compile().toJSON().includes, ['memberships']
+      assert.deepEqual App.User.includes('memberships').compile().toParams().includes, ['memberships']
     
       App.User.create firstName: 'Lance', (error, user) =>
         App.Group.create title: 'A Group', (error, group) =>
           App.Membership.create user: user, group: group, (error, membership) =>
-    
             # model.reload isn't setup yet.
             App.User.includes('memberships').find user.get('id'), (error, user) =>
               assert.ok user.get('memberships').all()._hasContent()
@@ -119,8 +119,6 @@ describeWith = (store) ->
               assert.deepEqual user.get('memberships').all().toArray().getEach('id'), [membership.get('id')]
 
               user.get('memberships').reset()
-
-              assert.ok !user.get('memberships').all()._hasContent()
 
               user.get('memberships').all =>
                 assert.ok user.get('memberships').all()._hasContent()
@@ -167,6 +165,7 @@ describeWith = (store) ->
 
               done()
 
+
     # You can't do this easily with MongoDB:
     # "find all memberships where user firstName equals 'Lance'",
     # because it requires joining two collections. Either use embedded docs,
@@ -178,7 +177,7 @@ describeWith = (store) ->
     #    App.Group.create title: 'A Group', (error, group) =>
     #      App.Membership.create user: user, group: group, (error, membership) =>
     #
-    #        console.log App.Membership.where('user.firstName': 'Lance').toJSON()
+    #        console.log App.Membership.where('user.firstName': 'Lance').toParams()
     #        App.Membership.where('user.firstName': 'Lance').all (error, memberships) =>
     #          console.log memberships
     #          done()
@@ -199,5 +198,5 @@ describeWith = (store) ->
         done()
     ###
    
-#describeWith(Tower.Store.Memory)
+describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.Mongodb) unless Tower.isClient
