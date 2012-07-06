@@ -104,6 +104,9 @@ Tower.Model.Cursor.Finders =
         @_runAfterFindCallbacksOnStore done, _.castArray(records)
 
   _find: (callback) ->
+    returnArray = @returnArray
+    result = undefined
+
     if @one
       @store.findOne(@, callback)
     else
@@ -113,6 +116,8 @@ Tower.Model.Cursor.Finders =
             records = null
           else
             records = @export(records) if !error && records.length
+
+        result = records
 
         @clear() if Tower.isClient
         # need to do something like this...
@@ -129,7 +134,8 @@ Tower.Model.Cursor.Finders =
 
         callback.call(@, error, records) if callback
         records
-    @
+    
+    if returnArray then @ else result
 
   # hack
   findOne: (callback) ->

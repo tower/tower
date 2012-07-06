@@ -8,6 +8,8 @@ Tower.Store.Transport.Ajax =
     contentType: 'application/json'
     dataType:    'json'
     processData: false
+    # This makes it so you can do async data fetching without callbacks!
+    async:       Tower.env == 'production'
     headers:     {'X-Requested-With': 'XMLHttpRequest'}
 
   ajax: (params, defaults) ->
@@ -164,20 +166,20 @@ Tower.Store.Transport.Ajax =
   destroyFailure: (record, callback) ->
     @failure(record, callback)
 
-  findSuccess: (criteria, callback) ->
+  findSuccess: (cursor, callback) ->
     # `data` will look like this:
     # {users: [user1, user1...], conditions: {}, page: 2, limit: 20, sort: []}
-    # and all we need to do is load it back into the criteria
+    # and all we need to do is load it back into the cursor
     (data, status, xhr) =>
       try
-        #callback(null, criteria.build(data))
-        data = criteria.model.load(data)
+        #callback(null, cursor.build(data))
+        data = cursor.model.load(data)
         callback(null, data) if callback
       catch error
         callback(error) if callback
 
-  findFailure: (criteria, callback) ->
-    @failure(criteria, callback)
+  findFailure: (cursor, callback) ->
+    @failure(cursor, callback)
 
   # Makes a request with JSON like this:
   #     {
@@ -210,7 +212,7 @@ Tower.Store.Transport.Ajax =
   # Then when you do the next search, what should happen?  It's not smart enough
   # to know it's already fetched those records, so it will return them again.
   # There is the possibility that we test all the records currently on the client against the
-  # fetching criteria, and append the ids of the matching records to the `conditions` field.
+  # fetching cursor, and append the ids of the matching records to the `conditions` field.
   # This way that "a" or "b" request might look like this:
   #     {
   #       "page": 1,
@@ -226,19 +228,20 @@ Tower.Store.Transport.Ajax =
   # 
   # Ooh, this just made me think.  One way to be able to do real-time pub/sub from client to server
   # is to have the server TCP request a list of ids or `updatedAt` values from the client to do the diff...
-  find: (criteria, callback) ->
-    params = @serializeParamsForFind(criteria)
+  find: (cursor, callback) ->
+    params  = @serializeParamsForFind(cursor)
+    records = undefined
     
     @queue =>
       @ajax(params)
-        .success(@findSuccess(criteria, callback))
-        .error(@findFailure(criteria, callback))
+        .success(@findSuccess(cursor, (error, data) => records = data))
+        .error(@findFailure(cursor, callback))
 
-    undefined
+    records
 
-  serializeParamsForFind: (criteria) ->
-    url     = Tower.urlFor(criteria.model)
-    data    = criteria.toJSON()
+  serializeParamsForFind: (cursor) ->
+    url     = Tower.urlFor(cursor.model)
+    data    = cursor.toParams()
     # tmp until we figure out a better way
     #data.conditions = JSON.stringify(data.conditions) if data.conditions
     data.format = 'json'

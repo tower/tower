@@ -50,7 +50,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     else if arguments.length == 2
       object = {}
       object[arguments[0]] = arguments[1]
-      @_where.push(conditions)
+      @_where.push(object)
     else
       @_where.push(conditions)
 
