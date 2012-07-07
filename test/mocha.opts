@@ -1,4 +1,4 @@
---require coffee-script ./test/server
+--require coffee-script ./test/server.coffee
 --reporter dot
 --ui bdd
 --timeout 2000

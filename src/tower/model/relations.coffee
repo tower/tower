@@ -147,4 +147,15 @@ Tower.Model.Relations =
 
       Tower.async dependents, iterator, callback
 
+    # @todo Find all the models/records that have an association pointing to this record.
+    # For models with hasMany of this record, remove it from the array.
+    # For models with hasOne of this record, clear the cache
+    # For models with belongsTo pointing to this record, remove the id.
+    notifyRelations: ->
+      relations   = @constructor.relations()
+
+      for name, relation of relations
+        relation.inverse()
+
+
 module.exports = Tower.Model.Relations

@@ -44,6 +44,42 @@ Tower.Store.Memory.Persistence =
 
     record
 
+  # This should basically be a soft delete, not touching the server 
+  # but acting like it's been deleted on the client.
+  # @todo need to refactor and think about some more.
+  unload: (records) ->
+    records = @_unload(data)
+    Tower.notifyConnections('unload', records)
+    records
+
+  _unload: (data) ->
+    records = _.castArray(data)
+
+    Ember.beginPropertyChanges()
+    
+    for record, i in records
+      records[i] = @unloadOne(@serializeModel(record))
+
+    Ember.endPropertyChanges()
+
+    records
+
+  # A lot of this code is the same as {Tower.Model#destroy}, refactoring time later :)
+  # The key thing is `record.notifyRelations`, which will update views which is important.
+  unloadOne: (record) ->
+    records         = @records
+    records.remove(record.get('id'))
+    record.set('isNew', false)
+    record.set('isDeleted', true)
+    # the method below was originally copied from record.destroyRelations.
+    # maybe Ember bindings can be used here to automatically set `authorId` or whatever to null
+    # because it's bound to `author.get('id')`?
+    # That might have performance issues, so going to do a hack for now.
+    record.notifyRelations()
+    # record.set('_cid', undefined)
+
+    record
+
   insert: (cursor, callback) ->
     result    = []
 

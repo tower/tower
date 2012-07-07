@@ -52,6 +52,11 @@ Tower.Model.Persistence =
       # Tower.Model.Cursor.pushMatching @store().load(records)
       @store().load(records)
 
+    # For memory store, if records were deleted on the server 
+    # and need to be removed on the connected clients.
+    unload: (records) ->
+      @store().unload(records)
+
     # Only use on memory store for now
     empty: ->
       @store().clean()

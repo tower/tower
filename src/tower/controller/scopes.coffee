@@ -68,7 +68,7 @@ Tower.Controller.Scopes =
       cursorMethod  = switch action
         when 'create', 'load' then 'mergeCreatedRecords'
         when 'update' then 'mergeUpdatedRecords'
-        when 'destroy' then 'mergeDeletedRecords'
+        when 'destroy', 'unload' then 'mergeDeletedRecords'
 
     # still doesn't quite handle async in the controller
     iterator  = (name, next) =>      
