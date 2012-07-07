@@ -25,9 +25,6 @@ Tower.Net.Connection.Socketio =
       handler.call(@, data, @)
 
   emit: (socket, data, key = 'sync') ->
-    console.log('emitting')
-    console.log(key)
-    console.log(data)
     socket.emit(key, data)
 
   broadcast: (socket, data) ->

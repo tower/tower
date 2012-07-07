@@ -1,10 +1,10 @@
 # @module
 Tower.Store.Mongodb.Persistence =
   # @see Tower.Store#insert
-  insert: (criteria, callback) ->
-    record      = @serializeModel(criteria.data[0], false)
+  insert: (cursor, callback) ->
+    record      = @serializeModel(cursor.data[0], false)
     attributes  = @serializeAttributesForInsert(record)
-    options     = @serializeOptions(criteria)
+    options     = @serializeOptions(cursor)
 
     @collection().insert attributes, options, (error, docs) =>
       doc       = docs[0]
@@ -17,11 +17,11 @@ Tower.Store.Mongodb.Persistence =
     undefined
 
   # @see Tower.Store#update
-  update: (updates, criteria, callback) ->
+  update: (updates, cursor, callback) ->
     updates         = @serializeAttributesForUpdate(updates.get('changes'))
 #    console.log updates
-    conditions      = @serializeConditions(criteria)
-    options         = @serializeOptions(criteria)
+    conditions      = @serializeConditions(cursor)
+    options         = @serializeOptions(cursor)
 
     options.safe    = true unless options.hasOwnProperty('safe')
     options.upsert  = false unless options.hasOwnProperty('upsert')
@@ -34,9 +34,9 @@ Tower.Store.Mongodb.Persistence =
     undefined
 
   # @see Tower.Store#destroy
-  destroy: (criteria, callback) ->
-    conditions      = @serializeConditions(criteria)
-    options         = @serializeOptions(criteria)
+  destroy: (cursor, callback) ->
+    conditions      = @serializeConditions(cursor)
+    options         = @serializeOptions(cursor)
 
     @collection().remove conditions, options, (error) =>
       callback.call(@, error) if callback

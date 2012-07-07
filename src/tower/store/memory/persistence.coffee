@@ -32,7 +32,8 @@ Tower.Store.Memory.Persistence =
       originalRecord.set('data', record.get('data'))
       # also need to handle updating the cursors.
       records.replaceKey(cid, record.get('id'))
-      originalRecord.propertyDidChange('data')
+      # don't want to do this b/c we just set it above... leaving for now just for notes
+      # originalRecord.propertyDidChange('data')
       record = originalRecord
     else
       # @todo now that this is an Ember.Map we don't have to make it a string

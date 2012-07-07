@@ -80,11 +80,11 @@ Tower.Store.Mongodb.Serialization =
 
   # title: 'santa'
   # createdAt: '<': new Date()
-  serializeConditions: (criteria) ->
+  serializeConditions: (cursor) ->
     schema  = @schema()
     result  = {}
 
-    query   = @deserializeModel(criteria.conditions())
+    query   = @deserializeModel(cursor.conditions())
 
     for key, value of query
       field = schema[key]
@@ -111,10 +111,10 @@ Tower.Store.Mongodb.Serialization =
   # batchSize
   # hint
   # explain
-  serializeOptions: (criteria) ->
-    limit         = criteria.get('limit')
-    sort          = criteria.get('order')
-    offset        = criteria.get('offset')
+  serializeOptions: (cursor) ->
+    limit         = cursor.get('limit')
+    sort          = cursor.get('order')
+    offset        = cursor.get('offset')
     options       = {}
     options.limit = limit if limit
     if sort.length

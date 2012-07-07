@@ -2,16 +2,16 @@
 Tower.Store.Mongodb.Finders =
   # Find and return an array of documents.
   #
-  # @param [Tower.Model.Scope] criteria A criteria object with all of the query information.
+  # @param [Tower.Model.Scope] cursor A cursor object with all of the query information.
   #
   # @return undefined Requires a callback to get the value.
-  find: (criteria, callback) ->
-    conditions  = @serializeConditions(criteria)
-    options     = @serializeOptions(criteria)
+  find: (cursor, callback) ->
+    conditions  = @serializeConditions(cursor)
+    options     = @serializeOptions(cursor)
 
     @collection().find(conditions, options).toArray (error, docs) =>
       unless error
-        unless criteria.raw
+        unless cursor.raw
           for doc in docs
             doc.id = doc['_id']
             delete doc['_id']
@@ -26,12 +26,12 @@ Tower.Store.Mongodb.Finders =
     undefined
 
   # @return undefined Requires a callback to get the value.
-  findOne: (criteria, callback) ->
-    criteria.limit(1)
-    conditions = @serializeConditions(criteria)
+  findOne: (cursor, callback) ->
+    cursor.limit(1)
+    conditions = @serializeConditions(cursor)
 
     @collection().findOne conditions, (error, doc) =>
-      unless criteria.raw || error || !doc
+      unless cursor.raw || error || !doc
         doc = @serializeModel(doc)
         doc.persistent = true
 
@@ -40,8 +40,8 @@ Tower.Store.Mongodb.Finders =
     undefined
 
   # @return undefined Requires a callback to get the value.
-  count: (criteria, callback) ->
-    conditions = @serializeConditions(criteria)
+  count: (cursor, callback) ->
+    conditions = @serializeConditions(cursor)
 
     @collection().count conditions, (error, count) =>
       callback.call @, error, count || 0 if callback
@@ -49,8 +49,8 @@ Tower.Store.Mongodb.Finders =
     undefined
 
   # @return undefined Requires a callback to get the value.
-  exists: (criteria, callback) ->
-    conditions = @serializeConditions(criteria)
+  exists: (cursor, callback) ->
+    conditions = @serializeConditions(cursor)
 
     @collection().count conditions, (error, count) =>
       callback.call(@, error, count > 0) if callback
