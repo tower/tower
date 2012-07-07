@@ -17,7 +17,10 @@ Tower.Store.Transport.Ajax =
 
   toJSON: (record, method, format) ->
     data          = {}
-    data[record.constructor.toKey()] = record
+    # need to think about this more
+    # data[record.constructor.toKey()] = record
+    # "blog-post" vs "blogPost"
+    data[_.camelize(record.constructor.toKey(), true)] = record
     data._method  = method
     # need to some how keep track of session so you don't send the model back to the current client.
     # this might be pretty complicated because everything on the server must be in the context of the saved record

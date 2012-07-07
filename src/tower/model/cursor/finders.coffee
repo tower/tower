@@ -120,15 +120,15 @@ Tower.Model.Cursor.Finders =
         result = records
 
         @clear() if Tower.isClient
-        # need to do something like this...
-        if _.isArray(records)
 
+        if _.isArray(records)
+          # need to do something like this...
           Ember.setProperties @,
             hasFirstPage:     !!records.length
             hasPreviousPage:  !!records.length
             hasNextPage:      !!records.length
             hasLastPage:      !!records.length
-            currentPage:      records.length
+            # currentPage:      records.length
 
           @addObjects(records)# if Tower.isClient
 

@@ -68,9 +68,11 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
 
   # Reverses the query so it can find the last one.
   reverseSort: ->
+    # need to work on this one.
     order = @get('order')
-    for set, i in order
-      set[1] = if set[1] == 'asc' then 'desc' else 'asc'
+    order = @_order = [['createdAt', 'asc']] unless order.length
+    for orderItem, i in order
+      orderItem[1] = if orderItem[1] == 'asc' then 'desc' else 'asc'
     order
 
   # Set of attributes to sort by, ascending.

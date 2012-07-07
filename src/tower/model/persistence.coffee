@@ -210,7 +210,8 @@ Tower.Model.Persistence =
             @destroyRelations (error) =>
               @set('isNew', false)
               @set('isDeleted', true)
-              @set('id', undefined)
+              # want to remove this after everyone's been notified.
+              # @set('id', undefined)
               complete.call(@, error)
           else
             complete.call(@, error)

@@ -258,6 +258,10 @@ class Tower.Model.Scope
   reset: ->
     @cursor.reset()
 
+  # @todo Should probably do some more delegating to the cursor, but don't want to hardcode too many methods.
+  getEach: ->
+    @cursor.getEach(arguments...)
+
   # Updates one or many records based on the scope's cursor.
   #
   # @example Find single record

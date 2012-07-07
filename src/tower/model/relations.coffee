@@ -118,7 +118,7 @@ Tower.Model.Relations =
       @getAssociation(key).first (error, result) =>
         record = result
         @set(key, record) if record && !error
-        callback.call(@, error, record)
+        callback.call(@, error, record) if callback
         record
       
       record

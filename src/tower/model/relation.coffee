@@ -118,8 +118,22 @@ class Tower.Model.Relation extends Tower.Class
               data.set(key, value)
             value
           else
-            data = Ember.get(@, 'data')
+            data  = Ember.get(@, 'data')
             value = data.get(key)
+            value = @fetch(key) unless value?
+            value
+        ).property('data').cacheable()
+      else # HasOne
+        object[name] = Ember.computed((key, value) ->
+          if arguments.length is 2
+            data = Ember.get(@, 'data')
+            data.set(key, value)
+            value
+          else
+            data  = Ember.get(@, 'data')
+            value = data.get(key)
+            value = @fetch(key) unless value?
+            value
         ).property('data').cacheable()
 
     @owner.reopen(object)

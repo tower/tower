@@ -27,7 +27,7 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
     if @owner.get('isNew')
       throw new Error('You cannot call insert unless the parent is saved')
 
-    callback.call @
+    callback.call(@)
 
   build: (callback) ->
     @compileForInsert()
@@ -46,12 +46,15 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
       @destroyReferenced(callback)
 
   find: (callback) ->
-    return @ if @_hasContent(callback)
+    # when you create a record you want to invalidate this.
+    # on the client you don't want to remove the items from the array so the
+    # next `all` queries the memory store to find them.
+    # on the server you don't want to store the created ones in memory,
+    # need to think of an api for server side so we don't end up creating a memory leak.
+    return @ if Tower.isServer && @_hasContent(callback)
 
     @validate (error) =>
       @findReferenced(callback)
-
-    @
 
   count: (callback) ->
     @validate (error) =>
@@ -127,16 +130,21 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
 
   findReferenced: (callback) ->
     @compileForFind()
+    returnArray = @returnArray
+    result = undefined
 
     @_runBeforeFindCallbacksOnStore =>
       @_find (error, records) =>
-        unless error
+        result = records
+        if !error && records
           done = =>
             @owner.get(@relation.name).load(_.castArray(records))
             callback.call(@, error, records) if callback
           @_runAfterFindCallbacksOnStore done, records
         else
           callback.call(@, error, records) if callback
+
+    if returnArray == false then result else @
 
   # add to set
   add: (callback) ->

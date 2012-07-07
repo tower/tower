@@ -95,7 +95,8 @@ describeWith = (store) ->
           _.destroy "/custom/#{user.get('id')}", format: "json", (response) ->
             resource = response.body
             assert.equal resource.firstName, "Lance"
-            assert.equal resource.id, undefined
+            # still thinking about this one, but pretty sure it shouldn't be null yet.
+            assert.notEqual resource.id, undefined
             assert.equal @headers["Content-Type"], "application/json"
             
             App.User.count (error, count) =>

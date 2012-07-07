@@ -1,6 +1,7 @@
 class Tower.Model.Relation.HasOne extends Tower.Model.Relation
   isHasOne: true
 
+# @todo deal with only allowing one record per association (either error or override).
 Tower.Model.Relation.HasOne.CursorMixin = Ember.Mixin.create
   isHasOne: true
 
@@ -12,7 +13,24 @@ Tower.Model.Relation.HasOne.CursorMixin = Ember.Mixin.create
 
   insert: (callback) ->
     @compile()
-    @_insert(callback)
+    result = undefined
+    
+    @_insert (error, record) =>
+      result = record
+      @owner.set(@relation.name, record) if !error && record
+      callback.call(@, error, record) if callback
+
+    result
+
+  find: (callback) ->
+    result = undefined
+
+    @_find (error, record) =>
+      result = record
+      @owner.set(@relation.name, record) if !error && record
+      callback.call(@, error, record) if callback
+
+    result
 
   # same as hasMany
   compile: ->
