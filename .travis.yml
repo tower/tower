@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - 0.8
+  - 0.6
 install: npm install ; npm install mongodb
 #before_script:
 #  - "export DISPLAY=:99.0"
