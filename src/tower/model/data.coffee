@@ -136,6 +136,9 @@ class Tower.Model.Data
     # _.extend(@savedData, @unsavedData)
     _.deepMerge(@savedData, @unsavedData)
 
+  copyAttributes: ->
+    _.deepMerge({}, @savedData, @unsavedData)
+
   unsavedRelations: ->
     relations = @record.constructor.relations()
     result    = {}

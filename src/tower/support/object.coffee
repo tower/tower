@@ -41,7 +41,7 @@ Tower.Support.Object =
         if object[key] && _.isHash(value)# && typeof value == 'object'
           object[key] = Tower.Support.Object.deepMerge(object[key], value)
         else
-          object[key] = value
+          object[key] = value # don't think this is actually cloning...
     object
 
   deepMergeWithArrays: (object) ->
@@ -105,7 +105,7 @@ Tower.Support.Object =
   # @return [String]
   kind: (object) ->
     _ = Tower.modules._
-    
+
     type = typeof(object)
     switch type
       when "object"
