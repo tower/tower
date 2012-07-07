@@ -72,7 +72,6 @@ class Tower.Model.Attribute
         value = data.get(key)
         value = field.defaultValue(@) if value == undefined
         field.decode(value, @)
-
     ).property('data').cacheable()
 
     #@owner.prototype[name] = attribute[name]

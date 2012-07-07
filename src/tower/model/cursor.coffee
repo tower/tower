@@ -89,12 +89,13 @@
 # 
 # I want this to be an array now, no longer a cursor.
 class Tower.Model.Cursor extends Tower.Collection
+  isCursor: true
+
   @make: ->
     if Ember.EXTEND_PROTOTYPES
       array = []
       array.isCursor = true
       array
-      #Tower.Model.CursorMixin.apply([])
     else
       @create()
 

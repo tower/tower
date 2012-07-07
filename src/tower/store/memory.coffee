@@ -24,7 +24,6 @@ class Tower.Store.Memory extends Tower.Store
 
   clean: ->
     @records  = Ember.Map.create()
-    @lastId   = 1
 
   commit: ->
     Ember.get(@, 'batch').commit()

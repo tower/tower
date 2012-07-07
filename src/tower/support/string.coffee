@@ -69,4 +69,14 @@ Tower.Support.String =
   toStateName: (string) ->
     "is#{_.camelize(string)}Active"
 
+  # rfc4122 version 4 compliant guid
+  # http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript#answer-2117523
+  # This is used primarily for generating temporari client ids, which
+  # will be replaced within a few milliseconds with a server id once saved.
+  uuid: ->
+    'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
+      r = Math.random()*16|0
+      v = if c == 'x' then r else (r&0x3|0x8)
+      v.toString(16)
+
 module.exports = Tower.Support.String

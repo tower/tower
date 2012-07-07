@@ -56,8 +56,9 @@ Tower.Model.Attributes =
   InstanceMethods:
     dynamicFields: true
 
-    data: Ember.computed(->
-      new Tower.Model.Data(@)
+    data: Ember.computed((key, value) ->
+      # sets the value or uses defaults
+      value || new Tower.Model.Data(@)
     ).cacheable()
 
     changes: Ember.computed(->

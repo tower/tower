@@ -4,9 +4,10 @@ Serializer  = Tower.Store.Serializer
 describeWith = (store) ->
   describe "Tower.Model.Fields (Tower.Store.#{store.className()})", ->
     beforeEach (done) ->
-      App.BaseModel.store(store)
-      App.User.store(store)
-      done()
+      store.clean =>
+        App.BaseModel.store(store)
+        App.User.store(store)
+        done()
       
     describe 'class', ->
       test 'type: "Id"', ->
@@ -252,6 +253,11 @@ describeWith = (store) ->
       assert.equal user.firstName, 'Lance'
 
   describe 'other', ->
+    beforeEach (done) ->
+      store.clean =>
+        App.User.store(store)
+        done()
+
     user = null
     beforeEach ->
       user = App.User.build(firstName: 'Lance')
@@ -315,6 +321,51 @@ describeWith = (store) ->
               assert.deepEqual user.get('data').savedData.meta, {a: 'b', nesting: {one: 'ten'}}
               done()
       
-describeWith(Tower.Store.Memory)
+    test 'cliend id', (done) ->
+      id = 'a client id'
+      user.set('_cid', id)
+      assert.equal user.get('_cid'), id
+      assert.equal user.get('id'), id
 
+      user.save =>
+        # should still have client id, but now a new server id
+        assert.equal user.get('_cid').toString(), id.toString()
+        assert.notEqual user.get('id').toString(), id
+
+        assert.equal user.toJSON()._cid, id
+        assert.equal user.toJSON().id.toString(), user.get('id').toString()
+
+        # need to test this out more
+        cloned = App.User.build(user.toJSON())
+        
+        assert.equal cloned.get('id').toString(), user.get('id').toString()
+        assert.equal cloned.get('_cid').toString(), user.get('_cid').toString()
+        assert.notEqual cloned.get('id').toString(), cloned.get('_cid').toString()
+
+        done()
+
+    if store.className() == 'Memory'
+      test 'that client id is replaced', (done) ->
+        id    = 'random client id'
+        user.set('_cid', id)
+        db = App.User.store()
+
+        Tower.isClient = true
+        user.save =>
+          # you should still be able to get it by client id
+          assert.ok db.records.get(id)
+          # only have one key
+          assert.equal db.records.keys.list.length, 1
+          # now pretend we've saved from server
+          newId = _.uuid()
+          user.set('id', newId)
+          App.User.load(user)
+          # now you shouldn't
+          assert.equal db.records.keys.list.length, 1
+          assert.isUndefined db.records.get(id)
+          assert.ok db.records.get(newId)
+          Tower.isClient = false
+          done()
+
+describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.Mongodb) unless Tower.isClient

@@ -84,11 +84,25 @@ class Tower.Model.Data
   #
   # @return [Object]
   get: (key) ->
-    result = Ember.get(@unsavedData, key)
+    passedKey = key
+    # @todo cleanup/optimize
+    key = if key == '_id' then 'id' else key
+    result = @_cid if key == '_cid'
+    result = Ember.get(@unsavedData, key) if result == undefined
     result = Ember.get(@savedData, key) if result == undefined
+    # in the "public api" we want there to be no distinction between cid/id, that should be managed transparently.
+    result = @_cid if passedKey == 'id' && result == undefined
     result
 
   set: (key, value) ->
+    if key == '_cid'
+      if value?
+        @_cid = value
+      else
+        delete @_cid
+      @record.propertyDidChange('id')
+      return value
+
     if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
       @[key.replace('$', '')](value)
     else

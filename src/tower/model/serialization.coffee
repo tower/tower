@@ -50,6 +50,9 @@ Tower.Model.Serialization =
     for name in attributeNames
       result[name] = @_readAttributeForSerialization(name)
 
+    cid = @_readAttributeForSerialization('_cid')
+    result._cid = cid if cid?
+
     if methods = options.methods
       methodNames = _.toArray(methods)
       for name in methods

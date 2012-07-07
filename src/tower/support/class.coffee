@@ -51,6 +51,17 @@ if typeof Ember != 'undefined'
   # need to put in a place where you can set this before it reaches here.
   Ember.NATIVE_EXTENSIONS = Tower.nativeExtensions
 
+  # Should see if ember already has this or add to ember core.
+  Ember.Map.prototype.replaceKey = (oldKey, newKey) ->
+    values  = @values
+    list    = @keys.list
+    guid    = Ember.guidFor(oldKey)
+    value   = values[guid] # the old record
+    delete values[guid]
+    list.replace(list.indexOf(oldKey), 1, newKey)
+    values[Ember.guidFor(newKey)] = value
+    undefined
+
   #if Tower.nativeExtensions
   #  _.extend(Function.prototype, coffeescriptMixin, towerMixin)
 else

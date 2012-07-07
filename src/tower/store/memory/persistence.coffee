@@ -10,38 +10,62 @@ Tower.Store.Memory.Persistence =
 
   _load: (data) ->
     records = _.castArray(data)
+
+    Ember.beginPropertyChanges()
     
     for record, i in records
       records[i] = @loadOne(@serializeModel(record))
 
+    Ember.endPropertyChanges()
+
     records
 
   loadOne: (record) ->
-    record.persistent = true
+    records         = @records
+    cid             = record.get('_cid')
+
+    originalRecord  = records.get(cid) if cid?
+
+    if originalRecord
+      # some how we want to make sure this doesn't override properties set between request and response (rare)
+      # maybe some versioning/timestamping in the future.
+      originalRecord.set('data', record.get('data'))
+      # also need to handle updating the cursors.
+      records.replaceKey(cid, record.get('id'))
+      originalRecord.propertyDidChange('data')
+      record = originalRecord
+    else
+      # @todo now that this is an Ember.Map we don't have to make it a string
+      records.set(record.get('id'), record)
+
     record.set('isNew', false)
-    # @todo now that this is an Ember.Map we don't have to make it a string
-    @records.set(record.get('id'), record)
+    # record.set('_cid', undefined)
+
     record
 
-  insert: (criteria, callback) ->
+  insert: (cursor, callback) ->
     result    = []
 
-    result.push(@insertOne(object)) for object in criteria.data
+    result.push(@insertOne(object)) for object in cursor.data
 
-    result    = criteria.export(result)
+    result    = cursor.export(result)
 
     callback.call(@, null, result) if callback
 
     result
 
   insertOne: (record) ->
+    unless record.get('_id')?
+      if Tower.isClient
+        record.set('_cid', @generateId()) unless record.get('_cid')?
+      else
+        record.set('id', @generateId())
+
     attributes = @deserializeModel(record)
-    attributes.id ?= @generateId()
-    #attributes.id = attributes.id#.toString()
     @loadOne(@serializeModel(record))
 
-  update: (updates, criteria, callback) ->
-    @find criteria, (error, records) =>
+  update: (updates, cursor, callback) ->
+    @find cursor, (error, records) =>
       return _.error(error, callback) if error
       # already updated by this point.
       #@updateOne(record, updates) for record in records
@@ -53,8 +77,8 @@ Tower.Store.Memory.Persistence =
       @_updateAttribute(record.attributes, key, value)
     record
 
-  destroy: (criteria, callback) ->
-    @find criteria, (error, records) ->
+  destroy: (cursor, callback) ->
+    @find cursor, (error, records) ->
       return _.error(error, callback) if error
       @destroyOne(record) for record in records
       callback.call(@, error, records) if callback

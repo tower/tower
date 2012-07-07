@@ -135,7 +135,7 @@ Tower.Model.Cursor.Finders =
         callback.call(@, error, records) if callback
         records
     
-    if returnArray then @ else result
+    if returnArray == false then result else @
 
   # hack
   findOne: (callback) ->

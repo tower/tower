@@ -123,6 +123,8 @@ Tower.Model.Persistence =
     # @todo Haven't implemented
     reload: ->
 
+    refresh: ->
+
     # Implementation of the {#save} method.
     #
     # @private
