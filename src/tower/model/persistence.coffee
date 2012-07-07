@@ -126,9 +126,21 @@ Tower.Model.Persistence =
       @
 
     # @todo Haven't implemented
-    reload: ->
+    # In the memory store there is only one instance of the record
+    # so if you change attributes it's going to be reflected in any reference
+    # unless you have somehow cloned the object.
+    # For the mongo store, it will be different though.
+    reload: (callback) ->
+      # @clearAssociationCache()
+      @constructor.find @get('id'), (error, freshRecord) =>
+        @set('data', freshRecord.get('data'))
+        callback.call(@, error) if callback
+
+      @
 
     refresh: ->
+
+    markForDestruction: ->
 
     # Implementation of the {#save} method.
     #

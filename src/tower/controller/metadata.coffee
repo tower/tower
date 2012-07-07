@@ -6,6 +6,9 @@ Tower.Controller.Metadata =
       else
         @
 
+    # How to refactor this...
+    # Maybe use class-level computed properties?
+    # It should be minimal code and high performance.
     metadata: ->
       @_metadata ||= {}
 
