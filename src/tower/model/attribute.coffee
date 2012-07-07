@@ -63,6 +63,7 @@ class Tower.Model.Attribute
     attribute = {}
     field     = @
 
+    # There needs to be a way to customize this from the outside
     attribute[name] = Ember.computed((key, value) ->
       if arguments.length is 2
         data = Ember.get(@, 'data')
@@ -75,7 +76,14 @@ class Tower.Model.Attribute
     ).property('data').cacheable()
 
     #@owner.prototype[name] = attribute[name]
-    @owner.reopen(attribute)
+    #@owner.reopen(attribute)
+    # testing out some of the depths of the ember api and some performance enhancements
+    mixins      = @owner.PrototypeMixin.mixins
+    properties  = mixins[mixins.length - 1].properties
+    if properties
+      properties[name] = attribute[name]
+    else
+      @owner.reopen(attribute)
 
   _addValidations: (options) ->
     validations           = {}

@@ -54,11 +54,12 @@ describeWith = (store) ->
         record.set('something', 'random')
         record.set('something', undefined)
         assert.deepEqual record.get('changes'), {}
-        
-      test 'setting association', ->
-        items = [new App.DataItemTest]
-        record.set('dataItemTests', items)
-        assert.deepEqual record.get('dataItemTests'), items
+      
+      # This is not actually what you want. 
+      #test 'setting association', ->
+      #  items = [new App.DataItemTest]
+      #  record.set('dataItemTests', items)
+      #  assert.deepEqual record.get('dataItemTests'), items
         
       test 'removing association', ->
         items = [new App.DataItemTest]

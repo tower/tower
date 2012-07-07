@@ -8,6 +8,11 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
 
     owner.field(@foreignKey, type: "Id")
 
+    # this is kind of a hack until it becomes clear how to accomplish in the ember api
+    mixins    = owner.PrototypeMixin.mixins
+    computed  = mixins[mixins.length - 1].properties[@foreignKey]
+    computed._dependentKeys.push(@name)
+
     if @polymorphic
       @foreignType = "#{name}Type"
       owner.field(@foreignType, type: 'String')

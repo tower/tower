@@ -8,9 +8,15 @@ class Tower.Factory
     @definitions[name] = new Tower.Factory(name, options, callback)
 
   @create: (name, options, callback) ->
+    @get(name).create(options, callback)
+
+  @build: (name, options, callback) ->
+    @get(name).build(options, callback)
+
+  @get: (name) ->
     factory = Tower.Factory.definitions[name]
     throw new Error("Factory '#{name}' doesn't exist.") unless factory
-    factory.create(options, callback)
+    factory
 
   constructor: (name, options = {}, callback) ->
     return Tower.Factory.create(name, options) unless @constructor == Tower.Factory
@@ -42,7 +48,7 @@ class Tower.Factory
 
     overrides     ||= {}
 
-    @createAttributes overrides, (error, attributes) =>
+    @buildAttributes overrides, (error, attributes) =>
       klass         = @toClass()
       result        = klass.build()
       result.setProperties(attributes)
@@ -54,12 +60,26 @@ class Tower.Factory
 
       result
 
-  createAttributes: (overrides, callback) ->
+  buildAttributes: (overrides, callback) ->
     if @callback.length
       # async
       @callback.call @, (error, attributes) =>
         callback.call @, error, _.extend(attributes, overrides)
     else
       callback.call @, null, _.extend(@callback.call(@), overrides)
+
+  build: (overrides, callback) ->
+    if typeof overrides == 'function'
+      callback      = overrides
+      overrides     = {}
+
+    overrides     ||= {}
+
+    @buildAttributes overrides, (error, attributes) =>
+      klass         = @toClass()
+      result        = klass.build()
+      result.setProperties(attributes)
+      callback.call(@, error, result) if callback
+      result
 
 module.exports = Tower.Factory
