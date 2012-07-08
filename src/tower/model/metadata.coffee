@@ -82,8 +82,9 @@ Tower.Model.Metadata =
     #
     # @return [Object]
     metadata: ->
+      @_metadata ||= {}
       className               = @className()
-      metadata                = @metadata[className]
+      metadata                = @_metadata[className]
       return metadata if metadata
       baseClassName           = @parentClass().className()
 
@@ -110,7 +111,7 @@ Tower.Model.Metadata =
       defaults                = if superMetadata.defaults then _.clone(superMetadata.defaults) else {}
       callbacks               = if superMetadata.callbacks then _.clone(superMetadata.callbacks) else {}
 
-      @metadata[className]    =
+      @_metadata[className]    =
         name:                 name
         namePlural:           namePlural
         className:            className
