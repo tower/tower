@@ -79,4 +79,10 @@ Tower.Support.String =
       v = if c == 'x' then r else (r&0x3|0x8)
       v.toString(16)
 
+  stringify: (object, pretty = true) ->
+    if pretty
+      JSON.stringify(object, null, 2)
+    else
+      JSON.stringify(object)
+
 module.exports = Tower.Support.String

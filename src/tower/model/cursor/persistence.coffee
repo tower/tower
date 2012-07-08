@@ -55,12 +55,15 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
           records = records[0] if !returnArray
           callback(error, records)
     else
-      @store.insert @, (error, __records) =>
-        records = __records
-        callback.call(@, error, __records) if callback
-        # this should go into some Ember runLoop thing
-        # it should also be moved to the store
-        Tower.notifyConnections('create', __records) unless error
+      @store.insert @, (error, result) =>
+        records = result
+        # tmp solution to get hasMany through working,
+        # since you need to wait for the first record to be created on the client via Ajax,
+        # then create the middle record.
+        # Because on client async:true in development, this works (putting notify before callback is called).
+        # It also works in test/production when async:false, b/c the ajax queue system.
+        Tower.notifyConnections('create', records) unless error
+        callback.call(@, error, records) if callback
 
     if Tower.isClient then records else @ # tmp solution
 

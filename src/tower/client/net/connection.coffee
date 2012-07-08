@@ -31,11 +31,11 @@ class Tower.Net.Connection extends Tower.Net.Connection
 
     @
 
-  notify: (action, records) ->
+  notify: (action, records, callback) ->
     # @todo
-    records = [records] unless records instanceof Array
+    records = _.castArray(records)#[records] unless records instanceof Array
 
-    @clientDidChange(action, records)
+    @clientDidChange(action, records, callback)
 
   resolve: (action, records, callback) ->
     record    = records[0]
@@ -53,9 +53,9 @@ class Tower.Net.Connection extends Tower.Net.Connection
   # This is called when a record is modified from the client
   # 
   # all records must be of the same type for now.
-  clientDidChange: (action, records) ->
+  clientDidChange: (action, records, callback) ->
     @resolve action, records, (error, matches) =>
-      @["clientDid#{_.camelize(action)}"](matches)
+      @["clientDid#{_.camelize(action)}"](matches, callback)
 
   # This is called when the server record changed
   serverDidChange: (data) ->
@@ -76,8 +76,8 @@ class Tower.Net.Connection extends Tower.Net.Connection
 
   # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
   # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
-  clientDidCreate: (records) ->
-    @notifyTransport('create', records)
+  clientDidCreate: (records, callback) ->
+    @notifyTransport('create', records, callback)
 
   clientDidUpdate: (records) ->
     @notifyTransport('update', records)

@@ -160,6 +160,9 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     @reset()
     @all(callback)
 
+  stringify: (pretty) ->
+    _.stringify(@, pretty)
+
   # Merge this cursor with another cursor.
   #
   # @param [Tower.Model.Criteria] cursor
@@ -192,7 +195,7 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     data.sort       = sort if sort && sort.length
     data.conditions = conditions if conditions
     data.page       = page if page
-    data.limit      = limit if limit
+    data.limit      = limit if limit && limit
     data.includes   = includes if includes && includes.length
 
     data

@@ -34,6 +34,9 @@ Tower.Model.Serialization =
     delete attributes.id
     @constructor.build(attributes)
 
+  stringify: (pretty) ->
+    _.stringify(@, pretty)
+
   # Implementation of the {#toJSON} method.
   #
   # @private

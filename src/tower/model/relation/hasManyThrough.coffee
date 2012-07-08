@@ -78,10 +78,8 @@ Tower.Model.Relation.HasManyThrough.CursorMixin = Ember.Mixin.create Tower.Model
 
   # remove from set
   remove: (callback) ->
-    throw new Error unless @relation.idCache
-
-    @owner.updateAttributes @ownerAttributesForDestroy(), (error) =>
-      callback.call @, error, @data if callback
+    @removeThroughRelation (error) =>
+      callback.call @, error, @ids if callback
 
   count: (callback) ->
     @_runBeforeFindCallbacksOnStore =>
@@ -111,6 +109,13 @@ Tower.Model.Relation.HasManyThrough.CursorMixin = Ember.Mixin.create Tower.Model
       @where('id': $in: ids)
 
       callback()
+
+  removeThroughRelation: (callback) ->
+    ids     = @ids
+    key     = @inverseRelation.foreignKey
+
+    @owner.get(@relation.through).anyIn(key, ids).destroy (error) =>
+      callback.call @, error if callback
 
   insertThroughRelation: (records, callback) ->
     #record = @owner.relation(@relation.name).cursor.records

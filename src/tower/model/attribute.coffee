@@ -68,6 +68,19 @@ class Tower.Model.Attribute
       if arguments.length is 2
         data  = Ember.get(@, 'data')
         value = data.set(key, field.encode(value, @))
+        # this is for associations, built for hasMany through. 
+        # need to think about some more but it works for now.
+        # you can save hasMany through, with async is true.
+        if Tower.isClient && key == 'id'
+          cid = data.get('_cid')
+          if cid and cid != data.get('_id')
+            relations = @constructor.relations()
+            for relationName, relation of relations
+              if relation.isHasMany || relation.isHasOne
+                foreignKey = relation.foreignKey
+                relation.klass().where(foreignKey, cid).all().forEach (item) ->
+                  item.set(foreignKey, value)
+
         # probably should put this into Tower.Model.Data:
         Tower.cursorNotification("#{@constructor.className()}.#{key}")
         value

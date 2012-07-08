@@ -100,7 +100,8 @@ Tower.Store.Memory.Finders =
 # @todo move this to client folder
 if Tower.isClient
   Tower.Store.Memory.Finders.fetch = (cursor, callback) ->
-    Tower.Net.Connection.transport.find cursor, (error, records) =>
+    method = if cursor.get('limit') == 1 then 'findOne' else 'find'
+    Tower.Net.Connection.transport[method] cursor, (error, records) =>
       #records = @load(records)
       if callback
         callback(error, records)

@@ -26,9 +26,9 @@ _.extend Tower,
   cb: ->
 
 
-  notifyConnections: (action, records) ->
+  notifyConnections: (action, records, callback) ->
     for sessionId, connection of Tower.connections
-      connection.notify(action, records)
+      connection.notify(action, records, callback)
 
   connections: {}
 

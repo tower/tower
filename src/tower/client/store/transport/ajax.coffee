@@ -8,8 +8,10 @@ Tower.Store.Transport.Ajax =
     contentType: 'application/json'
     dataType:    'json'
     processData: false
-    # This makes it so you can do async data fetching without callbacks!
-    async:       Tower.env == 'production'
+    # Setting `async: false` makes it so you can do async data fetching without callbacks!
+    # We only probably want this to be false on fetching records in the development env, 
+    # so you can do queries in the console and get the data back immediately.
+    async:       true # Tower.env == 'production'
     headers:     {'X-Requested-With': 'XMLHttpRequest'}
 
   ajax: (params, defaults) ->
@@ -85,16 +87,11 @@ Tower.Store.Transport.Ajax =
     # need a better way to do this, using batch requests
     for record in records
       do (record) =>
-        # need to setup clientId
-        record.set('id', undefined)
-        json  = @toJSON(record)
-        url   = Tower.urlFor(record.constructor)
-        
         @queue =>
           params =
-            url:  url
-            type: "POST"
-            data: json
+            url:  Tower.urlFor(record.constructor)
+            type: 'POST'
+            data: @toJSON(record)
 
           @ajax({}, params)
             .success(@createSuccess(record, callback))
@@ -123,12 +120,12 @@ Tower.Store.Transport.Ajax =
   update: (records, callback) ->
     for record in records
       do (record) =>
-        params =
-          type: "PUT"
-          data: @toJSON(record)
-          url: Tower.urlFor(record)
-
         @queue =>
+          params =
+            type: 'PUT'
+            data: @toJSON(record)
+            url:  Tower.urlFor(record)
+
           @ajax({}, params)
             .success(@updateSuccess(record, callback))
             .error(@updateFailure(record, callback))
@@ -145,17 +142,14 @@ Tower.Store.Transport.Ajax =
   destroy: (records, callback) ->
     for record in records
       do (record) =>
-        url     = Tower.urlFor(record)
-
-        params  =
-          url:        url
+        @queue =>
+          params  =
+          url:        Tower.urlFor(record)
           type:       'POST'
           data:       JSON.stringify(
             format:   'json'
             _method:  'DELETE'
           )
-
-        @queue =>
           # haven't yet handled arrays.
           @ajax({}, params)
             .success(@destroySuccess(record, callback))
@@ -237,7 +231,10 @@ Tower.Store.Transport.Ajax =
     
     @queue =>
       @ajax(params)
-        .success(@findSuccess(cursor, (error, data) => records = data))
+        .success(@findSuccess(cursor, (error, data) =>
+          callback.call(@, error, data) if callback
+          records = data
+        ))
         .error(@findFailure(cursor, callback))
 
     records
@@ -245,6 +242,36 @@ Tower.Store.Transport.Ajax =
   serializeParamsForFind: (cursor) ->
     url     = Tower.urlFor(cursor.model)
     data    = cursor.toParams()
+    # tmp until we figure out a better way
+    #data.conditions = JSON.stringify(data.conditions) if data.conditions
+    data.format = 'json'
+
+    type: 'GET'
+    data: $.param(data)
+    url:  url
+
+  # Going to merge this during refactoring period.
+  # One big copy paste for now :)
+  findOne: (cursor, callback) ->
+    params  = @serializeParamsForFindOne(cursor)
+    records = undefined
+    
+    @queue =>
+      @ajax(params)
+        .success(@findSuccess(cursor, (error, data) =>
+          data = try data[0]
+          callback.call(@, error, data) if callback
+          records = data
+        ))
+        .error(@findFailure(cursor, callback))
+
+    records
+
+  # This is hardcoded at the moment, getting late.
+  serializeParamsForFindOne: (cursor) ->
+    data    = cursor.toParams()
+    delete data.limit
+    url     = Tower.urlFor(cursor.model) + '/' + data.conditions.id
     # tmp until we figure out a better way
     #data.conditions = JSON.stringify(data.conditions) if data.conditions
     data.format = 'json'
