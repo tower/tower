@@ -104,8 +104,6 @@ Tower.Support.Object =
   #
   # @return [String]
   kind: (object) ->
-    _ = Tower.modules._
-
     type = typeof(object)
     switch type
       when "object"
