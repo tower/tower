@@ -70,7 +70,7 @@ Tower.Store.Operators =
       when 'number', 'string', 'float', 'NaN'
         success = recordValue == operators
       when 'undefined', 'null'
-        !recordValue?
+        success = recordValue === null || recordValue === undefined
       when 'regex'
         success = @match(recordValue, operators)
       else
