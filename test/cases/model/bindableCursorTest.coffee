@@ -10,9 +10,15 @@ class App.BindableCursorTest extends Tower.Model
 describe 'Tower.Model.Cursor (bindable)', ->
   cursor = null
   
-  beforeEach ->
-    cursor  = Tower.Model.Cursor.create(content: Ember.A([]))
-    cursor.make(model: App.BindableCursorTest)
+  beforeEach (done) ->
+    App.BindableCursorTest.store(Tower.Store.Memory).constructor.clean =>
+      cursor  = Tower.Model.Cursor.make()# Tower.Model.Cursor.create(content: Ember.A([]))
+      cursor.make(model: App.BindableCursorTest)
+
+      done()
+
+  afterEach ->
+    Tower.cursors = {}
     
   test 'addObserver', (done) ->
     record = App.BindableCursorTest.new()
@@ -33,7 +39,7 @@ describe 'Tower.Model.Cursor (bindable)', ->
     
     cursor.addObserver "length", (_, key, value) ->
       assert.ok value, "addObserver length called"
-      assert.equal cursor.content.length, 2
+      assert.equal cursor.length, 2
       done()
 
     cursor.pushMatching(records)
@@ -48,10 +54,82 @@ describe 'Tower.Model.Cursor (bindable)', ->
 
     cursor.addObserver "length", (_, key, value) ->
       assert.ok value, "addObserver length called"
-      assert.equal cursor.content.length, 1
+      assert.equal cursor.length, 1
       done()
 
     cursor.pushMatching(records)
+
+  test 'list model fields it\'s watching', ->
+    cursor.where(string: /string/)
+    assert.deepEqual cursor.getPath('observableFields').sort(), ['string']
+
+    cursor.desc('createdAt').propertyDidChange('observableFields')
+    assert.deepEqual cursor.getPath('observableFields').sort(), ['createdAt', 'string']
+
+    cursor.where(string: '!=': 'strings', '=~': /string/).propertyDidChange('observableFields')
+    assert.deepEqual cursor.getPath('observableFields').sort(), ['createdAt', 'string']
+
+  test 'Tower.cursors updates when cursor.observable() is called', ->
+    assert.equal _.keys(Tower.cursors).length, 0
+    cursor.where(string: /string/)
+    cursor.observable()
+    assert.equal _.keys(Tower.cursors).length, 1
+    assert.equal _.keys(Tower.cursors['BindableCursorTest']).length, 1
+    assert.equal Tower.getCursor('BindableCursorTest.string'), cursor
+
+  test 'cursor observers when just record attributes are set', (done) ->
+    cursor.where(string: /a s/ig).observable()
+
+    cursor.refresh (error, records) =>
+      assert.equal records.length, 0
+
+      App.BindableCursorTest.create {string: 'a string'}, (error, record) =>
+        cursor.refresh =>
+          assert.equal cursor.length, 1
+
+          record.set('string', 'new string')
+
+          assert.equal cursor.length, 0
+
+          done()
+
+  # It should probably keep track internally of the cursors that "should" be updated either way,
+  # so you don't have to manually do it.
+  test 'Tower.autoNotifyCursors = false', (done) ->
+    Tower.autoNotifyCursors = false
+
+    cursor.where(string: /a s/ig).observable()
+
+    App.BindableCursorTest.create {string: 'a string'}, (error, record) =>
+      cursor.refresh =>
+        assert.equal cursor.length, 1
+
+        record.set('string', 'new string')
+
+        assert.equal cursor.length, 1
+
+        Tower.notifyCursor(record.constructor.className() + '.' + 'string')
+
+        assert.equal cursor.length, 0
+
+        Tower.autoNotifyCursors = true
+
+        done()
+
+  #test 'cursor observers when records are created', (done) ->
+  #  cursor.where(string: /a.* s/ig).observable()
+  #
+  #  cursor.refresh (error, records) =>
+  #    assert.equal records.length, 0
+  #
+  #    App.BindableCursorTest.create {string: 'a string'}, =>
+  #      cursor.refresh (error, records) =>
+  #        assert.equal records.length, 1
+  #
+  #        App.BindableCursorTest.create {string: 'another string'}, =>
+  #          cursor.refresh (error, records) =>
+  #            assert.equal records.length, 2
+  #            done()
 
   ###
   test 'sort', (done) ->

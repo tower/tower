@@ -53,6 +53,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
       @_where.push(object)
     else
       @_where.push(conditions)
+    @
 
   # Attribute and direction used for ordering the datastore's result set.
   #
@@ -65,6 +66,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @return [Array] returns the full set of order commands for this cursor.
   order: (attribute, direction = 'asc') ->
     @_order.push [attribute, direction]
+    @
 
   # Reverses the query so it can find the last one.
   reverseSort: ->
@@ -74,6 +76,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     for orderItem, i in order
       orderItem[1] = if orderItem[1] == 'asc' then 'desc' else 'asc'
     order
+    @
 
   # Set of attributes to sort by, ascending.
   #
@@ -85,7 +88,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @return [Array] returns the full set of order commands for this cursor.
   asc: (attributes...) ->
     @order(attribute) for attribute in attributes
-    @_order
+    @
 
   # Set of attributes to sort by, descending.
   #
@@ -97,7 +100,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @return [Array] returns the full set of order commands for this cursor.
   desc: (attributes...) ->
     @order(attribute, 'desc') for attribute in attributes
-    @_order
+    @
 
   # @todo
   gte: ->
@@ -140,9 +143,11 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   #   App.Post.offset(20).all()
   offset: (number) ->
     @_offset = number
+    @
 
   limit: (number) ->
     @_limit = number
+    @
 
   # The set of fields we want the database to return, no more.
   #
@@ -154,12 +159,15 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @return [Array] returns the fields for this cursor.
   select: ->
     @_fields = _.flatten _.args(fields)
+    @
 
   includes: ->
     @_includes = _.flatten _.args(arguments)
+    @
 
   uniq: (value) ->
     @_uniq = value
+    @
 
   # @example
   #   App.Post.page(2).all()
@@ -171,7 +179,8 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # 
   # @todo Maybe we should make the `count` query part of the `paginate` method instead.
   page: (page) ->
-    limit = @limit(@_limit || Tower.Model.Cursor::defaultLimit)
+    @limit(@_limit || Tower.Model.Cursor::defaultLimit)
+    limit = @get('limit')
     Ember.set @, 'currentPage', page
     @offset((Math.max(1, page) - 1) * limit)
 

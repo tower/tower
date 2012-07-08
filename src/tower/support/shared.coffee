@@ -54,6 +54,71 @@ _.extend Tower,
       object[key] = Ember.computed(block)
       @reopen(object)
 
+  # @todo find ideal place for this
+  cursors: {} # Ember.Map.create()
+
+  # Want to figure out how to do this with ember observers sometime.
+  addCursor: (cursor) ->
+    types     = cursor.getPath('observableTypes')
+
+    for type in types
+      cursors   = Tower.cursors[type]
+
+      unless cursors
+        cursors = Tower.cursors[type] = {}
+        
+      # @todo getPath -> get when it's changed in cursor
+      fieldNames = cursor.getPath('observableFields')
+
+      for fieldName in fieldNames
+        cursors[fieldName] = cursor
+
+    cursor
+
+  removeCursor: (cursor) ->
+    types     = cursor.getPath('observableTypes')
+
+    for type in types
+      cursors   = Tower.cursors[type]
+
+      if cursors
+        # @todo getPath -> get when it's changed in cursor
+        fieldNames = cursor.getPath('observableFields')
+        
+        for fieldName in fieldNames
+          delete cursors[fieldName]
+
+    cursor
+
+  getCursor: (path) ->
+    Ember.getPath(Tower.cursors, path)
+
+  notifyCursor: (path) ->
+    cursor = Tower.getCursor(path)
+    
+    cursor.refresh() if cursor
+
+    delete Tower.cursorsToUpdate[path]
+
+    cursor
+
+  # If this is false, you must manually call
+  # `Tower.notifyCursors()` or `Tower.notifyCursor('SomeModel.fieldName')`
+  autoNotifyCursors: true
+
+  cursorsToUpdate: {}
+
+  # Should do some Ember.runLoop stuff here.
+  cursorNotification: (path) ->
+    if Tower.autoNotifyCursors
+      Tower.notifyCursor(path)
+    else
+      Tower.cursorsToUpdate[path] = true
+
+  notifyCursors: ->
+    for path of Tower.cursorsToUpdate
+      Tower.notifyCursor(path)
+
   #extend: (self, object) ->
   #  extended = object.extended
   #  delete object.extended

@@ -58,9 +58,6 @@ Tower.Model.Cursor.Finders =
   #      @set('totalCount', count)
   #
   #      callback.call(@, error, records) if callback
-  
-  publish: ->
-    @constructor.subscriptions.pushObject(@)
 
   # Helper method to traverse the pages of records.
   firstPage: ->

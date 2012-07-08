@@ -66,8 +66,11 @@ class Tower.Model.Attribute
     # There needs to be a way to customize this from the outside
     attribute[name] = Ember.computed((key, value) ->
       if arguments.length is 2
-        data = Ember.get(@, 'data')
-        data.set(key, field.encode(value, @))
+        data  = Ember.get(@, 'data')
+        value = data.set(key, field.encode(value, @))
+        # probably should put this into Tower.Model.Data:
+        Tower.cursorNotification("#{@constructor.className()}.#{key}")
+        value
       else
         data  = Ember.get(@, 'data')
         value = data.get(key)

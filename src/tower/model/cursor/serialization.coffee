@@ -34,6 +34,54 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     else
       @["_#{key}"]
 
+  # Wondering how this should be invalidated, other than manually calling
+  # cursor.propertyDidChange('observableFields'). You don't want to invalidate
+  # for every query condition you add, that would hurt server performance.
+  # Maybe it should be handled differently on the client and server.
+  observableFields: Ember.computed(->
+    data    = @toParams()
+
+    # what's more optimized?
+    # 1. creating an array and, for each new item you push, first check if array.indexOf(newItem) == -1
+    # 2. creating a hash, with all values as `true`, such as `{key1: true, key2: true}`, then `_.keys(hash)`
+    # 3. pushing all items in the array, then running `keys = _.uniq(keys)`
+    # need to run some tests.
+
+    fields  = []
+
+    if data.sort
+      for orderItem in data.sort
+        fields.push(orderItem[0])
+
+    fields  = _.uniq fields.concat(_.keys(data.conditions))
+
+    fields
+  ).cacheable()
+
+  # List of models that this cursor observe.
+  # 
+  # The simple case is the owner model for the cursor.
+  # The more complex case is where the query conditions for the cursor
+  # are based on properties of a related model, such as 
+  # `App.Post.includes('author').where('author.email', /a/)`. A lot of those "join" queries
+  # aren't supported in MongoDB, but this is still good to have.
+  # 
+  # @todo list out the cases when this will be more than the just the owner model.
+  observableTypes: Ember.computed(->
+    [@model.className()]
+  ).cacheable()
+
+  # Registers cursor in global set, to watch for changes in models matching it's conditions.
+  # @todo Think about name, possibly ['observable', 'register', 'publish', 'watch'].
+  #   The name "observable" feels like it follows the ember naming conventions.
+  observable: (falseFlag) ->
+    # Should probably add a watcher on the Tower.cursors computed property, not sure it will work though.
+    if falseFlag == false
+      Tower.removeCursor(@)
+    else
+      Tower.addCursor(@)
+    @
+
   # Must pass in array, and it will give you either an array or object back,
   # depending on what was passed into the scope.
   export: (result) ->
@@ -104,6 +152,13 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
       @
     else
       Ember.set(@, 'content', [])
+
+  # @todo Ideally, refresh wont remove then add back items in the array.
+  #   Instead, it should only insert/remove/sort what needs to be changed.
+  #   This will make the views snappier.
+  refresh: (callback) ->
+    @reset()
+    @all(callback)
 
   # Merge this cursor with another cursor.
   #

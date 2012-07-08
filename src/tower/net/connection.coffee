@@ -27,6 +27,7 @@ class Tower.Net.Connection extends Tower.Class
     @constructor.handlers.forEach (eventType, handler) =>
       @on(eventType, handler)
 
+  # @todo Need to merge the controller and model cursors.
   resolve: (action, records, callback) ->
     record    = records[0]
     return unless record
