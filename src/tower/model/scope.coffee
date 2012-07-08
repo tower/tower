@@ -306,7 +306,7 @@ class Tower.Model.Scope
   #
   # @param [Function] callback
   all: (callback) ->
-    @compile().find(callback)
+    @compile().all(callback)
 
   toArray: ->
     @all().toArray()

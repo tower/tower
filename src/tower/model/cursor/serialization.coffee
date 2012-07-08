@@ -177,6 +177,7 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     @_joins     = _.extend {}, cursor._joins
     @_eagerLoad = _.extend {}, cursor._eagerLoad
     @_near      = cursor._near
+    @returnArray = cursor.returnArray
     @
 
   toParams: ->

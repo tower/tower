@@ -138,7 +138,14 @@ Tower.Model.Persistence =
 
       @
 
-    refresh: ->
+    # This is basically the same as `refresh`, but for the client it fetches from the server.
+    # It's possible `refresh` and `reload` will be merged, waiting to see the use cases in the real world.
+    refresh: (callback) ->
+      @constructor.where(id: @get('id')).limit(1).fetch (error, freshRecord) =>
+        @set('data', freshRecord.get('data'))
+        callback.call(@, error) if callback
+
+      @
 
     markForDestruction: ->
 

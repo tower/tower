@@ -145,8 +145,13 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     @_offset = number
     @
 
+  # Experimenting with limit(1) returning single object, which makes sense.
   limit: (number) ->
     @_limit = number
+    if number == 1
+      @returnArray = false
+    else
+      delete @returnArray
     @
 
   # The set of fields we want the database to return, no more.

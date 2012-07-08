@@ -21,5 +21,11 @@ describeWith = (store) ->
           assert.equal user.get('firstName'), 'Pete'
           done()
 
+    test 'refresh', (done) ->
+      referenceUser.updateAttributes firstName: 'Pete', =>
+        user.refresh =>
+          assert.equal user.get('firstName'), 'Pete'
+          done()
+
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.Mongodb) unless Tower.isClient

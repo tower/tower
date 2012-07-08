@@ -14,7 +14,7 @@ Tower.Store.Memory.Finders =
     if usingGeo
       @_calculateDistances(records, @_getCoordinatesFromConditions(conditions))
       @_prepareConditionsForTesting(conditions)
-    
+
     if _.isPresent(conditions)
       for record in records
         result.push(record) if Tower.Store.Operators.test(record, conditions)
@@ -96,5 +96,17 @@ Tower.Store.Memory.Finders =
   _conditionsUseGeo: (conditions) ->
     return false unless _.isObject(conditions)
     return true for key, value of conditions when _.isPresent(value['$near']) || _.isPresent(value['$maxDistance'])
+
+# @todo move this to client folder
+if Tower.isClient
+  Tower.Store.Memory.Finders.fetch = (cursor, callback) ->
+    Tower.Net.Connection.transport.find cursor, (error, records) =>
+      #records = @load(records)
+      if callback
+        callback(error, records)
+      else if Tower.debug
+        console.log(records)
+
+      records
 
 module.exports = Tower.Store.Memory.Finders

@@ -154,7 +154,12 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
             # wiring the model to the controller, but it's really not. It would be abstracted away,
             # and this kind of stuff was relatively common in Rails, where `Thread.current` had variables set in the controller 
             # and accessed from models, but you never really knew. Sometimes that's what it takes.
+            # 
             # Going to try that!
+            # 
+            # This is how Tower should refactor the controller.scope method, and iterating through controller scopes.
+            # They really should start from iterating through the model, and if the model is mapped to a controller,
+            # then call the controller cursor method, otherwise call it directly on the model cursor.
             @owner.get(@relation.name).load(_.castArray(records))
             callback.call(@, error, records) if callback
           @_runAfterFindCallbacksOnStore done, records

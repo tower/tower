@@ -169,7 +169,7 @@ class Tower.Store extends Tower.Class
   # Then when you do the next search, what should happen?  It's not smart enough
   # to know it's already fetched those records, so it will return them again.
   # There is the possibility that we test all the records currently on the client against the
-  # fetching criteria, and append the ids of the matching records to the `conditions` field.
+  # fetching cursor, and append the ids of the matching records to the `conditions` field.
   # This way that "a" or "b" request might look like this:
   #     {
   #       "page": 1,
@@ -185,15 +185,12 @@ class Tower.Store extends Tower.Class
   # 
   # Ooh, this just made me think.  One way to be able to do real-time pub/sub from client to server
   # is to have the server TCP request a list of ids or `updatedAt` values from the client to do the diff...
-  fetch: (criteria, callback) ->
-    Tower.Net.Connection.transport.find criteria, (error, records) =>
-      #records = @load(records)
-      if callback
-        callback(error, records)
-      else if Tower.debug
-        console.log(records)
-
-      records
+  fetch: (cursor, callback) ->
+    # need to clean this up
+    if cursor.returnArray == false
+      @findOne(cursor, callback)
+    else
+      @find(cursor, callback)
 
 require './store/callbacks'
 require './store/batch'

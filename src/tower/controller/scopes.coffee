@@ -28,12 +28,12 @@ Tower.Controller.Scopes =
 
           unless name == 'all'
             if Tower.isClient
-              scope = Ember.computed(-> chain[name]().all())
+              scope = Ember.computed(-> chain[name]().all().observable())
             else
               scope = chain[name]()
           else
             if Tower.isClient
-              scope = Ember.computed(-> chain.all())
+              scope = Ember.computed(-> chain.all().observable())
             else
               scope = chain
         else
@@ -41,7 +41,7 @@ Tower.Controller.Scopes =
           name  = 'all' # might try to make this 'content', so you can do `{{#each App.postsController}}`
       else
         if Tower.isClient && typeof scope == 'function'
-          scope = Ember.computed(scope)
+          scope = Ember.computed(scope) # .observable()
 
       try
         # maybe we don't want to convert it to a cursor by this point...

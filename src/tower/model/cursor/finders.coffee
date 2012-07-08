@@ -80,6 +80,7 @@ Tower.Model.Cursor.Finders =
     @
 
   all: (callback) ->
+    delete @returnArray # tmp
     @find(callback)
 
   _hasContent: (callback) ->
