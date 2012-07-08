@@ -121,6 +121,7 @@ Tower.Support.Object =
       when "number"
         return "integer"    if object == +object && object == (object|0)
         return "float"      if object == +object && object != (object|0)
+        return "NaN"        if _.isNaN(object)
         return "number"
       when "function"
         return "regex"      if _.isRegExp(object)

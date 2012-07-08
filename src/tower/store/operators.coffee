@@ -66,20 +66,21 @@ Tower.Store.Operators =
   testValue: (recordValue, operators, record) ->
     success = true
 
-    switch typeof operators
-      when 'number', 'string', 'undefined', 'null', 'NaN'
+    switch _.kind(operators)
+      when 'number', 'string', 'float', 'NaN'
         success = recordValue == operators
+      when 'undefined', 'null'
+        !recordValue?
+      when 'regex'
+        success = @match(recordValue, operators)
       else
-        if _.isRegExp(operators)
-          success = @match(recordValue, operators)
-        else
-          for key, value of operators
-            if operator = Tower.Store.Operators.MAP[key]
-              success   = @[operator.replace('$', '')](recordValue, value, record)
-            else
-              success   = recordValue == operators
+        for key, value of operators
+          if operator = Tower.Store.Operators.MAP[key]
+            success   = @[operator.replace('$', '')](recordValue, value, record)
+          else
+            success   = recordValue == operators
 
-            return false unless success
+          return false unless success
 
     success
 

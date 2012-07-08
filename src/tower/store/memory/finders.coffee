@@ -90,12 +90,12 @@ Tower.Store.Memory.Finders =
 
   # Adjusts the given conditions so they can be used
   _prepareConditionsForTesting: (conditions) ->
-    return unless _.isPresent(conditions) && conditions.coordinates?
+    return unless _.isHash(conditions) && _.isHash(conditions.coordinates)
     delete conditions.coordinates['$near']
 
   _conditionsUseGeo: (conditions) ->
-    return false unless _.isObject(conditions)
-    return true for key, value of conditions when _.isPresent(value['$near']) || _.isPresent(value['$maxDistance'])
+    return false unless _.isHash(conditions)
+    return true for key, value of conditions when _.isHash(value) && (_.isPresent(value['$near']) || _.isPresent(value['$maxDistance']))
 
 # @todo move this to client folder
 if Tower.isClient

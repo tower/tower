@@ -23,7 +23,7 @@ Tower.Store.Mongodb.Serialization =
     schema  = @schema()
 
     for key, value of attributes
-      continue if key == 'id' && value == undefined || value == null
+      continue if key == 'id' # && value == undefined || value == null
       operator              = @constructor.atomicModifiers[key]
 
       if operator
