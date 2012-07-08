@@ -138,6 +138,23 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
         result = records
         if !error && records
           done = =>
+            # it's almost impossible to use the "IdentityMap" from rails in node.js,
+            # because this means the "environment" needs to basically be unique
+            # for an individual http/tcp request. That is, all models that are in the identity
+            # map need to be unique to the _request_. The only way you can do this is if you pass the identity map
+            # through every function call, but that would be messy.
+            # One possible solution is to not use `App.User.first().posts` or any class methods like that,
+            # because class methods are going to be shared globally, and so aren't unique on a per-request basis.
+            # Instead, you would use something like `this.first().posts`, where `this` is the controller instance you're in.
+            # That way you're accessing the models through the controller, and the controller _is_ unique to the request.
+            # By doing that, Tower can internally add meta information to the cursor, such that 
+            # `App.User.first().posts` actually means `App.User.env(@).first().posts`, or even just 
+            # `App.User.controller(@).first().posts`. Then that `env|controller` method could
+            # contain an identity map, in which the store would cache its records. Some might feel this is
+            # wiring the model to the controller, but it's really not. It would be abstracted away,
+            # and this kind of stuff was relatively common in Rails, where `Thread.current` had variables set in the controller 
+            # and accessed from models, but you never really knew. Sometimes that's what it takes.
+            # Going to try that!
             @owner.get(@relation.name).load(_.castArray(records))
             callback.call(@, error, records) if callback
           @_runAfterFindCallbacksOnStore done, records
