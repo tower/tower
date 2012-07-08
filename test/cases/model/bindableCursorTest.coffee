@@ -88,6 +88,8 @@ describe 'Tower.Model.Cursor (bindable)', ->
           assert.equal cursor.length, 1
 
           record.set('string', 'new string')
+          
+          Ember.run.sync()
 
           assert.equal cursor.length, 0
 

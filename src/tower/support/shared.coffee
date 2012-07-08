@@ -68,7 +68,7 @@ _.extend Tower,
 
       unless cursors
         cursors = Tower.cursors[type] = {}
-        
+      
       # @todo getPath -> get when it's changed in cursor
       fieldNames = cursor.getPath('observableFields')
 
@@ -114,10 +114,10 @@ _.extend Tower,
 
   # Should do some Ember.runLoop stuff here.
   cursorNotification: (path) ->
+    Tower.cursorsToUpdate[path] = true
+
     if Tower.autoNotifyCursors
-      Tower.notifyCursorFromPath(path)
-    else
-      Tower.cursorsToUpdate[path] = true
+      Ember.run.schedule('sync', @, @notifyCursors)
 
   notifyCursors: ->
     cursors = {}

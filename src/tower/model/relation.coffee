@@ -243,8 +243,9 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
     relation  = @relation.inverse()
     records   = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
 
-    for record in records
-      record.set(relation.name, undefined)
+    # this + ember computed cacheable() is causing issues with run loop, not sure this needs to be here.
+    #for record in records
+    #  record.set(relation.name, undefined)
 
     @_super()
 
