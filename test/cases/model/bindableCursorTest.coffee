@@ -73,9 +73,9 @@ describe 'Tower.Model.Cursor (bindable)', ->
     assert.equal _.keys(Tower.cursors).length, 0
     cursor.where(string: /string/)
     cursor.observable()
-    assert.equal _.keys(Tower.cursors).length, 1
-    assert.equal _.keys(Tower.cursors['BindableCursorTest']).length, 1
-    assert.equal Tower.getCursor('BindableCursorTest.string'), cursor
+    assert.equal _.keys(Tower.cursors).length, 2, '_.keys(Tower.cursors).length'
+    assert.equal _.keys(Tower.cursors['BindableCursorTest']).length, 1, "Tower.cursors['BindableCursorTest'].length"
+    assert.equal Tower.getCursor('BindableCursorTest.string'), cursor, "Tower.getCursor('BindableCursorTest.string')"
 
   test 'cursor observers when just record attributes are set', (done) ->
     cursor.where(string: /a s/ig).observable()
@@ -108,7 +108,7 @@ describe 'Tower.Model.Cursor (bindable)', ->
 
         assert.equal cursor.length, 1
 
-        Tower.notifyCursor(record.constructor.className() + '.' + 'string')
+        Tower.notifyCursorFromPath(record.constructor.className() + '.' + 'string')
 
         assert.equal cursor.length, 0
 

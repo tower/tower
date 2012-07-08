@@ -61,6 +61,8 @@ _.extend Tower,
   addCursor: (cursor) ->
     types     = cursor.getPath('observableTypes')
 
+    Tower.cursors[Ember.guidFor(cursor)] = cursor
+
     for type in types
       cursors   = Tower.cursors[type]
 
@@ -78,6 +80,8 @@ _.extend Tower,
   removeCursor: (cursor) ->
     types     = cursor.getPath('observableTypes')
 
+    delete Tower.cursors[Ember.guidFor(cursor)]
+
     for type in types
       cursors   = Tower.cursors[type]
 
@@ -93,9 +97,9 @@ _.extend Tower,
   getCursor: (path) ->
     Ember.getPath(Tower.cursors, path)
 
-  notifyCursor: (path) ->
+  notifyCursorFromPath: (path) ->
     cursor = Tower.getCursor(path)
-    
+
     cursor.refresh() if cursor
 
     delete Tower.cursorsToUpdate[path]
@@ -111,13 +115,22 @@ _.extend Tower,
   # Should do some Ember.runLoop stuff here.
   cursorNotification: (path) ->
     if Tower.autoNotifyCursors
-      Tower.notifyCursor(path)
+      Tower.notifyCursorFromPath(path)
     else
       Tower.cursorsToUpdate[path] = true
 
   notifyCursors: ->
+    cursors = {}
+
     for path of Tower.cursorsToUpdate
-      Tower.notifyCursor(path)
+      cursor = Tower.getCursor(path)
+      # this just makes it so we don't run the same one twice
+      cursors[Ember.guidFor(cursor)] = cursor if cursor
+
+    Tower.cursorsToUpdate = {}
+
+    for guid, cursor of cursors
+      cursor.refresh()
 
   #extend: (self, object) ->
   #  extended = object.extended
