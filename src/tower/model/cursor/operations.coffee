@@ -102,6 +102,9 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     @order(attribute, 'desc') for attribute in attributes
     @
 
+  ne: ->
+    @_whereOperator '$neq', arguments...
+
   # @todo
   gte: ->
     @_whereOperator '$gte', arguments...

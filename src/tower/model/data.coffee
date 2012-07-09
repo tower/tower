@@ -131,6 +131,7 @@ class Tower.Model.Data
 
   rollback: ->
     @unsavedData = {}
+    @record.propertyDidChange('data')
 
   attributes: ->
     # _.extend(@savedData, @unsavedData)

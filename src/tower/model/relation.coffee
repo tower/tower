@@ -155,6 +155,10 @@ class Tower.Model.Relation extends Tower.Class
           if arguments.length is 2
             data = Ember.get(@, 'data')
             data.set(key, value)
+            relation        = @constructor.relation(key)
+            foreignKey      = relation.foreignKey
+            # set belongsTo id on associated object
+            value.set(foreignKey, @get('id'))
             value
           else
             data  = Ember.get(@, 'data')

@@ -84,7 +84,7 @@ class Tower.Store extends Tower.Class
     models[i] = @deserializeModel(model) for model, i in models
     models
 
-  serializeModel: (attributes) ->
+  serializeModel: (attributes, saved) ->
     return attributes if attributes instanceof Tower.Model
     
     model = @records.get(attributes.id) if attributes.id? && @records
@@ -94,7 +94,11 @@ class Tower.Store extends Tower.Class
       #new klass(attributes)
       model = klass.new()
 
-    model.setProperties(attributes)
+    if saved
+      model.setSavedAttributes(attributes)
+    else
+      model.setProperties(attributes)
+
     model
 
   deserializeModel: (data) ->

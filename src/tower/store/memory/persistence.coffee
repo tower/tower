@@ -14,7 +14,7 @@ Tower.Store.Memory.Persistence =
     Ember.beginPropertyChanges()
     
     for record, i in records
-      records[i] = @loadOne(@serializeModel(record))
+      records[i] = @loadOne(@serializeModel(record, true))
 
     Ember.endPropertyChanges()
 

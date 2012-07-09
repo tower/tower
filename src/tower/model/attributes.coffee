@@ -63,7 +63,7 @@ Tower.Model.Attributes =
 
     changes: Ember.computed(->
       Ember.get(@get('data'), 'unsavedData')
-    )
+    ).volatile()
 
     attributes: Ember.computed(->
       @get('data').copyAttributes()

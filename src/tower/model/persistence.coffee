@@ -112,6 +112,10 @@ Tower.Model.Persistence =
       @setProperties(attributes)
       @save(callback)
 
+    updateAttribute: (key, value, callback) ->
+      @set(key, value)
+      @save(callback)
+
     # Destroy this record, if it is persistent.
     #
     # @param [Function] callback
@@ -146,6 +150,9 @@ Tower.Model.Persistence =
         callback.call(@, error) if callback
 
       @
+
+    rollback: ->
+      @get('data').rollback()
 
     markForDestruction: ->
 
