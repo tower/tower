@@ -54,6 +54,12 @@ _.extend Tower,
       object[key] = Ember.computed(block)
       @reopen(object)
 
+    get: (key) ->
+      Ember.get(@, key)
+
+    set: (key, value) ->
+      Ember.set(@, key, value)
+
   # @todo find ideal place for this
   cursors: {} # Ember.Map.create()
 

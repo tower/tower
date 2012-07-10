@@ -66,6 +66,8 @@ Tower.Model.Persistence =
       @constructor.store()
 
     # Create or update the record.
+    # 
+    # @todo Should only save if there is at least one changed attribute
     #
     # @example Default save
     #   user.save -> console.log 'saved'

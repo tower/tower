@@ -53,9 +53,12 @@ Tower.Model.Attributes =
 
       fields
 
+    # attributeNames: Ember.computed ->
+
   InstanceMethods:
     dynamicFields: true
 
+    # Want to get rid of this, don't like.
     data: Ember.computed((key, value) ->
       # sets the value or uses defaults
       value || new Tower.Model.Data(@)
@@ -65,13 +68,44 @@ Tower.Model.Attributes =
       Ember.get(@get('data'), 'unsavedData')
     ).volatile()
 
+    # @todo this is going to replace the above `changes` method
+    changesHash: Ember.computed(->
+      @get('data').changes()
+    ).volatile()
+
+    # @todo assign_attributes, assign_attributes, multiParameterAttributes
     attributes: Ember.computed(->
+      if arguments.length == 2
+        @assignAttributes(arguments[1]) if _.isHash(arguments[1])
       @get('data').copyAttributes()
     )
 
-    #attributes: Ember.computed(->
-    #  @get('data')
-    #)
+    assignAttributes: (attributes, options) ->
+      return unless _.isHash(attributes)
+      options ||= {}
+
+      # like with the datepicker, such as date(1) == month, date(2) == day, date(3) == year
+      multiParameterAttributes  = []
+      nestedParameterAttributes = []
+
+      unless options.withoutProtection
+        role = options.as || 'default'
+        attributes = @_sanitizeForMassAssignment(attributes, role)
+
+      for k, v of attributes
+        if k.indexOf("(") > -1
+          multiParameterAttributes.push [ k, v ]
+        else
+          if _.isHash(v)
+            nestedParameterAttributes.push [ k, v ]
+          else
+            @set(k, v)
+
+      # assign any deferred nested attributes after the base attributes have been set
+      for item in nestedParameterAttributes
+        @set(item[0], item[1])
+
+      # @assignMultiparameterAttributes(multiParameterAttributes)
 
     setSavedAttributes: (object) ->
       @get('data').setSavedAttributes(object)

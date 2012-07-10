@@ -94,7 +94,7 @@ describeWith = (store) ->
           assert.equal undefined, data.get('title')
           assert.equal undefined, data.unsavedData.title
           assert.equal undefined, data.savedData.title
-###          
+  ###          
         test 'push', ->
           assert.deepEqual ["ruby"], data.push("tags", "ruby")
           data.push(tags: "javascript")
@@ -222,7 +222,53 @@ describeWith = (store) ->
           
       #test 'set', ->
       #  console.log record.get('data')
-###
+  ###
+  describe 'changes', ->
+    beforeEach ->
+      record  = App.DataTest.new()
+      data    = record.get('data')#new Tower.Model.Data(record)
+
+    test 'changes', ->
+      assert.deepEqual data.changes(), {}
+      assert.deepEqual data.changedAttributes, {}
+      assert.deepEqual data.changed(), []
+      
+      data.set('title', 'title!')
+      
+      assert.deepEqual data.changedAttributes, {title: undefined}
+      assert.deepEqual data.changes(), {title: [ undefined, 'title!' ]}
+      assert.deepEqual data.changed(), ['title']
+
+    test 'changes from record', ->
+      assert.deepEqual record.get('changesHash'), {}
+
+      data.set('title', 'title!')
+      
+      assert.deepEqual record.get('changesHash'), {title: [ undefined, 'title!' ]}
+
+    test 'data.resetAttribute', ->
+      # hack fake initial value
+      data.changedAttributes.title = 'old title'
+      data.set('title', 'title!')
+      assert.equal data.get('title'), 'title!'
+      data.resetAttribute('title')
+      assert.equal data.get('title'), 'old title'
+      assert.equal data.changedAttributes.title, undefined
+
+    test 'data.isReadOnlyAttribute', ->
+      assert.isFalse data.isReadOnlyAttribute('title')
+
+    test 'data.previousChanges', ->
+      assert.deepEqual data.previousChanges, undefined
+      data.set('title', 'title!')
+      data.commit()
+      assert.deepEqual data.previousChanges, {title: [ undefined, 'title!' ]}
+
+    test 'data.attributesForUpdate', ->
+      data.set('title', 'title!')
+      assert.deepEqual data.attributeKeysForUpdate(), ['title']
+      assert.deepEqual data.attributesForUpdate(), {title: 'title!'}
+
 describeWith(Tower.Store.Memory)
 ###
 if Tower.client

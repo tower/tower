@@ -13,6 +13,27 @@ Tower.Model.MassAssignment =
     # This is meant to protect sensitive attributes from
     # being overwritten by malicious users tampering with URLs or forms.
     protected: ->
+      @_attributeAssignment('protected', arguments...)
+
+    protectedAttributes: Ember.computed(->
+      blacklist = {}
+      blacklist._deny = (key) -> _.include(@, key)
+      blacklist
+    ).cacheable()
+
+    accessibleAttributes: Ember.computed(->
+      whitelist = {}
+      whitelist._deny = (key) -> !_.include(@, key)
+      whitelist
+    ).cacheable()
+
+    activeAuthorizer: Ember.computed(->
+      Ember.get(@, 'protectedAttributes')
+    ).cacheable()
+
+    #attributesProtectedByDefault: Ember.computed(->
+    #  ['id']
+    #).cacheable()
 
     # Specifies a white list of model attributes that can be set via mass-assignment.
     #
@@ -28,7 +49,49 @@ Tower.Model.MassAssignment =
     # If you’d rather start from an all-open default and restrict attributes as needed,
     # have a look at {Tower.Model.MassAssigment.protected Tower.Model.protected}.
     accessible: ->
-      args    = _.args(arguments)
-      options = _.extractOptions(arguments)
+      @_attributeAssignment('accessible', arguments...)
+
+    _attributeAssignment: (type) ->
+      args    = _.args(arguments, 1)
+      options = _.extractOptions(args)
+      roles   = _.castArray(options.as || 'default')
+
+      assignments = Ember.get(@, "#{type}Attributes")
+
+      for role in roles
+        attributes = assignments[role]
+        
+        if attributes
+          attributes = attributes.concat(args)
+        else
+          attributes = args
+
+        attributes.deny = assignments._deny # tmp hack
+
+        assignments[role] = attributes
+
+      Ember.set(@, 'activeAuthorizer', assignments)
+
+      @
+
+  _sanitizeForMassAssignment: (attributes, role = 'default') ->
+    rejected            = []
+    authorizer          = Ember.get(@constructor, 'activeAuthorizer')[role]
+    sanitizedAttributes = {}
+
+    # @todo impl hash.reject in underscore.js
+    for key in _.keys(attributes)
+      if authorizer.deny(key)
+        rejected.push(key)
+      else
+        sanitizedAttributes[key] = attributes[key]
+
+    # This should be refactored later into a LoggerSanitizer class if there's not a simpler way
+    @_processRemovedAttributes(rejected) unless _.isEmpty(rejected)
+
+    sanitizedAttributes
+
+  _processRemovedAttributes: (keys) ->
+    # console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}"
 
 module.exports = Tower.Model.MassAssignment

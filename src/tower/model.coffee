@@ -81,5 +81,6 @@ Tower.Model.include Tower.Model.Timestamp
 Tower.Model.include Tower.Model.Transactions
 
 Tower.Model.field('id', type: 'Id')
+Tower.Model.protected('id') # attrProtectedByDefault tmp
 
 module.exports = Tower.Model

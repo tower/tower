@@ -1,15 +1,6 @@
 # @module
 Tower.Model.Serialization =
   ClassMethods:
-    fromJSON: (data) ->
-      records = JSON.parse(data)
-      records = [records] unless records instanceof Array
-
-      for record, i in records
-        records[i] = @build(record)
-
-      records
-
     toJSON: (records, options = {}) ->
       result = []
       result.push(record.toJSON()) for record in records

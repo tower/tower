@@ -1,5 +1,5 @@
 # @todo Inspired from acts_as_paranoid and mongoid::paranoia
-Tower.Model.Paranoid =
+Tower.Model.SoftDelete =
   ClassMethods:
     included: ->
       @field 'deletedAt', type: 'Date'

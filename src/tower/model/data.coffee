@@ -73,8 +73,38 @@ class Tower.Model.Data
 
     @record             = record
 
-    @savedData          = {}
+    @attributes         = {}
+    @changedAttributes  = {}
+    # @previousChanges    = {}
+    @savedData          = {} # this should be persisted data, even for client (waiting for ajax)
     @unsavedData        = {}
+    @primaryKey         = 'id' # tmp, make more robust
+
+  changes: ->
+    injectChange = (memo, value, key) =>
+      memo[key] = [value, @attributes[key]] # [old, new]
+      memo
+
+    _.inject(@changedAttributes, injectChange, {})
+
+  changed: ->
+    _.keys(@changedAttributes)
+
+  resetAttribute: (key) ->
+    if (old = @changedAttributes[key])?
+      delete @changedAttributes[key]
+      @attributes[key] = old
+    else
+      @attributes[key] = @defaultValue(key)
+
+  defaultValue: (key) ->
+    return field.defaultValue(@record) if field = @_getField(key)
+
+  cloneAttribute: (key) ->
+    _.clone(key)
+
+  isReadOnlyAttribute: (key) ->
+    !!@_getField(key).readonly
 
   # Get a value defined by a {Tower.Model.field}.
   #
@@ -88,7 +118,7 @@ class Tower.Model.Data
     # @todo cleanup/optimize
     key = if key == '_id' then 'id' else key
     result = @_cid if key == '_cid'
-    result = Ember.get(@unsavedData, key) if result == undefined
+    result = Ember.get(@attributes, key) if result == undefined
     result = Ember.get(@savedData, key) if result == undefined
     # in the "public api" we want there to be no distinction between cid/id, that should be managed transparently.
     result = @_cid if passedKey == 'id' && result == undefined
@@ -110,6 +140,16 @@ class Tower.Model.Data
       if !@record.get('isNew') && key == 'id'
         return @savedData[key] = value
 
+      # track changes!
+      # @todo, need to account for typecasting better
+      if (old = @changedAttributes[key])?
+        delete @changedAttributes[key] if old == value
+      else
+        old = @attributes[key] # @readAttribute(key)
+        @changedAttributes[key] = old if old != value
+
+      @attributes[key] = value
+
       if value == undefined || @savedData[key] == value
         # TODO Ember.deletePath
         delete @unsavedData[key]
@@ -117,15 +157,20 @@ class Tower.Model.Data
         #@unsavedData[key] = value
         Ember.setPath(@unsavedData, key, value)
 
-    @record.set('isDirty', _.isPresent(@unsavedData))
+    @record.set('isDirty', @isDirty())
 
     value
+
+  isDirty: ->
+    _.isPresent(@unsavedData)
 
   setSavedAttributes: (object) ->
     _.extend(@savedData, object)
 
   commit: ->
-    @attributes()
+    # @attributes()
+    @previousChanges = @changes()
+    _.deepMerge(@savedData, @unsavedData)
     @record.set('isDirty', false)
     @unsavedData = {}
 
@@ -133,7 +178,7 @@ class Tower.Model.Data
     @unsavedData = {}
     @record.propertyDidChange('data')
 
-  attributes: ->
+  attributesOld: ->
     # _.extend(@savedData, @unsavedData)
     _.deepMerge(@savedData, @unsavedData)
 
@@ -149,6 +194,31 @@ class Tower.Model.Data
         result[key] = value
 
     result
+
+  # Filters out the primary keys, from the attribute names, when the primary
+  # key is to be generated (e.g. the id attribute has no value).
+  attributesForCreate: ->
+    @_attributesForPersistence(@attributeKeysForCreate())
+
+  # Filters the primary keys and readonly attributes from the attribute names.
+  attributesForUpdate: (keys) ->
+    @_attributesForPersistence(@attributeKeysForUpdate(keys))
+
+  _attributesForPersistence: (keys) ->
+    result      = {}
+    attributes  = @attributes
+
+    for key in keys
+      result[key] = attributes[key]
+
+    result
+
+  attributeKeysForCreate: ->
+    _.keys(@attributes)
+
+  attributeKeysForUpdate: (keys = _.keys(@changedAttributes)) ->
+    primaryKey  = @primaryKey
+    _.select(keys, (key) -> key != primaryKey)
 
   push: (key, value) ->
     _.oneOrMany(@, @_push, key, value)
