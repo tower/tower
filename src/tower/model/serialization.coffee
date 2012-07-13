@@ -1,11 +1,5 @@
 # @module
 Tower.Model.Serialization =
-  ClassMethods:
-    toJSON: (records, options = {}) ->
-      result = []
-      result.push(record.toJSON()) for record in records
-      result
-
   # Compile the model instance into a hash.
   #
   # @param [Object] options

@@ -1,74 +1,3 @@
-# @todo Tower doesn't need this class separated, going to move everything under the Tower.Model class.
-#
-# This class encapsulates all the logic for modifying attributes, relations, and attachments on a record.
-#
-# When a record is first loaded, `data.savedData` is set to the initial values.
-# Then when you change an attribute, the model enters the `uncommitted` state
-# and starts adding to the `data.changes` object.  This allows us to rollback changes,
-# and only send the changed attributes to the database.
-#
-# You can do a bunch of changes to your model and the bindings will only be executed _once_, in the next frame.
-# You can call `model.flush()` to executes the binds for the model before the next frame.
-#
-# You can also set relations and they will be tracked here.
-#
-# @example Set arrays
-#   post.changes #=> {}
-#   post.tags = ['ruby', 'javascript']
-#   post.changes #=> {tags: [undefined, ['ruby', 'javascript']]}
-#   post.push('tags', 'node')
-#   post.changes #=> {tags: [undefined, ['ruby', 'javascript', 'node']]}
-#   post.pushEach('tags', ['rails', 'tower'])
-#   post.changes #=> {tags: [undefined, ['ruby', 'javascript', 'node', 'rails', 'tower']]}
-#
-# @example Set arrays through parameters
-#   post.setProperties(tags: ['ruby', 'javascript'])
-#   post.setProperties($push: tags: 'node')
-#   post.setProperties($pushEach: tags: ['rails', 'tower'])
-#
-# @example Set nested attributes
-#   post.push 'comments', message: 'First comment'
-#   post.set $push: comments: {message: 'First comment'}
-#
-# @example Increment attributes
-#   post.inc('likeCount', 1)
-#   post.atomicallySetAttribute('$inc', 'likeCount', 1)
-#   post.atomicallyUpdateAttribute('$inc', 'likeCount', 1)
-#   post.updateAttribute('$inc', 'likeCount', 1)
-#
-# @example Decrement attributes
-#   post.inc('likeCount', -1)
-#   post.set $inc: likeCount: -1
-#
-# @example Add item to array
-#   post.add 'tags', 'coffeescript'
-#   post.set $add: tags: 'coffeescript'
-#   post.addEach 'tags', ['javascript', 'coffeescript']
-#   post.set $addEach: tags: ['javascript', 'coffeescript']
-#
-# @example Remove item from array
-#   post.remove 'tags', 'coffeescript'
-#   post.set $remove: tags: 'coffeescript'
-#   post.removeEach 'tags', ['javascript', 'coffeescript']
-#   post.set $removeEach: tags: ['javascript', 'coffeescript']
-#
-# @example Pull item from array (same as remove)
-#   post.pull 'tags', 'coffeescript'
-#   post.set $pull: tags: 'coffeescript'
-#   post.pullEach 'tags', ['javascript', 'coffeescript']
-#   post.set $pullEach: tags: ['javascript', 'coffeescript']
-#
-# @example Each together
-#   user = App.User.first() # id == 1
-#   post = new App.Post(user: user, title: 'First Post')
-#   post.changes #=> {userId: [undefined, 1], title: [undefined, 'First Post']}
-#   post.attributeWas('title') #=> undefined
-#   post.tags = ['ruby', 'javascript']
-#   post.changes #=> {userId: [undefined, 1], title: [undefined, 'First Post'], tags: [undefined, ['ruby', 'javascript']]}
-#
-# @example Crazy params example
-#   post.updateAttributes(title: 'Renamed Post', $add: {tags: 'node'}, $removeEach: {tags: ['ruby', 'jasmine']})
-#
 class Tower.Model.Data
   constructor: (record) ->
     throw new Error('Data must be passed a record') unless record
@@ -83,22 +12,13 @@ class Tower.Model.Data
     @primaryKey         = 'id' # tmp, make more robust
 
   changes: ->
-    injectChange = (memo, value, key) =>
-      memo[key] = [value, @attributes[key]] # [old, new]
-      memo
-
-    _.inject(@changedAttributes, injectChange, {})
+    @record.get('changes')
 
   changed: ->
-    _.keys(@changedAttributes)
+    @record.get('changed')
 
   resetAttribute: (key) ->
-    if @changedAttributes.hasOwnProperty(key)
-      old = @changedAttributes[key]
-      delete @changedAttributes[key]
-      @attributes[key] = old
-    else
-      @attributes[key] = @_defaultValue(key)
+    @record.resetAttribute(key)
 
   isReadOnlyAttribute: (key) ->
     !!@_getField(key).readonly
@@ -178,19 +98,17 @@ class Tower.Model.Data
   # Filters out the primary keys, from the attribute names, when the primary
   # key is to be generated (e.g. the id attribute has no value).
   attributesForCreate: ->
-    @_attributesForPersistence(@attributeKeysForCreate())
+    @record.attributesForCreate()
 
   # Filters the primary keys and readonly attributes from the attribute names.
   attributesForUpdate: (keys) ->
-    @_attributesForPersistence(@attributeKeysForUpdate(keys))
+    @record.attributesForUpdate(keys)
 
   attributeKeysForCreate: ->
-    primaryKey = @primaryKey
-    _.select _.keys(@attributes), (key) -> key != primaryKey
+    @record.attributeKeysForCreate()
 
-  attributeKeysForUpdate: (keys = _.keys(@changedAttributes)) ->
-    primaryKey  = @primaryKey
-    _.select(keys, (key) -> key != primaryKey)
+  attributeKeysForUpdate: (keys) ->
+    @record.attributeKeysForUpdate(keys)
 
   push: (key, value) ->
     _.oneOrMany(@, @_push, key, value)
@@ -282,15 +200,6 @@ class Tower.Model.Data
   _getField: (key) ->
     @record.constructor.fields()[key]
 
-  _attributesForPersistence: (keys) ->
-    result      = {}
-    attributes  = @attributes
-
-    for key in keys
-      result[key] = attributes[key]
-
-    result
-
   # @todo horrible hack, just getting it to work.
   _actualSet: (key, value) ->
     @_updateChangedAttribute(key, value)
@@ -298,13 +207,7 @@ class Tower.Model.Data
     @attributes[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
 
   _updateChangedAttribute: (key, value) ->
-    # @todo, need to account for typecasting better
-    if @changedAttributes.hasOwnProperty(key)
-      if _.isEqual(@changedAttributes[key], value)
-        delete @changedAttributes[key]
-    else
-      old = @_clonedValue(@attributes[key]) # @readAttribute(key)
-      @changedAttributes[key] = old unless _.isEqual(old, value) # if old != value
+    @record._updateChangedAttribute(key, value)
 
   _clonedValue: (value) ->
     if _.isArray(value)

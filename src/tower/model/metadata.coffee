@@ -49,12 +49,6 @@ Tower.Model.Metadata =
         else
           options
 
-    _relationship: false
-
-    # for now, just for neo4j
-    relationship: (value = true) ->
-      @_relationship = value
-
     # @example All default options
     #   class App.User extends Tower.Model
     #     @defaults store: Tower.Store.Memory, scope: @desc('createdAt')
@@ -70,7 +64,7 @@ Tower.Model.Metadata =
       if arguments.length == 1 # we're getting a value
         @metadata().defaults[key]
       else
-        method = "_setDefault#{Tower.Support.String.camelize(key)}"
+        method = "_setDefault#{_.camelize(key)}"
         if @[method]
           @[method](value)
         else
@@ -93,11 +87,11 @@ Tower.Model.Metadata =
       else
         superMetadata = {}
 
-      name                    = Tower.Support.String.camelize(className, true)
-      namePlural              = Tower.Support.String.pluralize(name)
-      classNamePlural         = Tower.Support.String.pluralize(className)
-      paramName               = Tower.Support.String.parameterize(name)
-      paramNamePlural         = Tower.Support.String.parameterize(namePlural)
+      name                    = _.camelize(className, true)
+      namePlural              = _.pluralize(name)
+      classNamePlural         = _.pluralize(className)
+      paramName               = _.parameterize(name)
+      paramNamePlural         = _.parameterize(namePlural)
 
       if baseClassName != className
         namespace               = Tower.namespace()
