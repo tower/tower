@@ -29,7 +29,7 @@ Tower.Model.NestedAttributes =
     # if limit && attributesCollection.size > limit
     #  throw new Error("Maximum #{limit} records are allowed. Got #{attributesCollection.size} records instead.")
 
-    attributesCollection = _.castAattributesCollection] # not sure what this means: _.values(attributesCollection)
+    attributesCollection = _.castArray(attributesCollection) # not sure what this means: _.values(attributesCollection)
 
     #association = @relation(key)
     association = @constructor.relations()[key].scoped(@)
