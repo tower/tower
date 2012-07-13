@@ -65,24 +65,11 @@ Tower.Model.Attributes =
       value || new Tower.Model.Data(@)
     ).cacheable()
 
-    changes: Ember.computed(->
-      if @get('isNew')
-        @get('data').attributesForCreate()
-      else
-        @get('data').attributesForUpdate()
-      #Ember.get(@get('data'), 'unsavedData')
-    ).volatile()
-
-    # @todo this is going to replace the above `changes` method
-    changesHash: Ember.computed(->
-      @get('data').changes()
-    ).volatile()
-
-    # @todo assign_attributes, assign_attributes, multiParameterAttributes
     attributes: Ember.computed(->
       if arguments.length == 2
         @assignAttributes(arguments[1]) if _.isHash(arguments[1])
-      @get('data').copyAttributes()
+      # @todo remove
+      @get('data').attributes
     )
 
     modifyAttribute: (operation, key, value) ->
@@ -90,6 +77,9 @@ Tower.Model.Attributes =
       operation = if operation then operation.replace(/^\$/, '') else 'set'
 
       @[operation](key, value)
+
+    atomicallySetAttribute: ->
+      @modifyAttribute(arguments...)
 
     # @todo add to .build, .create, #updateAttributes
     # This takes in a params hash, usually straight from a request in a controller, 
@@ -144,14 +134,11 @@ Tower.Model.Attributes =
     getAttribute: (key) ->
       @get('data').getAttribute(key)
 
-    # Use this to set an attribute in a more optimized way
+    # @todo Use this to set an attribute in a more optimized way
     setAttribute: (key, value, operation) ->
-      @get('data').setAttribute(key, value, operation)
 
-    # Use this to set multiple attributes in a more optimized way.
-    # This is used by updateAttributes
+    # @todo Use this to set multiple attributes in a more optimized way.
     setAttributes: (attributes) ->
-      @get('data').setAttributes(attributes)
 
     # @todo same as below, might want to redo api
     # setAttributeWithOperation: (operation, key, value) ->

@@ -95,6 +95,71 @@ Tower.Model.Relations =
     getAssociationScope: (key) ->
       @getAssociation(key)
 
+    getHasManyAssociation: (key) ->
+      @getAssociation(key)
+
+    setHasManyAssociation: (key, value) ->
+      #data = Ember.get(@, 'data')
+      #data.set(key, value)
+
+    setHasOneAssociation: (key, value) ->
+      data = Ember.get(@, 'data')
+      data.set(key, value)
+      relation        = @constructor.relation(key)
+      foreignKey      = relation.foreignKey
+      # set belongsTo id on associated object
+      value.set(foreignKey, @get('id'))
+      value
+
+    getHasOneAssociation: (key) ->
+      data  = Ember.get(@, 'data')
+      value = data.get(key)
+      value = @fetch(key) unless value?
+      value
+
+    setBelongsToAssociation: (key, value) ->
+      data      = Ember.get(@, 'data')
+      oldValue  = data.get("#{key}Id")
+      
+      if value instanceof Tower.Model
+        newValue  = value.get('id')
+        data.set("#{key}Id", newValue)
+      else if value == null || value == undefined
+        data.set("#{key}Id", value)
+      else
+        newValue  = value
+        data.set(key, value)
+
+      if Tower.isClient
+        # This is notifying the hasMany associations.
+        # Really, it should notify the "scopes" or "cursors"
+        # that have been registered on the client app.
+        # 
+        # Better yet, whenever _any_ property changes on a model,
+        # you want to run it through all the registered scopes.
+        # Some scopes may sort records, others may select ones matching
+        # certain fields, etc. So the ideal would be to have a map
+        # of model properties to scopes watching those properties.
+        # This way, when a model property changes, you find all scopes that need to be updated like:
+        #   Tower.scopes[modelName][fieldName].refresh()
+        notifyRecord = (id) =>
+          relation        = @constructor.relation(key)
+          inverseRelation = relation.inverse()
+          record          = relation.klass().find(id)
+          record.propertyDidChange(inverseRelation.name) if record && inverseRelation
+
+        # notify oldValue that it's no longer associated
+        notifyRecord(oldValue) if oldValue && oldValue != newValue
+        notifyRecord(newValue) if newValue
+
+      value
+
+    getBelongsToAssociation: (key) ->
+      data  = Ember.get(@, 'data')
+      value = data.get(key)
+      value = @fetch(key) unless value?
+      value
+
     # Currently only used for the `belongsTo` association.
     # 
     # It will make the async database call.

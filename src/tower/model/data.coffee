@@ -1,3 +1,5 @@
+# @todo Tower doesn't need this class separated, going to move everything under the Tower.Model class.
+#
 # This class encapsulates all the logic for modifying attributes, relations, and attachments on a record.
 #
 # When a record is first loaded, `data.savedData` is set to the initial values.
@@ -11,25 +13,31 @@
 # You can also set relations and they will be tracked here.
 #
 # @example Set arrays
-#   post.set 'tags', ['ruby', 'javascript']
-#   post.push 'tags', 'node'
-#   post.pushEach 'tags', ['rails', 'tower']
+#   post.changes #=> {}
+#   post.tags = ['ruby', 'javascript']
+#   post.changes #=> {tags: [undefined, ['ruby', 'javascript']]}
+#   post.push('tags', 'node')
+#   post.changes #=> {tags: [undefined, ['ruby', 'javascript', 'node']]}
+#   post.pushEach('tags', ['rails', 'tower'])
+#   post.changes #=> {tags: [undefined, ['ruby', 'javascript', 'node', 'rails', 'tower']]}
 #
 # @example Set arrays through parameters
-#   post.set tags: ['ruby', 'javascript']
-#   post.set $push: tags: 'node'
-#   post.set $pushEach: tags: ['rails', 'tower']
+#   post.setProperties(tags: ['ruby', 'javascript'])
+#   post.setProperties($push: tags: 'node')
+#   post.setProperties($pushEach: tags: ['rails', 'tower'])
 #
 # @example Set nested attributes
 #   post.push 'comments', message: 'First comment'
 #   post.set $push: comments: {message: 'First comment'}
 #
 # @example Increment attributes
-#   post.inc 'likeCount', 1
-#   post.set $inc: likeCount: 1
+#   post.inc('likeCount', 1)
+#   post.atomicallySetAttribute('$inc', 'likeCount', 1)
+#   post.atomicallyUpdateAttribute('$inc', 'likeCount', 1)
+#   post.updateAttribute('$inc', 'likeCount', 1)
 #
 # @example Decrement attributes
-#   post.inc 'likeCount', -1
+#   post.inc('likeCount', -1)
 #   post.set $inc: likeCount: -1
 #
 # @example Add item to array
@@ -53,19 +61,13 @@
 # @example Each together
 #   user = App.User.first() # id == 1
 #   post = new App.Post(user: user, title: 'First Post')
-#   post.get('data').get('changes') #=> {userId: 1, title: 'First Post'}
-#   post.set 'tags', ['ruby', 'javascript']
-#   post.get('data').get('changes') #=> {userId: 1, title: 'First Post', tags: ['ruby', 'javascript']}
-#   post.set 'comments', [new App.Comment]
-#   post.comments().push new App.Comment
+#   post.changes #=> {userId: [undefined, 1], title: [undefined, 'First Post']}
+#   post.attributeWas('title') #=> undefined
+#   post.tags = ['ruby', 'javascript']
+#   post.changes #=> {userId: [undefined, 1], title: [undefined, 'First Post'], tags: [undefined, ['ruby', 'javascript']]}
 #
 # @example Crazy params example
-#   post.set
-#     title: 'Renamed Post'
-#     $add:
-#       tags: 'node'
-#     $removeEach:
-#       tags: ['ruby', 'jasmine']
+#   post.updateAttributes(title: 'Renamed Post', $add: {tags: 'node'}, $removeEach: {tags: ['ruby', 'jasmine']})
 #
 class Tower.Model.Data
   constructor: (record) ->
@@ -75,9 +77,9 @@ class Tower.Model.Data
 
     @attributes         = {}
     @changedAttributes  = {}
-    # @previousChanges    = {}
+    # @todo this should hold references to the association cursors, not the scopes
+    @associations       = {}
     @savedData          = {} # this should be persisted data, even for client (waiting for ajax)
-    @unsavedData        = {}
     @primaryKey         = 'id' # tmp, make more robust
 
   changes: ->
@@ -96,13 +98,7 @@ class Tower.Model.Data
       delete @changedAttributes[key]
       @attributes[key] = old
     else
-      @attributes[key] = @defaultValue(key)
-
-  defaultValue: (key) ->
-    return field.defaultValue(@record) if field = @_getField(key)
-
-  cloneAttribute: (key) ->
-    _.clone(key)
+      @attributes[key] = @_defaultValue(key)
 
   isReadOnlyAttribute: (key) ->
     !!@_getField(key).readonly
@@ -125,6 +121,16 @@ class Tower.Model.Data
     result = @_cid if passedKey == 'id' && result == undefined
     result
 
+  # stuff for merging api into model
+  unknownProperty: (key) ->
+    @getAttribute(key) # which is @get(key)
+
+  setUnknownProperty: (key, value) ->
+    @setAttribute(key, value)
+
+  setAttribute: (key, value)  ->
+    @set(key, value)
+
   set: (key, value) ->
     if key == '_cid'
       if value?
@@ -137,9 +143,9 @@ class Tower.Model.Data
     if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
       @[key.replace('$', '')](value)
     else
-      # need a better way to do this...
+      # @todo need a better way to do this...
       if !@record.get('isNew') && key == 'id'
-        return @savedData[key] = value
+        return @attributes[key] = value
 
       @_actualSet(key, value)
 
@@ -147,75 +153,27 @@ class Tower.Model.Data
 
     value
 
-  # @todo horrible hack, just getting it to work.
-  _actualSet: (key, value) ->
-    # track changes!
-    # @todo, need to account for typecasting better
-    if @changedAttributes.hasOwnProperty(key)
-      if _.isEqual(@changedAttributes[key], value)
-        delete @changedAttributes[key]
-      #else
-      #  console.log "VAL", value, @_clonedValue(value), @changedAttributes[key]
-      #  @changedAttributes[key] = @_clonedValue(value)
-    else
-      old = @_clonedValue(@attributes[key]) # @readAttribute(key)
-      @changedAttributes[key] = old unless _.isEqual(old, value) # if old != value
-
-    @attributes[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
-
-    if value == undefined || @savedData[key] == value
-      # TODO Ember.deletePath
-      delete @unsavedData[key]
-    else
-      #@unsavedData[key] = value
-      Ember.setPath(@unsavedData, key, value)
-
-  _clonedValue: (value) ->
-    if _.isArray(value)
-      value.concat()
-    else if typeof value == 'object'
-      _.clone(value)
-    else
-      value
-
   # Strip value for atomic update
   strip: (key) ->
     delete @changedAttributes[key]
 
   isDirty: ->
-    _.isPresent(@unsavedData)
+    _.isPresent(@changedAttributes)
 
   setSavedAttributes: (object) ->
+    # there's something weird going on here when destroy instantiates a record already in memory
     _.extend(@savedData, object)
+    #_.extend(@attributes, object)
 
   commit: ->
-    # @attributes()
     @previousChanges = @changes()
     @changedAttributes = {}
-    _.deepMerge(@savedData, @unsavedData)
     @record.set('isDirty', false)
-    @unsavedData = {}
 
   rollback: ->
-    @unsavedData = {}
+    _.extend(@attributes, @changedAttributes)
+    @changedAttributes = {}
     @record.propertyDidChange('data')
-
-  attributesOld: ->
-    # _.extend(@savedData, @unsavedData)
-    _.deepMerge(@savedData, @unsavedData)
-
-  copyAttributes: ->
-    _.deepMerge({}, @savedData, @unsavedData)
-
-  unsavedRelations: ->
-    relations = @record.constructor.relations()
-    result    = {}
-
-    for key, value of @unsavedData
-      if relations.hasOwnProperty(key)
-        result[key] = value
-
-    result
 
   # Filters out the primary keys, from the attribute names, when the primary
   # key is to be generated (e.g. the id attribute has no value).
@@ -226,17 +184,9 @@ class Tower.Model.Data
   attributesForUpdate: (keys) ->
     @_attributesForPersistence(@attributeKeysForUpdate(keys))
 
-  _attributesForPersistence: (keys) ->
-    result      = {}
-    attributes  = @attributes
-
-    for key in keys
-      result[key] = attributes[key]
-
-    result
-
   attributeKeysForCreate: ->
-    _.keys(@attributes)
+    primaryKey = @primaryKey
+    _.select _.keys(@attributes), (key) -> key != primaryKey
 
   attributeKeysForUpdate: (keys = _.keys(@changedAttributes)) ->
     primaryKey  = @primaryKey
@@ -276,11 +226,7 @@ class Tower.Model.Data
     if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
       @[key.replace('$', '')](value)
     else
-      if value == undefined
-        # TODO Ember.deletePath
-        delete @unsavedData[key]
-      else
-        Ember.setPath(@unsavedData, key, value)
+      @
 
   # @private
   _push: (key, value, array = false) ->
@@ -293,7 +239,6 @@ class Tower.Model.Data
       currentValue.push(value)
 
     # probably shouldn't reset it, need to consider
-    # Ember.set(@unsavedData, key, currentValue)
     @_actualSet(key, currentValue)
 
   # @private
@@ -308,7 +253,6 @@ class Tower.Model.Data
       currentValue.splice(_.toStringIndexOf(currentValue, value), 1)
 
     # probably shouldn't reset it, need to consider
-    # Ember.set(@unsavedData, key, currentValue)
     @_actualSet(key, currentValue)
 
   # @private
@@ -325,7 +269,6 @@ class Tower.Model.Data
       currentValue.push(value) if _.indexOf(currentValue, value) == -1
 
     # probably shouldn't reset it, need to consider
-    # Ember.set(@unsavedData, key, currentValue)
     @_actualSet(key, currentValue)
 
   # @private
@@ -334,13 +277,46 @@ class Tower.Model.Data
     currentValue ||= 0
     currentValue += value
 
-    # Ember.set(@unsavedData, key, currentValue)
     @_actualSet(key, currentValue)
 
   _getField: (key) ->
     @record.constructor.fields()[key]
 
-  _getRelation: (key) ->
-    @record.constructor.relations()[key]
+  _attributesForPersistence: (keys) ->
+    result      = {}
+    attributes  = @attributes
+
+    for key in keys
+      result[key] = attributes[key]
+
+    result
+
+  # @todo horrible hack, just getting it to work.
+  _actualSet: (key, value) ->
+    @_updateChangedAttribute(key, value)
+
+    @attributes[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
+
+  _updateChangedAttribute: (key, value) ->
+    # @todo, need to account for typecasting better
+    if @changedAttributes.hasOwnProperty(key)
+      if _.isEqual(@changedAttributes[key], value)
+        delete @changedAttributes[key]
+    else
+      old = @_clonedValue(@attributes[key]) # @readAttribute(key)
+      @changedAttributes[key] = old unless _.isEqual(old, value) # if old != value
+
+  _clonedValue: (value) ->
+    if _.isArray(value)
+      value.concat()
+    else if _.isDate(value)
+      new Date(value.getTime())
+    else if typeof value == 'object'
+      _.clone(value)
+    else
+      value
+
+  _defaultValue: (key) ->
+    return field.defaultValue(@record) if field = @_getField(key)
 
 module.exports = Tower.Model.Data

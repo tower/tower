@@ -9,8 +9,8 @@ describe 'Tower.Model.Dirty', ->
     
     model.set('likeCountWithDefault', 10)
     
-    assert.deepEqual model.get('data').savedData.likeCountWithDefault, undefined
-    assert.deepEqual model.get('data').unsavedData.likeCountWithDefault, 10
+    assert.deepEqual model.get('data').changedAttributes.likeCountWithDefault, undefined
+    assert.deepEqual model.get('data').attributes.likeCountWithDefault, 10
     
   test '#attributeWas', ->
     assert.equal model.attributeWas("likeCountWithDefault"), undefined

@@ -170,7 +170,7 @@ Tower.Model.Metadata =
       @constructor.metadata()
 
     toString: ->
-      attributes  = @get('data').attributes()
+      attributes  = @get('attributes')
       array       = []
       if attributes.hasOwnProperty('id')
         array.push("id=#{JSON.stringify(attributes.id)}")

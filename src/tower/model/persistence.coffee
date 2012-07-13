@@ -198,7 +198,13 @@ Tower.Model.Persistence =
       @
 
     rollback: ->
-      @get('data').rollback()
+      _.extend(@get('attributes'), @get('changedAttributes'))
+      @set('changedAttributes', {})
+      @propertyDidChange('data')
+
+    # @private
+    _commitAttributes: ->
+      @get('data').commit()
 
     # Implementation of the {#save} method.
     #
@@ -236,7 +242,7 @@ Tower.Model.Persistence =
 
           unless error
             @set('isNew', false)
-            @get('data').commit()
+            @_commitAttributes()
 
           complete.call(@, error)
 
@@ -261,7 +267,7 @@ Tower.Model.Persistence =
 
           unless error
             @set('isNew', false)
-            @get('data').commit()
+            @_commitAttributes()
 
           complete.call(@, error)
 

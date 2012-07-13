@@ -2,14 +2,39 @@
 Tower.Model.Dirty =
   InstanceMethods:
     attributeChanged: (name) ->
-      @get('changes').hasOwnProperty(name)
-
-    attributeChange: (name) ->
+      @get('changedAttributes').hasOwnProperty(name)
 
     attributeWas: (name) ->
-      @get('data').savedData[name]
+      @get('changedAttributes')[name]
 
-    resetAttribute: (name) ->
-      @get('data').set(name, undefined)
+    resetAttribute: (key) ->
+      changedAttributes = @get('changedAttributes')
+      attributes        = @get('attributes')
+
+      if changedAttributes.hasOwnProperty(key)
+        old = changedAttributes[key]
+        delete changedAttributes[key]
+        attributes[key] = old
+      else
+        attributes[key] = @get('data')._defaultValue(key)
+
+      # @get('data').resetAttribute(name, undefined)
+
+    changes: Ember.computed(->
+      if @get('isNew')
+        @attributesForCreate()
+      else
+        @attributesForUpdate()
+    ).volatile()
+
+    attributesForCreate: ->
+      @get('data').attributesForCreate()
+
+    attributesForUpdate: ->
+      @get('data').attributesForUpdate()
+
+    changedAttributes: Ember.computed(->
+      @get('data').changedAttributes
+    ).volatile()
 
 module.exports = Tower.Model.Dirty

@@ -23,12 +23,6 @@ describeWith = (store) ->
       test '#record', ->
         assert.deepEqual record, data.record
         
-      test '#savedData', ->
-        assert.deepEqual {}, data.savedData
-        
-      test '#unsavedData', ->
-        assert.deepEqual {}, data.unsavedData
-        
       test 'get path', ->
         data.set('something', 'random')
         assert.equal record.get('something'), 'random'
@@ -63,39 +57,33 @@ describeWith = (store) ->
       #  assert.deepEqual record.get('dataItemTests'), items
       
       # @todo need to update associations to new api
-      test 'removing association', ->
-        items = [new App.DataItemTest]
-        record.set('dataItemTests', items)
-        record.set('dataItemTests', undefined)
-        
-        assert.deepEqual record.get('changes'), {}
-        #assert.deepEqual record.get('dataItemTests'), []
-        
-      test 'getting association in changes hash', ->
-        items = [new App.DataItemTest]
-        record.set('dataItemTests', items)
-        assert.deepEqual record.get('changes'), dataItemTests: items
-        
-        #record.push('dataItemTests', new App.DataItemTest)
-        #assert.equal record.get('changes').dataItemTests.length, 2
-
-      #test '#relations', ->
+      #test 'removing association', ->
       #  items = [new App.DataItemTest]
       #  record.set('dataItemTests', items)
-      #  record.set('title', 'a title')
-      #  console.log data.unsavedData
+      #  record.set('dataItemTests', undefined)
+      #  
+      #  assert.deepEqual record.get('changes'), {}
+      #  #assert.deepEqual record.get('dataItemTests'), []
+      #  
+      #test 'getting association in changes hash', ->
+      #  items = [new App.DataItemTest]
+      #  record.set('dataItemTests', items)
+      #  assert.deepEqual record.get('changes'), dataItemTests: items
+      #  
+      #  #record.push('dataItemTests', new App.DataItemTest)
+      #  #assert.equal record.get('changes').dataItemTests.length, 2
 
       describe 'attribute modifiers', ->
         test 'set', ->
           data.set 'title', 'A Title'
           assert.equal 'A Title', data.get('title')
-          assert.equal 'A Title', data.unsavedData.title
-          assert.equal undefined, data.savedData.title
+          assert.equal 'A Title', data.attributes.title
+          assert.equal undefined, data.changedAttributes.title
           
           data.set 'title', undefined
           assert.equal undefined, data.get('title')
-          assert.equal undefined, data.unsavedData.title
-          assert.equal undefined, data.savedData.title
+          assert.equal undefined, data.attributes.title
+          assert.equal undefined, data.changedAttributes.title
   ###          
         test 'push', ->
           assert.deepEqual ["ruby"], data.push("tags", "ruby")
@@ -270,6 +258,35 @@ describeWith = (store) ->
       data.set('title', 'title!')
       assert.deepEqual data.attributeKeysForUpdate(), ['title']
       assert.deepEqual data.attributesForUpdate(), {title: 'title!'}
+
+    test '_updateChangedAttribute', ->
+      now   = new Date
+      now2  = new Date
+
+      data._updateChangedAttribute('string', 'string!')
+      data._updateChangedAttribute('array', [10])
+      data._updateChangedAttribute('object', {a: 1})
+      data._updateChangedAttribute('date', now)
+
+      assert.deepEqual data.changedAttributes, { string: undefined, array: undefined, object: undefined, date: undefined }
+
+      data._updateChangedAttribute('string', undefined)
+      data._updateChangedAttribute('array', undefined)
+      data._updateChangedAttribute('object', undefined)
+      data._updateChangedAttribute('date', undefined)
+
+      assert.deepEqual data.changedAttributes, { }
+
+      data.attributes = string: 'string!', array: [10], object: {a: 1}, date: now
+
+      data._updateChangedAttribute('string', 'string!')
+      data._updateChangedAttribute('array', [10])
+      data._updateChangedAttribute('object', {a: 1})
+      data._updateChangedAttribute('date', now2)
+
+      # sets it back to how it was just after loading from the database
+      assert.deepEqual data.changedAttributes, { }
+
 
 describeWith(Tower.Store.Memory)
 ###
