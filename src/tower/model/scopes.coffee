@@ -42,6 +42,10 @@ Tower.Model.Scopes =
       cursor.where(type: @className()) if @baseClass().className() != @className()
       cursor
 
+    # Removes default scope, but still allows you to use chainable scopes
+    unscoped: ->
+      @scoped(noDefault: true)
+
     toCursor: ->
       @cursor(arguments...)
 

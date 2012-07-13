@@ -17,7 +17,7 @@ describeWith = (store) ->
   describe "Tower.Model.Data (Tower.Store.#{store.className()})", ->
     describe 'data', ->
       beforeEach ->
-        record  = App.DataTest.new()
+        record  = App.DataTest.build()
         data    = record.get('data')#new Tower.Model.Data(record)
         
       test '#record', ->
@@ -50,7 +50,8 @@ describeWith = (store) ->
         record.set('something', 'random')
         assert.deepEqual record.get('changes'), something: 'random'
         
-      test 'setting changed attribute back to undefined', ->
+      test 'setting changed attribute back to undefined (isNew: false)', ->
+        record.set('isNew', false)
         record.set('something', 'random')
         record.set('something', undefined)
         assert.deepEqual record.get('changes'), {}
@@ -60,7 +61,8 @@ describeWith = (store) ->
       #  items = [new App.DataItemTest]
       #  record.set('dataItemTests', items)
       #  assert.deepEqual record.get('dataItemTests'), items
-        
+      
+      # @todo need to update associations to new api
       test 'removing association', ->
         items = [new App.DataItemTest]
         record.set('dataItemTests', items)

@@ -85,6 +85,7 @@ Tower.Model.Persistence =
       if typeof options == 'function'
         callback  = options
         options   = {}
+
       options ||= {}
 
       unless options.validate == false
@@ -114,9 +115,49 @@ Tower.Model.Persistence =
       @setProperties(attributes)
       @save(callback)
 
-    updateAttribute: (key, value, callback) ->
-      @set(key, value)
-      @save(callback)
+    # @todo this should be able to handle all of the following (or at least limitations clearly defined):
+    #   record.updateAttribute('title', 'Title!')
+    #   record.updateAttribute('postsCount', 1, '$inc')
+    #   record.updateAttribute('postsCount', 1, operation: '$inc')
+    #   record.updateAttribute('postsCount', 1, operation: '$inc', validate: false, atomic: true, (error) ->)
+    # 
+    # Other potentials
+    #   record.pushAttribute('tags', ['node.js'], callback)
+    #   record.pushAndUpdateAttribute('tags', ['node.js'], callback)
+    updateAttribute: (key, value, options, callback) ->
+      switch typeof options
+        when 'string'
+          options = operation: options
+        when 'function'
+          callback  = options
+          options   = {}
+
+      options ||= {}
+
+      if options.atomic # @todo atomic: true is not yet setup/tested
+        @atomicUpdateAttribute(key, value, options.operation, callback)
+      else
+        @modifyAttribute(options.operation, key, value)
+        @save(options, callback)
+
+    # @todo
+    atomicallyUpdateAttributes: (attributes, callback) ->
+
+    # This will update only the specific attribute, leaving the model in the `isDirty` state
+    # if any other attributes were previously changed.
+    atomicallyUpdateAttribute: (key, value, operation, callback) ->
+      if typeof operation == 'function'
+        callback  = operation
+        operation = undefined
+
+      @modifyAttribute(operation, key, value)
+
+      @get('data').strip(key)
+
+      updates = {}
+      updates[key] = value
+
+      @constructor.scoped(instantiate: false, noDefault: true).update(@get('id'), updates, callback)
 
     # Destroy this record, if it is persistent.
     #
@@ -147,16 +188,17 @@ Tower.Model.Persistence =
     # This is basically the same as `refresh`, but for the client it fetches from the server.
     # It's possible `refresh` and `reload` will be merged, waiting to see the use cases in the real world.
     refresh: (callback) ->
+      @set('isSyncing', true)
+
       @constructor.where(id: @get('id')).limit(1).fetch (error, freshRecord) =>
         @set('data', freshRecord.get('data'))
+        @set('isSyncing', false)
         callback.call(@, error) if callback
 
       @
 
     rollback: ->
       @get('data').rollback()
-
-    markForDestruction: ->
 
     # Implementation of the {#save} method.
     #

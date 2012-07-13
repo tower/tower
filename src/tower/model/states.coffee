@@ -6,5 +6,7 @@ Tower.Model.States =
   isError:   false
   isNew:     true
   isValid:   true
+  isSyncing: false
+  isMarkedForDestruction: false
 
 module.exports = Tower.Model.States

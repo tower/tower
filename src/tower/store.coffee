@@ -97,7 +97,8 @@ class Tower.Store extends Tower.Class
     if saved
       model.setSavedAttributes(attributes)
     else
-      model.setProperties(attributes)
+      # model.setProperties(attributes)
+      model.set('attributes', attributes)
 
     model
 

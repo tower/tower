@@ -4,6 +4,7 @@
 #   similar to how Mongoid does it.
 class Tower.Model.Relation.HasMany extends Tower.Model.Relation
   isHasMany: true
+  isCollection: true
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 
@@ -57,16 +58,22 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
       @findReferenced(callback)
 
   count: (callback) ->
+    if @relation.counterCache
+      # should probably only do this if there are no conditions
+      value = @owner.get(@relation.counterCacheKey)
+      callback.call @, null, value if callback
+      return value
+
     @validate (error) =>
       @compileForFind()
 
       @_runBeforeFindCallbacksOnStore =>
-        @_count (error, record) =>
+        @_count (error, value) =>
           unless error
             @_runAfterFindCallbacksOnStore =>
-              callback.call @, error, record if callback
+              callback.call @, error, value if callback
           else
-            callback.call @, error, record if callback
+            callback.call @, error, value if callback
 
   exists: (callback) ->
     @validate (error) =>
@@ -79,6 +86,11 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
               callback.call @, error, record if callback
           else
             callback.call @, error, record if callback
+
+  updateCounter: (difference, callback) ->
+    owner = @owner
+    key   = @relation.counterCacheKey
+    owner.updateAttribute(key, owner.get(key) + difference, callback)
 
   #find: (callback) ->
   #  @validate (error) =>

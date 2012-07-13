@@ -227,4 +227,20 @@ Tower.Support.Object =
 
     object
 
+  assertValidKeys: (options, keys) ->
+    for key of options
+      throw new Error("#{key} is not a valid key") unless _.include(keys, key)
+    true
+
+  except: (object) ->
+    result  = _.clone(object)
+
+    _.each _.flatten(_.args(arguments, 1)), (key) ->
+      delete result[key]
+
+    result
+
+  only: ->
+    _.pick(arguments...)
+
 module.exports = Tower.Support.Object

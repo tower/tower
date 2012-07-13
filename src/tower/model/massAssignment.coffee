@@ -1,6 +1,12 @@
 # @mixin
 Tower.Model.MassAssignment =
   ClassMethods:
+    # @todo
+    readOnly: (keys...) ->
+    
+    # @todo
+    readOnlyAttributes: ->
+
     # Attributes named in this macro are protected from mass-assignment
     # whenever attributes are sanitized before assignment.
     #
@@ -15,21 +21,29 @@ Tower.Model.MassAssignment =
     protected: ->
       @_attributeAssignment('protected', arguments...)
 
-    protectedAttributes: Ember.computed(->
-      blacklist = {}
-      blacklist._deny = (key) -> _.include(@, key)
+    protectedAttributes: ->
+      return @_protectedAttributes if @_protectedAttributes
+
+      # @todo turn this into a class
+      array = ['id']
+      blacklist = {'default': array}
+      blacklist._deny = (key) -> key == 'id' || _.include(@, key) # @todo id is tmp, should be refactored
+      array.deny = blacklist._deny
       blacklist
-    ).cacheable()
 
-    accessibleAttributes: Ember.computed(->
+      @_protectedAttributes = blacklist
+
+    accessibleAttributes: ->
+      return @_attributeAssignment if @_attributeAssignment
+
       whitelist = {}
-      whitelist._deny = (key) -> !_.include(@, key)
+      whitelist._deny = (key) -> key == 'id' || !_.include(@, key)
       whitelist
-    ).cacheable()
 
-    activeAuthorizer: Ember.computed(->
-      Ember.get(@, 'protectedAttributes')
-    ).cacheable()
+      @_accessibleAttributes = whitelist
+
+    activeAuthorizer: ->
+      @_activeAuthorizer ||= @protectedAttributes()
 
     #attributesProtectedByDefault: Ember.computed(->
     #  ['id']
@@ -56,7 +70,9 @@ Tower.Model.MassAssignment =
       options = _.extractOptions(args)
       roles   = _.castArray(options.as || 'default')
 
-      assignments = Ember.get(@, "#{type}Attributes")
+      # @todo figure out inheritable computed properties on classes.
+      # assignments = Ember.get(@, "#{type}Attributes")
+      assignments = @["#{type}Attributes"]()
 
       for role in roles
         attributes = assignments[role]
@@ -70,13 +86,14 @@ Tower.Model.MassAssignment =
 
         assignments[role] = attributes
 
-      Ember.set(@, 'activeAuthorizer', assignments)
+      # Ember.set(@, 'activeAuthorizer', assignments)
+      @_activeAuthorizer = assignments
 
       @
 
   _sanitizeForMassAssignment: (attributes, role = 'default') ->
     rejected            = []
-    authorizer          = Ember.get(@constructor, 'activeAuthorizer')[role]
+    authorizer          = @constructor.activeAuthorizer()[role] # Ember.get(@constructor, 'activeAuthorizer')[role]
     sanitizedAttributes = {}
 
     # @todo impl hash.reject in underscore.js
@@ -92,6 +109,6 @@ Tower.Model.MassAssignment =
     sanitizedAttributes
 
   _processRemovedAttributes: (keys) ->
-    # console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}"
+    console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}" unless Tower.env == 'test'
 
 module.exports = Tower.Model.MassAssignment

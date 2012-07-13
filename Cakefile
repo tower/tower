@@ -1,3 +1,4 @@
+# maybe switch to makefile, such as https://github.com/michaelficarra/CoffeeScriptRedux/blob/master/Makefile
 fs      = require 'fs'
 findit  = require './node_modules/findit'
 async   = require './node_modules/async'

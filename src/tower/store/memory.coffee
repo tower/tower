@@ -28,10 +28,12 @@ class Tower.Store.Memory extends Tower.Store
   commit: ->
     Ember.get(@, 'batch').commit()
 
+require './memory/calculations'
 require './memory/finders'
 require './memory/persistence'
 require './memory/serialization'
 
+Tower.Store.Memory.include Tower.Store.Memory.Calculations
 Tower.Store.Memory.include Tower.Store.Memory.Finders
 Tower.Store.Memory.include Tower.Store.Memory.Persistence
 Tower.Store.Memory.include Tower.Store.Memory.Serialization

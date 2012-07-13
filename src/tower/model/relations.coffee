@@ -90,7 +90,10 @@ Tower.Model.Relations =
       @get(key)
 
     getAssociation: (key) ->
-      @get(key + 'Association')
+      @get("#{key}Association")
+
+    getAssociationScope: (key) ->
+      @getAssociation(key)
 
     # Currently only used for the `belongsTo` association.
     # 
@@ -156,6 +159,5 @@ Tower.Model.Relations =
 
       for name, relation of relations
         relation.inverse()
-
 
 module.exports = Tower.Model.Relations

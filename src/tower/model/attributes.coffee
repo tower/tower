@@ -4,6 +4,7 @@ Tower.Model.Attributes =
 
   ClassMethods:
     dynamicFields: true
+    primaryKey: 'id'
 
     destructiveFields: [
       'id'
@@ -65,7 +66,11 @@ Tower.Model.Attributes =
     ).cacheable()
 
     changes: Ember.computed(->
-      Ember.get(@get('data'), 'unsavedData')
+      if @get('isNew')
+        @get('data').attributesForCreate()
+      else
+        @get('data').attributesForUpdate()
+      #Ember.get(@get('data'), 'unsavedData')
     ).volatile()
 
     # @todo this is going to replace the above `changes` method
@@ -80,32 +85,52 @@ Tower.Model.Attributes =
       @get('data').copyAttributes()
     )
 
-    assignAttributes: (attributes, options) ->
+    modifyAttribute: (operation, key, value) ->
+      operation = Tower.Store.Modifiers.MAP[operation]
+      operation = if operation then operation.replace(/^\$/, '') else 'set'
+
+      @[operation](key, value)
+
+    # @todo add to .build, .create, #updateAttributes
+    # This takes in a params hash, usually straight from a request in a controller, 
+    # so it should be thoroughly cleansed.
+    assignAttributes: (attributes, options, operation) ->
       return unless _.isHash(attributes)
       options ||= {}
 
-      # like with the datepicker, such as date(1) == month, date(2) == day, date(3) == year
+      unless options.withoutProtection
+        options.as ||= 'default'
+        attributes = @_sanitizeForMassAssignment(attributes, options.as)
+
+      Ember.beginPropertyChanges()
+
+      @_assignAttributes(attributes, options, operation)
+
+      Ember.endPropertyChanges()
+
+    _assignAttributes: (attributes, options, operation) ->
+      # such as with the datepicker, such as date(1) == month, date(2) == day, date(3) == year
       multiParameterAttributes  = []
       nestedParameterAttributes = []
+      modifiedAttributes        = []
 
-      unless options.withoutProtection
-        role = options.as || 'default'
-        attributes = @_sanitizeForMassAssignment(attributes, role)
-
+      # this recursion needs to be thought about again
       for k, v of attributes
-        if k.indexOf("(") > -1
+        if k.indexOf('(') > -1
           multiParameterAttributes.push [ k, v ]
+        else if k.charAt(0) == '$'
+          @assignAttributes(v, options, k)
         else
           if _.isHash(v)
             nestedParameterAttributes.push [ k, v ]
           else
-            @set(k, v)
+            @modifyAttribute(operation, k, v)
+
+      # @assignMultiparameterAttributes(multiParameterAttributes)
 
       # assign any deferred nested attributes after the base attributes have been set
       for item in nestedParameterAttributes
-        @set(item[0], item[1])
-
-      # @assignMultiparameterAttributes(multiParameterAttributes)
+        @modifyAttribute(operation, item[0], item[1])
 
     setSavedAttributes: (object) ->
       @get('data').setSavedAttributes(object)
@@ -115,6 +140,21 @@ Tower.Model.Attributes =
 
     setUnknownProperty: (key, value) ->
       @get('data').set(key, value) if @get('dynamicFields')
+
+    getAttribute: (key) ->
+      @get('data').getAttribute(key)
+
+    # Use this to set an attribute in a more optimized way
+    setAttribute: (key, value, operation) ->
+      @get('data').setAttribute(key, value, operation)
+
+    # Use this to set multiple attributes in a more optimized way.
+    # This is used by updateAttributes
+    setAttributes: (attributes) ->
+      @get('data').setAttributes(attributes)
+
+    # @todo same as below, might want to redo api
+    # setAttributeWithOperation: (operation, key, value) ->
 
 for method in Tower.Store.Modifiers.SET
   do (method) ->

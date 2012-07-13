@@ -2,7 +2,7 @@ model = null
 
 describe 'Tower.Model.Dirty', ->
   beforeEach ->
-    model = App.BaseModel.new()
+    model = App.BaseModel.build()
     
   test '#changes', ->
     assert.isObject model.get('changes')

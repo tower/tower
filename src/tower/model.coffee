@@ -30,7 +30,7 @@ class Tower.Model extends Tower.Class
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
 
-    @errors = {}
+    @set('errors', {})
 
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
@@ -52,6 +52,8 @@ require './model/relations'
 require './model/attachment'
 require './model/attribute'
 require './model/attributes'
+require './model/nestedAttributes'
+require './model/autosaveAssociation'
 require './model/persistence'
 require './model/scopes'
 require './model/serialization'
@@ -77,6 +79,8 @@ Tower.Model.include Tower.Model.Relations
 Tower.Model.include Tower.Model.Validations
 Tower.Model.include Tower.Model.Attachment
 Tower.Model.include Tower.Model.Attributes
+Tower.Model.include Tower.Model.NestedAttributes
+Tower.Model.include Tower.Model.AutosaveAssociation
 Tower.Model.include Tower.Model.Timestamp
 Tower.Model.include Tower.Model.Transactions
 

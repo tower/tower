@@ -3,7 +3,7 @@ Tower.Model.SoftDelete =
   ClassMethods:
     included: ->
       @field 'deletedAt', type: 'Date'
-      @isParanoid = true
+      # @isParanoid = true
 
       @defaultScope @where(deleted_at: null)
       @scope 'deleted', @ne(deleted_at: null)
@@ -18,3 +18,5 @@ Tower.Model.SoftDelete =
 
   restore: (callback) ->
     @updateAttribute('deletedAt', null, callback)
+
+module.exports = Tower.Model.SoftDelete

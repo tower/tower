@@ -19,6 +19,10 @@ _.extend Tower,
   config:           {}
   namespaces:       {}
   metadata:         {}
+  # @todo
+  # isTest: false
+  # isDevelopment: false
+  # isProduction: false
   _:                _
   subscribe: ->
     Tower.Application.instance().subscribe arguments...

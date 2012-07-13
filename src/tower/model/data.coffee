@@ -91,7 +91,8 @@ class Tower.Model.Data
     _.keys(@changedAttributes)
 
   resetAttribute: (key) ->
-    if (old = @changedAttributes[key])?
+    if @changedAttributes.hasOwnProperty(key)
+      old = @changedAttributes[key]
       delete @changedAttributes[key]
       @attributes[key] = old
     else
@@ -140,26 +141,46 @@ class Tower.Model.Data
       if !@record.get('isNew') && key == 'id'
         return @savedData[key] = value
 
-      # track changes!
-      # @todo, need to account for typecasting better
-      if (old = @changedAttributes[key])?
-        delete @changedAttributes[key] if old == value
-      else
-        old = @attributes[key] # @readAttribute(key)
-        @changedAttributes[key] = old if old != value
-
-      @attributes[key] = value
-
-      if value == undefined || @savedData[key] == value
-        # TODO Ember.deletePath
-        delete @unsavedData[key]
-      else
-        #@unsavedData[key] = value
-        Ember.setPath(@unsavedData, key, value)
+      @_actualSet(key, value)
 
     @record.set('isDirty', @isDirty())
 
     value
+
+  # @todo horrible hack, just getting it to work.
+  _actualSet: (key, value) ->
+    # track changes!
+    # @todo, need to account for typecasting better
+    if @changedAttributes.hasOwnProperty(key)
+      if _.isEqual(@changedAttributes[key], value)
+        delete @changedAttributes[key]
+      #else
+      #  console.log "VAL", value, @_clonedValue(value), @changedAttributes[key]
+      #  @changedAttributes[key] = @_clonedValue(value)
+    else
+      old = @_clonedValue(@attributes[key]) # @readAttribute(key)
+      @changedAttributes[key] = old unless _.isEqual(old, value) # if old != value
+
+    @attributes[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
+
+    if value == undefined || @savedData[key] == value
+      # TODO Ember.deletePath
+      delete @unsavedData[key]
+    else
+      #@unsavedData[key] = value
+      Ember.setPath(@unsavedData, key, value)
+
+  _clonedValue: (value) ->
+    if _.isArray(value)
+      value.concat()
+    else if typeof value == 'object'
+      _.clone(value)
+    else
+      value
+
+  # Strip value for atomic update
+  strip: (key) ->
+    delete @changedAttributes[key]
 
   isDirty: ->
     _.isPresent(@unsavedData)
@@ -170,6 +191,7 @@ class Tower.Model.Data
   commit: ->
     # @attributes()
     @previousChanges = @changes()
+    @changedAttributes = {}
     _.deepMerge(@savedData, @unsavedData)
     @record.set('isDirty', false)
     @unsavedData = {}
@@ -271,7 +293,8 @@ class Tower.Model.Data
       currentValue.push(value)
 
     # probably shouldn't reset it, need to consider
-    Ember.set(@unsavedData, key, currentValue)
+    # Ember.set(@unsavedData, key, currentValue)
+    @_actualSet(key, currentValue)
 
   # @private
   _pull: (key, value, array = false) ->
@@ -285,12 +308,15 @@ class Tower.Model.Data
       currentValue.splice(_.toStringIndexOf(currentValue, value), 1)
 
     # probably shouldn't reset it, need to consider
-    Ember.set(@unsavedData, key, currentValue)
+    # Ember.set(@unsavedData, key, currentValue)
+    @_actualSet(key, currentValue)
 
   # @private
   _add: (key, value, array = false) ->
     currentValue = @get(key)
     currentValue ||= []
+    # @todo need to figure out better way of comparing old/new values, not based on actual javascript object instance
+    currentValue = @_clonedValue(currentValue)
 
     if array
       for item in _.castArray(value)
@@ -299,7 +325,8 @@ class Tower.Model.Data
       currentValue.push(value) if _.indexOf(currentValue, value) == -1
 
     # probably shouldn't reset it, need to consider
-    Ember.set(@unsavedData, key, currentValue)
+    # Ember.set(@unsavedData, key, currentValue)
+    @_actualSet(key, currentValue)
 
   # @private
   _inc: (key, value) ->
@@ -307,7 +334,8 @@ class Tower.Model.Data
     currentValue ||= 0
     currentValue += value
 
-    Ember.set(@unsavedData, key, currentValue)
+    # Ember.set(@unsavedData, key, currentValue)
+    @_actualSet(key, currentValue)
 
   _getField: (key) ->
     @record.constructor.fields()[key]

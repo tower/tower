@@ -1,4 +1,6 @@
 class Tower.Model.Relation extends Tower.Class
+  isCollection: false
+
   # Construct a new relation.
   #
   # @param [Function] owner Tower.Model class this relation is defined on.
@@ -38,9 +40,10 @@ class Tower.Model.Relation extends Tower.Class
   initialize: (options) ->
     owner               = @owner
     name                = @name
+    className           = owner.className()
     # @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
     @type               = Tower.namespaced(options.type || _.camelize(_.singularize(name)))
-    @ownerType          = Tower.namespaced(owner.className())
+    @ownerType          = Tower.namespaced(className)
     @dependent        ||= false
     @counterCache     ||= false
     @idCache            = false unless @hasOwnProperty('idCache')
@@ -51,11 +54,13 @@ class Tower.Model.Relation extends Tower.Class
     @inverseOf        ||= undefined
     @polymorphic        = options.hasOwnProperty('as') || !!options.polymorphic
     @default            = false unless @hasOwnProperty('default')
-    @singularName       = Tower.Support.String.camelize(owner.className(), true)
-    @pluralName         = Tower.Support.String.pluralize(owner.className()) # collectionName?
-    @singularTargetName = Tower.Support.String.singularize(name)
-    @pluralTargetName   = Tower.Support.String.pluralize(name)
+    @singularName       = _.camelize(className, true)
+    @pluralName         = _.pluralize(className) # collectionName?
+    @singularTargetName = _.singularize(name)
+    @pluralTargetName   = _.pluralize(name)
     @targetType         = @type
+    @primaryKey         = 'id'
+    
     # hasMany "posts", foreignKey: "postId", idCacheKey: "postIds"
     unless @foreignKey
       if @as
@@ -88,10 +93,18 @@ class Tower.Model.Relation extends Tower.Class
 
     @_defineRelation(name)
 
+    if @autosave
+      @owner._addAutosaveAssociationCallbacks(@)
+
   _defineRelation: (name) ->
     object = {}
 
     isHasMany = !@className().match(/HasOne|BelongsTo/)
+    @relationType = if isHasMany then 'collection' else 'singular'
+
+    object[name + 'Association'] = Ember.computed((key) ->
+      @constructor.relation(name).scoped(@)
+    ).cacheable()
 
     if isHasMany
       # you can "set" collections directly, but whenever you "get" them
@@ -103,9 +116,6 @@ class Tower.Model.Relation extends Tower.Class
         @constructor.relation(name).scoped(@)
       ).property('data').cacheable()
     else
-      object[name + 'Association'] = Ember.computed((key) ->
-        @constructor.relation(name).scoped(@)
-      ).cacheable()
       if @className() == 'BelongsTo'
         object[name] = Ember.computed((key, value) ->
           if arguments.length is 2
@@ -265,6 +275,8 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
 
   _teardown: ->
     _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
+
+  addToTarget: (record) ->
 
 class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
   @make: ->
