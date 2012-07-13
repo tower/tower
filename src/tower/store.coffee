@@ -103,7 +103,7 @@ class Tower.Store extends Tower.Class
     model
 
   deserializeModel: (data) ->
-    if data instanceof Tower.Model then data.get('changes') else data
+    if data instanceof Tower.Model then data.get('dirtyAttributes') else data
 
   init: (options = {}) ->
     @_super arguments...

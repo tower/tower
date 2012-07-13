@@ -42,7 +42,7 @@ describeWith = (store) ->
         
       test 'unsavedData', ->
         record.set('something', 'random')
-        assert.deepEqual record.get('changes'), something: 'random'
+        assert.deepEqual record.get('changes'), something: [undefined, 'random']
         
       test 'setting changed attribute back to undefined (isNew: false)', ->
         record.set('isNew', false)
@@ -230,11 +230,11 @@ describeWith = (store) ->
       assert.deepEqual data.changed(), ['title']
 
     test 'changes from record', ->
-      assert.deepEqual record.get('changesHash'), {}
+      assert.deepEqual record.get('changes'), {}
 
       data.set('title', 'title!')
       
-      assert.deepEqual record.get('changesHash'), {title: [ undefined, 'title!' ]}
+      assert.deepEqual record.get('changes'), {title: [ undefined, 'title!' ]}
 
     test 'data.resetAttribute', ->
       # hack fake initial value

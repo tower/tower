@@ -1,40 +1,43 @@
 # @mixin
 Tower.Model.Dirty =
-  InstanceMethods:
-    attributeChanged: (name) ->
-      @get('changedAttributes').hasOwnProperty(name)
+  changes: Ember.computed(->
+    @get('data').changes()
+  ).volatile()
 
-    attributeWas: (name) ->
-      @get('changedAttributes')[name]
+  dirtyAttributes: Ember.computed(->
+    if @get('isNew')
+      @attributesForCreate()
+    else
+      @attributesForUpdate()
+  ).volatile()
 
-    resetAttribute: (key) ->
-      changedAttributes = @get('changedAttributes')
-      attributes        = @get('attributes')
+  attributeChanged: (name) ->
+    @get('changedAttributes').hasOwnProperty(name)
 
-      if changedAttributes.hasOwnProperty(key)
-        old = changedAttributes[key]
-        delete changedAttributes[key]
-        attributes[key] = old
-      else
-        attributes[key] = @get('data')._defaultValue(key)
+  attributeWas: (name) ->
+    @get('changedAttributes')[name]
 
-      # @get('data').resetAttribute(name, undefined)
+  resetAttribute: (key) ->
+    changedAttributes = @get('changedAttributes')
+    attributes        = @get('attributes')
 
-    changes: Ember.computed(->
-      if @get('isNew')
-        @attributesForCreate()
-      else
-        @attributesForUpdate()
-    ).volatile()
+    if changedAttributes.hasOwnProperty(key)
+      old = changedAttributes[key]
+      delete changedAttributes[key]
+      attributes[key] = old
+    else
+      attributes[key] = @get('data')._defaultValue(key)
 
-    attributesForCreate: ->
-      @get('data').attributesForCreate()
+    # @get('data').resetAttribute(name, undefined)
 
-    attributesForUpdate: ->
-      @get('data').attributesForUpdate()
+  attributesForCreate: ->
+    @get('data').attributesForCreate()
 
-    changedAttributes: Ember.computed(->
-      @get('data').changedAttributes
-    ).volatile()
+  attributesForUpdate: ->
+    @get('data').attributesForUpdate()
+
+  changedAttributes: Ember.computed(->
+    @get('data').changedAttributes
+  ).volatile()
 
 module.exports = Tower.Model.Dirty

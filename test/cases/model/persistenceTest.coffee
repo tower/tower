@@ -117,7 +117,7 @@ describeWith = (store) ->
         user.set "firstName", "John"
         
         assert.equal user.get('isDirty'), true
-        assert.deepEqual user.get('changes'), firstName: 'John'
+        assert.deepEqual user.get('changes'), firstName: ['Lance', 'John']
         
         user.save (error) =>
           assert.equal user.get("firstName"), "John", 'Assert name'

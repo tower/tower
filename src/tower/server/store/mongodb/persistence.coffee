@@ -18,8 +18,7 @@ Tower.Store.Mongodb.Persistence =
 
   # @see Tower.Store#update
   update: (updates, cursor, callback) ->
-    changes = updates.get('changes')
-    updates         = @serializeAttributesForUpdate(updates.get('changes'))
+    updates         = @serializeAttributesForUpdate(updates.get('dirtyAttributes'))
     
     conditions      = @serializeConditions(cursor)
     options         = @serializeOptions(cursor)

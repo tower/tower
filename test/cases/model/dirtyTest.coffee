@@ -37,3 +37,6 @@ describe 'Tower.Model.Dirty', ->
     assert.equal model.get("title"), "A Title!"
     assert.equal model.get("likeCount"), 2
     assert.deepEqual model.get("tags"), ["javascript"]
+
+  test 'changedAttributes', ->
+    console.log model.get('changedAttributes')
