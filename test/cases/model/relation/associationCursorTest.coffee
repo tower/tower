@@ -1,3 +1,21 @@
+# It seems there can be distinct optimizations for client/server association persistence.
+# For the server, the "context" need to be scoped to the current request, you have to save the models in callbacks.
+# One workaround may be to do things like App.User.env(@).where..., where `env` is the controller, so you're
+# creating a cursor mapped to the current request. This way you can create an identity-map/cache of records on a per-request basis.
+# Otherwise, you have to do what rails does and have the AutosaveAssociations callbacks.
+# On the client, however, it may be better to do something like what ember-data is doing with a global transaction.
+# When any of the models change, they are added to a global bucket, then at some point they are all synced.
+# There would be some complications with hasMany through records b/c of ids using that approach, but
+# it would mean that whenever you call `record.save()`, it doesn't have to go through all those callbacks; it
+# would only have to do what happens in the `set` method for associations, such as `_setHasManyAssociation`, which
+# just nullifies/sets ids on the associated models - and then the global transaction would sync them all in a simple way, 
+# just calling save/destroy on each. For now though, we can do this in phases:
+# 1. get it working on client/server the way rails does it with autosave associations.
+# 2. try out a global transaction on the client and see if that simplifies things.
+#   If so, remove the autosave stuff on the client and build something custom.
+# 3. try the `env` thing in the controller, so you're creating an identity map in the controllers
+#   on a per-request basis. This will pave the way for creating "database transactions" (or getting
+#   as close as possible to them with mongodb). We may find this may work like the client-side global transaction.
 class App.AssociationCursorTest extends Tower.Model
   @hasMany 'associationCursorPosts'
   @hasOne 'associationCursorAddress'
