@@ -110,7 +110,7 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     updateAttributes: (attributes, callback) ->
-      @setProperties(attributes)
+      @assignAttributes(attributes)
       @save(callback)
 
     # @todo this should be able to handle all of the following (or at least limitations clearly defined):

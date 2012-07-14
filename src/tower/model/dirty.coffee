@@ -4,7 +4,7 @@ Tower.Model.Dirty =
     attributes        = @get('attributes')
 
     injectChange = (memo, value, key) =>
-      memo[key] = [value, attributes[key]] # [old, new]
+      memo[key] = [value, @get('data').get(key)]# [value, attributes[key]] # [old, new]
       memo
 
     _.inject(@get('changedAttributes'), injectChange, {})

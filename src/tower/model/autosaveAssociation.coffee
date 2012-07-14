@@ -143,59 +143,78 @@ Tower.Model.AutosaveAssociation =
   # This all happens inside a transaction, _if_ the Transactions module is included into
   # Tower.Model after the AutosaveAssociation module, which it does by default.
   _saveCollectionAssociation: (association, callback) ->
-    if cursor = @getAssociationCursor(association.name)
-      autosave  = association.autosave
-      wasNew    = !!@newRecordBeforeSave
+    @_removeOldAssociations association, (error) =>
+      console.log error if error
+      if cursor = @getAssociationCursor(association.name)
+        autosave  = association.autosave
+        wasNew    = !!@newRecordBeforeSave
 
-      if records = @_associatedRecordsToValidateOrSave(cursor, wasNew, autosave)
-        recordsToDestroy = []
-        foreignKey  = association.foreignKey
-        key         = @get('id')
+        if records = @_associatedRecordsToValidateOrSave(cursor, wasNew, autosave)
+          recordsToDestroy = []
+          delete cursor._markedForDestruction
+          foreignKey  = association.foreignKey
+          key         = @get('id')
 
-        # Should be done in parallel with Tower.parallel iterator
-        # @todo this may want to be moved directly onto the cursor class
-        createRecord = (record, next) => 
-          if record.get('isDeleted')
-            next()
-          else if autosave && record.get('isMarkedForDestruction')
-            recordsToDestroy.push(record)
-          # autosave can be null/undefined/true/false
-          else if autosave != false && (wasNew || record.get('isNew'))
-            if autosave
+          # Should be done in parallel with Tower.parallel iterator
+          # @todo this may want to be moved directly onto the cursor class
+          createRecord = (record, next) => 
+            if record.get('isDeleted')
+              next()
+            else if autosave && record.get('isMarkedForDestruction')
+              recordsToDestroy.push(record)
+            # autosave can be null/undefined/true/false
+            else if autosave != false && (wasNew || record.get('isNew'))
+              if autosave
+                record.set(foreignKey, key)
+                # should not validate
+                # cursor.insert record, next
+                record.save(validate: false, next)
+              else if !association.nested
+                record.set(foreignKey, key)
+                record.save(next)
+                # cursor.insert record, next
+              else
+                next()
+            else if autosave
               record.set(foreignKey, key)
-              # should not validate
-              # cursor.insert record, next
-              record.save(validate: false, next)
-            else if !association.nested
-              record.set(foreignKey, key)
-              record.save(next)
-              # cursor.insert record, next
+              record.save validate: false, next
             else
               next()
-          else if autosave
-            record.set(foreignKey, key)
-            record.save validate: false, next
-          else
-            next()
 
-        Tower.parallel records, createRecord, (error) =>
-          if error
-            callback.call(@, error) if callback
-            return false
-          else if recordsToDestroy.length
-            # This should also be done in parallel
-            cursor.destroy recordsToDestroy, (error) =>
+          Tower.parallel records, createRecord, (error) =>
+            if error
               callback.call(@, error) if callback
-              return !error
-          else
-            callback.call(@) if callback
-            return true
-      else
-        callback.call(@) if callback
-        return true
+              return false
+            else if recordsToDestroy.length
+              # This should also be done in parallel
+              cursor.destroy recordsToDestroy, (error) =>
+                callback.call(@, error) if callback
+                return !error
+            else
+              callback.call(@) if callback
+              return true
+        else
+          callback.call(@) if callback
+          return true
 
       # reconstruct the scope now that we know the owner's id
       # associationScope.send(:reset_scope) if associationScope.respond_to?(:reset_scope)
+
+  # @todo tmp
+  _removeOldAssociations: (association, callback) ->
+    cursor = @getAssociationCursor(association.name)
+    records = cursor._markedForDestruction
+    delete cursor._markedForDestruction
+
+    if records && records.length
+      iterate = (record, next) =>
+        record.save (error) =>
+          next(error)
+
+      Tower.parallel records, iterate, (error) =>
+        callback.call(@, error)
+    else
+      callback.call(@)
 
   # Saves the associated record if it's new or <tt>:autosave</tt> is enabled
   # on the association.

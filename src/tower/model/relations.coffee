@@ -113,17 +113,22 @@ Tower.Model.Relations =
       # calculate difference
       # cursor.removeFromTarget(oldValues)
       if @get('isNew')
-        for item in cursor
-          item.set('isMarkedForDestruction', true) unless _.include(value, item)
+        @
       else
-        ids   = _.compact _.map value, (item) -> item.get('id')?.toString()
+        cursor._markedForDestruction ||= []
+        toRemove = cursor._markedForDestruction.concat()
+        ids = []
+        for item in value
+          id = Ember.get(item, 'id')
+          ids.push(id.toString()) if id?
 
         for item in cursor
-          id = try item.get('id')?.toString()
-          if id?
-            item.set('isMarkedForDestruction', true) unless _.include(ids, id)
-          else
-            item.set('isMarkedForDestruction') unless _.include(value, item)
+          if @_checkAssociationRecordForDestroy(item, association)
+            if _.indexOf(ids, item.get('id').toString()) == -1
+              item.set(association.foreignKey, undefined)
+              toRemove.push(item)
+
+        cursor._markedForDestruction = toRemove if toRemove.length
 
       # @todo convert value into array of Tower.Model instances
       if value && value.length
@@ -143,6 +148,12 @@ Tower.Model.Relations =
 
     _getHasManyAssociation: (key) ->
       @getAssociation(key)
+
+    # @todo tmp way
+    _checkAssociationRecordForDestroy: (record, association) ->
+      foreignId = record.get(association.foreignKey)
+      id        = @get('id')
+      foreignId? && id? && foreignId.toString() == id.toString() && !record.attributeChanged(association.foreignKey)
 
     _setHasOneAssociation: (key, value, association) ->
       cursor          = @getAssociationCursor(key)
