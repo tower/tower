@@ -44,7 +44,8 @@ Tower.Model.AutosaveAssociation =
         # define_non_cyclic_method(validationMethod, association) { send(method, association) }
         @validate validationMethod
 
-        mixin[validationMethod] = -> @[method](association)
+        mixin[validationMethod] = (callback) ->
+          @[method](association, callback)
 
       @reopen(mixin)
 
@@ -54,20 +55,37 @@ Tower.Model.AutosaveAssociation =
 
   # Validate the association if <tt>:validate</tt> or <tt>:autosave</tt> is
   # turned on for the association.
-  _validateSingleAssociation: (association) ->
-    associationScope  = @getAssociationScope(association.name)
-    record            = associationScope.reader if associationScope
-    @_associationIsValid(associationScope, record) if record
+  _validateSingleAssociation: (association, callback) ->
+    cursor  = @getAssociationCursor(association.name)
+    record  = cursor[0] if cursor # @todo assumes it's the array cursor, not Tower.Model.Cursor
+
+    if record
+      @_associationIsValid(association, record, callback)
+    else
+      callback.call(@) if callback
+      true
 
   # Validate the associated records if <tt>:validate</tt> or
   # <tt>:autosave</tt> is turned on for the association specified by
   # +association+.
-  _validateCollectionAssociation: (association) ->
-    if associationScope = @getAssociationScope(association.name)
-      if records = @_associatedRecordsToValidateOrSave(associationScope, @get('isNew'), associationScope.autosave)
-        # should be executed in parallel with Tower.parallel iterator
-        for record in records
-          @_associationIsValid(association, record)
+  _validateCollectionAssociation: (association, callback) ->
+    success = undefined
+    cursor  = @getAssociationCursor(association.name)
+    records = @_associatedRecordsToValidateOrSave(cursor, @get('isNew'), association.autosave) if cursor
+
+    if records && records.length
+      # should be executed in parallel with Tower.parallel iterator
+      iterate = (record, next) =>
+        @_associationIsValid association, record, (error) =>
+          success = !error unless success == false
+          next()
+
+      Tower.parallel records, iterate, =>
+        callback.call(@, success) if callback
+    else
+      callback.call(@, true) if callback
+
+    success
 
   # Returns whether or not the association is valid and applies any errors to
   # the parent, <tt>self</tt>, if it wasn't. Skips any <tt>:autosave</tt>
@@ -86,24 +104,26 @@ Tower.Model.AutosaveAssociation =
               array.push(message)
             errors[attribute] = _.uniq(array)
         else
-          errors[association.name] = 'Something not right (todo)'
+          errors[association.name] = ['Invalid']
 
-      callback.call(@, !error) if callback
+      success = !error
 
-      !error
+      callback.call(@, error) if callback
+
+      success
 
   # Returns the record for an association collection that should be validated
   # or saved. If +autosave+ is +false+ only new records will be returned,
   # unless the parent is/was a new record itself.
   # 
   # @todo
-  _associatedRecordsToValidateOrSave: (association, newRecord, autosave) ->
+  _associatedRecordsToValidateOrSave: (cursor, newRecord, autosave) ->
     if newRecord
-      association && association.target # need to have one main association on the model instance, which you can still chain.
+      cursor
     else if autosave
-      association.target.findAll (record) -> record.changedForAutosave()
+      cursor.filter (record) -> record._changedForAutosave()
     else
-      association.target.findAll (record) -> record.get('isNew')
+      cursor.filter (record) -> record.get('isNew')
 
   _changedForAutosave: ->
     @get('isNew') || @get('isDirty') || @get('isMarkedForDestruction') || @_nestedRecordsChangedForAutosave()
@@ -122,36 +142,57 @@ Tower.Model.AutosaveAssociation =
   #
   # This all happens inside a transaction, _if_ the Transactions module is included into
   # Tower.Model after the AutosaveAssociation module, which it does by default.
-  _saveCollectionAssociation: (association) ->
-    if associationScope = @getAssociationScope(association.name)
+  _saveCollectionAssociation: (association, callback) ->
+    if cursor = @getAssociationCursor(association.name)
       autosave  = association.autosave
       wasNew    = !!@newRecordBeforeSave
 
-      if records = @_associatedRecordsToValidateOrSave(associationScope, wasNew, autosave)
+      if records = @_associatedRecordsToValidateOrSave(cursor, wasNew, autosave)
         recordsToDestroy = []
+        foreignKey  = association.foreignKey
+        key         = @get('id')
 
         # Should be done in parallel with Tower.parallel iterator
-        for record in records
-          continue if record.get('isDeleted')
-
-          saved = true
-
-          if autosave && record.get('isMarkedForDestruction')
+        # @todo this may want to be moved directly onto the cursor class
+        createRecord = (record, next) => 
+          if record.get('isDeleted')
+            next()
+          else if autosave && record.get('isMarkedForDestruction')
             recordsToDestroy.push(record)
           # autosave can be null/undefined/true/false
           else if autosave != false && (wasNew || record.get('isNew'))
             if autosave
-              saved = associationScope.insertRecord(record, false)
+              record.set(foreignKey, key)
+              # should not validate
+              # cursor.insert record, next
+              record.save(validate: false, next)
+            else if !association.nested
+              record.set(foreignKey, key)
+              record.save(next)
+              # cursor.insert record, next
             else
-              associationScope.insertRecord(record) unless association.nested
+              next()
           else if autosave
-            saved = record.save(validate: false)
+            record.set(foreignKey, key)
+            record.save validate: false, next
+          else
+            next()
 
-          throw new Error('rolled back') unless saved
-
-        # This should also be done in parallel
-        for record in recordsToDestroy
-          associationScope.destroy(record)
+        Tower.parallel records, createRecord, (error) =>
+          if error
+            callback.call(@, error) if callback
+            return false
+          else if recordsToDestroy.length
+            # This should also be done in parallel
+            cursor.destroy recordsToDestroy, (error) =>
+              callback.call(@, error) if callback
+              return !error
+          else
+            callback.call(@) if callback
+            return true
+      else
+        callback.call(@) if callback
+        return true
 
       # reconstruct the scope now that we know the owner's id
       # associationScope.send(:reset_scope) if associationScope.respond_to?(:reset_scope)
@@ -165,8 +206,7 @@ Tower.Model.AutosaveAssociation =
   # This all happens inside a transaction, _if_ the Transactions module is included into
   # Tower.Model after the AutosaveAssociation module, which it does by default.
   _saveHasOneAssociation: (association, callback) ->
-    associationScope  = @getAssociationScope(association.name)
-    record            = @get(association.name) # associationScope.load_target if associationScope
+    record  = @get(association.name)
 
     if record && !record.get('isDeleted')
       autosave = association.autosave
@@ -210,13 +250,19 @@ Tower.Model.AutosaveAssociation =
           record.save validate: !autosave, (error) =>
             saved = !error
 
-            if !error # && associationScope.updated
+            unless error # && associationScope.updated
               @set(association.foreignKey, record.get(association.primaryKey || 'id'))
               # associationScope.get('isLoaded')
 
             callback.call(@, error) if callback
+        else
+          saved = true
+          callback.call(@) if callback
 
         saved
+      else
+        callback.call(@) if callback
+        true
     else
       callback.call(@) if callback
       true

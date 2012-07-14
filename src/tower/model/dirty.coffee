@@ -28,6 +28,9 @@ Tower.Model.Dirty =
   attributeChanged: (name) ->
     @get('changedAttributes').hasOwnProperty(name)
 
+  attributeChange: (name) ->
+    [@get('changedAttributes')[name], @get('attributes')[name]] if @attributeChanged(name)
+
   attributeWas: (name) ->
     @get('changedAttributes')[name]
 

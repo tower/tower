@@ -110,6 +110,9 @@ class Tower.Support.Callbacks.Chain
           Tower.async @after, runner, (error) =>
             complete.call binding if complete
             binding
+      else
+        # @todo what do we actually need to do here?
+        throw new Error(error)
 
   push: (phase, method, filters, options) ->
     @[phase].push new Tower.Support.Callback(method, filters, options)

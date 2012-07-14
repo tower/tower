@@ -92,73 +92,141 @@ Tower.Model.Relations =
     getAssociation: (key) ->
       @get("#{key}Association")
 
+    # This lazily instantiates, caches, and returns an association scope.
+    # 
+    # This is considered a 'top-level' scope, meaning you chain queries and it will be
+    # cloned like normal, but this original association scope will keep reference to the
+    # loaded records (if they've been loaded). This way it can be used to create/update/delete
+    # associated records, similar to the way attributes are managed.
     getAssociationScope: (key) ->
       @getAssociation(key)
 
-    getHasManyAssociation: (key) ->
+    getAssociationCursor: (key) ->
+      @getAssociation(key).cursor
+
+    # @todo maybe this should be a custom `cursor.replace` method
+    _setHasManyAssociation: (key, value, association, options = {}) ->
+      cursor      = @getAssociationScope(key).cursor
+      # @todo this should actually make a database call
+      # @todo cursor.difference(value)
+      value = _.castArray(value)
+      # calculate difference
+      # cursor.removeFromTarget(oldValues)
+      if @get('isNew')
+        for item in cursor
+          item.set('isMarkedForDestruction', true) unless _.include(value, item)
+      else
+        ids   = _.compact _.map value, (item) -> item.get('id')?.toString()
+
+        for item in cursor
+          id = try item.get('id')?.toString()
+          if id?
+            item.set('isMarkedForDestruction', true) unless _.include(ids, id)
+          else
+            item.set('isMarkedForDestruction') unless _.include(value, item)
+
+      # @todo convert value into array of Tower.Model instances
+      if value && value.length
+        for item in value
+          if item instanceof Tower.Model
+            item.set(association.foreignKey, @get('id'))
+          else if item == null || item == undefined
+            @ # @todo
+          else
+            @ # @todo
+        # @todo you don't actually want to remove them yet because previous ones haven't been deleted.
+        #cursor.addObjects(value)
+        cursor.load(value)
+      else
+        cursor.clear()
+        #cursor.load(cursor.build(value, options))
+
+    _getHasManyAssociation: (key) ->
       @getAssociation(key)
 
-    setHasManyAssociation: (key, value) ->
-      #data = Ember.get(@, 'data')
-      #data.set(key, value)
+    _setHasOneAssociation: (key, value, association) ->
+      cursor          = @getAssociationCursor(key)
+      existingRecord  = cursor[0]
+      # need some way of keeping a reference to these to destroy them.
+      # need to get the previous/database value from the associated record
 
-    setHasOneAssociation: (key, value) ->
-      data = Ember.get(@, 'data')
-      data.set(key, value)
-      relation        = @constructor.relation(key)
-      foreignKey      = relation.foreignKey
-      # set belongsTo id on associated object
-      value.set(foreignKey, @get('id'))
-      value
+      # @todo there needs to be a global observer setup for this
+      # clearCursor = (exRecord, attribute) -> Ember.removeObserver(existingRecord, 'id', clearCursor)
+      # Ember.addObserver(existingRecord, 'id', clearCursor)
+      # Ember.addObserver(existingRecord, 'isDirty', clearCursor)
+      # 
+      # Say someone else saves the associated hasOne record, and the sockets send back the new attributes
+      # for the record. Then we need to remove cursor._markedForDestruction because it was already changed.
+      # Actually, in that case, would you want to provide a warning before saving? Not sure... For now though,
+      # it will remove the attribute, so you need to setup temporary Ember observers:
+      #   Ember.addObserver(obj, this._from, this, this.fromDidChange);
+      #   @see Ember.Binding.prototype.connect method for twoWay binding implementation (its just observers)
+      # Ember.addObserver(existingRecord, 'id', this, 'changed')
+      # Ember.listenersFor(existingRecord, 'id:change')
+      # Ember.listenersFor(existingRecord, 'id:change')
+      # manually setup bindings
+      # binding = Ember.bind(existingRecord, 'id', 'this.foreignId')
+      # binding.disconnect(existingRecord)
+      # 
+      # For now, we can just assume you're eventually going to call save.
 
-    getHasOneAssociation: (key) ->
-      data  = Ember.get(@, 'data')
-      value = data.get(key)
-      value = @fetch(key) unless value?
-      value
+      # You could also just check if the record has any changes once you get to saving it from the owner.
+      # If it doesn't then it probably got saved some other way, and you can just ignore _markedForDestruction.
+      # But, the record may have been saved then re-dirtified somewhere else, then you call save on the owner...
+      # it doesn't make sense at that time to then call save on the record because the changes came from somewhere else.
+      if existingRecord && !cursor._markedForDestruction # should only happen once before a save
+        # @todo maybe it should just be pushed into the cursor array, which you should never be accessing directly anyway.
+        foreignId = existingRecord.get(association.foreignKey)
+        id        = @get('id')
+        if foreignId? && id? && foreignId.toString() == id.toString() && !existingRecord.attributeChanged(association.foreignKey)
+          cursor._markedForDestruction = existingRecord
 
-    setBelongsToAssociation: (key, value) ->
-      data      = Ember.get(@, 'data')
-      oldValue  = data.get("#{key}Id")
-      
       if value instanceof Tower.Model
-        newValue  = value.get('id')
-        data.set("#{key}Id", newValue)
+        record  = value
+        value.set(association.foreignKey, @get('id'))
       else if value == null || value == undefined
-        data.set("#{key}Id", value)
+        @ # @todo
       else
-        newValue  = value
-        data.set(key, value)
+        @ # @todo
 
-      if Tower.isClient
-        # This is notifying the hasMany associations.
-        # Really, it should notify the "scopes" or "cursors"
-        # that have been registered on the client app.
-        # 
-        # Better yet, whenever _any_ property changes on a model,
-        # you want to run it through all the registered scopes.
-        # Some scopes may sort records, others may select ones matching
-        # certain fields, etc. So the ideal would be to have a map
-        # of model properties to scopes watching those properties.
-        # This way, when a model property changes, you find all scopes that need to be updated like:
-        #   Tower.scopes[modelName][fieldName].refresh()
-        notifyRecord = (id) =>
-          relation        = @constructor.relation(key)
-          inverseRelation = relation.inverse()
-          record          = relation.klass().find(id)
-          record.propertyDidChange(inverseRelation.name) if record && inverseRelation
+      if record
+        cursor.clear()
+        cursor.addObject(record)
 
-        # notify oldValue that it's no longer associated
-        notifyRecord(oldValue) if oldValue && oldValue != newValue
-        notifyRecord(newValue) if newValue
+      record
 
-      value
+    _getHasOneAssociation: (key) ->
+      @getAssociationCursor(key)[0] || @fetch(key)
 
-    getBelongsToAssociation: (key) ->
-      data  = Ember.get(@, 'data')
-      value = data.get(key)
-      value = @fetch(key) unless value?
-      value
+    # @example
+    #   record.setBelongsToAssociation('user', user)
+    #   # in this case we need to do some rerouting
+    #   record.setBelongsToAssociation('user', user.id)
+    #   record.setBelongsToAssociation('user', null)
+    # 
+    # @todo pass association in as optimization (as first parameter)
+    _setBelongsToAssociation: (key, value, association) ->
+      if value instanceof Tower.Model
+        record  = value
+        id      = value.get('id')
+        @set(association.foreignKey, id)
+      else if value == null || value == undefined
+        @set(association.foreignKey, undefined)
+      else
+        id      = value
+        @set(association.foreignKey, id)
+
+      if record
+        cursor = @getAssociationCursor(key)
+        cursor.clear()
+        cursor.addObject(record)
+
+      # need to notify the hasMany/hasOne in reverse from here
+
+      record
+
+    _getBelongsToAssociation: (key) ->
+      @getAssociationCursor(key)[0] || @fetch(key)
 
     # Currently only used for the `belongsTo` association.
     # 

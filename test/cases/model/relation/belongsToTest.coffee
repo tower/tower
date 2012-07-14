@@ -200,5 +200,5 @@ describeWith = (store) ->
         done()
     ###
    
-describeWith(Tower.Store.Memory)
-describeWith(Tower.Store.Mongodb) unless Tower.isClient
+#describeWith(Tower.Store.Memory)
+#describeWith(Tower.Store.Mongodb) unless Tower.isClient

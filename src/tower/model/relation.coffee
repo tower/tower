@@ -49,7 +49,8 @@ class Tower.Model.Relation extends Tower.Class
     @idCache            = false unless @hasOwnProperty('idCache')
     @readonly           = false unless @hasOwnProperty('readonly')
     @validate           = false unless @hasOwnProperty('validate')
-    @autosave           = false unless @hasOwnProperty('autosave')
+    # @autosave is undefined has a different meaning that true/false
+    # @autosave           = false unless @hasOwnProperty('autosave')
     @touch              = false unless @hasOwnProperty('touch')
     @inverseOf        ||= undefined
     @polymorphic        = options.hasOwnProperty('as') || !!options.polymorphic
@@ -93,8 +94,8 @@ class Tower.Model.Relation extends Tower.Class
 
     @_defineRelation(name)
 
-    if @autosave
-      @owner._addAutosaveAssociationCallbacks(@)
+    #if @autosave
+    @owner._addAutosaveAssociationCallbacks(@)
 
   _defineRelation: (name) ->
     object = {}
@@ -106,29 +107,31 @@ class Tower.Model.Relation extends Tower.Class
       @constructor.relation(name).scoped(@)
     ).cacheable()
 
+    association = @
+
     if isHasMany
       # you can "set" collections directly, but whenever you "get" them
       # you're going to get a Tower.Model.Scope. To get the actual records call `.all`
       object[name] = Ember.computed((key, value) ->
         if arguments.length == 2
-          @setHasManyAssociation(key, value)
+          @_setHasManyAssociation(key, value, association)
         else
-          @getHasManyAssociation(name)
+          @_getHasManyAssociation(name)
       ).property('data').cacheable()
     else
       if @className() == 'BelongsTo'
         object[name] = Ember.computed((key, value) ->
           if arguments.length is 2
-            @setBelongsToAssociation(key, value)
+            @_setBelongsToAssociation(key, value, association)
           else
-            @getBelongsToAssociation(key)
+            @_getBelongsToAssociation(key)
         ).property('data', "#{name}Id").cacheable()
       else # HasOne
         object[name] = Ember.computed((key, value) ->
           if arguments.length is 2
-            @setHasOneAssociation(key, value)
+            @_setHasOneAssociation(key, value, association)
           else
-            @getHasOneAssociation(key)
+            @_getHasOneAssociation(key)
         ).property('data').cacheable()
 
     @owner.reopen(object)
@@ -136,9 +139,13 @@ class Tower.Model.Relation extends Tower.Class
   # @return [Tower.Model.Relation.Scope]
   scoped: (record) ->
     cursor = @constructor.Cursor.make()
-    cursor.make(model: @klass(), owner: record, relation: @)
-    klass = @targetKlass()
-    cursor.where(type: klass.className()) if klass.shouldIncludeTypeInScope()
+    #cursor.make(model: @klass(), owner: record, relation: @)
+    attributes = owner: record, relation: @
+    attributes.model = @klass() unless @polymorphic
+    attributes.model ||= @owner # polymorphic tmp hack
+    cursor.make(attributes)
+    klass = try @targetKlass()
+    cursor.where(type: klass.className()) if klass && klass.shouldIncludeTypeInScope()
     new Tower.Model.Scope(cursor)
 
   # @return [Function]
@@ -178,6 +185,8 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
   isConstructable: ->
     !!!@relation.polymorphic
 
+  isLoaded: false
+
   clone: (cloneContent = true) ->
     if Ember.EXTEND_PROTOTYPES
       clone = @clonePrototype()
@@ -200,6 +209,9 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
   load: (records) ->
     owner     = @owner
     relation  = @relation.inverse()
+
+    if !relation
+      throw new Error("Inverse relation has not been defined for `#{@relation.owner.className()}.#{_.camelize(@relation.className(), true)}('#{@relation.name}')`")
 
     for record in records
       record.set(relation.name, owner)
@@ -231,6 +243,13 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
     _.teardown(@, 'relation', 'records', 'owner', 'model', 'criteria')
 
   addToTarget: (record) ->
+
+  # Adds record to array of items to remove later in the persistence lifecycle.
+  removeFromTarget: (record) ->
+    @removed().push(record)
+
+  removed: ->
+    @_removed ||= []
 
 class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
   @make: ->

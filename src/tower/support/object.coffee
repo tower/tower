@@ -71,7 +71,12 @@ Tower.Support.Object =
     fn.toString().match(/\W*function\s+([\w\$]+)\(/)?[1]
 
   castArray: (object) ->
-    if _.isArray(object) then object else [object]
+    if _.isArray(object)
+      object
+    else if object?
+      [object]
+    else
+      []
 
   copy: (object) ->
     if _.isArray(object)

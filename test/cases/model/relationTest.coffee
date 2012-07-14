@@ -69,14 +69,6 @@ describeWith = (store) ->
             assert.equal membership.get('userId').toString(), user.get('id').toString()
             assert.equal membership.get('groupId').toString(), group.get('id').toString()
             done()
-
-        #test 'insert through model automatically', (done) ->
-        #  sinon.spy App.Group.store(), "insert"
-        #  sinon.spy App.Membership.store(), "insert"
-        #  
-        #  user.get('groups').create (error, group) =>
-        #    #console.log App.Membership.store().create
-        #    done()
       
       describe '.update', ->
         beforeEach (done) ->
@@ -97,7 +89,7 @@ describeWith = (store) ->
               assert.equal count, 2
 
               done()
-      
+    
       describe '.destroy', ->
         beforeEach (done) ->
           App.Membership.create groupId: group.get('id'), =>
@@ -175,7 +167,7 @@ describeWith = (store) ->
                 assert.equal groups.length, 1
               
                 done()
-  
+    
         test 'insert 2 models and 2 through models as Arguments', (done) ->
           assert.isTrue user.get('groups').all().isHasManyThrough, 'user.groups.isHasManyThrough'
 
@@ -192,7 +184,7 @@ describeWith = (store) ->
                   assert.equal count, 2
                 
                   done()
-
+    
       describe '.update', ->
         beforeEach (done) ->
           user.get('groups').create {name: "Starbucks"}, {}, done
@@ -212,7 +204,7 @@ describeWith = (store) ->
               user.get('memberships').count (error, count) =>
                 assert.equal count, 2
                 done()
-      
+    
       describe '.destroy', ->
         beforeEach (done) ->
           user.get('groups').create {name: "Starbucks"}, {}, done
@@ -237,7 +229,7 @@ describeWith = (store) ->
               user.get('memberships').create groupId: group.get('id'), (error, record) =>
                 membership = record
                 done()
-          
+     
         test 'appendThroughConditions', (done) ->
           cursor        = user.get('groups').cursor
           
@@ -258,7 +250,7 @@ describeWith = (store) ->
             user.get('groups').all (error, records) =>
               assert.equal records.length, 3
               done()
-
+    
           test 'first', (done) ->
             user.get('groups').desc("name").first (error, record) =>
               assert.equal record.get('name'), "C"
@@ -299,7 +291,7 @@ describeWith = (store) ->
             user.get('memberships').count (error, count) =>
               assert.equal count, 3
               done()
-
+    
           test 'exists', (done) ->
             user.get('memberships').exists (error, value) =>
               assert.equal value, true
@@ -322,7 +314,7 @@ describeWith = (store) ->
         beforeEach ->
           relation = App.Parent.relations().idCacheTrue_idCacheFalse
           cursor = parent.get('idCacheTrue_idCacheFalse').cursor
-          
+        
         test 'relation', ->
           assert.equal relation.idCache, true
           assert.equal relation.idCacheKey, "idCacheTrue_idCacheFalse" + "Ids"
@@ -346,7 +338,7 @@ describeWith = (store) ->
           assert.deepEqual cursor.ownerAttributes(child), { '$add': { idCacheTrue_idCacheFalseIds: child.get('id') } }
           
           done()
-          
+
         describe 'persistence', ->
           child   = null
           child2  = null
@@ -372,7 +364,7 @@ describeWith = (store) ->
                   parent = record
                   next()
             ], done
-        
+          
           test 'insert', (done) ->
             assert.equal child.get('parentId').toString(), parent.get('id').toString()
             assert.deepEqual parent.get(relation.idCacheKey), [child.get('id'), child2.get('id')]
@@ -420,7 +412,7 @@ describeWith = (store) ->
             parent.get('idCacheTrue_idCacheFalse').all (error, records) =>
               assert.equal records.length, 2
               done()
-              
+          
           test 'add to set', (done) ->
             App.Child.create (error, newChild) =>
               parent.get('idCacheTrue_idCacheFalse').add newChild, =>
@@ -430,20 +422,6 @@ describeWith = (store) ->
                   App.Child.all (error, records) =>
                     assert.equal records.length, 4
                     done()
-###                    
-          #test 'remove from set', (done) ->
-          #  parent.idCacheTrue_idCacheFalse().remove child, =>
-          #    App.Parent.find parent.get('id'), (error, parent) =>
-          #      assert.deepEqual _.toS(parent.get(relation.idCacheKey)), _.toS([child.get('id'), newChild.get('id')])
-          #
-          #      App.Child.all (error, records) =>
-          #        assert.equal records.length, 3
-          #        done()
-          
-          #describe 'inverseOf', ->
-          #  test 'add to set', (done) ->
-          #    App.Child.create (error, child) =>
-          #      child.idCacheFalse_idCacheTrue
-###
+
 describeWith(Tower.Store.Memory)
 describeWith(Tower.Store.Mongodb) unless Tower.client

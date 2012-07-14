@@ -70,7 +70,7 @@ Tower.Model.Attributes =
         @assignAttributes(arguments[1]) if _.isHash(arguments[1])
       # @todo remove
       @get('data').attributes
-    )
+    ).property('data')
 
     modifyAttribute: (operation, key, value) ->
       operation = Tower.Store.Modifiers.MAP[operation]

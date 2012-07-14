@@ -82,7 +82,8 @@ Tower.Model.Validations =
       @runCallbacks 'validate', (block) =>
         complete        = @_callback(block, callback)
         validators      = @constructor.validators()
-        errors          = @errors = {}
+        errors          = {}
+        @set('errors', errors)
 
         iterator        = (validator, next) =>
           validator.validateEach(@, errors, next)

@@ -172,7 +172,7 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
             # This is how Tower should refactor the controller.scope method, and iterating through controller scopes.
             # They really should start from iterating through the model, and if the model is mapped to a controller,
             # then call the controller cursor method, otherwise call it directly on the modelcursor.
-            @owner.get(@relation.name).load(_.castArray(records))
+            #@owner.get(@relation.name).load(_.castArray(records))
             callback.call(@, error, records) if callback
           @_runAfterFindCallbacksOnStore done, records
         else

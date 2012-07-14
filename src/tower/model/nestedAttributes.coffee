@@ -12,7 +12,7 @@ Tower.Model.NestedAttributes =
     _defineMethodForNestedAttributes: (key) ->
       relation = @relation(key)
       relation.autosave = true
-      @_addAutosaveAssociationCallbacks(reflection)
+      @_addAutosaveAssociationCallbacks(relation)
       type = _.camelize(relation.relationType)
 
       (attributes, massAssignmentOptions = {}) ->
