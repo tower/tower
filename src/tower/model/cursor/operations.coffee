@@ -4,6 +4,9 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # useful when you have a cursor with dates in the conditions.
   refreshInterval: (milliseconds) ->
 
+  invalidate: ->
+    @_invalidated = true
+
   # Join commands.
   #
   # For databases that don't offer joining, it's still useful.
@@ -53,6 +56,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
       @_where.push(object)
     else
       @_where.push(conditions)
+    @invalidate()
     @
 
   # Attribute and direction used for ordering the datastore's result set.
@@ -66,6 +70,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @return [Array] returns the full set of order commands for this cursor.
   order: (attribute, direction = 'asc') ->
     @_order.push [attribute, direction]
+    @invalidate()
     @
 
   # Reverses the query so it can find the last one.
@@ -76,6 +81,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     for orderItem, i in order
       orderItem[1] = if orderItem[1] == 'asc' then 'desc' else 'asc'
     order
+    @invalidate()
     @
 
   # Set of attributes to sort by, ascending.
@@ -101,6 +107,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   desc: (attributes...) ->
     @order(attribute, 'desc') for attribute in attributes
     @
+
 
   ne: ->
     @_whereOperator '$neq', arguments...
@@ -146,6 +153,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   #   App.Post.offset(20).all()
   offset: (number) ->
     @_offset = number
+    @invalidate()
     @
 
   # Experimenting with limit(1) returning single object, which makes sense.
@@ -155,6 +163,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
       @returnArray = false
     else
       delete @returnArray
+    @invalidate()
     @
 
   # The set of fields we want the database to return, no more.
@@ -167,14 +176,17 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # @return [Array] returns the fields for this cursor.
   select: ->
     @_fields = _.flatten _.args(fields)
+    @invalidate()
     @
 
   includes: ->
     @_includes = _.flatten _.args(arguments)
+    @invalidate()
     @
 
   uniq: (value) ->
     @_uniq = value
+    @invalidate()
     @
 
   # @example
@@ -223,6 +235,8 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     @where(coordinates: $maxDistance: bounds)
 
   test: (record) ->
+    # @todo need a subclass tester
+    # return false unless record.constructor.className()
     Tower.Store.Operators.test(record, @conditions())
 
   testEach: (records, callback) ->

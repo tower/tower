@@ -12,7 +12,8 @@ Tower.Controller.Params =
     # @option options [String] type
     #
     # @return [Tower.Net.Param]
-    param: (key, options) ->
+    param: (key, options = {}) ->
+      options.resourceType = @metadata().resourceType
       @params()[key] = Tower.Net.Param.create(key, options)
 
     # Return all params, or define multiple params at once.
@@ -63,8 +64,17 @@ Tower.Controller.Params =
       limit       = @params.limit
       sort        = @params.sort
 
-      for key, value of conditions
-        delete conditions[key] unless parsers.hasOwnProperty(key)
+      # @todo
+      cleanConditions = (hash) ->
+        for key, value of hash
+          if key == '$or' || key == '$nor'
+            cleanConditions(item) for item in value
+          else
+            delete hash[key] unless parsers.hasOwnProperty(key)
+
+        hash
+
+      conditions = cleanConditions(conditions)
 
       cursor.where(conditions)
       cursor.order(sort)  if sort && sort.length
@@ -80,6 +90,7 @@ Tower.Controller.Params =
       for name, parser of parsers
         if params.hasOwnProperty(name)
           if params[name] && typeof params[name] == 'string'
+            # @todo this shouldn't have to necessarily build a cursor, maybe there's a lighter way.
             cursor.where(parser.toCursor(params[name]))
           else if name == 'sort'
             cursor.order(params[name])

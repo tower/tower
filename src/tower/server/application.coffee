@@ -19,8 +19,8 @@ class Tower.Application extends Tower.Engine
 
   @autoloadPaths: [
     'app/helpers'
+    'app/concerns'
     'app/models'
-    #'app/concerns'
     'app/controllers'
     'app/presenters'
     'app/mailers'
@@ -121,12 +121,11 @@ class Tower.Application extends Tower.Engine
       @configureStores Tower.config.databases, =>
         @stack()
 
-        requirePaths File.files("#{Tower.root}/app/helpers")
-        requirePaths File.files("#{Tower.root}/app/models")
-
-        require "#{Tower.root}/app/controllers/applicationController"
-
         for path in @constructor.autoloadPaths
+          # @todo do something more robust, so you can autoload files or directories
+          # continue if path.match(/app\/(?:helpers)/) # just did this above
+          if path.match('app/controllers')
+            require "#{Tower.root}/app/controllers/applicationController"
           requirePaths File.files("#{Tower.root}/#{path}")
 
         done() if done

@@ -1,12 +1,28 @@
 class Tower.Net.Param.String extends Tower.Net.Param
+  # @todo think of more robust ways of searching API's
+  # @example Regex
+  #   # For now, you can search by one regex, it can't be used inside a non-regex search
+  #   ?title=/tower/
+  #   # can't do this:
+  #   ?title=-asp,/tower/
+  #   # ... but at some point we should handle that, perhaps merging regexps.
   parse: (value) ->
+    # if you search for regex directly
+    value   = value.trim()
+    arrays  = null
+    value.replace /^\/([^\/]+)\/(gi)?$/, (_, $1) => # matches /asdf/
+      arrays = [[@parseValue([@_clean($1)], ['$regex'])]]
+
+    return arrays if arrays
+
     arrays = value.split(/(?:[\s|\+]OR[\s|\+]|\||,)/g)
 
     for node, i in arrays
       values = []
 
       # ([\+\-\^]?[\w@\-_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')
-      node.replace /([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, (_, token) =>
+      # /([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g
+      node.replace /([\+\-\^]?[^'-]+|-?\'[^'-]+\')/g, (_, token) =>
         negation    = false
         exact       = false
 
@@ -30,7 +46,6 @@ class Tower.Net.Param.String extends Tower.Net.Param
         _
 
       arrays[i] = values
-
     arrays
 
 module.exports = Tower.Net.Param.String

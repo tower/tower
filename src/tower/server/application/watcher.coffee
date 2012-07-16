@@ -58,6 +58,7 @@ Tower.Application.Watcher =
         Tower.config.assets = config || {}
         Tower.Application.Assets.loadManifest()
     else if path.match(/app\/(models|controllers)\/.+\.(?:coffee|js|iced)/)
+      isController = RegExp.$1 == 'controllers'
       directory = "app/#{RegExp.$1}"
       # todo, clean up
       # reload all subclasses of changed class
@@ -72,7 +73,9 @@ Tower.Application.Watcher =
         subclasses[index] = "#{directory}/#{Tower.modules._.camelize(name, true)}"
 
       @reloadPath path, =>
-        @reloadPaths subclasses
+        @reloadPaths subclasses, =>
+          if isController
+            @reloadPath('config/routes.coffee')
     else if path.match(/config\/routes\.(?:coffee|js|iced)/)
       @reloadPath(path)
     else if path.match(/config\/locales\/(\w+)\.(?:coffee|js|iced)/)

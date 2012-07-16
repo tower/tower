@@ -84,9 +84,15 @@ Tower.Model.Validations =
         validators      = @constructor.validators()
         errors          = {}
         @set('errors', errors)
+        isNew           = @get('isNew')
 
         iterator        = (validator, next) =>
-          validator.validateEach(@, errors, next)
+          # skip if it doesn't include update
+          # @todo make more robust
+          if !isNew && !validator.on('update')
+            next()
+          else
+            validator.validateEach(@, errors, next)
 
         Tower.async validators, iterator, (error) =>
           if (!(_.isPresent(errors) || error))

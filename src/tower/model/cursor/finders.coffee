@@ -84,6 +84,11 @@ Tower.Model.Cursor.Finders =
     @find(callback)
 
   _hasContent: (callback) ->
+    if Tower.isClient && @_invalidated
+      delete @_invalidated
+      callback.call(@) if callback
+      return false
+
     records = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
     if records && records.length
       callback.call(@, null, records) if callback

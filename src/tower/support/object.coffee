@@ -191,6 +191,16 @@ Tower.Support.Object =
       else
         throw error
 
+  # This method is to cleanup the callback code.
+  # 
+  # @example
+  #   _.return(@, callback, error, arg2, arg3...)
+  #
+  # It's not as performant as using an `if` statement everywhere, but it is cleaner.
+  return: (binding, callback, error) ->
+    callback.apply(binding, _.args(arguments, 2)) if callback
+    !error
+
   teardown: (object, variables...) ->
     variables = _.flatten variables
     for variable in variables

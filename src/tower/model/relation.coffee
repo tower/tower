@@ -97,13 +97,14 @@ class Tower.Model.Relation extends Tower.Class
     #if @autosave
     @owner._addAutosaveAssociationCallbacks(@)
 
+  # @todo refactor!
   _defineRelation: (name) ->
     object = {}
 
     isHasMany = !@className().match(/HasOne|BelongsTo/)
     @relationType = if isHasMany then 'collection' else 'singular'
 
-    object[name + 'Association'] = Ember.computed((key) ->
+    object[name + 'AssociationScope'] = Ember.computed((key) ->
       @constructor.relation(name).scoped(@)
     ).cacheable()
 
@@ -141,11 +142,19 @@ class Tower.Model.Relation extends Tower.Class
     cursor = @constructor.Cursor.make()
     #cursor.make(model: @klass(), owner: record, relation: @)
     attributes = owner: record, relation: @
-    attributes.model = @klass() unless @polymorphic
-    attributes.model ||= @owner # polymorphic tmp hack
+    polymorphicBelongsTo = @polymorphic && @className().match(/BelongsTo/)
+    unless polymorphicBelongsTo
+      attributes.model = @klass()# unless @polymorphic
     cursor.make(attributes)
     klass = try @targetKlass()
-    cursor.where(type: klass.className()) if klass && klass.shouldIncludeTypeInScope()
+    if polymorphicBelongsTo
+      #id    = record.get(@foreignKey)
+      type  = record.get(@foreignType)
+      if type?
+        cursor.model = Tower.constant(type)
+        cursor.store = cursor.model.store()
+    else
+      cursor.where(type: klass.className()) if klass && klass.shouldIncludeTypeInScope()
     new Tower.Model.Scope(cursor)
 
   # @return [Function]

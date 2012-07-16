@@ -124,18 +124,51 @@ Tower.Model.Attributes =
 
     setSavedAttributes: (object) ->
       @get('data').setSavedAttributes(object)
+      #_.extend(@savedData, object)
 
     unknownProperty: (key) ->
+      #@getAttribute(key) if @get('dynamicFields')
       @get('data').get(key) if @get('dynamicFields')
 
     setUnknownProperty: (key, value) ->
+      #@setAttribute(key, value) if @get('dynamicFields')
       @get('data').set(key, value) if @get('dynamicFields')
 
     getAttribute: (key) ->
-      @get('data').getAttribute(key)
+      #@get('data').getAttribute(key)
+      passedKey = key
+      # @todo cleanup/optimize
+      key = if key == '_id' then 'id' else key
+      result = @_cid if key == '_cid'
+      result = Ember.get(@get('attributes'), key) if result == undefined
+      result = Ember.get(@savedData, key) if result == undefined
+      # in the "public api" we want there to be no distinction between cid/id, that should be managed transparently.
+      result = @_cid if passedKey == 'id' && result == undefined
+      result
 
     # @todo Use this to set an attribute in a more optimized way
     setAttribute: (key, value, operation) ->
+      if key == '_cid'
+        if value?
+          @_cid = value
+        else
+          delete @_cid
+        @propertyDidChange('id')
+        return value
+
+      if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
+        @[key.replace('$', '')](value)
+      else
+        # @todo need a better way to do this...
+        if !@get('isNew') && key == 'id'
+          @get('attributes')[key] = value
+          return value
+
+        @_actualSet(key, value)
+
+      @set('isDirty', _.isPresent(@get('changedAttributes')))
+
+      value
 
     # @todo Use this to set multiple attributes in a more optimized way.
     setAttributes: (attributes) ->

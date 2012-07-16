@@ -80,7 +80,7 @@ Tower.Model.NestedAttributes =
     else if !hasId && !assignmentOptions.withoutProtection
       @ #raise_nested_attributes_record_not_found(key, attributes['id'])
     else if !rejected
-      association = @getAssociation(key)
+      association = @getAssociationScope(key)
       if association
         association.build(_.except(attributes, @_unassignableKeys(assignmentOptions)), assignmentOptions)
       else

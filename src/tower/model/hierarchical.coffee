@@ -1,6 +1,8 @@
 # @mixin
 # @todo
 # copied this from acts_as_nested_set, haven't messed with it yet.
+# @see https://github.com/collectiveidea/awesome_nested_set/blob/master/lib/awesome_nested_set/awesome_nested_set.rb
+# @see https://github.com/thinkwell/mongoid_nested_set/blob/master/lib/mongoid_nested_set/update.rb
 Tower.Model.Hierarchical =
   ClassMethods:
     hierarchical: (options = {}) ->
@@ -33,7 +35,7 @@ Tower.Model.Hierarchical =
     metadata    = @metadata()
     conditions  = {}
     conditions[metadata.parentId] = null
-    @selfAndAncestors.where(conditions).first(callback)
+    @selfAndAncestors().where(conditions).first(callback)
 
   selfAndAncestors: ->
     @nestedSetScope().where(
@@ -68,11 +70,14 @@ Tower.Model.Hierarchical =
       rgt: '<=': @get('rgt')
     )
 
+  nestedSetScope: ->
+    @constructor.where(id: @get('id'))
+
   descendants: ->
     @withoutSelf @selfAndDescendants()
 
   isDescendantOf: (other) ->
-    other.get('left') < @get('left') && @get('left') < @get('right') && @isSameScope(other)
+    other.get('lft') < @get('lft') && @get('rgt') < @get('rgt') && @isSameScope(other)
 
   moveLeft: ->
     @moveToLeftOf @leftSibling()
@@ -81,10 +86,10 @@ Tower.Model.Hierarchical =
     @moveToRightOf @rightSibling()
 
   moveToLeftOf: (node) ->
-    @moveTo node, 'left'
+    @moveTo node, 'lft'
 
   moveToRightOf: (node) ->
-    @moveTo node, 'right'
+    @moveTo node, 'rgt'
 
   moveToChildOf: (node) ->
     @moveTo node, 'child'
@@ -96,13 +101,13 @@ Tower.Model.Hierarchical =
     @runCallbacks 'move', ->
 
   isOrIsDescendantOf: (other) ->
-    other.get('left') <= @get('left') && @get('left') < other.get('right') && @isSameScope(other)
+    other.get('lft') <= @get('lft') && @get('lft') < other.get('right') && @isSameScope(other)
 
   isAncestorOf: (other) ->
-    @get('left') < other.get('left') && other.get('left') < @get('right') && @isSameScope(other)
+    @get('lft') < other.get('lft') && other.get('lft') < @get('right') && @isSameScope(other)
 
   isOrIsAncestorOf: (other) ->
-    @get('left') <= other.get('left') && other.get('left') < @get('right') && @isSameScope(other)
+    @get('lft') <= other.get('lft') && other.get('lft') < @get('right') && @isSameScope(other)
 
   isSameScope: (other) ->
     Array(actsAsNestedSetOptions.scope).all (attr) ->
@@ -111,13 +116,13 @@ Tower.Model.Hierarchical =
   leftSibling: (callback) ->
     metadata    = @constructor.metadata()
     conditions  = {}
-    conditions[metadata.lft] = $lt: @get('left')
+    conditions[metadata.lft] = $lt: @get('lft')
     siblings.where(conditions).desc(metadata.lft).last(callback)
 
   rightSibling: (callback) ->
     metadata    = @constructor.metadata()
     conditions  = {}
-    conditions[metadata.left] = $gt: @get('left')
+    conditions[metadata.lft] = $gt: @get('lft')
     siblings.where(conditions).first(callback)
 
 module.exports = Tower.Model.Hierarchical

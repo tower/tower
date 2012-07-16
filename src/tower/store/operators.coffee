@@ -20,12 +20,14 @@ Tower.Store.Operators =
     '$regex':     '$match'
     '$match':     '$match'
     '$notMatch':  '$notMatch'
-    '!~':         '$nm'
+    '!~':         '$notMatch'
     '$nm':        '$nm'
     '==':         '$eq'
+    '=':          '$eq'
     '$eq':        '$eq'
-    '!=':         '$neq'
-    '$neq':       '$neq'
+    '!=':         '$ne'
+    '$neq':       '$ne'
+    '$ne':        '$ne'
     '$null':      '$null'
     '$notNull':   '$notNull'
     '$exists':    '$exists'
@@ -71,6 +73,10 @@ Tower.Store.Operators =
         success = recordValue == operators
       when 'undefined', 'null'
         success = recordValue == null || recordValue == undefined
+      when 'date'
+        success = recordValue.getTime() == operators.getTime()
+      when 'array'
+        success = _.isEqual(recordValue, operators)
       when 'regex'
         success = @match(recordValue, operators)
       else

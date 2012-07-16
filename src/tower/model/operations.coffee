@@ -55,8 +55,115 @@
 # @example Crazy params example
 #   post.updateAttributes(title: 'Renamed Post', $add: {tags: 'node'}, $removeEach: {tags: ['ruby', 'jasmine']})
 #
-Tower.Model.Operations =  
+Tower.Model.Operations =
   push: (key, value) ->
     _.oneOrMany(@, @_push, key, value)
+
+  pushEach: (key, value) ->
+    _.oneOrMany(@, @_push, key, value, true)
+
+  pull: (key, value) ->
+    _.oneOrMany(@, @_pull, key, value)
+
+  pullEach: (key, value) ->
+    _.oneOrMany(@, @_pull, key, value, true)
+
+  inc: (key, value) ->
+    _.oneOrMany(@, @_inc, key, value)
+
+  add: (key, value) ->
+    _.oneOrMany(@, @_add, key, value)
+
+  addEach: (key, value) ->
+    _.oneOrMany(@, @_add, key, value, true)
+
+  unset: ->
+    keys = _.flatten _.args(arguments)
+    delete @[key] for key in keys
+    undefined
+
+  # @private
+  _set: (key, value) ->
+    if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
+      @[key.replace('$', '')](value)
+    else
+      @
+
+  # @private
+  _push: (key, value, array = false) ->
+    currentValue = @getAttribute(key)
+    currentValue ||= []
+
+    if array
+      currentValue = currentValue.concat(_.castArray(value))
+    else
+      currentValue.push(value)
+
+    # probably shouldn't reset it, need to consider
+    @_actualSet(key, currentValue)
+
+  # @private
+  _pull: (key, value, array = false) ->
+    currentValue = @getAttribute(key)
+    return null unless currentValue
+
+    if array
+      for item in _.castArray(value)
+        currentValue.splice(_.toStringIndexOf(currentValue, item), 1)
+    else
+      currentValue.splice(_.toStringIndexOf(currentValue, value), 1)
+
+    # probably shouldn't reset it, need to consider
+    @_actualSet(key, currentValue)
+
+  # @private
+  _add: (key, value, array = false) ->
+    currentValue = @getAttribute(key)
+    currentValue ||= []
+    # @todo need to figure out better way of comparing old/new values, not based on actual javascript object instance
+    currentValue = @_clonedValue(currentValue)
+
+    if array
+      for item in _.castArray(value)
+        currentValue.push(item) if _.indexOf(currentValue, item) == -1
+    else
+      currentValue.push(value) if _.indexOf(currentValue, value) == -1
+
+    # probably shouldn't reset it, need to consider
+    @_actualSet(key, currentValue)
+
+  # @private
+  _inc: (key, value) ->
+    currentValue = @getAttribute(key)
+    currentValue ||= 0
+    currentValue += value
+
+    @_actualSet(key, currentValue)
+
+  _getField: (key) ->
+    @constructor.fields()[key]
+
+  # @todo horrible hack, just getting it to work.
+  _actualSet: (key, value) ->
+    @_updateChangedAttribute(key, value)
+
+    @get('attributes')[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
+
+  _clonedValue: (value) ->
+    if _.isArray(value)
+      value.concat()
+    else if _.isDate(value)
+      new Date(value.getTime())
+    else if typeof value == 'object'
+      _.clone(value)
+    else
+      value
+
+  _defaultValue: (key) ->
+    return field.defaultValue(@) if field = @_getField(key)
+
+
+Tower.Model.Operations.remove = Tower.Model.Operations.pull
+Tower.Model.Operations.removeEach = Tower.Model.Operations.pullEach
 
 module.exports = Tower.Model.Operations

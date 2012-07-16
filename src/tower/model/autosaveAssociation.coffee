@@ -41,8 +41,8 @@ Tower.Model.AutosaveAssociation =
 
       if association.validate # && !@methodDefined(validationMethod)
         method = if isCollection then '_validateCollectionAssociation' else '_validateSingleAssociation'
-        # define_non_cyclic_method(validationMethod, association) { send(method, association) }
-        @validate validationMethod
+        # @todo this isn't setup
+        # @validate validationMethod
 
         mixin[validationMethod] = (callback) ->
           @[method](association, callback)
@@ -273,7 +273,7 @@ Tower.Model.AutosaveAssociation =
               @set(association.foreignKey, record.get(association.primaryKey || 'id'))
               # associationScope.get('isLoaded')
 
-            callback.call(@, error) if callback
+            _.return(@, callback, error)
         else
           saved = true
           callback.call(@) if callback

@@ -121,7 +121,7 @@ class Tower.Model.Scope
   # @return [void] Requires a callback to get the data.
   build: ->
     cursor          = @compile()
-    args            = _.args(arguments)
+    args            = _.compact _.args(arguments)
     callback        = _.extractBlock(args)
     # for `create`, the rest of the arguments must be records
 
@@ -155,7 +155,7 @@ class Tower.Model.Scope
   # @return [void] Requires a callback to get the data.
   insert: ->
     cursor          = @compile()
-    args            = _.args(arguments)
+    args            = _.compact _.args(arguments)
     callback        = _.extractBlock(args)
     # for `insert`, the rest of the arguments must be records
 

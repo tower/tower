@@ -5,7 +5,7 @@ Tower.Store.Transport.Ajax =
   requesting: false
 
   defaults:
-    contentType: 'application/json; charset=utf-8'
+    contentType: 'application/json'
     dataType:    'json'
     processData: false
     # Setting `async: false` makes it so you can do async data fetching without callbacks!
@@ -123,7 +123,7 @@ Tower.Store.Transport.Ajax =
         @queue =>
           data = {}
           # @todo need to keep changes internally until the response gets back
-          data[_.camelize(record.constructor.toKey(), true)] = record.get('changes')
+          data[_.camelize(record.constructor.toKey(), true)] = record.get('dirtyAttributes')
           data._method  = 'PUT'
           data.format = 'json'
           params =

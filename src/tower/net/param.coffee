@@ -11,13 +11,20 @@ class Tower.Net.Param
 
   @create: (key, options = {}) ->
     options = type: options if typeof options == 'string'
+    options.as ||= key
+    
+    # @todo lazily compute the type so it doesn't depend on the models being loaded before it.
+    if !options.type && type = options.resourceType
+      field = Tower.constant(type).fields()[options.as]
+      options.type = field.type
+
     options.type ||= 'String'
     new Tower.Net.Param[options.type](key, options)
 
   constructor: (key, options = {}) ->
     @controller = options.controller
     @key        = key
-    @attribute  = options.as || @key
+    @attribute  = options.as
     @modelName  = options.modelName
     @namespace  = _.pluralize(@modelName) if modelName?
     @exact      = options.exact || false

@@ -25,14 +25,14 @@ class Tower.Model.Validator
     accepts:    'accepts'
 
   @createAll: (attributes, validations = {}) ->
-    options     = _.moveProperties({}, validations, 'on', 'if', 'unless', 'allow')
+    options     = _.moveProperties({}, validations, 'on', 'if', 'unless', 'allow', 'scope')
     validators  = []
 
     for key, value of validations
       validatorOptions = _.clone(options)
 
       if _.isHash(value)
-        validatorOptions = _.moveProperties(validatorOptions, value, 'on', 'if', 'unless', 'allow')
+        validatorOptions = _.moveProperties(validatorOptions, value, 'on', 'if', 'unless', 'allow', 'scope')
 
       validators.push Tower.Model.Validator.create(key, value, attributes, validatorOptions)
 
@@ -65,6 +65,13 @@ class Tower.Model.Validator
     @value      = value
     @attributes = _.castArray(attributes)
     @options    = options
+
+  # @todo cache these
+  on: (action) ->
+    value = @options.on
+    return true unless value
+    return value == action if typeof value == 'string'
+    _.include(value, action)
 
   # Given a record, validate each attribute defined for this validator.
   #

@@ -52,6 +52,11 @@ _.extend Tower,
 
     className: ->
       _.functionName(@)
+
+    build: (attributes) ->
+      object = @create()
+      object.setProperties(attributes) if attributes
+      object
       
     computed: (key, block) ->
       object = {}

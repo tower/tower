@@ -113,6 +113,7 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
               callback.call(@, error, record) if callback
         else
           callback.call(@, error, record) if callback
+        # record
 
   updateReferenced: (callback) ->
     @compileForUpdate()

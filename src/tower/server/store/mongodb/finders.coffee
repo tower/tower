@@ -9,6 +9,8 @@ Tower.Store.Mongodb.Finders =
     conditions  = @serializeConditions(cursor)
     options     = @serializeOptions(cursor)
 
+    console.log conditions
+
     @collection().find(conditions, options).toArray (error, docs) =>
       unless error
         unless cursor.raw

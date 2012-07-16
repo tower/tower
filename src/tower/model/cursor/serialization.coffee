@@ -193,7 +193,25 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     includes      = @get('includes')
     
     data.sort       = sort if sort && sort.length
-    data.conditions = conditions if conditions
+    operators = Tower.Store.Operators.MAP
+
+    # @todo may want to put this somewhere else
+    if conditions
+      for key, value of conditions
+        if _.isRegExp(value)
+          conditions[key] = {'=~': value.source}
+        else if _.isHash(value)
+          for _key, _value of value
+            if operator = operators[_key] && _.isRegExp(_value)
+              if operator == '$notMatch'
+                # @todo build a better '$notMatch' converter
+                delete value[_key]
+                value['=~'] == "^.*(?!#{_value.source}).*$"
+              else
+                value[_key] = _value.source
+
+      data.conditions = conditions
+
     data.page       = page if page
     data.limit      = limit if limit && limit
     data.includes   = includes if includes && includes.length
@@ -216,6 +234,8 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
   # Compiled result from the {#where} arguments.
   #
   # @return [Object]
+  # 
+  # @todo handle helpers such as `createdAt: 'today'`, which creates a $gte and $lte range between start and end of day
   conditions: ->
     result = {}
 

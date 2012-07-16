@@ -24,6 +24,10 @@ class Tower.Model.Attribute
       else
         'Model'
 
+    observes = _.castArray(options.observes)
+    observes.push('data')
+    @observes = observes
+
     @_setDefault(options)
     @_defineAccessors(options)
     @_defineAttribute(options)
@@ -46,7 +50,17 @@ class Tower.Model.Attribute
     serializer  = Tower.Store.Serializer[type]
 
     @get        = options.get || (serializer.from if serializer)
-    @set        = options.set || (serializer.to if serializer)
+
+    if serialize = (options.serialize || options.encode)
+      # serialize = "to#{_.camelize(serialize)}"
+      # this might be too much but it would be useful to abstract away in a cleaner way
+      if _[serialize] # underscore helper
+        observed = @observes.length == 2 && @observes[0] # the first property
+        @get    = ->
+          _[serialize](@get(observed))
+      else
+        @get    = true
+    @set      = options.set || (serializer.to if serializer)
 
     @get        = "get#{_.camelize(name)}" if @get == true
     @set        = "set#{_.camelize(name)}" if @set == true
@@ -64,7 +78,14 @@ class Tower.Model.Attribute
     field     = @
 
     # There needs to be a way to customize this from the outside
-    attribute[name] = Ember.computed((key, value) ->
+    computed = Ember.computed((key, value) ->
+      #if arguments.length == 2
+      #  value = @setAttribute(key, field.encode(value, @))
+      #else
+      #  value = @getAttribute(key)
+      #  value = field.defaultValue(@) if value == undefined
+      #  field.decode(value, @)
+
       if arguments.length is 2
         data  = Ember.get(@, 'data')
         value = data.set(key, field.encode(value, @))
@@ -80,7 +101,7 @@ class Tower.Model.Attribute
                 foreignKey = relation.foreignKey
                 relation.klass().where(foreignKey, cid).all().forEach (item) ->
                   item.set(foreignKey, value)
-
+      
         # probably should put this into Tower.Model.Data:
         Tower.cursorNotification("#{@constructor.className()}.#{key}")
         value
@@ -89,7 +110,9 @@ class Tower.Model.Attribute
         value = data.get(key)
         value = field.defaultValue(@) if value == undefined
         field.decode(value, @)
-    ).property('data').cacheable()
+    )
+
+    attribute[name] = computed.property.apply(computed, @observes).cacheable()
 
     #@owner.prototype[name] = attribute[name]
     #@owner.reopen(attribute)

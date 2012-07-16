@@ -75,16 +75,21 @@ Tower.Model.Persistence =
     #
     # @return [void] Requires a callback.
     save: (options, callback) ->
-      @set('isSaving', true)
-      @get('transaction').adopt(@)
-
-      throw new Error('Record is read only') if @readOnly
-
       if typeof options == 'function'
         callback  = options
         options   = {}
 
       options ||= {}
+
+      # @todo
+      # unless @get('isNew') || @get('isDirty')
+      #   callback.call(@) if callback
+      #   return true
+
+      @set('isSaving', true)
+      @get('transaction').adopt(@)
+
+      throw new Error('Record is read only') if @readOnly
 
       unless options.validate == false
         @validate (error) =>
@@ -164,6 +169,7 @@ Tower.Model.Persistence =
     # @return [void] Requires a callback.
     destroy: (callback) ->
       if @get('isNew')
+        @set('isDeleted', true)
         callback.call(@, null if callback)
       else
         @_destroy(callback)

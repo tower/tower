@@ -14,8 +14,8 @@ Tower.View.StringHelper =
   htmlEscape: (text) ->
     text.replace /[\"><&]/g, (_) => @HTML_ESCAPE[_]
 
-  t: (string) ->
-    Tower.Support.I18n.translate(string)
+  t: (string, options) ->
+    Tower.Support.I18n.translate(string, options)
 
   l: (object) ->
     Tower.Support.I18n.localize(string)

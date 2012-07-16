@@ -86,11 +86,8 @@ Tower.Model.Relations =
       @baseClass().className() != @className()
 
   InstanceMethods:
-    getRelation: (key) ->
-      @get(key)
-
     getAssociation: (key) ->
-      @get("#{key}Association")
+      @constructor.relations()[key]
 
     # This lazily instantiates, caches, and returns an association scope.
     # 
@@ -99,22 +96,28 @@ Tower.Model.Relations =
     # loaded records (if they've been loaded). This way it can be used to create/update/delete
     # associated records, similar to the way attributes are managed.
     getAssociationScope: (key) ->
-      @getAssociation(key)
+      @get("#{key}AssociationScope")
 
     getAssociationCursor: (key) ->
-      @getAssociation(key).cursor
+      @getAssociationScope(key).cursor
 
     # @todo maybe this should be a custom `cursor.replace` method
     _setHasManyAssociation: (key, value, association, options = {}) ->
       cursor      = @getAssociationScope(key).cursor
       # @todo this should actually make a database call
       # @todo cursor.difference(value)
-      value = _.castArray(value)
+      value       = _.castArray(value)
+      # @todo should be possible to accomplish the same thing with `cursor.build(value)`.
+      #   also, it should set default properties from the cursor/defaultScope
+      for item, i in value
+        value[i]  = cursor.store.serializeModel(item) unless item instanceof Tower.Model
+
       # calculate difference
       # cursor.removeFromTarget(oldValues)
       if @get('isNew')
         @
       else
+        # @todo find a better way to accomplish this
         cursor._markedForDestruction ||= []
         toRemove = cursor._markedForDestruction.concat()
         ids = []
@@ -147,7 +150,7 @@ Tower.Model.Relations =
         #cursor.load(cursor.build(value, options))
 
     _getHasManyAssociation: (key) ->
-      @getAssociation(key)
+      @getAssociationScope(key)
 
     # @todo tmp way
     _checkAssociationRecordForDestroy: (record, association) ->
@@ -237,7 +240,8 @@ Tower.Model.Relations =
       record
 
     _getBelongsToAssociation: (key) ->
-      @getAssociationCursor(key)[0] || @fetch(key)
+      # @todo shouldn't use try, but testing out polymorphic assoc.
+      @getAssociationCursor(key)[0] || try @fetch(key)
 
     # Currently only used for the `belongsTo` association.
     # 
@@ -262,7 +266,7 @@ Tower.Model.Relations =
       #if record
       #  callback.call(@, null, record) if callback
       #else
-      @getAssociation(key).first (error, result) =>
+      @getAssociationScope(key).first (error, result) =>
         record = result
         @set(key, record) if record && !error
         callback.call(@, error, record) if callback
@@ -270,15 +274,12 @@ Tower.Model.Relations =
       
       record
 
-    relation: (name) ->
-      @relations[name] ||= @constructor.relation(name).scoped(@)
-
     createAssocation: (name, args...) ->
-      association = @getAssociation(name)
+      association = @getAssociationScope(name)
       association.create.apply(association, args)
 
     buildAssocation: (name, args...) ->
-      association = @getAssociation(name)
+      association = @getAssociationScope(name)
       association.build.apply(association, args)
 
     destroyRelations: (callback) ->

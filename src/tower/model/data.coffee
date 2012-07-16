@@ -82,7 +82,12 @@ class Tower.Model.Data
 
   setSavedAttributes: (object) ->
     # there's something weird going on here when destroy instantiates a record already in memory
-    _.extend(@savedData, object)
+    if object
+      savedData = @savedData
+      for key, value of object
+        field = @_getField(key)
+        value = field.encode(value, @record) if field && value? # @todo think this is in reverse...
+        savedData[key] = value
     #_.extend(@attributes, object)
 
   commit: ->

@@ -15,8 +15,13 @@ Tower.Model.Serialization =
   #
   # @return [Tower.Model]
   clone: ->
-    attributes = Tower.clone(@attributes)
+    # need to get a clone method that works on arrays
+    attributes = _.clone(@toJSON())
     delete attributes.id
+    
+    for key, value of attributes
+      attributes[key] = value.concat() if _.isArray(value)
+
     @constructor.build(attributes)
 
   stringify: (pretty) ->

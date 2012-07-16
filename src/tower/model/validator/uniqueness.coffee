@@ -1,7 +1,18 @@
 class Tower.Model.Validator.Uniqueness extends Tower.Model.Validator
+  constructor: (name, value, attributes, options) ->
+    super(name, value, attributes, options)
+
   validate: (record, attribute, errors, callback) ->
     value       = record.get(attribute)
-    record.constructor.where(attribute, value).exists (error, result) =>
+    conditions  = {}
+    conditions[attribute] = value
+    scope = @value
+    scope = @value.scope if _.isHash(scope)
+    
+    if typeof scope == 'string'
+      conditions[scope] = record.get(scope)
+
+    record.constructor.where(conditions).exists (error, result) =>
       if result
         return @failure(
           record,

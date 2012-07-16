@@ -17,7 +17,7 @@ Tower.Model.Dirty =
       @attributesForUpdate()
   ).volatile()
 
-  changedAttributes: Ember.computed(->
+  changedAttributes: Ember.computed((key, value) ->
     @get('data').changedAttributes
   ).volatile()
 

@@ -23,6 +23,7 @@ module.exports =
       '/vendor/javascripts/prettify'
       '/vendor/javascripts/async'
       '/vendor/javascripts/socket.io'
+      '/vendor/javascripts/uri'
       '/vendor/javascripts/handlebars'
       '/vendor/javascripts/ember'
       '/vendor/javascripts/tower'

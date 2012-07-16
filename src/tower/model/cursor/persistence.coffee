@@ -45,15 +45,18 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
           next()
 
       Tower.async records, iterator, (error) =>
-        Tower.cb(error, records)
-
+        #Tower.cb(error, records)
+        # @todo need to throw an error if records weren't saved an no callback was passed in.
+        #error ||= new Error('Record invalid') if _.isPresent(records[0]) && _.isPresent(records[0].errors)
         unless callback
           throw error if error
           records = records[0] if !returnArray
         else
-          return callback(error) if error
-          records = records[0] if !returnArray
-          callback(error, records)
+          if error
+            callback(error)
+          else
+            records = records[0] if !returnArray
+            callback(error, records)
     else
       @store.insert @, (error, result) =>
         records = result
@@ -72,6 +75,7 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
 
   _update: (callback) ->
     updates     = @data[0]
+    records     = undefined
 
     if @instantiate
       iterator = (record, next) =>
@@ -79,13 +83,14 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
 
       @_each @, iterator, callback
     else
-      @store.update updates, @, (error, records) =>
+      @store.update updates, @, (error, result) =>
+        records = result
+        Tower.notifyConnections('update', records) unless error
         callback.call(@, error, records) if callback
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
-        Tower.notifyConnections('update', records) unless error
 
-    @
+    if Tower.isClient then records else @ # tmp solution
 
   destroy: (callback) ->
     @_destroy callback
@@ -98,11 +103,10 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
       @_each(@, iterator, callback)
     else
       @store.destroy @, (error, records) =>
+        Tower.notifyConnections('destroy', records) unless error
         callback.call(@, error, records) if callback
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
-        Tower.notifyConnections('destroy', records) unless error
-
     @
 
   # add to set

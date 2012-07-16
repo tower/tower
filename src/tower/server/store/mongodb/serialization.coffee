@@ -85,6 +85,7 @@ Tower.Store.Mongodb.Serialization =
     result  = {}
 
     query   = @deserializeModel(cursor.conditions())
+    operators = @constructor.queryOperators#Tower.Store.Operators.MAP
 
     for key, value of query
       field = schema[key]
@@ -95,16 +96,22 @@ Tower.Store.Mongodb.Serialization =
       else if _.isHash(value)
         result[key] = {}
         for _key, _value of value
-          operator  = @constructor.queryOperators[_key]
+          operator  = operators[_key]
           if operator == '$eq'
             result[key] = @encode field, _value, _key
           else
             _key      = operator if operator
             if _key == '$in'
               _value = _.castArray(_value)
+            if _key == '$match'
+              _key = '$regex' # @todo tmp
+
             result[key][_key] = @encode field, _value, _key
       else
         result[key] = @encode field, value
+
+    # @todo log here
+    # console.log _.stringify(result)
 
     result
 

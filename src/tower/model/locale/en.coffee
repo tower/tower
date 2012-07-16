@@ -5,7 +5,7 @@ Tower.Support.I18n.load module.exports =
       minimum:              "%{attribute} must be a minimum of %{value}"
       maximum:              "%{attribute} must be a maximum of %{value}"
       length:               "%{attribute} must be equal to %{value}"
-      format:               "%{attribute} must match the format %{value}"
+      format:               "%{attribute} must be a valid %{value}"
       inclusion:            "%{attribute} is not included in the list"
       exclusion:            "%{attribute} is reserved"
       invalid:              "%{attribute} is invalid"
@@ -26,6 +26,7 @@ Tower.Support.I18n.load module.exports =
       odd:                  "%{attribute} must be odd"
       even:                 "%{attribute} must be even"
       recordInvalid:        "Validation failed: %{errors}"
+      uniqueness:           "%{attribute} must be unique"
       # Append your own errors here or at the model/attributes scope.
     fullMessages:
       format:               "%{message}"

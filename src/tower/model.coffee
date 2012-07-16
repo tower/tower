@@ -15,6 +15,7 @@ class Tower.Model extends Tower.Class
   #      require(path) if path.match(/\.(coffee|js|iced)$/)
 
   errors: null
+  readOnly: false
 
   # Construct a new Tower.Model
   #
@@ -30,11 +31,15 @@ class Tower.Model extends Tower.Class
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
 
+    # @todo tmp, getting rid of Data class
+    @savedData = {}
+
     @set('errors', {})
 
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
-    @readOnly       = if options.hasOwnProperty('readOnly') then options.readOnly else false
+    # @set('readOnly', if options.hasOwnProperty('readOnly') then options.readOnly else false)
+    @readOnly = if options.hasOwnProperty('readOnly') then options.readOnly else false
 
     @setProperties(attrs)
 
@@ -62,6 +67,9 @@ require './model/validator'
 require './model/validations'
 require './model/timestamp'
 require './model/transactions'
+require './model/operations'
+require './model/hierarchical'
+require './model/ability'
 require './model/locale/en'
 
 Tower.Model.include Tower.Support.Callbacks
@@ -82,6 +90,8 @@ Tower.Model.include Tower.Model.Attributes
 Tower.Model.include Tower.Model.NestedAttributes
 Tower.Model.include Tower.Model.AutosaveAssociation
 Tower.Model.include Tower.Model.Timestamp
+Tower.Model.include Tower.Model.Hierarchical
+#Tower.Model.include Tower.Model.Operations
 Tower.Model.include Tower.Model.Transactions
 
 Tower.Model.field('id', type: 'Id')

@@ -1,6 +1,7 @@
 # @mixin
 Tower.Model.Metadata =
   ClassMethods:
+    isModel: true
     # The class in the superclass hierarchy that directly subclasses Tower.Model
     #
     # @example

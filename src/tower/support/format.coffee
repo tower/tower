@@ -173,6 +173,14 @@
       pattern = phoneFormats[options.format] || /^\d{3}-\d{3}-\d{4}|\d{3}\.\d{3}\.\d{4}|\d{10}|\d{3}\s\d{3}\s\d{4}|\(\d{3}\)\s\d{3}-\d{4}$/i
       !!value.toString().match(pattern)
 
+    isUri: (value, options = {}) ->
+      pattern = if options.protocol != false
+        /^(?:https?:\/\/)(?:[\w]+\.)(?:\.?[\w]{2,})+$/
+      else
+        /^(?:https?:\/\/)?(?:[\w]+\.)(?:\.?[\w]{2,})+$/
+
+      !!value.match(pattern)
+
     isCreditCard: (value) ->
       _.isLuhn(value)
 
@@ -218,6 +226,8 @@
 
     isSlug: (value) ->
       value == _.parameterize(value)
+
+  validating.isUrl = validating.isUri
 
   for cardType in ['DinersClub', 'EnRoute', 'Discover', 'JCB', 'CarteBlanche', 'Switch', 'Solo', 'Laser']
     do (cardType) ->
