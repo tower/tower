@@ -28,8 +28,16 @@ Tower.Controller.Instrumentation =
         console.log "  Processing by #{@constructor.className()}##{@action} as #{@format.toUpperCase()} (#{@request.method})"
         console.log "  Parameters:", @params
 
-      @runCallbacks 'action', name: @action, (callback) =>
+      block = (callback) =>
         @[@action].call @, callback
+
+      complete = (error) =>
+        if error
+          # @todo tmp
+          console.log "Callback failed", error if Tower.env == 'development'
+          @handleError(error)
+
+      @runCallbacks 'action', name: @action, block, complete
 
     clear: ->
       @request  = null

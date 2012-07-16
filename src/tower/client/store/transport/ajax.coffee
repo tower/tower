@@ -73,9 +73,15 @@ Tower.Store.Transport.Ajax =
       #@record.trigger('ajaxSuccess', data, status, xhr)
       options.success?.apply(@record)
 
-  failure: (data, callback) ->
+  failure: (record, callback) ->
     (xhr, statusText, error) =>
-      callback.call(@, error) if callback
+      json = try JSON.parse(xhr.responseText)
+      json ||= {}
+      json.status ||= xhr.status
+      json.statusText ||= statusText
+      json.message ||= error
+      # @todo record.rollback()
+      callback.call(@, json) if callback
   
   # This is called from {Tower.Net.Connection#clientDidCreate}.
   # 

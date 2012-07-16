@@ -89,30 +89,36 @@ class Tower.Support.Callbacks.Chain
     runner    = (callback, next) =>
       callback.run(binding, options, next)
 
-    Tower.async @before, runner, (error) =>
-      unless error
-        if block
-          # this won't work with coffee-scripts __bind method!
-          # it wraps the function with 0 arguments, when yours might have the callback
-          switch block.length
-            when 0
-              block.call(binding)
-              Tower.async @after, runner, (error) =>
-                complete.call binding if complete
-                binding
-            else
-              block.call binding, (error) =>
-                unless error
-                  Tower.async @after, runner, (error) =>
-                    complete.call binding if complete
-                    binding
+    # @todo need to think about how errors are handled with callbacks more.
+    done = (error) =>
+      if error
+        error = new Error(error) unless error instanceof Error
+        # @todo not sure if it's wired up to handle throwing errors yet
+        if complete
+          complete.call(binding, error)
         else
-          Tower.async @after, runner, (error) =>
-            complete.call binding if complete
-            binding
+          throw error
       else
-        # @todo what do we actually need to do here?
-        throw new Error(error)
+        complete.call(binding) if complete
+      binding
+
+    Tower.async @before, runner, (error) =>
+      return done(error) if error
+
+      if block
+        # this won't work with coffee-scripts __bind method!
+        # it wraps the function with 0 arguments, when yours might have the callback
+        switch block.length
+          when 0
+            block.call(binding)
+            Tower.async @after, runner, done
+          else
+            block.call binding, (error) =>
+              return done(error) if error
+              unless error
+                Tower.async @after, runner, done
+      else
+        Tower.async @after, runner, done
 
   push: (phase, method, filters, options) ->
     @[phase].push new Tower.Support.Callback(method, filters, options)

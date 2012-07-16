@@ -68,8 +68,6 @@ Tower.Store.Operators =
   testValue: (recordValue, operators, record) ->
     success = true
 
-    console.log "TESTING", recordValue, operators
-
     switch _.kind(operators)
       when 'number', 'string', 'float', 'NaN'
         success = recordValue == operators
@@ -91,7 +89,6 @@ Tower.Store.Operators =
 
             return false unless success
         else # might be more comparable objects, like mongo ObjectIDs
-          console.log "NOPE!", recordValue, operators
           success = _.isEqual(recordValue, operators)
 
     success

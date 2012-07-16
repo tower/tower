@@ -1,13 +1,18 @@
 Tower.Controller.Errors =
   ClassMethods:
     rescue: (type, method, options) ->
-      app = Tower.Application.instance()
-      handlers = app.currentErrorHandlers ||= []
-
-      handlers.push (error) =>
+      Tower.Application.instance().errorHandlers.push (error) =>
         errorType = if typeof type == 'string' then global[type] else type
         if error instanceof errorType
           @instance()[method](error)
+
+  # @todo make this more robust, just going to render simple error message for now
+  # @see http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+  handleError: (error) ->
+    @unauthorized(error)
+
+  unauthorized: (error) ->
+    @render status: 401, json: error: error.toString()
 
 Tower.Controller.Errors.ClassMethods.rescueFrom = Tower.Controller.Errors.ClassMethods.rescue
 

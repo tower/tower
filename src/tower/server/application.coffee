@@ -17,6 +17,8 @@ class Tower.Application extends Tower.Engine
   setDefaults: ->
     true
 
+  errorHandlers: []
+
   @autoloadPaths: [
     'app/helpers'
     'app/concerns'
