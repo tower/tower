@@ -237,6 +237,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   test: (record) ->
     # @todo need a subclass tester
     # return false unless record.constructor.className()
+    # @todo needs to work on things like MongoDB's ObjectID
     Tower.Store.Operators.test(record, @conditions())
 
   testEach: (records, callback) ->

@@ -68,6 +68,8 @@ Tower.Store.Operators =
   testValue: (recordValue, operators, record) ->
     success = true
 
+    console.log "TESTING", recordValue, operators
+
     switch _.kind(operators)
       when 'number', 'string', 'float', 'NaN'
         success = recordValue == operators
@@ -80,13 +82,17 @@ Tower.Store.Operators =
       when 'regex'
         success = @match(recordValue, operators)
       else
-        for key, value of operators
-          if operator = Tower.Store.Operators.MAP[key]
-            success   = @[operator.replace('$', '')](recordValue, value, record)
-          else
-            success   = recordValue == operators
+        if _.isHash(operators) # simple object of operators
+          for key, value of operators
+            if operator = Tower.Store.Operators.MAP[key]
+              success   = @[operator.replace('$', '')](recordValue, value, record)
+            else
+              success   = recordValue == operators
 
-          return false unless success
+            return false unless success
+        else # might be more comparable objects, like mongo ObjectIDs
+          console.log "NOPE!", recordValue, operators
+          success = _.isEqual(recordValue, operators)
 
     success
 
@@ -119,10 +125,10 @@ Tower.Store.Operators =
 
     if _.isArray(recordValue)
       for value in array
-        return true if recordValue.indexOf(value) != -1
+        return true if _.include(recordValue, value)
     else
       for value in array
-        return true if recordValue == value
+        return true if _.isEqual(recordValue, value)
     false
 
   allIn: (recordValue, array) ->
@@ -130,10 +136,10 @@ Tower.Store.Operators =
 
     if _.isArray(recordValue)
       for value in array
-        return false if _.indexOf(recordValue, value) == -1
+        return false if !_.include(recordValue, value)
     else
       for value in array
-        return false if recordValue != value
+        return false if !_.isEqual(recordValue, value)
     true
 
   notInAny: (recordValue, array) ->
@@ -141,10 +147,10 @@ Tower.Store.Operators =
 
     if _.isArray(recordValue)
       for value in array
-        return true if _.indexOf(recordValue, value) != -1
+        return true if _.include(recordValue, value)
     else
       for value in array
-        return true if recordValue == value
+        return true if _.isEqual(recordValue, value)
 
     false
 

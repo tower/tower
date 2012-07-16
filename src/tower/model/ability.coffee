@@ -1,6 +1,26 @@
+###
+class App.Ability extends Tower.Ability
+  assign: ->
+    user = @get('user')
+    
+    @can 'read', App.Post
+    # in this case you might not check for it, so you don't need to make the db call,
+    # should do lazy loading with a function
+    # @todo should be able to do this but can't
+    # @can 'update', user.get('groups')
+    # hasManyThrough.appendFindConditions is the issue.
+    @can 'update', user.get('groups').all()
+    @can 'manage', user.get('memberships')
+    # @todo 'create' actions should add id to cursor.
+    @can 'read', 'create', App.Membership
+    #if user.hasRole('admin')
+    #  @
+    @
+###
 class Tower.Ability extends Tower.Class
-  rules: Ember.computed ->
+  rules: Ember.computed(->
     []
+  ).cacheable()
 
   actions:
     read:   ['index', 'show']
