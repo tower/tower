@@ -21,8 +21,8 @@ class Tower.Net.Param.String extends Tower.Net.Param
       values = []
 
       # ([\+\-\^]?[\w@\-_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')
-      # /([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g
-      node.replace /([\+\-\^]?[^'-]+|-?\'[^'-]+\')/g, (_, token) =>
+      # /([\+\-\^]?[^'-]+|-?\'[^'-]+\')/g
+      node.replace /([\+\-\^]?[\w@_\s\d\.\$]+|-?\'[\w@-_\s\d\+\.\$]+\')/g, (_, token) =>
         negation    = false
         exact       = false
 

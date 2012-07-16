@@ -1,4 +1,4 @@
-App.Concernable.EmailConcern =
+App.EmailConcern =
   ClassMethods:
     welcome: (id) ->
       App.Concernable.find id, (error, record) =>

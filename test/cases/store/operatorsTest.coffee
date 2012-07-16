@@ -31,24 +31,24 @@ describe "Tower.Store.Operators", ->
     assert.isFalse o.eq(new Date, _(3).days().ago().toDate()), 'now === ago'
     assert.isFalse o.eq(/asdf/, "asdf"), '/asdf/ === "asdf"'
     
-  test 'neq', ->
-    assert.isTrue o.neq(null, undefined), 'null === undefined'
-    assert.isTrue o.neq(undefined, null), 'undefined === null'
-    assert.isTrue o.neq(0, null), '0 === null'
-    assert.isTrue o.neq(0, undefined), '0 === undefined'
-    assert.isTrue o.neq(1, '1'), '1 === "1"'
-    assert.isTrue o.neq(1, 1.1), '1 === 1.1'
-    assert.isTrue o.neq(new Date, _(3).days().ago().toDate()), 'now === ago'
-    assert.isTrue o.neq(/asdf/, "asdf"), '/asdf/ === "asdf"'
+  test 'ne', ->
+    assert.isTrue o.ne(null, undefined), 'null === undefined'
+    assert.isTrue o.ne(undefined, null), 'undefined === null'
+    assert.isTrue o.ne(0, null), '0 === null'
+    assert.isTrue o.ne(0, undefined), '0 === undefined'
+    assert.isTrue o.ne(1, '1'), '1 === "1"'
+    assert.isTrue o.ne(1, 1.1), '1 === 1.1'
+    assert.isTrue o.ne(new Date, _(3).days().ago().toDate()), 'now === ago'
+    assert.isTrue o.ne(/asdf/, "asdf"), '/asdf/ === "asdf"'
     
-    assert.isFalse o.neq(1, 1), '1 === 1'
-    assert.isFalse o.neq(1, 1.0), '1 === 1.0'
-    assert.isFalse o.neq(new Date, new Date), 'now === now'
-    assert.isFalse o.neq(/asdf/, "/asdf/"), '/asdf/ === "/asdf/"'
-    assert.isFalse o.neq("/asdf/", /asdf/), '"/asdf/" === /asdf/'
-    assert.isFalse o.neq(null, null), 'null === null'
-    assert.isFalse o.neq(undefined, undefined), 'undefined === undefined'
-    assert.isFalse o.neq(0, 0), '0 === 0'
+    assert.isFalse o.ne(1, 1), '1 === 1'
+    assert.isFalse o.ne(1, 1.0), '1 === 1.0'
+    assert.isFalse o.ne(new Date, new Date), 'now === now'
+    assert.isFalse o.ne(/asdf/, "/asdf/"), '/asdf/ === "/asdf/"'
+    assert.isFalse o.ne("/asdf/", /asdf/), '"/asdf/" === /asdf/'
+    assert.isFalse o.ne(null, null), 'null === null'
+    assert.isFalse o.ne(undefined, undefined), 'undefined === undefined'
+    assert.isFalse o.ne(0, 0), '0 === 0'
       
   describe 'gte', ->
     test 'integer', ->

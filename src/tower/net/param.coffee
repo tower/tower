@@ -19,7 +19,11 @@ class Tower.Net.Param
       options.type = field.type
 
     options.type ||= 'String'
-    new Tower.Net.Param[options.type](key, options)
+    klass = Tower.Net.Param[options.type]
+    unless klass # @todo
+      options.type = 'String'
+      klass = Tower.Net.Param.String
+    new klass(key, options)
 
   constructor: (key, options = {}) ->
     @controller = options.controller

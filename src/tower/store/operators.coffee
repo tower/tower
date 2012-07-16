@@ -108,7 +108,7 @@ Tower.Store.Operators =
   eq: (recordValue, value) ->
     @_comparable(recordValue) == @_comparable(value)
 
-  neq: (recordValue, value) ->
+  ne: (recordValue, value) ->
     @_comparable(recordValue) != @_comparable(value)
 
   match: (recordValue, value) ->
