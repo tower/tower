@@ -112,7 +112,8 @@ Tower.Model.Validations =
         Tower.async validators, iterator, (error) =>
           if (!(_.isPresent(errors) || error))
             success = true
-          complete.call(@, !success)
+          # @todo need to handle afterValidation callbacks
+          complete.call(@)
 
         success
 

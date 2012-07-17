@@ -162,3 +162,39 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
         assert.equal record._asyncMethodWithAsyncCallback, 'error!'
         assert.equal record._afterAsyncMethodWithAsyncCallback, undefined
         done()
+
+  describe 'uniqueness', ->
+    class App.UniquenessModel extends Tower.Model
+      @store Tower.Store.Mongodb
+
+      @field 'title'
+      @field 'slug'
+
+      @belongsTo 'post'
+
+      @validates 'title', presence: true
+      @validates 'postId', uniqueness: true
+
+      @before 'validate', 'slugify'
+      
+      slugify: ->
+        @set 'slug', _.parameterize(@get('title')) if @get('title') && !@get('slug')?
+        true
+
+    record = null
+    post = null
+
+    beforeEach (done) ->
+      App.Post.create rating: 8, (error, r) =>
+        post = r
+        App.UniquenessModel.create title: 'a title', postId: post.get('id'), (error, r) =>
+          record = r
+          done()
+
+    # the uniqueness error might be coming from Tower.Model.AutosaveAssociation#_associationIsValid
+    test 'save', (done) ->
+      assert.isTrue record.get('isValid')
+
+      record.save =>
+        assert.isFalse record.get('isValid')
+        done()

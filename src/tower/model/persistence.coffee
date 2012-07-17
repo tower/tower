@@ -93,12 +93,13 @@ Tower.Model.Persistence =
 
       unless options.validate == false
         @validate (error) =>
+          error ||= _.isPresent(@get('errors'))
           if error
             @set('isValid', false)
             @set('isSaving', false)
             # something is wrong here...
             if callback
-              callback.call(@, null)
+              callback.call(@)
             else
               # something like this if no callback is passed
               throw new Error(_.flatten(_.values(@errors)).join('. '))
