@@ -46,12 +46,7 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
     asyncMethodWithAsyncCallback: (methodDone) ->
       block = (blockDone) ->
         process.nextTick =>
-          @_asyncMethodWithAsyncCallback = true
-          blockDone()
-
-      complete = (error) =>
-        console.log error
-        methodDone()
+          blockDone(@_asyncMethodWithAsyncCallback = @_expectedAsyncMethodWithAsyncCallback)
 
       @runCallbacks 'asyncMethodWithAsyncCallback', block, methodDone
 
@@ -124,7 +119,9 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
     test 'if async beforeCallback calls back with an error (or anything except null, false, or undefined), it should halt', (done) ->
       record._expectedBeforeAsyncMethodWithAsyncCallback = 'error!'
       record._expectedAfterAsyncMethodWithAsyncCallback = undefined
-      record.asyncMethodWithAsyncCallback =>
+      record._expectedAsyncMethodWithAsyncCallback = false
+      record.asyncMethodWithAsyncCallback (error) =>
+        assert.equal error.message, 'error!'
         assert.equal record._beforeAsyncMethodWithAsyncCallback, 'error!'
         assert.equal record._asyncMethodWithAsyncCallback, undefined
         assert.equal record._afterAsyncMethodWithAsyncCallback, undefined
@@ -133,9 +130,11 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
     test 'everything should execute if no errors', (done) ->
       record._expectedBeforeAsyncMethodWithAsyncCallback = undefined
       record._expectedAfterAsyncMethodWithAsyncCallback = false
-      record.asyncMethodWithAsyncCallback =>
+      record._expectedAsyncMethodWithAsyncCallback = false
+      record.asyncMethodWithAsyncCallback (error) =>
+        assert.equal error, undefined
         assert.equal record._beforeAsyncMethodWithAsyncCallback, undefined
-        assert.equal record._asyncMethodWithAsyncCallback, true
+        assert.equal record._asyncMethodWithAsyncCallback, false
         assert.equal record._afterAsyncMethodWithAsyncCallback, false
         done()
 
@@ -143,10 +142,23 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
       record._expectedBeforeAsyncMethodWithAsyncCallback = undefined
       record._expectedAfterAsyncMethodWithAsyncCallback = true
       record._expectedAfterAsyncMethodWithAsyncCallback2 = true
-      record.asyncMethodWithAsyncCallback =>
+      record._expectedAsyncMethodWithAsyncCallback = false
+      record.asyncMethodWithAsyncCallback (error) =>
+        assert.equal error.message, 'true'
         assert.equal record._beforeAsyncMethodWithAsyncCallback, undefined
-        assert.equal record._asyncMethodWithAsyncCallback, true
+        assert.equal record._asyncMethodWithAsyncCallback, false
         assert.equal record._afterAsyncMethodWithAsyncCallback, true
         # never reaches this one.
         assert.equal record._afterAsyncMethodWithAsyncCallback2, undefined
+        done()
+
+    test '* if async block calls callback with anything but false/undefined/null it will halt', (done) ->
+      record._expectedBeforeAsyncMethodWithAsyncCallback = false # but still will execute
+      record._expectedAfterAsyncMethodWithAsyncCallback = false # but will be undefined because it halts
+      record._expectedAsyncMethodWithAsyncCallback = 'error!'
+      record.asyncMethodWithAsyncCallback (error) =>
+        assert.equal error.message, 'error!'
+        assert.equal record._beforeAsyncMethodWithAsyncCallback, false
+        assert.equal record._asyncMethodWithAsyncCallback, 'error!'
+        assert.equal record._afterAsyncMethodWithAsyncCallback, undefined
         done()
