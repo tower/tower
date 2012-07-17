@@ -80,6 +80,8 @@ Tower.Model.Validations =
       success         = false
 
       @runCallbacks 'validate', (block) =>
+        # @todo this is calling back too soon, we need first execute after validation callbacks,
+        # then call the callback above
         complete        = @_callback(block, callback)
         validators      = @constructor.validators()
         errors          = {}

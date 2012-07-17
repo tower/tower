@@ -104,7 +104,6 @@ class Tower.Support.Callbacks.Chain
 
     Tower.async @before, runner, (error) =>
       return done(error) if error
-
       if block
         # this won't work with coffee-scripts __bind method!
         # it wraps the function with 0 arguments, when yours might have the callback
