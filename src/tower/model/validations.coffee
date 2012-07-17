@@ -76,6 +76,19 @@ Tower.Model.Validations =
     # @param [Function] callback
     #
     # @return [void]
+    # 
+    # @todo make sure the callbacks execute in this order
+    # - save
+    # - valid
+    # - before_validation
+    # - validate
+    # - after_validation
+    # - before_save
+    # - before_create
+    # - create
+    # - after_create
+    # - after_save
+    # - after_commit
     validate: (callback) ->
       success         = false
 
