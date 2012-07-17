@@ -97,7 +97,7 @@ class Tower.Support.Callbacks.Chain
         if complete
           complete.call(binding, error)
         else
-          throw error
+          throw error unless Tower.Support.Callbacks.silent
       else
         complete.call(binding) if complete
       binding
@@ -147,7 +147,7 @@ class Tower.Support.Callback
     switch method.length
       when 0
         result = method.call binding
-        next(if !result then new Error("Callback did not pass") else null)
+        next(if result == false then new Error("Callback did not pass") else null)
       else
         method.call binding, next
 
