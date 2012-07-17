@@ -56,7 +56,7 @@ _.request = (method, path, options, callback) ->
   options   ||= {}
   headers     = options.headers || {}
   params      = options.params  || {}
-  redirects   = options.redirects || 5
+  redirects   = if options.redirects? then options.redirects else 5
   auth        = options.auth
   format      = options.format# || "form-data"
 
