@@ -49,6 +49,10 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
           @_asyncMethodWithAsyncCallback = true
           blockDone()
 
+      complete = (error) =>
+        console.log error
+        methodDone()
+
       @runCallbacks 'asyncMethodWithAsyncCallback', block, methodDone
 
     beforeAsyncMethodWithAsyncCallback: (done) ->
