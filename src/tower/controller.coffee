@@ -35,6 +35,7 @@ class Tower.Controller extends Tower.Class
     @hasParent            = @constructor.hasParent()
 
 require './controller/callbacks'
+require './controller/flash'
 require './controller/helpers'
 require './controller/instrumentation'
 require './controller/params'
@@ -45,6 +46,7 @@ require './controller/responder'
 require './controller/responding'
 
 Tower.Controller.include Tower.Controller.Callbacks
+Tower.Controller.include Tower.Controller.Flash
 Tower.Controller.include Tower.Controller.Helpers
 Tower.Controller.include Tower.Controller.Instrumentation
 Tower.Controller.include Tower.Controller.Params
