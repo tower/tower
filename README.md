@@ -19,6 +19,24 @@ Tower is soon going to support only Node.js 0.8.0+. This stuff moves fast.
 
 Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
 
+## Contributor Note
+
+All of the base ideas are now pretty much in the Tower codebase, now it's just a matter of fleshing out the edge cases and a few implementations. Here's what's new:
+
+- Background jobs in Redis. The `Model.enqueue` and `Model#enqueue` methods are convention for off-loading expensive tasks to the background. You then run `cake work` and it will start the [kue](https://github.com/LearnBoost/kue) background worker to process items in the different redis queues. That process is running in a totally separate environment, but they can communicate b/c of redis' nice pub/sub api. This still needs to be fleshed out and tested a bit more but the basics are there.
+- Attachments. File uploading is working, as well as image resizing with imagemagick. I've started working on post-processing using background redis jobs as well. Tower should have a standard set of attachment "processors" to make uploading/processing attachments dead-simple (it's still pretty hard in Rails). This includes from any format to standard formats (video/audio/docs/images/etc.), video/audio/image processing/compression, text extraction and resizing, and document processing (pdf text extraction, MS Word to text, etc.). It's all pretty straight forward, just need to wrap command-line tools. See http://documentcloud.github.com/docsplit/.
+- Authentication. I don't think I've merged the authentication code yet, but an older version is here: https://github.com/viatropos/tower-authentication-example. The whole logging in with email/facebook/etc. should be completely solved. Right now mongodb session support is working locally, I will merge it when I finish with some other stuff.
+- Subdomains. Subdomains should be first-class citizens. We need to thoroughly test them in production. JSONP support exists (to do `GET` requests across domains), need to test that out. Need to get a better/leaner URL parser, but what's in there now works. Need to test authentication/sessions/cookies across subdomains.
+- Authorization. I've started on the authorization system (inspired from [cancan](https://github.com/ryanb/cancan/)). It works and is pretty awesome :). Just need to add some controller hooks to make it plug-and-chug.
+- Mass-assignment protection. I've implemented the basics of "mass assignment protection" (see the [Rails Security Guide](http://guides.rubyonrails.org/security.html#mass-assignment)), need to test it out a bit more. Also need to handle input sanitization.
+- Embedded Documents. I've mapped out how this could be implemented but it's still on the todo list.
+- Associations (hasMany, hasManyThrough, belongsTo, hasOne). They all work well (tested manually on the client as well, pretty awesome seeing hasManyThrough relations save on the client). There's a good amount of work to be done on making sure `user.address == address.user`, that kind of reflection stuff (especially for binding on the view). Wrote down a lot of ideas on how to implement an "identity map", but we have to be careful about garbage collection if we're going to store references to the request/controller objects in some hidden "thread" (see some of the recent commits for notes - early/mid July). Also need to make the validations/callbacks more robust for `acceptsNestedAttributesFor`, but it's all working at a basic level.
+- The Cursor. The cursor is _super_ awesome :). There's a ton more ideas on how to make it even more awesome, but for now it does what it's supposed to. I'd like to simplify the notification system eventually (telling the client of model changes).
+- Ember Views. This is the next big thing to do, but it's really independent of Tower. Tower can create some helpers like form builders and whatnot, but that might take a long time - particularly b/c there's going to be a lot of work put in to make sure performance is top-notch with all those views.
+- Client Routes. The base code for mapping routes.coffee into the Ember routing system is there, but the Ember API is changing weekly almost so I haven't gotten back to it. It should only take a few hours to wire up.
+
+If you're excited to work on one of these things let me know and I'll point you to where things are and all that. Once all of this stuff is reasonably complete (mid August hopefully), this will merge into master. From there it's going to be "robustifying" everything, and hardcore performance tuning.
+
 ## Default Development Stack
 
 - Ember
