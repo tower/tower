@@ -46,12 +46,6 @@ Tower.AttachmentProcessingMixin =
       {}
   ).cacheable()
 
-  styles: #Ember.computed(-> {}).volatile()
-    thumb:  ['25x25', 'png']
-    small:  ['50x50', 'png']
-    medium: ['125x125', 'png']
-    large:  ['300x300', 'png']
-
   # https://github.com/rsms/node-imagemagick/
   processors: #Ember.computed(->).cacheable()
     [
