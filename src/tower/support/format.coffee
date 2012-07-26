@@ -111,6 +111,7 @@
     midnight: ->
 
     toDate: (value) ->
+      return value unless value?
       moment(value)._d
 
     withDate: (value) ->

@@ -65,6 +65,7 @@ Tower.Model.Dirty =
 
   _updateChangedAttribute: (key, value) ->
     changedAttributes = @get('changedAttributes')
+    # @todo this is not the current attributes... need to get rid of data.unsavedData
     attributes        = @get('attributes')
 
     # @todo, need to account for typecasting better

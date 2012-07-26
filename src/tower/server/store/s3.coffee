@@ -14,11 +14,10 @@ class Tower.Store.S3 extends Tower.Store
       # tmp
       delete file._data
 
+      return next(new Error('Must specify the upload path, file.to, for ' + file.path)) unless file.to?
+
       fs.stat file.path, (error, stats) =>
         file.length = stats.size
-        
-        # @todo tmp
-        file.to ||= "/test-images/#{file.filename}"
 
         # @todo far-future expires headers
         headers = 
@@ -44,11 +43,12 @@ class Tower.Store.S3 extends Tower.Store
   update: (updates, cursor, callback) ->
 
   destroy: (cursor, callback) ->
-    paths = _.castArray(cursor)
+    paths   = _.castArray(cursor)
+    client  = @client()
 
     destroy = (path, next) =>
       return next() unless path?
-      knox.deleteFile(path, next)
+      client.deleteFile(path, next)
 
     Tower.series paths, destroy, (error) =>
       callback.call(@, error) if callback
@@ -57,4 +57,5 @@ class Tower.Store.S3 extends Tower.Store
     @createBucket(arguments...)
 
   createBucket: ->
-    
+
+module.exports = Tower.Store.S3

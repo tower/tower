@@ -7,13 +7,31 @@ Tower.AttachmentProcessingMixin =
 
     @protected 'processed'
 
-    @before 'create', 'setAttachmentAttributes'
+    @before 'save', 'prepareForDestroy'
+    @before 'save', 'setAttachmentAttributes'
 
     @after 'save', 'destroyOldFiles'
     @after 'save', 'saveFiles'
 
     @before 'destroy', 'prepareForDestroy'
     @after 'destroy', 'destroyFiles'
+
+    @defaults
+      defaultStyle:           'original'
+      defaultUrl:             '/uploads/:class-:style/missing.png'
+      restrictedCharacters:   /[&$+,\/:;=?@<>\[\]\{\}\|\\\^~%# ]/
+      # So people can't guess the urls
+      # hashData:              ':class/:id/:style/:updatedAt'
+      # hashDigest:            'SHA1'
+      onlyProcess:            []
+      path:                   ':root/public:url'
+      preserveFiles:          false
+      processors:             ['thumbnail']
+      storage:                'filesystem'
+      styles:                 {}
+      # @todo if you switch your urls, it should know how to delete the old files
+      #   (maybe stores a json file in tmp directory with old config)
+      url:                    '/uploads/:class/:style/:name' # '/uploads/:class/:name-:style-:geometry.:format'
 
   ClassMethods:
     DELAYED_POST_PROCESSING: false
@@ -60,7 +78,7 @@ Tower.AttachmentProcessingMixin =
         ext     = parts.pop()
         newName = parts.join('.') + style[0] + '.' + ext
 
-        {width, height} = App.Attachment.parseDimensions(style[0])
+        {width, height} = @constructor.parseDimensions(style[0])
 
         # @todo abstract away
         createTempFile = (opts, callback) =>
@@ -88,15 +106,33 @@ Tower.AttachmentProcessingMixin =
     ]
 
   prepareForDestroy: ->
+    return if @constructor.defaults().preserveFiles || @get('isNew') #!@get('files').original
+    
+    paths   = []
+    styles  = _.keys @get('styles')
+    styles.push('original') if _.indexOf(styles, 'original') == -1
+
+    for style in styles
+      path = @urlFor(style, true)
+      paths.push(path) if path?
+
+    Ember.set(@, '_queuedForDestroy', paths)
+
+    # @setProperties(name: null, contentType: null, size: null, fingerprint: null, updatedAt: null)
+
+    undefined
 
   destroyFiles: ->
 
   destroyOldFiles: (callback) ->
-    return
+    paths = Ember.get(@, '_queuedForDestroy')
 
-    # @todo this should just get file attributes
-    urls = _.map(@get('styles'), (style) -> style.url)
-    @constructor.fileStore.destroy urls, callback
+    delete @_queuedForDestroy
+
+    if paths && paths.length
+      @constructor.fileStore.destroy paths, callback
+    else
+      callback()
 
   # @todo Might want to make these accessible from the thumbnails as well
   setAttachmentAttributes: (callback) ->
@@ -105,7 +141,7 @@ Tower.AttachmentProcessingMixin =
     if file
       Ember.beginPropertyChanges()
 
-      @set('name', file.filename) unless @get('name')?
+      @set('name', @_sanitizeFilename(file.name)) unless @get('name')?
       @set('contentType', file.mime) unless @get('contentType')?
       @set('size', file.length) unless @get('size')?
 
@@ -128,6 +164,14 @@ Tower.AttachmentProcessingMixin =
       callback()
 
     undefined
+
+  # @todo should this be a generic attribute helper (cleaning strings in general)?
+  _sanitizeFilename: (string) ->
+    restricted = @constructor.defaults().restrictedCharacters
+    if restricted
+      string.replace(restricted, '-')
+    else
+      string
 
   # If you have async operations enabled in Tower, it will enqueue
   # the post processing of the files, and only save the original to wherever it needs
@@ -161,6 +205,7 @@ Tower.AttachmentProcessingMixin =
     # maybe make an underscore helper, `_.remove(obj, styleName)` which deletes and returns
     file  = files[styleName]
     # delete files[styleName]
+    file.to ||= @urlFor(styleName)
 
     @constructor.fileStore.create file, (error) =>
       # if file.isTemp ...
@@ -189,10 +234,45 @@ Tower.AttachmentProcessingMixin =
       processorIterator = (processor, processorComplete) =>
         # processor = (file, options, callback) ->
         #   # generatThumb...
-        processor file, style, (error, resultFile) =>
+        processor.call @, file, style, (error, resultFile) =>
           files[styleName] = file = resultFile # the next processor gets the output from the previous
           processorComplete(error)
 
       Tower.series processors, processorIterator, styleComplete
 
     Tower.series styleNames, postProcessIterator, callback
+
+  urlFor: (style, oldValue) ->
+    @_parsePath(@constructor.defaults().url, style, oldValue)
+
+  pathFor: (style, oldValue) ->
+    @_parsePath(@constructor.defaults().path, style, oldValue)
+
+  _parsePath: (path, style, oldValue) ->
+    data = @get('styles')[style] || {}
+    # @todo normalize styles
+    data.format ||= 'png'
+
+    # @todo refactor into generic interpolator
+    path.replace /:(\w+)/g, (__, attribute) =>
+      switch attribute
+        when 'bucket', 'format'
+          data[attribute]
+        when 'url'
+          @urlFor(style)
+        when 'root'
+          Tower.root
+        when 'style'
+          style
+        when 'class'
+          _.parameterize(@constructor.className())
+        when 'name', 'filename'
+          if oldValue
+            # @todo need to fix the _updateChangedAttribute function
+            @attributeWas('name')
+          else
+            @get('name')
+        when 'geometry'
+          "#{@get('width')}x#{@get('height')}"
+        else
+          @get(attribute)
