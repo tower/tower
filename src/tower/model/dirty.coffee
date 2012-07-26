@@ -10,6 +10,9 @@ Tower.Model.Dirty =
     _.inject(@get('changedAttributes'), injectChange, {})
   ).volatile()
 
+  # @todo should dirtyAttributes include embedded documents?
+  #   or should embedded documents be saved after the the parent model saves?
+  #   this is the way mongoid does it (the later)
   dirtyAttributes: Ember.computed(->
     if @get('isNew')
       @attributesForCreate()

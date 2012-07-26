@@ -93,7 +93,9 @@ Tower.Model.AutosaveAssociation =
   _associationIsValid: (association, record, callback) ->
     return true if record.get('isDeleted') || record.get('isMarkedForDestruction')
 
-    record.validate (error) =>
+    record.validate =>
+      # @todo handle this in Validations mixin
+      error = _.isPresent(record.get('errors'))
       if error
         errors = @get('errors')
         if association.autosave

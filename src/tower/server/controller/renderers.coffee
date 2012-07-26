@@ -5,6 +5,10 @@ Tower.Controller.addRenderers
     callback null, text if callback
     text
 
+  # This supports JSONP, just append `http://api.example.com/users.json?callback=?` to to your url and
+  # jQuery will generate a function name for you that it will automatically
+  # handle and parse your JSON from, such as `function1234567({your: 'data'})`.
+  # You need JSONP to do `GET` requests across domains (even subdomains).
   json: (json, options, callback) ->
     unless typeof(json) == 'string'
       if @params.pretty && @params.pretty.toString() == 'true'

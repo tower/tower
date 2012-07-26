@@ -1,3 +1,4 @@
+# https://github.com/andris9/Nodemailer
 Tower.Mailer.Rendering =
   ClassMethods:
     mail: (options = {}, callback) ->

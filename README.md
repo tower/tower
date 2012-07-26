@@ -555,8 +555,30 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Unsolved Complexities
 
-- Handling transactions from the client. How would you save the data for credit/account (subtract one record, add to another) so if one fails both revert back (if you try to keep it simplified and only POST individual records at a time)? You can do embedded models on MongoDB, and transactions on MySQL perhaps. Then if `acceptsNestedAttributesFor` is specified it will send nested data in JSON POST rather than separate.
+- Handling transactions from the client. How would you save the data for credit/account (subtract one record, add to another) so if one fails both revert back (if you try to keep it simplified and only POST individual records at a time)? You can do embedded models on MongoDB, and transactions on MySQL perhaps. Then if `acceptsNestedAttributesFor` is specified it will send nested data in JSON POST rather than separate. Obviously it's better to not do this on the server, but we should see if it's possible to do otherwise, and if not, publicize why.
 
 ## Decisions (need to finalize)
 
 - for uniqueness validation, if it fails on the client, should it try fetching the record from the server? (and loading the record into the client memory store). Reasons for include having to do less work as a coder (lazy loads data). Reasons against include making HTTP requests to the server without necessarily expecting to - or you may not want it to fetch. Perhaps you can specify an option (`lazy: true`) or something, and on the client if true it will make the request (or `autofetch: true`)
+- For non-transactional (yet still complex) associations, such as `group hasMany users through memberships`, you can save one record at a time, so the client should be instant. But if the first record created fails (say you do `group.members.create()`, which creates a user, then a membership tying the two together), what should the client tell the user? Some suggest a global notification (perhaps an alert bar) saying a more generic message such as "please refresh the page, some data is out of sync". But if the data is very important, ideally the code would know how to take the user (who might click this notification) to a form to try saving the `hasMany through` association again. If it continues to fail, it's probably either a bug in the code, or we should be able to know if the server is having issues (like it's crashed or power went out) - then if it's a bug we can have them notify us (some button perhaps) or if it's a real server problem we prepared for we can notify something like "sorry, having server issues, try again later". Other that that, it's up to you to build the validations properly so the data is saved
+
+## Todo
+
+- refactor attachments
+- test redis queue
+- s3 store
+- redis store
+- embedded documents
+- test jsonp
+- remove/replace/update design.io (watch tasks)
+- default templates: eco
+- add ability to use pure javascript (no coffeescript). default templates: ejs
+- handlebars on client
+- allow not using any database
+- redis data store
+- make store be reused between models, not per model
+- should we rename app/views to app/templates (since views are now Ember.View and Ember templates are templates?)
+- have application autoload lib folders
+- use require in the browser to lazy load scripts
+- gruntjs
+- term-css

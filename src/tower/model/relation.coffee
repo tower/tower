@@ -25,6 +25,7 @@ class Tower.Model.Relation extends Tower.Class
   #   when relationship is created/destroyed.
   # @option options [String] counterCacheKey Set to the value of the `counterCache` option if it's a string,
   #   otherwise it's `"#{singularTargetName}Count"`.
+  # @option options [Boolean] autobuild (false)
   #
   # @see Tower.Model.Relations.ClassMethods#hasMany
   init: (owner, name, options = {}) ->
@@ -48,7 +49,8 @@ class Tower.Model.Relation extends Tower.Class
     @counterCache     ||= false
     @idCache            = false unless @hasOwnProperty('idCache')
     @readonly           = false unless @hasOwnProperty('readonly')
-    @validate           = false unless @hasOwnProperty('validate')
+    # from rails' autosave_association and reflection.rb validate?
+    @validate           = @autosave == true unless @hasOwnProperty('validate')
     # @autosave is undefined has a different meaning that true/false
     # @autosave           = false unless @hasOwnProperty('autosave')
     @touch              = false unless @hasOwnProperty('touch')
@@ -61,6 +63,8 @@ class Tower.Model.Relation extends Tower.Class
     @pluralTargetName   = _.pluralize(name)
     @targetType         = @type
     @primaryKey         = 'id'
+    # @todo
+    @autobuild          = false unless @hasOwnProperty('autobuild')
     
     # hasMany "posts", foreignKey: "postId", idCacheKey: "postIds"
     unless @foreignKey
@@ -98,6 +102,7 @@ class Tower.Model.Relation extends Tower.Class
     @owner._addAutosaveAssociationCallbacks(@)
 
   # @todo refactor!
+  # http://stackoverflow.com/questions/4255379/dirty-tracking-of-embedded-document-on-the-parent-doc-in-mongoid
   _defineRelation: (name) ->
     object = {}
 

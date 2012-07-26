@@ -106,7 +106,7 @@ describeWith = (store) ->
           assert.equal record._associatedRecordsToValidateOrSave(cursor, false, false).length, 1
 
         test '_validateCollectionAssociation', ->
-          record._setHasManyAssociation('associationCursorPosts', App.AssociationCursorPost.build(), association)
+          record._setHasManyAssociation('associationCursorPosts', [App.AssociationCursorPost.build()], association)
           assert.isFalse record._validateCollectionAssociation(association), 'record._validateCollectionAssociation(association)'
 
           # @todo what should the error message be?

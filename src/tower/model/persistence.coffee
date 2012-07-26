@@ -81,10 +81,10 @@ Tower.Model.Persistence =
 
       options ||= {}
 
-      # @todo
-      # unless @get('isNew') || @get('isDirty')
-      #   callback.call(@) if callback
-      #   return true
+      # @todo prevent infinite loops and unnecessary calls to the db
+      if @get('isSaving') # || !(@get('isNew') || @get('isDirty'))
+        callback.call(@) if callback
+        return true
 
       @set('isSaving', true)
       @get('transaction').adopt(@)

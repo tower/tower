@@ -74,7 +74,7 @@ _.extend Tower,
 
   # Want to figure out how to do this with ember observers sometime.
   addCursor: (cursor) ->
-    types     = cursor.getPath('observableTypes')
+    types     = Ember.get(cursor, 'observableTypes')
 
     Tower.cursors[Ember.guidFor(cursor)] = cursor
 
@@ -85,7 +85,7 @@ _.extend Tower,
         cursors = Tower.cursors[type] = {}
       
       # @todo getPath -> get when it's changed in cursor
-      fieldNames = cursor.getPath('observableFields')
+      fieldNames = Ember.get(cursor, 'observableFields')
 
       for fieldName in fieldNames
         cursors[fieldName] = cursor
@@ -93,7 +93,7 @@ _.extend Tower,
     cursor
 
   removeCursor: (cursor) ->
-    types     = cursor.getPath('observableTypes')
+    types     = Ember.get(cursor, 'observableTypes')
 
     delete Tower.cursors[Ember.guidFor(cursor)]
 
@@ -102,7 +102,7 @@ _.extend Tower,
 
       if cursors
         # @todo getPath -> get when it's changed in cursor
-        fieldNames = cursor.getPath('observableFields')
+        fieldNames = Ember.get(cursor, 'observableFields')
         
         for fieldName in fieldNames
           delete cursors[fieldName]

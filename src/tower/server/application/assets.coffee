@@ -179,6 +179,7 @@ Tower.Application.Assets =
     client  = knox.createClient Tower.config.credentials.s3
 
     @upload (from, to, headers, next) ->
+      # @todo use putStream
       client.putFile from, to, headers, next
 
   stats: ->

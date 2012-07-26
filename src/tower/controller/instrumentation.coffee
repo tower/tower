@@ -5,19 +5,29 @@ Tower.Controller.Instrumentation =
     call: (request, response, next) ->
       @request  = request
       @response = response
-      @params   = @request.params   || {}
-      @cookies  = @request.cookies  || {}
-      @query    = @request.query    || {}
-      @session  = @request.session  || {}
+      @params   = request.params   || {}
+      @cookies  = request.cookies  || {}
+      @query    = request.query    || {}
+      @session  = request.session  || {}
+      params    = @params
       # tmp, but need to think about his more
-      @params.conditions = JSON.parse(@params.conditions) if typeof @params.conditions == 'string'
+      params.conditions = JSON.parse(params.conditions) if typeof params.conditions == 'string'
 
-      unless @params.format
-        try @params.format = require('mime').extension(@request.header('content-type'))
-        @params.format ||= 'html'
+      unless params.format
+        try params.format = require('mime').extension(request.header('content-type'))
+        params.format ||= 'html'
 
-      @format   = @params.format
-      @action   = @params.action
+      # @todo maybe move this into middleware (merging files with params)
+      if files = request.files
+        # {"profile": {"coverImage": {path: '/tmp/123.png'}, "attachments": [{path: '/tmp/456.png'}]}}
+        # key == "profile"
+        # value == {"coverImage": {path: '/tmp/123.png'}, "attachments": [{path: '/tmp/456.png'}]}
+        for key, value of files
+          params[key] ||= {} # "profile"
+          _.extend(params[key], value)
+
+      @format   = params.format
+      @action   = params.action
       @headers  = {}
       @callback = next
       @process()

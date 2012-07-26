@@ -42,4 +42,14 @@ class Tower.Store.FileSystem extends Tower.Store
     path  = "#{@loadPaths[0]}/#{query.path}"
     path  = path.replace(new RegExp("(\\.#{query.ext})?$"), ".#{query.ext}")
 
+  create: (cursor, callback) ->
+
+  update: (updates, cursor, callback) ->
+
+  destroy: (cursor, callback) ->
+
+  exists: (cursor, callback) ->
+
+  count: (cursor, callback) ->
+
 module.exports = Tower.Store.FileSystem
