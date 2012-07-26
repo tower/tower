@@ -12,19 +12,22 @@ Tower.Model.Attachment =
     # @example (Eventually)
     #   class App.User extends Tower.Model
     #     @attachment 'photo', styles: thumb: '25x25'
-    attachment: (name, options = {}) ->
+    attachment: (name, options) ->
       if typeof name == 'string'
+        options ||= {}
         # class @Photo extends Tower.Model
         attachmentClassName = _.camelize(name)
         attachmentClass     = @[attachmentClassName] = Tower.Model.extend()
         # add attachment fields to this new class
         attachmentClass._attachmentFields()
-        attachmentClass.include(Tower.AttachmentProcessingMixin)
+        attachmentClass._attachmentProcessing(options)
         # then associate it
         @hasOne name, type: attachmentClass
       else # this is the working case, just adds attachment fields to it.
+        options = name
+        options ||= {}
         @_attachmentFields()
-        @include Tower.AttachmentProcessingMixin
+        @_attachmentProcessing(options)
 
     _attachmentFields: ->
       @field 'name',        type: 'String'
@@ -32,6 +35,11 @@ Tower.Model.Attachment =
       @field 'width',       type: 'Integer'
       @field 'height',      type: 'Integer'
       @field 'contentType', type: 'String'
+
+    _attachmentProcessing: (options) ->
+      @include Tower.AttachmentProcessingMixin
+
+      @styles options.styles if options.styles
 
     attachments: ->
       @metadata().attachments

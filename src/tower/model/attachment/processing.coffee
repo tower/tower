@@ -28,6 +28,15 @@ Tower.AttachmentProcessingMixin =
       @find id, (error, record) =>
         record.postProcessAndSave(callback)
 
+    # Adds a new class method to the class
+    # 
+    # @todo for each style, it should create a nested model (e.g. thumb/medium/large)
+    # that we can save properties for if desired (embedded docs).
+    styles: (styles) ->
+      @reopen styles: Ember.computed(->
+        _.extend({}, styles)
+      ).cacheable()
+
   isUploading: false
 
   files: Ember.computed((key, value) ->
