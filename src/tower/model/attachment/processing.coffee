@@ -39,7 +39,7 @@ Tower.AttachmentProcessingMixin =
     parseDimensions: (string) ->
       string.match(/\b(\d*)x?(\d*)\b([\>\<\#\@\%^!])?/i)
 
-      width: RegExp.$1, height: RegExp.$2
+      width: RegExp.$1, height: RegExp.$2, modifier: RegExp.$3
 
     # Called from the background job, which finds the instance and postprocesses it.
     postProcessAndSave: (id, callback) ->

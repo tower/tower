@@ -108,7 +108,6 @@ Tower.Model.Cursor.toString = -> 'Tower.Model.Cursor'
 # @todo refactor this
 Tower.Model.Cursor::defaultLimit = 20
 
-
 require './cursor/finders'
 require './cursor/operations'
 require './cursor/persistence'
@@ -121,6 +120,7 @@ Tower.Model.CursorMixin = Ember.Mixin.create(
   Tower.Model.Cursor.Serialization
 )
 
+# @todo undo this feature?
 if Ember.EXTEND_PROTOTYPES
   Tower.Model.CursorMixin.without.apply(Tower.Model.CursorMixin, ['length', 'isCursor']).apply(Array.prototype)
 
