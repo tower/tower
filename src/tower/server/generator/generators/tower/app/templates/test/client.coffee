@@ -9,5 +9,5 @@ global.__flash_getWindowLocation  = null
 global.__flash_getTopLocation     = null
 
 $ ->
-  #mocha.globals ['__flash_getWindowLocation', '__flash_getTopLocation']
-  #mocha.run()
+  # mocha.globals ['__flash_getWindowLocation', '__flash_getTopLocation']
+  # mocha.run()
