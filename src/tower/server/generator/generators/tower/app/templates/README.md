@@ -1,17 +1,38 @@
-# <%= app.title %>
+Tower.js
+========
 
-## Install
+Thanks for installing Tower and using it to build an application!
+You can read this file for more information on how to get started.
+You can also read the website we've made: http://towerjs.org.
+There are also plenty of screencasts here: http://towerjs.org/screencast.
 
-First [setup the Tower.js development environment](http://towerjs.org/guides/development#environment), then run:
+Install
+-------
 
-```
-git clone git@github.com:<%= user.username %>/<%= app.name %>.git
-cd <%= app.name %>
-npm install
-node server
-```
+You've probably already got `tower.js` installed if you're reading this, but just in case we've provided a little instruction.
+To get started with `tower.js` you'll need the following software:
 
-## Test
+  * Node.js
+  * Node Package Manager (aka, npm)
+
+With those two installed you only need to do the following steps to create your first app:
+
+  1. `npm install -g design.io forever tower`
+  2. `tower new app_name_here`
+  3. `cd app_name_here`
+  4. `npm install`
+
+Now your application is fully setup and ready to run with `forever`:
+
+    $ forever server.js
+
+You an discover the other commands by using `tower generate`.
+You also have access to a console with `tower console`.
+Look to the `cake` file for more commands.
+
+
+Test
+----
 
 Run tests:
 
@@ -36,6 +57,3 @@ Read up on [testing Tower.js apps](http://towerjs.org/guides/testing).
 
 If all else fails, see the [Rails Guides](http://guides.rubyonrails.org/), should be fairly close.
 
----
-
-Built on Tower.js
