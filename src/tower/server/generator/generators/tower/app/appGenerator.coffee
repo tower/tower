@@ -48,6 +48,8 @@ class Tower.Generator.AppGenerator extends Tower.Generator
             @template "_meta.coffee"
             @template "_navigation.coffee"
             @template "_sidebar.coffee"
+      @inside "scripts", ->
+        @template "tower"
 
       @inside "config", ->
         @template "application.coffee"

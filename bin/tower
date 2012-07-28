@@ -1,3 +1,11 @@
 #!/usr/bin/env node
+var file = require('fs');
+var path = require('path');
+var script = path.join(process.env.PWD, 'scripts', 'tower');
 
-require('../lib/tower').Command.run(process.argv);
+
+if(file.existsSync(script)) {
+  require(script)
+} else {
+  require('tower').Command.run(process.argv);
+}
