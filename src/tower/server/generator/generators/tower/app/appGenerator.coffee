@@ -86,6 +86,9 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @template "crossdomain.xml"
         @template "humans.txt"
         @template "robots.txt"
+        @template "index.html"
+        @template "foundation.css"
+        @template "tower.js"
         @directory "images"
         @inside "javascripts", ->
           @inside "app", ->
