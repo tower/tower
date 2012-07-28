@@ -9,9 +9,9 @@
 test
 spec
 ./docs
-README.markdown
 
 # Ignore documentation directories
+README.*
 
 # Ignore various lib files
 Watchfile
