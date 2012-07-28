@@ -25,9 +25,11 @@
 _.series [
 
 ], (error) =>
+  # Check to see if there was an error in the seed
   if error
     console.log 'Something went wrong creating seed data... Try changing something and running again.'
   else
     console.log 'Successfully created seed data!'
 
-  process.exit() # close task
+  # Close task
+  process.exit()
