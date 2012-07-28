@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome to Tower.js!</title>
+    <link rel="stylesheet" type="text/css" href="/foundation.css">
+    <style type="text/css">
+      #header .nav-bar { margin-top: 0px; }
+      .center { text-align: center; }
+    </style>
+  </head>
+  <body>
+    <header id="header">
+      <ul class="nav-bar">
+        <li class="active"><a href="http://towerjs.org/">Tower.js</a></li>
+        <li><a href="https://github.com/viatropos/tower">Source</a></li>
+        <li><a href="#setup">Setup</a></li>
+        <li><a href="#server">Server</a></li>
+        <li><a href="#more">More</a></li>
+      </ul>
+    </header>
+    <article class="row">
+      <header class="twelve column">
+        <hgroup>
+          <h1>Welcome to Tower.js!</h1>
+          <h3 class="subheader">ship with tower</h3>
+        </hgroup>
+      </header>
+
+      <nav class="five column offset-by-four">
+        <dl class="sub-nav">
+          <dt>Jump To: </dt>
+          <dd><a href="#setup">Getting Setup</a></dd>
+          <dd><a href="#server">Server: Go!</a></dd>
+          <dd><a href="#more">Finding More</a></dd>
+        </dl>
+      </nav>
+
+      <hr>
+
+      <section id="introduction" class="six column">
+        <header>
+          <h2 class="subheader">Introduction</h2>
+        </header>
+
+        <p>
+          Thanks for installing Tower and using it to build an application!
+          You can read this file for more information on how to get started.
+          You can also <a href="http://towerjs.org">go to the website we've made just for Tower.js</a>.
+          There are also <a href="http://towerjs.org/screencast">plenty of screencasts to watch</a>, or maybe you want to submit your own?
+
+        </p>
+
+        <div class="center">
+          <img src="/tower.png">
+        </div>
+      </section>
+
+      <section id="setup" class="six column">
+        <header>
+          <h2 class="subheader">Getting Setup</h2>
+        </header>
+
+        <p>
+          You've probably already got <strong>Tower.js</strong> installed if you're reading this, but just in case we've provided a little instruction.
+          To get started with <strong>Tower.js</strong> you'll need the following software:
+        </p>
+
+        <ul class="circle" style="list-style-position: inside;">
+          <li><a href="">Node.js</a></li>
+          <li><a href="">Node Package Manager (aka, npm)</a></li>
+        </ul>
+
+        <p>
+          With those two installed you only need to do run (inside your terminal) these commands to create your first app:
+        </p>
+
+        <ol class="decimal" style="list-style-position: inside;">
+          <li><code>npm install -g design.io forever tower</code>
+          <li><code>tower new app_name_here</code>
+          <li><code>cd app_name_here</code>
+          <li><code>npm install</code>
+        </ol>
+      </section>
+
+      <section id="server" class="six column">
+        <header>
+          <h2 class="subheader">Server: Go!</h2>
+        </header>
+
+        <p>
+          Once you've set up your application you can run the server with the <a href="">forever</a> library.
+          Just use the below command in your terminal:
+        </p>
+
+        <pre>
+
+  <code>$ forever server.js</code>
+
+        </pre>
+
+        <p>
+          You should be able to open your browser to <a href="http://localhost:3000/">http://localhost:3000/</a> and see this page!
+        </p>
+      </section>
+
+      <section id="more" class="six column">
+        <header>
+          <h2 class="subheader">Finding More</h2>
+        </header>
+
+        <p>
+          Looking for more information?
+          Check out the footer below or <a href="irc://irc.freenode.net/towerjs">join our IRC room</a>.
+        </p>
+
+        <p>
+          If you'd like to write an article about <strong>Tower.js</strong> let us know so we can feature it on the <a href="https://groups.google.com/forum/?fromgroups#!forum/towerjs">Google Group</a>.
+        <p>
+          If you want you can also message the creator, <a href="https://twitter.com/viatropos">@viatropos</a>
+        </p>
+
+      </section>
+
+    </article>
+    <footer id="footer" class="row">
+      <hr>
+      <p class="five column">
+        You can find more resources at these links:
+      </p>
+      <ul class="seven column">
+        <li>Main Website: <a href="http://towerjs.org">http://towerjs.org</a></li>
+        <li>Code Docs: <a href=""></a></li>
+        <li>Issue Tracker: <a href="http://github.com/viatropos/tower/issues">http://github.com/viatropos/tower/issues</a></li>
+        <li>Questions? <a href="http://stackoverflow.com/questions/tagged/towerjs">http://stackoverflow.com/questions/tagged/towerjs</a></li>
+      </ul>
+    </footer>
+  </body>
+</html>
