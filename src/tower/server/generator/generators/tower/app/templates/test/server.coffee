@@ -16,11 +16,11 @@ global.destroy  = _.destroy
 
 global.app      = Tower.Application.instance()
 
-# initialize the app before everything.
+# Initialize the app before everything.
 before (done) ->
   app.initialize done
 
-# run this before each action
+# Run this before each action
 beforeEach (done) ->
   if Tower.client
     Tower.Store.Memory.clean(done)
