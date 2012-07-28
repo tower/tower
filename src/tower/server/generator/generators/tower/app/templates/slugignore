@@ -1,3 +1,5 @@
+# Add lines to this file in the form of directory globs in order to
+# have them ignored by Heroku
 *.psd
 *.pdf
 test
