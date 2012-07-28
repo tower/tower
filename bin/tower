@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var file = require('fs');
 var path = require('path');
-var local_script = path.join(process.env.PWD, 'scripts', 'tower');
+var script = path.join(process.env.PWD, 'scripts', 'tower');
 
 require('../lib/tower').Command.run(process.argv);
