@@ -1,9 +1,19 @@
+# Add lines to this file in the form of directory globs in order to
+# have them ignored by Heroku
+
+# Ignore assets
 *.psd
 *.pdf
+
+# Ignore test directories
 test
 spec
-./docs
-README.markdown
+
+# Ignore documentation directories
+docs
+wiki
+README.*
+
+# Ignore various lib files
 Watchfile
 .gitignore
-wiki
