@@ -5,7 +5,7 @@
   "description":              "<%= app.description %>",
   "homepage":                 "http://<%= user.username %>.github.com/<%= app.name %>",
   "main":                     "./server.js",
-  "author":                   "<%= user.name %> <<%= user.email %>>",
+  "author":                   "'<%= user.name %>' <<%= user.email %>>",
   "keywords": [
     "node"
   ],
