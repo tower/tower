@@ -8,9 +8,9 @@
 # Ignore test directories
 test
 spec
-./docs
 
 # Ignore documentation directories
+docs
 README.*
 
 # Ignore various lib files
