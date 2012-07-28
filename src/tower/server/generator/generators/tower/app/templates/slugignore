@@ -11,9 +11,9 @@ spec
 
 # Ignore documentation directories
 docs
+wiki
 README.*
 
 # Ignore various lib files
 Watchfile
 .gitignore
-wiki
