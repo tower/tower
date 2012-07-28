@@ -1,33 +1,43 @@
 require 'tower'
 knox  = require 'knox'
 
+# This uploads all of your assets
 task 'assets:upload', ->
   invoke 'assets:upload:s3'
 
+# This uploads all of your assets to Amazon Web Services S3
 task 'assets:upload:s3', ->
   invoke 'environment'
-  
+
+  # Create a client from your S3 credentials
   client  = knox.createClient Tower.config.credentials.s3
 
+  # Start uploading each asset
   Tower.Application.Assets.upload (from, to, headers, callback) ->
     client.putFile from, to, headers, callback
 
+# This bundles all of your assets into neat little files
 task 'assets:bundle', ->
   invoke 'environment'
   Tower.Application.Assets.bundle()
 
+# This task displays the sizes of the assets on the current project
 task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset sizes', ->
   invoke 'environment'
   Tower.Application.Assets.stats()
 
+# This runs the seed file, which initializes your db with data
 task 'db:seed', ->
   require('tower').Application.instance().initialize =>
     require './db/seeds'
 
+# This puts your Tower app in production mode, used for special tasks
 task 'environment', ->
   Tower.env = 'production'
+# This initializes your Tower application, used for special taks
   Tower.Application.instance().initialize()
 
+# This displays all of the routs for your Tower app
 task 'routes', ->
   invoke 'environment'
 

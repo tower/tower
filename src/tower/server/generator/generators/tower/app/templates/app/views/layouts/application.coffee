@@ -3,8 +3,8 @@ html ->
   head ->
     partial 'shared/meta'
   body role: 'application', ->
-    #if browserIs 'ie'
-    #  javascriptTag 'http://html5shiv.googlecode.com/svn/trunk/html5.js'
+    # if browserIs 'ie'
+    #   javascriptTag 'http://html5shiv.googlecode.com/svn/trunk/html5.js'
     script type: 'text/x-handlebars', 'data-template-name': 'application', ->
       partial 'shared/body'
 
