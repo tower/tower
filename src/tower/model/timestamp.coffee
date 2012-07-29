@@ -1,6 +1,7 @@
 # @module
 Tower.Model.Timestamp =
   ClassMethods:
+    # Adds `createdAt` and `updatedAt` attributes to your records.
     timestamps: ->
       @include Tower.Model.Timestamp.CreatedAt
       @include Tower.Model.Timestamp.UpdatedAt

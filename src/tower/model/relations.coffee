@@ -80,12 +80,13 @@ Tower.Model.Relations =
       throw new Error("Relation '#{name}' does not exist on '#{@name}'") unless relation
       relation
 
-    # tmp until this is figured out more,
+    # @todo tmp until this is figured out more,
     # need to handle subclassing in associations better.
     shouldIncludeTypeInScope: ->
       @baseClass().className() != @className()
 
   InstanceMethods:
+    # @todo probably should remove, reduntant.
     getAssociation: (key) ->
       @constructor.relations()[key]
 
@@ -100,148 +101,6 @@ Tower.Model.Relations =
 
     getAssociationCursor: (key) ->
       @getAssociationScope(key).cursor
-
-    # @todo maybe this should be a custom `cursor.replace` method
-    _setHasManyAssociation: (key, value, association, options = {}) ->
-      cursor      = @getAssociationScope(key).cursor
-      # @todo this should actually make a database call
-      # @todo cursor.difference(value)
-      value       = _.castArray(value)
-      # @todo should be possible to accomplish the same thing with `cursor.build(value)`.
-      #   also, it should set default properties from the cursor/defaultScope
-      for item, i in value
-        value[i]  = cursor.store.serializeModel(item) unless item instanceof Tower.Model
-
-      # calculate difference
-      # cursor.removeFromTarget(oldValues)
-      if @get('isNew')
-        @
-      else
-        # @todo find a better way to accomplish this
-        cursor._markedForDestruction ||= []
-        toRemove = cursor._markedForDestruction.concat()
-        ids = []
-        for item in value
-          id = Ember.get(item, 'id')
-          ids.push(id.toString()) if id?
-
-        for item in cursor
-          if @_checkAssociationRecordForDestroy(item, association)
-            if _.indexOf(ids, item.get('id').toString()) == -1
-              item.set(association.foreignKey, undefined)
-              toRemove.push(item)
-
-        cursor._markedForDestruction = toRemove if toRemove.length
-
-      # @todo convert value into array of Tower.Model instances
-      if value && value.length
-        for item in value
-          if item instanceof Tower.Model
-            item.set(association.foreignKey, @get('id'))
-          else if item == null || item == undefined
-            @ # @todo
-          else
-            @ # @todo
-        # @todo you don't actually want to remove them yet because previous ones haven't been deleted.
-        #cursor.addObjects(value)
-        cursor.load(value)
-      else
-        cursor.clear()
-        #cursor.load(cursor.build(value, options))
-
-    _getHasManyAssociation: (key) ->
-      @getAssociationScope(key)
-
-    # @todo tmp way
-    _checkAssociationRecordForDestroy: (record, association) ->
-      foreignId = record.get(association.foreignKey)
-      id        = @get('id')
-      foreignId? && id? && foreignId.toString() == id.toString() && !record.attributeChanged(association.foreignKey)
-
-    _setHasOneAssociation: (key, value, association) ->
-      cursor          = @getAssociationCursor(key)
-      existingRecord  = cursor[0]
-      # need some way of keeping a reference to these to destroy them.
-      # need to get the previous/database value from the associated record
-
-      # @todo there needs to be a global observer setup for this
-      # clearCursor = (exRecord, attribute) -> Ember.removeObserver(existingRecord, 'id', clearCursor)
-      # Ember.addObserver(existingRecord, 'id', clearCursor)
-      # Ember.addObserver(existingRecord, 'isDirty', clearCursor)
-      # 
-      # Say someone else saves the associated hasOne record, and the sockets send back the new attributes
-      # for the record. Then we need to remove cursor._markedForDestruction because it was already changed.
-      # Actually, in that case, would you want to provide a warning before saving? Not sure... For now though,
-      # it will remove the attribute, so you need to setup temporary Ember observers:
-      #   Ember.addObserver(obj, this._from, this, this.fromDidChange);
-      #   @see Ember.Binding.prototype.connect method for twoWay binding implementation (its just observers)
-      # Ember.addObserver(existingRecord, 'id', this, 'changed')
-      # Ember.listenersFor(existingRecord, 'id:change')
-      # Ember.listenersFor(existingRecord, 'id:change')
-      # manually setup bindings
-      # binding = Ember.bind(existingRecord, 'id', 'this.foreignId')
-      # binding.disconnect(existingRecord)
-      # 
-      # For now, we can just assume you're eventually going to call save.
-
-      # You could also just check if the record has any changes once you get to saving it from the owner.
-      # If it doesn't then it probably got saved some other way, and you can just ignore _markedForDestruction.
-      # But, the record may have been saved then re-dirtified somewhere else, then you call save on the owner...
-      # it doesn't make sense at that time to then call save on the record because the changes came from somewhere else.
-      if existingRecord && !cursor._markedForDestruction # should only happen once before a save
-        # @todo maybe it should just be pushed into the cursor array, which you should never be accessing directly anyway.
-        foreignId = existingRecord.get(association.foreignKey)
-        id        = @get('id')
-        if foreignId? && id? && foreignId.toString() == id.toString() && !existingRecord.attributeChanged(association.foreignKey)
-          cursor._markedForDestruction = existingRecord
-
-      if value instanceof Tower.Model
-        record  = value
-        value.set(association.foreignKey, @get('id'))
-      else if value == null || value == undefined
-        @ # @todo
-      else
-        @ # @todo
-
-      if record
-        cursor.clear()
-        cursor.addObject(record)
-
-      record
-
-    _getHasOneAssociation: (key) ->
-      @getAssociationCursor(key)[0] || @fetch(key)
-
-    # @example
-    #   record.setBelongsToAssociation('user', user)
-    #   # in this case we need to do some rerouting
-    #   record.setBelongsToAssociation('user', user.id)
-    #   record.setBelongsToAssociation('user', null)
-    # 
-    # @todo pass association in as optimization (as first parameter)
-    _setBelongsToAssociation: (key, value, association) ->
-      if value instanceof Tower.Model
-        record  = value
-        id      = value.get('id')
-        @set(association.foreignKey, id)
-      else if value == null || value == undefined
-        @set(association.foreignKey, undefined)
-      else
-        id      = value
-        @set(association.foreignKey, id)
-
-      if record
-        cursor = @getAssociationCursor(key)
-        cursor.clear()
-        cursor.addObject(record)
-
-      # need to notify the hasMany/hasOne in reverse from here
-
-      record
-
-    _getBelongsToAssociation: (key) ->
-      # @todo shouldn't use try, but testing out polymorphic assoc.
-      @getAssociationCursor(key)[0] || try @fetch(key)
 
     # Currently only used for the `belongsTo` association.
     # 
@@ -304,5 +163,155 @@ Tower.Model.Relations =
 
       for name, relation of relations
         relation.inverse()
+
+    # @private
+    # @todo maybe this should be a custom `cursor.replace` method
+    _setHasManyAssociation: (key, value, association, options = {}) ->
+      cursor      = @getAssociationScope(key).cursor
+      # @todo this should actually make a database call
+      # @todo cursor.difference(value)
+      value       = _.castArray(value)
+      # @todo should be possible to accomplish the same thing with `cursor.build(value)`.
+      #   also, it should set default properties from the cursor/defaultScope
+      for item, i in value
+        value[i]  = cursor.store.serializeModel(item) unless item instanceof Tower.Model
+
+      # calculate difference
+      # cursor.removeFromTarget(oldValues)
+      if @get('isNew')
+        @
+      else
+        # @todo find a better way to accomplish this
+        cursor._markedForDestruction ||= []
+        toRemove = cursor._markedForDestruction.concat()
+        ids = []
+        for item in value
+          id = Ember.get(item, 'id')
+          ids.push(id.toString()) if id?
+
+        for item in cursor
+          if @_checkAssociationRecordForDestroy(item, association)
+            if _.indexOf(ids, item.get('id').toString()) == -1
+              item.set(association.foreignKey, undefined)
+              toRemove.push(item)
+
+        cursor._markedForDestruction = toRemove if toRemove.length
+
+      # @todo convert value into array of Tower.Model instances
+      if value && value.length
+        for item in value
+          if item instanceof Tower.Model
+            item.set(association.foreignKey, @get('id'))
+          else if item == null || item == undefined
+            @ # @todo
+          else
+            @ # @todo
+        # @todo you don't actually want to remove them yet because previous ones haven't been deleted.
+        #cursor.addObjects(value)
+        cursor.load(value)
+      else
+        cursor.clear()
+        #cursor.load(cursor.build(value, options))
+
+    # @private
+    _getHasManyAssociation: (key) ->
+      @getAssociationScope(key)
+
+    # @private
+    # @todo tmp way
+    _checkAssociationRecordForDestroy: (record, association) ->
+      foreignId = record.get(association.foreignKey)
+      id        = @get('id')
+      foreignId? && id? && foreignId.toString() == id.toString() && !record.attributeChanged(association.foreignKey)
+
+    # @private
+    _setHasOneAssociation: (key, value, association) ->
+      cursor          = @getAssociationCursor(key)
+      existingRecord  = cursor[0]
+      # need some way of keeping a reference to these to destroy them.
+      # need to get the previous/database value from the associated record
+
+      # @todo there needs to be a global observer setup for this
+      # clearCursor = (exRecord, attribute) -> Ember.removeObserver(existingRecord, 'id', clearCursor)
+      # Ember.addObserver(existingRecord, 'id', clearCursor)
+      # Ember.addObserver(existingRecord, 'isDirty', clearCursor)
+      # 
+      # Say someone else saves the associated hasOne record, and the sockets send back the new attributes
+      # for the record. Then we need to remove cursor._markedForDestruction because it was already changed.
+      # Actually, in that case, would you want to provide a warning before saving? Not sure... For now though,
+      # it will remove the attribute, so you need to setup temporary Ember observers:
+      #   Ember.addObserver(obj, this._from, this, this.fromDidChange);
+      #   @see Ember.Binding.prototype.connect method for twoWay binding implementation (its just observers)
+      # Ember.addObserver(existingRecord, 'id', this, 'changed')
+      # Ember.listenersFor(existingRecord, 'id:change')
+      # Ember.listenersFor(existingRecord, 'id:change')
+      # manually setup bindings
+      # binding = Ember.bind(existingRecord, 'id', 'this.foreignId')
+      # binding.disconnect(existingRecord)
+      # 
+      # For now, we can just assume you're eventually going to call save.
+
+      # You could also just check if the record has any changes once you get to saving it from the owner.
+      # If it doesn't then it probably got saved some other way, and you can just ignore _markedForDestruction.
+      # But, the record may have been saved then re-dirtified somewhere else, then you call save on the owner...
+      # it doesn't make sense at that time to then call save on the record because the changes came from somewhere else.
+      if existingRecord && !cursor._markedForDestruction # should only happen once before a save
+        # @todo maybe it should just be pushed into the cursor array, which you should never be accessing directly anyway.
+        foreignId = existingRecord.get(association.foreignKey)
+        id        = @get('id')
+        if foreignId? && id? && foreignId.toString() == id.toString() && !existingRecord.attributeChanged(association.foreignKey)
+          cursor._markedForDestruction = existingRecord
+
+      if value instanceof Tower.Model
+        record  = value
+        value.set(association.foreignKey, @get('id'))
+      else if value == null || value == undefined
+        @ # @todo
+      else
+        @ # @todo
+
+      if record
+        cursor.clear()
+        cursor.addObject(record)
+
+      record
+
+    # @private
+    _getHasOneAssociation: (key) ->
+      @getAssociationCursor(key)[0] || @fetch(key)
+
+    # @private
+    # 
+    # @example
+    #   record.setBelongsToAssociation('user', user)
+    #   # in this case we need to do some rerouting
+    #   record.setBelongsToAssociation('user', user.id)
+    #   record.setBelongsToAssociation('user', null)
+    # 
+    # @todo pass association in as optimization (as first parameter)
+    _setBelongsToAssociation: (key, value, association) ->
+      if value instanceof Tower.Model
+        record  = value
+        id      = value.get('id')
+        @set(association.foreignKey, id)
+      else if value == null || value == undefined
+        @set(association.foreignKey, undefined)
+      else
+        id      = value
+        @set(association.foreignKey, id)
+
+      if record
+        cursor = @getAssociationCursor(key)
+        cursor.clear()
+        cursor.addObject(record)
+
+      # need to notify the hasMany/hasOne in reverse from here
+
+      record
+
+    # @private
+    _getBelongsToAssociation: (key) ->
+      # @todo shouldn't use try, but testing out polymorphic assoc.
+      @getAssociationCursor(key)[0] || try @fetch(key)
 
 module.exports = Tower.Model.Relations

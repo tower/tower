@@ -252,6 +252,9 @@ describeWith = (store) ->
     test 'string', ->
       assert.equal user.firstName, 'Lance'
 
+  describe 'attributesForCreate'
+  describe 'attributesForUpdate'
+
   describe 'other', ->
     beforeEach (done) ->
       store.clean =>

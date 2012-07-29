@@ -156,6 +156,8 @@ class Tower.Model.Attribute
   defaultValue: (record) ->
     _default = @_default
 
+    return _default unless _default?
+    
     if _.isArray(_default)
       _default.concat()
     else if _.isHash(_default)

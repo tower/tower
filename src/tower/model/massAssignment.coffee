@@ -65,6 +65,7 @@ Tower.Model.MassAssignment =
     accessible: ->
       @_attributeAssignment('accessible', arguments...)
 
+    # @private
     _attributeAssignment: (type) ->
       args    = _.args(arguments, 1)
       options = _.extractOptions(args)
@@ -91,6 +92,7 @@ Tower.Model.MassAssignment =
 
       @
 
+  # @private
   _sanitizeForMassAssignment: (attributes, role = 'default') ->
     rejected            = []
     authorizer          = @constructor.activeAuthorizer()[role] # Ember.get(@constructor, 'activeAuthorizer')[role]
@@ -108,6 +110,7 @@ Tower.Model.MassAssignment =
 
     sanitizedAttributes
 
+  # @private
   _processRemovedAttributes: (keys) ->
     console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}" unless Tower.env == 'test'
 

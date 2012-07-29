@@ -603,3 +603,4 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - use require in the browser to lazy load scripts
 - gruntjs
 - term-css
+- make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)

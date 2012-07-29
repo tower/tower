@@ -120,6 +120,8 @@ Tower.Model.Validations =
       success
 
     # Need to establish a better comparison API/approach
+    # 
+    # @todo rename to isEqual
     equals: (object) ->
       if object instanceof Tower.Model
         @get('id').toString() == object.get('id').toString()

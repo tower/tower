@@ -83,19 +83,6 @@ Tower.Model.Cursor.Finders =
     delete @returnArray # tmp
     @find(callback)
 
-  _hasContent: (callback) ->
-    if Tower.isClient && @_invalidated
-      delete @_invalidated
-      callback.call(@) if callback
-      return false
-
-    records = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
-    if records && records.length
-      callback.call(@, null, records) if callback
-      true
-    else
-      false
-
   find: (callback) ->
     return @ if @_hasContent(callback)
 
@@ -106,40 +93,6 @@ Tower.Model.Cursor.Finders =
           records
         @_runAfterFindCallbacksOnStore done, _.castArray(records)
 
-  _find: (callback) ->
-    returnArray = @returnArray
-    result = undefined
-
-    if @one
-      @store.findOne(@, callback)
-    else
-      @store.find @, (error, records) =>
-        if records
-          if @returnArray == false && !records.length
-            records = null
-          else
-            records = @export(records) if !error && records.length
-
-        result = records
-
-        @clear() if Tower.isClient
-
-        if _.isArray(records)
-          # need to do something like this...
-          Ember.setProperties @,
-            hasFirstPage:     !!records.length
-            hasPreviousPage:  !!records.length
-            hasNextPage:      !!records.length
-            hasLastPage:      !!records.length
-            # currentPage:      records.length
-
-          @addObjects(records)# if Tower.isClient
-
-        callback.call(@, error, records) if callback
-        records
-    
-    if returnArray == false then result else @
-
   # hack
   findOne: (callback) ->
     @limit(1)
@@ -149,18 +102,8 @@ Tower.Model.Cursor.Finders =
   count: (callback) ->
     @_count(callback)
 
-  _count: (callback) ->
-    @store.count @, (error, count) =>
-      Ember.set(@, 'totalCount', count)
-      callback.apply(@, arguments) if callback
-
   exists: (callback) ->
     @_exists(callback)
-
-  _exists: (callback) ->
-    @store.exists @, (error, exists) =>
-      Ember.set(@, 'isEmpty', !exists)
-      callback.apply(@, arguments) if callback
 
   fetch: (callback) ->
     @store.fetch(@, callback)
@@ -221,6 +164,67 @@ Tower.Model.Cursor.Finders =
     @mergeUpdatedRecords(content)
     # Ember.SortableMixin
     Ember.endPropertyChanges(@)
+
+  # @protected
+  _find: (callback) ->
+    returnArray = @returnArray
+    result = undefined
+
+    if @one
+      @store.findOne(@, callback)
+    else
+      @store.find @, (error, records) =>
+        if records
+          if @returnArray == false && !records.length
+            records = null
+          else
+            records = @export(records) if !error && records.length
+
+        result = records
+
+        @clear() if Tower.isClient
+
+        if _.isArray(records)
+          # need to do something like this...
+          Ember.setProperties @,
+            hasFirstPage:     !!records.length
+            hasPreviousPage:  !!records.length
+            hasNextPage:      !!records.length
+            hasLastPage:      !!records.length
+            # currentPage:      records.length
+
+          @addObjects(records)# if Tower.isClient
+
+        callback.call(@, error, records) if callback
+        records
+    
+    if returnArray == false then result else @
+
+  # @protected
+  _count: (callback) ->
+    @store.count @, (error, count) =>
+      Ember.set(@, 'totalCount', count)
+      callback.apply(@, arguments) if callback
+
+  # @protected
+  _exists: (callback) ->
+    @store.exists @, (error, exists) =>
+      Ember.set(@, 'isEmpty', !exists)
+      callback.apply(@, arguments) if callback
+
+  # @private
+  _hasContent: (callback) ->
+    if Tower.isClient && @_invalidated
+      delete @_invalidated
+      callback.call(@) if callback
+      return false
+
+    records = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
+    if records && records.length
+      callback.call(@, null, records) if callback
+      true
+    else
+      false
 
 for phase in ['Before', 'After']
   for action in ['Insert', 'Update', 'Destroy', 'Find']

@@ -24,9 +24,6 @@ Tower.Model.Serialization =
 
     @constructor.build(attributes)
 
-  stringify: (pretty) ->
-    _.stringify(@, pretty)
-
   # Implementation of the {#toJSON} method.
   #
   # @private
@@ -69,6 +66,10 @@ Tower.Model.Serialization =
           for record, i in records
             records[i] = record._serializableHash(opts)
           result[name] = records
+
+    # @todo think about this more
+    # for key, value of result
+    #   delete result[key] unless value?
 
     result
 

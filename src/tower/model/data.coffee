@@ -23,6 +23,11 @@ class Tower.Model.Data
   isReadOnlyAttribute: (key) ->
     !!@_getField(key).readonly
 
+  # @todo think about this more, should it return defaults (and if so, lazily or not?)
+  #   It needs to call record.toJSON() so it can get the defaults in there.
+  getAttributes: ->
+    attributes = @attributes #@record.toJSON()
+
   # Get a value defined by a {Tower.Model.field}.
   #
   # @note It will try to get a default value for you the first time it is retrieved.
@@ -84,10 +89,12 @@ class Tower.Model.Data
     # there's something weird going on here when destroy instantiates a record already in memory
     if object
       savedData = @savedData
+      attributes = @attributes
       for key, value of object
         field = @_getField(key)
         value = field.encode(value, @record) if field && value? # @todo think this is in reverse...
         savedData[key] = value
+        attributes[key] = value
     #_.extend(@attributes, object)
 
   commit: ->

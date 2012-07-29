@@ -119,6 +119,8 @@ Tower.Model.Persistence =
       @assignAttributes(attributes)
       @save(callback)
 
+    # @todo this should be removed?
+    # 
     # @todo this should be able to handle all of the following (or at least limitations clearly defined):
     #   record.updateAttribute('title', 'Title!')
     #   record.updateAttribute('postsCount', 1, '$inc')
@@ -177,7 +179,6 @@ Tower.Model.Persistence =
 
       @
 
-    # @todo Haven't implemented
     # In the memory store there is only one instance of the record
     # so if you change attributes it's going to be reflected in any reference
     # unless you have somehow cloned the object.
@@ -202,6 +203,10 @@ Tower.Model.Persistence =
 
       @
 
+    # Sets attribute values to what they were before you started changing them.
+    # 
+    # If the record is new (not persisted), this means they go back to `undefined` or default values.
+    # If the record is persisted, it will send it back to the previously saved values.
     rollback: ->
       _.extend(@get('attributes'), @get('changedAttributes'))
       @set('changedAttributes', {})
