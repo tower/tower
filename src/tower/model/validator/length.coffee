@@ -1,5 +1,7 @@
 class Tower.Model.Validator.Length extends Tower.Model.Validator
   constructor: (name, value, attributes, options) ->
+    name = @valueCheck name, value
+    value = value[name] ||= value
     super
 
     @validate = switch name
@@ -14,6 +16,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateGreaterThanOrEqual: (record, attribute, errors, callback) ->
     value = record.get(attribute)
+    if typeof value is 'string'
+      value = value.length
     unless value >= @getValue(record)
       return @failure(
         record,
@@ -26,6 +30,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateGreaterThan: (record, attribute, errors, callback) ->
     value = record.get(attribute)
+    if typeof value is 'string'
+      value = value.length
     unless value > @getValue(record)
       return @failure(
         record,
@@ -38,6 +44,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateLessThanOrEqual: (record, attribute, errors, callback) ->
     value = record.get(attribute)
+    if typeof value is 'string'
+      value = value.length
     unless value <= @getValue(record)
       return @failure(
         record,
@@ -50,6 +58,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateLessThan: (record, attribute, errors, callback) ->
     value = record.get(attribute)
+    if typeof value is 'string'
+      value = value.length
     unless value < @getValue(record)
       return @failure(
         record,
@@ -62,6 +72,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateMinimum: (record, attribute, errors, callback) ->
     value = record.get(attribute)
+    if typeof value is 'string'
+      value = value.length
     unless typeof(value) == 'number' && value >= @getValue(record)
       return @failure(
         record,
@@ -74,7 +86,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateMaximum: (record, attribute, errors, callback) ->
     value = record.get(attribute)
-
+    if typeof value is 'string'
+      value = value.length
     unless typeof(value) == 'number' && value <= @getValue(record)
       return @failure(
         record,
@@ -87,6 +100,8 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
 
   validateLength: (record, attribute, errors, callback) ->
     value = record.get(attribute)
+    if typeof value is 'string'
+      value = value.length
     unless typeof(value) == 'number' && value == @getValue(record)
       return @failure(
         record,
@@ -96,5 +111,12 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
         callback
       )
     @success(callback)
+
+  valueCheck: (name, value) ->
+    if typeof value == 'object'
+      for key of value
+        if key in ["min", "max", "gte", "gt", "lte", "lt"]
+          return key
+    return name
 
 module.exports = Tower.Model.Validator.Length
