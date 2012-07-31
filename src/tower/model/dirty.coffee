@@ -132,6 +132,7 @@ Tower.Model.Dirty =
     keys ||= _.keys(@get('changedAttributes'))
     _.select keys, (key) -> key != primaryKey
 
+  # @private
   _updateChangedAttribute: (key, value) ->
     changedAttributes = @get('changedAttributes')
     # @todo this is not the current attributes... need to get rid of data.unsavedData
@@ -145,6 +146,7 @@ Tower.Model.Dirty =
       old = @get('data')._clonedValue(attributes[key]) # @readAttribute(key)
       changedAttributes[key] = old unless _.isEqual(old, value) # if old != value
 
+  # @private
   _attributesForPersistence: (keys) ->
     result      = {}
     attributes  = @get('attributes')

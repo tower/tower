@@ -1,5 +1,10 @@
 Tower.Model.AutosaveAssociation =
   ClassMethods:
+    # Sets up save/validation callbacks for associations.
+    # 
+    # You don't need to use this directly.
+    # 
+    # @private
     _addAutosaveAssociationCallbacks: (association) ->
       name              = _.camelize(association.name)
       saveMethod        = "_autosaveAssociatedRecordsFor#{name}"
@@ -49,12 +54,15 @@ Tower.Model.AutosaveAssociation =
 
       @reopen(mixin)
 
+  # @private
   _beforeSaveCollectionAssociation: ->
     @newRecordBeforeSave = @get('isNew')
     true
 
-  # Validate the association if <tt>:validate</tt> or <tt>:autosave</tt> is
+  # Validate the association if `validate or `autosave` is
   # turned on for the association.
+  # 
+  # @private
   _validateSingleAssociation: (association, callback) ->
     cursor  = @getAssociationCursor(association.name)
     record  = cursor[0] if cursor # @todo assumes it's the array cursor, not Tower.Model.Cursor
@@ -65,9 +73,11 @@ Tower.Model.AutosaveAssociation =
       callback.call(@) if callback
       true
 
-  # Validate the associated records if <tt>:validate</tt> or
-  # <tt>:autosave</tt> is turned on for the association specified by
-  # +association+.
+  # Validate the associated records if `validate` or
+  # `autosave` is turned on for the association specified by
+  # `association`.
+  # 
+  # @private
   _validateCollectionAssociation: (association, callback) ->
     success = undefined
     cursor  = @getAssociationCursor(association.name)
@@ -88,8 +98,10 @@ Tower.Model.AutosaveAssociation =
     success
 
   # Returns whether or not the association is valid and applies any errors to
-  # the parent, <tt>self</tt>, if it wasn't. Skips any <tt>:autosave</tt>
-  # enabled records if they're marked_for_destruction? or destroyed.
+  # the parent, `this`, if it wasn't. Skips any `autosave`
+  # enabled records if they're `get('isMarkedForDestruction')` or destroyed.
+  # 
+  # @private
   _associationIsValid: (association, record, callback) ->
     return true if record.get('isDeleted') || record.get('isMarkedForDestruction')
 
@@ -115,10 +127,12 @@ Tower.Model.AutosaveAssociation =
       success
 
   # Returns the record for an association collection that should be validated
-  # or saved. If +autosave+ is +false+ only new records will be returned,
+  # or saved. If `autosave` is `false` only new records will be returned,
   # unless the parent is/was a new record itself.
   # 
   # @todo
+  # 
+  # @private
   _associatedRecordsToValidateOrSave: (cursor, newRecord, autosave) ->
     if newRecord
       cursor
@@ -127,23 +141,28 @@ Tower.Model.AutosaveAssociation =
     else
       cursor.filter (record) -> record.get('isNew')
 
+  # @private
   _changedForAutosave: ->
     @get('isNew') || @get('isDirty') || @get('isMarkedForDestruction') || @_nestedRecordsChangedForAutosave()
 
   # @todo this looks like a pretty expensive method.
+  # 
+  # @private
   _nestedRecordsChangedForAutosave: ->
     _.any @constructor.relations(), (association) =>
       association = @getAssociationScope(association.name)
       association && _.any(_.compact(_.castArray(association.target)), (a) -> a._changedForAutosave())
 
   # Saves any new associated records, or all loaded autosave associations if
-  # <tt>:autosave</tt> is enabled on the association.
+  # `autosave` is enabled on the association.
   #
   # In addition, it destroys all children that were marked for destruction
   # with `isMarkedForDestruction: true`.
   #
   # This all happens inside a transaction, _if_ the Transactions module is included into
   # Tower.Model after the AutosaveAssociation module, which it does by default.
+  # 
+  # @private
   _saveCollectionAssociation: (association, callback) ->
     @_removeOldAssociations association, (error) =>
       console.log error if error
@@ -203,6 +222,8 @@ Tower.Model.AutosaveAssociation =
       # associationScope.send(:reset_scope) if associationScope.respond_to?(:reset_scope)
 
   # @todo tmp
+  # 
+  # @private
   _removeOldAssociations: (association, callback) ->
     cursor = @getAssociationCursor(association.name)
     records = cursor._markedForDestruction
@@ -218,14 +239,10 @@ Tower.Model.AutosaveAssociation =
     else
       callback.call(@)
 
-  # Saves the associated record if it's new or <tt>:autosave</tt> is enabled
+  # Saves the associated record if it's new or `autosave` is enabled
   # on the association.
-  #
-  # In addition, it will destroy the association if it was marked for
-  # destruction with mark_for_destruction.
-  #
-  # This all happens inside a transaction, _if_ the Transactions module is included into
-  # Tower.Model after the AutosaveAssociation module, which it does by default.
+  # 
+  # @private
   _saveHasOneAssociation: (association, callback) ->
     record  = @get(association.name)
 
@@ -254,6 +271,8 @@ Tower.Model.AutosaveAssociation =
   # Saves the associated record if it's new or `autosave` is enabled.
   #
   # In addition, it will destroy the association if it was marked for destruction.
+  # 
+  # @private
   _saveBelongsToAssociation: (association, callback) ->
     #associationScope  = @getAssociationScope(association.name)
     #record            = associationScope && associationScope._getRecord()

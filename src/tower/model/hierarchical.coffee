@@ -1,8 +1,6 @@
-# @mixin
 # @todo
-# copied this from acts_as_nested_set, haven't messed with it yet.
-# @see https://github.com/collectiveidea/awesome_nested_set/blob/master/lib/awesome_nested_set/awesome_nested_set.rb
-# @see https://github.com/thinkwell/mongoid_nested_set/blob/master/lib/mongoid_nested_set/update.rb
+# 
+# @mixin
 Tower.Model.Hierarchical =
   ClassMethods:
     hierarchical: (options = {}) ->

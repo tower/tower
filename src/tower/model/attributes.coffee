@@ -3,7 +3,10 @@ Tower.Model.Attributes =
   Serialization: {}
 
   ClassMethods:
+    # @todo there are no tests for this yet.
     dynamicFields: true
+
+    # @todo this is not being used yet.
     primaryKey: 'id'
 
     # @todo
@@ -59,6 +62,8 @@ Tower.Model.Attributes =
 
     # Returns a hash with keys for every attribute, and the default value (or `undefined`).
     # 
+    # @private
+    # 
     # @return [Object]
     _defaultAttributes: (record) ->
       attributes = {}
@@ -82,14 +87,19 @@ Tower.Model.Attributes =
     # How about you can only `get` the attributes, it will make the API much simpler.
     # It needs to be all fields with default values
     attributes: Ember.computed(->
-      throw new Error('Cannot set attributes hash directly') if arguments.length == 2
-      #if arguments.length == 2
-      #  @assignAttributes(arguments[1]) if _.isHash(arguments[1])
-      #@get('data').getAttributes()
+      #throw new Error('Cannot set attributes hash directly') if arguments.length == 2
+      if arguments.length == 2
+        @assignAttributes(arguments[1]) if _.isHash(arguments[1])
+        
+      @get('data').getAttributes()
       # @todo should this also include the values from @defaultScope ?
-      @constructor._defaultAttributes(@)
+      #@constructor._defaultAttributes(@)
     ).property('data')
 
+    # Performs an operation on an attribute value.
+    # 
+    # You don't need to use this directly in most cases, instead use the helper methods
+    # such as `push`, `set`, etc.
     modifyAttribute: (operation, key, value) ->
       operation = Tower.Store.Modifiers.MAP[operation]
       operation = if operation then operation.replace(/^\$/, '') else 'set'
@@ -99,9 +109,8 @@ Tower.Model.Attributes =
     atomicallySetAttribute: ->
       @modifyAttribute(arguments...)
 
-    # @todo add to .build, .create, #updateAttributes
-    # This takes in a params hash, usually straight from a request in a controller, 
-    # so it should be thoroughly cleansed.
+    # This takes in a params hash, usually straight from a request in a controller,
+    # and makes sure you don't set any insecure/protected attributes unintentionally.
     assignAttributes: (attributes, options, operation) ->
       return unless _.isHash(attributes)
       options ||= {}
@@ -169,7 +178,10 @@ Tower.Model.Attributes =
 
     # @todo same as below, might want to redo api
     # setAttributeWithOperation: (operation, key, value) ->
-      
+
+    # @todo handle multi-parameter attributes, such as the datepicker.
+    # 
+    # @private
     _assignAttributes: (attributes, options, operation) ->
       # such as with the datepicker, such as date(1) == month, date(2) == day, date(3) == year
       multiParameterAttributes  = []

@@ -87,6 +87,7 @@ Tower.Model.Persistence =
         return true
 
       @set('isSaving', true)
+      # @todo remove for now?
       @get('transaction').adopt(@)
 
       throw new Error('Record is read only') if @readOnly

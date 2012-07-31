@@ -19,6 +19,7 @@ Tower.Controller.Redirecting =
               Tower.urlFor(@resource, action: options.action)
         url ||= '/'
 
+        # @todo remove
         if Tower.env == 'test'
           if options.action == 'index'
             url = '/custom'

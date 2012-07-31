@@ -27,6 +27,7 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     # options.findOne = conditions.id && conditions.id.hasOwnProperty('$in') && conditions.id.$in.length == 1
 
   # Get the conditions, order, limit, fields, offset, or other private variables.
+  # 
   # @todo remove this old helper
   get: (key) ->
     if key == 'content'
@@ -218,19 +219,6 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
 
     data
 
-  _compileAttributes: (object, conditions) ->
-    for key, value of conditions
-      oldValue = result[key]
-      if oldValue
-        if _.isArray(oldValue)
-          object[key] = oldValue.concat value
-        else if typeof oldValue == 'object' && typeof value == 'object'
-          object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
-        else
-          object[key] = value
-      else
-        object[key] = value
-
   # Compiled result from the {#where} arguments.
   #
   # @return [Object]
@@ -281,6 +269,20 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
       delete attributes[key] if value == undefined
 
     attributes
+
+  # @private
+  _compileAttributes: (object, conditions) ->
+    for key, value of conditions
+      oldValue = result[key]
+      if oldValue
+        if _.isArray(oldValue)
+          object[key] = oldValue.concat value
+        else if typeof oldValue == 'object' && typeof value == 'object'
+          object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
+        else
+          object[key] = value
+      else
+        object[key] = value
 
   # @private
   _each: (cursor, iterator, callback) ->

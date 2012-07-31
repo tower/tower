@@ -3,6 +3,8 @@
 # @include Tower.View.HeadHelper
 # @include Tower.View.RenderingHelper
 # @include Tower.View.StringHelper
+# 
+# @todo I think we can remove the view class.
 class Tower.View extends Tower.Class
   @reopenClass
     cache:                                      {}

@@ -29,6 +29,11 @@ Tower.Model.Attachment =
         @_attachmentFields()
         @_attachmentProcessing(options)
 
+    # @todo
+    attachments: ->
+      @metadata().attachments
+
+    # @private
     _attachmentFields: ->
       @field 'name',        type: 'String'
       @field 'size',        type: 'Integer'
@@ -36,15 +41,11 @@ Tower.Model.Attachment =
       @field 'height',      type: 'Integer'
       @field 'contentType', type: 'String'
 
+    # @private
     _attachmentProcessing: (options) ->
       @include Tower.AttachmentProcessingMixin
 
       @styles options.styles if options.styles
-
-    attachments: ->
-      @metadata().attachments
-
-  attachments: ->
 
 require './attachment/processing'
 

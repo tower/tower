@@ -1,3 +1,4 @@
+# @todo needs lots of refactoring
 class Tower.Model.Attribute
   # @option options [Boolean|String|Function] set If `set` is a boolean, it will look for a method
   #   named `"set#{field.name}"` on the prototype.  If it's a string, it will call that method on the prototype.
@@ -157,7 +158,7 @@ class Tower.Model.Attribute
     _default = @_default
 
     return _default unless _default?
-    
+
     if _.isArray(_default)
       _default.concat()
     else if _.isHash(_default)
@@ -181,5 +182,8 @@ class Tower.Model.Attribute
         type.call binding, value
       else
         value
+
+  # @todo for the pure javascript version we're going to need to have this method.
+  attach: (owner) ->
 
 module.exports = Tower.Model.Attribute

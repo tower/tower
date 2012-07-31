@@ -1,7 +1,30 @@
 # @mixin
 Tower.Model.Cursor.Persistence = Ember.Mixin.create
+  # Builds records matching the cursors criteria.
+  # 
+  # If you give it an array, it will return an array, otherwise it will return the record.
+  # 
+  # @return [Object|Array]
   build: (callback) ->
     @_build(callback)
+
+  # @todo rename to `create`
+  insert: (callback) ->
+    @_insert(callback)
+
+  update: (callback) ->
+    @_update(callback)
+
+  destroy: (callback) ->
+    @_destroy(callback)
+
+  # @todo
+  # add to set
+  add: (callback) ->
+
+  # @todo
+  # remove from set
+  remove: (callback) ->
 
   _build: (callback) ->
     store       = @store
@@ -25,9 +48,6 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
     callback.call(@, null, result) if callback
 
     result
-
-  insert: (callback) ->
-    @_insert(callback)
 
   _insert: (callback) ->
     records = undefined
@@ -70,9 +90,6 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
 
     if Tower.isClient then records else @ # tmp solution
 
-  update: (callback) ->
-    @_update(callback)
-
   _update: (callback) ->
     updates     = @data[0]
     records     = undefined
@@ -92,9 +109,6 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
 
     if Tower.isClient then records else @ # tmp solution
 
-  destroy: (callback) ->
-    @_destroy callback
-
   _destroy: (callback) ->
     if @instantiate
       iterator = (record, next) ->
@@ -108,11 +122,5 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
     @
-
-  # add to set
-  add: (callback) ->
-
-  # remove from set
-  remove: (callback) ->
 
 module.exports = Tower.Model.Cursor.Persistence

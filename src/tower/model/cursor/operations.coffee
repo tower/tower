@@ -244,20 +244,6 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     delete conditions.type # need to come back to STI
     Tower.Store.Operators.testEach(records, conditions, callback)
 
-  # @private
-  _whereOperator: (operator, attributes) ->
-    query = {}
-    
-    if typeof attributes == 'string'
-      attrs = {}
-      attrs[arguments[1]] = arguments[2]
-      attributes = attrs
-
-    for key, value of attributes
-      query[key] = {}
-      query[key][operator] = value
-    @where query
-
   eagerLoad: (records, callback) ->
     return callback() unless records && records.length
 
@@ -326,6 +312,20 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
           done()
 
     Tower.parallel keys, eagerLoad, callback
+
+  # @private
+  _whereOperator: (operator, attributes) ->
+    query = {}
+    
+    if typeof attributes == 'string'
+      attrs = {}
+      attrs[arguments[1]] = arguments[2]
+      attributes = attrs
+
+    for key, value of attributes
+      query[key] = {}
+      query[key][operator] = value
+    @where query
 
   # Alias for {#order}.
 Tower.Model.Cursor.Operations.sort = Tower.Model.Cursor.Operations.order

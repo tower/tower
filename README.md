@@ -591,6 +591,7 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - redis store
 - embedded documents
 - test jsonp
+- add `-i` interactive option to command line (pick db, config, etc., rails wizard)
 - remove/replace/update design.io (watch tasks)
 - default templates: eco
 - add ability to use pure javascript (no coffeescript). default templates: ejs
@@ -603,4 +604,6 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - use require in the browser to lazy load scripts
 - gruntjs
 - term-css
+- https://github.com/kuno/GeoIP
+- global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
 - make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)

@@ -10,8 +10,8 @@ Tower.Model.Relations =
     #   class App.Address extends Tower.Model
     #     @belongsTo 'user'
     #
-    #   user    = App.User.insert()
-    #   address = user.get('address').insert()
+    #   user    = App.User.create()
+    #   address = user.get('address').create()
     #
     # @example Example using all the `hasOne` options
     #   class App.User extends Tower.Model
@@ -32,7 +32,7 @@ Tower.Model.Relations =
     #     @belongsTo 'user'
     #
     #   user    = App.User.create()
-    #   comment = user.get('comments').insert()
+    #   comment = user.get('comments').create()
     #
     # @example Example using all the `hasMany` options
     #   class App.User extends Tower.Model
