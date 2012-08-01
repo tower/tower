@@ -39,7 +39,10 @@ Tower.Controller.Instrumentation =
         console.log "  Parameters:", @params
 
       block = (callback) =>
-        @[@action].call @, callback
+        try
+          @[@action].call @, callback
+        catch error
+          callback(error)
 
       complete = (error) =>
         if error
