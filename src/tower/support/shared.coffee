@@ -1,5 +1,5 @@
 Ember.Map::toArray = ->
-  _.values(@values)
+  Tower._.values(@values)
 
 #global.T = Tower
 
@@ -51,7 +51,7 @@ _.extend Tower,
       Tower.include @, arguments...
 
     className: ->
-      _.functionName(@)
+      Tower._.functionName(@)
 
     build: (attributes) ->
       object = @create()
@@ -229,7 +229,7 @@ _.extend Tower,
     Tower.Support.I18n.localize(arguments...)
 
   stringify: ->
-    string = _.args(arguments).join("_")
+    string = Tower._.args(arguments).join("_")
     switch Tower.case
       when "snakecase"
         Tower.Support.String.underscore(string)

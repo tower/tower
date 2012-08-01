@@ -9,11 +9,6 @@
 class Tower.Model extends Tower.Class
   @reopen Ember.Evented
 
-  #if Tower.isServer
-  #  @extended: ->
-  #    for path in require('pathfinder').File.files("#{Tower.root}/app/concerns/#{@metadata().name}")
-  #      require(path) if path.match(/\.(coffee|js|iced)$/)
-
   errors: null
   readOnly: false
 
@@ -22,26 +17,38 @@ class Tower.Model extends Tower.Class
   # @param [Object] attributes a hash of attributes
   # @param [Object] options a hash of options
   # @option options [Boolean] persistent whether or not this object is from the database
-  init: (attrs = {}, options = {}) ->
-    @_super arguments...
+  initialize: (attributes = {}, options = {}) ->
+    unless options.isNew == false
+      @_initialize(attributes, options)
+    else
+      @_initializeFromStore(attributes)
 
+  _initialize: (attrs, options) ->
     definitions = @constructor.fields()
     attributes  = {}
 
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
 
-    # @todo tmp, getting rid of Data class
-    @savedData = {}
-
-    @set('errors', {})
+    attrs.errors = {}
+    attrs.readOnly = if options.hasOwnProperty('readOnly') then options.readOnly else false
 
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
-    # @set('readOnly', if options.hasOwnProperty('readOnly') then options.readOnly else false)
-    @readOnly = if options.hasOwnProperty('readOnly') then options.readOnly else false
+    #@setProperties(attributes)
 
-    @setProperties(attrs)
+  _initializeFromStore: (attributes) ->
+    _.extend @get('attributes'), @constructor.initializeAttributes(attributes)
+
+    @_initializeData()
+
+  _initializeData: ->
+    @set('isNew', false)
+
+    @runCallbacks 'find'
+    @runCallbacks 'initialize'
+
+    @
 
 require './model/scope'
 require './model/massAssignment'

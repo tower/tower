@@ -73,6 +73,12 @@ Tower.Model.Attributes =
 
       attributes
 
+    initializeAttributes: (record, attributes) ->
+      for name, field of @fields()
+        attributes[name] = field.decode(attributes[name], record)
+
+      attributes
+
     # attributeNames: Ember.computed ->
 
   InstanceMethods:
@@ -87,13 +93,9 @@ Tower.Model.Attributes =
     # How about you can only `get` the attributes, it will make the API much simpler.
     # It needs to be all fields with default values
     attributes: Ember.computed(->
-      #throw new Error('Cannot set attributes hash directly') if arguments.length == 2
-      if arguments.length == 2
-        @assignAttributes(arguments[1]) if _.isHash(arguments[1])
-        
+      throw new Error('Cannot set attributes hash directly') if arguments.length == 2
+
       @get('data').getAttributes()
-      # @todo should this also include the values from @defaultScope ?
-      #@constructor._defaultAttributes(@)
     ).property('data')
 
     # Performs an operation on an attribute value.
