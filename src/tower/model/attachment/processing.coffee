@@ -69,7 +69,7 @@ Tower.AttachmentProcessingMixin =
     [
       # thumbnail processor
       (file, style, callback) ->
-        im      = require('imagemagick')
+        im      = require('gm').subClass({imageMagick: true}) # require('imagemagick')
         temp    = require('temp')
         fs      = require('fs')
 
@@ -98,7 +98,8 @@ Tower.AttachmentProcessingMixin =
             dstPath:  info.path
             # format:   style[1] || ext
 
-          im.resize options, (error) =>
+          im(file.path).resize(width, height).write info.path, (error) =>
+          #im.resize options, (error) =>
             info.filename = newName
             info.mime     = file.mime
             # info.temp     = true
@@ -149,11 +150,11 @@ Tower.AttachmentProcessingMixin =
       # @set('fingerprint', file.print) unless @get('fingerprint')?
       
       unless @get('width')? && @get('height')?
-        # @todo imagemagick library needs to be updated to use `close` event instead of `exit`.
-        # I manually changed this in the local node module.
-        require('imagemagick').identify file.path, (error, features) =>
+        # @todo make into processor.identify
+        require('gm').subClass({imageMagick: true})(file.path).identify (error, features) =>
           @set('width', features.width)
           @set('height', features.height)
+          try @set('fingerprint', features.Properties.signature)
 
           Ember.endPropertyChanges()
 
