@@ -1,19 +1,19 @@
-Tower.Support.String =
+Tower.StringHelper =
   camelize_rx:    /(?:^|_|\-)(.)/g
   capitalize_rx:  /(^|\s)([a-z])/g
   underscore_rx1: /([A-Z]+)([A-Z][a-z])/g
   underscore_rx2: /([a-z\d])([A-Z])/g
 
   constantize: (string, scope = global) ->
-    scope[Tower.Support.String.camelize(string)]
+    scope[Tower.StringHelper.camelize(string)]
 
   camelize: (string, firstLetterLower) ->
-    string = string.replace Tower.Support.String.camelize_rx, (str, p1) -> p1.toUpperCase()
+    string = string.replace Tower.StringHelper.camelize_rx, (str, p1) -> p1.toUpperCase()
     if firstLetterLower then string.substr(0,1).toLowerCase() + string.substr(1) else string
 
   underscore: (string) ->
-    string.replace(Tower.Support.String.underscore_rx1, '$1_$2')
-          .replace(Tower.Support.String.underscore_rx2, '$1_$2')
+    string.replace(Tower.StringHelper.underscore_rx1, '$1_$2')
+          .replace(Tower.StringHelper.underscore_rx2, '$1_$2')
           .replace('-', '_').toLowerCase()
 
   singularize: (string) ->
@@ -30,7 +30,7 @@ Tower.Support.String =
 
     Tower.modules.inflector.pluralize string
 
-  capitalize: (string) -> string.replace Tower.Support.String.capitalize_rx, (m, p1, p2) -> p1 + p2.toUpperCase()
+  capitalize: (string) -> string.replace Tower.StringHelper.capitalize_rx, (m, p1, p2) -> p1 + p2.toUpperCase()
 
   trim: (string) -> if string then string.trim() else ""
 
@@ -60,7 +60,7 @@ Tower.Support.String =
     # > This week's http://t.co/f2HvvZ1u
     # 1. "this-weeks-tco"
     # 2. "this-weeks-httptco"
-    Tower.Support.String.underscore(string)
+    Tower.StringHelper.underscore(string)
       #.replace(/'/, '') # week's => weeks
       .replace(/\.([^\.])/, (_, $1) -> $1) # node.js => nodejs (instead of node-js)
       .replace(/[^a-z0-9]+/g, "-") # replace every other non-word character with "-"
@@ -85,4 +85,4 @@ Tower.Support.String =
     else
       JSON.stringify(object)
 
-module.exports = Tower.Support.String
+module.exports = Tower.StringHelper

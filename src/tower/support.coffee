@@ -8,10 +8,10 @@ require './support/string'
 require './support/geo'
 
 _.mixin Tower.Support.Array
-_.mixin Tower.Support.Number
-_.mixin Tower.Support.Object
-_.mixin Tower.Support.RegExp
-_.mixin Tower.Support.String
+_.mixin Tower.NumberHelper
+_.mixin Tower.ObjectHelper
+_.mixin Tower.RegExpHelper
+_.mixin Tower.StringHelper
 
 # hack
 try _.string.isBlank = Tower.Support.Object
