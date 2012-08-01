@@ -35,7 +35,9 @@ Tower.Mailer.Rendering =
     # locals
     mail: (options = {}, callback) ->
       @render options, (error, options) =>
-        @transport().sendMail(options)
+        # sendMail options, (error, response) =>
+        # https://github.com/andris9/Nodemailer/blob/master/examples/example_smtp.js
+        @transport().sendMail options, callback
 
     render: (options, callback) =>
       template = options.template
@@ -44,7 +46,7 @@ Tower.Mailer.Rendering =
       if template
         locals = options.locals || {}
         delete options.locals
-        Tower.modules.mint path: template, locals: locals, (error, result) =>
+        Tower.modules.mint.render path: template, locals: locals, (error, result) =>
           options.html = result
           callback.call(@, error, options)
       else
