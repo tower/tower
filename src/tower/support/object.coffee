@@ -1,6 +1,6 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
 
-Tower.Support.Object =
+Tower.ObjectHelper =
   modules: (object) ->
     args = _.args(arguments, 1)
 
@@ -39,7 +39,7 @@ Tower.Support.Object =
     for node in args
       for key, value of node when key not in specialProperties
         if object[key] && _.isHash(value)# && typeof value == 'object'
-          object[key] = Tower.Support.Object.deepMerge(object[key], value)
+          object[key] = Tower.ObjectHelper.deepMerge(object[key], value)
         else
           object[key] = value # don't think this is actually cloning...
     object
@@ -54,7 +54,7 @@ Tower.Support.Object =
           if _.isArray(oldValue)
             object[key] = oldValue.concat value
           else if typeof oldValue == "object" && typeof value == "object"
-            object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
+            object[key] = Tower.ObjectHelper.deepMergeWithArrays(object[key], value)
           else
             object[key] = value
         else
@@ -145,7 +145,7 @@ Tower.Support.Object =
   #
   # @return [Boolean]
   isPresent: (object) ->
-    !Tower.Support.Object.isBlank(object)
+    !Tower.ObjectHelper.isBlank(object)
 
   # Checks if the object is "blank", defined below.
   #
@@ -258,4 +258,4 @@ Tower.Support.Object =
   only: ->
     _.pick(arguments...)
 
-module.exports = Tower.Support.Object
+module.exports = Tower.ObjectHelper
