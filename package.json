@@ -69,7 +69,8 @@
     "wrench": ">= 1.3.8",
     "temp": "~0.4.0",
     "knox": "0.0.11",
-    "gm": "~1.4.1"
+    "gm": "~1.4.1",
+    "nodemailer": "~0.3.21"
   },
   "devDependencies": {
     "cli-table": ">= 0.0.1",
