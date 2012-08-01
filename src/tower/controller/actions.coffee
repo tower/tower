@@ -15,7 +15,7 @@ Tower.Controller.Actions =
   create: (callback) ->
     @_create (format) =>
       format.html => @redirectTo action: 'show'
-      format.json => @render json: @resource, status: 200
+      format.json => @render json: @resource, status: 201
 
   # Default implementation for the 'show' action.
   show: ->

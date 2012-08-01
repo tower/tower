@@ -45,3 +45,29 @@ task 'routes', ->
   routes  = Tower.Route.all()
 
   result
+
+task 'jobs', ->
+  # make sure tower is loaded so we can get models
+  # invoke 'environment'
+  # needs to be the same as the current running app (local or remote)
+  Tower.env = process.env.ENV || 'development'
+  
+  Tower.Application.instance().initialize =>
+    process.nextTick =>
+      kue   = require('kue')
+      jobs  = kue.createQueue()
+
+      run = (job, done) =>
+        data    = job.data
+        klass   = Tower.constant(data.klass)
+        method  = data.method
+        args    = data.args || []
+        args.push(done) if data.async
+        klass[method].apply(klass, args)
+        done() unless data.async # if it's not async then just callback immediately
+
+      jobs.types (error, types) =>
+        throw error if error
+        atOnce = 2 # @todo configurable
+        for type in types
+          jobs.process(type, atOnce, run)

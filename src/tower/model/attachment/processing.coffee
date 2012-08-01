@@ -43,7 +43,10 @@ Tower.AttachmentProcessingMixin =
 
     # Called from the background job, which finds the instance and postprocesses it.
     postProcessAndSave: (id, callback) ->
-      @find id, (error, record) =>
+      @where(id: $in: [id]).first (error, record) =>
+        # @todo
+        # file = require('fs').readFileSync()
+
         record.postProcessAndSave(callback)
 
     # Adds a new class method to the class
