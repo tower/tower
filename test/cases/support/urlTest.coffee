@@ -26,19 +26,33 @@ describe 'Tower.Support.Url', ->
     assert.equal url, "/users"
     
   test 'urlFor(post, App.Comment)', ->
-    url = urlFor(new App.Post(id: 10), App.Comment)
+    post = App.Post.build()
+    post.set('id', 10)
+    url = urlFor(post, App.Comment)
     assert.equal url, "/posts/10/comments"
     
   test 'urlFor(post, comment)', ->
-    url = urlFor(new App.Post(id: 10), new App.Comment(id: 20))
+    post = App.Post.build()
+    post.set('id', 10)
+    comment = App.Comment.build()
+    comment.set('id', 20)
+    url = urlFor(post, comment)
     assert.equal url, "/posts/10/comments/20"
     
   test 'urlFor("admin", post, comment)', ->
-    url = urlFor("admin", new App.Post(id: 10), new App.Comment(id: 20))
+    post = App.Post.build()
+    post.set('id', 10)
+    comment = App.Comment.build()
+    comment.set('id', 20)
+    url = urlFor("admin", post, comment)
     assert.equal url, "/admin/posts/10/comments/20"
     
   test 'urlFor(post, comment, action: "edit")', ->
-    url = urlFor(new App.Post(id: 10), new App.Comment(id: 20), action: "edit")
+    post = App.Post.build()
+    post.set('id', 10)
+    comment = App.Comment.build()
+    comment.set('id', 20)
+    url = urlFor(post, comment, action: "edit")
     assert.equal url, "/posts/10/comments/20/edit"
     
   describe 'named routes', ->
@@ -58,7 +72,8 @@ describe 'Tower.Support.Url', ->
     post = null
     
     beforeEach ->
-      post = App.Post.build(id: 10)
+      post = App.Post.build()
+      post.set('id', 10)
       
     describe 'strings', ->
       test 'urlFor(post, params: title: "Node")', ->

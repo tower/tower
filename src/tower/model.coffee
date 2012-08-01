@@ -21,7 +21,7 @@ class Tower.Model extends Tower.Class
     unless options.isNew == false
       @_initialize(attributes, options)
     else
-      @_initializeFromStore(attributes)
+      @_initializeFromStore(attributes, options)
 
   _initialize: (attrs, options) ->
     definitions = @constructor.fields()
@@ -30,23 +30,28 @@ class Tower.Model extends Tower.Class
     for name, definition of definitions
       attributes[name] = definition.defaultValue(@)
 
-    attrs.errors = {}
-    attrs.readOnly = if options.hasOwnProperty('readOnly') then options.readOnly else false
-
     attributes.type ||= @constructor.className() if @constructor.isSubClass()
 
     #@setProperties(attributes)
 
-  _initializeFromStore: (attributes) ->
+    @setProperties(attrs)
+
+    @_initializeData(options)
+
+  _initializeFromStore: (attributes, options) ->
     _.extend @get('attributes'), @constructor.initializeAttributes(attributes)
-
-    @_initializeData()
-
-  _initializeData: ->
+      
     @set('isNew', false)
 
-    @runCallbacks 'find'
-    @runCallbacks 'initialize'
+    @_initializeData(options)
+
+  _initializeData: (options) ->
+    @setProperties
+      errors:   {}
+      readOnly: if options.hasOwnProperty('readOnly') then options.readOnly else false
+
+    # @runCallbacks 'find'
+    # @runCallbacks 'initialize'
 
     @
 

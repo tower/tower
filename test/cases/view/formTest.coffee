@@ -86,7 +86,7 @@ describeWith = (store) ->
 
 """
       test '#formFor(camelCasedModel)', ->
-        model = new App.CamelCasedModel(name: "something")
+        model = App.CamelCasedModel.build(name: "something")
         template = ->
           formFor @model, (form) ->
             form.fieldset (fields) ->
@@ -117,7 +117,7 @@ describeWith = (store) ->
     
       describe 'fields', ->
         test 'string', ->
-          user = new App.User(firstName: "Lance")
+          user = App.User.build(firstName: "Lance")
         
           template = ->
             formFor @user, (form) ->
@@ -149,7 +149,7 @@ describeWith = (store) ->
 """
 
         test 'text', ->
-          user = new App.User(firstName: "Lance")
+          user = App.User.build(firstName: "Lance")
           
           template = ->
             formFor @user, (form) ->
@@ -181,7 +181,7 @@ describeWith = (store) ->
 """
 
         test 'array', ->
-          post = new App.Post(tags: ["ruby", "javascript"])
+          post = App.Post.build(tags: ["ruby", "javascript"])
         
           template = ->
             formFor @post, (form) ->
