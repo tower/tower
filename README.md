@@ -585,25 +585,10 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Todo
 
-- refactor attachments
-- test redis queue
-- s3 store
-- redis store
-- embedded documents
-- test jsonp
-- add `-i` interactive option to command line (pick db, config, etc., rails wizard)
-- remove/replace/update design.io (watch tasks)
-- default templates: eco
-- add ability to use pure javascript (no coffeescript). default templates: ejs
-- handlebars on client
-- allow not using any database
-- redis data store
-- make store be reused between models, not per model
-- should we rename app/views to app/templates (since views are now Ember.View and Ember templates are templates?)
-- have application autoload lib folders
 - use require in the browser to lazy load scripts
 - gruntjs
 - term-css
 - https://github.com/kuno/GeoIP
 - global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
 - make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)
+- http://jsperf.com/angular-vs-knockout-vs-ember/2
