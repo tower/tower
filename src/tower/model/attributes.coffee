@@ -74,6 +74,8 @@ Tower.Model.Attributes =
       attributes
 
     initializeAttributes: (record, attributes) ->
+      return attributes
+      
       for name, field of @fields()
         attributes[name] = field.decode(attributes[name], record)
 
