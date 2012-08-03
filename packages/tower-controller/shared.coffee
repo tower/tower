@@ -1,0 +1,25 @@
+require './shared/controller'
+require './shared/callbacks'
+require './shared/errors'
+require './shared/helpers'
+require './shared/instrumentation'
+require './shared/metadata'
+require './shared/params'
+require './shared/redirecting'
+require './shared/rendering'
+require './shared/resourceful'
+require './shared/responder'
+require './shared/responding'
+require './shared/scopes'
+
+Tower.Controller.include Tower.Controller.Callbacks
+Tower.Controller.include Tower.Controller.Errors
+Tower.Controller.include Tower.Controller.Helpers
+Tower.Controller.include Tower.Controller.Instrumentation
+Tower.Controller.include Tower.Controller.Metadata
+Tower.Controller.include Tower.Controller.Params
+Tower.Controller.include Tower.Controller.Redirecting
+Tower.Controller.include Tower.Controller.Rendering
+Tower.Controller.include Tower.Controller.Resourceful
+Tower.Controller.include Tower.Controller.Responding
+Tower.Controller.include Tower.Controller.Scopes

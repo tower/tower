@@ -9,7 +9,7 @@ cakefileDestination = null
 describe 'Tower.Generator.Actions', ->
   beforeEach ->
     try wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp", true)
-    sourceRoot          = process.cwd() + "/src/tower/server/generator/generators/tower/app"
+    sourceRoot          = process.cwd() + "/packages/tower-generator/server/generators/tower/app"
     destinationRoot     = process.cwd() + "/test/tmp"
     cakefileDestination = File.join(destinationRoot, "Cakefile")
     fs.unlinkSync cakefileDestination if File.exists(cakefileDestination)
