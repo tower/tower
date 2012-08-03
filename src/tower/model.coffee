@@ -23,18 +23,10 @@ class Tower.Model extends Tower.Class
     else
       @_initializeFromStore(attributes, options)
 
-  _initialize: (attrs, options) ->
-    definitions = @constructor.fields()
-    attributes  = {}
+  _initialize: (attributes, options) ->
+    _.extend(@get('attributes'), @constructor._defaultAttributes(@))
 
-    for name, definition of definitions
-      attributes[name] = definition.defaultValue(@)
-
-    attributes.type ||= @constructor.className() if @constructor.isSubClass()
-
-    #@setProperties(attributes)
-
-    @setProperties(attrs)
+    @assignAttributes(attributes)
 
     @_initializeData(options)
 
@@ -50,8 +42,8 @@ class Tower.Model extends Tower.Class
       errors:   {}
       readOnly: if options.hasOwnProperty('readOnly') then options.readOnly else false
 
-    # @runCallbacks 'find'
-    # @runCallbacks 'initialize'
+    @runCallbacks 'find'
+    @runCallbacks 'initialize'
 
     @
 
@@ -103,7 +95,7 @@ Tower.Model.include Tower.Model.NestedAttributes
 Tower.Model.include Tower.Model.AutosaveAssociation
 Tower.Model.include Tower.Model.Timestamp
 Tower.Model.include Tower.Model.Hierarchical
-#Tower.Model.include Tower.Model.Operations
+Tower.Model.include Tower.Model.Operations
 Tower.Model.include Tower.Model.Transactions
 
 Tower.Model.field('id', type: 'Id')

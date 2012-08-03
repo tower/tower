@@ -187,6 +187,7 @@ Tower.Model.Persistence =
     reload: (callback) ->
       # @clearAssociationCache()
       @constructor.find @get('id'), (error, freshRecord) =>
+        # @todo need better transfer code
         @set('data', freshRecord.get('data'))
         callback.call(@, error) if callback
 
@@ -210,12 +211,16 @@ Tower.Model.Persistence =
     # If the record is persisted, it will send it back to the previously saved values.
     rollback: ->
       _.extend(@get('attributes'), @get('changedAttributes'))
-      @set('changedAttributes', {})
+      _.clean(@get('changedAttributes'), {})
       @propertyDidChange('data')
 
     # @private
-    _commitAttributes: ->
-      @get('data').commit()
+    commit: ->
+      # trying out clearing object vs. instantiating new
+      @set('previousChanges', @get('changes'))
+      _.clean(@get('changedAttributes'))
+      #@propertyDidChange('data')
+      @set('isDirty', false)
 
     # Implementation of the {#save} method.
     #
@@ -253,7 +258,7 @@ Tower.Model.Persistence =
 
           unless error
             @set('isNew', false)
-            @_commitAttributes()
+            @commit()
 
           complete.call(@, error)
 
@@ -278,7 +283,7 @@ Tower.Model.Persistence =
 
           unless error
             @set('isNew', false)
-            @_commitAttributes()
+            @commit()
 
           complete.call(@, error)
 

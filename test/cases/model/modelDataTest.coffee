@@ -18,20 +18,10 @@ describeWith = (store) ->
     describe 'data', ->
       beforeEach ->
         record  = App.DataTest.build()
-        data    = record.get('data')#new Tower.Model.Data(record)
-        
-      test '#record', ->
-        assert.deepEqual record, data.record
         
       test 'get path', ->
-        data.set('something', 'random')
+        record.set('something', 'random')
         assert.equal record.get('something'), 'random'
-        
-      #test 'get nested path', ->
-      #  data.set('something': {})
-      #  data.set('something.deeply': {})
-      #  data.set('something.deeply.nested': 'random')
-      #  assert.equal record.get('something.deeply.nested'), 'random'
         
       test 'dynamicFields: false', ->
         assert.equal record.get('dynamicFields'), true
@@ -75,15 +65,15 @@ describeWith = (store) ->
 
       describe 'attribute modifiers', ->
         test 'set', ->
-          data.set 'title', 'A Title'
-          assert.equal 'A Title', data.get('title')
-          assert.equal 'A Title', data.attributes.title
-          assert.equal undefined, data.changedAttributes.title
+          record.set 'title', 'A Title'
+          assert.equal 'A Title', record.get('title')
+          assert.equal 'A Title', record.get('attributes').title
+          assert.equal undefined, record.get('changedAttributes').title
           
-          data.set 'title', undefined
-          assert.equal undefined, data.get('title')
-          assert.equal undefined, data.attributes.title
-          assert.equal undefined, data.changedAttributes.title
+          record.set 'title', undefined
+          assert.equal undefined, record.get('title')
+          assert.equal undefined, record.get('attributes').title
+          assert.equal undefined, record.get('changedAttributes').title
   ###          
         test 'push', ->
           assert.deepEqual ["ruby"], data.push("tags", "ruby")
@@ -215,77 +205,75 @@ describeWith = (store) ->
   ###
   describe 'changes', ->
     beforeEach ->
-      record  = App.DataTest.new()
-      data    = record.get('data')#new Tower.Model.Data(record)
+      record  = App.DataTest.build()
 
     test 'changes', ->
-      assert.deepEqual data.changes(), {}
-      assert.deepEqual data.changedAttributes, {}
-      assert.deepEqual data.changed(), []
+      assert.deepEqual record.get('changes'), {}
+      assert.deepEqual record.get('changedAttributes'), {}
+      assert.deepEqual record.get('changed'), []
       
-      data.set('title', 'title!')
+      record.set('title', 'title!')
       
-      assert.deepEqual data.changedAttributes, {title: undefined}
-      assert.deepEqual data.changes(), {title: [ undefined, 'title!' ]}
-      assert.deepEqual data.changed(), ['title']
+      assert.deepEqual record.get('changedAttributes'), {title: undefined}
+      assert.deepEqual record.get('changes'), {title: [ undefined, 'title!' ]}
+      assert.deepEqual record.get('changed'), ['title']
 
     test 'changes from record', ->
       assert.deepEqual record.get('changes'), {}
 
-      data.set('title', 'title!')
+      record.set('title', 'title!')
       
       assert.deepEqual record.get('changes'), {title: [ undefined, 'title!' ]}
 
     test 'data.resetAttribute', ->
       # hack fake initial value
-      data.changedAttributes.title = 'old title'
-      data.set('title', 'title!')
-      assert.equal data.get('title'), 'title!'
-      data.resetAttribute('title')
-      assert.equal data.get('title'), 'old title'
-      assert.equal data.changedAttributes.title, undefined
+      record.get('attributes').title = 'old title'
+      record.get('changedAttributes').title = 'old title'
 
-    test 'data.isReadOnlyAttribute', ->
-      assert.isFalse data.isReadOnlyAttribute('title')
+      record.set('title', 'title!')
+      assert.equal record.get('title'), 'title!'
+      record.resetAttribute('title')
+      assert.equal record.get('title'), 'old title'
+      assert.equal record.get('changedAttributes').title, undefined
 
     test 'data.previousChanges', ->
-      assert.deepEqual data.previousChanges, undefined
-      data.set('title', 'title!')
-      data.commit()
-      assert.deepEqual data.previousChanges, {title: [ undefined, 'title!' ]}
+      assert.deepEqual record.get('previousChanges'), undefined
+      record.set('title', 'title!')
+      record.commit()
+      assert.deepEqual record.get('previousChanges'), {title: [ undefined, 'title!' ]}
 
     test 'data.attributesForUpdate', ->
-      data.set('title', 'title!')
-      assert.deepEqual data.attributeKeysForUpdate(), ['title']
-      assert.deepEqual data.attributesForUpdate(), {title: 'title!'}
+      record.set('title', 'title!')
+      assert.deepEqual record.attributeKeysForUpdate(), ['title']
+      assert.deepEqual record.attributesForUpdate(), {title: 'title!'}
 
     test '_updateChangedAttribute', ->
       now   = new Date
       now2  = new Date
 
-      data._updateChangedAttribute('string', 'string!')
-      data._updateChangedAttribute('array', [10])
-      data._updateChangedAttribute('object', {a: 1})
-      data._updateChangedAttribute('date', now)
+      record._updateChangedAttribute('string', 'string!')
+      record._updateChangedAttribute('array', [10])
+      record._updateChangedAttribute('object', {a: 1})
+      record._updateChangedAttribute('date', now)
 
-      assert.deepEqual data.changedAttributes, { string: undefined, array: undefined, object: undefined, date: undefined }
+      assert.deepEqual record.get('changedAttributes'), { string: undefined, array: undefined, object: undefined, date: undefined }
 
-      data._updateChangedAttribute('string', undefined)
-      data._updateChangedAttribute('array', undefined)
-      data._updateChangedAttribute('object', undefined)
-      data._updateChangedAttribute('date', undefined)
+      record._updateChangedAttribute('string', undefined)
+      record._updateChangedAttribute('array', undefined)
+      record._updateChangedAttribute('object', undefined)
+      record._updateChangedAttribute('date', undefined)
 
-      assert.deepEqual data.changedAttributes, { }
+      assert.deepEqual record.get('changedAttributes'), { }
 
-      data.attributes = string: 'string!', array: [10], object: {a: 1}, date: now
+      _.extend(record.get('attributes'), string: 'string!', array: [10], object: {a: 1}, date: now)
 
-      data._updateChangedAttribute('string', 'string!')
-      data._updateChangedAttribute('array', [10])
-      data._updateChangedAttribute('object', {a: 1})
-      data._updateChangedAttribute('date', now2)
+      record._updateChangedAttribute('string', 'string!')
+      record._updateChangedAttribute('array', [10])
+      record._updateChangedAttribute('object', {a: 1})
+      record._updateChangedAttribute('date', now2)
 
       # sets it back to how it was just after loading from the database
-      assert.deepEqual data.changedAttributes, { }
+      assert.deepEqual record.get('changedAttributes'), { }
 
 
 describeWith(Tower.Store.Memory)

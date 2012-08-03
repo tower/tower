@@ -71,34 +71,25 @@ Tower.Model.Attributes =
       for name, field of @fields()
         attributes[name] = field.defaultValue(record)
 
+      attributes.type ||= @className() if @isSubClass()
+
       attributes
 
     initializeAttributes: (record, attributes) ->
-      return attributes
-      
-      for name, field of @fields()
-        attributes[name] = field.decode(attributes[name], record)
-
-      attributes
+      _.defaults(attributes, @_defaultAttributes(record))
 
     # attributeNames: Ember.computed ->
 
   InstanceMethods:
     dynamicFields: true
 
-    # Want to get rid of this, don't like.
-    data: Ember.computed((key, value) ->
-      # sets the value or uses defaults
-      value || new Tower.Model.Data(@)
-    ).cacheable()
-
     # How about you can only `get` the attributes, it will make the API much simpler.
     # It needs to be all fields with default values
     attributes: Ember.computed(->
       throw new Error('Cannot set attributes hash directly') if arguments.length == 2
 
-      @get('data').getAttributes()
-    ).property('data')
+      {}#@get('data').getAttributes()
+    ).property('data').cacheable()
 
     # Performs an operation on an attribute value.
     # 
@@ -129,17 +120,11 @@ Tower.Model.Attributes =
 
       Ember.endPropertyChanges()
 
-    setSavedAttributes: (object) ->
-      @get('data').setSavedAttributes(object)
-      #_.extend(@savedData, object)
-
     unknownProperty: (key) ->
-      #@getAttribute(key) if @get('dynamicFields')
-      @get('data').get(key) if @get('dynamicFields')
+      @getAttribute(key) if @get('dynamicFields')
 
     setUnknownProperty: (key, value) ->
-      #@setAttribute(key, value) if @get('dynamicFields')
-      @get('data').set(key, value) if @get('dynamicFields')
+      @setAttribute(key, value) if @get('dynamicFields')
 
     getAttribute: (key) ->
       #@get('data').getAttribute(key)
@@ -148,7 +133,6 @@ Tower.Model.Attributes =
       key = if key == '_id' then 'id' else key
       result = @_cid if key == '_cid'
       result = Ember.get(@get('attributes'), key) if result == undefined
-      result = Ember.get(@savedData, key) if result == undefined
       # in the "public api" we want there to be no distinction between cid/id, that should be managed transparently.
       result = @_cid if passedKey == 'id' && result == undefined
       result
@@ -164,7 +148,11 @@ Tower.Model.Attributes =
         return value
 
       if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
-        @[key.replace('$', '')](value)
+        key = key.replace('$', '')
+        if key == 'set'
+          @assignAttributes(value)
+        else
+          @[key](value)
       else
         # @todo need a better way to do this...
         if !@get('isNew') && key == 'id'
@@ -176,6 +164,11 @@ Tower.Model.Attributes =
       @set('isDirty', _.isPresent(@get('changedAttributes')))
 
       value
+
+    _actualSet: (key, value) ->
+      @_updateChangedAttribute(key, value)
+
+      @get('attributes')[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
 
     # @todo Use this to set multiple attributes in a more optimized way.
     setAttributes: (attributes) ->
@@ -210,9 +203,9 @@ Tower.Model.Attributes =
       for item in nestedParameterAttributes
         @modifyAttribute(operation, item[0], item[1])
 
-for method in Tower.Store.Modifiers.SET
-  do (method) ->
-    Tower.Model.Attributes.InstanceMethods[method] = ->
-      Ember.get(@, 'data')[method] arguments...
+#for method in Tower.Store.Modifiers.SET
+#  do (method) ->
+#    Tower.Model.Attributes.InstanceMethods[method] = ->
+#      Ember.get(@, 'data')[method] arguments...
 
 module.exports = Tower.Model.Attributes

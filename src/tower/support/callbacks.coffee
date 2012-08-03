@@ -69,7 +69,7 @@ Tower.Support.Callbacks =
     if chain
       chain.run(@, options, block, complete)
     else
-      block.call @
+      block.call @ if block
       complete.call @ if complete
 
   _callback: ->
