@@ -19,9 +19,9 @@ Tower.Store.Mongodb.Persistence =
   # @see Tower.Store#update
   update: (updates, cursor, callback) ->
     updates         = @serializeAttributesForUpdate(updates.get('dirtyAttributes'))
-
+    
     if _.isBlank(updates)
-      callback.call(@)
+      callback.call(@) if callback
       return
     
     conditions      = @serializeConditions(cursor)

@@ -39,8 +39,8 @@ class Tower.Model extends Tower.Class
     @_initializeData(options)
 
   _initializeFromStore: (attributes, options) ->
-    _.extend @get('attributes'), @constructor.initializeAttributes(attributes)
-      
+    _.extend @get('attributes'), @constructor.initializeAttributes(@, attributes)
+
     @set('isNew', false)
 
     @_initializeData(options)
