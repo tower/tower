@@ -20,7 +20,6 @@ Tower.modules =
 
 require './support'
 require './application'
-require './client/application'
 require './store'
 require './client/store'
 require './model'
@@ -31,12 +30,6 @@ require './client/controller'
 require './net'
 require './client/net'
 require './middleware'
-
-#_.extend T,
-#  M: T.Model
-#  V: T.View
-#  C: T.Controller
-#  S: T.Store
 
 Tower.goTo = (string, params) ->
   History.pushState(params, params?.title, string)

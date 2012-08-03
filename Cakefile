@@ -26,8 +26,6 @@ JS_COPYRIGHT  = """
 
 """
 
-#Tower   = require './lib/tower'
-
 compileFile = (root, path, check) ->
   try
     data = fs.readFileSync path, 'utf-8'
@@ -102,36 +100,7 @@ Tower.version = "#{VERSION}"
 
           fs.writeFile "./dist/tower.min.js.gz", mint.uglifyjs(result, {})
 
-task 'docs', 'Build the docs', ->
-  exec './node_modules/dox/bin/dox < ./lib/tower/route/dsl.js', (err, stdout, stderr) ->
-    throw err if err
-    console.log stdout + stderr
-
-task 'site', 'Build site'
-
-task 'stats', 'Build files and report on their sizes', ->
-  Table = require './node_modules/cli-table'
-  paths = findit.sync('./dist')
-  prev  = 0
-  table = new Table
-    head:       ['Path', 'Size (kb)', 'Compression (%)']
-    colWidths:  [50, 15, 20]
-
-  for path, i in paths
-    if path.match(/\.(js|coffee)$/)
-      stat = fs.statSync(path)
-      size = stat.size / 1000.0
-      if i % 2 == 0
-        percent = (size / prev) * 100.0
-        percent = percent.toFixed(1)
-        table.push [path, size, "#{percent} %"]
-      else
-        table.push [path, size, "-"]
-      prev = size
-
-  console.log table.toString()
-
 task 'clean', 'remove trailing whitespace', ->
-  findit.find "./src", (file) ->
+  findit.find "./packages", (file) ->
     if !file.match('command') && File.isFile(file)
       fs.writeFileSync(file, fs.readFileSync(file, "utf-8").toString().replace(/[ \t]+$/mg, ""))

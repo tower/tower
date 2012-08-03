@@ -12,20 +12,20 @@ require("design.io-javascripts")
   debug:    false
   ignore:   /(lib\/|public|node_modules|server\.js|spec|test|dist|generators\/.+\/templates)/
   write: (path, string) ->
-    path = path.replace(/^(src)/, "lib").replace(/\.(js|coffee)/, ".js")
+    path = path.replace(/^(packages)/, "lib").replace(/\.(js|coffee)/, ".js")
     try
       File.write path, string, (error) ->
         console.log(error.stack) if error
     catch error
       console.log error.stack
 
-watch /src\/.+\/generators\/.+\/templates/
+watch /packages\/.+\/(generators\/.+\/templates|package\.json)/
   initialize: (path, callback) ->
     @update(path, callback)
     
   update: (path, callback) ->
     string  = fs.readFileSync(path)
-    path    = path.replace(/^src/, 'lib')
+    path    = path.replace(/^packages/, 'lib')
     try
       File.write path, string, (error) ->
         console.log(error.stack) if error

@@ -44,24 +44,6 @@ require '../tower-middleware/server'
 require '../tower-command/server'
 require '../tower-generator/server'
 
-#require './support'
-#require './application'
-#require './server/application'
-#require './store'
-#require './server/store'
-#require './model'
-#require './server/model'
-#require './view'
-#require './controller'
-#require './server/controller'
-#require './controller/tst'
-#require './net'
-#require './server/net'
-#require './server/mailer'
-#require './middleware'
-#require './server/command'
-#require './server/generator'
-
 Tower.watch = true
 
 Tower.View.store(new Tower.Store.FileSystem(['app/views']))
