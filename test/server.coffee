@@ -22,6 +22,11 @@ Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/example/app/views"]
 Tower.port            = 3001
 
+# hack to only use database we've specified
+config = require(Tower.root + '/config/databases')
+for key, value of config
+  delete config[key] unless key == store
+
 require '../src/tower/server/generator/tst'
 
 app = Tower.Application.instance()

@@ -263,5 +263,4 @@ Tower.Support.Object =
       delete object[key] if object.hasOwnProperty(key)
     object
 
-
 module.exports = Tower.Support.Object
