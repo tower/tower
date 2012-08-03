@@ -94,9 +94,15 @@ Tower.Model.Dirty =
     if changedAttributes.hasOwnProperty(key)
       value = changedAttributes[key]
     else
-      value = @get('data')._defaultValue(key)
+      value = @_defaultValue(key)
 
     @set(key, value)
+
+  _defaultValue: (key) ->
+    return field.defaultValue(@@) if field = @_getField(key)
+
+  _getField: (key) ->
+    @constructor.fields()[key]
 
   # Returns a hash of all the attributes to be persisted to the database on create.
   # 
