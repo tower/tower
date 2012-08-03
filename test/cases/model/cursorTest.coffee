@@ -141,24 +141,24 @@ describe 'Tower.Model.Cursor', ->
       
       assert.isTrue cursor.test(App.CursorTest.new(string: 'a string'))
       
-      assert.isFalse cursor.test(new App.CursorTest(string: 'a strin'))
+      assert.isFalse cursor.test(App.CursorTest.build(string: 'a strin'))
       
     test 'neq', ->
       cursor.where(string: '!=': 'a string')
       
-      assert.isFalse cursor.test(new App.CursorTest(string: 'a string'))
+      assert.isFalse cursor.test(App.CursorTest.build(string: 'a string'))
       
-      assert.isTrue cursor.test(new App.CursorTest(string: 'a strin'))
+      assert.isTrue cursor.test(App.CursorTest.build(string: 'a strin'))
       
     test '$or', ->
       cursor.where($or: [{string: '==': 'a string'}, {integer: '<': 10}])
       
-      assert.isTrue cursor.test(new App.CursorTest(string: 'a string'))
-      assert.isTrue cursor.test(new App.CursorTest(string: 'a string', integer: 9))
-      assert.isTrue cursor.test(new App.CursorTest(string: 'a strin', integer: 9))
+      assert.isTrue cursor.test(App.CursorTest.build(string: 'a string'))
+      assert.isTrue cursor.test(App.CursorTest.build(string: 'a string', integer: 9))
+      assert.isTrue cursor.test(App.CursorTest.build(string: 'a strin', integer: 9))
       
-      assert.isFalse cursor.test(new App.CursorTest(string: 'a strin'))
-      assert.isFalse cursor.test(new App.CursorTest(string: 'a strin', integer: 10))
+      assert.isFalse cursor.test(App.CursorTest.build(string: 'a strin'))
+      assert.isFalse cursor.test(App.CursorTest.build(string: 'a strin', integer: 10))
       
   describe '#addIds', ->
     test 'addIds', ->

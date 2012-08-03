@@ -8,9 +8,6 @@ io      = null
 class Tower.Application extends Tower.Engine
   @_callbacks: {}
 
-  #@extended: ->
-  #  global[@className()] = @create()
-
   @before 'initialize', 'setDefaults'
 
   # This is a hack

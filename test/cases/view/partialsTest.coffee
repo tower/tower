@@ -43,8 +43,8 @@ describe 'Tower.View', ->
     """
     
     posts = []
-    posts.push new App.Post(title: "First Post")
-    posts.push new App.Post(title: "Second Post")
+    posts.push App.Post.build(title: "First Post")
+    posts.push App.Post.build(title: "Second Post")
     
     template = ->
       ul class: "posts", ->
@@ -70,7 +70,7 @@ describe 'Tower.View', ->
       li class: "post", -> post.get("title")
     """
     
-    post = new App.Post(title: "First Post")
+    post = App.Post.build(title: "First Post")
     
     template = ->
       ul class: "posts", ->
@@ -99,7 +99,7 @@ describe 'Tower.View', ->
         h1 post.get("title")
     """
     
-    post = new App.Post(title: "First Post")
+    post = App.Post.build(title: "First Post")
     
     template = ->
       ul class: "posts", ->

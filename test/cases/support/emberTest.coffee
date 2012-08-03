@@ -113,7 +113,7 @@ describe 'Tower + Ember', ->
       assert.equal App.Post.className(), "Post"
       
     test 'new', ->
-      user = new App.User(lastName: "Pollard")
+      user = App.User.build(lastName: "Pollard")
       assert.equal user.get('lastName'), "Pollard"
     
     test 'metadata', ->

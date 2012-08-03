@@ -131,11 +131,8 @@ describeWith = (store) ->
       model = null
     
       beforeEach ->
-        model = App.BaseModel.new()
+        model = App.BaseModel.build()
     
-      test '#data', ->
-        assert.equal typeof(model.get('data')), "object"
-
       test '#get', ->
         assert.equal model.get('likeCountWithDefault'), 0
       
@@ -242,15 +239,7 @@ describeWith = (store) ->
                 assert.equal user.get('rating'), 3.4
 
                 done()
-  ###              
-  describe 'accessors', ->
-    user = null
-    
-    beforeEach ->
-      user = App.User.new(firstName: 'Lance')
-      
-    test 'string', ->
-      assert.equal user.firstName, 'Lance'
+  ### 
 
   #describe 'attributesForCreate'
   #describe 'attributesForUpdate'
@@ -266,24 +255,32 @@ describeWith = (store) ->
       user = App.User.build(firstName: 'Lance')
 
     test 'unsavedData is gone after saving and finding', (done) ->
-      assert.deepEqual user.get('data').changed(), ['firstName']
-      assert.deepEqual user.get('data').attributesForCreate(), {firstName: 'Lance'}
+      assert.deepEqual user.get('changed'), ['firstName']
+      assert.deepEqual user.attributesForCreate(),
+        firstName: 'Lance'
+        likes: 0,
+        tags: [],
+        admin: false,
+        rating: 2.5,
+        postIds: [],
+        articleIds: [],
+        cachedMembershipIds: []
 
       user.save =>
-        assert.deepEqual user.get('data').changedAttributes, {}
+        assert.deepEqual user.get('changedAttributes'), {}, '3'
 
         App.User.find user.get('id'), (error, user) =>
-          assert.deepEqual user.get('data').changedAttributes, {}
+          assert.deepEqual user.get('changedAttributes'), {}, '4'
 
           user.set('firstName', 'Dane')
           user.set('lastName', 'Pollard')
-          assert.deepEqual user.get('data').changed(), ['firstName', 'lastName']
-          assert.deepEqual user.get('data').attributesForUpdate(), {firstName: 'Dane', lastName: 'Pollard'}
+          assert.deepEqual user.get('changed'), ['firstName', 'lastName'], '5'
+          assert.deepEqual user.attributesForUpdate(), {firstName: 'Dane', lastName: 'Pollard'}, '6'
 
           user.save =>
-            assert.equal user.get('firstName'), 'Dane'
-            assert.equal user.get('lastName'), 'Pollard'
-            assert.deepEqual user.get('data').changedAttributes, {}
+            assert.equal user.get('firstName'), 'Dane', '7'
+            assert.equal user.get('lastName'), 'Pollard', '8'
+            assert.deepEqual user.get('changedAttributes'), {}, '9'
             done()
     ###
     test 'Object attribute type', (done) ->
@@ -332,23 +329,16 @@ describeWith = (store) ->
     test 'cliend id', (done) ->
       id = 'a client id'
       user.set('_cid', id)
-      assert.equal user.get('_cid'), id
-      assert.equal user.get('id'), id
+      assert.equal user.get('_cid'), id, '1'
+      assert.equal user.get('id'), id, '2'
 
       user.save =>
         # should still have client id, but now a new server id
-        assert.equal user.get('_cid').toString(), id.toString()
-        assert.notEqual user.get('id').toString(), id
+        assert.equal user.get('_cid').toString(), id.toString(), '3'
+        assert.notEqual user.get('id').toString(), id, '4'
 
-        assert.equal user.toJSON()._cid, id
-        assert.equal user.toJSON().id.toString(), user.get('id').toString()
-
-        # need to test this out more
-        cloned = App.User.build(user.toJSON())
-        
-        assert.equal cloned.get('id').toString(), user.get('id').toString()
-        assert.equal cloned.get('_cid').toString(), user.get('_cid').toString()
-        assert.notEqual cloned.get('id').toString(), cloned.get('_cid').toString()
+        assert.equal user.toJSON()._cid, id, '5'
+        assert.equal user.toJSON().id.toString(), user.get('id').toString(), '6'
 
         done()
 

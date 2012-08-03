@@ -258,4 +258,9 @@ Tower.ObjectHelper =
   only: ->
     _.pick(arguments...)
 
-module.exports = Tower.ObjectHelper
+  clean: (object) ->
+    for key, value of object
+      delete object[key] if object.hasOwnProperty(key)
+    object
+
+module.exports = Tower.Support.Object

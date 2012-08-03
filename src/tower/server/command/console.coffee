@@ -1,4 +1,3 @@
-# http://nodejs.org/docs/v0.6.1/api/repl.html
 class Tower.Command.Console
   constructor: (argv) ->
     @program = program = require('commander')

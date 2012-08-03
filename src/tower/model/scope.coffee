@@ -1,4 +1,6 @@
 # Interface to {Tower.Model.Cursor}, used to build database operations.
+# 
+# @todo Remove this layer, if you want to manually reuse a scope maybe have to call `clone` directly?
 class Tower.Model.Scope
   @finderMethods: [
     'find'

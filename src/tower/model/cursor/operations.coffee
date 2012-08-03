@@ -174,7 +174,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   #
   # @return [Array] returns the fields for this cursor.
   select: ->
-    @_fields = _.flatten _.args(fields)
+    @_fields = _.flatten _.args(arguments)
     @invalidate()
     @
 

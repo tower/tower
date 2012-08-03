@@ -5,7 +5,8 @@ describe 'urlFor', ->
   beforeEach ->
     Tower.Route.reload()
     
-    post = new App.Post(id: 10)
+    post = App.Post.build()
+    post.set('id', 10)
     
     defaultUrlOptions = 
       onlyPath:      true, 

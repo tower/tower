@@ -180,7 +180,7 @@ describe "Tower.Store.Operators", ->
     beforeEach ->
       t = new Date
       
-      r = new App.OperatorsTest
+      r = App.OperatorsTest.build
         string:       "a string"
         integer:      10
         float:        12.2
@@ -279,7 +279,7 @@ describe "Tower.Store.Operators", ->
         i       = 1
         records = []
         while i <= 20
-          records.push new App.OperatorsTest(string: "string #{i}", integer: i)
+          records.push App.OperatorsTest.build(string: "string #{i}", integer: i)
           i++
       
       test 'select', ->
