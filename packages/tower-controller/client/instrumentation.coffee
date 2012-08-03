@@ -1,7 +1,7 @@
 # @mixin
 Tower.ControllerInstrumentation =
   enter: (action) ->
-    Ember.changeProperties ->
+    Ember.changeProperties =>
       @set('isActive', true)
       @set('action', action)
       @set(_.toStateName(action), true)
@@ -29,7 +29,7 @@ Tower.ControllerInstrumentation =
       method.call(controller, params, callback)
 
   exit: (action) ->
-    Ember.changeProperties ->
+    Ember.changeProperties =>
       @set('isActive', false)
       @set(_.toStateName(action), false)
 

@@ -161,7 +161,7 @@ class Tower.Application extends Tower.Engine
       try
         store = Tower.constant(storeClassName) # This will find Tower.StoreMemory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
       catch error
-        store = require "./store/#{databaseName}"
+        store = require "#{__dirname}/../../tower-store/server/#{databaseName}"
 
       if !defaultStoreSet || databaseConfig.default
         Tower.Model.default('store', store) unless Tower.Model.default('store')
@@ -173,7 +173,8 @@ class Tower.Application extends Tower.Engine
       try store.configure Tower.config.databases[databaseName][Tower.env]
       store.initialize(next)
 
-    Tower.parallel databaseNames, iterator, callback
+    Tower.parallel databaseNames, iterator, =>
+      callback.call(@) if callback
 
   stack: ->
     configs     = @constructor.initializers()
