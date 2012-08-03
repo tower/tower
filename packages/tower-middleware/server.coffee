@@ -1,9 +1,9 @@
 # @module
 Tower.Middleware = {}
 
-require './middleware/agent'
-require './middleware/cookies'
-require './middleware/location'
-require './middleware/router'
+require './server/agent'
+require './server/cookies'
+require './server/location'
+require './server/router'
 
 module.exports = Tower.Middleware

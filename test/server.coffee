@@ -27,7 +27,7 @@ config = require(Tower.root + '/config/databases')
 for key, value of config
   delete config[key] unless key == store
 
-require '../src/tower/server/generator/tst'
+require '../packages/tower-generator/server/tst'
 
 app = Tower.Application.instance()
 
