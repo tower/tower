@@ -1,6 +1,10 @@
 require '../index.js'
 File  = require('pathfinder').File
 
+# mocha $(find test -name "*attributesTest.coffee") --store mongodb
+store = require('commander').option('--store [name]', 'Store to run tests against', 'memory').parse(process.argv).store
+Tower.store = Tower.Store[_.camelize(store)]
+
 global.chai   = require 'chai'
 global.assert = chai.assert
 global.expect = chai.expect
