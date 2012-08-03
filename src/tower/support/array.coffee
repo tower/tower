@@ -65,12 +65,13 @@ Tower.Support.Array =
       if x < y then -1 else 1
 
     sortings = sortings.map (sorting) ->
-      sorting = [sorting, "asc"] unless sorting instanceof Array
+      sorting = [sorting, "asc"] unless _.isArray(sorting)
 
-      if sorting[1] == "desc"
+      if sorting[1].toLowerCase() == "desc"
         sorting[1] = -1
       else
         sorting[1] = 1
+
       sorting
 
     objects.sort (a, b) ->

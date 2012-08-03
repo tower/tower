@@ -69,7 +69,8 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   #
   # @return [Array] returns the full set of order commands for this cursor.
   order: (attribute, direction = 'asc') ->
-    @_order.push [attribute, direction]
+    value = if _.isArray(attribute) then attribute else [attribute, direction]
+    @_order.push value
     @invalidate()
     @
 

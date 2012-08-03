@@ -1,11 +1,11 @@
-SRC = $(shell find test -name "*associationCursorTest.coffee")
+SRC = $(shell find test -name "*Test.coffee")
 STORES = memory mongodb
 CMD = ./node_modules/mocha/bin/mocha
 
 test-all:
 	for i in $(STORES); do ./node_modules/mocha/bin/mocha $(SRC) --store $$i; done
 
-test: test-memory
+test: test-memory test-mongodb
 
 test-memory:
 	$(CMD) $(SRC) --store memory

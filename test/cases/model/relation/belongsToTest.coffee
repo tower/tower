@@ -2,25 +2,10 @@ membership  = null
 group       = null
 user        = null
 
-describeWith = (store) ->
-  describe "Tower.Model.Relation.BelongsTo (Tower.Store.#{store.className()})", ->
+describeWith = =>
+  describe "Tower.Model.Relation.BelongsTo", ->
     beforeEach (done) ->
       async.series [
-        (callback) =>
-          store.clean(callback)
-        (callback) =>
-          # maybe the store should be global..
-          # there's a problem in relations with subclasses b/c type
-          App.Page.store(store)
-          App.Post.store(store)
-          App.Child.store(store)
-          App.Address.store(store)
-          App.Parent.store(store)
-          App.User.store(store)
-          App.Membership.store(store)
-          App.DependentMembership.store(store)
-          App.Group.store(store)
-          callback()
         (callback) =>
           App.User.insert firstName: "Lance", (error, record) =>
             user = record
@@ -199,6 +184,3 @@ describeWith = (store) ->
       test 'fetch', (done) ->
         done()
     ###
-   
-#describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.Mongodb) unless Tower.isClient

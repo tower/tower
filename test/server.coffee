@@ -4,7 +4,7 @@ File  = require('pathfinder').File
 # mocha $(find test -name "*attributesTest.coffee") --store mongodb
 store = require('commander').option('--store [name]', 'Store to run tests against', 'memory').parse(process.argv).store
 
-console.log "Running tests with #{store}"
+console.log "Running tests with #{store} store"
 
 Tower.store = Tower.Store[_.camelize(store)]
 
@@ -44,8 +44,13 @@ beforeEach (done) ->
   Tower.View.engine             = "coffee"
   Tower.View.store().loadPaths  = ["test/example/app/views"]
   
-  Tower.Application.instance().initialize ->
-    Tower.store.clean(done)
+  # @todo this doesn't look like it's running every time.
+  Tower.Application.instance().initialize =>
+    done()
+
+beforeEach (done) ->
+  Tower.store.clean =>
+    done()
 
 after (done) ->
   return done()

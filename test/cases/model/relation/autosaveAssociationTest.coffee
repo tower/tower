@@ -6,9 +6,6 @@ describe 'Tower.Model.AutosaveAssociation', ->
 
   record = null
 
-  beforeEach (done) ->
-    App.AutosaveAssociationTest.store().constructor.clean(done)
-
   test 'callbacks', ->
     callbacks = App.AutosaveAssociationTest.callbacks()
     methods   = (array) ->
