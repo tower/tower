@@ -187,10 +187,17 @@ Tower.Model.Persistence =
     reload: (callback) ->
       # @clearAssociationCache()
       @constructor.find @get('id'), (error, freshRecord) =>
-        # @todo need better transfer code
-        @set('data', freshRecord.get('data'))
+        @_merge(freshRecord)
         callback.call(@, error) if callback
 
+      @
+
+    # @todo need better merging code
+    _merge: (record) ->
+      _.extend @get('attributes'), record.get('attributes')
+      @propertyDidChange('data')
+      _.extend @get('changedAttributes'), record.get('changedAttributes')
+      _.extend @get('previousChanges'), record.get('previousChanges') if record.get('previousChanges')
       @
 
     # This is basically the same as `refresh`, but for the client it fetches from the server.
@@ -199,7 +206,7 @@ Tower.Model.Persistence =
       @set('isSyncing', true)
 
       @constructor.where(id: @get('id')).limit(1).fetch (error, freshRecord) =>
-        @set('data', freshRecord.get('data'))
+        @_merge(freshRecord)
         @set('isSyncing', false)
         callback.call(@, error) if callback
 

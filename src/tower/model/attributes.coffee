@@ -88,8 +88,8 @@ Tower.Model.Attributes =
     attributes: Ember.computed(->
       throw new Error('Cannot set attributes hash directly') if arguments.length == 2
 
-      {}#@get('data').getAttributes()
-    ).property('data').cacheable()
+      {}
+    ).cacheable()
 
     # Performs an operation on an attribute value.
     # 
