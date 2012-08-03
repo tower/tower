@@ -1,6 +1,6 @@
 # Places a record in a bucket by its `type`.
 # Groups multiple atomic operations into one bulk operation.
-class Tower.Store.Transaction extends Tower.Class
+class Tower.StoreTransaction extends Tower.Class
   init: ->
     # Ember.set @, 'records', Ember.Map.create()
     @records = []

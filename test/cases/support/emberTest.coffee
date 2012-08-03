@@ -121,9 +121,9 @@ describe 'Tower + Ember', ->
       
       #console.log metadata
 ###      
-  describe 'Tower.Model.Scope', ->
+  describe 'Tower.ModelScope', ->
     test 'instanceof Ember.ArrayProxy', ->
-      scope = new Tower.Model.Scope
+      scope = new Tower.ModelScope
       
       assert.isTrue scope instanceof Ember.ArrayProxy, "scope instanceof Ember.ArrayProxy"
       

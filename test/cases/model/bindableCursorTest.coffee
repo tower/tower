@@ -7,12 +7,12 @@ class App.BindableCursorTest extends Tower.Model
   @field "arrayString", type: ["String"], default: []
   @field "arrayObject", type: ["Object"], default: []
 
-describe 'Tower.Model.Cursor (bindable)', ->
+describe 'Tower.ModelCursor (bindable)', ->
   cursor = null
   
   beforeEach (done) ->
-    App.BindableCursorTest.store(Tower.Store.Memory).constructor.clean =>
-      cursor  = Tower.Model.Cursor.make()# Tower.Model.Cursor.create(content: Ember.A([]))
+    App.BindableCursorTest.store(Tower.StoreMemory).constructor.clean =>
+      cursor  = Tower.ModelCursor.make()# Tower.ModelCursor.create(content: Ember.A([]))
       cursor.make(model: App.BindableCursorTest)
 
       done()

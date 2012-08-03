@@ -19,7 +19,7 @@ File.mkdirpSync = (dir) ->
       else
         console.error(e)
 
-Tower.Generator.Actions =
+Tower.GeneratorActions =
   get: (url, to) ->
     path  = @destinationPath(to)
 
@@ -223,7 +223,7 @@ Tower.Generator.Actions =
   findInSourcePaths: (path) ->
     File.expandPath(File.join(@sourceRoot, "templates", @currentSourceDirectory, path))
 
-Tower.Generator.Actions.file = Tower.Generator.Actions.createFile
-Tower.Generator.Actions.directory = Tower.Generator.Actions.createDirectory
+Tower.GeneratorActions.file = Tower.GeneratorActions.createFile
+Tower.GeneratorActions.directory = Tower.GeneratorActions.createDirectory
 
-module.exports = Tower.Generator.Actions
+module.exports = Tower.GeneratorActions

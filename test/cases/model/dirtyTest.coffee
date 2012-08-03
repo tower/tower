@@ -1,6 +1,6 @@
 model = null
 
-describe 'Tower.Model.Dirty', ->
+describe 'Tower.ModelDirty', ->
   test 'cannot set attributes directly', ->
     block = =>
       model.set('attributes', likeCountWithDefault: 10)

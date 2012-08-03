@@ -1,6 +1,6 @@
 File = require('pathfinder').File
 
-class Tower.Store.FileSystem extends Tower.Store
+class Tower.StoreFileSystem extends Tower.Store
   # add load paths if you need to, e.g.
   # Tower.View.store().loadPaths.push("themes/views")
   init: (loadPaths = []) ->
@@ -52,4 +52,4 @@ class Tower.Store.FileSystem extends Tower.Store
 
   count: (cursor, callback) ->
 
-module.exports = Tower.Store.FileSystem
+module.exports = Tower.StoreFileSystem

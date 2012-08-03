@@ -1,6 +1,6 @@
 # @mixin
 # This is basically an Ember.Pagination module.
-Tower.Model.Cursor.Finders =
+Tower.ModelCursorFinders =
   # These are for binding to pagination controls in a view
   # https://gist.github.com/1608481
   # https://github.com/interline/travelstar-pagination/blob/master/lib/mixins/paginatable.js
@@ -122,7 +122,7 @@ Tower.Model.Cursor.Finders =
   pushMatching: (records) ->
     return [] if records.length == 0 || records[0].constructor.toString() != @store.className
 
-    matching = Tower.Store.Operators.select(records, @conditions())
+    matching = Tower.StoreOperators.select(records, @conditions())
 
     # see https://github.com/emberjs/ember.js/issues/773
     # need to change this so it works with model.get('id')
@@ -139,7 +139,7 @@ Tower.Model.Cursor.Finders =
   pullMatching: (records) ->
     return [] if records.length == 0 || records[0].constructor.toString() != @store.className
 
-    matching = Tower.Store.Operators.select(records, @conditions())
+    matching = Tower.StoreOperators.select(records, @conditions())
 
     # see https://github.com/emberjs/ember.js/issues/773
     @removeObjects(matching)
@@ -150,7 +150,7 @@ Tower.Model.Cursor.Finders =
   pullNotMatching: (records) ->
     return [] if records.length == 0 || records[0].constructor.toString() != @store.className
 
-    notMatching = Tower.Store.Operators.notMatching(records, @conditions())
+    notMatching = Tower.StoreOperators.notMatching(records, @conditions())
 
     # see https://github.com/emberjs/ember.js/issues/773
     @removeObjects(notMatching)
@@ -229,9 +229,9 @@ Tower.Model.Cursor.Finders =
 for phase in ['Before', 'After']
   for action in ['Insert', 'Update', 'Destroy', 'Find']
     do (phase, action) =>
-      Tower.Model.Cursor.Finders["_run#{phase}#{action}CallbacksOnStore"] = (done, records) ->
+      Tower.ModelCursorFinders["_run#{phase}#{action}CallbacksOnStore"] = (done, records) ->
         @store["run#{phase}#{action}"](@, done, records)
 
-Tower.Model.Cursor.Finders = Ember.Mixin.create(Tower.Model.Cursor.Finders)
+Tower.ModelCursorFinders = Ember.Mixin.create(Tower.ModelCursorFinders)
 
-module.exports = Tower.Model.Cursor.Finders
+module.exports = Tower.ModelCursorFinders

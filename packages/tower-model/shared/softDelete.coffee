@@ -1,5 +1,5 @@
 # @todo Inspired from acts_as_paranoid and mongoid::paranoia
-Tower.Model.SoftDelete =
+Tower.ModelSoftDelete =
   ClassMethods:
     included: ->
       @field 'deletedAt', type: 'Date'
@@ -19,4 +19,4 @@ Tower.Model.SoftDelete =
   restore: (callback) ->
     @updateAttribute('deletedAt', null, callback)
 
-module.exports = Tower.Model.SoftDelete
+module.exports = Tower.ModelSoftDelete

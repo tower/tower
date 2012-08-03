@@ -1,4 +1,4 @@
-class Tower.Generator.Mocha.ModelGenerator extends Tower.Generator
+class Tower.GeneratorMochaModelGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -6,4 +6,4 @@ class Tower.Generator.Mocha.ModelGenerator extends Tower.Generator
     @template "model.coffee", "test/models/#{@model.name}Test.coffee"
     @asset "/test/models/#{@model.name}Test", bundle: "development"
 
-module.exports = Tower.Generator.Mocha.ModelGenerator
+module.exports = Tower.GeneratorMochaModelGenerator

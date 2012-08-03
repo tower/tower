@@ -1,4 +1,4 @@
-class Tower.Generator.MailerGenerator extends Tower.Generator
+class Tower.GeneratorMailerGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -6,4 +6,4 @@ class Tower.Generator.MailerGenerator extends Tower.Generator
       @inside "mailers", '.', ->
         @template "mailer.coffee", "#{@model.name}Mailer.coffee", ->
 
-module.exports = Tower.Generator.MailerGenerator
+module.exports = Tower.GeneratorMailerGenerator

@@ -1,4 +1,4 @@
-describe "Tower.View.EmberHelper", ->  
+describe "Tower.ViewEmberHelper", ->  
   view = null
   user = null
 

@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Metadata =
+Tower.ModelMetadata =
   ClassMethods:
     isModel: true
     # The class in the superclass hierarchy that directly subclasses Tower.Model
@@ -46,20 +46,20 @@ Tower.Model.Metadata =
       @_url = switch typeof options
         when 'object'
           if options.parent
-            url = "/#{Tower.Support.String.parameterize(Tower.Support.String.pluralize(options.parent))}/:#{Tower.Support.String.camelize(options.parent, true)}/#{@toParam()}"
+            url = "/#{Tower.SupportString.parameterize(Tower.SupportString.pluralize(options.parent))}/:#{Tower.SupportString.camelize(options.parent, true)}/#{@toParam()}"
         else
           options
 
     # @example All default options
     #   class App.User extends Tower.Model
-    #     @defaults store: Tower.Store.Memory, scope: @desc('createdAt')
+    #     @defaults store: Tower.StoreMemory, scope: @desc('createdAt')
     defaults: (object) ->
       @default(key, value) for key, value of object if object
       @metadata().defaults
 
     # @example All default options
     #   class App.User extends Tower.Model
-    #     @default 'store', Tower.Store.Memory
+    #     @default 'store', Tower.StoreMemory
     #     @default 'scope', @desc('createdAt')
     default: (key, value) ->
       if arguments.length == 1 # we're getting a value
@@ -124,7 +124,7 @@ Tower.Model.Metadata =
 
     _setDefaultScope: (scope) ->
       defaults = @metadata().defaults
-      if scope instanceof Tower.Model.Scope
+      if scope instanceof Tower.ModelScope
         defaults.scope = scope
       else if scope
         defaults.scope = @where(scope)
@@ -176,4 +176,4 @@ Tower.Model.Metadata =
       result  = array.concat(result.sort()).join(', ')
       "#<#{@constructor.toString()}:#{Ember.guidFor(@)} #{result}>"
 
-module.exports = Tower.Model.Metadata
+module.exports = Tower.ModelMetadata

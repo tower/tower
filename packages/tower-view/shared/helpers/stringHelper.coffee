@@ -1,5 +1,5 @@
 # @mixin
-Tower.View.StringHelper =
+Tower.ViewStringHelper =
   # Characters that need to be escaped to HTML entities from user input
   HTML_ESCAPE:
     '&': '&amp;'
@@ -15,12 +15,12 @@ Tower.View.StringHelper =
     text.replace /[\"><&]/g, (_) => @HTML_ESCAPE[_]
 
   t: (string, options) ->
-    Tower.Support.I18n.translate(string, options)
+    Tower.SupportI18n.translate(string, options)
 
   l: (object) ->
-    Tower.Support.I18n.localize(string)
+    Tower.SupportI18n.localize(string)
 
   boolean: (boolean) ->
     if boolean then "yes" else "no"
 
-module.exports = Tower.View.StringHelper
+module.exports = Tower.ViewStringHelper

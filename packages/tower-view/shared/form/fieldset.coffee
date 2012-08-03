@@ -1,4 +1,4 @@
-class Tower.View.Form.Fieldset extends Tower.View.Component
+class Tower.ViewFormFieldset extends Tower.ViewComponent
   constructor: (args, options) ->
     super
     #@label      = @localize("titles", options[:label], nil, (attributes[:locale_options] || {}).merge(:allow_blank => true)) if options[:label].present?
@@ -14,7 +14,7 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
     delete attributes.parentIndex
     delete attributes.label
 
-    @builder     = new Tower.View.Form.Builder([],
+    @builder     = new Tower.ViewFormBuilder([],
       template:     @template
       model:        @model
       attribute:    @attribute
@@ -30,4 +30,4 @@ class Tower.View.Form.Fieldset extends Tower.View.Component
       @tag Tower.View.fieldListTag, class: Tower.View.fieldListClass, =>
         @builder.render(block)
 
-module.exports = Tower.View.Form.Fieldset
+module.exports = Tower.ViewFormFieldset

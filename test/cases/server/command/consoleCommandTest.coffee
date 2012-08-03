@@ -1,6 +1,6 @@
 command = ->
   defaultArgs = ["node", "tower", "console"]
-  (new Tower.Command.Console(defaultArgs.concat(_.args(arguments)))).program
+  (new Tower.CommandConsole(defaultArgs.concat(_.args(arguments)))).program
 
-describe "Tower.Command.Console", ->
+describe "Tower.CommandConsole", ->
   describe "tower console", ->

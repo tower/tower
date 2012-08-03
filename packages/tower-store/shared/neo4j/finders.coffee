@@ -1,5 +1,5 @@
 # @module
-Tower.Store.Neo4j.Finders =
+Tower.StoreNeo4jFinders =
   # @see Tower.Store#find
   find: (criteria, callback) ->
     conditions  = criteria.conditions()
@@ -19,4 +19,4 @@ Tower.Store.Neo4j.Finders =
   # @see Tower.Store#exists
   exists: (criteria, callback) ->
 
-module.exports = Tower.Store.Neo4j.Finders
+module.exports = Tower.StoreNeo4jFinders

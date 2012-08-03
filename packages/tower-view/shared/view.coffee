@@ -1,8 +1,8 @@
-# @include Tower.View.AssetHelper
-# @include Tower.View.ComponentHelper
-# @include Tower.View.HeadHelper
-# @include Tower.View.RenderingHelper
-# @include Tower.View.StringHelper
+# @include Tower.ViewAssetHelper
+# @include Tower.ViewComponentHelper
+# @include Tower.ViewHeadHelper
+# @include Tower.ViewRenderingHelper
+# @include Tower.ViewStringHelper
 # 
 # @todo I think we can remove the view class.
 class Tower.View extends Tower.Class
@@ -93,9 +93,9 @@ class Tower.View extends Tower.Class
     ]
     store: (store) ->
       @_store = store if store
-      @_store ||= new Tower.Store.Memory(name: 'view')
+      @_store ||= new Tower.StoreMemory(name: 'view')
     renderers: {}
-    coffeecupTags: _.map(Tower.modules.coffeecup.tags, (i) -> Tower.Support.String.camelize(i, true))
+    coffeecupTags: _.map(Tower.modules.coffeecup.tags, (i) -> Tower.SupportString.camelize(i, true))
     helper: (object) ->
       _.extend(Tower.View.helpers, object)
 

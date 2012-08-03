@@ -1,4 +1,4 @@
-class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
+class Tower.ModelRelationBelongsTo extends Tower.ModelRelation
   isBelongsTo: true
   
   init: (owner, name, options = {}) ->
@@ -20,15 +20,15 @@ class Tower.Model.Relation.BelongsTo extends Tower.Model.Relation
     #owner.prototype[name] = ->
     #  @relation(name)
 
-Tower.Model.Relation.BelongsTo.CursorMixin = Ember.Mixin.create
+Tower.ModelRelationBelongsToCursorMixin = Ember.Mixin.create
   isBelongsTo: true
   # need to do something here about Reflection
 
   clonePrototype: ->
     clone = @concat()
     clone.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(clone)
-    Tower.Model.Relation.BelongsTo.CursorMixin.apply(clone)
+    Tower.ModelRelationCursorMixin.apply(clone)
+    Tower.ModelRelationBelongsToCursorMixin.apply(clone)
 
   find: ->
     @compile()
@@ -40,13 +40,13 @@ Tower.Model.Relation.BelongsTo.CursorMixin = Ember.Mixin.create
     # @todo shouldn't have to do $in here...
     @where(id: $in: [@owner.get(relation.foreignKey)])
 
-class Tower.Model.Relation.BelongsTo.Cursor extends Tower.Model.Relation.Cursor
+class Tower.ModelRelationBelongsToCursor extends Tower.ModelRelationCursor
   @make: ->
     array = []
     array.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(array)
-    Tower.Model.Relation.BelongsTo.CursorMixin.apply(array)
+    Tower.ModelRelationCursorMixin.apply(array)
+    Tower.ModelRelationBelongsToCursorMixin.apply(array)
 
-  @include Tower.Model.Relation.BelongsTo.CursorMixin
+  @include Tower.ModelRelationBelongsToCursorMixin
 
-module.exports = Tower.Model.Relation.BelongsTo
+module.exports = Tower.ModelRelationBelongsTo

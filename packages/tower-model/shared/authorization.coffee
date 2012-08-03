@@ -1,6 +1,6 @@
-Tower.Model.Authorization =
+Tower.ModelAuthorization =
   ClassMethods:
     # @todo cancan
     accessibleBy: (ability, action = 'index') ->
 
-module.exports = Tower.Model.Authorization
+module.exports = Tower.ModelAuthorization

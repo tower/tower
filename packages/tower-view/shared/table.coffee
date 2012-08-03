@@ -1,4 +1,4 @@
-class Tower.View.Table extends Tower.View.Component
+class Tower.ViewTable extends Tower.ViewComponent
   constructor: (args, options) ->
     super
 

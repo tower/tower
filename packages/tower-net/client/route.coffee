@@ -1,5 +1,5 @@
-Tower.Net.Route.DSL::match = ->
+Tower.NetRouteDSL::match = ->
   @scope ||= {}
-  route = new Tower.Net.Route(@_extractOptions(arguments...))
+  route = new Tower.NetRoute(@_extractOptions(arguments...))
   Tower.router.insertRoute(route)
-  Tower.Net.Route.create(route)
+  Tower.NetRoute.create(route)

@@ -1,1 +1,1 @@
-describe 'Tower.Support.I18n', ->
+describe 'Tower.SupportI18n', ->

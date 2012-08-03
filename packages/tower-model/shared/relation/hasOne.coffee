@@ -1,15 +1,15 @@
-class Tower.Model.Relation.HasOne extends Tower.Model.Relation
+class Tower.ModelRelationHasOne extends Tower.ModelRelation
   isHasOne: true
 
 # @todo deal with only allowing one record per association (either error or override).
-Tower.Model.Relation.HasOne.CursorMixin = Ember.Mixin.create
+Tower.ModelRelationHasOneCursorMixin = Ember.Mixin.create
   isHasOne: true
 
   clonePrototype: ->
     clone = @concat()
     clone.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(clone)
-    Tower.Model.Relation.HasOne.CursorMixin.apply(clone)
+    Tower.ModelRelationCursorMixin.apply(clone)
+    Tower.ModelRelationHasOneCursorMixin.apply(clone)
 
   insert: (callback) ->
     @compile()
@@ -46,13 +46,13 @@ Tower.Model.Relation.HasOne.CursorMixin = Ember.Mixin.create
 
     @where(data)
 
-class Tower.Model.Relation.HasOne.Cursor extends Tower.Model.Relation.Cursor
+class Tower.ModelRelationHasOneCursor extends Tower.ModelRelationCursor
   @make: ->
     array = []
     array.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(array)
-    Tower.Model.Relation.HasOne.CursorMixin.apply(array)
+    Tower.ModelRelationCursorMixin.apply(array)
+    Tower.ModelRelationHasOneCursorMixin.apply(array)
 
-  @include Tower.Model.Relation.HasOne.CursorMixin
+  @include Tower.ModelRelationHasOneCursorMixin
 
-module.exports = Tower.Model.Relation.HasOne
+module.exports = Tower.ModelRelationHasOne

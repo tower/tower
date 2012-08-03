@@ -1,5 +1,5 @@
 # @mixin
-Tower.View.Rendering =
+Tower.ViewRendering =
   render: (options, callback) ->
     if !options.type && options.template && typeof(options.template) == 'string' && !options.inline
       type  = options.template.split('/')
@@ -142,4 +142,4 @@ Tower.View.Rendering =
     throw new Error("Template '#{template}' was not found.") unless result
     result
 
-module.exports = Tower.View.Rendering
+module.exports = Tower.ViewRendering

@@ -1,4 +1,4 @@
-class Tower.View.Form.Builder extends Tower.View.Component
+class Tower.ViewFormBuilder extends Tower.ViewComponent
   constructor: (args, options = {}) ->
     @template       = options.template
     @model          = options.model
@@ -21,7 +21,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
     options                 = @defaultOptions(_.extractOptions(args))
     options.label           ||= args.shift()
 
-    new Tower.View.Form.Fieldset([], options).render(block)
+    new Tower.ViewFormFieldset([], options).render(block)
 
   fields: ->
     args              = _.args(arguments)
@@ -68,7 +68,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
       tabindex:    tabindex
     )
 
-    new Tower.View.Form.Builder(options).render(block)
+    new Tower.ViewFormBuilder(options).render(block)
 
   field: ->
     args          = _.args(arguments)
@@ -97,7 +97,7 @@ class Tower.View.Form.Builder extends Tower.View.Component
       errorHTML:   options.errorHTML || {}
       hintHtml:    options.hintHtml  || {}
 
-    new Tower.View.Form.Field([], _.extend(defaults, options)).render(block)
+    new Tower.ViewFormField([], _.extend(defaults, options)).render(block)
 
   button: ->
     args          = _.args(arguments)

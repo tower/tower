@@ -1,4 +1,4 @@
-class Tower.Generator.ControllerGenerator extends Tower.Generator
+class Tower.GeneratorControllerGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -14,4 +14,4 @@ class Tower.Generator.ControllerGenerator extends Tower.Generator
     #@asset "/app/client/controllers/#{@controller.directory}/#{@model.name}Controller".replace(/\/+/g, "/")
     @generate "mocha:controller"
 
-module.exports = Tower.Generator.ControllerGenerator
+module.exports = Tower.GeneratorControllerGenerator

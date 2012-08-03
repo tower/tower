@@ -1,4 +1,4 @@
-class Tower.Model.Relation extends Tower.Class
+class Tower.ModelRelation extends Tower.Class
   isCollection: false
 
   # Construct a new relation.
@@ -27,7 +27,7 @@ class Tower.Model.Relation extends Tower.Class
   #   otherwise it's `"#{singularTargetName}Count"`.
   # @option options [Boolean] autobuild (false)
   #
-  # @see Tower.Model.Relations.ClassMethods#hasMany
+  # @see Tower.ModelRelations.#hasMany
   init: (owner, name, options = {}) ->
     @_super()
 
@@ -42,7 +42,7 @@ class Tower.Model.Relation extends Tower.Class
     owner               = @owner
     name                = @name
     className           = owner.className()
-    # @type               = Tower.namespaced(options.type || Tower.Support.String.camelize(Tower.Support.String.singularize(name)))
+    # @type               = Tower.namespaced(options.type || Tower.SupportString.camelize(Tower.SupportString.singularize(name)))
     @type               = Tower.namespaced(options.type || _.camelize(_.singularize(name)))
     @ownerType          = Tower.namespaced(className)
     @dependent        ||= false
@@ -71,7 +71,7 @@ class Tower.Model.Relation extends Tower.Class
       if @as
         @foreignKey = "#{@as}Id"
       else
-        if @className() == 'BelongsTo'
+        if @className().match 'BelongsTo'
           @foreignKey = "#{@singularTargetName}Id"
         else
           @foreignKey = "#{@singularName}Id"
@@ -117,7 +117,7 @@ class Tower.Model.Relation extends Tower.Class
 
     if isHasMany
       # you can "set" collections directly, but whenever you "get" them
-      # you're going to get a Tower.Model.Scope. To get the actual records call `.all`
+      # you're going to get a Tower.ModelScope. To get the actual records call `.all`
       object[name] = Ember.computed((key, value) ->
         if arguments.length == 2
           @_setHasManyAssociation(key, value, association)
@@ -125,7 +125,7 @@ class Tower.Model.Relation extends Tower.Class
           @_getHasManyAssociation(name)
       ).property('data').cacheable()
     else
-      if @className() == 'BelongsTo'
+      if @className().match 'BelongsTo'
         object[name] = Ember.computed((key, value) ->
           if arguments.length is 2
             @_setBelongsToAssociation(key, value, association)
@@ -142,9 +142,9 @@ class Tower.Model.Relation extends Tower.Class
 
     @owner.reopen(object)
 
-  # @return [Tower.Model.Relation.Scope]
+  # @return [Tower.ModelRelationScope]
   scoped: (record) ->
-    cursor = @constructor.Cursor.make()
+    cursor = Tower[@constructor.className() + 'Cursor'].make()
     #cursor.make(model: @klass(), owner: record, relation: @)
     attributes = owner: record, relation: @
     polymorphicBelongsTo = @polymorphic && @className().match(/BelongsTo/)
@@ -160,7 +160,7 @@ class Tower.Model.Relation extends Tower.Class
         cursor.store = cursor.model.store()
     else
       cursor.where(type: klass.className()) if klass && klass.shouldIncludeTypeInScope()
-    new Tower.Model.Scope(cursor)
+    new Tower.ModelScope(cursor)
 
   # @return [Function]
   targetKlass: ->
@@ -174,7 +174,7 @@ class Tower.Model.Relation extends Tower.Class
 
   # Relation on the associated object that maps back to this relation.
   #
-  # @return [Tower.Model.Relation]
+  # @return [Tower.ModelRelation]
   inverse: (type) ->
     return @_inverse if @_inverse
 
@@ -195,7 +195,7 @@ class Tower.Model.Relation extends Tower.Class
 
   _setForeignType: ->
 
-Tower.Model.Relation.CursorMixin = Ember.Mixin.create
+Tower.ModelRelationCursorMixin = Ember.Mixin.create
   isConstructable: ->
     !!!@relation.polymorphic
 
@@ -218,7 +218,7 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
   clonePrototype: ->
     clone = @concat()
     clone.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(clone)
+    Tower.ModelRelationCursorMixin.apply(clone)
 
   load: (records) ->
     owner     = @owner
@@ -265,17 +265,17 @@ Tower.Model.Relation.CursorMixin = Ember.Mixin.create
   removed: ->
     @_removed ||= []
 
-class Tower.Model.Relation.Cursor extends Tower.Model.Cursor
+class Tower.ModelRelationCursor extends Tower.ModelCursor
   @make: ->
     array = []
     array.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(array)
+    Tower.ModelRelationCursorMixin.apply(array)
 
-  @include Tower.Model.Relation.CursorMixin
+  @include Tower.ModelRelationCursorMixin
 
 require './relation/belongsTo'
 require './relation/hasMany'
 require './relation/hasManyThrough'
 require './relation/hasOne'
 
-module.exports = Tower.Model.Relation
+module.exports = Tower.ModelRelation

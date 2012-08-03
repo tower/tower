@@ -1,4 +1,4 @@
-# This should somehow integrate with the future {Tower.Store.Transaction} class,
+# This should somehow integrate with the future {Tower.StoreTransaction} class,
 # to bundle up modifications.
 # 
 # This doesn't need to be used on the client.  The client just needs a set of cursors.
@@ -6,11 +6,11 @@
 # 
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
-class Tower.Net.Connection extends Tower.Net.Connection
+class Tower.NetConnection extends Tower.NetConnection
   @connect: (socket, callback) ->
     socket.on 'connect', =>
       id = @getId(socket)
-      connection = Tower.Net.Connection.create(socket: socket).connect()
+      connection = Tower.NetConnection.create(socket: socket).connect()
       connection.id = id
       Tower.connection = connection
       Tower.connections[id] = connection
@@ -25,7 +25,7 @@ class Tower.Net.Connection extends Tower.Net.Connection
   connect: ->
     # tmp solution to get data syncing working, then will refactor/robustify
     @on 'sync', (data) =>
-      @serverDidChange(data) unless Tower.Net.Connection.transport.requesting # tmp hack to prevent client data from appearing twice (only on the one who performed action)
+      @serverDidChange(data) unless Tower.NetConnection.transport.requesting # tmp hack to prevent client data from appearing twice (only on the one who performed action)
 
     @registerHandlers()
 

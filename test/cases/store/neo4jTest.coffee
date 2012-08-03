@@ -1,12 +1,12 @@
 ###
-describe 'Tower.Store.Neo4j', ->
+describe 'Tower.StoreNeo4j', ->
   class App.NeoModel extends Tower.Model
-    @store Tower.Store.Neo4j
+    @store Tower.StoreNeo4j
     
     @field 'firstName'
     
   before (done) =>
-    Tower.Store.Neo4j.initialize(done)
+    Tower.StoreNeo4j.initialize(done)
   
   test 'create node', (done) ->
     App.NeoModel.create firstName: 'A Node!', (error, record) =>

@@ -1,5 +1,7 @@
 Tower.Support = {}
 
+Tower._ = global._
+
 require './shared/array'
 require './shared/number'
 require './shared/object'
@@ -7,14 +9,14 @@ require './shared/regexp'
 require './shared/string'
 require './shared/geo'
 
-_.mixin Tower.Support.Array
-_.mixin Tower.Support.Number
-_.mixin Tower.Support.Object
-_.mixin Tower.Support.RegExp
-_.mixin Tower.Support.String
+Tower._.mixin Tower.SupportArray
+Tower._.mixin Tower.SupportNumber
+Tower._.mixin Tower.SupportObject
+Tower._.mixin Tower.SupportRegExp
+Tower._.mixin Tower.SupportString
 
 # hack
-try _.string.isBlank = Tower.Support.Object
+try _.string.isBlank = Tower.SupportObject
 
 require './shared/callbacks'
 require './shared/shared'

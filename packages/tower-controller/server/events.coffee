@@ -1,4 +1,4 @@
-Tower.Controller.Events =
+Tower.ControllerEvents =
   ClassMethods:
     addEventHandler: (name, handler, options) ->
       @_addSocketEventHandler name, handler, options
@@ -16,7 +16,7 @@ Tower.Controller.Events =
     addSocketEventHandler: (name, handler, options) ->
       controllerName = @metadata().name
 
-      Tower.Net.Connection.addHandler name, options, (connection) =>
+      Tower.NetConnection.addHandler name, options, (connection) =>
         connection.get(controllerName)[name]
       #unless @io
       #  @io = Tower.Application.instance().io.of('/' + @socketNamespace()).on 'connection', (socket) =>
@@ -36,4 +36,4 @@ Tower.Controller.Events =
       else
         handler.call controller, event
 
-module.exports = Tower.Controller.Events
+module.exports = Tower.ControllerEvents

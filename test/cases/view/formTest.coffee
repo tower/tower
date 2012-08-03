@@ -1,7 +1,7 @@
 view = null
 user = null
 
-describe "Tower.View.Form", ->
+describe "Tower.ViewForm", ->
   beforeEach ->
     view = Tower.View.create()
   

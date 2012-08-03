@@ -1,3 +1,3 @@
-Tower.Support.Geo = Tower.modules.geo
+Tower.SupportGeo = Tower.modules.geo
 
-module.exports = Tower.Support.Geo
+module.exports = Tower.SupportGeo

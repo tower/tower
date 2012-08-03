@@ -1,5 +1,5 @@
 # @todo needs lots of refactoring
-class Tower.Model.Attribute
+class Tower.ModelAttribute
   # @option options [Boolean|String|Function] set If `set` is a boolean, it will look for a method
   #   named `"set#{field.name}"` on the prototype.  If it's a string, it will call that method on the prototype.
   #   If it's a function, it will call that function as if it were on the prototype.
@@ -48,7 +48,7 @@ class Tower.Model.Attribute
     name        = @name
     type        = @type
 
-    serializer  = Tower.Store.Serializer[type]
+    serializer  = Tower['StoreSerializer' +type]
 
     @get        = options.get || (serializer.from if serializer)
 
@@ -106,7 +106,7 @@ class Tower.Model.Attribute
                 relation.klass().where(foreignKey, cid).all().forEach (item) ->
                   item.set(foreignKey, value)
       
-        # probably should put this into Tower.Model.Data:
+        # probably should put this into Tower.ModelData:
         Tower.cursorNotification("#{@constructor.className()}.#{key}")
         value
       else
@@ -132,7 +132,7 @@ class Tower.Model.Attribute
   _addValidations: (options) ->
     validations           = {}
 
-    for key, normalizedKey of Tower.Model.Validator.keys
+    for key, normalizedKey of Tower.ModelValidator.keys
       validations[normalizedKey] = options[key] if options.hasOwnProperty(key)
 
     @owner.validates @name, validations if _.isPresent(validations)
@@ -190,4 +190,4 @@ class Tower.Model.Attribute
   # @todo for the pure javascript version we're going to need to have this method.
   attach: (owner) ->
 
-module.exports = Tower.Model.Attribute
+module.exports = Tower.ModelAttribute

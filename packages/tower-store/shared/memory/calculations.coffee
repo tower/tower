@@ -1,4 +1,4 @@
-Tower.Store.Memory.Calculations =
+Tower.StoreMemoryCalculations =
   average: (conditions, options, callback) ->
 
   sum: (conditions, options, callback) ->
@@ -7,4 +7,4 @@ Tower.Store.Memory.Calculations =
 
   max: (conditions, options, callback) ->
 
-module.exports = Tower.Store.Memory.Calculations
+module.exports = Tower.StoreMemoryCalculations

@@ -4,7 +4,7 @@
 # perhaps even one global batch method that routes it to sub controllers:
 # /batch
 # [{method: "PUT", to: "/posts", id: "10", data: {"title": "A Post"}}]
-class Tower.Store.Batch extends Tower.Class
+class Tower.StoreBatch extends Tower.Class
   # By default the store will persist the data.
   #
   # If you set this to false, then you have full control
@@ -78,7 +78,7 @@ class Tower.Store.Batch extends Tower.Class
     Ember.get(Ember.get(@, 'buckets'), kind)
 
   getType: (recordOrCursor) ->
-    if recordOrCursor instanceof Tower.Model.Cursor
+    if recordOrCursor instanceof Tower.ModelCursor
       recordOrCursor.getType()
     else
       recordOrCursor.constructor
@@ -126,4 +126,4 @@ class Tower.Store.Batch extends Tower.Class
 
     store.commit(commitDetails, callback)
 
-module.exports = Tower.Store.Batch
+module.exports = Tower.StoreBatch

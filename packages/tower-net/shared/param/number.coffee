@@ -1,4 +1,4 @@
-class Tower.Net.Param.Number extends Tower.Net.Param
+class Tower.NetParamNumber extends Tower.NetParam
   parse: (value) ->
     values  = []
     array   = value.split(/[,\|]/)
@@ -23,4 +23,4 @@ class Tower.Net.Param.Number extends Tower.Net.Param
   parseValue: (value, operators) ->
     super(parseFloat(value), operators)
 
-module.exports = Tower.Net.Param.Number
+module.exports = Tower.NetParamNumber

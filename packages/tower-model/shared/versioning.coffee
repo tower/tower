@@ -1,6 +1,6 @@
 # @todo Inspired from mongoid::versioning, http://railscasts.com/episodes/255-undo-with-paper-trail?view=asciicast
 # @todo undo/redo example
-Tower.Model.Versioning =
+Tower.ModelVersioning =
   ClassMethods:
     included: ->
       # Current version of the record

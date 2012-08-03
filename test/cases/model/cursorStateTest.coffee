@@ -1,5 +1,5 @@
 
-describe "Tower.Model.Cursor states", ->
+describe "Tower.ModelCursor states", ->
   describe "exists", ->
     test 'default', ->
       cursor = App.User.scoped().cursor

@@ -1,4 +1,4 @@
-Tower.Net.Agent::request = (method, path, options, callback) ->
+Tower.NetAgent::request = (method, path, options, callback) ->
   if typeof options == "function"
     callback      = options
     options       = {}

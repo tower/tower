@@ -1,8 +1,8 @@
 command = ->
   defaultArgs = ["node", "tower", "new", "blog"]
-  (new Tower.Command.New(defaultArgs.concat(_.args(arguments)))).program
+  (new Tower.CommandNew(defaultArgs.concat(_.args(arguments)))).program
 
-describe "Tower.Command.New", ->
+describe "Tower.CommandNew", ->
   describe "tower new blog", ->
     test "default", ->
       assert.equal command().namespace, "App"

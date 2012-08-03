@@ -2,7 +2,7 @@
 # 
 # @todo create ability limit sortable properties, in case 
 # you don't want to allow the user to sort specific properties
-class Tower.Net.Param.Order extends Tower.Net.Param
+class Tower.NetParamOrder extends Tower.NetParam
   parse: (value) ->
     values  = []
     array   = value.toString().split(/\s*,/)
@@ -20,4 +20,4 @@ class Tower.Net.Param.Order extends Tower.Net.Param
 
     values
 
-module.exports = Tower.Net.Param.Order
+module.exports = Tower.NetParamOrder

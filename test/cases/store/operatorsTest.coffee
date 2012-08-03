@@ -7,8 +7,8 @@ class App.OperatorsTest extends Tower.Model
   @field "arrayString", type: ["String"], default: []
   @field "arrayObject", type: ["Object"], default: []
 
-describe "Tower.Store.Operators", ->
-  o = Tower.Store.Operators
+describe "Tower.StoreOperators", ->
+  o = Tower.StoreOperators
   r = null
   t = null
   

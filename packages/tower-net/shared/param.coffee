@@ -1,7 +1,7 @@
 # Defines how to parse a specific URL query parameter into a database criteria.
 # 
 # @todo see if these Param classes can be refactored to a set of functions, classes/OOP may not be necessary.
-class Tower.Net.Param
+class Tower.NetParam
   @perPage:       20
   @sortDirection: 'ASC'
   @sortKey:       'sort'                 # or 'order', etc.
@@ -19,10 +19,10 @@ class Tower.Net.Param
       options.type = field.type
 
     options.type ||= 'String'
-    klass = Tower.Net.Param[options.type]
+    klass = Tower['NetParam' + options.type]
     unless klass # @todo
       options.type = 'String'
-      klass = Tower.Net.Param.String
+      klass = Tower.NetParamString
     new klass(key, options)
 
   constructor: (key, options = {}) ->
@@ -42,7 +42,7 @@ class Tower.Net.Param
 
   toCursor: (value) ->
     nodes     = @parse(value)
-    criteria  = Tower.Model.Cursor.create()
+    criteria  = Tower.ModelCursor.create()
     criteria.make()
 
     for set in nodes
@@ -72,4 +72,4 @@ require './param/number'
 require './param/order'
 require './param/string'
 
-module.exports = Tower.Net.Param
+module.exports = Tower.NetParam

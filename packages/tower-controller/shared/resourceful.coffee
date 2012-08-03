@@ -4,7 +4,7 @@
 # this on the client is to demo what the server can do from the client
 # (think in-browser console or something).  In that case we need to figure
 # out how to include specific files in the browser manually.
-Tower.Controller.Resourceful =
+Tower.ControllerResourceful =
   ClassMethods:
     # Set information about resource/model for this controller.
     #
@@ -23,7 +23,7 @@ Tower.Controller.Resourceful =
       if typeof options == 'string'
         options                 =
           name: options
-          type: Tower.Support.String.camelize(options)
+          type: Tower.SupportString.camelize(options)
           collectionName: _.pluralize(options)
 
       metadata.resourceName     = options.name if options.name
@@ -56,7 +56,7 @@ Tower.Controller.Resourceful =
       options ||= {}
 
       options.key = key
-      options.type ||= Tower.Support.String.camelize(options.key)
+      options.type ||= Tower.SupportString.camelize(options.key)
 
       belongsTo.push(options)
 
@@ -77,7 +77,7 @@ Tower.Controller.Resourceful =
 
       @
 
-  # Helper method to give you the {Tower.Model.Scope} and a new record.
+  # Helper method to give you the {Tower.ModelScope} and a new record.
   #
   # @param [Function] callback
   #
@@ -91,8 +91,8 @@ Tower.Controller.Resourceful =
     options = records: (@resource || @collection)
 
     if callback && callback.length > 1
-      successResponder = new Tower.Controller.Responder(@, options)
-      failureResponder = new Tower.Controller.Responder(@, options)
+      successResponder = new Tower.ControllerResponder(@, options)
+      failureResponder = new Tower.ControllerResponder(@, options)
 
       callback.call @, successResponder, failureResponder
 
@@ -101,7 +101,7 @@ Tower.Controller.Resourceful =
       else
         failureResponder[format].call @, error
     else
-      Tower.Controller.Responder.respond(@, options, callback)
+      Tower.ControllerResponder.respond(@, options, callback)
 
   # Returns a new record for the scope.
   #
@@ -230,4 +230,4 @@ Tower.Controller.Resourceful =
 
     undefined
 
-module.exports = Tower.Controller.Resourceful
+module.exports = Tower.ControllerResourceful

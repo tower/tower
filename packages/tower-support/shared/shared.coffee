@@ -37,7 +37,7 @@ _.extend Tower,
   connections: {}
 
   createConnection: (socket) ->
-    connection = Tower.Net.Connection.create().setProperties(socket: socket)
+    connection = Tower.NetConnection.create().setProperties(socket: socket)
     @connections[connection.toString()] = connection
 
   toMixin: ->
@@ -182,9 +182,9 @@ _.extend Tower,
     @metadata[name] ||= {}
 
   # @example
-  #     Tower.hook "Tower.Store.Mongodb.load", after: "config.locales"
+  #     Tower.hook "Tower.StoreMongodb.load", after: "config.locales"
   #     Tower.callback "initialize", name: "addRoutingPaths", after: "config.locales"
-  # Uses Tower.Support.Callback internally
+  # Uses Tower.SupportCallback internally
   callback: ->
     Tower.Application.callback arguments...
 
@@ -212,9 +212,9 @@ _.extend Tower,
   #    options       = {}
   #  options       ||= {}
   #  url             = path
-  #  location        = new Tower.Net.Url(url)
-  #  request         = new Tower.Net.Request(url: url, location: location, method: method)
-  #  response        = new Tower.Net.Response(url: url, location: location, method: method)
+  #  location        = new Tower.NetUrl(url)
+  #  request         = new Tower.NetRequest(url: url, location: location, method: method)
+  #  response        = new Tower.NetResponse(url: url, location: location, method: method)
   #  request.query   = location.params
   #  Tower.Application.instance().handle request, response, ->
   #    callback.call @, @response
@@ -223,18 +223,18 @@ _.extend Tower,
     throw new Error(Tower.t(arguments...))
 
   t: ->
-    Tower.Support.I18n.translate(arguments...)
+    Tower.SupportI18n.translate(arguments...)
 
   l: ->
-    Tower.Support.I18n.localize(arguments...)
+    Tower.SupportI18n.localize(arguments...)
 
   stringify: ->
     string = Tower._.args(arguments).join("_")
     switch Tower.case
       when "snakecase"
-        Tower.Support.String.underscore(string)
+        Tower.SupportString.underscore(string)
       else
-        Tower.Support.String.camelize(string)
+        Tower.SupportString.camelize(string)
 
   namespace:  ->
     Tower.Application.instance().toString()#.constructor.className()

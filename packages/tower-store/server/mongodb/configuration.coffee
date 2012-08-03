@@ -1,4 +1,4 @@
-Tower.Store.Mongodb.Configuration =
+Tower.StoreMongodbConfiguration =
   ClassMethods:
     supports:
       embed: true
@@ -27,7 +27,7 @@ Tower.Store.Mongodb.Configuration =
       env = @config
 
       if env.url
-        url           = new Tower.Net.Url(env.url)
+        url           = new Tower.NetUrl(env.url)
         env.name      = url.segments[0]
         env.host      = url.hostname
         env.port      = url.port
@@ -39,4 +39,4 @@ Tower.Store.Mongodb.Configuration =
     lib: ->
       require 'mongodb'
 
-module.exports = Tower.Store.Mongodb.Configuration
+module.exports = Tower.StoreMongodbConfiguration

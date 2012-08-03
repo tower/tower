@@ -1,5 +1,5 @@
 # @mixin
-Tower.View.RenderingHelper =
+Tower.ViewRenderingHelper =
   partial: (path, options, callback) ->
     try
       if typeof options == "function"
@@ -16,7 +16,7 @@ Tower.View.RenderingHelper =
       template    = @_readTemplate(path, prefixes, options.type || Tower.View.engine)
       template    = @renderWithEngine(String(template))
       if options.collection
-        name      = options.as || Tower.Support.String.camelize(options.collection[0].constructor.name, true)
+        name      = options.as || Tower.SupportString.camelize(options.collection[0].constructor.name, true)
         tmpl      = eval "(function(data) { with(data) { this.#{name} = #{name}; #{String(template)} } })"
         for item in options.collection
           locals[name] = item

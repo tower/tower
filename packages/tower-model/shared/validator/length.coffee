@@ -1,4 +1,4 @@
-class Tower.Model.Validator.Length extends Tower.Model.Validator
+class Tower.ModelValidatorLength extends Tower.ModelValidator
   constructor: (name, value, attributes, options) ->
     super
 
@@ -97,4 +97,4 @@ class Tower.Model.Validator.Length extends Tower.Model.Validator
       )
     @success(callback)
 
-module.exports = Tower.Model.Validator.Length
+module.exports = Tower.ModelValidatorLength

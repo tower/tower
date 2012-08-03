@@ -1,6 +1,6 @@
 # This should eventually be _the_ interface to sending and receiving messages
 # from client to server.
-class Tower.Net.Agent
+class Tower.NetAgent
   constructor: (attributes = {}) ->
     _.extend @, attributes
 
@@ -53,4 +53,4 @@ class Tower.Net.Agent
     else
       newRequest
 
-module.exports = Tower.Net.Agent
+module.exports = Tower.NetAgent

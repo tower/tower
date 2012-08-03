@@ -1,4 +1,4 @@
-class Tower.Net.Param.Date extends Tower.Net.Param
+class Tower.NetParamDate extends Tower.NetParam
   parse: (value) ->
     values  = []
     array   = value.toString().split(/[\s,\+]/)
@@ -20,4 +20,4 @@ class Tower.Net.Param.Date extends Tower.Net.Param
   parseValue: (value, operators) ->
     super(_.toDate(value), operators)
 
-module.exports = Tower.Net.Param.Date
+module.exports = Tower.NetParamDate

@@ -1,4 +1,4 @@
-class Tower.View.Form.Field extends Tower.View.Component
+class Tower.ViewFormField extends Tower.ViewComponent
   addClass: (string, args) ->
     result = if string then string.split(/\s+/g) else []
     for arg in args
@@ -7,15 +7,15 @@ class Tower.View.Form.Field extends Tower.View.Component
     result.join(" ")
 
   toId: (options = {}) ->
-    result = if typeof(@model) == 'object' then Tower.Support.String.parameterize(@model.constructor.className()) else @model
+    result = if typeof(@model) == 'object' then Tower.SupportString.parameterize(@model.constructor.className()) else @model
     result += "-#{options.parentIndex}" if options.parentIndex
-    result += "-#{Tower.Support.String.parameterize(@attribute)}"
+    result += "-#{Tower.SupportString.parameterize(@attribute)}"
     result += "-#{options.type || "field"}"
     result += "-#{@index}" if @index?
     result
 
   toParam: (options = {}) ->
-    result = if typeof(@model) == 'object' then Tower.Support.String.camelize(@model.constructor.className(), true) else @model
+    result = if typeof(@model) == 'object' then Tower.SupportString.camelize(@model.constructor.className(), true) else @model
     result += "[#{options.parentIndex}]" if options.parentIndex
     result += "[#{@attribute}]"
     result += "[#{@index}]" if @index?
@@ -31,9 +31,9 @@ class Tower.View.Form.Field extends Tower.View.Component
 
     # input type
 
-    field           = @model.constructor.fields()[@attribute] if typeof(@model) == 'object' # || new Tower.Model.Attribute
+    field           = @model.constructor.fields()[@attribute] if typeof(@model) == 'object' # || new Tower.ModelAttribute
 
-    options.as    ||= if field then Tower.Support.String.camelize(field.type, true) else "string"
+    options.as    ||= if field then Tower.SupportString.camelize(field.type, true) else "string"
     @inputType      = inputType = options.as
     @required       = !!(field && field.required == true)
 
@@ -77,7 +77,7 @@ class Tower.View.Form.Field extends Tower.View.Component
 
     @validate       = options.validate != false
 
-    classes         = [inputType, Tower.Support.String.parameterize(@attribute), @inputHTML.class]
+    classes         = [inputType, Tower.SupportString.parameterize(@attribute), @inputHTML.class]
 
     unless ["submit", "fieldset"].indexOf(inputType) > -1
       classes.push if field && field.required then Tower.View.requiredClass else Tower.View.optionalClass

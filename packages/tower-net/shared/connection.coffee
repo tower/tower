@@ -1,4 +1,4 @@
-# This should somehow integrate with the future {Tower.Store.Transaction} class,
+# This should somehow integrate with the future {Tower.StoreTransaction} class,
 # to bundle up modifications.
 # 
 # This doesn't need to be used on the client.  The client just needs a set of cursors.
@@ -6,7 +6,7 @@
 # 
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
-class Tower.Net.Connection extends Tower.Class
+class Tower.NetConnection extends Tower.Class
   # still figuring out how to organize this stuff...
   @transport:   undefined
   @controllers: []
@@ -15,9 +15,9 @@ class Tower.Net.Connection extends Tower.Class
   # Try socket.io, then sockjs
   @initialize: ->
     if Tower.modules.socketio
-      @reopenClass Tower.Net.Connection.Socketio
+      @reopenClass Tower.NetConnectionSocketio
     else
-      @reopenClass Tower.Net.Connection.Sockjs
+      @reopenClass Tower.NetConnectionSockjs
 
   # @addHandler '/posts/something'
   @addHandler: (name, handler) ->
@@ -52,4 +52,4 @@ class Tower.Net.Connection extends Tower.Class
   on: (eventType, handler) ->
     @constructor.registerHandler(@socket, eventType, handler)
 
-module.exports = Tower.Net.Connection
+module.exports = Tower.NetConnection

@@ -1,4 +1,4 @@
-class Tower.Net.Param.Geo extends Tower.Net.Param
+class Tower.NetParamGeo extends Tower.NetParam
   parse: (value) ->
 
-module.exports = Tower.Net.Param.Geo
+module.exports = Tower.NetParamGeo

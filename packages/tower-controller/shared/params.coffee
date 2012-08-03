@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Params =
+Tower.ControllerParams =
   ClassMethods:
     # Define a parameter that should be parsed into cursor for a model query.
     #
@@ -11,10 +11,10 @@ Tower.Controller.Params =
     # @param [Object] options
     # @option options [String] type
     #
-    # @return [Tower.Net.Param]
+    # @return [Tower.NetParam]
     param: (key, options = {}) ->
       options.resourceType = @metadata().resourceType
-      @params()[key] = Tower.Net.Param.create(key, options)
+      @params()[key] = Tower.NetParam.create(key, options)
 
     # Return all params, or define multiple params at once.
     #
@@ -42,11 +42,11 @@ Tower.Controller.Params =
     #
     # @note The cursor is memoized.
     #
-    # @return [Tower.Model.Cursor]
+    # @return [Tower.ModelCursor]
     cursor: ->
       return @_cursor if @_cursor
 
-      cursor = Tower.Model.Cursor.create()
+      cursor = Tower.ModelCursor.create()
       cursor.make()
       
       if @params.conditions # @request.method.toUpperCase() == 'POST'
@@ -101,4 +101,4 @@ Tower.Controller.Params =
 
       cursor
 
-module.exports = Tower.Controller.Params
+module.exports = Tower.ControllerParams

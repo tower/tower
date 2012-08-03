@@ -1,9 +1,9 @@
 param = null
 
-describe 'Tower.Net.Param', ->
+describe 'Tower.NetParam', ->
   describe 'String', ->
     beforeEach ->
-      param = Tower.Net.Param.create("title", type: "String")
+      param = Tower.NetParam.create("title", type: "String")
     
     test 'match string', ->
       cursor  = param.toCursor("Hello+World")
@@ -23,7 +23,7 @@ describe 'Tower.Net.Param', ->
   
   describe 'Array', ->
     beforeEach ->
-      param = Tower.Net.Param.create("tags", type: "Array")
+      param = Tower.NetParam.create("tags", type: "Array")
     
     test '$allIn', ->
       cursor  = param.toCursor("[ruby,javascript]")
@@ -56,7 +56,7 @@ describe 'Tower.Net.Param', ->
   describe 'Date', ->
     param = null
     beforeEach ->
-      param = Tower.Net.Param.create("createdAt", type: "Date")
+      param = Tower.NetParam.create("createdAt", type: "Date")
 
     test 'exact date', ->
       cursor  = param.toCursor("12-25-2012")
@@ -87,7 +87,7 @@ describe 'Tower.Net.Param', ->
     param = null
 
     beforeEach ->
-      param = Tower.Net.Param.create("likeCount", type: "Number")
+      param = Tower.NetParam.create("likeCount", type: "Number")
 
     test 'exact number `12`', ->
       cursor  = param.toCursor("12")
@@ -153,7 +153,7 @@ describe 'Tower.Net.Param', ->
     param = null
 
     beforeEach ->
-      param = Tower.Net.Param.create("sort", type: "Order")
+      param = Tower.NetParam.create("sort", type: "Order")
 
     test 'ascending (default)', ->
       values = param.parse('createdAt')

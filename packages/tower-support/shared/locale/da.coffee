@@ -1,4 +1,4 @@
-Tower.Support.I18n.load module.exports =
+Tower.SupportI18n.load module.exports =
   date:
     formats:
       standard: "%Y-%m-%d"

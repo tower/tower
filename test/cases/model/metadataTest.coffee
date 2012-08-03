@@ -1,6 +1,6 @@
 user = null
 
-describe "Tower.Model.Metadata", ->
+describe "Tower.ModelMetadata", ->
   test '.name', ->
     assert.equal App.User.metadata().name, "user"
     

@@ -1,4 +1,4 @@
-describe "Tower.Dispatch.Route.DSL", ->
+describe "Tower.DispatchRouteDSL", ->
   describe "route", ->
     it "should match routes with keys", ->
       route = new Tower.Route(path: "/users/:id/:tag")
@@ -70,7 +70,7 @@ describe "Tower.Dispatch.Route.DSL", ->
       assert.deepEqual route.defaults, {flow: "signup"}
     
     it "should be found in the router", ->
-      router      = Tower.Middleware.Router
+      router      = Tower.MiddlewareRouter
       request     = method: "get", url: "http://www.local.host:3000/login", header: ->
       
       controller  = router.find request, {}, (controller) ->
@@ -254,7 +254,7 @@ describe "Tower.Dispatch.Route.DSL", ->
       assert.deepEqual route.defaults, {flow: "signup"}
     
     it "should be found in the router", ->
-      router      = Tower.Middleware.Router
+      router      = Tower.MiddlewareRouter
       request     = method: "get", url: "http://www.local.host:3000/login", header: ->
       
       controller  = router.find request, {}, (controller) ->

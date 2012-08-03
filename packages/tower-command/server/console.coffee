@@ -1,4 +1,4 @@
-class Tower.Command.Console
+class Tower.CommandConsole
   constructor: (argv) ->
     @program = program = require('commander')
 
@@ -41,7 +41,7 @@ class Tower.Command.Console
       client[Tower.namespace()] = app
       client._r = (name) ->
         (error, value) ->
-          #args = Tower.Support.Array.args(arguments)
+          #args = Tower.SupportArray.args(arguments)
           #error = args.shift()
           if error
             console.log(error)
@@ -200,4 +200,4 @@ class Tower.Command.Console
     repl.prompt()
 
 
-module.exports = Tower.Command.Console
+module.exports = Tower.CommandConsole

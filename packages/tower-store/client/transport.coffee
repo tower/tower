@@ -5,7 +5,7 @@
 # but that's too abstract for my head right now.
 # 
 # For now, the default implementation is blank, and if you want to use Ajax
-# then set `Tower.Net.Connection.include(Tower.Store.Ajax.Transport)`
-Tower.Store.Transport = {}
+# then set `Tower.NetConnection.include(Tower.StoreAjaxTransport)`
+Tower.StoreTransport = {}
 
 require './transport/ajax'

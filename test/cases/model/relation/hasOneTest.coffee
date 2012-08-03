@@ -1,4 +1,4 @@
-describe "Tower.Model.Relation.HasOne", ->
+describe "Tower.ModelRelationHasOne", ->
   user    = null
   address = null
 

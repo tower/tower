@@ -1,4 +1,4 @@
-class Tower.Generator.ScaffoldGenerator extends Tower.Generator
+class Tower.GeneratorScaffoldGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -8,4 +8,4 @@ class Tower.Generator.ScaffoldGenerator extends Tower.Generator
     #@generate "helper"
     @generate "assets"
 
-module.exports = Tower.Generator.ScaffoldGenerator
+module.exports = Tower.GeneratorScaffoldGenerator

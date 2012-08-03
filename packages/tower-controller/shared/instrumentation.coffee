@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Instrumentation =
+Tower.ControllerInstrumentation =
   InstanceMethods:
     # Called when the route for this controller is found.
     call: (request, response, next) ->
@@ -60,4 +60,4 @@ Tower.Controller.Instrumentation =
     metadata: ->
       @constructor.metadata()
 
-module.exports = Tower.Controller.Instrumentation
+module.exports = Tower.ControllerInstrumentation

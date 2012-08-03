@@ -13,7 +13,7 @@ class App.DataItemTest extends Tower.Model
   
   @belongsTo "dataTest"
 
-describe "Tower.Model.Data", ->
+describe "Tower.ModelData", ->
   describe 'data', ->
     beforeEach ->
       record  = App.DataTest.build()
@@ -191,7 +191,7 @@ describe "Tower.Model.Data", ->
       record = new App.DataTest
       
     test 'initialize', ->
-      assert.ok record.get('data') instanceof Tower.Model.Data
+      assert.ok record.get('data') instanceof Tower.ModelData
       
   describe 'persistent record', ->
     beforeEach (done) ->

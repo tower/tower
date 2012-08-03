@@ -1,7 +1,6 @@
-attr        = Tower.Model.Attribute
-Serializer  = Tower.Store.Serializer
+attr        = Tower.ModelAttribute
 
-describe "Tower.Model.Fields", ->
+describe "Tower.ModelFields", ->
   describe 'class', ->
     test 'type: "Id"', ->
       field = App.BaseModel.fields().id
@@ -50,75 +49,75 @@ describe "Tower.Model.Fields", ->
     
   describe 'serialization', ->
     test 'string "A string" == "A string"', ->
-      assert.equal Serializer.String.to("A string"), "A string"
-      assert.equal Serializer.String.from("A string"), "A string"
+      assert.equal Tower.StoreSerializerString.to("A string"), "A string"
+      assert.equal Tower.StoreSerializerString.from("A string"), "A string"
 
     test 'string null, undefined == null', ->
-      assert.equal Serializer.String.to(undefined), null
-      assert.equal Serializer.String.from(undefined), null
-      assert.equal Serializer.String.to(null), null
-      assert.equal Serializer.String.from(null), null
+      assert.equal Tower.StoreSerializerString.to(undefined), null
+      assert.equal Tower.StoreSerializerString.from(undefined), null
+      assert.equal Tower.StoreSerializerString.to(null), null
+      assert.equal Tower.StoreSerializerString.from(null), null
     
     #test 'date', ->
-    #  assert.equal Serializer.Date.to("Jan 10, 2010").getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
-    #  assert.equal Serializer.Date.from(new Date("Sun, 10 Jan 2010 08:00:00 GMT")).getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
+    #  assert.equal Tower.StoreSerializerDate.to("Jan 10, 2010").getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
+    #  assert.equal Tower.StoreSerializerDate.from(new Date("Sun, 10 Jan 2010 08:00:00 GMT")).getTime(), new Date("Sun, 10 Jan 2010 08:00:00 GMT").getTime()
     
     test 'boolean == true', ->
-      assert.equal Serializer.Boolean.to(true), true
-      assert.equal Serializer.Boolean.from(true), true
+      assert.equal Tower.StoreSerializerBoolean.to(true), true
+      assert.equal Tower.StoreSerializerBoolean.from(true), true
     
-      assert.equal Serializer.Boolean.to(1), true
-      assert.equal Serializer.Boolean.from(1), true
+      assert.equal Tower.StoreSerializerBoolean.to(1), true
+      assert.equal Tower.StoreSerializerBoolean.from(1), true
     
-      assert.equal Serializer.Boolean.to("true"), true
-      assert.equal Serializer.Boolean.from("true"), true
+      assert.equal Tower.StoreSerializerBoolean.to("true"), true
+      assert.equal Tower.StoreSerializerBoolean.from("true"), true
     
     test 'boolean == false', ->
-      assert.equal Serializer.Boolean.to(false), false
-      assert.equal Serializer.Boolean.from(false), false
+      assert.equal Tower.StoreSerializerBoolean.to(false), false
+      assert.equal Tower.StoreSerializerBoolean.from(false), false
     
-      assert.equal Serializer.Boolean.to(null), false
-      assert.equal Serializer.Boolean.from(null), false
+      assert.equal Tower.StoreSerializerBoolean.to(null), false
+      assert.equal Tower.StoreSerializerBoolean.from(null), false
     
-      assert.equal Serializer.Boolean.to(undefined), false
-      assert.equal Serializer.Boolean.from(undefined), false
+      assert.equal Tower.StoreSerializerBoolean.to(undefined), false
+      assert.equal Tower.StoreSerializerBoolean.from(undefined), false
     
-      assert.equal Serializer.Boolean.to(0), false
-      assert.equal Serializer.Boolean.from(0), false
+      assert.equal Tower.StoreSerializerBoolean.to(0), false
+      assert.equal Tower.StoreSerializerBoolean.from(0), false
     
-      assert.equal Serializer.Boolean.to("false"), false
-      assert.equal Serializer.Boolean.from("false"), false
+      assert.equal Tower.StoreSerializerBoolean.to("false"), false
+      assert.equal Tower.StoreSerializerBoolean.from("false"), false
     
     test 'number', ->
-      assert.equal Serializer.Number.to(1), 1
-      assert.equal Serializer.Number.to(1.1), 1.1
+      assert.equal Tower.StoreSerializerNumber.to(1), 1
+      assert.equal Tower.StoreSerializerNumber.to(1.1), 1.1
     
-      assert.equal Serializer.Number.from(1), 1
-      assert.equal Serializer.Number.from(1.1), 1.1
+      assert.equal Tower.StoreSerializerNumber.from(1), 1
+      assert.equal Tower.StoreSerializerNumber.from(1.1), 1.1
   
     test 'integer', ->
-      assert.equal Serializer.Integer.to(1), 1
-      assert.equal Serializer.Integer.to(1.1), 1
+      assert.equal Tower.StoreSerializerInteger.to(1), 1
+      assert.equal Tower.StoreSerializerInteger.to(1.1), 1
 
-      assert.equal Serializer.Integer.from(1), 1
-      assert.equal Serializer.Integer.from(1.1), 1
+      assert.equal Tower.StoreSerializerInteger.from(1), 1
+      assert.equal Tower.StoreSerializerInteger.from(1.1), 1
   
     test 'float', ->
-      assert.equal Serializer.Float.to(1), 1.0
-      assert.equal Serializer.Float.to(1.1), 1.1
+      assert.equal Tower.StoreSerializerFloat.to(1), 1.0
+      assert.equal Tower.StoreSerializerFloat.to(1.1), 1.1
 
-      assert.equal Serializer.Float.from(1), 1.0
-      assert.equal Serializer.Float.from(1.1), 1.1
+      assert.equal Tower.StoreSerializerFloat.from(1), 1.0
+      assert.equal Tower.StoreSerializerFloat.from(1.1), 1.1
     
     test 'array', ->
-      assert.equal Serializer.Array.to(undefined), null
-      assert.equal Serializer.Array.to(null), null
+      assert.equal Tower.StoreSerializerArray.to(undefined), null
+      assert.equal Tower.StoreSerializerArray.to(null), null
     
-      assert.deepEqual Serializer.Array.from(1), [1]
-      assert.deepEqual Serializer.Array.from([1]), [1]
+      assert.deepEqual Tower.StoreSerializerArray.from(1), [1]
+      assert.deepEqual Tower.StoreSerializerArray.from([1]), [1]
 
-      assert.deepEqual Serializer.Array.from("hey"), ["hey"]
-      assert.deepEqual Serializer.Array.from(["hey"]), ["hey"]
+      assert.deepEqual Tower.StoreSerializerArray.from("hey"), ["hey"]
+      assert.deepEqual Tower.StoreSerializerArray.from(["hey"]), ["hey"]
     
   describe 'instance', ->
     model = null

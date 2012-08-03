@@ -43,7 +43,7 @@ class App.AssociationCursorAddress extends Tower.Model
 
   @validates 'city', 'state', presence: true
 
-describe "Tower.Model.Relation (association cursor", ->
+describe "Tower.ModelRelation (association cursor", ->
   record      = null
   cursor      = null
   association = null
@@ -57,7 +57,7 @@ describe "Tower.Model.Relation (association cursor", ->
         association = record.constructor.relations()['associationCursorPosts']
 
       test 'getAssociation', ->
-        assert.isTrue record.getAssociationScope('associationCursorPosts') instanceof Tower.Model.Scope, "record.getAssociationScope('associationCursorPosts') instanceof Tower.Model.Scope"
+        assert.isTrue record.getAssociationScope('associationCursorPosts') instanceof Tower.ModelScope, "record.getAssociationScope('associationCursorPosts') instanceof Tower.ModelScope"
         assert.isTrue record.getAssociationScope('associationCursorPosts').cursor.isHasMany, 'cursor.isHasMany'
         assert.isTrue record.getAssociationCursor('associationCursorPosts').isHasMany, 'getAssociationCursor("associationCursorPosts").isHasMany'
 
@@ -172,7 +172,7 @@ describe "Tower.Model.Relation (association cursor", ->
       #association.autosave = undefined
     
     test 'getAssociation', ->
-      assert.isTrue record.getAssociationScope('associationCursorUser') instanceof Tower.Model.Scope, "record.getAssociationScope('associationCursorUser') instanceof Tower.Model.Scope"
+      assert.isTrue record.getAssociationScope('associationCursorUser') instanceof Tower.ModelScope, "record.getAssociationScope('associationCursorUser') instanceof Tower.ModelScope"
       assert.isTrue record.getAssociationScope('associationCursorUser').cursor.isBelongsTo, 'cursor.isBelongsTo'
       assert.isTrue record.getAssociationCursor('associationCursorUser').isBelongsTo, 'getAssociationCursor("associationCursorUser").isBelongsTo'
     
@@ -236,7 +236,7 @@ describe "Tower.Model.Relation (association cursor", ->
       association = record.constructor.relations()[key]
     
     test 'getAssociation', ->
-      assert.isTrue record.getAssociationScope(key) instanceof Tower.Model.Scope, "record.getAssociationScope(key) instanceof Tower.Model.Scope"
+      assert.isTrue record.getAssociationScope(key) instanceof Tower.ModelScope, "record.getAssociationScope(key) instanceof Tower.ModelScope"
       assert.isTrue record.getAssociationScope(key).cursor.isHasOne, 'cursor.isHasOne'
       assert.isTrue record.getAssociationCursor(key).isHasOne, 'getAssociationCursor("associationCursorUser").isHasOne'
     

@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Cursor.Persistence = Ember.Mixin.create
+Tower.ModelCursorPersistence = Ember.Mixin.create
   # Builds records matching the cursors criteria.
   # 
   # If you give it an array, it will return an array, otherwise it will return the record.
@@ -124,4 +124,4 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
         # it should also be moved to the store
     @
 
-module.exports = Tower.Model.Cursor.Persistence
+module.exports = Tower.ModelCursorPersistence

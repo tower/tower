@@ -1,5 +1,5 @@
 # @mixin
-Tower.View.ElementHelper =
+Tower.ViewElementHelper =
   title: (value) ->
     document.title = value
 
@@ -21,7 +21,7 @@ Tower.View.ElementHelper =
     ".#{@elementKey(arguments...)}"
 
   elementKey: ->
-    Tower.Support.String.parameterize(@elementNameComponents(arguments...).join("-"))
+    Tower.SupportString.parameterize(@elementNameComponents(arguments...).join("-"))
 
   # @elementName @user, "firstName"
   #   #=> "user[firstName]"
@@ -35,7 +35,7 @@ Tower.View.ElementHelper =
     for item, i in result
       result[i] = "[#{item}]"
 
-    Tower.Support.String.parameterize(result.join(""))
+    Tower.SupportString.parameterize(result.join(""))
 
   elementNameComponents: ->
     args    = _.args(arguments)
@@ -52,4 +52,4 @@ Tower.View.ElementHelper =
 
     result
 
-module.exports = Tower.View.ElementHelper
+module.exports = Tower.ViewElementHelper

@@ -1,4 +1,4 @@
-describe "Tower.Model.Finders", ->
+describe "Tower.ModelFinders", ->
   beforeEach (done) ->
     # @todo I have no idea why adding this makes it work 
     # (b/c it's also in test/server.coffee beforeEach hook)
@@ -341,7 +341,7 @@ describe "Tower.Model.Finders", ->
 
   describe 'pagination', ->
     beforeEach (done) ->
-      Tower.Model.Cursor::defaultLimit = 5
+      Tower.ModelCursor::defaultLimit = 5
       
       callbacks = []
       i = 0
@@ -356,7 +356,7 @@ describe "Tower.Model.Finders", ->
       _.series callbacks, done
       
     afterEach ->
-      Tower.Model.Cursor::defaultLimit = 20
+      Tower.ModelCursor::defaultLimit = 20
     
     test 'limit(1)', (done) ->
       App.Post.limit(1).all (error, posts) =>

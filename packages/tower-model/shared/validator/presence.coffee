@@ -1,4 +1,4 @@
-class Tower.Model.Validator.Presence extends Tower.Model.Validator
+class Tower.ModelValidatorPresence extends Tower.ModelValidator
   validate: (record, attribute, errors, callback) ->
     unless _.isPresent(record.get(attribute))
       return @failure(
@@ -10,4 +10,4 @@ class Tower.Model.Validator.Presence extends Tower.Model.Validator
       )
     @success(callback)
 
-module.exports = Tower.Model.Validator.Presence
+module.exports = Tower.ModelValidatorPresence

@@ -1,5 +1,5 @@
 # Tower.history.enabled = false
-Tower.Net.Connection.transport = Tower.Store.Transport.Ajax
+Tower.NetConnection.transport = Tower.StoreTransportAjax
 
 App.bootstrap = (data) ->
 

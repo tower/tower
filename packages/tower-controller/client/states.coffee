@@ -2,7 +2,7 @@
 # @concern
 #
 # Used to bind menu items to controller states
-Tower.Controller.States =
+Tower.ControllerStates =
   # This should be configured from the @belongsTo in controllers.
   parentController: ->
     Tower.Application.instance().get('applicationController')

@@ -1,4 +1,4 @@
-class Tower.Command.Info
+class Tower.CommandInfo
   constructor: (argv) ->
     @program = program = require('commander')
     program
@@ -29,4 +29,4 @@ class Tower.Command.Info
   run: ->
 
 
-module.exports = Tower.Command.Info
+module.exports = Tower.CommandInfo

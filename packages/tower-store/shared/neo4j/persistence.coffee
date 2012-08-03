@@ -1,4 +1,4 @@
-Tower.Store.Neo4j.Persistence =
+Tower.StoreNeo4jPersistence =
   insert: (criteria, callback) ->
     if criteria.relationship
       @_createRelationship(criteria, callback)
@@ -31,4 +31,4 @@ Tower.Store.Neo4j.Persistence =
 
   destroy: (criteria, callback) ->
 
-module.exports = Tower.Store.Neo4j.Persistence
+module.exports = Tower.StoreNeo4jPersistence

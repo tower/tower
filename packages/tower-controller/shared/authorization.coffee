@@ -1,4 +1,4 @@
 # http://www.danielbaulig.de/socket-ioexpress/
-Tower.Controller.Authorization = {}
+Tower.ControllerAuthorization = {}
 
-module.exports = Tower.Controller.Authorization
+module.exports = Tower.ControllerAuthorization

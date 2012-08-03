@@ -1,4 +1,4 @@
-Tower.Controller.Errors =
+Tower.ControllerErrors =
   ClassMethods:
     rescue: (type, method, options) ->
       Tower.Application.instance().errorHandlers.push (error) =>
@@ -14,6 +14,6 @@ Tower.Controller.Errors =
   unauthorized: (error) ->
     @render status: 401, json: error: error.toString()
 
-Tower.Controller.Errors.ClassMethods.rescueFrom = Tower.Controller.Errors.ClassMethods.rescue
+Tower.ControllerErrors.ClassMethods.rescueFrom = Tower.ControllerErrors.ClassMethods.rescue
 
-module.exports = Tower.Controller.Errors
+module.exports = Tower.ControllerErrors

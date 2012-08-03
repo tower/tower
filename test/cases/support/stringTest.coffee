@@ -1,6 +1,6 @@
-describe 'Tower.Support.String', ->
+describe 'Tower.SupportString', ->
   describe '#paramterize', ->
-    parameterize = Tower.Support.String.parameterize
+    parameterize = Tower.SupportString.parameterize
     
     test 'should replace special characters with dashes', ->
       assert.equal "tower-s-great", parameterize("Tower's great")
@@ -25,7 +25,7 @@ describe 'Tower.Support.String', ->
       assert.equal "my-thing1", parameterize("myThing1")
       
   describe 'inflection', ->
-    support = Tower.Support.String
+    support = Tower.SupportString
     
     test 'pluralize', ->
       assert.equal support.pluralize("entry"), "entries"

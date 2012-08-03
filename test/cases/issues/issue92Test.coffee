@@ -1,4 +1,4 @@
-attr = Tower.Model.Attribute
+attr = Tower.ModelAttribute
 
 describe "Testing Issue #92.", ->
   issue = null

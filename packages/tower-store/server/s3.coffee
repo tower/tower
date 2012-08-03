@@ -1,4 +1,4 @@
-class Tower.Store.S3 extends Tower.Store
+class Tower.StoreS3 extends Tower.Store
   client: ->
     return @_client if @_client
     knox      = require('knox')
@@ -58,4 +58,4 @@ class Tower.Store.S3 extends Tower.Store
 
   createBucket: ->
 
-module.exports = Tower.Store.S3
+module.exports = Tower.StoreS3

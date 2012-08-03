@@ -3,12 +3,12 @@
 #
 # Like the Tower.Model methods, the callback chain is aborted as soon as one of the methods in the chain returns false.
 #
-# To use, include {Tower.Support.Callbacks} in the class you are creating:
+# To use, include {Tower.SupportCallbacks} in the class you are creating:
 #
 #     class App.Location
-#       @include Tower.Support.Callbacks
+#       @include Tower.SupportCallbacks
 #
-Tower.Support.Callbacks =
+Tower.SupportCallbacks =
   ClassMethods:
     before: ->
       @appendCallback "before", arguments...
@@ -44,7 +44,7 @@ Tower.Support.Callbacks =
       callbacks   = @callbacks()
 
       for filter in args
-        callback = callbacks[filter] ||= new Tower.Support.Callbacks.Chain
+        callback = callbacks[filter] ||= new Tower.SupportCallbacksChain
         callback.push phase, method, options
 
       @
@@ -75,7 +75,7 @@ Tower.Support.Callbacks =
   _callback: ->
     Tower.callbackChain(arguments...)
 
-class Tower.Support.Callbacks.Chain
+class Tower.SupportCallbacksChain
   constructor: (options = {}) ->
     @[key] = value for key, value of options
 
@@ -83,7 +83,7 @@ class Tower.Support.Callbacks.Chain
     @after  ||= []
 
   clone: ->
-    new Tower.Support.Callbacks.Chain(before: @before.concat(), after: @after.concat())
+    new Tower.SupportCallbacksChain(before: @before.concat(), after: @after.concat())
 
   run: (binding, options, block, complete) ->
     runner    = (callback, next) =>
@@ -97,7 +97,7 @@ class Tower.Support.Callbacks.Chain
         if complete
           complete.call(binding, error)
         else
-          throw error unless Tower.Support.Callbacks.silent
+          throw error unless Tower.SupportCallbacks.silent
       else
         complete.call(binding) if complete
       binding
@@ -120,9 +120,9 @@ class Tower.Support.Callbacks.Chain
         Tower.async @after, runner, done
 
   push: (phase, method, filters, options) ->
-    @[phase].push new Tower.Support.Callback(method, filters, options)
+    @[phase].push new Tower.SupportCallback(method, filters, options)
 
-class Tower.Support.Callback
+class Tower.SupportCallback
   constructor: (method, conditions = {}) ->
     @method       = method
     @conditions   = conditions
@@ -151,4 +151,4 @@ class Tower.Support.Callback
       else
         method.call binding, next
 
-module.exports = Tower.Support.Callbacks
+module.exports = Tower.SupportCallbacks

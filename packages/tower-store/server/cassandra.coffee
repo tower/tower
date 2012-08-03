@@ -1,4 +1,4 @@
 # @todo
-class Tower.Store.Cassandra extends Tower.Store
+class Tower.StoreCassandra extends Tower.Store
 
-module.exports = Tower.Store.Cassandra
+module.exports = Tower.StoreCassandra

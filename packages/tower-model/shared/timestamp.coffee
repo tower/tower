@@ -1,23 +1,19 @@
 # @module
-Tower.Model.Timestamp =
+Tower.ModelTimestamp =
   ClassMethods:
     # Adds `createdAt` and `updatedAt` attributes to your records.
     timestamps: ->
-      @include Tower.Model.Timestamp.CreatedAt
-      @include Tower.Model.Timestamp.UpdatedAt
-
       @field 'createdAt', type: 'Date'
       @field 'updatedAt', type: 'Date'
 
       @before 'create', 'setCreatedAt'
       @before 'save', 'setUpdatedAt'
 
-  CreatedAt:
-    setCreatedAt: ->
-      @set 'createdAt', new Date
+      @include
+        setCreatedAt: ->
+          @set 'createdAt', new Date
 
-  UpdatedAt:
-    setUpdatedAt: ->
-      @set 'updatedAt', new Date
+        setUpdatedAt: ->
+          @set 'updatedAt', new Date
 
-module.exports = Tower.Model.Timestamp
+module.exports = Tower.ModelTimestamp

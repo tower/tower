@@ -1,4 +1,4 @@
-Tower.Store.Callbacks =
+Tower.StoreCallbacks =
   # Prepare the criteria before you execute {#create},
   # perhaps for mimicking join tables in Mongodb.
   #
@@ -65,4 +65,4 @@ Tower.Store.Callbacks =
     else
       callback()
 
-module.exports = Tower.Store.Callbacks
+module.exports = Tower.StoreCallbacks

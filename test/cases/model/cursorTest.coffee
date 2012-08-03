@@ -10,9 +10,9 @@ class App.CursorTest extends Tower.Model
   @field "arrayString", type: ["String"], default: []
   @field "arrayObject", type: ["Object"], default: []
 
-describe 'Tower.Model.Cursor', ->
+describe 'Tower.ModelCursor', ->
   beforeEach ->
-    cursor = Tower.Model.Cursor.make()
+    cursor = Tower.ModelCursor.make()
     cursor.make()
     
   afterEach ->
@@ -133,7 +133,7 @@ describe 'Tower.Model.Cursor', ->
     
   describe '#test', ->
     beforeEach ->
-      cursor  = Tower.Model.Cursor.create()
+      cursor  = Tower.ModelCursor.create()
       cursor.make(model: App.CursorTest)
       
     test 'eq', ->
@@ -166,7 +166,7 @@ describe 'Tower.Model.Cursor', ->
       
   describe '#create', ->
     beforeEach ->
-      cursor  = Tower.Model.Cursor.create()
+      cursor  = Tower.ModelCursor.create()
       cursor.make(model: App.CursorTest)
       
     test 'create()', (done) ->

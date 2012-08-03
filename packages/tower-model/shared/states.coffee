@@ -1,4 +1,4 @@
-Tower.Model.States =
+Tower.ModelStates =
   isLoaded:  false
   isDirty:   false
   isSaving:  false
@@ -9,4 +9,4 @@ Tower.Model.States =
   isSyncing: false
   isMarkedForDestruction: false
 
-module.exports = Tower.Model.States
+module.exports = Tower.ModelStates

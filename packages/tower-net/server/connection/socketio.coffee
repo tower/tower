@@ -1,4 +1,4 @@
-Tower.Net.Connection.Socketio =
+Tower.NetConnectionSocketio =
   getId: (socket) ->
     socket.id
 
@@ -30,4 +30,4 @@ Tower.Net.Connection.Socketio =
   broadcast: (socket, data) ->
     socket.broadcast(data)
 
-module.exports = Tower.Net.Connection.Socketio
+module.exports = Tower.NetConnectionSocketio

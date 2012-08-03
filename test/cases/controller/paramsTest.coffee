@@ -1,6 +1,6 @@
 # make sure params as strings get properly serialized (integration test)
 
-describe "Tower.Controller.Params", ->
+describe "Tower.ControllerParams", ->
   beforeEach (done) ->
     App.Post.create title: 'First Post', rating: 8, =>
       App.Post.create title: 'Second Post', rating: 7, done

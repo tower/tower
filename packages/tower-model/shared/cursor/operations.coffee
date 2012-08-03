@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Cursor.Operations = Ember.Mixin.create
+Tower.ModelCursorOperations = Ember.Mixin.create
   # @todo will refresh this cursor after x milliseconds,
   # useful when you have a cursor with dates in the conditions.
   refreshInterval: (milliseconds) ->
@@ -199,7 +199,7 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
   # 
   # @todo Maybe we should make the `count` query part of the `paginate` method instead.
   page: (page) ->
-    @limit(@_limit || Tower.Model.Cursor::defaultLimit)
+    @limit(@_limit || Tower.ModelCursor::defaultLimit)
     limit = @get('limit')
     Ember.set @, 'currentPage', page
     @offset((Math.max(1, page) - 1) * limit)
@@ -238,12 +238,12 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     # @todo need a subclass tester
     # return false unless record.constructor.className()
     # @todo needs to work on things like MongoDB's ObjectID
-    Tower.Store.Operators.test(record, @conditions())
+    Tower.StoreOperators.test(record, @conditions())
 
   testEach: (records, callback) ->
     conditions = @conditions()
     delete conditions.type # need to come back to STI
-    Tower.Store.Operators.testEach(records, conditions, callback)
+    Tower.StoreOperators.testEach(records, conditions, callback)
 
   eagerLoad: (records, callback) ->
     return callback() unless records && records.length
@@ -329,6 +329,6 @@ Tower.Model.Cursor.Operations = Ember.Mixin.create
     @where query
 
   # Alias for {#order}.
-Tower.Model.Cursor.Operations.sort = Tower.Model.Cursor.Operations.order
+Tower.ModelCursorOperations.sort = Tower.ModelCursorOperations.order
 
-module.exports = Tower.Model.Cursor.Operations
+module.exports = Tower.ModelCursorOperations

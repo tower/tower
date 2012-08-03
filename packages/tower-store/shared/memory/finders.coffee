@@ -1,5 +1,5 @@
 # @module
-Tower.Store.Memory.Finders =
+Tower.StoreMemoryFinders =
   # @see Tower.Store#find
   find: (cursor, callback) ->
     result      = []
@@ -17,7 +17,7 @@ Tower.Store.Memory.Finders =
 
     if _.isPresent(conditions)
       for record in records
-        result.push(record) if Tower.Store.Operators.test(record, conditions)
+        result.push(record) if Tower.StoreOperators.test(record, conditions)
     else
       for record in records
         result.push(record)
@@ -86,7 +86,7 @@ Tower.Store.Memory.Finders =
       coordinates = record.get('coordinates')
       coordinates = {latitude: coordinates.lat, longitude: coordinates.lng}
 
-      record.__distance = Tower.Support.Geo.getDistance(center, coordinates)
+      record.__distance = Tower.SupportGeo.getDistance(center, coordinates)
 
   # Adjusts the given conditions so they can be used
   _prepareConditionsForTesting: (conditions) ->
@@ -99,9 +99,9 @@ Tower.Store.Memory.Finders =
 
 # @todo move this to client folder
 if Tower.isClient
-  Tower.Store.Memory.Finders.fetch = (cursor, callback) ->
+  Tower.StoreMemoryFinders.fetch = (cursor, callback) ->
     method = if cursor.get('limit') == 1 then 'findOne' else 'find'
-    Tower.Net.Connection.transport[method] cursor, (error, records) =>
+    Tower.NetConnection.transport[method] cursor, (error, records) =>
       #records = @load(records)
       if callback
         callback(error, records)
@@ -110,4 +110,4 @@ if Tower.isClient
 
       records
 
-module.exports = Tower.Store.Memory.Finders
+module.exports = Tower.StoreMemoryFinders

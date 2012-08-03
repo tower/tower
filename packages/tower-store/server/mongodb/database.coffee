@@ -1,5 +1,5 @@
 # @mixin
-Tower.Store.Mongodb.Database =
+Tower.StoreMongodbDatabase =
   ClassMethods:
     info: (callback) ->
 
@@ -81,4 +81,4 @@ Tower.Store.Mongodb.Database =
       callback.call @
       @_transaction = false
 
-module.exports = Tower.Store.Mongodb.Database
+module.exports = Tower.StoreMongodbDatabase

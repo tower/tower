@@ -1,4 +1,4 @@
-Tower.Model.AutosaveAssociation =
+Tower.ModelAutosaveAssociation =
   ClassMethods:
     # Sets up save/validation callbacks for associations.
     # 
@@ -65,7 +65,7 @@ Tower.Model.AutosaveAssociation =
   # @private
   _validateSingleAssociation: (association, callback) ->
     cursor  = @getAssociationCursor(association.name)
-    record  = cursor[0] if cursor # @todo assumes it's the array cursor, not Tower.Model.Cursor
+    record  = cursor[0] if cursor # @todo assumes it's the array cursor, not Tower.ModelCursor
 
     if record
       @_associationIsValid(association, record, callback)
@@ -307,4 +307,4 @@ Tower.Model.AutosaveAssociation =
       callback.call(@) if callback
       true
 
-module.exports = Tower.Model.AutosaveAssociation
+module.exports = Tower.ModelAutosaveAssociation

@@ -1,14 +1,14 @@
 # @mixin
-Tower.Model.Transactions =
+Tower.ModelTransactions =
   ClassMethods:
     transaction: (block) ->
-      transaction = new Tower.Store.Transaction
+      transaction = new Tower.StoreTransaction
       block.call @, transaction if block
       transaction
 
   InstanceMethods:
     transaction: Ember.computed(->
-      new Tower.Store.Transaction
+      new Tower.StoreTransaction
     ).cacheable()
 
     save: ->
@@ -16,4 +16,4 @@ Tower.Model.Transactions =
 
       @_super arguments...
 
-module.exports = Tower.Model.Transactions
+module.exports = Tower.ModelTransactions

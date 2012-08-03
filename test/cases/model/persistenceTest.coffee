@@ -9,7 +9,7 @@ Array.prototype.ARRAY_TO_STRING = ->
   result += ']'
   result
 
-describe "Tower.Model.Persistence", ->
+describe "Tower.ModelPersistence", ->
   describe 'new', ->
     test '#isNew', ->
       user = new App.User

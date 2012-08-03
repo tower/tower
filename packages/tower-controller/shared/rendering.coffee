@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Rendering =
+Tower.ControllerRendering =
   ClassMethods:
     # Add a render for a specific mime type.
     #
@@ -159,4 +159,4 @@ Tower.Controller.Rendering =
       options.template ||= (options.file || (options.action || @action))
       options
 
-module.exports = Tower.Controller.Rendering
+module.exports = Tower.ControllerRendering

@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Callbacks =
+Tower.ControllerCallbacks =
   ClassMethods:
     # Callback to run before any action.
     beforeAction: ->
@@ -15,4 +15,4 @@ Tower.Controller.Callbacks =
     callbacks: ->
       @metadata().callbacks
 
-module.exports = Tower.Controller.Callbacks
+module.exports = Tower.ControllerCallbacks

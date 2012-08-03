@@ -1,4 +1,4 @@
-class Tower.Generator.AppGenerator extends Tower.Generator
+class Tower.GeneratorAppGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   buildApp: (name = @appName) ->
@@ -230,4 +230,4 @@ class Tower.Generator.AppGenerator extends Tower.Generator
         @template "home.md"
         @template "_sidebar.md"
 
-module.exports = Tower.Generator.AppGenerator
+module.exports = Tower.GeneratorAppGenerator

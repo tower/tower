@@ -1,4 +1,4 @@
 # @todo
-class Tower.Store.PostgreSQL extends Tower.Store
+class Tower.StorePostgreSQL extends Tower.Store
 
-module.exports = Tower.Store.PostgreSQL
+module.exports = Tower.StorePostgreSQL

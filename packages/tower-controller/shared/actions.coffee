@@ -1,4 +1,4 @@
-Tower.Controller.Actions =  
+Tower.ControllerActions =  
   # Default implementation for the 'index' action.
   index: ->
     @_index (format) =>
@@ -82,4 +82,4 @@ Tower.Controller.Actions =
       resource.destroy (error) =>
         @respondWithStatus !!!error, callback
 
-module.exports = Tower.Controller.Actions
+module.exports = Tower.ControllerActions

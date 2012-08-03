@@ -1,11 +1,11 @@
-describe 'Tower.Net.Connection', ->
+describe 'Tower.NetConnection', ->
   connection = null
 
   beforeEach ->
     connection = Tower.createConnection()
 
   test 'constructor', ->
-    assert.ok connection instanceof Tower.Net.Connection
+    assert.ok connection instanceof Tower.NetConnection
 
   if Tower.isServer
     test 'lazily instantiates controllers', ->
@@ -14,7 +14,7 @@ describe 'Tower.Net.Connection', ->
 
   test 'scopes', ->
     scope = connection.getPath('postsController.all')
-    assert.isTrue scope.isCursor, 'scope instanceof Tower.Model.Cursor'
+    assert.isTrue scope.isCursor, 'scope instanceof Tower.ModelCursor'
   
   test 'notify -> matchAgainstCursors', (done) ->
     # spyon connection.created

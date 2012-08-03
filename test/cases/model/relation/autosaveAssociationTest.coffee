@@ -1,4 +1,4 @@
-describe 'Tower.Model.AutosaveAssociation', ->
+describe 'Tower.ModelAutosaveAssociation', ->
   class App.AutosaveAssociationTest extends Tower.Model
     @hasMany 'posts', autosave: true
     @hasOne 'address', autosave: true

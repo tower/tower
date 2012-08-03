@@ -1,4 +1,4 @@
-Tower.Store.Operators =
+Tower.StoreOperators =
   MAP:
     '>=':         '$gte'
     '$gte':       '$gte'
@@ -82,7 +82,7 @@ Tower.Store.Operators =
       else
         if _.isHash(operators) # simple object of operators
           for key, value of operators
-            if operator = Tower.Store.Operators.MAP[key]
+            if operator = Tower.StoreOperators.MAP[key]
               success   = @[operator.replace('$', '')](recordValue, value, record)
             else
               success   = recordValue == operators
@@ -206,6 +206,6 @@ Tower.Store.Operators =
     else
       _.getNestedAttribute recordOrObject, key
 
-Tower.Store.Operators.notIn = Tower.Store.Operators.notInAny
+Tower.StoreOperators.notIn = Tower.StoreOperators.notInAny
 
-module.exports = Tower.Store.Operators
+module.exports = Tower.StoreOperators

@@ -3,7 +3,7 @@ File  = require("pathfinder").File
 fs    = require 'fs'
 
 # @mixin
-Tower.Generator.Helpers =
+Tower.GeneratorHelpers =
   route: (routingCode) ->
     # @log "route", routingCode
 
@@ -49,4 +49,4 @@ Tower.Generator.Helpers =
   inRoot: (block) ->
     @inside ".", block
 
-module.exports = Tower.Generator.Helpers
+module.exports = Tower.GeneratorHelpers

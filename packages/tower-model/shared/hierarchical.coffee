@@ -1,7 +1,7 @@
 # @todo
 # 
 # @mixin
-Tower.Model.Hierarchical =
+Tower.ModelHierarchical =
   ClassMethods:
     hierarchical: (options = {}) ->
       @metadata().lft       = options.lft ||= 'lft'
@@ -123,4 +123,4 @@ Tower.Model.Hierarchical =
     conditions[metadata.lft] = $gt: @get('lft')
     siblings.where(conditions).first(callback)
 
-module.exports = Tower.Model.Hierarchical
+module.exports = Tower.ModelHierarchical

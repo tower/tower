@@ -1,8 +1,8 @@
 # @module
-Tower.Store.Mongodb.Finders =
+Tower.StoreMongodbFinders =
   # Find and return an array of documents.
   #
-  # @param [Tower.Model.Scope] cursor A cursor object with all of the query information.
+  # @param [Tower.ModelScope] cursor A cursor object with all of the query information.
   #
   # @return undefined Requires a callback to get the value.
   find: (cursor, callback) ->
@@ -57,4 +57,4 @@ Tower.Store.Mongodb.Finders =
 
     undefined
 
-module.exports = Tower.Store.Mongodb.Finders
+module.exports = Tower.StoreMongodbFinders

@@ -1,5 +1,5 @@
 # @module
-Tower.I18nHelper =
+Tower.SupportI18n =
   PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g
   defaultLanguage: 'en'
 
@@ -54,6 +54,6 @@ Tower.I18nHelper =
         value = value.call(locals) if typeof value == 'function'
         if $3 then sprintf("%#{$3}", value) else value
 
-Tower.I18nHelper.t = Tower.I18nHelper.translate
+Tower.SupportI18n.t = Tower.SupportI18n.translate
 
-module.exports = Tower.I18nHelper
+module.exports = Tower.SupportI18n

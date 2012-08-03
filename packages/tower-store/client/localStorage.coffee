@@ -2,7 +2,7 @@
 # https://github.com/marcuswestin/store.js
 # https://raw.github.com/marcuswestin/store.js/master/store.js
 # https://raw.github.com/marcuswestin/store.js/master/json.js
-class Tower.Store.LocalStorage extends Tower.Store.Memory
+class Tower.StoreLocalStorage extends Tower.StoreMemory
   initialize: ->
     @lastId   = 0
 
@@ -15,4 +15,4 @@ class Tower.Store.LocalStorage extends Tower.Store.Memory
   _removeRecord: (key) ->
     delete @records[record.id]
 
-module.exports = Tower.Store.LocalStorage
+module.exports = Tower.StoreLocalStorage

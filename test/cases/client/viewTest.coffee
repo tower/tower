@@ -1,5 +1,5 @@
 if Tower.isClient
-  describe 'Tower.View.EmberHelper', ->
+  describe 'Tower.ViewEmberHelper', ->
     view = null
   
     beforeEach ->

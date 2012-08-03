@@ -1,6 +1,6 @@
-Tower.Store.Neo4j.Configuration =
+Tower.StoreNeo4jConfiguration =
   ClassMethods:
     lib: ->
       require('neo4js')
 
-module.exports = Tower.Store.Neo4j.Configuration
+module.exports = Tower.StoreNeo4jConfiguration

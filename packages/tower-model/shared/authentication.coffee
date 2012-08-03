@@ -1,4 +1,4 @@
-Tower.Model.Authentication =
+Tower.ModelAuthentication =
   ClassMethods:
     # Like Rails' `has_secure_password`
     authenticated: ->
@@ -15,7 +15,7 @@ Tower.Model.Authentication =
       # attributes protected by default
       @protected 'passwordDigest', 'passwordSalt'
 
-      @include Tower.Model.Authentication._InstanceMethods
+      @include Tower.ModelAuthentication._InstanceMethods
 
   # Only included if class method is called.
   _InstanceMethods:
@@ -42,4 +42,4 @@ Tower.Model.Authentication =
 
       true
 
-module.exports = Tower.Model.Authentication
+module.exports = Tower.ModelAuthentication

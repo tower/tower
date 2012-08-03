@@ -1,4 +1,4 @@
-Tower.Support.Url =
+Tower.SupportUrl =
   # use single quotes, otherwise they're escaped
   toQueryValue: (value, type, negate = "") ->
     if _.isArray(value)
@@ -53,31 +53,31 @@ Tower.Support.Url =
           rangeIdentifier = if type == 'date' then 't' else 'n'
 
           if data.hasOwnProperty("min")
-            range += Tower.Support.Url.toQueryValue(data.min, type)
+            range += Tower.SupportUrl.toQueryValue(data.min, type)
           else
             range += rangeIdentifier
 
           range += ".."
 
           if data.hasOwnProperty("max")
-            range += Tower.Support.Url.toQueryValue(data.max, type)
+            range += Tower.SupportUrl.toQueryValue(data.max, type)
           else
             range += rangeIdentifier
 
           set.push range
 
         if data.hasOwnProperty("eq")
-          set.push Tower.Support.Url.toQueryValue(data.eq, type)
+          set.push Tower.SupportUrl.toQueryValue(data.eq, type)
         if data.hasOwnProperty("match")
-          set.push Tower.Support.Url.toQueryValue(data.match, type)
+          set.push Tower.SupportUrl.toQueryValue(data.match, type)
         if data.hasOwnProperty("neq")
-          set.push Tower.Support.Url.toQueryValue(data.neq, type, negate)
+          set.push Tower.SupportUrl.toQueryValue(data.neq, type, negate)
         if data.hasOwnProperty("notMatch")
-          set.push Tower.Support.Url.toQueryValue(data.notMatch, type, negate)
+          set.push Tower.SupportUrl.toQueryValue(data.notMatch, type, negate)
 
         param += set.join(",")
       else
-        param += Tower.Support.Url.toQueryValue(value, type)
+        param += Tower.SupportUrl.toQueryValue(value, type)
 
       result.push param
 
@@ -142,7 +142,7 @@ Tower.Support.Url =
 
       unless options.protocol == false
         result += options.protocol || "http"
-        result += ":" unless result.match(Tower.Support.RegExp.regexpEscape(":|//"))
+        result += ":" unless result.match(Tower.SupportRegExp.regexpEscape(":|//"))
 
       result += "//" unless result.match("//")
       result += @rewriteAuthentication(options)
@@ -157,8 +157,8 @@ Tower.Support.Url =
     else
       result += path
 
-    result += "?#{Tower.Support.Url.toQuery(params, schema)}" unless _.isBlank(params)
-    result += "##{Tower.Support.Url.toQuery(options.anchor)}" if options.anchor
+    result += "?#{Tower.SupportUrl.toQuery(params, schema)}" unless _.isBlank(params)
+    result += "##{Tower.SupportUrl.toQuery(options.anchor)}" if options.anchor
     result
 
   # Tower.urlFor(App.User.first(), {onlyPath: false, params: {likes: {">=": -10, "<=": 20, "!=": [13, 15]}, tags: {"==": ["ruby", /javascript#/i], "!=": ["java"]}}, trailingSlash: true, host: "example.com", user: "lance", password: "pollard", anchor: {likes: 10}})
@@ -181,9 +181,9 @@ Tower.Support.Url =
       route = Tower.Route.find(options.route)
       result = route.urlFor() if route
     else if options.controller && options.action
-      route   = Tower.Route.findByControllerOptions(name: Tower.Support.String.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
+      route   = Tower.Route.findByControllerOptions(name: Tower.SupportString.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
       if route
-        result  = "/" + Tower.Support.String.parameterize(options.controller)
+        result  = "/" + Tower.SupportString.parameterize(options.controller)
     else
       for item in args
         result += "/"
@@ -209,6 +209,6 @@ Tower.Support.Url =
 
     @urlForBase(options)
 
-Tower.urlFor = -> Tower.Support.Url.urlFor arguments...
+Tower.urlFor = -> Tower.SupportUrl.urlFor arguments...
 
-module.exports = Tower.Support.Url
+module.exports = Tower.SupportUrl

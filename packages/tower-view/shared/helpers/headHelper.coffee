@@ -1,7 +1,7 @@
 # This defines all the meta tag and other html `<head>` helpers.
 #
 # @mixin
-Tower.View.HeadHelper =
+Tower.ViewHeadHelper =
   metaTag: (name, content) ->
     meta name: name, content: content
 
@@ -125,4 +125,4 @@ Tower.View.HeadHelper =
   openGraphMetaTag: (property, content) ->
     meta property: property, content: content
 
-module.exports = Tower.View.HeadHelper
+module.exports = Tower.ViewHeadHelper

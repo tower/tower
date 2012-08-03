@@ -6,7 +6,7 @@ store = require('commander').option('--store [name]', 'Store to run tests agains
 
 console.log "Running tests with #{store} store"
 
-Tower.store = Tower.Store[_.camelize(store)]
+Tower.store = Tower['Store' + _.camelize(store)]
 
 global.chai   = require 'chai'
 global.assert = chai.assert
@@ -32,7 +32,7 @@ require '../packages/tower-generator/server/tst'
 app = Tower.Application.instance()
 
 # tmp until figure out how to test this syncing functionality...
-Tower.Net.Connection.reopen(notify: ->)
+Tower.NetConnection.reopen(notify: ->)
 
 before (done) ->
   Tower.Model.default('store', Tower.store)

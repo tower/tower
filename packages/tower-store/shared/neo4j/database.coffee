@@ -1,4 +1,4 @@
-Tower.Store.Neo4j.Database =
+Tower.StoreNeo4jDatabase =
   ClassMethods:
     initialize: (callback) ->
       return callback.call @, @database if @initialized
@@ -14,4 +14,4 @@ Tower.Store.Neo4j.Database =
   database: ->
     @constructor.database
 
-module.exports = Tower.Store.Neo4j.Database
+module.exports = Tower.StoreNeo4jDatabase

@@ -5,11 +5,11 @@ require './server/events'
 require './server/net'
 require './server/sockets'
 
-Tower.Controller.include Tower.Controller.Actions
-Tower.Controller.include Tower.Controller.Caching
-Tower.Controller.include Tower.Controller.Events
-Tower.Controller.include Tower.Controller.Net
-Tower.Controller.include Tower.Controller.Sockets
+Tower.Controller.include Tower.ControllerActions
+Tower.Controller.include Tower.ControllerCaching
+Tower.Controller.include Tower.ControllerEvents
+Tower.Controller.include Tower.ControllerNet
+Tower.Controller.include Tower.ControllerSockets
 
 Tower.Controller.reopenClass extended: ->
   object    = {}
@@ -20,9 +20,9 @@ Tower.Controller.reopenClass extended: ->
     Tower.Application.instance()[name].create()
   ).cacheable()
 
-  Tower.Net.Connection.controllers.push(camelName)
+  Tower.NetConnection.controllers.push(camelName)
 
-  Tower.Net.Connection.reopen(object)
+  Tower.NetConnection.reopen(object)
 
   @
 

@@ -2,7 +2,7 @@ membership  = null
 group       = null
 user        = null
 
-describe "Tower.Model.Relation", ->
+describe "Tower.ModelRelation", ->
   beforeEach (done) ->
     async.series [
       (callback) =>

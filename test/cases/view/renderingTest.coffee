@@ -1,4 +1,4 @@
-describe 'Tower.View.Rendering', ->
+describe 'Tower.ViewRendering', ->
   view = null
   
   beforeEach ->

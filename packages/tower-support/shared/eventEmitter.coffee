@@ -1,5 +1,5 @@
 # @module
-Tower.Support.EventEmitter =
+Tower.SupportEventEmitter =
   #included: ->
   #  @events = {}
 
@@ -81,4 +81,4 @@ Tower.Support.EventEmitter =
   allowAndFire: (key) ->
     @event(key).allowAndFire(_.args(arguments, 1))
 
-module.exports = Tower.Support.EventEmitter
+module.exports = Tower.SupportEventEmitter

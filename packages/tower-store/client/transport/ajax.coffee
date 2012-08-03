@@ -1,4 +1,4 @@
-Tower.Store.Transport.Ajax =
+Tower.StoreTransportAjax =
   requests: []
   enabled:  true
   pending:  false
@@ -83,7 +83,7 @@ Tower.Store.Transport.Ajax =
       # @todo record.rollback()
       callback.call(@, json) if callback
   
-  # This is called from {Tower.Net.Connection#clientDidCreate}.
+  # This is called from {Tower.NetConnection#clientDidCreate}.
   # 
   # It will iterate through an array of records and create 1
   # Ajax request for each. This will soon be optimized to be single
@@ -291,4 +291,4 @@ Tower.Store.Transport.Ajax =
     data: $.param(data)
     url:  url
 
-module.exports = Tower.Store.Transport.Ajax
+module.exports = Tower.StoreTransportAjax

@@ -1,5 +1,5 @@
 # @module
-Tower.Controller.Net =
+Tower.ControllerNet =
   # @todo
   head: (status, options = {}) ->
     if typeof status == 'object'
@@ -20,4 +20,4 @@ Tower.Controller.Net =
     @headers['Content-Type'] = Mime[formats.first] if formats
     @body         = ' '
 
-module.exports = Tower.Controller.Net
+module.exports = Tower.ControllerNet

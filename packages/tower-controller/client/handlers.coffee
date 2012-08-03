@@ -1,6 +1,6 @@
 # Technically, this is just a raw jQuery handler, which you won't need if you just use Ember.
 # So we should have ember/jquery/mootools/etc. as separate helper projects.
-Tower.Controller.Handlers =
+Tower.ControllerHandlers =
   ClassMethods:    
     # @example
     #   @on 'click .item', 'add', id: true
@@ -60,4 +60,4 @@ Tower.Controller.Handlers =
   redirect: ->
     Tower.goTo(Tower.urlFor(arguments...))
 
-module.exports = Tower.Controller.Handlers
+module.exports = Tower.ControllerHandlers

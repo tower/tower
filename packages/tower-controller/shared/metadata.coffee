@@ -1,4 +1,4 @@
-Tower.Controller.Metadata =
+Tower.ControllerMetadata =
   ClassMethods:
     baseClass: ->
       if @__super__ && @__super__.constructor.baseClass && @__super__.constructor != Tower.Controller
@@ -63,4 +63,4 @@ Tower.Controller.Metadata =
       parts                   = type.split('.')
       resourceName            = _.camelize(parts[parts.length - 1], true)
 
-module.exports = Tower.Controller.Metadata
+module.exports = Tower.ControllerMetadata

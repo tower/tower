@@ -1,5 +1,5 @@
 # @module
-Tower.Model.Serialization =
+Tower.ModelSerialization =
   # Compile the model instance into a hash.
   #
   # @param [Object] options
@@ -77,4 +77,4 @@ Tower.Model.Serialization =
   _readAttributeForSerialization: (name, type = 'json') ->
     @get(name)
 
-module.exports = Tower.Model.Serialization
+module.exports = Tower.ModelSerialization

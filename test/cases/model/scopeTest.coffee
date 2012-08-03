@@ -2,7 +2,7 @@ scope     = null
 criteria  = null
 user      = null
 
-describe "Tower.Model.Scope", ->
+describe "Tower.ModelScope", ->
   beforeEach (done) ->
     async.series [
       (callback) => 
@@ -67,19 +67,19 @@ describe "Tower.Model.Scope", ->
     test '.insert', (done) ->
       cursor = App.User.insert firstName: "Baldwin", likes: 10, (error, user) =>
         process.nextTick =>
-          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.Model.Cursor'
+          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
           done()
     
     test '.update', (done) ->
       cursor = App.User.update firstName: "Baldwin", (error, user) =>
         process.nextTick =>
-          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.Model.Cursor'
+          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
           done()
     
     test '.destroy', (done) ->
       cursor = App.User.destroy (error, user) =>
         process.nextTick =>
-          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.Model.Cursor'
+          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
           done()
         
   describe 'global callback', ->

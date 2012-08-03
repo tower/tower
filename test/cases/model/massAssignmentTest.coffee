@@ -1,4 +1,4 @@
-describe 'Tower.Model.MassAssignment', ->
+describe 'Tower.ModelMassAssignment', ->
   class App.ModelWithProtectedAttributes extends Tower.Model
     @field 'a', type: 'Integer'
     @field 'b', type: 'Integer'

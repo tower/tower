@@ -1,5 +1,5 @@
 # https://github.com/felixge/node-couchdb
 # @todo
-class Tower.Store.CouchDB extends Tower.Store
+class Tower.StoreCouchDB extends Tower.Store
 
-module.exports = Tower.Store.CouchDB
+module.exports = Tower.StoreCouchDB

@@ -9,16 +9,16 @@ Tower.Controller.reopenClass extended: ->
 
   Tower.Application.instance().reopen(object)
 
-  Tower.Net.Connection.controllers.push(camelName)
+  Tower.NetConnection.controllers.push(camelName)
 
   @
 
   instance: ->
     Tower.Application.instance().get(camelName)
 
-Tower.Controller.include Tower.Controller.Actions
-Tower.Controller.include Tower.Controller.Elements
-Tower.Controller.include Tower.Controller.Events
-Tower.Controller.include Tower.Controller.Handlers
-Tower.Controller.include Tower.Controller.Instrumentation
-Tower.Controller.include Tower.Controller.States
+Tower.Controller.include Tower.ControllerActions
+Tower.Controller.include Tower.ControllerElements
+Tower.Controller.include Tower.ControllerEvents
+Tower.Controller.include Tower.ControllerHandlers
+Tower.Controller.include Tower.ControllerInstrumentation
+Tower.Controller.include Tower.ControllerStates

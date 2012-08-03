@@ -1,6 +1,6 @@
 <%= app.namespace %>.bootstrap = (data) ->
 
-Tower.Net.Connection.transport = Tower.Store.Transport.Ajax
+Tower.NetConnection.transport = Tower.StoreTransportAjax
 <%= app.namespace %>.initialize()
 <%= app.namespace %>.listen()
 

@@ -1,7 +1,7 @@
 # @todo
 # http://docs.neo4j.org/chunked/stable/security-server.html
 # http://sujitpal.blogspot.com/2009/05/using-neo4j-to-load-and-query-owl.html
-Tower.Store.Neo4j.Serialization =
+Tower.StoreNeo4jSerialization =
   # @example conditions (http://docs.neo4j.org/chunked/stable/query-where.html)
   #   START n=node(3, 1)
   #   WHERE (n.age < 30 and n.name = "Tobias") or not(n.name = "Tobias")
@@ -29,4 +29,4 @@ Tower.Store.Neo4j.Serialization =
   serializeToCypher: (criteria) ->
     conditions = criteria.conditions()
 
-module.exports = Tower.Store.Neo4j.Serialization
+module.exports = Tower.StoreNeo4jSerialization

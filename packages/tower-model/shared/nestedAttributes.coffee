@@ -1,4 +1,4 @@
-Tower.Model.NestedAttributes =
+Tower.ModelNestedAttributes =
   ClassMethods:
     acceptsNestedAttributesFor: (keys...) ->
       mixin = {}
@@ -112,4 +112,4 @@ Tower.Model.NestedAttributes =
   _hasDestroyFlag: (attributes) ->
     attributes.hasOwnProperty('_destroy')
 
-module.exports = Tower.Model.NestedAttributes
+module.exports = Tower.ModelNestedAttributes

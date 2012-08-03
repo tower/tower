@@ -1,4 +1,4 @@
-Tower.Controller.Scopes =
+Tower.ControllerScopes =
   ClassMethods:
     # @example
     #   class App.PostsController extends Tower.Controller
@@ -107,6 +107,6 @@ Tower.Controller.Scopes =
     
     object
 
-Tower.Controller.Scopes.ClassMethods.collection = Tower.Controller.Scopes.ClassMethods.scope
+Tower.ControllerScopes.ClassMethods.collection = Tower.ControllerScopes.ClassMethods.scope
 
-module.exports = Tower.Controller.Scopes
+module.exports = Tower.ControllerScopes

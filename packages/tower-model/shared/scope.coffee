@@ -1,7 +1,7 @@
-# Interface to {Tower.Model.Cursor}, used to build database operations.
+# Interface to {Tower.ModelCursor}, used to build database operations.
 # 
 # @todo Remove this layer, if you want to manually reuse a scope maybe have to call `clone` directly?
-class Tower.Model.Scope
+class Tower.ModelScope
   @finderMethods: [
     'find'
     'all'
@@ -362,15 +362,15 @@ class Tower.Model.Scope
 
   # Clone this scope (and the critera attached to it).
   #
-  # @return [Tower.Model.Scope]
+  # @return [Tower.ModelScope]
   clone: ->
     new @constructor(@cursor.clone(false))
 
-for key in Tower.Model.Scope.queryMethods
+for key in Tower.ModelScope.queryMethods
   do (key) =>
-    Tower.Model.Scope::[key] = ->
+    Tower.ModelScope::[key] = ->
       clone = @clone()
       clone.cursor[key](arguments...)
       clone
 
-module.exports = Tower.Model.Scope
+module.exports = Tower.ModelScope

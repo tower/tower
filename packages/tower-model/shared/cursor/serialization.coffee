@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Cursor.Serialization = Ember.Mixin.create
+Tower.ModelCursorSerialization = Ember.Mixin.create
   isCursor: true
 
   make: (options = {}) ->
@@ -7,7 +7,7 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     @model      ||= options.model
     @store        = if @model then @model.store() else undefined
 
-    #@transaction  = options.transaction || new Tower.Store.Transaction
+    #@transaction  = options.transaction || new Tower.StoreTransaction
 
     @instantiate  = options.instantiate != false
 
@@ -125,10 +125,10 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
 
   # Clone this cursor.
   #
-  # @return [Tower.Model.Criteria]
+  # @return [Tower.ModelCriteria]
   clone: (cloneContent = true) ->
     if Ember.EXTEND_PROTOTYPES
-      clone = @concat()#Tower.Model.CursorMixin.apply(@concat())
+      clone = @concat()#Tower.ModelCursorMixin.apply(@concat())
       clone.isCursor = true
     else
       clone = @constructor.create()
@@ -166,9 +166,9 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
 
   # Merge this cursor with another cursor.
   #
-  # @param [Tower.Model.Criteria] cursor
+  # @param [Tower.ModelCriteria] cursor
   #
-  # @return [Tower.Model.Criteria] returns this cursor.
+  # @return [Tower.ModelCriteria] returns this cursor.
   merge: (cursor) ->
     @_where     = @_where.concat cursor._where
     @_order     = @_order.concat cursor._order
@@ -194,7 +194,7 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
     includes      = @get('includes')
     
     data.sort       = sort if sort && sort.length
-    operators = Tower.Store.Operators.MAP
+    operators = Tower.StoreOperators.MAP
 
     # @todo may want to put this somewhere else
     if conditions
@@ -278,7 +278,7 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
         if _.isArray(oldValue)
           object[key] = oldValue.concat value
         else if typeof oldValue == 'object' && typeof value == 'object'
-          object[key] = Tower.Support.Object.deepMergeWithArrays(object[key], value)
+          object[key] = Tower.SupportObject.deepMergeWithArrays(object[key], value)
         else
           object[key] = value
       else
@@ -300,4 +300,4 @@ Tower.Model.Cursor.Serialization = Ember.Mixin.create
   _array: (existing, orNull) ->
     if existing && existing.length then existing.concat() else (if orNull then null else [])
 
-module.exports = Tower.Model.Cursor.Serialization
+module.exports = Tower.ModelCursorSerialization

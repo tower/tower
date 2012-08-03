@@ -1,4 +1,4 @@
-class Tower.View.Component
+class Tower.ViewComponent
   @render: ->
     args              = _.args(arguments)
     template          = args.shift()

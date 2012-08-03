@@ -1,5 +1,5 @@
 class Tower.Store extends Tower.Class
-  @include Tower.Support.Callbacks
+  @include Tower.SupportCallbacks
 
   @defaultLimit: 100
 
@@ -110,7 +110,7 @@ class Tower.Store extends Tower.Class
     @_super arguments...
 
     @name       = options.name
-    @className  = options.type || Tower.namespaced(Tower.Support.String.camelize(Tower.Support.String.singularize(@name)))
+    @className  = options.type || Tower.namespaced(Tower.SupportString.camelize(Tower.SupportString.singularize(@name)))
 
   _defaultOptions: (options) ->
     options

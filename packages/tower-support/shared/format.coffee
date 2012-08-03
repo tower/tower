@@ -244,7 +244,7 @@
       inflector.singularize(name)
 
     camelCase: (value) ->
-      Tower.Support.String.camelize(value)
+      Tower.SupportString.camelize(value)
 
   asyncing =
     series: ->

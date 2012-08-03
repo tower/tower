@@ -1,4 +1,4 @@
-class Tower.Generator.HelperGenerator extends Tower.Generator
+class Tower.GeneratorHelperGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -6,4 +6,4 @@ class Tower.Generator.HelperGenerator extends Tower.Generator
       @inside "helpers", '.', ->
         @template "helper.coffee", "#{@model.name}Helper.coffee", ->
 
-module.exports = Tower.Generator.HelperGenerator
+module.exports = Tower.GeneratorHelperGenerator

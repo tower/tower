@@ -6,7 +6,7 @@ class App.Controller_Scopes_MetdataController extends Tower.Controller
     user.set('id', 5)
     user
 
-describe 'Tower.Controller.Scopes', ->
+describe 'Tower.ControllerScopes', ->
   C = App.Controller_Scopes_MetdataController
 
   beforeEach ->
@@ -22,26 +22,26 @@ describe 'Tower.Controller.Scopes', ->
       C.scope App.Post
 
       assert.deepEqual _.keys(C.metadata().scopes), ['all']
-      assert.isTrue C.metadata().scopes['all'].isCursor, "scope instanceof Tower.Model.Cursor"
+      assert.isTrue C.metadata().scopes['all'].isCursor, "scope instanceof Tower.ModelCursor"
 
     test '"all"', ->
       C.scope 'all'
 
       assert.deepEqual C.metadata().scopeNames, ['all']
-      assert.isTrue C.metadata().scopes['all'].isCursor, "scope instanceof Tower.Model.Cursor"
+      assert.isTrue C.metadata().scopes['all'].isCursor, "scope instanceof Tower.ModelCursor"
 
     test '"highlyRated"', ->
       C.scope 'highlyRated'
 
       assert.deepEqual _.keys(C.metadata().scopes), ['highlyRated']
-      assert.isTrue C.metadata().scopes['highlyRated'].isCursor, "scope instanceof Tower.Model.Cursor"
+      assert.isTrue C.metadata().scopes['highlyRated'].isCursor, "scope instanceof Tower.ModelCursor"
       assert.deepEqual C.metadata().scopes['highlyRated'].conditions(), {type: 'Post', rating: '>=': 8}
 
   describe 'instance', ->
     test 'default', ->
       C.scope()
 
-      assert.isTrue C.instance().get('all').isCursor, "scope instanceof Tower.Model.Cursor"
+      assert.isTrue C.instance().get('all').isCursor, "scope instanceof Tower.ModelCursor"
 
     test '"writtenBy(currentUser)"', ->
       C.scope 'writtenBy', -> App.Post.where(userId: @getPath('currentUser.id'))

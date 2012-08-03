@@ -1,6 +1,6 @@
 # @todo
 # @mixin
-Tower.Generator.Shell =
+Tower.GeneratorShell =
   sayStatus: (status, color) ->
     _console.log status if @options.verbose
     #base.shell.sayStatus status, relativeDestination, color if options.verbose
@@ -15,4 +15,4 @@ Tower.Generator.Shell =
     console.log description
     @program.choose list, callback
 
-module.exports = Tower.Generator.Shell
+module.exports = Tower.GeneratorShell

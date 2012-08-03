@@ -1,10 +1,10 @@
-class Tower.View.Form extends Tower.View.Component
+class Tower.ViewForm extends Tower.ViewComponent
   constructor: (args, options) ->
     super
     @model      = args.shift() || new Tower.Model
 
     if typeof @model == "string"
-      klass     = try Tower.constant(Tower.Support.String.camelize(@model))
+      klass     = try Tower.constant(Tower.SupportString.camelize(@model))
       @model    = new klass if klass
 
     @attributes = @_extractAttributes(options)
@@ -13,7 +13,7 @@ class Tower.View.Form extends Tower.View.Component
     @tag "form", @attributes, =>
       @tag "input", type: "hidden", name: "_method", value: @attributes["data-method"]
       if callback
-        builder    = new Tower.View.Form.Builder([],
+        builder    = new Tower.ViewFormBuilder([],
           template:   @template
           tabindex:   1
           accessKeys: {}
@@ -28,7 +28,7 @@ class Tower.View.Form extends Tower.View.Component
     attributes.class            = options["class"] if options.hasOwnProperty("class")
     #@mergeClass attributes, config.formClass
     attributes.id               = options.id if options.hasOwnProperty("id")
-    attributes.id             ||= Tower.Support.String.parameterize("#{@model.constructor.className()}-form")
+    attributes.id             ||= Tower.SupportString.parameterize("#{@model.constructor.className()}-form")
     attributes.enctype          = "multipart/form-data" if (options.multipart || attributes.multipart == true)
     attributes.role             = "form"
     attributes.novalidate       = "true" # needs to be true b/c the error popups are horribly ugly!# if options.validate == false
@@ -51,4 +51,4 @@ require './form/builder'
 require './form/field'
 require './form/fieldset'
 
-module.exports = Tower.View.Form
+module.exports = Tower.ViewForm

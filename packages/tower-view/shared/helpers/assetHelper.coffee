@@ -1,5 +1,5 @@
 # @mixin
-Tower.View.AssetHelper =
+Tower.ViewAssetHelper =
   javascripts: ->
     sources = _.args(arguments)
     options = _.extractOptions(sources)
@@ -59,4 +59,4 @@ Tower.View.AssetHelper =
 
     result
 
-module.exports = Tower.View.AssetHelper
+module.exports = Tower.ViewAssetHelper

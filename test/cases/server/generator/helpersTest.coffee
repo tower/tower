@@ -1,1 +1,1 @@
-describe 'Tower.Generator.Helpers', ->
+describe 'Tower.GeneratorHelpers', ->

@@ -1,4 +1,4 @@
-class Tower.Model.Validator.Uniqueness extends Tower.Model.Validator
+class Tower.ModelValidatorUniqueness extends Tower.ModelValidator
   constructor: (name, value, attributes, options) ->
     super(name, value, attributes, options)
 
@@ -24,4 +24,4 @@ class Tower.Model.Validator.Uniqueness extends Tower.Model.Validator
       else
         @success(callback)
 
-module.exports = Tower.Model.Validator.Uniqueness
+module.exports = Tower.ModelValidatorUniqueness

@@ -1,4 +1,4 @@
 class Tower.Hook extends Ember.Application
-  @include Tower.Support.Callbacks
+  @include Tower.SupportCallbacks
 
 module.exports = Tower.Hook

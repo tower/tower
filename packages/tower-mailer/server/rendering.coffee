@@ -1,4 +1,4 @@
-Tower.Mailer.Rendering =
+Tower.MailerRendering =
   ClassMethods:
     config: {}
 
@@ -52,4 +52,4 @@ Tower.Mailer.Rendering =
       else
         callback.call(@, null, options)
 
-module.exports = Tower.Mailer.Rendering
+module.exports = Tower.MailerRendering

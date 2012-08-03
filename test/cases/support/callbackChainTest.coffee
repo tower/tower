@@ -1,6 +1,6 @@
-describe 'Tower.Support.Callbacks.CallbackChain', ->
+describe 'Tower.SupportCallbacksCallbackChain', ->
   class CallbackTest extends Tower.Class
-    @include Tower.Support.Callbacks
+    @include Tower.SupportCallbacks
 
     # sync method, sync callback
     @before 'method', 'beforeMethod'
@@ -65,7 +65,7 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
   record = null
 
   beforeEach ->
-    Tower.Support.Callbacks.silent = true
+    Tower.SupportCallbacks.silent = true
     record = CallbackTest.build()
 
   describe 'sync method, sync callback', ->
@@ -189,7 +189,7 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
           record = r
           done()
 
-    # the uniqueness error might be coming from Tower.Model.AutosaveAssociation#_associationIsValid
+    # the uniqueness error might be coming from Tower.ModelAutosaveAssociation#_associationIsValid
     test 'save', (done) ->
       assert.isTrue record.get('isValid')
 

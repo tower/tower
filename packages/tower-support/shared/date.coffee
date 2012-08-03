@@ -1,6 +1,6 @@
 # Helpers to warp the time for testing: https://github.com/harvesthq/time-warp
 # @todo And some time zone helpers
-Tower.Support.Date =
+Tower.SupportDate =
   timeOffset: 0
   timeZone:   'UTC'
 

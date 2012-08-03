@@ -9,9 +9,9 @@ App.configure ->
   @use "bodyParser", uploadDir: "./public/uploads"
   #@use "csrf"
   @use "methodOverride", "_method"
-  @use Tower.Middleware.Agent
-  @use Tower.Middleware.Location
+  @use Tower.MiddlewareAgent
+  @use Tower.MiddlewareLocation
   #if Tower.httpCredentials && Tower.branch != "development"
   #  @use "basicAuth", Tower.httpCredentials.username, Tower.httpCredentials.password
   
-  @use Tower.Middleware.Router
+  @use Tower.MiddlewareRouter

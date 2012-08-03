@@ -1,4 +1,4 @@
-class Tower.Net.Cookies
+class Tower.NetCookies
   @parse: (string = document.cookie) ->
     result  = {}
     pairs   = string.split(/[;,] */);
@@ -27,4 +27,4 @@ class Tower.Net.Cookies
   constructor: (attributes = {}) ->
     _.extend(@, attributes)
 
-module.exports = Tower.Net.Cookies
+module.exports = Tower.NetCookies

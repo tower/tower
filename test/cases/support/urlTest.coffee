@@ -1,4 +1,4 @@
-describe 'Tower.Support.Url', ->
+describe 'Tower.SupportUrl', ->
   urlFor = Tower.urlFor
   
   test 'urlFor("something")', ->

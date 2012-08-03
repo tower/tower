@@ -1,5 +1,5 @@
 # @mixin
-Tower.View.EmberHelper =
+Tower.ViewEmberHelper =
   hEach: ->
     hBlock 'each', arguments...
 
@@ -78,4 +78,4 @@ Tower.View.EmberHelper =
       block()
       text "{{/#{key}}}"
 
-module.exports = Tower.View.EmberHelper
+module.exports = Tower.ViewEmberHelper

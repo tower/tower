@@ -5,13 +5,13 @@ require './server/helpers'
 require './server/resources'
 require './server/shell'
 
-Tower.Generator.include Tower.Generator.Actions
-Tower.Generator.include Tower.Generator.Configuration
-Tower.Generator.include Tower.Generator.Helpers
-Tower.Generator.include Tower.Generator.Resources
-Tower.Generator.include Tower.Generator.Shell
+Tower.Generator.include Tower.GeneratorActions
+Tower.Generator.include Tower.GeneratorConfiguration
+Tower.Generator.include Tower.GeneratorHelpers
+Tower.Generator.include Tower.GeneratorResources
+Tower.Generator.include Tower.GeneratorShell
 
-Tower.Generator.Mocha = {}
+Tower.GeneratorMocha = {}
 
 require './server/generators/tower/app/appGenerator'
 require './server/generators/tower/model/modelGenerator'

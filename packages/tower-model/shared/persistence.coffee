@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Persistence =
+Tower.ModelPersistence =
   ClassMethods:
     # Construct a new instance of the model
     new: Ember.Object.create
@@ -8,7 +8,7 @@ Tower.Model.Persistence =
     #
     # @example Define the store from a store class
     #   class App.User extends Tower.Model
-    #     @store Tower.Store.Mongodb
+    #     @store Tower.StoreMongodb
     #
     # @example Define the store from an object (uses {Tower.Model.default('store')})
     #   class App.Person extends Tower.Model
@@ -25,7 +25,7 @@ Tower.Model.Persistence =
       store     = metadata.store
       return store if arguments.length == 0 && store
 
-      defaultStore = @default('store') || Tower.Model.default('store') || Tower.Store.Memory
+      defaultStore = @default('store') || Tower.Model.default('store') || Tower.StoreMemory
 
       type = typeof value
 
@@ -41,13 +41,13 @@ Tower.Model.Persistence =
 
       metadata.store = store
 
-    # Load data into the store, used only for {Tower.Store.Memory}.
+    # Load data into the store, used only for {Tower.StoreMemory}.
     #
     # @param [Array] records array of objects or models (so you can pass in JSON).
     #
     # @return [Array] will return the array of models.
     load: (records) ->
-      # Tower.Model.Cursor.pushMatching @store().load(records)
+      # Tower.ModelCursor.pushMatching @store().load(records)
       @store().load(records)
 
     # For memory store, if records were deleted on the server 
@@ -322,4 +322,4 @@ Tower.Model.Persistence =
 
       undefined
 
-module.exports = Tower.Model.Persistence
+module.exports = Tower.ModelPersistence

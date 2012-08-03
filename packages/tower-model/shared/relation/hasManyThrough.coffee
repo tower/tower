@@ -1,4 +1,4 @@
-class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
+class Tower.ModelRelationHasManyThrough extends Tower.ModelRelationHasMany
   isHasManyThrough: true
 
   init: (options) ->
@@ -10,7 +10,7 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
 
   # Relation on the associated object that maps back to this relation.
   #
-  # @return [Tower.Model.Relation]
+  # @return [Tower.ModelRelation]
   inverseThrough: (relation) ->
     relations = relation.targetKlass().relations()
 
@@ -25,14 +25,14 @@ class Tower.Model.Relation.HasManyThrough extends Tower.Model.Relation.HasMany
       for name, relation of relations
         return relation if relation.targetType == type
 
-Tower.Model.Relation.HasManyThrough.CursorMixin = Ember.Mixin.create Tower.Model.Relation.HasMany.CursorMixin,
+Tower.ModelRelationHasManyThroughCursorMixin = Ember.Mixin.create Tower.ModelRelationHasManyCursorMixin,
   isHasManyThrough: true
 
   clonePrototype: ->
     clone = @concat()
     clone.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(clone)
-    Tower.Model.Relation.HasManyThrough.CursorMixin.apply(clone)
+    Tower.ModelRelationCursorMixin.apply(clone)
+    Tower.ModelRelationHasManyThroughCursorMixin.apply(clone)
 
   make: (options = {}) ->
     @_super arguments...
@@ -134,13 +134,13 @@ Tower.Model.Relation.HasManyThrough.CursorMixin = Ember.Mixin.create Tower.Model
       throughRecords = throughRecords[0] unless returnArray
       callback.call @, error, throughRecords if callback
 
-class Tower.Model.Relation.HasManyThrough.Cursor extends Tower.Model.Relation.Cursor
+class Tower.ModelRelationHasManyThroughCursor extends Tower.ModelRelationCursor
   @make: ->
     array = []
     array.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(array)
-    Tower.Model.Relation.HasManyThrough.CursorMixin.apply(array)
+    Tower.ModelRelationCursorMixin.apply(array)
+    Tower.ModelRelationHasManyThroughCursorMixin.apply(array)
 
-  @include Tower.Model.Relation.HasManyThrough.CursorMixin
+  @include Tower.ModelRelationHasManyThroughCursorMixin
 
-module.exports = Tower.Model.Relation.HasManyThrough
+module.exports = Tower.ModelRelationHasManyThrough

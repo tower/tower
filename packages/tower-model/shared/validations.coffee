@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Validations =
+Tower.ModelValidations =
   ClassMethods:
     # Define validation(s) for attribute(s).
     #
@@ -52,7 +52,7 @@ Tower.Model.Validations =
       options     = attributes.pop()
       validators  = @validators()
 
-      newValidators = Tower.Model.Validator.createAll(attributes, options)
+      newValidators = Tower.ModelValidator.createAll(attributes, options)
       validators.push(validator) for validator in newValidators
 
       @
@@ -128,4 +128,4 @@ Tower.Model.Validations =
       else
         false
 
-module.exports = Tower.Model.Validations
+module.exports = Tower.ModelValidations

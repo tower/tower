@@ -2,7 +2,7 @@ scope     = null
 criteria  = null
 user      = null
 
-describe 'Tower.Model.Serialization', -> 
+describe 'Tower.ModelSerialization', -> 
   test "instance.toJSON", ->
     json = App.User.new(firstName: "Lance").toJSON()
     

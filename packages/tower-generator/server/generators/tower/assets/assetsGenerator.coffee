@@ -1,4 +1,4 @@
-class Tower.Generator.AssetsGenerator extends Tower.Generator
+class Tower.GeneratorAssetsGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -9,4 +9,4 @@ class Tower.Generator.AssetsGenerator extends Tower.Generator
         #@inside "controllers", '.', ->
         #  @template "controller.coffee", "#{@model.pluralName}Controller.coffee"
 
-module.exports = Tower.Generator.AssetsGenerator
+module.exports = Tower.GeneratorAssetsGenerator

@@ -1,8 +1,8 @@
-# @concern Tower.Model.Attributes
-# @concern Tower.Model.Persistence
-# @concern Tower.Model.Relations
-# @concern Tower.Model.Scopes
-# @concern Tower.Model.Validations
+# @concern Tower.ModelAttributes
+# @concern Tower.ModelPersistence
+# @concern Tower.ModelRelations
+# @concern Tower.ModelScopes
+# @concern Tower.ModelValidations
 #
 # @method .where(conditions)
 #   Query conditions

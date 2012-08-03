@@ -1,13 +1,13 @@
-describe 'Tower.Store.Mongodb', ->
+describe 'Tower.StoreMongodb', ->
   __config    = null
   config      = null
 
   beforeEach ->
-    __config  = Tower.Store.Mongodb.config
-    config    = Tower.Store.Mongodb.config = {}
+    __config  = Tower.StoreMongodb.config
+    config    = Tower.StoreMongodb.config = {}
 
   afterEach ->
-    Tower.Store.Mongodb.config = __config
+    Tower.StoreMongodb.config = __config
 
   test 'url', ->
     config.url = "mongodb://heroku_user:asdfasdfasdf@data123.mongolab.com:29197/heroku_app"
@@ -19,7 +19,7 @@ describe 'Tower.Store.Mongodb', ->
       username: 'heroku_user'
       password: 'asdfasdfasdf'
 
-    result = Tower.Store.Mongodb.parseEnv()
+    result = Tower.StoreMongodb.parseEnv()
 
     for key, value of expected
       assert.equal result[key], value

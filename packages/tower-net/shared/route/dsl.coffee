@@ -1,11 +1,11 @@
-class Tower.Net.Route.DSL
+class Tower.NetRouteDSL
   constructor: ->
     @_scope = {}
 
   match: ->
     @scope ||= {}
-    route = new Tower.Net.Route(@_extractOptions(arguments...))
-    Tower.Net.Route.create(route)
+    route = new Tower.NetRoute(@_extractOptions(arguments...))
+    Tower.NetRoute.create(route)
 
   get: ->
     @matchMethod("get", _.args(arguments))
@@ -200,4 +200,4 @@ class Tower.Net.Route.DSL
 
     name: controller, action: action, className: controller
 
-module.exports = Tower.Route.DSL
+module.exports = Tower.RouteDSL

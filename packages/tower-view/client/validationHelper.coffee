@@ -1,4 +1,4 @@
-Tower.View.ValidationHelper =
+Tower.ViewValidationHelper =
   success: ->
     @redirectTo "/"
 

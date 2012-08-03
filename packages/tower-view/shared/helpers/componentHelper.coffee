@@ -1,11 +1,11 @@
-Tower.View.ComponentHelper =
+Tower.ViewComponentHelper =
   formFor: ->
     _c = if typeof(__cc) == 'undefined' then __ck else __cc
-    Tower.View.Form.render(_c, arguments...)
+    Tower.ViewForm.render(_c, arguments...)
 
   tableFor: ->
     _c = if typeof(__cc) == 'undefined' then __ck else __cc
-    Tower.View.Table.render(_c, arguments...)
+    Tower.ViewTable.render(_c, arguments...)
 
   widget: ->
 
@@ -20,4 +20,4 @@ Tower.View.ComponentHelper =
     dt key
     dd value
 
-module.exports = Tower.View.ComponentHelper
+module.exports = Tower.ViewComponentHelper

@@ -1,5 +1,5 @@
 # @mixin
-Tower.Store.Memory.Persistence =
+Tower.StoreMemoryPersistence =
   # Load models into the store (for non-persistent stores).
   #
   # @return [Array] Returns array of added records.
@@ -124,4 +124,4 @@ Tower.Store.Memory.Persistence =
   destroyOne: (record) ->
     @records.remove(record.get('id'))
 
-module.exports = Tower.Store.Memory.Persistence
+module.exports = Tower.StoreMemoryPersistence

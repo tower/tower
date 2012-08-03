@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Instrumentation =
+Tower.ControllerInstrumentation =
   enter: (action) ->
     Ember.changeProperties ->
       @set('isActive', true)

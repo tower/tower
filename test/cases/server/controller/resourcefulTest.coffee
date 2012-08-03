@@ -2,7 +2,7 @@ controller  = null
 user        = null
 router      = null
 
-describe "Tower.Controller.Resourceful", ->
+describe "Tower.ControllerResourceful", ->
   beforeEach (done) ->
     App.User.destroy =>
       App.User.insert firstName: "Lance", (error, record) =>

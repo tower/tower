@@ -1,5 +1,5 @@
 # @module
-Tower.Store.Mongodb.Serialization =
+Tower.StoreMongodbSerialization =
   serializeModel: (attributes, saved = false) ->
     return attributes if attributes instanceof Tower.Model
     klass = Tower.constant(@className)
@@ -81,7 +81,7 @@ Tower.Store.Mongodb.Serialization =
     result  = {}
 
     query   = @deserializeModel(cursor.conditions())
-    operators = @constructor.queryOperators#Tower.Store.Operators.MAP
+    operators = @constructor.queryOperators#Tower.StoreOperators.MAP
 
     for key, value of query
       field = schema[key]
@@ -226,4 +226,4 @@ Tower.Store.Mongodb.Serialization =
   decodeId: (value) ->
     value.toString()
 
-module.exports = Tower.Store.Mongodb.Serialization
+module.exports = Tower.StoreMongodbSerialization

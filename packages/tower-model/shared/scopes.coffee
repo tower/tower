@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Scopes =
+Tower.ModelScopes =
   ClassMethods:
     # Define a named scope on the model class.
     #
@@ -13,15 +13,15 @@ Tower.Model.Scopes =
     # @param [String] name
     # @param [Object] scope you can pass in conditions for the `where` method, or an actual scope instance.
     #
-    # @return [Tower.Model.Scope]
+    # @return [Tower.ModelScope]
     scope: (name, scope) ->
-      scope   = if scope instanceof Tower.Model.Scope then scope else @where(scope)
+      scope   = if scope instanceof Tower.ModelScope then scope else @where(scope)
       @[name] = ->
         @scoped().where(scope.cursor)
 
-    # Returns a {Tower.Model.Scope} with default cursor for the model class.
+    # Returns a {Tower.ModelScope} with default cursor for the model class.
     #
-    # @return [Tower.Model.Scope]
+    # @return [Tower.ModelScope]
     scoped: (options = {}) ->
       cursor        = @cursor(options)
       # default scopes aren't 100% yet
@@ -30,14 +30,14 @@ Tower.Model.Scopes =
       if defaultScope
         defaultScope.where(cursor)
       else
-        new Tower.Model.Scope(cursor)
+        new Tower.ModelScope(cursor)
 
-    # Return a {Tower.Model.Cursor} to be used in building a query.
+    # Return a {Tower.ModelCursor} to be used in building a query.
     #
-    # @return [Tower.Model.Cursor]
+    # @return [Tower.ModelCursor]
     cursor: (options = {}) ->
       options.model = @
-      cursor = Tower.Model.Cursor.make()
+      cursor = Tower.ModelCursor.make()
       cursor.make(options)
       cursor.where(type: @className()) if @baseClass().className() != @className()
       cursor
@@ -49,19 +49,19 @@ Tower.Model.Scopes =
     toCursor: ->
       @cursor(arguments...)
 
-for key in Tower.Model.Scope.queryMethods
+for key in Tower.ModelScope.queryMethods
   do (key) ->
-    Tower.Model.Scopes.ClassMethods[key] = ->
+    Tower.ModelScopes.ClassMethods[key] = ->
       @scoped()[key](arguments...)
 
-for key in Tower.Model.Scope.finderMethods
+for key in Tower.ModelScope.finderMethods
   do (key) ->
-    Tower.Model.Scopes.ClassMethods[key] = ->
+    Tower.ModelScopes.ClassMethods[key] = ->
       @scoped()[key](arguments...)
 
-for key in Tower.Model.Scope.persistenceMethods
+for key in Tower.ModelScope.persistenceMethods
   do (key) ->
-    Tower.Model.Scopes.ClassMethods[key] = ->
+    Tower.ModelScopes.ClassMethods[key] = ->
       @scoped()[key](arguments...)
 
-module.exports = Tower.Model.Scopes
+module.exports = Tower.ModelScopes

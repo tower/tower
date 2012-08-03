@@ -1,4 +1,4 @@
-class Tower.Model.Validator
+class Tower.ModelValidator
   @keys:
     presence:   'presence'
     required:   'required'
@@ -34,7 +34,7 @@ class Tower.Model.Validator
       if _.isHash(value)
         validatorOptions = _.moveProperties(validatorOptions, value, 'on', 'if', 'unless', 'allow', 'scope')
 
-      validators.push Tower.Model.Validator.create(key, value, attributes, validatorOptions)
+      validators.push Tower.ModelValidator.create(key, value, attributes, validatorOptions)
 
     validators
 
@@ -48,17 +48,17 @@ class Tower.Model.Validator
   @_create: (name, value, attributes, options) ->
     switch name
       when 'presence', 'required'
-        new @Presence(name, value, attributes, options)
+        new Tower.ModelValidatorPresence(name, value, attributes, options)
       when 'count', 'length', 'min', 'max', 'gte', 'gt', 'lte', 'lt'
-        new @Length(name, value, attributes, options)
+        new Tower.ModelValidatorLength(name, value, attributes, options)
       when 'format'
-        new @Format(name, value, attributes, options)
+        new Tower.ModelValidatorFormat(name, value, attributes, options)
       when 'in', 'only', 'values', 'accepts'
-        new @Set('in', value, attributes, options)
+        new Tower.ModelValidatorSet('in', value, attributes, options)
       when 'except', 'notIn'
-        new @Set('notIn', value, attributes, options)
+        new Tower.ModelValidatorSet('notIn', value, attributes, options)
       when 'uniqueness', 'unique'
-        new @Uniqueness(name, value, attributes, options)
+        new Tower.ModelValidatorUniqueness(name, value, attributes, options)
 
   constructor: (name, value, attributes, options = {}) ->
     @name       = name
@@ -159,4 +159,4 @@ require './validator/presence'
 require './validator/set'
 require './validator/uniqueness'
 
-module.exports = Tower.Model.Validation
+module.exports = Tower.ModelValidation

@@ -1,5 +1,5 @@
 # @module
-Tower.Controller.Sockets =
+Tower.ControllerSockets =
   # @todo
   broadcast: ->
 
@@ -9,4 +9,4 @@ Tower.Controller.Sockets =
   # @todo
   connect: ->
 
-module.exports = Tower.Controller.Sockets
+module.exports = Tower.ControllerSockets

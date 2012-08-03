@@ -1,4 +1,4 @@
-Tower.Controller.Actions =
+Tower.ControllerActions =
   # Default implementation for the 'index' action.
   index: (params) ->
     @findCollection (error, collection) =>

@@ -46,7 +46,7 @@ require '../tower-generator/server'
 
 Tower.watch = true
 
-Tower.View.store(new Tower.Store.FileSystem(['app/views']))
+Tower.View.store(new Tower.StoreFileSystem(['app/views']))
 Tower.root                = process.cwd()
 Tower.publicPath          = process.cwd() + '/public'
 Tower.publicCacheDuration = 60 * 1000
@@ -56,4 +56,4 @@ Tower.render              = (string, options = {}) ->
 Tower.domain              = 'localhost'
 
 Tower.run = (argv) ->
-  (new Tower.Command.Server(argv)).run()
+  (new Tower.CommandServer(argv)).run()

@@ -1,5 +1,5 @@
 # @module
-Tower.Controller.Caching =
+Tower.ControllerCaching =
   # @todo
   freshWhen: ->
 
@@ -15,4 +15,4 @@ Tower.Controller.Caching =
   store: ->
     @_store ||= {}
 
-module.exports = Tower.Controller.Caching
+module.exports = Tower.ControllerCaching

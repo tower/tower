@@ -1,4 +1,4 @@
-describe 'Tower.Support.Format', ->
+describe 'Tower.SupportFormat', ->
   describe 'validation', ->
     test 'isPresent', ->
       assert.isFalse _.isPresent(null)

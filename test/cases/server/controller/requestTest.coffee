@@ -125,6 +125,6 @@ describeWith = (store) ->
       # 
       #     done()
   
-describeWith(Tower.Store.Memory)
+describeWith(Tower.StoreMemory)
 unless Tower.client
-  describeWith(Tower.Store.Mongodb)
+  describeWith(Tower.StoreMongodb)

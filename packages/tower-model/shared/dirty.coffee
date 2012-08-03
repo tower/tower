@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Dirty =
+Tower.ModelDirty =
   # Returns a hash in the format `{attribute1Name: [oldValue, newValue]}`, 
   # only for the attributes that have different before/after values.
   # 
@@ -172,4 +172,4 @@ Tower.Model.Dirty =
   _getField: (key) ->
     @constructor.fields()[key]
 
-module.exports = Tower.Model.Dirty
+module.exports = Tower.ModelDirty

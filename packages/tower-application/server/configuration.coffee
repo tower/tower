@@ -1,6 +1,6 @@
 # This isn't being used yet, but is an idea.
-class Tower.Application.Configuration extends Tower.Class
-  @include Tower.Support.Callbacks
+class Tower.ApplicationConfiguration extends Tower.Class
+  @include Tower.SupportCallbacks
 
   @before "initialize", "addLoadPaths"
   @before "initialize", "addAutoloadPaths"
@@ -23,11 +23,11 @@ class Tower.Application.Configuration extends Tower.Class
 
       Tower.config[key] = config if _.isPresent(config)
 
-    Tower.Application.Assets.loadManifest()
+    Tower.ApplicationAssets.loadManifest()
 
     paths = File.files("#{Tower.root}/config/locales")
     for path in paths
-      Tower.Support.I18n.load(path) if path.match(/\.(coffee|js)$/)
+      Tower.SupportI18n.load(path) if path.match(/\.(coffee|js)$/)
 
     # load initializers
     require "#{Tower.root}/config/environments/#{Tower.env}"

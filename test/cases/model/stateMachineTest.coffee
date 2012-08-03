@@ -1,6 +1,6 @@
 ###
 describeWith = (store) ->
-  describe "Tower.Model.StateMachine (Tower.Store.#{store.className()})", ->
+  describe "Tower.ModelStateMachine (Tower.Store.#{store.className()})", ->
     record        = null
     stateMachine  = null
     
@@ -14,7 +14,7 @@ describeWith = (store) ->
         done()
       
     test 'new, currentState', ->
-      assert.ok stateMachine instanceof Tower.Model.StateMachine, "record.get('stateMachine') instanceof Tower.Model.StateMachine"
+      assert.ok stateMachine instanceof Tower.ModelStateMachine, "record.get('stateMachine') instanceof Tower.ModelStateMachine"
       
       assert.equal stateMachine.get('currentState').get('name'), 'empty'
       
@@ -109,5 +109,5 @@ describeWith = (store) ->
           assert.equal stateMachine.getPath('currentState.path'), 'rootState.updated.invalid'
           assert.equal record.get('isValid'), false
 
-describeWith(Tower.Store.Memory)
+describeWith(Tower.StoreMemory)
 ###

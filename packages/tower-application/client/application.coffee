@@ -14,7 +14,7 @@ class Tower.Application extends Tower.Engine
   @before 'initialize', 'setDefaults'
 
   setDefaults: ->
-    #Tower.Model.default "store", Tower.Store.Ajax
+    #Tower.Model.default "store", Tower.NetResponse
     #Tower.Model.field "id", type: "Id"
 
     true
@@ -44,8 +44,8 @@ class Tower.Application extends Tower.Engine
     @
 
   extractAgent: ->
-    Tower.cookies = Tower.Net.Cookies.parse()
-    Tower.agent   = new Tower.Net.Agent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
+    Tower.cookies = Tower.NetCookies.parse()
+    Tower.agent   = new Tower.NetAgent(JSON.parse(Tower.cookies["user-agent"] || '{}'))
 
   listen: ->
     return if @listening
@@ -56,16 +56,16 @@ class Tower.Application extends Tower.Engine
     # see https://groups.google.com/forum/#!msg/socket_io/eNSAXgE9FjA/wv5zN0OpKpkJ
     Tower.socketUrl ||= "#{window.location.protocol}://io-#{Tower.port}.#{window.location.host}"
     
-    Tower.Net.Connection.initialize()
-    Tower.Net.Connection.listen(Tower.socketUrl)
+    Tower.NetConnection.initialize()
+    Tower.NetConnection.listen(Tower.socketUrl)
 
     if Tower.history && Tower.history.enabled
       Tower.history.Adapter.bind global, "statechange", =>
         state     = Tower.history.getState()
         params    = _.extend(title: state.title, (state.data || {}))
-        location  = new Tower.Net.Url(state.url)
-        request   = new Tower.Net.Request(url: state.url, location: location, params: params)
-        response  = new Tower.Net.Response(url: state.url, location: location)
+        location  = new Tower.NetUrl(state.url)
+        request   = new Tower.NetRequest(url: state.url, location: location, params: params)
+        response  = new Tower.NetResponse(url: state.url, location: location)
         Tower.stateManager.handleUrl(location.path, params)
       $(global).trigger("statechange")
     else

@@ -1,6 +1,6 @@
 nativeIndexOf = Array.prototype.indexOf
 
-Tower.ArrayHelper =
+Tower.SupportArray =
   toStringIndexOf: (array, item, isSorted) ->
     return -1 unless array?
 

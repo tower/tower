@@ -123,7 +123,7 @@ class Tower.Ability extends Tower.Class
       scope = scope.scoped().cursor # tower model class, `App.Post`
       scope.compile()
       scope
-    else if scope instanceof Tower.Model.Scope
+    else if scope instanceof Tower.ModelScope
       scope = scope.cursor
       scope.compile()
       scope

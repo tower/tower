@@ -1,7 +1,7 @@
 # @todo
-Tower.Model.Sharding =
+Tower.ModelSharding =
   ClassMethods:
     # @shard 'firstName', 'lastName'
     shard: (keys...) ->
       
-module.exports = Tower.Model.Sharding
+module.exports = Tower.ModelSharding

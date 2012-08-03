@@ -57,10 +57,10 @@ describe 'Tower.Store', ->
       
       Tower.Application.configNames.push 'databases'
       
-    test 'should set the default model store to Tower.Store.Memory if no databases are in the config', ->
+    test 'should set the default model store to Tower.StoreMemory if no databases are in the config', ->
       configuration = {}
       withReconfiguredDatabase configuration, =>
-        assert.equal Tower.Store.Memory, Tower.Model.default('store')
+        assert.equal Tower.StoreMemory, Tower.Model.default('store')
     
     test 'should set the default model store to the first database seen in the database config for the current environment if none are marked as default', ->
       configuration =
@@ -76,7 +76,7 @@ describe 'Tower.Store', ->
             port: 6837
       
       withReconfiguredDatabase configuration, =>
-        assert.equal Tower.Store.Mongodb, Tower.Model.default('store')
+        assert.equal Tower.StoreMongodb, Tower.Model.default('store')
 
     test 'should set the default model store to the database marked as default in the database config for the current environment', ->
       configuration =
@@ -93,7 +93,7 @@ describe 'Tower.Store', ->
             default: true
       
       withReconfiguredDatabase configuration, =>
-        assert.equal Tower.Store.Mongodb, Tower.Model.default('store')
+        assert.equal Tower.StoreMongodb, Tower.Model.default('store')
       
   
   describe '#update', ->

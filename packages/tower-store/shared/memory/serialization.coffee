@@ -1,7 +1,7 @@
 # @mixin
-Tower.Store.Memory.Serialization =
+Tower.StoreMemorySerialization =
   generateId: ->
     #(@lastId++)#.toString()
     _.uuid()
 
-module.exports = Tower.Store.Memory.Serialization
+module.exports = Tower.StoreMemorySerialization

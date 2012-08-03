@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Attributes =
+Tower.ModelAttributes =
   Serialization: {}
 
   ClassMethods:
@@ -37,10 +37,10 @@ Tower.Model.Attributes =
     # @option options [String] type the data type for this field
     # @option option [Object] default default value
     #
-    # @return [Tower.Model.Attribute]
+    # @return [Tower.ModelAttribute]
     field: (name, options) ->
       # @todo convert this to Ember.Map so it's an ordered set
-      @fields()[name] = new Tower.Model.Attribute(@, name, options)
+      @fields()[name] = new Tower.ModelAttribute(@, name, options)
 
     # The set of fields for the model.
     #
@@ -94,7 +94,7 @@ Tower.Model.Attributes =
     # You don't need to use this directly in most cases, instead use the helper methods
     # such as `push`, `set`, etc.
     modifyAttribute: (operation, key, value) ->
-      operation = Tower.Store.Modifiers.MAP[operation]
+      operation = Tower.StoreModifiers.MAP[operation]
       operation = if operation then operation.replace(/^\$/, '') else 'set'
 
       @[operation](key, value)
@@ -145,7 +145,7 @@ Tower.Model.Attributes =
         @propertyDidChange('id')
         return value
 
-      if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
+      if Tower.StoreModifiers.MAP.hasOwnProperty(key)
         key = key.replace('$', '')
         if key == 'set'
           @assignAttributes(value)
@@ -208,9 +208,9 @@ Tower.Model.Attributes =
       for item in nestedParameterAttributes
         @modifyAttribute(operation, item[0], item[1])
 
-#for method in Tower.Store.Modifiers.SET
+#for method in Tower.StoreModifiers.SET
 #  do (method) ->
-#    Tower.Model.Attributes.InstanceMethods[method] = ->
+#    Tower.ModelAttributesInstanceMethods[method] = ->
 #      Ember.get(@, 'data')[method] arguments...
 
-module.exports = Tower.Model.Attributes
+module.exports = Tower.ModelAttributes

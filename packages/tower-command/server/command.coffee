@@ -16,7 +16,7 @@ Tower.Command =
     command = 'info' if !command || !!command.match(/^-/)
     command = @aliases[command] if @aliases.hasOwnProperty(command)
     #throw new Error('You must give tower a command (e.g. 'tower new my-app' or 'tower server')') unless command
-    command = new Tower.Command[Tower.Support.String.camelize(command)](argv)
+    command = new Tower.Command[Tower.SupportString.camelize(command)](argv)
     command.run()
 
 module.exports = Tower.Command

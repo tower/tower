@@ -1,4 +1,4 @@
-class Tower.Net.Param.String extends Tower.Net.Param
+class Tower.NetParamString extends Tower.NetParam
   # @todo think of more robust ways of searching API's
   # @example Regex
   #   # For now, you can search by one regex, it can't be used inside a non-regex search
@@ -48,4 +48,4 @@ class Tower.Net.Param.String extends Tower.Net.Param
       arrays[i] = values
     arrays
 
-module.exports = Tower.Net.Param.String
+module.exports = Tower.NetParamString

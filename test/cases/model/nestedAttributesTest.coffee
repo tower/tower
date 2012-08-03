@@ -1,4 +1,4 @@
-describe 'Tower.Model.NestedAttributes', ->
+describe 'Tower.ModelNestedAttributes', ->
   record = null
 
   class App.NestedModelTest extends Tower.Model

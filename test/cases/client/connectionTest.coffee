@@ -1,5 +1,5 @@
 if Tower.isClient
-  describe 'Tower.Net.Connection', ->
+  describe 'Tower.NetConnection', ->
     test 'there should only be one connection, since it is the client'
 
     describe 'it should be invoked', ->

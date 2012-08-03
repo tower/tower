@@ -2,7 +2,7 @@ File    = require('pathfinder').File
 _path   = require('path')
 
 # @module
-Tower.Application.Watcher =
+Tower.ApplicationWatcher =
   reloadMap:
     models:
       pattern:  /app\/models/
@@ -56,7 +56,7 @@ Tower.Application.Watcher =
     else if path.match(/config\/assets.coffee/)
       @reloadPath path, (error, config) =>
         Tower.config.assets = config || {}
-        Tower.Application.Assets.loadManifest()
+        Tower.ApplicationAssets.loadManifest()
     else if path.match(/app\/(models|controllers)\/.+\.(?:coffee|js|iced)/)
       isController = RegExp.$1 == 'controllers'
       directory = "app/#{RegExp.$1}"
@@ -81,7 +81,7 @@ Tower.Application.Watcher =
     else if path.match(/config\/locales\/(\w+)\.(?:coffee|js|iced)/)
       language = RegExp.$1
       @reloadPath path, (error, locale) =>
-        Tower.Support.I18n.load(locale, language)
+        Tower.SupportI18n.load(locale, language)
 
   reloadPath: (path, callback) ->
     path = require.resolve(_path.resolve(Tower.root, _path.relative(Tower.root, path)))

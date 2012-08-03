@@ -1,4 +1,4 @@
-class Tower.Generator.LibraryGenerator extends Tower.Generator
+class Tower.GeneratorLibraryGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   buildApp: (name) ->
@@ -35,4 +35,4 @@ class Tower.Generator.LibraryGenerator extends Tower.Generator
 
       @template "watch", "Watchfile"
 
-module.exports = Tower.Generator.LibraryGenerator
+module.exports = Tower.GeneratorLibraryGenerator

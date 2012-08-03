@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Helpers =
+Tower.ControllerHelpers =
   ClassMethods:
     helper: (object) ->
       @helpers().push(object)
@@ -15,4 +15,4 @@ Tower.Controller.Helpers =
       layout = @constructor.metadata().layout
       if typeof(layout) == 'function' then layout.call(@) else layout
 
-module.exports = Tower.Controller.Helpers
+module.exports = Tower.ControllerHelpers

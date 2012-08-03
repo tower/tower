@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Indexing =
+Tower.ModelIndexing =
   ClassMethods:
     # Add indexing to the model.
     #
@@ -40,4 +40,4 @@ Tower.Model.Indexing =
     indexes: ->
       @metadata().indexes
 
-module.exports = Tower.Model.Indexing
+module.exports = Tower.ModelIndexing

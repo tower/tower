@@ -1,4 +1,4 @@
-Tower.Controller.Events =
+Tower.ControllerEvents =
   ClassMethods:
     DOM_EVENTS: [
       'click'
@@ -42,7 +42,7 @@ Tower.Controller.Events =
         @addDomEventHandler(name, handler, options)
 
     socketNamespace: ->
-      Tower.Support.String.pluralize(Tower.Support.String.camelize(@className().replace(/(Controller)$/, ''), false))
+      Tower.SupportString.pluralize(Tower.SupportString.camelize(@className().replace(/(Controller)$/, ''), false))
 
     addSocketEventHandler: (name, handler, options) ->
       @io ||= Tower.Application.instance().io.connect('/' + @socketNamespace())
@@ -80,6 +80,6 @@ Tower.Controller.Events =
       else
         handler.call controller, event
 
-Tower.Controller.Events.ClassMethods.DOM_EVENT_PATTERN = new RegExp("^(#{Tower.Controller.Events.ClassMethods.DOM_EVENTS.join("|")})")
+Tower.ControllerEvents.ClassMethods.DOM_EVENT_PATTERN = new RegExp("^(#{Tower.ControllerEvents.ClassMethods.DOM_EVENTS.join("|")})")
 
-module.exports = Tower.Controller.Events
+module.exports = Tower.ControllerEvents

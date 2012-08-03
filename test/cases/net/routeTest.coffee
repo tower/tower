@@ -1,4 +1,4 @@
-describe "Tower.Net.Route", ->
+describe "Tower.NetRoute", ->
   beforeEach ->
     Tower.Route.clear()
     

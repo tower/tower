@@ -1,5 +1,5 @@
 # https://github.com/sockjs/sockjs-client
-Tower.Net.Connection.Sockjs =
+Tower.NetConnectionSockjs =
   getId: (socket) ->
     1
 

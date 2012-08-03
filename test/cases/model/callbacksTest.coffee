@@ -1,1 +1,1 @@
-describe "Tower.Model.Callbacks", ->
+describe "Tower.ModelCallbacks", ->

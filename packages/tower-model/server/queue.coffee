@@ -1,7 +1,7 @@
 # @mixin
 # @todo
 # https://github.com/technoweenie/coffee-resque
-Tower.Model.Queue =
+Tower.ModelQueue =
   ClassMethods:
     # @example Send email using job queue
     #   class App.User extends Tower.Model
@@ -88,4 +88,4 @@ Tower.Model.Queue =
   enqueue: ->
     @constructor.enqueue arguments...
 
-module.exports = Tower.Model.Queue
+module.exports = Tower.ModelQueue

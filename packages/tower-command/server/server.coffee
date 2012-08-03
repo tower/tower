@@ -1,4 +1,4 @@
-class Tower.Command.Server
+class Tower.CommandServer
   constructor: (argv) ->
     @program = program = require('commander')
 
@@ -50,4 +50,4 @@ class Tower.Command.Server
     
     Tower.Application.instance().run()
 
-module.exports = Tower.Command.Server
+module.exports = Tower.CommandServer

@@ -1,7 +1,7 @@
 # @mixin
 # @todo
-Tower.Model.Inheritance =
+Tower.ModelInheritance =
   # @private
   _computeType: ->
 
-module.exports = Tower.Model.Inheritance
+module.exports = Tower.ModelInheritance

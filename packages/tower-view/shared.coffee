@@ -11,17 +11,17 @@ require './shared/helpers/headHelper'
 require './shared/helpers/renderingHelper'
 require './shared/helpers/stringHelper'
 
-Tower.View.include Tower.View.Rendering
-Tower.View.include Tower.View.AssetHelper
-Tower.View.include Tower.View.ComponentHelper
-Tower.View.include Tower.View.EmberHelper
-Tower.View.include Tower.View.HeadHelper
-Tower.View.include Tower.View.RenderingHelper
-Tower.View.include Tower.View.StringHelper
+Tower.View.include Tower.ViewRendering
+Tower.View.include Tower.ViewAssetHelper
+Tower.View.include Tower.ViewComponentHelper
+Tower.View.include Tower.ViewEmberHelper
+Tower.View.include Tower.ViewHeadHelper
+Tower.View.include Tower.ViewRenderingHelper
+Tower.View.include Tower.ViewStringHelper
 
-Tower.View.helper Tower.View.AssetHelper
-Tower.View.helper Tower.View.ComponentHelper
-Tower.View.helper Tower.View.EmberHelper
-Tower.View.helper Tower.View.HeadHelper
-Tower.View.helper Tower.View.RenderingHelper
-Tower.View.helper Tower.View.StringHelper
+Tower.View.helper Tower.ViewAssetHelper
+Tower.View.helper Tower.ViewComponentHelper
+Tower.View.helper Tower.ViewEmberHelper
+Tower.View.helper Tower.ViewHeadHelper
+Tower.View.helper Tower.ViewRenderingHelper
+Tower.View.helper Tower.ViewStringHelper

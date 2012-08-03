@@ -1,4 +1,4 @@
-Tower.Support.File =
+Tower.SupportFile =
   removeDirectory: (path, recursive = true) ->
     if recursive
       require('wrench').rmdirSyncRecursive(path)

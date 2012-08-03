@@ -45,11 +45,11 @@ class Tower.Application extends Tower.Engine
     #@use connect.bodyParser()
     #@use connect.csrf()
     #@use connect.methodOverride('_method')
-    @use Tower.Middleware.Agent
-    @use Tower.Middleware.Location
+    @use Tower.MiddlewareAgent
+    @use Tower.MiddlewareLocation
     if Tower.httpCredentials
       @use connect.basicAuth(Tower.httpCredentials.username, Tower.httpCredentials.password)
-    #@use Tower.Middleware.Router
+    #@use Tower.MiddlewareRouter
     @server.get '/', (request, response) =>
       view = new Tower.View({})
       fs.readFile "#{Tower.root}/index.coffee", 'utf-8', (error, result) =>
@@ -106,11 +106,11 @@ class Tower.Application extends Tower.Engine
         # need a way to get _ to work in the console, which uses _ for last returned value
         Tower.config[key] = config if Tower.modules._.isPresent(config)
 
-      Tower.Application.Assets.loadManifest()
+      Tower.ApplicationAssets.loadManifest()
 
       paths = File.files("#{Tower.root}/config/locales")
       for path in paths
-        Tower.Support.I18n.load(path) if path.match(/\.(coffee|js|iced)$/)
+        Tower.SupportI18n.load(path) if path.match(/\.(coffee|js|iced)$/)
 
       # load initializers
       require "#{Tower.root}/config/environments/#{Tower.env}"
@@ -156,10 +156,10 @@ class Tower.Application extends Tower.Engine
     iterator = (databaseName, next) ->
       databaseConfig = configuration[databaseName]
 
-      storeClassName = "Tower.Store.#{Tower.modules._.camelize(databaseName)}"
+      storeClassName = "Tower.Store#{Tower.modules._.camelize(databaseName)}"
 
       try
-        store = Tower.constant(storeClassName) # This will find Tower.Store.Memory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
+        store = Tower.constant(storeClassName) # This will find Tower.StoreMemory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
       catch error
         store = require "./store/#{databaseName}"
 
@@ -201,8 +201,8 @@ class Tower.Application extends Tower.Engine
         #console.log(error.stack)
       
       unless @io
-        Tower.Net.Connection.initialize()
-        @io   = Tower.Net.Connection.listen(@server)
+        Tower.NetConnection.initialize()
+        @io   = Tower.NetConnection.listen(@server)
 
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
@@ -217,6 +217,6 @@ class Tower.Application extends Tower.Engine
     @listen()
 
   watch: ->
-    Tower.Application.Watcher.watch()
+    Tower.ApplicationWatcher.watch()
 
 module.exports = Tower.Application

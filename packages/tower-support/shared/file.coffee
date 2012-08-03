@@ -1,7 +1,7 @@
 # @todo Simplified interface over `fs`, `path`, and `wrench` for dealing with files.
 #
 # @module
-Tower.Support.File = Tower.File =
+Tower.SupportFile = Tower.File =
   isFile: ->
 
   isDirectory: ->
@@ -16,4 +16,4 @@ Tower.Support.File = Tower.File =
 
   mkdir: (directory, recursive, callback) ->
 
-module.exports = Tower.Support.File
+module.exports = Tower.SupportFile

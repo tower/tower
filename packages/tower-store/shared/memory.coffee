@@ -1,4 +1,4 @@
-class Tower.Store.Memory extends Tower.Store
+class Tower.StoreMemory extends Tower.Store
   @stores: ->
     @_stores ||= []
 
@@ -20,7 +20,7 @@ class Tower.Store.Memory extends Tower.Store
     @records  = Ember.Map.create()
     @lastId   = 1
 
-    Ember.set(@, 'batch', new Tower.Store.Batch)
+    Ember.set(@, 'batch', new Tower.StoreBatch)
 
   clean: ->
     @records  = Ember.Map.create()
@@ -33,9 +33,9 @@ require './memory/finders'
 require './memory/persistence'
 require './memory/serialization'
 
-Tower.Store.Memory.include Tower.Store.Memory.Calculations
-Tower.Store.Memory.include Tower.Store.Memory.Finders
-Tower.Store.Memory.include Tower.Store.Memory.Persistence
-Tower.Store.Memory.include Tower.Store.Memory.Serialization
+Tower.StoreMemory.include Tower.StoreMemoryCalculations
+Tower.StoreMemory.include Tower.StoreMemoryFinders
+Tower.StoreMemory.include Tower.StoreMemoryPersistence
+Tower.StoreMemory.include Tower.StoreMemorySerialization
 
-module.exports = Tower.Store.Memory
+module.exports = Tower.StoreMemory

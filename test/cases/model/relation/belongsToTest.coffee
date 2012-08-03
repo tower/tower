@@ -3,7 +3,7 @@ group       = null
 user        = null
 
 describeWith = =>
-  describe "Tower.Model.Relation.BelongsTo", ->
+  describe "Tower.ModelRelationBelongsTo", ->
     beforeEach (done) ->
       async.series [
         (callback) =>

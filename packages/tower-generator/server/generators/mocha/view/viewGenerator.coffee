@@ -1,4 +1,4 @@
-class Tower.Generator.Mocha.ViewGenerator extends Tower.Generator
+class Tower.GeneratorMochaViewGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
@@ -7,4 +7,4 @@ class Tower.Generator.Mocha.ViewGenerator extends Tower.Generator
 
     @template "view.coffee", "test/views/#{@model.name}Test.coffee", ->
 
-module.exports = Tower.Generator.Mocha.ViewGenerator
+module.exports = Tower.GeneratorMochaViewGenerator

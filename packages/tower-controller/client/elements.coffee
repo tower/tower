@@ -1,4 +1,4 @@
-Tower.Controller.Elements =
+Tower.ControllerElements =
   ClassMethods:
     # @extractElements $(".item a"), find: {meta: "span small"}, closest: {title: ".item h1"}
     extractElements: (target, options = {}) ->
@@ -13,4 +13,4 @@ Tower.Controller.Elements =
     processElements: (target, options = {}) ->
       @elements = @extractElements(target, options)
 
-module.exports = Tower.Controller.Elements
+module.exports = Tower.ControllerElements

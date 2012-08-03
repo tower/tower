@@ -1,5 +1,5 @@
 # @todo Make this more like a {Tower.Model}
-class Tower.Net.Route extends Tower.Class
+class Tower.NetRoute extends Tower.Class
   @store: ->
     @_store ||= []
 
@@ -45,7 +45,7 @@ class Tower.Net.Route extends Tower.Class
   @draw: (callback) ->
     @_defaultCallback ||= callback
     callback = @_defaultCallback unless callback
-    callback.apply(new Tower.Net.Route.DSL(@))
+    callback.apply(new Tower.NetRouteDSL(@))
 
   @findController: (request, response, callback) ->
     routes      = Tower.Route.all()
@@ -203,8 +203,8 @@ class Tower.Net.Route extends Tower.Class
 
     new RegExp('^' + path + '$', if !!caseSensitive then '' else 'i')
 
-Tower.Route = Tower.Net.Route
+Tower.Route = Tower.NetRoute
 
 require './route/dsl'
 
-module.exports = Tower.Net.Route
+module.exports = Tower.NetRoute

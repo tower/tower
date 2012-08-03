@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Responding =
+Tower.ControllerResponding =
   ClassMethods:
     # Defines mime types that are rendered by default when invoking {#respondWith}.
     #
@@ -49,14 +49,14 @@ Tower.Controller.Responding =
     #
     # @return [void] Requires a block.
     respondTo: (block) ->
-      Tower.Controller.Responder.respond(@, {}, block)
+      Tower.ControllerResponder.respond(@, {}, block)
 
     # A more robust responder.
     #
     # Wraps a resource around a responder for default representation.
     # First it invokes {#respondTo}, and if a response cannot be found
     # (ie. no block for the request was given and template was not available),
-    # it instantiates a {Tower.Controller.Responder} with the controller and resource.
+    # it instantiates a {Tower.ControllerResponder} with the controller and resource.
     #
     # @example
     #   index: ->
@@ -92,7 +92,7 @@ Tower.Controller.Responding =
 
       options.records = args[0]
 
-      Tower.Controller.Responder.respond(@, options, callback)
+      Tower.ControllerResponder.respond(@, options, callback)
 
     # @private
     _mimesForAction: ->
@@ -115,4 +115,4 @@ Tower.Controller.Responding =
 
       result
 
-module.exports = Tower.Controller.Responding
+module.exports = Tower.ControllerResponding

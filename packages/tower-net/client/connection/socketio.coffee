@@ -1,4 +1,4 @@
-Tower.Net.Connection.Socketio =
+Tower.NetConnectionSocketio =
   getId: (socket) ->
     try
       socket.sessionid || socket.socket.sessionid

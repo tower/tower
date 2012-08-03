@@ -1,6 +1,6 @@
 # @todo
 # @mixin
-Tower.Model.Attachment =
+Tower.ModelAttachment =
   ClassMethods:
     # For now, you can make a model _and attachment_, 
     # but can't yet have a nested attachment (on the list todo).
@@ -49,4 +49,4 @@ Tower.Model.Attachment =
 
 require './attachment/processing'
 
-module.exports = Tower.Model.Attachment
+module.exports = Tower.ModelAttachment

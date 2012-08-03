@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.MassAssignment =
+Tower.ModelMassAssignment =
   ClassMethods:
     # @todo
     readOnly: (keys...) ->
@@ -61,7 +61,7 @@ Tower.Model.MassAssignment =
     # This is meant to protect sensitive attributes from
     # being overwritten by malicious users tampering with URLs or forms.
     # If you’d rather start from an all-open default and restrict attributes as needed,
-    # have a look at {Tower.Model.MassAssigment.protected Tower.Model.protected}.
+    # have a look at {Tower.ModelMassAssigment.protected Tower.Model.protected}.
     accessible: ->
       @_attributeAssignment('accessible', arguments...)
 
@@ -114,4 +114,4 @@ Tower.Model.MassAssignment =
   _processRemovedAttributes: (keys) ->
     console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}" unless Tower.env == 'test'
 
-module.exports = Tower.Model.MassAssignment
+module.exports = Tower.ModelMassAssignment

@@ -1,5 +1,5 @@
 # @mixin
-Tower.Generator.Configuration =
+Tower.GeneratorConfiguration =
   ClassMethods:
     desc: (usage, description, options = {}) ->
       if options.for
@@ -32,7 +32,7 @@ Tower.Generator.Configuration =
         else if @defaultValueForOption(name, options).in?([true, false])
           {banner: ""}
         else
-          {desc: "#{Tower.Support.String.titleize(name)} to be invoked", banner: "NAME"}
+          {desc: "#{Tower.SupportString.titleize(name)} to be invoked", banner: "NAME"}
 
         unless classOptions.hasOwnProperty(name)
           classOption(name, defaults.merge(options))
@@ -62,4 +62,4 @@ Tower.Generator.Configuration =
     baseRoot: ->
       File.dirname(__FILE__)
 
-module.exports = Tower.Generator.Configuration
+module.exports = Tower.GeneratorConfiguration

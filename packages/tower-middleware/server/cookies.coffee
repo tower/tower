@@ -1,4 +1,4 @@
-Tower.Middleware.Cookies = (request, response, next) ->
-  request._cookies ||= Tower.Net.Cookies.parse()
+Tower.MiddlewareCookies = (request, response, next) ->
+  request._cookies ||= Tower.NetCookies.parse()
 
-module.exports = Tower.Middleware.Cookies
+module.exports = Tower.MiddlewareCookies

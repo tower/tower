@@ -1,5 +1,5 @@
-Tower.Mailer.Configuration =
+Tower.MailerConfiguration =
   ClassMethods:
     lib: -> require('mailer')
 
-module.exports = Tower.Mailer.Configuration
+module.exports = Tower.MailerConfiguration

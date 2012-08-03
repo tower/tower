@@ -6,7 +6,7 @@ Tower.router = Ember.Router.create
 
   # Don't need this with the latest version of ember.
   handleUrl: (url, params = {}) ->
-    route = Tower.Net.Route.findByUrl(url)
+    route = Tower.NetRoute.findByUrl(url)
 
     if route
       params = route.toControllerData(url, params)

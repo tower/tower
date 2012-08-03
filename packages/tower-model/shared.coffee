@@ -27,27 +27,27 @@ require './shared/hierarchical'
 require './shared/ability'
 require './shared/locale/en'
 
-Tower.Model.include Tower.Support.Callbacks
-Tower.Model.include Tower.Model.Metadata
-Tower.Model.include Tower.Model.Dirty
-Tower.Model.include Tower.Model.Indexing
-Tower.Model.include Tower.Model.Authentication
-Tower.Model.include Tower.Model.MassAssignment
-Tower.Model.include Tower.Model.Scopes
-Tower.Model.include Tower.Model.Persistence
-Tower.Model.include Tower.Model.Inheritance
-Tower.Model.include Tower.Model.Serialization
-Tower.Model.include Tower.Model.States
-Tower.Model.include Tower.Model.Relations
-Tower.Model.include Tower.Model.Validations
-Tower.Model.include Tower.Model.Attachment
-Tower.Model.include Tower.Model.Attributes
-Tower.Model.include Tower.Model.NestedAttributes
-Tower.Model.include Tower.Model.AutosaveAssociation
-Tower.Model.include Tower.Model.Timestamp
-Tower.Model.include Tower.Model.Hierarchical
-Tower.Model.include Tower.Model.Operations
-Tower.Model.include Tower.Model.Transactions
+Tower.Model.include Tower.SupportCallbacks
+Tower.Model.include Tower.ModelMetadata
+Tower.Model.include Tower.ModelDirty
+Tower.Model.include Tower.ModelIndexing
+Tower.Model.include Tower.ModelAuthentication
+Tower.Model.include Tower.ModelMassAssignment
+Tower.Model.include Tower.ModelScopes
+Tower.Model.include Tower.ModelPersistence
+Tower.Model.include Tower.ModelInheritance
+Tower.Model.include Tower.ModelSerialization
+Tower.Model.include Tower.ModelStates
+Tower.Model.include Tower.ModelRelations
+Tower.Model.include Tower.ModelValidations
+Tower.Model.include Tower.ModelAttachment
+Tower.Model.include Tower.ModelAttributes
+Tower.Model.include Tower.ModelNestedAttributes
+Tower.Model.include Tower.ModelAutosaveAssociation
+Tower.Model.include Tower.ModelTimestamp
+Tower.Model.include Tower.ModelHierarchical
+Tower.Model.include Tower.ModelOperations
+Tower.Model.include Tower.ModelTransactions
 
 Tower.Model.field('id', type: 'Id')
 Tower.Model.protected('id') # attrProtectedByDefault tmp

@@ -12,14 +12,14 @@ require './shared/responder'
 require './shared/responding'
 require './shared/scopes'
 
-Tower.Controller.include Tower.Controller.Callbacks
-Tower.Controller.include Tower.Controller.Errors
-Tower.Controller.include Tower.Controller.Helpers
-Tower.Controller.include Tower.Controller.Instrumentation
-Tower.Controller.include Tower.Controller.Metadata
-Tower.Controller.include Tower.Controller.Params
-Tower.Controller.include Tower.Controller.Redirecting
-Tower.Controller.include Tower.Controller.Rendering
-Tower.Controller.include Tower.Controller.Resourceful
-Tower.Controller.include Tower.Controller.Responding
-Tower.Controller.include Tower.Controller.Scopes
+Tower.Controller.include Tower.ControllerCallbacks
+Tower.Controller.include Tower.ControllerErrors
+Tower.Controller.include Tower.ControllerHelpers
+Tower.Controller.include Tower.ControllerInstrumentation
+Tower.Controller.include Tower.ControllerMetadata
+Tower.Controller.include Tower.ControllerParams
+Tower.Controller.include Tower.ControllerRedirecting
+Tower.Controller.include Tower.ControllerRendering
+Tower.Controller.include Tower.ControllerResourceful
+Tower.Controller.include Tower.ControllerResponding
+Tower.Controller.include Tower.ControllerScopes

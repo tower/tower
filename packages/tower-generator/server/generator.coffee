@@ -13,7 +13,7 @@ class Tower.Generator extends Tower.Class
     nodes[nodes.length - 1] += 'Generator'
 
     for node, i in nodes
-      klass = klass[Tower.Support.String.camelize(node)]
+      klass = klass[Tower.SupportString.camelize(node)]
 
     klass
 

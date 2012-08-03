@@ -8,4 +8,4 @@ require './shared/operators'
 require './shared/serializer'
 require './shared/transaction'
 
-Tower.Store.include Tower.Store.Callbacks
+Tower.Store.include Tower.StoreCallbacks

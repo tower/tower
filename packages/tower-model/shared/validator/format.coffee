@@ -1,4 +1,4 @@
-class Tower.Model.Validator.Format extends Tower.Model.Validator
+class Tower.ModelValidatorFormat extends Tower.ModelValidator
   constructor: (name, value, attributes, options) ->
     super(name, value, attributes, options)
 
@@ -24,4 +24,4 @@ class Tower.Model.Validator.Format extends Tower.Model.Validator
     else
       @success(callback)
 
-module.exports = Tower.Model.Validator.Format
+module.exports = Tower.ModelValidatorFormat

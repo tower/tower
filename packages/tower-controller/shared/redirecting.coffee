@@ -1,5 +1,5 @@
 # @mixin
-Tower.Controller.Redirecting =
+Tower.ControllerRedirecting =
   InstanceMethods:
     redirectTo: ->
       @redirect arguments...
@@ -31,4 +31,4 @@ Tower.Controller.Redirecting =
         console.log error
       @callback() if @callback
 
-module.exports = Tower.Controller.Redirecting
+module.exports = Tower.ControllerRedirecting

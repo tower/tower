@@ -1,4 +1,4 @@
-class Tower.Model.Validator.Set extends Tower.Model.Validator
+class Tower.ModelValidatorSet extends Tower.ModelValidator
   constructor: (name, value, attributes, options) ->
     super(name, _.castArray(value), attributes, options)
 
@@ -25,4 +25,4 @@ class Tower.Model.Validator.Set extends Tower.Model.Validator
     else
       @success(callback)
 
-module.exports = Tower.Model.Validator.Format
+module.exports = Tower.ModelValidatorFormat

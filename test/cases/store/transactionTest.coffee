@@ -1,6 +1,6 @@
 ###
 describeWith = (store) ->
-  describe "Tower.Store.Batch (Tower.Store.#{store.className()})", ->
+  describe "Tower.StoreBatch (Tower.Store.#{store.className()})", ->
     record        = null
     batch   = null
     
@@ -9,14 +9,14 @@ describeWith = (store) ->
         App.User.store(store)
         
         record  = new App.User(firstName: "James")
-        record.set('batch', new Tower.Store.Batch)
+        record.set('batch', new Tower.StoreBatch)
         batch   = record.get('batch')
         
         done()
         
     test 'record.withBatch', (done) ->
       record.withBatch (t) =>
-        assert.ok t instanceof Tower.Store.Batch, 'batch instanceof Tower.Store.Batch'
+        assert.ok t instanceof Tower.StoreBatch, 'batch instanceof Tower.StoreBatch'
         
         done()
         
@@ -69,7 +69,7 @@ describeWith = (store) ->
         done()
         
       test '#adopt', (done) ->
-        adopter = new Tower.Store.Batch
+        adopter = new Tower.StoreBatch
         adopter.adopt(record)
         
         assert.isTrue batch.getBucket('clean').get(record.constructor).isEmpty(), 'batch lost record'
@@ -77,5 +77,5 @@ describeWith = (store) ->
         
         done()
       
-describeWith(Tower.Store.Memory)
+describeWith(Tower.StoreMemory)
 ###

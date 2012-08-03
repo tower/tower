@@ -2,20 +2,20 @@
 #
 # @note Thinking about making ./referenced and ./embedded copies,
 #   similar to how Mongoid does it.
-class Tower.Model.Relation.HasMany extends Tower.Model.Relation
+class Tower.ModelRelationHasMany extends Tower.ModelRelation
   isHasMany: true
   isCollection: true
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 
-Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
+Tower.ModelRelationHasManyCursorMixin = Ember.Mixin.create
   isHasMany: true
 
   clonePrototype: ->
     clone = @concat()
     clone.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(clone)
-    Tower.Model.Relation.HasMany.CursorMixin.apply(clone)
+    Tower.ModelRelationCursorMixin.apply(clone)
+    Tower.ModelRelationHasManyCursorMixin.apply(clone)
 
   # @todo
   has: (object) ->
@@ -296,13 +296,13 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
     rootRelation = @owner.relation(@relation.name)
     rootRelation.cursor.records = rootRelation.cursor.records.concat _.castArray(records)
 
-class Tower.Model.Relation.HasMany.Cursor extends Tower.Model.Relation.Cursor
+class Tower.ModelRelationHasManyCursor extends Tower.ModelRelationCursor
   @make: ->
     array = []
     array.isCursor = true
-    Tower.Model.Relation.CursorMixin.apply(array)
-    Tower.Model.Relation.HasMany.CursorMixin.apply(array)
+    Tower.ModelRelationCursorMixin.apply(array)
+    Tower.ModelRelationHasManyCursorMixin.apply(array)
 
-  @include Tower.Model.Relation.HasMany.CursorMixin
+  @include Tower.ModelRelationHasManyCursorMixin
 
-module.exports = Tower.Model.Relation.HasMany
+module.exports = Tower.ModelRelationHasMany

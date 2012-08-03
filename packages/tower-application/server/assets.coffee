@@ -12,7 +12,7 @@ print         = require('util').print
 # @module
 # Tower.module "Application.Assets"
 # https://github.com/tomgallacher/gzippo
-Tower.Application.Assets =
+Tower.ApplicationAssets =
   # Loads "public/assets/manifest.json".
   #
   # @return [Object] the JSON contained in that file.
@@ -213,4 +213,4 @@ Tower.Application.Assets =
 
     console.log table.toString()
 
-module.exports = Tower.Application.Assets
+module.exports = Tower.ApplicationAssets

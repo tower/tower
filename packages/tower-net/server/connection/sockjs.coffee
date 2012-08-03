@@ -1,5 +1,5 @@
 # https://github.com/sockjs/sockjs-node
-Tower.Net.Connection.Sockjs =
+Tower.NetConnectionSockjs =
   getId: (socket) ->
     socket.id
 
@@ -28,4 +28,4 @@ Tower.Net.Connection.Sockjs =
 
   broadcast: (data) ->
 
-module.exports = Tower.Net.Connection.Sockjs
+module.exports = Tower.NetConnectionSockjs

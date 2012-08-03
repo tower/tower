@@ -1,4 +1,4 @@
-Tower.Controller.Authentication =
+Tower.ControllerAuthentication =
   ClassMethods:
     # @example
     #   authenticated name: "Lance", password: "Pollard", only: "search"

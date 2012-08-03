@@ -25,14 +25,14 @@
 # Because most/all of the database implementations in Node.js
 # require asynchronous callbacks, you must use the asynchronous callback approach
 # to obtain a reference to the cursor containing records.  However, every cursor method
-# that uses the async callback will return the `Tower.Model.Cursor` instance.  On the server
+# that uses the async callback will return the `Tower.ModelCursor` instance.  On the server
 # it will not contain any records (because of the async-ness), but in the browser,
 # it _will_ contain the records.  So in the browser you don't need to use async callbacks!
 #
-# @example In the browser (i.e. using {Tower.Store.Memory}), no callback is needed
+# @example In the browser (i.e. using {Tower.StoreMemory}), no callback is needed
 #   users = App.User.all()
 # 
-# @note An instance of {Tower.Model.Cursor} looks and feels almost like a 
+# @note An instance of {Tower.ModelCursor} looks and feels almost like a 
 # native JavaScript Array, but it is not.  See http://stackoverflow.com/a/10763103/169992. 
 # When you log `users` in the Chrome web console, for example, it will look like it's an Array.
 # jQuery does this same thing.  It just makes it more intuitive.
@@ -67,8 +67,8 @@
 # 
 # ## The State of Cursors
 # 
-# Unline {Tower.Model.Scope}, which creates a clone every time you call a chaining method,
-# the {Tower.Model.Cursor} does not get cloned, and it retains the state of any modifications.
+# Unline {Tower.ModelScope}, which creates a clone every time you call a chaining method,
+# the {Tower.ModelCursor} does not get cloned, and it retains the state of any modifications.
 # This allows for tracking pagination among other things, but it also means they're 
 # not as flexible as scopes.  In the end you don't really need to think about the fact that
 # you're using a cursor, but it's good to know anyway.
@@ -88,7 +88,7 @@
 # will be destroyed. 
 # 
 # I want this to be an array now, no longer a cursor.
-class Tower.Model.Cursor extends Tower.Collection
+class Tower.ModelCursor extends Tower.Collection
   isCursor: true
 
   @make: ->
@@ -104,26 +104,26 @@ class Tower.Model.Cursor extends Tower.Collection
     @_super(attr)
 
 # https://github.com/emberjs/ember.js/issues/1051
-Tower.Model.Cursor.toString = -> 'Tower.Model.Cursor'
+Tower.ModelCursor.toString = -> 'Tower.ModelCursor'
 # @todo refactor this
-Tower.Model.Cursor::defaultLimit = 20
+Tower.ModelCursor::defaultLimit = 20
 
 require './cursor/finders'
 require './cursor/operations'
 require './cursor/persistence'
 require './cursor/serialization'
 
-Tower.Model.CursorMixin = Ember.Mixin.create(
-  Tower.Model.Cursor.Finders,
-  Tower.Model.Cursor.Operations,
-  Tower.Model.Cursor.Persistence,
-  Tower.Model.Cursor.Serialization
+Tower.ModelCursorMixin = Ember.Mixin.create(
+  Tower.ModelCursorFinders,
+  Tower.ModelCursorOperations,
+  Tower.ModelCursorPersistence,
+  Tower.ModelCursorSerialization
 )
 
 # @todo undo this feature?
 if Ember.EXTEND_PROTOTYPES
-  Tower.Model.CursorMixin.without.apply(Tower.Model.CursorMixin, ['length', 'isCursor']).apply(Array.prototype)
+  Tower.ModelCursorMixin.without.apply(Tower.ModelCursorMixin, ['length', 'isCursor']).apply(Array.prototype)
 
-Tower.Model.Cursor.include(Tower.Model.CursorMixin)
+Tower.ModelCursor.include(Tower.ModelCursorMixin)
 
-module.exports = Tower.Model.Cursor
+module.exports = Tower.ModelCursor

@@ -1,7 +1,7 @@
 ioServer  = null
 ioClient  = null
 
-describe 'Tower.Controller.Sockets', ->      
+describe 'Tower.ControllerSockets', ->      
   beforeEach (done) ->
     Tower.startWithSocket =>
       ioServer = Tower.Application.instance().io

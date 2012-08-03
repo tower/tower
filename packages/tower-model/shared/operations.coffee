@@ -55,7 +55,7 @@
 # @example Crazy params example
 #   post.updateAttributes(title: 'Renamed Post', $add: {tags: 'node'}, $removeEach: {tags: ['ruby', 'jasmine']})
 #
-Tower.Model.Operations =
+Tower.ModelOperations =
   push: (key, value) ->
     _.oneOrMany(@, @_push, key, value)
 
@@ -84,7 +84,7 @@ Tower.Model.Operations =
 
   # @private
   _set: (key, value) ->
-    if Tower.Store.Modifiers.MAP.hasOwnProperty(key)
+    if Tower.StoreModifiers.MAP.hasOwnProperty(key)
       @[key.replace('$', '')](value)
     else
       @
@@ -157,7 +157,7 @@ Tower.Model.Operations =
   _defaultValue: (key) ->
     return field.defaultValue(@) if field = @_getField(key)
 
-Tower.Model.Operations.remove = Tower.Model.Operations.pull
-Tower.Model.Operations.removeEach = Tower.Model.Operations.pullEach
+Tower.ModelOperations.remove = Tower.ModelOperations.pull
+Tower.ModelOperations.removeEach = Tower.ModelOperations.pullEach
 
-module.exports = Tower.Model.Operations
+module.exports = Tower.ModelOperations

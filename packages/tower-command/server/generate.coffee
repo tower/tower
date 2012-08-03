@@ -1,4 +1,4 @@
-class Tower.Command.Generate
+class Tower.CommandGenerate
   constructor: (argv) ->
     @program = program = new (require('commander').Command)
 
@@ -43,4 +43,4 @@ class Tower.Command.Generate
   run: ->
     Tower.Generator.run(@program.args[1], program: @program, modelName: @program.args[2])
 
-module.exports = Tower.Command.Generate
+module.exports = Tower.CommandGenerate

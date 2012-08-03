@@ -1,17 +1,17 @@
-# @include Tower.Support.Callbacks
-# @include Tower.Support.EventEmitter
-# @include Tower.Controller.Callbacks
-# @include Tower.Controller.Helpers
-# @include Tower.Controller.Instrumentation
-# @include Tower.Controller.Params
-# @include Tower.Controller.Redirecting
-# @include Tower.Controller.Rendering
-# @include Tower.Controller.Resourceful
-# @include Tower.Controller.Responding
+# @include Tower.SupportCallbacks
+# @include Tower.SupportEventEmitter
+# @include Tower.ControllerCallbacks
+# @include Tower.ControllerHelpers
+# @include Tower.ControllerInstrumentation
+# @include Tower.ControllerParams
+# @include Tower.ControllerRedirecting
+# @include Tower.ControllerRendering
+# @include Tower.ControllerResourceful
+# @include Tower.ControllerResponding
 class Tower.Controller extends Tower.Collection
-  @include  Tower.Support.Callbacks
-  @reopenClass Tower.Support.EventEmitter
-  @include  Tower.Support.EventEmitter
+  @include  Tower.SupportCallbacks
+  @reopenClass Tower.SupportEventEmitter
+  @include  Tower.SupportEventEmitter
 
   @instance: ->
     @_instance ||= new @

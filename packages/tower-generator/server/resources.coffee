@@ -3,7 +3,7 @@ File  = require("pathfinder").File
 fs    = require 'fs'
 
 # @mixin
-Tower.Generator.Resources =
+Tower.GeneratorResources =
   generate: (type) ->
     options =
       program:          @program
@@ -32,7 +32,7 @@ Tower.Generator.Resources =
     type:       switch type.toLowerCase()
       when "text" then "String"
       else
-        Tower.Support.String.camelize(type)
+        Tower.SupportString.camelize(type)
 
     humanName:  _.humanize(name)
 
@@ -60,20 +60,20 @@ Tower.Generator.Resources =
         "A #{name}"
 
   buildRelation: (type, className) ->
-    name:       Tower.Support.String.camelize(className, true)
+    name:       Tower.SupportString.camelize(className, true)
     type:       type
     humanName:  _.humanize(className)
 
   buildModel: (name, appNamespace, argv = []) ->
     namespaces            = name.split("/")
     name                  = namespaces.pop()
-    name                  = Tower.Support.String.camelize(name, true)
-    className             = Tower.Support.String.camelize(name)
-    classNamePlural       = Tower.Support.String.pluralize(className)
+    name                  = Tower.SupportString.camelize(name, true)
+    className             = Tower.SupportString.camelize(name)
+    classNamePlural       = Tower.SupportString.pluralize(className)
     namespacedClassName   = "#{appNamespace}.#{className}"
-    namePlural            = Tower.Support.String.pluralize(name)
-    paramName             = Tower.Support.String.parameterize(name)
-    paramNamePlural       = Tower.Support.String.parameterize(namePlural)
+    namePlural            = Tower.SupportString.pluralize(name)
+    paramName             = Tower.SupportString.parameterize(name)
+    paramNamePlural       = Tower.SupportString.parameterize(namePlural)
     humanName             = _.humanize(className)
     humanNamePlural       = _.pluralize(humanName)
     attributes            = []
@@ -83,12 +83,12 @@ Tower.Generator.Resources =
       pair  = pair.split(":")
       continue unless pair.length > 1
       key   = pair[0]
-      type  = Tower.Support.String.camelize(pair[1] || "String", true)
+      type  = Tower.SupportString.camelize(pair[1] || "String", true)
 
       if key.match(/(belongsTo|hasMany|hasOne)/)
-        relations.push @buildRelation(key, Tower.Support.String.camelize(type))
+        relations.push @buildRelation(key, Tower.SupportString.camelize(type))
       else
-        attributes.push @builtAttribute(key, Tower.Support.String.camelize(type))
+        attributes.push @builtAttribute(key, Tower.SupportString.camelize(type))
 
     name:                 name
     namespace:            appNamespace
@@ -104,30 +104,30 @@ Tower.Generator.Resources =
     relations:            relations
     namespacedDirectory:  namespaces.join("/")
     viewDirectory:        namespaces.join("/") + "/#{namePlural}"
-    namespaced:           _.map(namespaces, (n) -> Tower.Support.String.camelize(n)).join(".")
+    namespaced:           _.map(namespaces, (n) -> Tower.SupportString.camelize(n)).join(".")
 
   buildApp: (name = @appName) ->
     @program.namespace ||= Tower.namespace()
     name:             name
-    namespace:        Tower.Support.String.camelize(@program.namespace)
-    paramName:        Tower.Support.String.parameterize(name)
-    paramNamePlural:  Tower.Support.String.parameterize(Tower.Support.String.pluralize(name))
+    namespace:        Tower.SupportString.camelize(@program.namespace)
+    paramName:        Tower.SupportString.parameterize(name)
+    paramNamePlural:  Tower.SupportString.parameterize(Tower.SupportString.pluralize(name))
     session:          @generateRandom("hex")
     year:             (new Date).getFullYear()
     directory:        name
 
   buildView: (name) ->
-    name = _.map(name.split("/"), (n) -> Tower.Support.String.camelize(n, true)).join("/")
+    name = _.map(name.split("/"), (n) -> Tower.SupportString.camelize(n, true)).join("/")
     namespace:  name
-    directory:  Tower.Support.String.pluralize(name)
+    directory:  Tower.SupportString.pluralize(name)
 
   buildController: (name) ->
     namespaces  = name.split("/")
-    className   = Tower.Support.String.pluralize(Tower.Support.String.camelize(namespaces[namespaces.length - 1])) + "Controller"
+    className   = Tower.SupportString.pluralize(Tower.SupportString.camelize(namespaces[namespaces.length - 1])) + "Controller"
     if namespaces.length > 1
       namespaces = namespaces[0..-2]
-      directory   = _.map(namespaces, (n) -> Tower.Support.String.camelize(n, true)).join("/")
-      namespace   = @app.namespace + "." + _.map(namespaces, (n) -> Tower.Support.String.camelize(n)).join(".")
+      directory   = _.map(namespaces, (n) -> Tower.SupportString.camelize(n, true)).join("/")
+      namespace   = @app.namespace + "." + _.map(namespaces, (n) -> Tower.SupportString.camelize(n)).join(".")
     else
       namespace   = @app.namespace
       directory   = ""
@@ -135,7 +135,7 @@ Tower.Generator.Resources =
     namespace:  namespace
     className:  className
     directory:  directory
-    name:       Tower.Support.String.camelize(className, true)
+    name:       Tower.SupportString.camelize(className, true)
     namespaced: directory != ""
 
   generateRandom: (code = "hex") ->
@@ -178,4 +178,4 @@ Tower.Generator.Resources =
 
     user
 
-module.exports = Tower.Generator.Resources
+module.exports = Tower.GeneratorResources

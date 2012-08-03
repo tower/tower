@@ -1,5 +1,5 @@
 # @mixin
-Tower.Model.Relations =
+Tower.ModelRelations =
   ClassMethods:
     # One-to-one association, where the id is stored on the associated object.
     #
@@ -20,7 +20,7 @@ Tower.Model.Relations =
     #   class App.Address extends Tower.Model
     #     @belongsTo 'addressable', polymorphic: true
     hasOne: (name, options = {}) ->
-      @relations()[name]  = new Tower.Model.Relation.HasOne(@, name, options)
+      @relations()[name]  = new Tower.ModelRelationHasOne(@, name, options)
 
     # One-to-many association, where the id is stored on the associated object.
     #
@@ -46,12 +46,12 @@ Tower.Model.Relations =
     # @option options [String] as polymorphic key, if the associated object's relationship is polymorphic
     # @option options [Boolean] embed if true, the data store will try to embed the data in the record (Mongodb currently)
     #
-    # @return [Tower.Model.Relation.HasMany]
+    # @return [Tower.ModelRelationHasMany]
     hasMany: (name, options = {}) ->
       if options.hasOwnProperty('through')
-        @relations()[name]  = new Tower.Model.Relation.HasManyThrough(@, name, options)
+        @relations()[name]  = new Tower.ModelRelationHasManyThrough(@, name, options)
       else
-        @relations()[name]  = new Tower.Model.Relation.HasMany(@, name, options)
+        @relations()[name]  = new Tower.ModelRelationHasMany(@, name, options)
 
     # Many-to-one association, where the `id` is stored on this object.
     #
@@ -60,9 +60,9 @@ Tower.Model.Relations =
     # @option options [String] as polymorphic key, if the associated object's relationship is polymorphic
     # @option options [Boolean] embed if true, the data store will try to embed the data in the record (Mongodb currently)
     #
-    # @return [Tower.Model.Relation.BelongsTo]
+    # @return [Tower.ModelRelationBelongsTo]
     belongsTo: (name, options) ->
-      @relations()[name] = new Tower.Model.Relation.BelongsTo(@, name, options)
+      @relations()[name] = new Tower.ModelRelationBelongsTo(@, name, options)
 
     # Set of all relations for this model.
     #
@@ -74,7 +74,7 @@ Tower.Model.Relations =
     #
     # @param [String] name
     #
-    # @return [Tower.Model.Relation]
+    # @return [Tower.ModelRelation]
     relation: (name) ->
       relation = @relations()[name]
       throw new Error("Relation '#{name}' does not exist on '#{@name}'") unless relation
@@ -314,4 +314,4 @@ Tower.Model.Relations =
       # @todo shouldn't use try, but testing out polymorphic assoc.
       @getAssociationCursor(key)[0] || try @fetch(key)
 
-module.exports = Tower.Model.Relations
+module.exports = Tower.ModelRelations

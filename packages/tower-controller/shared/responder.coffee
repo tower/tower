@@ -1,5 +1,5 @@
 # Don't need this for the client, @todo, remove for client.
-class Tower.Controller.Responder
+class Tower.ControllerResponder
   @respond: (controller, options, callback) ->
     responder = new @(controller, options)
     responder.respond callback
@@ -78,4 +78,4 @@ class Tower.Controller.Responder
   jsonResourceErrors: ->
     errors: @resource.errors
 
-module.exports = Tower.Controller.Responder
+module.exports = Tower.ControllerResponder

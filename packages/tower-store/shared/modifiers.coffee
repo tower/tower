@@ -1,4 +1,4 @@
-Tower.Store.Modifiers =
+Tower.StoreModifiers =
   MAP:
     '$set':         '$set'
     '$unset':       '$unset'
@@ -70,4 +70,4 @@ Tower.Store.Modifiers =
 
   _remove: (key, value) ->
 
-module.exports = Tower.Store.Modifiers
+module.exports = Tower.StoreModifiers

@@ -6,7 +6,7 @@ fs              = require 'fs'
 wrench          = require 'wrench'
 cakefileDestination = null
 
-describe 'Tower.Generator.Resources', ->
+describe 'Tower.GeneratorResources', ->
   beforeEach ->
     wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp", true)
     generator   = new Tower.Generator(silent: true)

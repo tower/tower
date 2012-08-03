@@ -1,4 +1,4 @@
-class Tower.Net.Request
+class Tower.NetRequest
   constructor: (data = {}) ->
     @url        = data.url
     @location   = data.location
@@ -12,4 +12,4 @@ class Tower.Net.Request
 
   header: ->
 
-module.exports = Tower.Net.Request
+module.exports = Tower.NetRequest

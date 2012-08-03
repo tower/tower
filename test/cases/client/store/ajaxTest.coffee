@@ -1,6 +1,6 @@
 if Tower.isClient
   describeWith = (store) ->
-    describe "Tower.Store.Transport.Ajax (#{store.className()})", ->
+    describe "Tower.StoreTransportAjax (#{store.className()})", ->
       beforeEach ->
         App.User.store(store)
 
@@ -37,7 +37,7 @@ if Tower.isClient
         test 'success', (done) ->
           user = App.User.build(firstName: 'Lance')
 
-          Tower.Store.Transport.Ajax.create [user], (error, updatedUser) =>
+          Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
             console.log updatedUser.get('id')
             assert.ok !error
             done()
@@ -45,14 +45,14 @@ if Tower.isClient
         #test 'failure', (done) ->
         #  user = App.User.build()
 #
-        #  Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
+        #  Tower.StoreTransportAjax.create user, (error, updatedUser) =>
         #    assert.ok !error
         #    done()
 #
         #test 'error (before it even makes a request)', (done) ->
         #  user = {}
 #
-        #  Tower.Store.Transport.Ajax.create user, (error, updatedUser) =>
+        #  Tower.StoreTransportAjax.create user, (error, updatedUser) =>
         #    assert.ok !error
         #   done()
 
@@ -63,7 +63,7 @@ if Tower.isClient
         beforeEach (done) ->
           user = App.User.build(firstName: 'Lance')
 
-          Tower.Store.Transport.Ajax.create [user], (error, updatedUser) =>
+          Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
             user = updatedUser
 
             done()
@@ -73,7 +73,7 @@ if Tower.isClient
 
           console.log user
 
-          Tower.Store.Transport.Ajax.update user, (error, updatedUser) =>
+          Tower.StoreTransportAjax.update user, (error, updatedUser) =>
             console.log error
             console.log updatedUser
             done()
@@ -88,13 +88,13 @@ if Tower.isClient
         beforeEach (done) ->
           user = App.User.build(firstName: 'Lance')
 
-          Tower.Store.Transport.Ajax.create [user], (error, updatedUser) =>
+          Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
             user = updatedUser
 
             done()
 
         test 'success', (done) ->
-          Tower.Store.Transport.Ajax.destroy user, (error, destroyedUser) =>
+          Tower.StoreTransportAjax.destroy user, (error, destroyedUser) =>
             console.log error
             console.log destroyedUser
             done()
@@ -106,9 +106,9 @@ if Tower.isClient
         test 'conditions', (done) ->
           criteria  = App.User.where(firstName: 'L').compile()
           
-          Tower.Store.Transport.Ajax.find criteria, (error, data) =>
+          Tower.StoreTransportAjax.find criteria, (error, data) =>
             console.log error.stack if error
             console.log data
             done()
 
-  describeWith(Tower.Store.Memory)
+  describeWith(Tower.StoreMemory)

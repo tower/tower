@@ -1,4 +1,4 @@
 # @todo
-class Tower.Store.SQLite3 extends Tower.Store
+class Tower.StoreSQLite3 extends Tower.Store
 
-module.exports = Tower.Store.SQLite3
+module.exports = Tower.StoreSQLite3

@@ -1,4 +1,4 @@
-Tower.Support.I18n.load module.exports =
+Tower.SupportI18n.load module.exports =
   model:
     errors:
       presence:             "%{attribute} can't be blank"
