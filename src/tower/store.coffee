@@ -94,13 +94,12 @@ class Tower.Store extends Tower.Class
       #new klass(attributes)
       model = klass.new()
 
-    if saved
-      model.setSavedAttributes(attributes)
-    else
-      # model.setProperties(attributes)
-      model.set('attributes', attributes)
-      # @todo think about more
-      #_.extend(model.get('attributes'), attributes)
+    # @todo get rid of this
+    #if saved
+    #  model.setSavedAttributes(attributes)
+    #else
+    #  model.assignAttributes(attributes)
+    model.initialize(attributes, isNew: !saved)
 
     model
 

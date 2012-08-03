@@ -133,6 +133,7 @@ Tower.Model.Relation.HasMany.CursorMixin = Ember.Mixin.create
       @_destroy (error, record) =>
         unless error
           @_runAfterDestroyCallbacksOnStore =>
+            # @todo this should be moved into the main model
             if @updateOwnerRecord()
               @owner.updateAttributes @ownerAttributesForDestroy(record), (error) =>
                 callback.call(@, error, record) if callback

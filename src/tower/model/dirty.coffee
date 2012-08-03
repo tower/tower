@@ -8,7 +8,7 @@ Tower.Model.Dirty =
     attributes        = @get('attributes')
 
     injectChange = (memo, value, key) =>
-      memo[key] = [value, @get('data').get(key)]# [value, attributes[key]] # [old, new]
+      memo[key] = [value, @getAttribute(key)]# [value, attributes[key]] # [old, new]
       memo
 
     _.inject(@get('changedAttributes'), injectChange, {})
@@ -62,8 +62,8 @@ Tower.Model.Dirty =
   # 
   # @return [Object]
   changedAttributes: Ember.computed((key, value) ->
-    @get('data').changedAttributes
-  ).volatile()
+    {}
+  ).cacheable()
 
   # Array of changed attribute names.
   # 
@@ -92,11 +92,11 @@ Tower.Model.Dirty =
     attributes        = @get('attributes')
 
     if changedAttributes.hasOwnProperty(key)
-      old = changedAttributes[key]
-      delete changedAttributes[key]
-      attributes[key] = old
+      value = changedAttributes[key]
     else
-      attributes[key] = @get('data')._defaultValue(key)
+      value = @_defaultValue(key)
+
+    @set(key, value)
 
   # Returns a hash of all the attributes to be persisted to the database on create.
   # 
@@ -137,13 +137,13 @@ Tower.Model.Dirty =
     changedAttributes = @get('changedAttributes')
     # @todo this is not the current attributes... need to get rid of data.unsavedData
     attributes        = @get('attributes')
-
     # @todo, need to account for typecasting better
+    
     if changedAttributes.hasOwnProperty(key)
       if _.isEqual(changedAttributes[key], value)
         delete changedAttributes[key]
     else
-      old = @get('data')._clonedValue(attributes[key]) # @readAttribute(key)
+      old = @_clonedValue(attributes[key]) # @readAttribute(key)
       changedAttributes[key] = old unless _.isEqual(old, value) # if old != value
 
   # @private
@@ -155,5 +155,21 @@ Tower.Model.Dirty =
       result[key] = attributes[key]
 
     result
+    
+  _clonedValue: (value) ->
+    if _.isArray(value)
+      value.concat()
+    else if _.isDate(value)
+      new Date(value.getTime())
+    else if typeof value == 'object'
+      _.clone(value)
+    else
+      value
+
+  _defaultValue: (key) ->
+    return field.defaultValue(@) if field = @_getField(key)
+
+  _getField: (key) ->
+    @constructor.fields()[key]
 
 module.exports = Tower.Model.Dirty

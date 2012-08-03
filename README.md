@@ -558,6 +558,18 @@ watch /app\/views\/.+\.mustache/
 npm test
 ```
 
+Run individual test file:
+
+``` bash
+mocha $(find test -name "*persistenceTest.coffee")
+```
+
+Run test matching pattern:
+
+``` bash
+mocha $(find test -name "*persistenceTest.coffee") -g "string property$"
+```
+
 ## Examples
 
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)

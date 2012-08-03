@@ -37,6 +37,7 @@ Tower.Model.Cursor.Persistence = Ember.Mixin.create
 
     for item in data
       if item instanceof Tower.Model
+        # @todo need to clone the attributes
         item.setProperties(attributes)
       else
         item = store.serializeModel(_.extend({}, attributes, item))

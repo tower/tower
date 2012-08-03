@@ -93,6 +93,7 @@ Tower.Model.Operations =
   _push: (key, value, array = false) ->
     currentValue = @getAttribute(key)
     currentValue ||= []
+    currentValue = @_clonedValue(currentValue)
 
     if array
       currentValue = currentValue.concat(_.castArray(value))
@@ -100,11 +101,11 @@ Tower.Model.Operations =
       currentValue.push(value)
 
     # probably shouldn't reset it, need to consider
-    @_actualSet(key, currentValue)
+    @_actualSet(key, currentValue, true)
 
   # @private
   _pull: (key, value, array = false) ->
-    currentValue = @getAttribute(key)
+    currentValue = @_clonedValue @getAttribute(key)
     return null unless currentValue
 
     if array
@@ -114,14 +115,14 @@ Tower.Model.Operations =
       currentValue.splice(_.toStringIndexOf(currentValue, value), 1)
 
     # probably shouldn't reset it, need to consider
-    @_actualSet(key, currentValue)
+    @_actualSet(key, currentValue, true)
 
   # @private
   _add: (key, value, array = false) ->
     currentValue = @getAttribute(key)
     currentValue ||= []
     # @todo need to figure out better way of comparing old/new values, not based on actual javascript object instance
-    currentValue = @_clonedValue(currentValue)
+    currentValue = @_clonedValue(currentValue, true)
 
     if array
       for item in _.castArray(value)
@@ -130,7 +131,7 @@ Tower.Model.Operations =
       currentValue.push(value) if _.indexOf(currentValue, value) == -1
 
     # probably shouldn't reset it, need to consider
-    @_actualSet(key, currentValue)
+    @_actualSet(key, currentValue, true)
 
   # @private
   _inc: (key, value) ->
@@ -138,16 +139,10 @@ Tower.Model.Operations =
     currentValue ||= 0
     currentValue += value
 
-    @_actualSet(key, currentValue)
+    @_actualSet(key, currentValue, true)
 
   _getField: (key) ->
     @constructor.fields()[key]
-
-  # @todo horrible hack, just getting it to work.
-  _actualSet: (key, value) ->
-    @_updateChangedAttribute(key, value)
-
-    @get('attributes')[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
 
   _clonedValue: (value) ->
     if _.isArray(value)
@@ -161,7 +156,6 @@ Tower.Model.Operations =
 
   _defaultValue: (key) ->
     return field.defaultValue(@) if field = @_getField(key)
-
 
 Tower.Model.Operations.remove = Tower.Model.Operations.pull
 Tower.Model.Operations.removeEach = Tower.Model.Operations.pullEach

@@ -80,13 +80,16 @@ class Tower.Model.Attribute
 
     # There needs to be a way to customize this from the outside
     computed = Ember.computed((key, value) ->
-      #if arguments.length == 2
-      #  value = @setAttribute(key, field.encode(value, @))
-      #else
-      #  value = @getAttribute(key)
-      #  value = field.defaultValue(@) if value == undefined
-      #  field.decode(value, @)
-
+      if arguments.length == 2
+        value = field.encode(value, @)
+        value = @setAttribute(key, value)
+        Tower.cursorNotification("#{@constructor.className()}.#{key}")
+        value
+      else
+        value = @getAttribute(key)
+        value = field.defaultValue(@) if value == undefined
+        field.decode(value, @)
+      ###
       if arguments.length is 2
         data  = Ember.get(@, 'data')
         value = data.set(key, field.encode(value, @))
@@ -111,6 +114,7 @@ class Tower.Model.Attribute
         value = data.get(key)
         value = field.defaultValue(@) if value == undefined
         field.decode(value, @)
+      ###
     )
 
     attribute[name] = computed.property.apply(computed, @observes).cacheable()

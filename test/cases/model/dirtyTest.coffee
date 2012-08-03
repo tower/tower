@@ -1,6 +1,12 @@
 model = null
 
 describe 'Tower.Model.Dirty', ->
+  test 'cannot set attributes directly', ->
+    block = =>
+      model.set('attributes', likeCountWithDefault: 10)
+
+    assert.throw(block, 'Cannot set attributes hash directly')
+
   return # @todo rolling back for the moment
   testBlock = ->
     test '#changes', ->
