@@ -3,6 +3,9 @@ File  = require('pathfinder').File
 
 # mocha $(find test -name "*attributesTest.coffee") --store mongodb
 store = require('commander').option('--store [name]', 'Store to run tests against', 'memory').parse(process.argv).store
+
+console.log "Running tests with #{store}"
+
 Tower.store = Tower.Store[_.camelize(store)]
 
 global.chai   = require 'chai'
@@ -39,7 +42,8 @@ beforeEach (done) ->
   Tower.View.store().loadPaths  = ["test/example/app/views"]
   
   Tower.Application.instance().initialize ->
-    Tower.Store.Mongodb.clean(done)
+    Tower.store.clean =>
+      Tower.Store.Mongodb.clean(done)
 
 after (done) ->
   return done()
