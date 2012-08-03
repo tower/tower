@@ -164,7 +164,7 @@ class Tower.Application extends Tower.Engine
         store = require "./store/#{databaseName}"
 
       if !defaultStoreSet || databaseConfig.default
-        Tower.Model.default('store', store)
+        Tower.Model.default('store', store) unless Tower.Model.default('store')
         defaultStoreSet = true
 
       #Tower.callback 'initialize', name: "#{store.className()}.initialize", (done) ->

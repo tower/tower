@@ -30,7 +30,10 @@ app = Tower.Application.instance()
 Tower.Net.Connection.reopen(notify: ->)
 
 before (done) ->
-  app.initialize done
+  Tower.Model.default('store', Tower.store)
+
+  app.initialize =>
+    done()
   # App.Address.store().collection().ensureIndex {coordinates:"2d"}, done
 
 beforeEach (done) ->
@@ -42,8 +45,7 @@ beforeEach (done) ->
   Tower.View.store().loadPaths  = ["test/example/app/views"]
   
   Tower.Application.instance().initialize ->
-    Tower.store.clean =>
-      Tower.Store.Mongodb.clean(done)
+    Tower.store.clean(done)
 
 after (done) ->
   return done()
