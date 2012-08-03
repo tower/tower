@@ -47,10 +47,13 @@ Tower.Store.Mongodb.Database =
 
     # Remove all data from the database
     clean: (callback) ->
-      return callback.call @ unless @database
+      unless @database
+        callback.call(@) if callback
+        return
 
       @database.collections (error, collections) =>
         remove = (collection, next) =>
+          # console.log 'remove', collection.collectionName
           collection.remove(next)
 
         Tower.parallel collections, remove, callback

@@ -120,6 +120,7 @@ Tower.Store.Mongodb.Serialization =
     offset        = cursor.get('offset')
     options       = {}
     options.limit = limit if limit
+
     if sort.length
       options.sort  = _.map sort, (set) ->
         [
@@ -127,6 +128,7 @@ Tower.Store.Mongodb.Serialization =
           if set[1] == 'asc' then 1 else -1
         ]
     options.skip  = offset if offset
+
     options
 
   encode: (field, value, operation) ->

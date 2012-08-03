@@ -1,38 +1,36 @@
 view = null
 user = null
 
-describeWith = (store) ->
-  describe "Tower.View.Form (Tower.Store.#{store.className()})", ->
-    beforeEach ->
-      App.User.store(store)
-      view = Tower.View.create()
+describe "Tower.View.Form", ->
+  beforeEach ->
+    view = Tower.View.create()
+  
+  describe 'form', ->
+    beforeEach (done) ->
+      App.User.insert firstName: "Lance", (error, record) =>
+        user = record
+        done()
     
-    describe 'form', ->
-      beforeEach (done) ->
-        App.User.insert firstName: "Lance", (error, record) =>
-          user = record
-          done()
-      
-      test '#formFor()', ->
-        template = ->
-          formFor()
-      
-        view.render template: template, (error, result) ->
-          assert.equal result, """
+    test '#formFor()', ->
+      template = ->
+        formFor()
+    
+      view.render template: template, (error, result) ->
+        assert.equal result, """
 <form action="/" id="model-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
 </form>
 
 """
-      test '#formFor(user)', ->
-        template = ->
-          formFor @user, (form) ->
-            form.fieldset (fields) ->
-              fields.field "firstName"
-      
-        view.render template: template, locals: user: user, (error, result) ->
-          throw error if error
-          assert.equal result, """
+    test '#formFor(user)', ->
+      template = ->
+        formFor @user, (form) ->
+          form.fieldset (fields) ->
+            fields.field "firstName"
+    
+      view.render template: template, locals: user: user, (error, result) ->
+        throw error if error
+        assert.equal result, """
 <form action="/users/#{user.get('id')}" id="user-form" role="form" novalidate="true" data-method="put" method="post">
   <input type="hidden" name="_method" value="put" />
   <fieldset>
@@ -53,18 +51,18 @@ describeWith = (store) ->
 </form>
 
 """
-      test '#formFor(user) with errors', ->
-        user.set "firstName", null
-        user.validate()
-        assert.deepEqual user.errors, { firstName: [ 'firstName can\'t be blank' ] }
-        template = ->
-          formFor @user, (form) ->
-            form.fieldset (fields) ->
-              fields.field "firstName"
+    test '#formFor(user) with errors', ->
+      user.set "firstName", null
+      user.validate()
+      assert.deepEqual user.errors, { firstName: [ 'firstName can\'t be blank' ] }
+      template = ->
+        formFor @user, (form) ->
+          form.fieldset (fields) ->
+            fields.field "firstName"
 
-        view.render template: template, locals: user: user, (error, result) ->
-          throw error if error
-          assert.equal result, """
+      view.render template: template, locals: user: user, (error, result) ->
+        throw error if error
+        assert.equal result, """
 <form action="/users/#{user.get('id')}" id="user-form" role="form" novalidate="true" data-method="put" method="post">
   <input type="hidden" name="_method" value="put" />
   <fieldset>
@@ -85,15 +83,15 @@ describeWith = (store) ->
 </form>
 
 """
-      test '#formFor(camelCasedModel)', ->
-        model = App.CamelCasedModel.build(name: "something")
-        template = ->
-          formFor @model, (form) ->
-            form.fieldset (fields) ->
-              fields.field "name"
-      
-        view.render template: template, locals: model: model, (error, result) ->
-          assert.equal result, """
+    test '#formFor(camelCasedModel)', ->
+      model = App.CamelCasedModel.build(name: "something")
+      template = ->
+        formFor @model, (form) ->
+          form.fieldset (fields) ->
+            fields.field "name"
+    
+      view.render template: template, locals: model: model, (error, result) ->
+        assert.equal result, """
 <form action="/camel-cased-models" id="camel-cased-model-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -114,19 +112,19 @@ describeWith = (store) ->
 </form>
 
 """
-    
-      describe 'fields', ->
-        test 'string', ->
-          user = App.User.build(firstName: "Lance")
-        
-          template = ->
-            formFor @user, (form) ->
-              form.fieldset (fields) ->
-                fields.field "firstName", as: "string"
-        
-          view.render template: template, locals: user: user, (error, result) ->
-            throw error if error
-            assert.equal result, """
+  
+    describe 'fields', ->
+      test 'string', ->
+        user = App.User.build(firstName: "Lance")
+      
+        template = ->
+          formFor @user, (form) ->
+            form.fieldset (fields) ->
+              fields.field "firstName", as: "string"
+      
+        view.render template: template, locals: user: user, (error, result) ->
+          throw error if error
+          assert.equal result, """
 <form action="/users" id="user-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -148,17 +146,17 @@ describeWith = (store) ->
 
 """
 
-        test 'text', ->
-          user = App.User.build(firstName: "Lance")
-          
-          template = ->
-            formFor @user, (form) ->
-              form.fieldset (fields) ->
-                fields.field "firstName", as: "text"
+      test 'text', ->
+        user = App.User.build(firstName: "Lance")
         
-          view.render template: template, locals: user: user, (error, result) ->
-            throw error if error
-            assert.equal result, """
+        template = ->
+          formFor @user, (form) ->
+            form.fieldset (fields) ->
+              fields.field "firstName", as: "text"
+      
+        view.render template: template, locals: user: user, (error, result) ->
+          throw error if error
+          assert.equal result, """
 <form action="/users" id="user-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -180,17 +178,17 @@ describeWith = (store) ->
 
 """
 
-        test 'array', ->
-          post = App.Post.build(tags: ["ruby", "javascript"])
-        
-          template = ->
-            formFor @post, (form) ->
-              form.fieldset (fields) ->
-                fields.field "tags", as: "array"
-        
-          view.render template: template, locals: post: post, (error, result) ->
-            throw error if error
-            assert.equal result, """
+      test 'array', ->
+        post = App.Post.build(tags: ["ruby", "javascript"])
+      
+        template = ->
+          formFor @post, (form) ->
+            form.fieldset (fields) ->
+              fields.field "tags", as: "array"
+      
+        view.render template: template, locals: post: post, (error, result) ->
+          throw error if error
+          assert.equal result, """
 <form action="/posts" id="post-form" role="form" novalidate="true" data-method="post" method="post">
   <input type="hidden" name="_method" value="post" />
   <fieldset>
@@ -257,7 +255,3 @@ describeWith = (store) ->
 
   """
   ###
-
-describeWith(Tower.Store.Memory)
-unless Tower.client
-  describeWith(Tower.Store.Mongodb)

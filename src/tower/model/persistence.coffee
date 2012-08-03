@@ -25,7 +25,7 @@ Tower.Model.Persistence =
       store     = metadata.store
       return store if arguments.length == 0 && store
 
-      defaultStore = @default('store') || Tower.Store.Memory
+      defaultStore = @default('store') || Tower.Model.default('store') || Tower.Store.Memory
 
       type = typeof value
 

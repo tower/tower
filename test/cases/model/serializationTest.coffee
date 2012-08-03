@@ -2,10 +2,7 @@ scope     = null
 criteria  = null
 user      = null
 
-describe 'Tower.Model.Serialization', ->
-  beforeEach ->
-    App.User.store(Tower.Store.Memory)
-    
+describe 'Tower.Model.Serialization', -> 
   test "instance.toJSON", ->
     json = App.User.new(firstName: "Lance").toJSON()
     

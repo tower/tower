@@ -165,8 +165,6 @@ describe 'Tower.Support.Callbacks.CallbackChain', ->
 
   describe 'uniqueness', ->
     class App.UniquenessModel extends Tower.Model
-      @store Tower.Store.Mongodb
-
       @field 'title'
       @field 'slug'
 

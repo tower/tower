@@ -7,7 +7,7 @@ class Tower.Store.Memory extends Tower.Store
 
     store.clean() for store in stores
 
-    callback()
+    callback() if callback
 
   init: (options) ->
     @_super arguments...

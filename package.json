@@ -92,7 +92,7 @@
     "socket.io-client": ">= 0.9.5"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
+    "test": "make test",
     "docs": "codo",
     "postinstall": "npm install git://github.com/viatropos/coffeecup.git --force ; npm install git://github.com/viatropos/coffee-script.git --force"
   }
