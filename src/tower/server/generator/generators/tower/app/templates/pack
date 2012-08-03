@@ -1,11 +1,11 @@
 {
   "name":                     "<%= app.name %>",
   "private":                  true,
-  "version":                  "0.0.1",
+  "version":                  "0.1.0",
   "description":              "<%= app.description %>",
   "homepage":                 "http://<%= user.username %>.github.com/<%= app.name %>",
   "main":                     "./server.js",
-  "author":                   "<%= user.name %> <<%= user.email %>>",
+  "author":                   "'<%= user.name %>' <<%= user.email %>>",
   "keywords": [
     "node"
   ],
