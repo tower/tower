@@ -83,8 +83,6 @@ Tower.Model.Attributes =
   InstanceMethods:
     dynamicFields: true
 
-    # How about you can only `get` the attributes, it will make the API much simpler.
-    # It needs to be all fields with default values
     attributes: Ember.computed(->
       throw new Error('Cannot set attributes hash directly') if arguments.length == 2
 
