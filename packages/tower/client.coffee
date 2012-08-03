@@ -18,18 +18,14 @@ Tower.modules =
   sockjs:     try global.SockJS
   _:          _
 
-require './support'
-require './application'
-require './store'
-require './client/store'
-require './model'
-require './view'
-require './client/view'
-require './controller'
-require './client/controller'
-require './net'
-require './client/net'
-require './middleware'
+require '../tower-support/client'
+require '../tower-application/client'
+require '../tower-store/client'
+require '../tower-model/client'
+require '../tower-view/client'
+require '../tower-controller/client'
+require '../tower-net/client'
+require '../tower-middleware/server'
 
 Tower.goTo = (string, params) ->
   History.pushState(params, params?.title, string)

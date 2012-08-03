@@ -4,7 +4,7 @@ findit  = require './node_modules/findit'
 async   = require './node_modules/async'
 mint    = require 'mint'
 gzip    = require 'gzip'
-_path   = require 'path'
+nodePath = require 'path'
 File    = require('pathfinder').File
 {exec, spawn}  = require 'child_process'
 sys     = require 'util'
@@ -26,55 +26,40 @@ JS_COPYRIGHT  = """
 
 """
 
-compileFile = (root, path, check) ->
+compileFile = (root, path, level) ->
   try
     data = fs.readFileSync path, 'utf-8'
     # total hack, built 10 minutes at a time over a few months, needs to be rethought, but works
     data = data.replace /require '([^']+)'\n/g, (_, _path) ->
-      #_path = "#{root}/#{_path.toString().split("/")[2]}.coffee"
-      parts = _path.toString().split("/")
-      if parts.length > 2
-        if parts[1] == "client"
-          parts = parts[1..-1]
-        else
-          parts = parts[2..-1]
+      _parent = !!_path.match(/\.\./)
+      if _parent
+        _root = nodePath.resolve(root, _path)
+        _path = _root + '.coffee'
       else
-        parts = parts[1..-1]
-      _path = "#{root}/#{parts.join("/")}.coffee"
-      if !check || check(_path)
-        #fs.readFileSync _path, 'utf-8'
-        _root = _path.split(".")[-3..-2].join(".")
-        #_root = _path.replace(/\.coffee$/, "")
-        try
-          compileFile(_root, _path, check) + "\n\n"
-        catch error
-          _console.info _path
-          _console.error error.stack
-          ""
-      else
+        _root = nodePath.resolve(root, '..', _path)
+        _path = _root + '.coffee'
+      try
+        compileFile(_root, _path, level + 1) + "\n\n"
+      catch error
+        _console.info _path
+        _console.error error.stack
         ""
     data = data.replace(/module\.exports\s*=.*\s*/g, "")
     data + "\n\n"
+    if level == 1
+      outputPath = './dist/' + nodePath.resolve(path, '..').split('/').pop()
+      fs.writeFileSync outputPath + '.coffee', data
+      mint.coffee data, bare: false, (error, result) ->
+        # result = JS_COPYRIGHT + result
+        _console.error error.stack if error
+        fs.writeFileSync outputPath + '.js', result
+    data
   catch error
     console.log error
     ""
 
-compileDirectory = (root, check, callback) ->
-  code = compileFile("./src/tower/#{root}", "./src/tower/#{root}.coffee", check)
-  callback(code) if callback
-  code
-
-compileEach = (root, check, callback) ->
-  result = compileDirectory root, check, callback
-
-  #fs.writeFile "./dist/tower/#{root}.coffee", result
-  mint.coffee result, bare: false, (error, result) ->
-    fs.writeFile "./dist/tower/#{root}.js", result
-    unless error
-      fs.writeFile "./dist/tower/#{root}.min.js", mint.uglifyjs(result, {})
-
 task 'build', ->
-  content = compileFile("./src/tower", "./src/tower/client.coffee").replace /Tower\.version *= *.+\n/g, (_) ->
+  content = compileFile("./packages/tower", "./packages/tower/client.coffee", 0).replace /Tower\.version *= *.+\n/g, (_) ->
     version = """
 Tower.version = "#{VERSION}"
 
