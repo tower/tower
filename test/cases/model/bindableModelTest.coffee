@@ -7,7 +7,7 @@ describe 'Tower.Model (bindable)', ->
   record  = null
   
   beforeEach ->
-    record = new App.BindableTest
+    record = App.BindableTest.build()
     
   test 'string', (done) ->
     record.addObserver 'string', (o, key, value) ->

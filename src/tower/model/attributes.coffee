@@ -163,10 +163,17 @@ Tower.Model.Attributes =
 
       value
 
-    _actualSet: (key, value) ->
+    _actualSet: (key, value, dispatch) ->
       @_updateChangedAttribute(key, value)
 
       @get('attributes')[key] = value# unless @record.constructor.relations().hasOwnProperty(key)
+
+      # @todo refactor.
+      #   Basically, if you do atomic operations on attributes there needs to be some
+      #   way to tell ember to update bindings.
+      @propertyDidChange(key) if dispatch
+
+      value
 
     # @todo Use this to set multiple attributes in a more optimized way.
     setAttributes: (attributes) ->

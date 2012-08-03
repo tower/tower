@@ -11,6 +11,7 @@ class Tower.Model extends Tower.Class
 
   errors: null
   readOnly: false
+  previousChanges: undefined
 
   # Construct a new Tower.Model
   #

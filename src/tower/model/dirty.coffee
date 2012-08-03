@@ -98,12 +98,6 @@ Tower.Model.Dirty =
 
     @set(key, value)
 
-  _defaultValue: (key) ->
-    return field.defaultValue(@@) if field = @_getField(key)
-
-  _getField: (key) ->
-    @constructor.fields()[key]
-
   # Returns a hash of all the attributes to be persisted to the database on create.
   # 
   # It ignores any attribute with a value of `undefined` (but doesn't ignore `null` values).
@@ -144,6 +138,7 @@ Tower.Model.Dirty =
     # @todo this is not the current attributes... need to get rid of data.unsavedData
     attributes        = @get('attributes')
     # @todo, need to account for typecasting better
+    
     if changedAttributes.hasOwnProperty(key)
       if _.isEqual(changedAttributes[key], value)
         delete changedAttributes[key]
@@ -170,5 +165,11 @@ Tower.Model.Dirty =
       _.clone(value)
     else
       value
+
+  _defaultValue: (key) ->
+    return field.defaultValue(@) if field = @_getField(key)
+
+  _getField: (key) ->
+    @constructor.fields()[key]
 
 module.exports = Tower.Model.Dirty
