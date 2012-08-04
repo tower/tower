@@ -54,7 +54,8 @@ class Tower.Application extends Tower.Engine
     Tower.url ||= "#{window.location.protocol}//#{window.location.host}"
     # Clients can only be connected to 1 connection in certain browser, this is a known hack I guess!
     # see https://groups.google.com/forum/#!msg/socket_io/eNSAXgE9FjA/wv5zN0OpKpkJ
-    Tower.socketUrl ||= "#{window.location.protocol}://io-#{Tower.port}.#{window.location.host}"
+    #Tower.socketUrl ||= "#{window.location.protocol}://io-#{Tower.port}.#{window.location.host}"
+    Tower.socketUrl ||= Tower.url
     
     Tower.NetConnection.initialize()
     Tower.NetConnection.listen(Tower.socketUrl)

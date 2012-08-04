@@ -110,7 +110,11 @@ _.extend Tower,
     cursor
 
   getCursor: (path) ->
-    Ember.getPath(Tower.cursors, path)
+    # @todo tmp, ember 1.0 changed api, server is using older version of ember.
+    if Tower.isClient
+      Ember.get(Tower.cursors, path)
+    else
+      Ember.getPath(Tower.cursors, path)
 
   notifyCursorFromPath: (path) ->
     cursor = Tower.getCursor(path)
