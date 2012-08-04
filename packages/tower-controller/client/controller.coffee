@@ -15,10 +15,3 @@ Tower.Controller.reopenClass extended: ->
 
   instance: ->
     Tower.Application.instance().get(camelName)
-
-Tower.Controller.include Tower.ControllerActions
-Tower.Controller.include Tower.ControllerElements
-Tower.Controller.include Tower.ControllerEvents
-Tower.Controller.include Tower.ControllerHandlers
-Tower.Controller.include Tower.ControllerInstrumentation
-Tower.Controller.include Tower.ControllerStates
