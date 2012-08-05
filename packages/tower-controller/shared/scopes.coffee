@@ -41,6 +41,7 @@ Tower.ControllerScopes =
           name  = 'all' # might try to make this 'content', so you can do `{{#each App.postsController}}`
       else
         if Tower.isClient && typeof scope == 'function'
+          cursor = scope
           scope = Ember.computed(scope) # .observable()
 
       try
@@ -54,6 +55,10 @@ Tower.ControllerScopes =
         object[name] = scope
 
         @reopen(object)
+
+        if Tower.isClient
+          instance = @instance()
+          instance.set(name, cursor()) unless instance.get(name)
       catch error
         console.log(error.stack || error)
 

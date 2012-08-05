@@ -47,19 +47,20 @@ Tower.ApplicationAssets =
             fs.writeFileSync "public/assets/#{name}#{extension}", content
 
             process.nextTick ->
-              #compressor content, {}, (error, result) ->
-                #if error
-                #  console.log error
-                #  return next(error)
-              do (content) =>
-                result = content
-                digestPath  = File.digestFile("public/assets/#{name}#{extension}")
+              compressor content, {}, (error, content) ->
+                if error
+                  console.log error
+                  return next(error)
 
-                manifest["#{name}#{extension}"]  = File.basename(digestPath)
+                do (content) =>
+                  result = content
+                  digestPath  = File.digestFile("public/assets/#{name}#{extension}")
 
-                #gzip result, (error, result) ->
-                fs.writeFile digestPath, result, ->
-                  next()
+                  manifest["#{name}#{extension}"]  = File.basename(digestPath)
+
+                  #gzip result, (error, result) ->
+                  fs.writeFile digestPath, result, ->
+                    next()
 
           assetBlocks = []
 
