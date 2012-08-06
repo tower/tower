@@ -1,5 +1,24 @@
 # @todo needs lots of refactoring
 class Tower.ModelAttribute
+  # @example Datatypes
+  #   'boolean'
+  #   'integer'
+  #   'decimal' (double)
+  #   'long' (double)
+  #   'bigint'
+  #   'float'
+  #   'date'
+  #   'time'
+  #   'datetime'
+  #   'timestamp'
+  #   'string'
+  #   'text'
+  #   'binary'
+  #   'reference' == id of related document
+  # 
+  # @example Other data types
+  #   'id'
+  #   'bigint'
   # @option options [Boolean|String|Function] set If `set` is a boolean, it will look for a method
   #   named `"set#{field.name}"` on the prototype.  If it's a string, it will call that method on the prototype.
   #   If it's a function, it will call that function as if it were on the prototype.

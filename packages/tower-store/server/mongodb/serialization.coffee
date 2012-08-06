@@ -1,5 +1,57 @@
+# All things that deal with data types and serialization.
+# 
+# - http://bsonspec.org/
+# - http://www.mongodb.org/display/DOCS/Timestamp+data+type
+# - http://www.mongodb.org/display/DOCS/Dates
+# - http://stackoverflow.com/questions/7682714/does-mongodb-support-floating-point-types
+# 
+# @example Node.js MongoDB Data Types
+#   new mongo.Long(numberString)
+#   new mongo.ObjectID(hexString)
+#   new mongo.Timestamp()  // the actual unique number is generated on insert.
+#   new mongo.DBRef(collectionName, id, dbName)
+#   new mongo.Binary(buffer)  // takes a string or Buffer
+#   new mongo.Code(code, [context])
+#   new mongo.Symbol(string)
+#   new mongo.MinKey()
+#   new mongo.MaxKey()
+#   new mongo.Double(number) 
+#   var motherOfAllDocuments = {
+#     'string': 'hello',
+#     'array': [1,2,3],
+#     'hash': {'a':1, 'b':2},
+#     'date': date,
+#     'oid': oid,
+#     'binary': bin,
+#     'int': 42,
+#     'float': 33.3333,
+#     'boolean': true,
+#     'long': date.getTime(),
+#     'where': new Code('this.a > i', {i:1}),
+#     'dbref': new DBRef('namespace', oid, 'integration_tests_')
+#   }
+# 
 # @module
 Tower.StoreMongodbSerialization =
+  DATA_TYPES:
+    id:         'id'
+    reference:  'reference'
+    binary:     'binary'
+    array:      'array'
+    hash:       'hash'
+    boolean:    'boolean'
+    integer:    'integer'
+    decimal:    'float'
+    float:      'float'
+    long:       'long'
+    bigint:     'long'
+    date:       'datetime'
+    time:       'datetime'
+    datetime:   'datetime'
+    timestamp:  'datetime'
+    string:     'string'
+    text:       'string'
+
   serializeModel: (attributes, saved = false) ->
     return attributes if attributes instanceof Tower.Model
     klass = Tower.constant(@className)
