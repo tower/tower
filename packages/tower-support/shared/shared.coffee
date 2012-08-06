@@ -19,6 +19,13 @@ _.extend Tower,
   config:           {}
   namespaces:       {}
   metadata:         {}
+  tryRequire: (paths) ->
+    paths = _.flatten(paths)
+    for path in paths
+      try
+        return require(path)
+      catch error
+        @
   # @todo
   # isTest: false
   # isDevelopment: false
