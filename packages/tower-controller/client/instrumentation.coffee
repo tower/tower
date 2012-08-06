@@ -8,7 +8,7 @@ Tower.ControllerInstrumentation =
       @set('format', 'html')
 
   # Called when the route for this controller is found.
-  call: (router, params) ->
+  call: (router, params = {}) ->
     @set('params', params)
 
     action = @get('action')
@@ -26,7 +26,7 @@ Tower.ControllerInstrumentation =
 
       throw new Error("Action '#{action}' is not defined properly.") unless method
 
-      method.call(controller, params, callback)
+      method.call(@, params, callback)
 
   exit: (action) ->
     Ember.changeProperties =>
@@ -35,7 +35,7 @@ Tower.ControllerInstrumentation =
 
     method = @[action]
 
-    method.exit.call(controller) if typeof(method) == 'object' && method.exit
+    method.exit.call(@) if typeof(method) == 'object' && method.exit
 
   clear: ->
 

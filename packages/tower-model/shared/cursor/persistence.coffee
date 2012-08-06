@@ -19,6 +19,9 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
     @_destroy(callback)
 
   # @todo
+  findOrCreate: (callback) ->
+
+  # @todo
   # add to set
   add: (callback) ->
 

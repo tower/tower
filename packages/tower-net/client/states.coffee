@@ -1,8 +1,8 @@
 Tower.router = Ember.Router.create
   initialState: 'root'
-  location: 'history'
+  location: Ember.HistoryLocation.create() # @todo 'history' throws an error in ember
 
-  root: Ember.State.create(route: '/')
+  root: Ember.Route.create(route: '/')
 
   # Don't need this with the latest version of ember.
   handleUrl: (url, params = {}) ->
@@ -10,22 +10,22 @@ Tower.router = Ember.Router.create
 
     if route
       params = route.toControllerData(url, params)
-      Tower.stateManager.transitionTo(route.state, params)
+      Tower.router.transitionTo(route.state, params)
     else
       console.log "No route for #{url}"
 
-  # createStatesByRoute(Tower.stateManager, 'posts.show.comments.index')
+  # createStatesByRoute(Tower.router, 'posts.show.comments.index')
   createControllerActionState: (name, action) ->
     name = _.camelize(name, true) #=> postsController
 
     # isIndexActive, isShowActive
     # actionMethod  = "#{action}#{_.camelize(name).replace(/Controller$/, '')}"
     # 
-    # Tower.stateManager.indexPosts = Ember.State.transitionTo('root.posts.index')
+    # Tower.router.indexPosts = Ember.State.transitionTo('root.posts.index')
     # Need to think about this more...
-    # Tower.stateManager[actionMethod] = Ember.State.transitionTo("root.#{_.camelize(name, true).replace(/Controller$/, '')}.#{action}")
+    # Tower.router[actionMethod] = Ember.State.transitionTo("root.#{_.camelize(name, true).replace(/Controller$/, '')}.#{action}")
 
-    Ember.State.create
+    Ember.Route.create
       enter: (router, transition) ->
         @_super(router, transition)
 
@@ -38,6 +38,9 @@ Tower.router = Ember.Router.create
         console.log "connectOutlets: #{@name}" if Tower.debug
         controller  = Ember.get(Tower.Application.instance(), name)
 
+        # controller.call(router, @, params)
+        # if @action == state.name, call action
+        # else if state.name == @collectionName call @enter
         controller.call(router, params) if controller
 
       exit: (router, transition) ->
@@ -61,7 +64,7 @@ Tower.router = Ember.Router.create
     return undefined if !path || path == ""
 
     r       = path.split('.')
-    state   = @
+    state   = @root
 
     i       = 0
     n       = r.length
