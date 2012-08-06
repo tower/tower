@@ -157,6 +157,8 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
   # @todo Ideally, refresh wont remove then add back items in the array.
   #   Instead, it should only insert/remove/sort what needs to be changed.
   #   This will make the views snappier.
+  #   Also, this needs to handle non-persisten records (created with App.X.build()),
+  #   which don't yet have an `id` so are missed by @all().
   refresh: (callback) ->
     @reset()
     @all(callback)

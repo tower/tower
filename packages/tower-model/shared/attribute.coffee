@@ -83,7 +83,8 @@ class Tower.ModelAttribute
       if arguments.length == 2
         value = field.encode(value, @)
         value = @setAttribute(key, value)
-        Tower.cursorNotification("#{@constructor.className()}.#{key}")
+        # @todo this is having issues with App.MyModel.build
+        # Tower.cursorNotification("#{@constructor.className()}.#{key}")
         value
       else
         value = @getAttribute(key)
