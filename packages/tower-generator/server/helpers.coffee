@@ -35,7 +35,7 @@ Tower.GeneratorHelpers =
       @injectIntoFile "config/assets.coffee", "      \'#{path}\'\n", after: new RegExp("\\s*#{bundle}: *\\[[^\\]]+\\n", "i")
 
   navigation: (key, path) ->
-    pattern = /div *class: *"nav-collapse" *, *->\s+ul *class: *"nav", *-> */
+    pattern = /div *class: *'nav-collapse' *, *->\s+ul *class: *'nav', *-> */
     content = """\n    navItem t('links.#{key}'), #{path}
 """
 
