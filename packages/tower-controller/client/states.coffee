@@ -11,12 +11,4 @@ Tower.ControllerStates =
     if options.view
       options.view
     else
-      App.get(_.camelize(options.template))
-
-  renderWithEmber: (options) ->
-    outletOptions =
-      outletName: options.outlet || 'view' # default value in ember
-      viewClass:  @findEmberView(options)
-      context:    options.data || @#get('content')
-
-    @parentController().connectOutlet(outletOptions)
+      App.get(_.camelize(options.template) + 'View')

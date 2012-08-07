@@ -18,3 +18,11 @@ Tower.View.reopen
     #app.set(viewName, view)
 
     view
+    
+  renderEmberView: (options) ->
+    outletOptions =
+      outletName: options.outlet || 'view' # default value in ember
+      viewClass:  @findEmberView(options)
+      context:    options.data || @#get('content')
+
+    @parentController().connectOutlet(outletOptions)

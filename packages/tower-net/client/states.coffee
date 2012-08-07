@@ -27,7 +27,7 @@ Tower.router = Ember.Router.create
 
     Ember.Route.create
       route: route
-      
+
       enter: (router, transition) ->
         @_super(router, transition)
 
@@ -35,7 +35,7 @@ Tower.router = Ember.Router.create
         controller  = Ember.get(Tower.Application.instance(), name)
 
         if controller
-          if @name = controller.collectionName
+          if @name == controller.collectionName
             controller.enter()
           else
             controller.enterAction(action)
@@ -47,7 +47,11 @@ Tower.router = Ember.Router.create
         # controller.call(router, @, params)
         # if @action == state.name, call action
         # else if state.name == @collectionName call @enter
-        controller.call(router, params) if controller
+        if controller
+          return if @name == controller.collectionName
+          controller.call(router, params)
+
+        true
 
       exit: (router, transition) ->
         @_super(router, transition)
