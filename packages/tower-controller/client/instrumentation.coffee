@@ -1,11 +1,14 @@
 # @mixin
 Tower.ControllerInstrumentation =
-  enter: (action) ->
+  enter: ->
     Ember.changeProperties =>
       @set('isActive', true)
+      @set('format', 'html')
+
+  enterAction: (action) ->
+    Ember.changeProperties =>
       @set('action', action)
       @set(_.toStateName(action), true)
-      @set('format', 'html')
 
   # Called when the route for this controller is found.
   call: (router, params = {}) ->
@@ -28,9 +31,11 @@ Tower.ControllerInstrumentation =
 
       method.call(@, params, callback)
 
-  exit: (action) ->
+  exit: ->
+    @set('isActive', false)
+
+  exitAction: (action) ->
     Ember.changeProperties =>
-      @set('isActive', false)
       @set(_.toStateName(action), false)
 
     method = @[action]

@@ -59,7 +59,7 @@ compileFile = (root, path, level) ->
     ""
 
 task 'build', ->
-  fs.mkdirSync('./dist')
+  fs.mkdirSync('./dist') unless fs.existsSync('./dist')
   content = compileFile("./packages/tower", "./packages/tower/client.coffee", 0).replace /Tower\.version *= *.+\n/g, (_) ->
     version = """
 Tower.version = "#{VERSION}"

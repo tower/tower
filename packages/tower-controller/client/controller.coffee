@@ -4,7 +4,8 @@ Tower.Controller.reopenClass extended: ->
   camelName = _.camelize(name, true)
 
   object[camelName] = Ember.computed(->
-    Tower.Application.instance()[name].create()
+    Tower.router.get(camelName)
+    # Tower.Application.instance()[name].create()
   ).cacheable()
 
   Tower.Application.instance().reopen(object)

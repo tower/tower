@@ -1,8 +1,8 @@
 Tower.router = Ember.Router.create
   initialState: 'root'
-  location: Ember.HistoryLocation.create() # @todo 'history' throws an error in ember
-
-  root: Ember.Route.create(route: '/')
+  # @todo 'history' throws an error in ember
+  location:     Ember.HistoryLocation.create()
+  root:         Ember.Route.create(route: '/')
 
   # Don't need this with the latest version of ember.
   handleUrl: (url, params = {}) ->
@@ -15,7 +15,7 @@ Tower.router = Ember.Router.create
       console.log "No route for #{url}"
 
   # createStatesByRoute(Tower.router, 'posts.show.comments.index')
-  createControllerActionState: (name, action) ->
+  createControllerActionState: (name, action, route) ->
     name = _.camelize(name, true) #=> postsController
 
     # isIndexActive, isShowActive
@@ -26,13 +26,19 @@ Tower.router = Ember.Router.create
     # Tower.router[actionMethod] = Ember.State.transitionTo("root.#{_.camelize(name, true).replace(/Controller$/, '')}.#{action}")
 
     Ember.Route.create
+      route: route
+      
       enter: (router, transition) ->
         @_super(router, transition)
 
         console.log "enter: #{@name}" if Tower.debug
         controller  = Ember.get(Tower.Application.instance(), name)
 
-        controller.enter(action) if controller
+        if controller
+          if @name = controller.collectionName
+            controller.enter()
+          else
+            controller.enterAction(action)
 
       connectOutlets: (router, params) ->
         console.log "connectOutlets: #{@name}" if Tower.debug
@@ -49,7 +55,11 @@ Tower.router = Ember.Router.create
         console.log "exit: #{@name}" if Tower.debug
         controller  = Ember.get(Tower.Application.instance(), name)
 
-        controller.exit(action) if controller
+        if controller
+          if @name = controller.collectionName
+            controller.exit()
+          else
+            controller.exitAction(action)
 
   insertRoute: (route) ->
     if route.state
@@ -65,6 +75,7 @@ Tower.router = Ember.Router.create
 
     r       = path.split('.')
     state   = @root
+    controllerName = route.controller.name
 
     i       = 0
     n       = r.length
@@ -80,7 +91,10 @@ Tower.router = Ember.Router.create
       if s
         state = s
       else
-        s = @createControllerActionState(route.controller.name, r[i])
+        routeName = '/'
+        if r[i] == r[0] || r[i] == 'new'
+          routeName += r[i]
+        s = @createControllerActionState(controllerName, r[i], routeName)
         state.setupChild(states, r[i], s)
         state = s
 

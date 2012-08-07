@@ -15,8 +15,8 @@ Tower.ControllerStates =
 
   renderWithEmber: (options) ->
     outletOptions =
-      name:     options.outlet || 'view' # default value in ember
-      view:     @findEmberView(options)
-      context:  options.data || @get('content')
+      outletName: options.outlet || 'view' # default value in ember
+      viewClass:  @findEmberView(options)
+      context:    options.data || @#get('content')
 
     @parentController().connectOutlet(outletOptions)

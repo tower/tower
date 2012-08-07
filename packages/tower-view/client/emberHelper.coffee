@@ -18,16 +18,3 @@ Tower.View.reopen
     #app.set(viewName, view)
 
     view
-
-  renderEmberView: (path) ->
-    view = @findEmberView(path)
-
-    throw new Error("Ember view for '#{path}' was not found.") unless view
-
-    oldView = Tower.router.get('_currentView')
-    return view if oldView == view
-    oldView.destroy() if oldView
-
-    Tower.router.set('_currentView', view)
-
-    view.append()

@@ -14,7 +14,11 @@ class Tower.ModelAttribute
   #   'string'
   #   'text'
   #   'binary'
+  #   'object' == 'blob' == anything
+  #   'hash'
+  #   'array'
   #   'reference' == id of related document
+  #   'geo'
   # 
   # @example Other data types
   #   'id'
