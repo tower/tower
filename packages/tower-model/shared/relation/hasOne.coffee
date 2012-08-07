@@ -47,7 +47,7 @@ Tower.ModelRelationHasOneCursorMixin = Ember.Mixin.create
     @where(data)
 
 class Tower.ModelRelationHasOneCursor extends Tower.ModelRelationCursor
-  @make: ->
+  @makeOld: ->
     array = []
     array.isCursor = true
     Tower.ModelRelationCursorMixin.apply(array)

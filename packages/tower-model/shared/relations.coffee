@@ -189,7 +189,7 @@ Tower.ModelRelations =
           id = Ember.get(item, 'id')
           ids.push(id.toString()) if id?
 
-        for item in cursor
+        for item in cursor.get('content')
           if @_checkAssociationRecordForDestroy(item, association)
             if _.indexOf(ids, item.get('id').toString()) == -1
               item.set(association.foreignKey, undefined)
@@ -212,6 +212,7 @@ Tower.ModelRelations =
       else
         cursor.clear()
         #cursor.load(cursor.build(value, options))
+      cursor
 
     # @private
     _getHasManyAssociation: (key) ->
@@ -227,7 +228,7 @@ Tower.ModelRelations =
     # @private
     _setHasOneAssociation: (key, value, association) ->
       cursor          = @getAssociationCursor(key)
-      existingRecord  = cursor[0]
+      existingRecord  = cursor.objectAt(0)
       # need some way of keeping a reference to these to destroy them.
       # need to get the previous/database value from the associated record
 
@@ -278,7 +279,7 @@ Tower.ModelRelations =
 
     # @private
     _getHasOneAssociation: (key) ->
-      @getAssociationCursor(key)[0] || @fetch(key)
+      @getAssociationCursor(key).objectAt(0) || @fetch(key)
 
     # @private
     # 
@@ -302,7 +303,7 @@ Tower.ModelRelations =
 
       if record
         cursor = @getAssociationCursor(key)
-        cursor.clear()
+        Ember.set(cursor, 'content', [])#cursor.clear()
         cursor.addObject(record)
 
       # need to notify the hasMany/hasOne in reverse from here
@@ -312,6 +313,6 @@ Tower.ModelRelations =
     # @private
     _getBelongsToAssociation: (key) ->
       # @todo shouldn't use try, but testing out polymorphic assoc.
-      @getAssociationCursor(key)[0] || try @fetch(key)
+      @getAssociationCursor(key).objectAt(0) || try @fetch(key)
 
 module.exports = Tower.ModelRelations

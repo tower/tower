@@ -219,7 +219,8 @@ Tower.ModelCursorFinders =
       callback.call(@) if callback
       return false
 
-    records = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
+    # records = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
+    records = Ember.get(@, 'content')
     if records && records.length
       callback.call(@, null, records) if callback
       true

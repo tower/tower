@@ -202,15 +202,15 @@ Tower.ModelRelationCursorMixin = Ember.Mixin.create
   isLoaded: false
 
   clone: (cloneContent = true) ->
-    if Ember.EXTEND_PROTOTYPES
-      clone = @clonePrototype()
-    else
-      clone = @constructor.create()
-      if cloneContent
-        content = Ember.get(@, 'content') || Ember.A([])
-        clone.setProperties(content: content) if content
-      unless content
-        clone.setProperties(content: Ember.A([]))
+    #if Ember.EXTEND_PROTOTYPES
+    #  clone = @clonePrototype()
+    #else
+    clone = @constructor.make()
+    if cloneContent
+      content = Ember.get(@, 'content') || Ember.A([])
+      clone.setProperties(content: content) if content
+    unless content
+      clone.setProperties(content: Ember.A([]))
     clone.make(model: @model, owner: @owner, relation: @relation, instantiate: @instantiate)
     clone.merge(@)
     clone
@@ -235,7 +235,7 @@ Tower.ModelRelationCursorMixin = Ember.Mixin.create
   reset: ->
     owner     = @owner
     relation  = @relation.inverse()
-    records   = if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
+    records   = Ember.get(@, 'content')#if Ember.EXTEND_PROTOTYPES then @ else Ember.get(@, 'content')
 
     # this + ember computed cacheable() is causing issues with run loop, not sure this needs to be here.
     #for record in records
@@ -266,7 +266,7 @@ Tower.ModelRelationCursorMixin = Ember.Mixin.create
     @_removed ||= []
 
 class Tower.ModelRelationCursor extends Tower.ModelCursor
-  @make: ->
+  @makeOld: ->
     array = []
     array.isCursor = true
     Tower.ModelRelationCursorMixin.apply(array)
