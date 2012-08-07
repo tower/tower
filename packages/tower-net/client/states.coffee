@@ -2,7 +2,9 @@ Tower.router = Ember.Router.create
   initialState: 'root'
   # @todo 'history' throws an error in ember
   location:     Ember.HistoryLocation.create()
-  root:         Ember.Route.create(route: '/')
+  root:         Ember.Route.create
+    route: '/'
+    index: Ember.Route.create(route: '/')
 
   # Don't need this with the latest version of ember.
   handleUrl: (url, params = {}) ->
