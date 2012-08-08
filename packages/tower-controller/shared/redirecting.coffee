@@ -20,11 +20,11 @@ Tower.ControllerRedirecting =
         url ||= '/'
 
         # @todo remove
-        if Tower.env == 'test'
-          if options.action == 'index'
-            url = '/custom'
-          else
-            url = "/custom/#{@resource.get('id')}"
+        # if Tower.env == 'test'
+        #   if options.action == 'index'
+        #     url = '/custom'
+        #   else
+        #     url = "/custom/#{@resource.get('id')}"
 
         @response.redirect url
       catch error
