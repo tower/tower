@@ -1,3 +1,5 @@
+_ = Tower._
+
 if typeof Ember != 'undefined'
   coffeescriptMixin =
     __extend: (child) ->

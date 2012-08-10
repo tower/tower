@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 # @todo
 # https://github.com/technoweenie/coffee-resque

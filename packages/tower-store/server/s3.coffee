@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.StoreS3 extends Tower.Store
   client: ->
     return @_client if @_client

@@ -1,3 +1,5 @@
+_ = Tower._
+
 # validator library
 # https://github.com/cesario/activevalidators
 # https://github.com/rickharrison/validate.js/blob/master/validate.js

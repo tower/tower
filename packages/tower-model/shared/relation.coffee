@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.ModelRelation extends Tower.Class
   isCollection: false
 

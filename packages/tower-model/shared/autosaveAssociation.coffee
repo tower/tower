@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ModelAutosaveAssociation =
   ClassMethods:
     # Sets up save/validation callbacks for associations.

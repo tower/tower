@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 Tower.ModelDirty =
   # Returns a hash in the format `{attribute1Name: [oldValue, newValue]}`, 

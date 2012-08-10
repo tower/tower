@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.NetRouteDSL
   constructor: ->
     @_scope = {}

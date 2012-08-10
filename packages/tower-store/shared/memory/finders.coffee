@@ -1,4 +1,6 @@
-# @module
+_ = Tower._
+
+# @mixin
 Tower.StoreMemoryFinders =
   # @see Tower.Store#find
   find: (cursor, callback) ->

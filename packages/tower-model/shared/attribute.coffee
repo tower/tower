@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo needs lots of refactoring
 class Tower.ModelAttribute
   # @example Datatypes

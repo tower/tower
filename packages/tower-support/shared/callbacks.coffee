@@ -1,4 +1,5 @@
-# @module
+_ = Tower._
+
 # Provides an interface for any class to have Tower.Model like callbacks.
 #
 # Like the Tower.Model methods, the callback chain is aborted as soon as one of the methods in the chain returns false.
@@ -8,6 +9,7 @@
 #     class App.Location
 #       @include Tower.SupportCallbacks
 #
+# @mixin
 Tower.SupportCallbacks =
   ClassMethods:
     before: ->

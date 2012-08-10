@@ -2,6 +2,7 @@ Ember.Map::toArray = ->
   Tower._.values(@values)
 
 #global.T = Tower
+_ = global._
 
 _.extend Tower,
   nativeExtensions: true
