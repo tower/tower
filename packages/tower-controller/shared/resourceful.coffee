@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 # @todo Most of this stuff is only really relevant for the server,
 # so consider moving it to the server folder.  The only reason you'd want

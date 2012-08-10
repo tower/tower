@@ -1,3 +1,4 @@
+# @mixin
 Tower.ControllerErrors =
   ClassMethods:
     rescue: (type, method, options) ->
