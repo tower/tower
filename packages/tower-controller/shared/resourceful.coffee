@@ -23,8 +23,8 @@ Tower.ControllerResourceful =
       if typeof options == 'string'
         options                 =
           name: options
-          type: Tower.SupportString.camelize(options)
-          collectionName: _.pluralize(options)
+          type: Tower._.camelize(options)
+          collectionName: Tower._.pluralize(options)
 
       metadata.resourceName     = options.name if options.name
 
@@ -56,7 +56,7 @@ Tower.ControllerResourceful =
       options ||= {}
 
       options.key = key
-      options.type ||= Tower.SupportString.camelize(options.key)
+      options.type ||= Tower._.camelize(options.key)
 
       belongsTo.push(options)
 
@@ -65,11 +65,11 @@ Tower.ControllerResourceful =
       belongsTo.length > 0
 
     actions: ->
-      args    = _.flatten(_.args(arguments))
-      options = _.extractOptions(args)
+      args    = Tower._.flatten(_.args(arguments))
+      options = Tower._.extractOptions(args)
 
       actions         = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy']
-      actionsToRemove = _.difference(actions, args, options.except || [])
+      actionsToRemove = Tower._.difference(actions, args, options.except || [])
 
       for action in actionsToRemove
         @[action] = null
@@ -189,7 +189,7 @@ Tower.ControllerResourceful =
       for relation in belongsTo
         param         = relation.param || "#{relation.key}Id"
         if params.hasOwnProperty(param)
-          relation = _.extend({}, relation)
+          relation = Tower._.extend({}, relation)
           relation.param = param
           return relation
       return null
