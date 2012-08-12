@@ -51,7 +51,7 @@ Tower.ControllerHandlers =
         params.method = method
         params.action = action
 
-        elements  = _.extend {target: target, form: form}, {}#, @extractElements(target, options)
+        elements  = Tower._.extend {target: target, form: form}, {}#, @extractElements(target, options)
 
         event.data = elements: elements, params: params
 

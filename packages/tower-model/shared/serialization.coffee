@@ -1,4 +1,6 @@
-# @module
+_ = Tower._
+
+# @mixin
 Tower.ModelSerialization =
   # Compile the model instance into a hash.
   #

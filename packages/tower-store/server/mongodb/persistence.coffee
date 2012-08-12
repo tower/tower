@@ -1,4 +1,6 @@
-# @module
+_ = Tower._
+
+# @mixin
 Tower.StoreMongodbPersistence =
   # @see Tower.Store#insert
   insert: (cursor, callback) ->

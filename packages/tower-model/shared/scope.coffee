@@ -1,3 +1,5 @@
+_ = Tower._
+
 # Interface to {Tower.ModelCursor}, used to build database operations.
 # 
 # @todo Remove this layer, if you want to manually reuse a scope maybe have to call `clone` directly?

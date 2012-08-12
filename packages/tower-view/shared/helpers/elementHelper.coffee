@@ -21,7 +21,7 @@ Tower.ViewElementHelper =
     ".#{@elementKey(arguments...)}"
 
   elementKey: ->
-    Tower.SupportString.parameterize(@elementNameComponents(arguments...).join("-"))
+    Tower._.parameterize(@elementNameComponents(arguments...).join("-"))
 
   # @elementName @user, "firstName"
   #   #=> "user[firstName]"
@@ -35,7 +35,7 @@ Tower.ViewElementHelper =
     for item, i in result
       result[i] = "[#{item}]"
 
-    Tower.SupportString.parameterize(result.join(""))
+    Tower._.parameterize(result.join(""))
 
   elementNameComponents: ->
     args    = _.args(arguments)

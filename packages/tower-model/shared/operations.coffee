@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @example Set arrays
 #   post.changes #=> {}
 #   post.tags = ['ruby', 'javascript']

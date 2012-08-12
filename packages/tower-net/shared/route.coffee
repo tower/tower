@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo Make this more like a {Tower.Model}
 class Tower.NetRoute extends Tower.Class
   @store: ->

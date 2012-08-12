@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @concern Tower.ModelAttributes
 # @concern Tower.ModelPersistence
 # @concern Tower.ModelRelations

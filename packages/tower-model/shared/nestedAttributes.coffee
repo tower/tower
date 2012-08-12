@@ -1,3 +1,6 @@
+_ = Tower._
+
+# @mixin
 Tower.ModelNestedAttributes =
   ClassMethods:
     acceptsNestedAttributesFor: (keys...) ->

@@ -56,7 +56,7 @@ Tower.ControllerActions =
   _create: (callback) ->
     @createResource (error, resource) =>
       return @failure(error, callback) unless resource
-      @respondWithStatus _.isBlank(resource.errors), callback
+      @respondWithStatus Tower._.isBlank(resource.errors), callback
 
   # @private
   _show: (callback) ->
@@ -73,7 +73,7 @@ Tower.ControllerActions =
     @findResource (error, resource) =>
       return @failure(error, callback) if error
       resource.updateAttributes @params[@resourceName], (error) =>
-        @respondWithStatus !!!error && _.isBlank(resource.errors), callback
+        @respondWithStatus !!!error && Tower._.isBlank(resource.errors), callback
 
   # @private
   _destroy: (callback) ->

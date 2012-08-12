@@ -1,10 +1,11 @@
 # @mixin
+# @todo make this work in not just coffeecup but all of them.
 Tower.ViewAssetHelper =
   javascripts: ->
-    sources = _.args(arguments)
-    options = _.extractOptions(sources)
-    options.namespace = "javascripts"
-    options.extension = "js"
+    sources = Tower._.args(arguments)
+    options = Tower._.extractOptions(sources)
+    options.namespace = 'javascripts'
+    options.extension = 'js'
     paths = _extractAssetPaths sources, options
     javascriptTag(path) for path in paths
     return null
@@ -15,8 +16,8 @@ Tower.ViewAssetHelper =
   stylesheets: ->
     sources = _.args(arguments)
     options = _.extractOptions(sources)
-    options.namespace = "stylesheets"
-    options.extension = "css"
+    options.namespace = 'stylesheets'
+    options.extension = 'css'
     paths = _extractAssetPaths sources, options
     stylesheetTag(path) for path in paths
     return null
@@ -37,7 +38,7 @@ Tower.ViewAssetHelper =
     assets    = Tower.config.assets[namespace]
     result    = []
 
-    if Tower.env == "production"
+    if Tower.env == 'production'
       manifest  = Tower.assetManifest
       for source in sources
         unless !!source.match(/^(http|\/{2})/)

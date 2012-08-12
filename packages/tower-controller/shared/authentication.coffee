@@ -1,3 +1,4 @@
+# @mixin
 Tower.ControllerAuthentication =
   ClassMethods:
     # @example

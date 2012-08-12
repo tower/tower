@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.SupportString =
   camelize_rx:    /(?:^|_|\-)(.)/g
   capitalize_rx:  /(^|\s)([a-z])/g
@@ -62,7 +64,7 @@ Tower.SupportString =
     # 2. "this-weeks-httptco"
     Tower.SupportString.underscore(string)
       #.replace(/'/, '') # week's => weeks
-      .replace(/\.([^\.])/, (_, $1) -> $1) # node.js => nodejs (instead of node-js)
+      .replace(/\.([^\.])/, (__, $1) -> $1) # node.js => nodejs (instead of node-js)
       .replace(/[^a-z0-9]+/g, "-") # replace every other non-word character with "-"
       .replace(/^-+|-+$/g, '') # remove hyphens from beginning and end
 

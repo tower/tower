@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 Tower.StoreMemoryPersistence =
   # Load models into the store (for non-persistent stores).
