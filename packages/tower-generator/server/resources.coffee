@@ -1,5 +1,5 @@
-exec  = require("child_process").exec
-File  = require("pathfinder").File
+exec  = require('child_process').exec
+File  = require('pathfinder').File
 fs    = require 'fs'
 
 # @mixin
@@ -27,35 +27,35 @@ Tower.GeneratorResources =
     app:        @app
     user:       @user
 
-  builtAttribute: (name, type = "string") ->
+  builtAttribute: (name, type = 'string') ->
     name:       name
     type:       switch type.toLowerCase()
-      when "text" then "String"
+      when 'text' then 'String'
       else
         Tower.SupportString.camelize(type)
 
     humanName:  _.humanize(name)
 
     fieldType:  switch type
-      when "integer"                    then "number"
-      when "float", "decimal", "string" then "string"
-      when "time"                       then "time"
-      when "datetime", "timestamp"      then "datetime"
-      when "date"                       then "date"
-      when "text"                       then "text"
-      when "boolean"                    then "checkbox"
+      when 'integer'                    then 'number'
+      when 'float', 'decimal', 'string' then 'string'
+      when 'time'                       then 'time'
+      when 'datetime', 'timestamp'      then 'datetime'
+      when 'date'                       then 'date'
+      when 'text'                       then 'text'
+      when 'boolean'                    then 'checkbox'
       else
-        "string"
+        'string'
 
     default:    switch type
-      when "integer"                        then 0
-      when "array" then []
+      when 'integer'                        then 0
+      when 'array' then []
       else
         null
 
     value: switch type
-      when "integer" then 0
-      when "array" then []
+      when 'integer' then 0
+      when 'array' then []
       else
         "A #{name}"
 
@@ -65,7 +65,7 @@ Tower.GeneratorResources =
     humanName:  _.humanize(className)
 
   buildModel: (name, appNamespace, argv = []) ->
-    namespaces            = name.split("/")
+    namespaces            = name.split('/')
     name                  = namespaces.pop()
     name                  = Tower.SupportString.camelize(name, true)
     className             = Tower.SupportString.camelize(name)
@@ -80,7 +80,7 @@ Tower.GeneratorResources =
     relations             = []
 
     for pair in argv
-      pair  = pair.split(":")
+      pair  = pair.split(':')
       continue unless pair.length > 1
       key   = pair[0]
       type  = Tower.SupportString.camelize(pair[1] || "String", true)
@@ -102,9 +102,9 @@ Tower.GeneratorResources =
     humanNamePlural:      humanNamePlural
     attributes:           attributes
     relations:            relations
-    namespacedDirectory:  namespaces.join("/")
-    viewDirectory:        namespaces.join("/") + "/#{namePlural}"
-    namespaced:           _.map(namespaces, (n) -> Tower.SupportString.camelize(n)).join(".")
+    namespacedDirectory:  namespaces.join('/')
+    viewDirectory:        namespaces.join('/') + "/#{namePlural}"
+    namespaced:           _.map(namespaces, (n) -> Tower.SupportString.camelize(n)).join('.')
 
   buildApp: (name = @appName) ->
     @program.namespace ||= Tower.namespace()
@@ -112,37 +112,37 @@ Tower.GeneratorResources =
     namespace:        Tower.SupportString.camelize(@program.namespace)
     paramName:        Tower.SupportString.parameterize(name)
     paramNamePlural:  Tower.SupportString.parameterize(Tower.SupportString.pluralize(name))
-    session:          @generateRandom("hex")
+    session:          @generateRandom('hex')
     year:             (new Date).getFullYear()
     directory:        name
     isStatic:         true
 
   buildView: (name) ->
-    name = _.map(name.split("/"), (n) -> Tower.SupportString.camelize(n, true)).join("/")
+    name = _.map(name.split('/'), (n) -> Tower.SupportString.camelize(n, true)).join('/')
     namespace:  name
     directory:  Tower.SupportString.pluralize(name)
 
   buildController: (name) ->
-    namespaces  = name.split("/")
-    className   = Tower.SupportString.pluralize(Tower.SupportString.camelize(namespaces[namespaces.length - 1])) + "Controller"
+    namespaces  = name.split('/')
+    className   = Tower.SupportString.pluralize(Tower.SupportString.camelize(namespaces[namespaces.length - 1])) + 'Controller'
     if namespaces.length > 1
       namespaces = namespaces[0..-2]
-      directory   = _.map(namespaces, (n) -> Tower.SupportString.camelize(n, true)).join("/")
-      namespace   = @app.namespace + "." + _.map(namespaces, (n) -> Tower.SupportString.camelize(n)).join(".")
+      directory   = _.map(namespaces, (n) -> Tower.SupportString.camelize(n, true)).join('/')
+      namespace   = @app.namespace + '.' + _.map(namespaces, (n) -> Tower.SupportString.camelize(n)).join('.')
     else
       namespace   = @app.namespace
-      directory   = ""
+      directory   = ''
 
     namespace:  namespace
     className:  className
     directory:  directory
     name:       Tower.SupportString.camelize(className, true)
-    namespaced: directory != ""
+    namespaced: directory != ''
 
-  generateRandom: (code = "hex") ->
+  generateRandom: (code = 'hex') ->
     crypto  = require('crypto')
     uuid    = require('node-uuid')
-    hash    = crypto.createHash("sha1")
+    hash    = crypto.createHash('sha1')
     hash.update(uuid.v4())
     hash.digest(code)
 
@@ -154,19 +154,19 @@ Tower.GeneratorResources =
 
     try
       if File.exists(gitFile)
-        lines     = File.read(gitFile).split("\n")
+        lines     = File.read(gitFile).split('\n')
         for line in lines
-          if line.charAt(0) != "#" && line.match(/\S/)
+          if line.charAt(0) != '#' && line.match(/\S/)
             if line.match(/^\[(.*)\]$/)
            	  variable = RegExp.$1
            	else
-           	  line  = line.split("=")
+           	  line  = line.split('=')
            	  key   = line[0].trim()
            	  value = line[1].trim()
            	  gitConfig[variable] ||= {}
            	  gitConfig[variable][key] = value
 
-      # refactor to underscore.blank
+      # @todo refactor to underscore.blank
       user.name     = if gitConfig.user && gitConfig.user.name then gitConfig.user.name else 'username'
       user.email    = if gitConfig.user && gitConfig.user.email then gitConfig.user.email else 'user@example.com'
       user.username = if gitConfig.github && gitConfig.github.user then gitConfig.github.user else 'User'

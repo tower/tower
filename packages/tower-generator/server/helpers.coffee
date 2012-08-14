@@ -35,7 +35,7 @@ Tower.GeneratorHelpers =
     bundle = options.bundle || "application"
     @inRoot =>
       @injectIntoFile "config/assets.coffee", "      \'#{path}\'\n",
-        after: new RegExp("\\s*#{bundle}: *\\[[^\\]]+\\n", "i"),
+        after: new RegExp("\\s*#{bundle}: *\\[[^\\]]*\\n", "i"),
         duplicate: false
 
   navigation: (key, path) ->

@@ -26,5 +26,6 @@ class Tower.GeneratorViewGenerator extends Tower.Generator
 
     for view in views
       @template "client/#{view}.coffee", "app/client/views/#{@view.directory}/#{view}.coffee"
+      @asset "/app/client/views/#{@view.directory}/#{view}"
 
 module.exports = Tower.GeneratorViewGenerator

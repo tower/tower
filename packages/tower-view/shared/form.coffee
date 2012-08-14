@@ -12,6 +12,7 @@ class Tower.ViewForm extends Tower.ViewComponent
   render: (callback) ->
     @tag "form", @attributes, =>
       @tag "input", type: "hidden", name: "_method", value: @attributes["data-method"]
+      # @tag "input", type: "hidden", name: "format", value: 'html'
       if callback
         builder    = new Tower.ViewFormBuilder([],
           template:   @template

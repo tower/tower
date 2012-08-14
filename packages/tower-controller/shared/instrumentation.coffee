@@ -16,6 +16,7 @@ Tower.ControllerInstrumentation =
       unless params.format
         try params.format = require('mime').extension(request.header('content-type'))
         params.format ||= 'html'
+        params.format = 'html' if params.format.toLowerCase() == 'form' # @todo tmp hack
 
       # @todo maybe move this into middleware (merging files with params)
       if files = request.files
