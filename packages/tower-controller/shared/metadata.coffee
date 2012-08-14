@@ -1,3 +1,6 @@
+_ = Tower._
+
+# @mixin
 Tower.ControllerMetadata =
   ClassMethods:
     baseClass: ->
@@ -11,6 +14,8 @@ Tower.ControllerMetadata =
     # It should be minimal code and high performance.
     metadata: ->
       @_metadata ||= {}
+
+      _ = Tower._
 
       className               = @className()
       metadata                = @_metadata[className]
@@ -61,6 +66,6 @@ Tower.ControllerMetadata =
 
     _compileResourceName: (type) ->
       parts                   = type.split('.')
-      resourceName            = _.camelize(parts[parts.length - 1], true)
+      resourceName            = Tower._.camelize(parts[parts.length - 1], true)
 
 module.exports = Tower.ControllerMetadata

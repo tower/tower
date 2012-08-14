@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.Store extends Tower.Class
   @include Tower.SupportCallbacks
 

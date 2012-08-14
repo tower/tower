@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.SupportUrl =
   # use single quotes, otherwise they're escaped
   toQueryValue: (value, type, negate = "") ->

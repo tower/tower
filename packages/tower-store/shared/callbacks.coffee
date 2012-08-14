@@ -1,3 +1,6 @@
+_ = Tower._
+
+# @mixin
 Tower.StoreCallbacks =
   # Prepare the criteria before you execute {#create},
   # perhaps for mimicking join tables in Mongodb.

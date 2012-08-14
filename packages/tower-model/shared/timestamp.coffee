@@ -1,4 +1,4 @@
-# @module
+# @mixin
 Tower.ModelTimestamp =
   ClassMethods:
     # Adds `createdAt` and `updatedAt` attributes to your records.

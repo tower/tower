@@ -72,8 +72,8 @@ Tower.ControllerEvents =
       controller.elements ||= {}
       controller.params   ||= {}
 
-      _.extend controller.params, options.params if options.params
-      _.extend controller.elements, options.elements if options.elements
+      Tower._.extend controller.params, options.params if options.params
+      Tower._.extend controller.elements, options.elements if options.elements
 
       if typeof handler == 'string'
         controller[handler].call controller, event

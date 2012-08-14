@@ -1,3 +1,5 @@
+_ = Tower._
+
 # All things that deal with data types and serialization.
 # 
 # - http://bsonspec.org/
@@ -31,7 +33,7 @@
 #     'dbref': new DBRef('namespace', oid, 'integration_tests_')
 #   }
 # 
-# @module
+# @mixin
 Tower.StoreMongodbSerialization =
   DATA_TYPES:
     id:         'id'

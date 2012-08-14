@@ -11,4 +11,4 @@ Tower.ControllerStates =
     if options.view
       options.view
     else
-      App.get(_.camelize(options.template) + 'View')
+      App.get(Tower._.camelize(options.template) + 'View')

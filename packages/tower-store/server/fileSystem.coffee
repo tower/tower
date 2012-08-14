@@ -1,4 +1,5 @@
 File = require('pathfinder').File
+_ = Tower._
 
 class Tower.StoreFileSystem extends Tower.Store
   # add load paths if you need to, e.g.

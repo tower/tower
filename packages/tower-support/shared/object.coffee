@@ -1,4 +1,5 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
+_ = Tower._
 
 Tower.SupportObject =
   modules: (object) ->

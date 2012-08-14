@@ -16,6 +16,7 @@ class Tower.NetParamOrder extends Tower.NetParam
         #if controller
         #  param = controller.params()[token]
 
+        # @todo need to make operators an array
         values.push token, operator
 
     values

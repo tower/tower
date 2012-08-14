@@ -1,3 +1,6 @@
+_ = Tower._
+
+# @mixin
 Tower.ControllerActions =  
   # Default implementation for the 'index' action.
   index: ->

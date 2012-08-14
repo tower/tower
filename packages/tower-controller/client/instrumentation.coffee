@@ -36,7 +36,7 @@ Tower.ControllerInstrumentation =
 
   exitAction: (action) ->
     Ember.changeProperties =>
-      @set(_.toStateName(action), false)
+      @set(Tower._.toStateName(action), false)
 
     method = @[action]
 

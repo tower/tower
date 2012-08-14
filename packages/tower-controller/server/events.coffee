@@ -11,7 +11,7 @@ Tower.ControllerEvents =
       @addSocketEventHandler name, handler for name, handler of @_socketHandlers
 
     socketNamespace: ->
-      _.pluralize(_.camelize(@className().replace(/(Controller)$/, ''), false))
+      Tower._.pluralize(_.camelize(@className().replace(/(Controller)$/, ''), false))
 
     addSocketEventHandler: (name, handler, options) ->
       controllerName = @metadata().name

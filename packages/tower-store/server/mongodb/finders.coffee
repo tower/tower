@@ -1,4 +1,6 @@
-# @module
+_ = Tower._
+
+# @mixin
 Tower.StoreMongodbFinders =
   # Find and return an array of documents.
   #

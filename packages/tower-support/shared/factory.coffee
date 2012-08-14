@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.Factory
   @definitions: {}
 
@@ -28,7 +30,7 @@ class Tower.Factory
     throw new Error("Expected function callback for Factory '#{name}'") unless typeof(callback) == 'function'
 
     @name             = name
-    @className        = Tower.namespaced(Tower.SupportString.camelize(options.className || name))
+    @className        = Tower.namespaced(_.camelize(options.className || name))
     @parentClassName  = options.parent
     @callback         = callback
 

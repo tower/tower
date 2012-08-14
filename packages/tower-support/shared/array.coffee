@@ -1,4 +1,5 @@
 nativeIndexOf = Array.prototype.indexOf
+_ = Tower._
 
 Tower.SupportArray =
   toStringIndexOf: (array, item, isSorted) ->

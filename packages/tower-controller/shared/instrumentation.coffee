@@ -24,7 +24,7 @@ Tower.ControllerInstrumentation =
         # value == {"coverImage": {path: '/tmp/123.png'}, "attachments": [{path: '/tmp/456.png'}]}
         for key, value of files
           params[key] ||= {} # "profile"
-          _.extend(params[key], value)
+          Tower._.extend(params[key], value)
 
       @format   = params.format
       @action   = params.action

@@ -1,4 +1,6 @@
-# @module
+_ = Tower._
+
+# @mixin
 Tower.SupportI18n =
   PATTERN: /(?:%%|%\{(\w+)\}|%<(\w+)>(.*?\d*\.?\d*[bBdiouxXeEfgGcps]))/g
   defaultLanguage: 'en'
@@ -6,7 +8,7 @@ Tower.SupportI18n =
   load: (pathOrObject, language = @defaultLanguage) ->
     store     = @store()
     language  = store[language] ||= {}
-    Tower.modules._.deepMerge(language, if typeof(pathOrObject) == 'string' then require(pathOrObject) else pathOrObject)
+    _.deepMerge(language, if typeof(pathOrObject) == 'string' then require(pathOrObject) else pathOrObject)
     @
 
   translate: (key, options = {}) ->

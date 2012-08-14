@@ -1,4 +1,8 @@
+_ = Tower._
+
 # This should all go into underscore, _.toString(), _.fromString()
+# 
+# @mixin
 Tower.StoreSerializerString =
   from: (serialized) ->
     if _.none(serialized) then null else String(serialized)
