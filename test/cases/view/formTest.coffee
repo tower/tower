@@ -112,6 +112,41 @@ describe "Tower.ViewForm", ->
 </form>
 
 """
+    ###
+    describe 'ember', ->
+      test 'string input', ->
+        post = App.Post.build(title: 'A Post!', tags: ["ruby", "javascript"])
+      
+        template = ->
+          formFor 'post', live: true, (form) ->
+            form.fieldset (fields) ->
+              fields.field 'title', as: 'string'
+      
+        view.render template: template, locals: post: post, (error, result) ->
+          console.log result
+          throw error if error
+          assert.equal result, """
+<form action="/posts" id="post-form" role="form" novalidate="true" data-method="post" method="post">
+  <input type="hidden" name="_method" value="post" />
+  <fieldset>
+    <ol class="fields">
+      <li class="field control-group string optional" id="post-title-field">
+        <label for="post-title-input" class="control-label">
+          <span>Title</span>
+          <abbr title="Optional" class="optional">
+            
+          </abbr>
+        </label>
+        <div class="controls">
+          <input type="text" id="post-title-input" name="post[title]" class="string title optional input" aria-required="false" />
+        </div>
+      </li>
+    </ol>
+  </fieldset>
+</form>
+
+"""
+    ###
   
     describe 'fields', ->
       test 'string', ->

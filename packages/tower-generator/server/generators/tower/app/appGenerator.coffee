@@ -108,7 +108,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @template "mocha.opts"
 
       @directory "tmp"
-
+      
       @inside "vendor", ->
         @inside "javascripts", ->
           # https://github.com/eriwen/javascript-stacktrace

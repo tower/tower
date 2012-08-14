@@ -20,6 +20,7 @@ class Tower.ViewFormFieldset extends Tower.ViewComponent
       attribute:    @attribute
       index:        @index
       parentIndex:  @parentIndex
+      live:         @live
     )
 
   render: (block) ->

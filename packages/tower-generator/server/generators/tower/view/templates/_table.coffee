@@ -1,4 +1,4 @@
-<% if app.isStatic %>
+<% if (app.isStatic) { %>
 tableFor '<%= model.namePlural %>', (t) ->
   t.head ->
     t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
@@ -17,7 +17,7 @@ tableFor '<%= model.namePlural %>', (t) ->
     t.row ->
       t.cell colspan: <%= model.attributes.length + 3 %>, ->
         linkTo 'New <%= model.humanName %>', urlFor(<%= app.namespace %>.<%= model.className %>, action: 'new')
-<% else %>
+<% } else { %>
 tableFor '<%= model.namePlural %>', (t) ->
   t.head ->
     t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
@@ -37,4 +37,4 @@ tableFor '<%= model.namePlural %>', (t) ->
     t.row ->
       t.cell colspan: <%= model.attributes.length + 3 %>, ->
         a '{{action new <%= model.name %> href=true target="App.<%= model.namePlural %>Controller"}}', 'New <%= model.humanName %>'
-<% end %>
+<% } %>

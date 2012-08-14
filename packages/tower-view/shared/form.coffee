@@ -18,6 +18,7 @@ class Tower.ViewForm extends Tower.ViewComponent
           tabindex:   1
           accessKeys: {}
           model:      @model
+          live:       @live
         )
         builder.render(callback)
 

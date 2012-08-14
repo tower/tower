@@ -115,6 +115,7 @@ Tower.GeneratorResources =
     session:          @generateRandom("hex")
     year:             (new Date).getFullYear()
     directory:        name
+    isStatic:         true
 
   buildView: (name) ->
     name = _.map(name.split("/"), (n) -> Tower.SupportString.camelize(n, true)).join("/")
@@ -166,13 +167,17 @@ Tower.GeneratorResources =
            	  gitConfig[variable][key] = value
 
       # refactor to underscore.blank
-      user.name     = if gitConfig.user && gitConfig.user.name then gitConfig.user.name else "username"
-      user.email    = if gitConfig.user && gitConfig.user.email then gitConfig.user.email else "example@example.com"
-      user.username = if gitConfig.github && gitConfig.github.user then gitConfig.github.user else "User"
+      user.name     = if gitConfig.user && gitConfig.user.name then gitConfig.user.name else 'username'
+      user.email    = if gitConfig.user && gitConfig.user.email then gitConfig.user.email else 'user@example.com'
+      user.username = if gitConfig.github && gitConfig.github.user then gitConfig.github.user else 'User'
     catch error
       @
 
-    user.database   = "mongodb"
+    user.name ||= 'username'
+    user.email ||= 'user@example.com'
+    user.username ||= 'User'
+
+    user.database   = 'mongodb'
 
     callback(user) if callback
 

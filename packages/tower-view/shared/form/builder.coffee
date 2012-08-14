@@ -7,6 +7,7 @@ class Tower.ViewFormBuilder extends Tower.ViewComponent
     @index          = options.index
     @tabindex       = options.tabindex
     @accessKeys     = options.accessKeys
+    @live           = options.live
     #@attributes     = @cloneAttributes(options.except(:template, :model, :attribute, :accessKeys, :index, :tabindex))
 
   defaultOptions: (options = {}) ->
@@ -20,6 +21,7 @@ class Tower.ViewFormBuilder extends Tower.ViewComponent
     block                   = args.pop()
     options                 = @defaultOptions(_.extractOptions(args))
     options.label           ||= args.shift()
+    options.live            = @live
 
     new Tower.ViewFormFieldset([], options).render(block)
 
@@ -66,6 +68,7 @@ class Tower.ViewFormBuilder extends Tower.ViewComponent
       parentIndex: index
       accessKeys:  accessKeys
       tabindex:    tabindex
+      live:        @live
     )
 
     new Tower.ViewFormBuilder(options).render(block)
@@ -96,6 +99,7 @@ class Tower.ViewFormBuilder extends Tower.ViewComponent
       labelHTML:   options.labelHTML || {}
       errorHTML:   options.errorHTML || {}
       hintHtml:    options.hintHtml  || {}
+      live:        @live
 
     new Tower.ViewFormField([], _.extend(defaults, options)).render(block)
 
