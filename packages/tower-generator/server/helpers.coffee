@@ -40,8 +40,11 @@ Tower.GeneratorHelpers =
 
   navigation: (key, path) ->
     pattern = /div *class: *'nav-collapse' *, *->\s+ul *class: *'nav', *-> */
-    content = """\n    navItem t('links.#{key}'), #{path}
+    content = """\n    li ->
+\ \ \ \ \ \ a '{{action index#{@model.className} href=true}}', t('links.#{key}')
 """
+#    content = """\n    navItem t('links.#{key}'), #{path}
+#"""
 
     @inRoot =>
       @injectIntoFile "app/views/shared/_navigation.coffee", content, after: pattern, duplicate: false
