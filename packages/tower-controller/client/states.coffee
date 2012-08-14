@@ -7,8 +7,8 @@ Tower.ControllerStates =
   parentController: ->
     Tower.Application.instance().get('applicationController')
 
-  findEmberView: (options) ->
-    if options.view
-      options.view
-    else
-      App.get(Tower._.camelize(options.template) + 'View')
+  # findEmberView: (options) ->
+  #   if options.view
+  #     options.view
+  #   else
+  #     App.get(Tower._.camelize(options.template) + 'View')

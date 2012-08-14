@@ -1,2 +1,2 @@
 <%= app.namespace %>.<%= model.className %>View = Ember.View.extend
-  templateName: '<%= model.paramName %>'
+  templateName: 'app/views/<%= view.directory %>/show'

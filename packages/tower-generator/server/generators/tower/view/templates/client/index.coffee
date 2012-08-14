@@ -1,2 +1,2 @@
 <%= app.namespace %>.<%= model.classNamePlural %>View = Ember.CollectionView.extend
-  templateName: '<%= model.paramNamePlural %>'
+  templateName: 'app/views/<%= view.directory %>/index'

@@ -1,2 +1,2 @@
 <%= app.namespace %>.<%= model.className %>FormView = Ember.View.extend
-  templateName: '<%= model.paramName %>Form'
+  templateName: 'app/views/<%= view.directory %>/_form'

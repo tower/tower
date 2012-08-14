@@ -1,4 +1,4 @@
-<% if (app.isStatic) { %>
+<% if (!app.Dynamic) { %>
 tableFor '<%= model.namePlural %>', (t) ->
   t.head ->
     t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>
@@ -27,14 +27,14 @@ tableFor '<%= model.namePlural %>', (t) ->
     t.row class: '<%= model.name %>', -><% for (var i = 0; i < model.attributes.length; i++) { %>
       t.cell '{{<%= model.name %>.<%= model.attributes[i].name %>}}'<% } %>
       t.cell ->
-        a '{{action show <%= model.name %> href=true target="App.<%= model.namePlural %>Controller"}}', 'Show'
+        a '{{action show<%= model.className %> <%= model.name %> href=true}}', 'Show'
         span '|'
-        a '{{action edit <%= model.name %> href=true target="App.<%= model.namePlural %>Controller"}}', 'Edit'
+        a '{{action edit<%= model.className %> <%= model.name %> href=true}}', 'Edit'
         span '|'
-        a '{{action destroy <%= model.name %> href=true target="App.<%= model.namePlural %>Controller"}}', 'Destroy'
+        a '{{action destroy<%= model.className %> <%= model.name %> href=true}}', 'Destroy'
     text '{{/each}}'
   t.foot ->
     t.row ->
       t.cell colspan: <%= model.attributes.length + 3 %>, ->
-        a '{{action new <%= model.name %> href=true target="App.<%= model.namePlural %>Controller"}}', 'New <%= model.humanName %>'
+        a '{{action new<%= model.className %> <%= model.name %> href=true}}', 'New <%= model.humanName %>'
 <% } %>
