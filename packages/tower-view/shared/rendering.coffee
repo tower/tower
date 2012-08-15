@@ -22,7 +22,7 @@ Tower.ViewRendering =
   # @option options [Array] prefixes Array of folders to look for the templates in.
   render: (options, callback) ->
     @_normalizeRenderOptions(options)
-
+    
     @_renderBody options, (error, body) =>
       return callback.call(@, error, body) if error
       @_renderLayout(body, options, callback)

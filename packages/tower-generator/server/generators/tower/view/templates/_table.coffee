@@ -1,4 +1,4 @@
-<% if (!app.Dynamic) { %>
+<% if (app.isNotDynamic) { %>
 tableFor '<%= model.namePlural %>', (t) ->
   t.head ->
     t.row -><% for (var i = 0; i < model.attributes.length; i++) { %>

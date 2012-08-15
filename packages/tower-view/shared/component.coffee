@@ -13,7 +13,7 @@ class Tower.ViewComponent
     @[key] = value for key, value of options
 
   tag: (key, args...) ->
-    @template.tag key, args
+    @template.tag key, _.compact(args)
 
   addClass: (string, args) ->
     result = if string then string.split(/\s+/g) else []
