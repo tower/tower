@@ -1,4 +1,4 @@
-Tower.router = Ember.Router.create
+Tower.Router = Ember.Router.extend
   initialState: 'root'
   # @todo 'history' throws an error in ember
   location:     Ember.HistoryLocation.create()
@@ -42,8 +42,11 @@ Tower.router = Ember.Router.create
       #
       # @todo
       serialize: (router, context) ->
-        attributes = Ember.get(context, 'attributes') if context
-        attributes || context
+        attributes  = context.toJSON() if context && context.toJSON
+        attributes || context # i.e. "params"
+
+      deserialize: (router, params) ->
+        params
 
       enter: (router, transition) ->
         @_super(router, transition)
@@ -133,3 +136,6 @@ Tower.router = Ember.Router.create
       i++
 
     undefined
+
+# @todo tmp workaround b/c ember will initialize url right when router is created
+Tower.router = Tower.Router.PrototypeMixin.mixins[Tower._router.PrototypeMixin.mixins.length - 1].properties
