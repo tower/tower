@@ -135,7 +135,7 @@ Tower.ModelRelationHasManyThroughCursorMixin = Ember.Mixin.create Tower.ModelRel
       callback.call @, error, throughRecords if callback
 
 class Tower.ModelRelationHasManyThroughCursor extends Tower.ModelRelationCursor
-  @make: ->
+  @makeOld: ->
     array = []
     array.isCursor = true
     Tower.ModelRelationCursorMixin.apply(array)

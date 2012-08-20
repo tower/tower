@@ -41,7 +41,7 @@ Tower.ModelRelationBelongsToCursorMixin = Ember.Mixin.create
     @where(id: $in: [@owner.get(relation.foreignKey)])
 
 class Tower.ModelRelationBelongsToCursor extends Tower.ModelRelationCursor
-  @make: ->
+  @makeOld: ->
     array = []
     array.isCursor = true
     Tower.ModelRelationCursorMixin.apply(array)

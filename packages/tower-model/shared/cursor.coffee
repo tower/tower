@@ -92,12 +92,14 @@ class Tower.ModelCursor extends Tower.Collection
   isCursor: true
 
   @make: ->
-    if Ember.EXTEND_PROTOTYPES
-      array = []
-      array.isCursor = true
-      array
-    else
-      @create()
+    #if Ember.EXTEND_PROTOTYPES
+    #  array = []
+    #  array.isCursor = true
+    #  array
+    #else
+    cursor = @create()
+    cursor.set('content', Ember.A([]))
+    cursor
 
   init: (attr = {}) ->
     attr.content ||= Ember.A([]) if Tower.isClient
@@ -121,8 +123,8 @@ Tower.ModelCursorMixin = Ember.Mixin.create(
 )
 
 # @todo undo this feature?
-if Ember.EXTEND_PROTOTYPES
-  Tower.ModelCursorMixin.without.apply(Tower.ModelCursorMixin, ['length', 'isCursor']).apply(Array.prototype)
+#if Ember.EXTEND_PROTOTYPES
+#  Tower.ModelCursorMixin.without.apply(Tower.ModelCursorMixin, ['length', 'isCursor']).apply(Array.prototype)
 
 Tower.ModelCursor.include(Tower.ModelCursorMixin)
 

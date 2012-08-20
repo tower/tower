@@ -2,3 +2,4 @@
 --reporter dot
 --ui bdd
 --timeout 2000
+--slow 75

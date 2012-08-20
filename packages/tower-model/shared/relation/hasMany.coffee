@@ -297,7 +297,7 @@ Tower.ModelRelationHasManyCursorMixin = Ember.Mixin.create
     rootRelation.cursor.records = rootRelation.cursor.records.concat _.castArray(records)
 
 class Tower.ModelRelationHasManyCursor extends Tower.ModelRelationCursor
-  @make: ->
+  @makeOld: ->
     array = []
     array.isCursor = true
     Tower.ModelRelationCursorMixin.apply(array)

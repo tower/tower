@@ -141,7 +141,8 @@ describe "Tower.ModelRelation", ->
 
       test 'all together now, insert through model', (done) ->
         user.get('groups').create (error, group) =>
-          assert.ok user.get('memberships').all() instanceof Array, 'user.memberships.all instanceof Array'
+          # removed this functionality
+          # assert.ok user.get('memberships').all() instanceof Array, 'user.memberships.all instanceof Array'
           assert.ok user.get('memberships').all().isCursor, 'user.memberships.all.isCursor'
           assert.ok user.get('memberships').all().isHasMany, 'user.memberships.all.isHasManyThrough'
 

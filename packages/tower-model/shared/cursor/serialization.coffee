@@ -23,7 +23,7 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
     @_uniq        = options.uniq
     @_eagerLoad   = options.eagerLoad || {}
     @_near        = options.near
-    Ember.set(@, 'content', Ember.A([])) if Tower.isClient
+    Ember.set(@, 'content', Ember.A([]))# if Tower.isClient
     # options.findOne = conditions.id && conditions.id.hasOwnProperty('$in') && conditions.id.$in.length == 1
 
   # Get the conditions, order, limit, fields, offset, or other private variables.
@@ -127,32 +127,32 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
   #
   # @return [Tower.ModelCriteria]
   clone: (cloneContent = true) ->
-    if Ember.EXTEND_PROTOTYPES
-      clone = @concat()#Tower.ModelCursorMixin.apply(@concat())
-      clone.isCursor = true
-    else
-      clone = @constructor.create()
-      if cloneContent
-        content = Ember.get(@, 'content') || Ember.A([])
-        clone.setProperties(content: content) if content
+    #if Ember.EXTEND_PROTOTYPES
+    #  clone = @concat()#Tower.ModelCursorMixin.apply(@concat())
+    #  clone.isCursor = true
+    #else
+    clone = @constructor.create()
+    if cloneContent
+      content = Ember.get(@, 'content') || Ember.A([])
+      clone.setProperties(content: content) if content
 
     clone.make(model: @model, instantiate: @instantiate)
     clone.merge(@)
     clone
 
   load: (records) ->
-    if Ember.EXTEND_PROTOTYPES
-      @clear()
-      @addObjects(records)
-    else
-     Ember.set(@, 'content', records)
+    #if Ember.EXTEND_PROTOTYPES
+    #  @clear()
+    #  @addObjects(records)
+    #else
+    Ember.set(@, 'content', records)
 
   reset: ->
-    if Ember.EXTEND_PROTOTYPES
-      @clear()
-      @
-    else
-      Ember.set(@, 'content', [])
+    #if Ember.EXTEND_PROTOTYPES
+    #  @clear()
+    #  @
+    #else
+    Ember.set(@, 'content', [])
 
   # @todo Ideally, refresh wont remove then add back items in the array.
   #   Instead, it should only insert/remove/sort what needs to be changed.

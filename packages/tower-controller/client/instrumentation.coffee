@@ -1,5 +1,13 @@
 # @mixin
 Tower.ControllerInstrumentation =
+  params: Ember.computed(->
+    Tower.router.getStateMeta(Tower.router.get('currentState'), 'serialized')
+  ).volatile()
+
+  resource: Ember.computed(->
+    Tower.router.getStateMeta(Tower.router.get('currentState'), 'context')
+  ).volatile()
+
   enter: ->
     Ember.changeProperties =>
       @set('isActive', true)
@@ -12,7 +20,10 @@ Tower.ControllerInstrumentation =
 
   # Called when the route for this controller is found.
   call: (router, params = {}) ->
-    @set('params', params)
+    # @todo ember should allow this to be cached.
+    router.send('stashContext', params)
+
+    # @set('params', params)
 
     action = @get('action')
 

@@ -67,7 +67,7 @@ Tower.ModelAutosaveAssociation =
   # @private
   _validateSingleAssociation: (association, callback) ->
     cursor  = @getAssociationCursor(association.name)
-    record  = cursor[0] if cursor # @todo assumes it's the array cursor, not Tower.ModelCursor
+    record  = cursor.objectAt(0) if cursor # @todo assumes it's the array cursor, not Tower.ModelCursor
 
     if record
       @_associationIsValid(association, record, callback)
@@ -137,7 +137,7 @@ Tower.ModelAutosaveAssociation =
   # @private
   _associatedRecordsToValidateOrSave: (cursor, newRecord, autosave) ->
     if newRecord
-      cursor
+      Ember.get(cursor, 'content')
     else if autosave
       cursor.filter (record) -> record._changedForAutosave()
     else

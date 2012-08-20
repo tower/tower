@@ -43,7 +43,7 @@ class App.AssociationCursorAddress extends Tower.Model
 
   @validates 'city', 'state', presence: true
 
-describe "Tower.ModelRelation (association cursor", ->
+describe "Tower.ModelRelation (association cursor)", ->
   record      = null
   cursor      = null
   association = null
@@ -62,16 +62,16 @@ describe "Tower.ModelRelation (association cursor", ->
         assert.isTrue record.getAssociationCursor('associationCursorPosts').isHasMany, 'getAssociationCursor("associationCursorPosts").isHasMany'
 
       test 'setHasManyAssociation', ->
-        assert.equal cursor.length, 0
+        assert.equal cursor.get('content').length, 0
         # pass single item
         record._setHasManyAssociation('associationCursorPosts', App.AssociationCursorPost.build(), association)
-        assert.equal cursor.length, 1
+        assert.equal cursor.get('content').length, 1
         # pass single item in array
         record._setHasManyAssociation('associationCursorPosts', [App.AssociationCursorPost.build()], association)
-        assert.equal cursor.length, 1
+        assert.equal cursor.get('content').length, 1
         # pass multiple items in array
         record._setHasManyAssociation('associationCursorPosts', [App.AssociationCursorPost.build(), App.AssociationCursorPost.build()], association)
-        assert.equal cursor.length, 2
+        assert.equal cursor.get('content').length, 2
 
       test '_associatedRecordsToValidateOrSave(cursor, isNew: true, autosave: false)', ->
         assert.equal record._associatedRecordsToValidateOrSave(cursor, true).length, 0
@@ -136,19 +136,19 @@ describe "Tower.ModelRelation (association cursor", ->
 
         record.updateAttributes associationCursorPosts: [child1], =>
           firstId = child1.get('associationCursorTestId').toString()
-          assert.ok firstId
+          assert.ok firstId, '1'
           child2 = App.AssociationCursorPost.build(title: 'Second Title!')
 
           record.updateAttributes associationCursorPosts: [child2], =>
             secondId = child2.get('associationCursorTestId')
-            assert.ok secondId
-            assert.equal firstId.toString(), secondId.toString()
+            assert.ok secondId, '2'
+            assert.equal firstId.toString(), secondId.toString(), '3'
             # @todo
-            assert.isUndefined child1.get('associationCursorTestId')
-            assert.equal child2.get('associationCursorTestId').toString(), record.get('id').toString()
-
+            assert.isUndefined child1.get('associationCursorTestId'), '4'
+            assert.equal child2.get('associationCursorTestId').toString(), record.get('id').toString(), '5'
+            
             record.get('associationCursorPosts').all (error, count) =>
-              assert.equal count.length, 1
+              assert.equal count.length, 1, '6'
               done()
 
       test 'nullify', (done) ->
@@ -177,10 +177,10 @@ describe "Tower.ModelRelation (association cursor", ->
       assert.isTrue record.getAssociationCursor('associationCursorUser').isBelongsTo, 'getAssociationCursor("associationCursorUser").isBelongsTo'
     
     test 'setBelongsToAssociation', ->
-      assert.equal cursor.length, 0
+      assert.equal cursor.get('content').length, 0
       # pass single item
       record._setBelongsToAssociation('associationCursorUser', App.AssociationCursorUser.build(), association)
-      assert.equal cursor.length, 1
+      assert.equal cursor.get('content').length, 1
 
     test '_validateSingleAssociation', ->
       record._setBelongsToAssociation('associationCursorUser', App.AssociationCursorUser.build(), association)
@@ -241,10 +241,10 @@ describe "Tower.ModelRelation (association cursor", ->
       assert.isTrue record.getAssociationCursor(key).isHasOne, 'getAssociationCursor("associationCursorUser").isHasOne'
     
     test 'setHasOneAssociation', ->
-      assert.equal cursor.length, 0
+      assert.equal cursor.get('content').length, 0
       # pass single item
       record._setHasOneAssociation(key, App.AssociationCursorAddress.build(), association)
-      assert.equal cursor.length, 1
+      assert.equal cursor.get('content').length, 1
 
     test '_validateSingleAssociation', ->
       record._setHasOneAssociation(key, App.AssociationCursorAddress.build(), association)
