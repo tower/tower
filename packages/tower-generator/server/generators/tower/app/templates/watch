@@ -57,13 +57,14 @@ watch /app\/views.*\.coffee$/
       template      = "Tower.View.cache =\n"
       
       iterator = (item, next) =>
-        name = item[0].replace(/app\/(?:client\/)views\//, '')#.replace('/', '_')
+        name = item[0].replace(/app\/(?:client\/)?views\//, '')#.replace('/', '_')
         try
           string = coffeecup.render(item[1])  
         catch error
           try
-            view = new Tower.View
-            opts = type: 'coffee', inline: true, template: item[1]
+            prefix  = name.split('/')[0]
+            view    = new Tower.View(collectionName: prefix)
+            opts    = type: 'coffee', inline: true, template: item[1], prefixes: [prefix]
             cb = (error, body) =>
               string = body
             view.render(opts, cb)
