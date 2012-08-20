@@ -1,7 +1,7 @@
 _ = Tower._
 
 Tower.SupportString =
-  camelize_rx:    /(?:^|_|\-)(.)/g
+  camelize_rx:    /(?:^|_|\-|\/)(.)/g
   capitalize_rx:  /(^|\s)([a-z])/g
   underscore_rx1: /([A-Z]+)([A-Z][a-z])/g
   underscore_rx2: /([a-z\d])([A-Z])/g

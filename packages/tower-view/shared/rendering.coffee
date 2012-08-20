@@ -34,6 +34,10 @@ Tower.ViewRendering =
     # tmp
     if Tower.isClient
       try
+        # @todo tmp
+        # `new` and `edit` views will be the same
+        options.template = 'edit' if options.template == 'new'
+        options.template = options.prefixes[0] + '/' + options.template
         view = @renderEmberView(options)
         if view
           callback.call(@, null, '') if callback

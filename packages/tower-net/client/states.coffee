@@ -27,7 +27,7 @@ Tower.Router = Ember.Router.extend
     if action == 'show' || action == 'destroy' || action == 'update'
       route += ':id'
     else if action == 'edit'
-      route += '/:id/edit'
+      route += ':id/edit'
 
     # isIndexActive, isShowActive
     # actionMethod  = "#{action}#{_.camelize(name).replace(/Controller$/, '')}"
@@ -81,7 +81,7 @@ Tower.Router = Ember.Router.extend
         controller  = Ember.get(Tower.Application.instance(), name)
 
         if controller
-          if @name = controller.collectionName
+          if @name == controller.collectionName
             controller.exit()
           else
             controller.exitAction(action)
