@@ -58,6 +58,10 @@ watch /app\/views.*\.coffee$/
       
       iterator = (item, next) =>
         name = item[0].replace(/app\/(?:client\/)?views\//, '')#.replace('/', '_')
+        # _table.coffee
+        fileName = name.split('/')
+        fileName = fileName[fileName.length - 1]
+        return next() if fileName.match(/^_/) # if it's a partial, don't include
         try
           string = coffeecup.render(item[1])  
         catch error
