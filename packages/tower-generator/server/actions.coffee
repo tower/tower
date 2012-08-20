@@ -64,9 +64,11 @@ Tower.GeneratorActions =
     if typeof callback == "function"
       data = callback.call @, data
     else if options.before
-      data = data.replace options.before, (_) -> "#{string}#{_}"
+      unless options.duplicate == false && data.match(_.regexpEscape(string))
+        data = data.replace options.before, (_) -> "#{string}#{_}"
     else if options.after
-      data = data.replace options.after, (_) -> "#{_}#{string}"
+      unless options.duplicate == false && data.match(_.regexpEscape(string))
+        data = data.replace options.after, (_) -> "#{_}#{string}"
     else # after
       data = data + string
 

@@ -18,7 +18,9 @@ Tower.GeneratorHelpers =
     @inRoot =>
       # bootstrap into client side
       @injectIntoFile "app/client/config/bootstrap.coffee",
-        "  #{@app.namespace}.#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n", after: /bootstrap\ = *\(data\) *-\> *\n/i
+        "  #{@app.namespace}.#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n",
+          after: /bootstrap\ = *\(data\) *-\> *\n/i
+          duplicate: false
 
       # bootstrap into server side
       string = """
@@ -27,24 +29,29 @@ Tower.GeneratorHelpers =
         next()
 
 """
-      @injectIntoFile "app/controllers/applicationController.coffee", string, after: /_.series *\[ *\n/i
+      @injectIntoFile "app/controllers/applicationController.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
 
   asset: (path, options = {}) ->
     bundle = options.bundle || "application"
     @inRoot =>
-      @injectIntoFile "config/assets.coffee", "      \'#{path}\'\n", after: new RegExp("\\s*#{bundle}: *\\[[^\\]]+\\n", "i")
+      @injectIntoFile "config/assets.coffee", "      \'#{path}\'\n",
+        after: new RegExp("\\s*#{bundle}: *\\[[^\\]]*\\n", "i"),
+        duplicate: false
 
   navigation: (key, path) ->
     pattern = /div *class: *'nav-collapse' *, *->\s+ul *class: *'nav', *-> */
-    content = """\n    navItem t('links.#{key}'), #{path}
+    content = """\n    li ->
+\ \ \ \ \ \ a '{{action index#{@model.className} href=true}}', t('links.#{key}')
 """
+#    content = """\n    navItem t('links.#{key}'), #{path}
+#"""
 
     @inRoot =>
-      @injectIntoFile "app/views/shared/_navigation.coffee", content, after: pattern
+      @injectIntoFile "app/views/shared/_navigation.coffee", content, after: pattern, duplicate: false
 
   locale: (pattern, content) ->
     @inRoot =>
-      @injectIntoFile "config/locales/en.coffee", content, after: pattern
+      @injectIntoFile "config/locales/en.coffee", content, after: pattern, duplicate: false
 
   inRoot: (block) ->
     @inside ".", block

@@ -1,10 +1,13 @@
-Tower.router = Ember.Router.create
+Tower.Router = Ember.Router.extend
   initialState: 'root'
   # @todo 'history' throws an error in ember
   location:     Ember.HistoryLocation.create()
   root:         Ember.Route.create
     route: '/'
     index: Ember.Route.create(route: '/')
+    eventTransitions:
+      'showRoot': 'root.index'
+    showRoot: Ember.State.transitionTo('root.index')
 
   # Don't need this with the latest version of ember.
   handleUrl: (url, params = {}) ->
@@ -20,6 +23,12 @@ Tower.router = Ember.Router.create
   createControllerActionState: (name, action, route) ->
     name = _.camelize(name, true) #=> postsController
 
+    # @todo tmp hack
+    if action == 'show' || action == 'destroy' || action == 'update'
+      route += ':id'
+    else if action == 'edit'
+      route += '/:id/edit'
+
     # isIndexActive, isShowActive
     # actionMethod  = "#{action}#{_.camelize(name).replace(/Controller$/, '')}"
     # 
@@ -29,6 +38,16 @@ Tower.router = Ember.Router.create
 
     Ember.Route.create
       route: route
+
+      # So you can give it a post and it returns the attributes
+      #
+      # @todo
+      serialize: (router, context) ->
+        attributes  = context.toJSON() if context && context.toJSON
+        attributes || context # i.e. "params"
+
+      deserialize: (router, params) ->
+        params
 
       enter: (router, transition) ->
         @_super(router, transition)
@@ -98,8 +117,19 @@ Tower.router = Ember.Router.create
         state = s
       else
         routeName = '/'
+
+        # @todo tmp hack
         if r[i] == r[0] || r[i] == 'new'
           routeName += r[i]
+
+        # @todo tmp hack
+        # Basically, create methods like `showUser` and `indexUsers`, which
+        # will call Ember.State.transitionTo('users.show'), pass the correct context, etc.
+        if !controllerName.toLowerCase().match(r[i])
+          methodName = r[i] + _.singularize(_.camelize(controllerName.replace('Controller', '')))
+          Tower.router.root[methodName] = Ember.State.transitionTo(r.join('.'))
+          Tower.router.root.eventTransitions[methodName] = r.join('.')
+        
         s = @createControllerActionState(controllerName, r[i], routeName)
         state.setupChild(states, r[i], s)
         state = s
@@ -107,3 +137,6 @@ Tower.router = Ember.Router.create
       i++
 
     undefined
+
+# @todo tmp workaround b/c ember will initialize url right when router is created
+Tower.router = Tower.Router.PrototypeMixin.mixins[Tower._router.PrototypeMixin.mixins.length - 1].properties

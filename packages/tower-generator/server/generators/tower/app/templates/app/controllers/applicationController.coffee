@@ -1,6 +1,9 @@
 class <%= app.namespace %>.ApplicationController extends Tower.Controller
   @layout 'application'
 
+  @param 'createdAt', type: 'Date'
+  @param 'updatedAt', type: 'Date'
+
   @beforeAction 'bootstrap'#, only: 'welcome'
 
   welcome: ->

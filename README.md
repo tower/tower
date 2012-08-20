@@ -604,3 +604,40 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
 - make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)
 - http://jsperf.com/angular-vs-knockout-vs-ember/2
+
+## New Stuff (api is todo, can access now through Tower.router)
+
+``` coffeescript
+@resources 'posts'
+@namespace 'admin', ->
+  @resources 'posts'
+```
+
+``` coffeescript
+Tower.urlFor(App.Post)
+Tower.urlFor('root.posts.index')
+```
+
+``` coffeescript
+# GET
+App.indexPosts(title: 'A') # App.action, Tower.action, which one?
+App.showPost(id: 1)
+App.newPost()
+App.editPost(id: 1)
+# Non-GET
+App.createPost()
+App.updatePost(id: 1)
+App.destroyPost(id: 1)
+```
+
+``` html
+{{#each post in App.postsController.all}}
+<a {{action editPost post href=true}}>Edit</a>
+{{/each}}
+```
+
+``` coffeescript
+# @todo
+App.indexAdminPosts() # /admin/posts
+App.indexPostComments(postId: 1) # /posts/1/comments
+```

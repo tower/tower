@@ -27,6 +27,12 @@ require("design.io-javascripts") /(config\/locales\/.*|config\/(?:application|ro
   outputPath: (path) ->
     "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")
 
+coffeecup = require('coffeecup')
+
+require('tower')
+
+Tower.Application.instance().initialize()
+
 watch /app\/views.*\.coffee$/
   update: (path, callback) ->
     try
@@ -38,31 +44,40 @@ watch /app\/views.*\.coffee$/
       selector = id
       name  = ""
       
-      @broadcast body: data, id: id, selector: selector, path: "/#{name}"
+      #@broadcast body: data, id: id, selector: selector, path: "/#{name}"
       
       files   = File.files("app/views")
       result  = []
       
       for file in files
+        continue unless file.match(/app\/views\/.+\.coffee$/)
         continue unless file.match(/\.coffee$/)
-        result.push [file.replace(/\.coffee$/, ""), File.read(file) + "\n\n"]
+        result.push [file.replace(/\.coffee$/, ""), File.read(file)]
         
       template      = "Tower.View.cache =\n"
       
       iterator = (item, next) =>
-        mint.coffee "(->\n#{item[1]})", {}, (error, string) =>
-          if error
-            console.log "Error parsing #{item[0]}"
-            throw error
-          template += "  '#{item[0]}': ->\n"
-          lines = item[1].split(/\n/)
-          for line, i in lines
-            lines[i] = "    #{line}"
-          template += lines.join("\n")
-          template += "\n"
-          next()
+        name = item[0].replace(/app\/(?:client\/)views\//, '')#.replace('/', '_')
+        try
+          string = coffeecup.render(item[1])  
+        catch error
+          try
+            view = new Tower.View
+            opts = type: 'coffee', inline: true, template: item[1]
+            cb = (error, body) =>
+              string = body
+            view.render(opts, cb)
+          catch error
+            console.log item[0], error
+            return next() # so we can still have some templates
+
+        template += "  '#{name}': Ember.Handlebars.compile('"
+        # make it render to HTML for ember
+        template += "#{string}')\n"
+        next()
         
       async.forEachSeries result, iterator, (error) =>
+        template += '_.extend(Ember.TEMPLATES, Tower.View.cache)\n'
         mint.coffee template, bare: true, (error, string) =>
           if error
             console.log error
@@ -76,9 +91,11 @@ watch /app\/views.*\.coffee$/
     
   client:
     update: (data) ->
-      Tower.View.cache[data.id] = data
-      
-      #if data.reload
-      #  window.location = data.path
-      #else
-      #  Tower.get data.path
+      Tower.View.cache ||= {}
+      Tower.View.cache[data.id] = Ember.TEMPLATES[data.id] = data
+      ###
+      if data.reload
+        window.location = data.path
+      else
+        Tower.get data.path
+      ###

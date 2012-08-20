@@ -2,8 +2,10 @@ module.exports =
   javascripts:
     application: [
       '/config/application'
+      # "/config/environments/#{Tower.env}"
       '/app/client/config/bootstrap'
       '/config/routes'
+      '/app/client/controllers/applicationController'
       '/app/views/templates'
       '/app/client/views/layouts/application'
     ]

@@ -21,10 +21,31 @@ Tower.ViewRendering =
   # @option options [Object] locals data accessible as variables in the template itself (the template context)
   # @option options [Array] prefixes Array of folders to look for the templates in.
   render: (options, callback) ->
-    @_normalizeRenderOptions(options)
+    if !options.type && options.template && typeof(options.template) == 'string' && !options.inline
+      type  = options.template.split('/')
+      type  = type[type.length - 1].split(".")
+      type  = type[1..-1].join()
+      options.type  = if type != '' then type else @constructor.engine
+
+    options.type        ||= @constructor.engine
+    options.layout      = @_context.layout() if !options.hasOwnProperty("layout") && @_context.layout
+    options.locals      = @_renderingContext(options)
+
+    # tmp
+    if Tower.isClient
+      try
+        view = @renderEmberView(options)
+        if view
+          callback.call(@, null, '') if callback
+          return
+        #else
+        #  callback.call(@, 'ERROR, no ember view', '') if callback
+      catch error
+        console.log(error.stack || error)
+        # callback.call(@, error) if callback
 
     @_renderBody options, (error, body) =>
-      return callback.call(@, error, body) if error
+      return callback(error, body) if error
       @_renderLayout(body, options, callback)
 
   _normalizeRenderOptions: (options) ->
