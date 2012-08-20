@@ -6,7 +6,7 @@ Tower.Router = Ember.Router.extend
     route: '/'
     index: Ember.Route.create(route: '/')
     eventTransitions:
-      'showRoot': 'root.index'
+      showRoot: 'root.index'
     showRoot: Ember.State.transitionTo('root.index')
 
   # Don't need this with the latest version of ember.
@@ -139,4 +139,4 @@ Tower.Router = Ember.Router.extend
     undefined
 
 # @todo tmp workaround b/c ember will initialize url right when router is created
-Tower.router = Tower.Router.PrototypeMixin.mixins[Tower._router.PrototypeMixin.mixins.length - 1].properties
+Tower.router = Tower.Router.PrototypeMixin.mixins[Tower.Router.PrototypeMixin.mixins.length - 1].properties
