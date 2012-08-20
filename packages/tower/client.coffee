@@ -1,4 +1,5 @@
 window.global       ||= window
+_                     = global._
 module                = global.module || {}
 global.Tower = Tower  = Ember.Namespace.create()
 Tower.version         = "0.0.0" # this is dynamically modified so it doesn't really matter what it is.

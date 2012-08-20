@@ -23,7 +23,7 @@ Tower.router = Ember.Router.create
     name = _.camelize(name, true) #=> postsController
 
     # @todo tmp hack
-    if action == 'show'
+    if action == 'show' || action == 'destroy' || action == 'update'
       route += ':id'
     else if action == 'edit'
       route += '/:id/edit'
