@@ -13,7 +13,7 @@ header id: 'header', class: 'header', role: 'banner', ->
 section id: 'content', role: 'main', ->
   div class: 'container', ->
     text '{{outlet}}\n'
-    yields 'body'
+    # yields 'body'
     aside id: 'sidebar', role: 'complementary', ->
       if hasContentFor 'sidebar'
         yields 'sidebar'
