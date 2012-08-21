@@ -1,4 +1,4 @@
-Tower.debug = Tower.env == 'development'
+# Tower.debug = Tower.env == 'development'
 
 <%= app.namespace %>.bootstrap = (data) ->
   # Optimized rendering (force right at bottom of DOM, before DOM ready)

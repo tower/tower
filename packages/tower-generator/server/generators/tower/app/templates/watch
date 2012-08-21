@@ -34,6 +34,9 @@ require('tower')
 Tower.Application.instance().initialize()
 
 watch /app\/views.*\.coffee$/
+  initialize: (path, callback) ->
+    @update(path, callback)
+    
   update: (path, callback) ->
     try
       nodes = path.replace("app/views/", "").split("/")

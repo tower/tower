@@ -17,7 +17,7 @@ describe '<%= model.classNamePlural %>Controller', ->
       assert.equal urlFor(<%= app.namespace %>.<%= model.className %>), "/<%= model.namePlural %>"
 
     test 'new', ->
-      <%= model.name %> = new <%= app.namespace %>.<%= model.className %>
+      <%= model.name %> = <%= app.namespace %>.<%= model.className %>.build()
       assert.equal urlFor(<%= model.name %>, action: 'new'), "/<%= model.namePlural %>/new"
 
     test 'show', ->
