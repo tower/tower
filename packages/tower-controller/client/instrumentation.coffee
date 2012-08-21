@@ -27,6 +27,8 @@ Tower.ControllerInstrumentation =
 
     action = @get('action')
 
+    @propertyDidChange('resource')
+
     @runCallbacks 'action', name: action, (callback) =>
       method = @[action]
       

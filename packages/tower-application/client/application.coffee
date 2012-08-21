@@ -41,7 +41,7 @@ class Tower.Application extends Tower.Engine
   initialize: ->
     @extractAgent()
     @setDefaults()
-    @_super(Tower.router = Tower.Router.create())
+    @_super(Tower.router)
     @
 
   extractAgent: ->

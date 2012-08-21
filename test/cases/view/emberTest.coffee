@@ -22,6 +22,8 @@ describe 'Tower Ember View rendering', ->
       # this is the view object itself, where _context is the controller
       context:
         _context: {}
+      controller:
+        _context: {}
 
   test '#_getEmberTemplate', ->
     assert.equal view._getEmberTemplate('computed/template'), 'computed/template!'

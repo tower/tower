@@ -14,7 +14,7 @@ class Tower.Controller extends Tower.Collection
   @include  Tower.SupportEventEmitter
 
   @instance: ->
-    @_instance ||= new @
+    @_instance ||= new @ # @create()
 
   init: ->
     @_super arguments...

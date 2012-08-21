@@ -48,6 +48,8 @@ class Tower.NetRoute extends Tower.Class
     @_defaultCallback ||= callback
     callback = @_defaultCallback unless callback
     callback.apply(new Tower.NetRouteDSL(@))
+    if Tower.isClient
+      Tower.router = Tower.Router.create() # @todo make this more robust, it's a hack now
 
   @findController: (request, response, callback) ->
     routes      = Tower.Route.all()

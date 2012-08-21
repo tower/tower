@@ -1,1 +1,2 @@
-class <%= controller.namespace %>.<%= controller.className %> extends Tower.ObjectController
+<%= controller.namespace %>.<%= model.className %>Controller = Ember.ObjectController.extend
+  contentBinding: 'Tower.router.<%= model.namePlural %>Controller.resource'

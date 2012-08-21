@@ -8,6 +8,9 @@ Tower.Controller.reopenClass extended: ->
     # Tower.Application.instance()[name].create()
   ).cacheable()
 
+  # @todo make this awesome
+  @reopen(resourceControllerBinding: "Tower.router.#{_.singularize(camelName.replace(/Controller$/, ''))}Controller")
+
   Tower.Application.instance().reopen(object)
 
   Tower.NetConnection.controllers.push(camelName)

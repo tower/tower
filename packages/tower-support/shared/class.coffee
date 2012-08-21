@@ -24,6 +24,9 @@ if typeof Ember != 'undefined'
   Ember.Application.reopenClass(coffeescriptMixin)
   Ember.ArrayProxy.reopenClass(coffeescriptMixin)
   Ember.ArrayController.reopenClass(coffeescriptMixin)
+  if Ember.ObjectProxy
+    Ember.ObjectProxy.reopenClass(coffeescriptMixin)
+    Ember.ObjectController.reopenClass(coffeescriptMixin)
   Ember.State.reopenClass(coffeescriptMixin)
   Ember.StateManager.reopenClass(coffeescriptMixin)
 
