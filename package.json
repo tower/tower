@@ -17,7 +17,18 @@
       "web": "http://lancepollard.com"
     }
   ],
-  "contributors": [],
+  "contributors": [
+    "Lance Pollard <lancejpollard@gmail.com>",
+    "edubkendo",
+    "Sebastian Hoitz",
+    "Jai-gouk Kim",
+    "Dave Myron",
+    "Vyacheslav Voronchuk",
+    "Nov Matake",
+    "abovethewater",
+    "Scott Tesoriere <scott@tesoriere.com>",
+    "Kristian Mandrup <kmandrup@gmail.com>"
+  ],
   "licenses": [
     {
       "type": "MIT",
@@ -92,6 +103,7 @@
     "socket.io-client": ">= 0.9.5",
     "design.io-javascripts": ">= 0.1.0"
   },
+  "optionalDependencies": {},
   "scripts": {
     "test": "make test",
     "docs": "codo",
