@@ -118,6 +118,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
           # https://github.com/viatropos/tiny-require.js
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js", "socket.io.js"
           @get "https://raw.github.com/viatropos/design.io/master/design.io.js", "design.io.js"
+          # @todo make this more customizable
           @get "https://raw.github.com/viatropos/tower/master/dist/tower.js", "tower.js"
           # Trying out ember's history implementation, which is much lighter
           # @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
@@ -133,7 +134,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
           @get "http://sinonjs.org/releases/sinon-1.3.1.js", "sinon.js"
           @get "https://raw.github.com/chaijs/chai/efc77596338556cca5fb4eade95c3838a743a186/chai.js", "chai.js"
           @get "http://coffeekup.org/coffeekup.js", "coffeekup.js"
-          @get "http://cloud.github.com/downloads/emberjs/ember.js/ember-1.0.pre.js", "ember.js"
+          @get "http://cloud.githufb.com/downloads/emberjs/ember.js/ember-1.0.pre.js", "ember.js"
           @get "https://raw.github.com/emberjs/starter-kit/1e6ee1418c694206a49bd7b021fe5996e7fdb14c/js/libs/handlebars-1.0.0.beta.6.js", "handlebars.js"
           @get "http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js", "prettify.js"
           @get "https://raw.github.com/Marak/Faker.js/master/Faker.js", "faker.js"

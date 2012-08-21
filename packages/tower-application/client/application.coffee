@@ -61,18 +61,6 @@ class Tower.Application extends Tower.Engine
     Tower.NetConnection.initialize()
     Tower.NetConnection.listen(Tower.socketUrl)
 
-    if Tower.history && Tower.history.enabled
-      Tower.history.Adapter.bind global, "statechange", =>
-        state     = Tower.history.getState()
-        params    = _.extend(title: state.title, (state.data || {}))
-        location  = new Tower.NetUrl(state.url)
-        request   = new Tower.NetRequest(url: state.url, location: location, params: params)
-        response  = new Tower.NetResponse(url: state.url, location: location)
-        Tower.stateManager.handleUrl(location.path, params)
-      $(global).trigger("statechange")
-    else
-      console.warn "History not enabled"
-
   run: ->
     @listen()
 
