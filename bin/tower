@@ -1,4 +1,2 @@
 #!/usr/bin/env node
-require('../lib/tower');
-Tower.srcRoot = require('path').resolve(__dirname + '/../');
-Tower.Command.run(process.argv);
+require('../lib/tower').Command.run(process.argv);
