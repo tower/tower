@@ -1,4 +1,4 @@
-linkTo t('title'), '/', class: 'brand'
+a '{{action showRoot href=true}}', class: 'brand', -> t('title')
 
 div class: 'nav-collapse', ->
   ul class: 'nav', ->

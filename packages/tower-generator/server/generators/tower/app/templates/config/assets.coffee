@@ -31,7 +31,7 @@ module.exports =
       # '/vendor/javascripts/bootstrap/bootstrap-transition'
       # '/vendor/javascripts/bootstrap/bootstrap-alert'
       # '/vendor/javascripts/bootstrap/bootstrap-modal'
-      # '/vendor/javascripts/bootstrap/bootstrap-dropdown'
+      '/vendor/javascripts/bootstrap/bootstrap-dropdown'
       # '/vendor/javascripts/bootstrap/bootstrap-scrollspy'
       # '/vendor/javascripts/bootstrap/bootstrap-tab'
       # '/vendor/javascripts/bootstrap/bootstrap-tooltip'

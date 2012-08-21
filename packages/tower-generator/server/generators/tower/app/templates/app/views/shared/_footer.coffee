@@ -1,4 +1,4 @@
 cite class: 'copyright', ->
   span '&copy;'
-  linkTo t('author'), t('email')
+  a href: "mailto:#{t('email')}", -> t('author')
   span "#{t('year')}."

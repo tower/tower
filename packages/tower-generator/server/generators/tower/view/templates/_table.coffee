@@ -31,7 +31,7 @@ tableFor '<%= model.namePlural %>', (t) ->
         span '|'
         a '{{action edit<%= model.className %> <%= model.name %> href=true}}', 'Edit'
         span '|'
-        a '{{action destroy<%= model.className %> <%= model.name %> href=true}}', 'Destroy'
+        a '{{action destroy<%= model.className %> <%= model.name %>}}', 'Destroy'
     text '{{/each}}'
   t.foot ->
     t.row ->
