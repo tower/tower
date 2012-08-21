@@ -6,6 +6,9 @@ html ->
   body role: "application", ->
     #if browserIs "ie"
     #  javascriptTag "http://html5shiv.googlecode.com/svn/trunk/html5.js"
+    
+    script type: 'text/x-handlebars', 'data-template-name': 'posts/index', ->
+      p 'A TEMPLATE!'
       
     if hasContentFor "templates"
       yields "templates"
@@ -30,13 +33,21 @@ html ->
       div class: "container", ->
         partial "shared/footer"
         
-  if hasContentFor "popups"
-    aside id: "popups", ->
-      yields "popups"
+    if hasContentFor "popups"
+      aside id: "popups", ->
+        yields "popups"
       
-  if hasContentFor "bottom"
-    yields "bottom"
+    if hasContentFor "bottom"
+      yields "bottom"
+      
+      script "App.users = Ember.ArrayProxy.create({content: Ember.A([])})"
+      script type: "text/x-handlebars", ->
+        text """
+        {{#collection contentBinding="App.users" tagName="ul"}}
+          <b>{{content.firstName}}</b>
+        {{/collection}}
+        """
     
-    div id: "mocha", ->
+      div id: "mocha", ->
     
-    script "App.bootstrap(#{JSON.stringify(@bootstrapData, null, [])})" if @bootstrapData
+      script "App.bootstrap(#{JSON.stringify(@bootstrapData, null, [])})" if @bootstrapData

@@ -1,9 +1,6 @@
-wrench  = require 'wrench'
-fs      = require 'fs'
-
-Tower.Support.File =
+Tower.SupportFile =
   removeDirectory: (path, recursive = true) ->
     if recursive
-      wrench.rmdirSyncRecursive(path)
+      require('wrench').rmdirSyncRecursive(path)
     else
-      fs.rmdirSync(path)
+      require('fs').rmdirSync(path)

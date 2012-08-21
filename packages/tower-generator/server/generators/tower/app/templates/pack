@@ -1,0 +1,69 @@
+{
+  "name":                     "<%= app.name %>",
+  "private":                  true,
+  "version":                  "0.0.1",
+  "description":              "<%= app.description %>",
+  "homepage":                 "http://<%= user.username %>.github.com/<%= app.name %>",
+  "main":                     "./server.js",
+  "author":                   "'<%= user.name %>' <<%= user.email %>>",
+  "keywords": [
+    "node"
+  ],
+  "maintainers": [{
+    "name":                   "<%= user.name %>",
+    "email":                  "<%= user.email %>"
+  }],
+  "contributors": [
+
+  ],
+  "licenses": [
+    {
+      "type":                 "MIT",
+      "url":                  "http://mths.be/mit"
+    }
+  ],
+  "bugs": {
+    "url":                    "https://github.com/<%= user.username %>/<%= app.name %>/issues"
+  },
+  "repository": {
+    "type":                   "git",
+    "url":                    "https://github.com/<%= user.username %>/<%= app.name %>.git"
+  },
+  "engines": {
+    "node":                   ">= 0.4.0",
+    "npm":                    "1"
+  },
+  "dependencies": {
+    "underscore":             ">= 0.0.1",
+    "underscore.string":      ">= 0.0.1",
+    "mongodb":                ">= 0.9.9-7",
+    "redis":                  ">= 0.7.1",
+    "coffee-resque":          ">= 0.1.4",
+    "coffee-script":          ">= 1.3.1",
+    "mint":                   ">= 0.3.0",
+    "tower":                  ">= 0.4.1"
+  },
+  "devDependencies": {
+    "stylus":                 ">= 0.17.0",
+    "less":                   ">= 1.2.2",
+    "uglify-js":              ">= 1.1.1",
+    "pathfinder":             ">= 0.3.0",
+    "async":                  ">= 0.0.1",
+    "mocha":                  ">= 0.12.1",
+    "chai":                   ">= 0.3.3",
+    "sinon":                  ">= 1.3.1",
+    "design.io":              ">= 0.3.0",
+    "design.io-javascripts":  ">= 0.3.0",
+    "design.io-stylesheets":  ">= 0.3.0",
+    "knox":                   ">= 0.0.9",
+    "gzip":                   ">= 0.1.0",
+    "forever":                ">= 0.8.5",
+    "cli-table":              ">= 0.0.1"
+  },
+  "scripts": {
+    "test":                   "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",
+    "prepublish":             "npm prune; rm -rf node_modules/*/{test,example,bench}*",
+    "start":                  "node server.js -e production",
+    "postinstall":            "npm install git://github.com/viatropos/coffeecup.git --force ; npm install git://github.com/viatropos/coffee-script.git --force"
+  }
+}

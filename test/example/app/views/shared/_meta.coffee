@@ -31,6 +31,6 @@ javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
 
 contentFor "bottom", ->  
   javascripts "vendor" 
+  javascripts "lib", "application"
   if Tower.env == "development"
     javascripts "development"
-  javascripts "lib", "application"

@@ -6,10 +6,10 @@ fs              = require 'fs'
 wrench          = require 'wrench'
 cakefileDestination = null
 
-describe 'Tower.Generator.Actions', ->
+describe 'Tower.GeneratorActions', ->
   beforeEach ->
     try wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp", true)
-    sourceRoot          = process.cwd() + "/lib/tower/server/generator/generators/tower/app"
+    sourceRoot          = process.cwd() + "/packages/tower-generator/server/generators/tower/app"
     destinationRoot     = process.cwd() + "/test/tmp"
     cakefileDestination = File.join(destinationRoot, "Cakefile")
     fs.unlinkSync cakefileDestination if File.exists(cakefileDestination)
@@ -44,7 +44,8 @@ describe 'Tower.Generator.Actions', ->
     
   test '#file', ->
     assert.equal generator.createFile.toString(), generator.file.toString()
-    
+   
+  # failing on node 0.4.x, revisit later but it's not vital 
   test '#createDirectory(recursiveDirectory)', (done) ->
     directory = "./a/b/c/d"
     

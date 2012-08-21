@@ -1,34 +1,28 @@
-attr = Tower.Model.Attribute
+attr = Tower.ModelAttribute
 
-describeWith = (store) ->
-  describe "Testing Issue #92. (Tower.Store.#{store.name})", ->
-    issue = null
+describe "Testing Issue #92.", ->
+  issue = null
 
-    beforeEach ->
-      issue = new App.Issue92()
+  beforeEach ->
+    issue = App.Issue92.build()
 
-    test 'test for changing boolean values', (done) ->
-      assert.equal issue.get("enabled"), true
+  test 'test for changing boolean values', (done) ->
+    assert.equal issue.get("enabled"), true, 'should be true 1'
 
-      issue.set "enabled", false
-      assert.equal issue.get("enabled"), false
+    issue.set "enabled", false
+    assert.equal issue.get("enabled"), false, 'should be false 2'
 
-      issue.save =>
-        App.Issue92.find issue.get("id"), (error, issue) =>
-          assert.equal issue.get("enabled"), false
+    issue.save =>
+      App.Issue92.find issue.get("id"), (error, issue) =>
+        assert.equal issue.get("enabled"), false, 'should be false 3'
 
-          issue.set "enabled", true
-          assert.equal issue.get("enabled"), true
+        issue.set "enabled", true
+        assert.equal issue.get("enabled"), true, 'should be true 4'
 
-          issue.save =>
-            App.Issue92.find issue.get("id"), (error, issue) =>
-              assert.equal issue.get("enabled"), true
+        # console.log issue.get('data')
 
-              done()
+        issue.save =>
+          App.Issue92.find issue.get("id"), (error, issue) =>
+            assert.equal issue.get("enabled"), true, 'should be true 5'
 
-describeWith(Tower.Store.Memory)
-
-if Tower.client
-  describeWith(Tower.Store.Ajax)
-else
-  describeWith(Tower.Store.MongoDB)
+            done()

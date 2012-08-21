@@ -20,7 +20,7 @@ if Tower.client
     
     setTimeout caller, 200
 
-describe 'Tower.Controller.Callbacks', ->
+describe 'Tower.ControllerCallbacks', ->
   unless Tower.client    
     beforeEach (done) ->
       Tower.start(done)

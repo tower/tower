@@ -5,21 +5,34 @@ require('design.io').extension('watchfile')
 async = require('async')
 File  = require('pathfinder').File
 mint  = require('mint')
+fs    = require('fs')
 
 require("design.io-javascripts")
   compress: false
   debug:    false
-  ignore:   /(lib\/|public|node_modules|server\.js|spec|test|dist)/
-  #outputPath: (path) ->
-  #  "spec/tmp/test.css"
+  ignore:   /(lib\/|public|node_modules|server\.js|spec|test|dist|generators\/.+\/templates)/
   write: (path, string) ->
-    path = path.replace(/^(src)/, "lib").replace(/\.(js|coffee)/, ".js")
-    #growl.notify("updated #{path}", { title: 'Stylesheets' })
+    path = path.replace(/^(packages)/, "lib").replace(/\.(js|coffee)/, ".js")
     try
       File.write path, string, (error) ->
         console.log(error.stack) if error
     catch error
       console.log error.stack
+
+watch /packages\/.+\/(generators\/.+\/templates|package\.json)/
+  initialize: (path, callback) ->
+    @update(path, callback)
+    
+  update: (path, callback) ->
+    string  = fs.readFileSync(path)
+    path    = path.replace(/^packages/, 'lib')
+    try
+      File.write path, string, (error) ->
+        console.log(error.stack) if error
+        callback()
+    catch error
+      console.log error.stack
+      callback()
 
 require("design.io-javascripts") /test\/example\/.*\.coffee$/
   compress: false

@@ -6,17 +6,23 @@ testCases   = _.map File.files("#{Tower.root}/public/javascripts/test/cases"), (
 testCases   = _.select testCases, (path) ->
   #!path.match("server")
   path.match(/model|application|store|support|http|client|controller/)
+  !!path.match(/client/)
   
 testModels  = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
   
 testModels  = _.select testModels, (path) ->
   path.match(/model|application|controller/) && !path.match('client')
+
+testModels = testModels.concat [
+  "/app/client/controllers/testUsersController"
+]
   
 module.exports =
   javascripts:
     application: [
-      "/app/client/config/application"
+      "/config/application"
+      "/app/client/config/bootstrap"
       "/config/routes"
       "/app/views/templates"
     ].concat(testModels)

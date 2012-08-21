@@ -1,0 +1,73 @@
+require 'tower'
+knox  = require 'knox'
+
+# This uploads all of your assets
+task 'assets:upload', ->
+  invoke 'assets:upload:s3'
+
+# This uploads all of your assets to Amazon Web Services S3
+task 'assets:upload:s3', ->
+  invoke 'environment'
+
+  # Create a client from your S3 credentials
+  client  = knox.createClient Tower.config.credentials.s3
+
+  # Start uploading each asset
+  Tower.Application.Assets.upload (from, to, headers, callback) ->
+    client.putFile from, to, headers, callback
+
+# This bundles all of your assets into neat little files
+task 'assets:bundle', ->
+  invoke 'environment'
+  Tower.Application.Assets.bundle()
+
+# This task displays the sizes of the assets on the current project
+task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset sizes', ->
+  invoke 'environment'
+  Tower.Application.Assets.stats()
+
+# This runs the seed file, which initializes your db with data
+task 'db:seed', ->
+  require('tower').Application.instance().initialize =>
+    require './db/seeds'
+
+# This puts your Tower app in production mode, used for special tasks
+task 'environment', ->
+  Tower.env = 'production'
+# This initializes your Tower application, used for special taks
+  Tower.Application.instance().initialize()
+
+# This displays all of the routs for your Tower app
+task 'routes', ->
+  invoke 'environment'
+
+  result  = []
+  routes  = Tower.Route.all()
+
+  result
+
+task 'jobs', ->
+  # make sure tower is loaded so we can get models
+  # invoke 'environment'
+  # needs to be the same as the current running app (local or remote)
+  Tower.env = process.env.ENV || 'development'
+  
+  Tower.Application.instance().initialize =>
+    process.nextTick =>
+      kue   = require('kue')
+      jobs  = kue.createQueue()
+
+      run = (job, done) =>
+        data    = job.data
+        klass   = Tower.constant(data.klass)
+        method  = data.method
+        args    = data.args || []
+        args.push(done) if data.async
+        klass[method].apply(klass, args)
+        done() unless data.async # if it's not async then just callback immediately
+
+      jobs.types (error, types) =>
+        throw error if error
+        atOnce = 2 # @todo configurable
+        for type in types
+          jobs.process(type, atOnce, run)

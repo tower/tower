@@ -1,7 +1,7 @@
 describeWith = (store) ->
   post = null
   
-  describe "Tower.Model.Relation.HasMany (Tower.Store.#{store.name})", ->
+  describe "Tower.ModelRelationHasMany (Tower.Store.#{store.name})", ->
     beforeEach (done) ->
       App.Post.store(store)
       App.Comment.store(store)
@@ -11,7 +11,7 @@ describeWith = (store) ->
             post = record
             done()
     
-    unless store == Tower.Store.Memory
+    unless store == Tower.StoreMemory
       describe 'embedded', ->
         describe '.create', ->
           test 'existingPost.embeddedComments().create()', (done) ->
@@ -217,5 +217,5 @@ describeWith = (store) ->
           post.referencedComments().destroy (error, comments) =>
             done()
   ###  
-#describeWith(Tower.Store.Memory)
-#describeWith(Tower.Store.MongoDB)
+#describeWith(Tower.StoreMemory)
+#describeWith(Tower.StoreMongodb)

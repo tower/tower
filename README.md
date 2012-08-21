@@ -8,33 +8,69 @@ Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built 
 
 Follow me [@viatropos](http://twitter.com/viatropos).
 
-Docs are a work in progress.
-
 - **IRC**: #towerjs on irc.freenode.net
 - **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
 - **Issues**: http://github.com/viatropos/tower/issues
+- **Roadmap**: http://github.com/viatropos/tower/wiki/roadmap
+
+Note, Tower is still very early alpha (0.4.0).  Check out the [roadmap](http://github.com/viatropos/tower/wiki/roadmap) to see where we're going.  If your up for it please contribute!  The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release.  From there, it's performance optimization, workflow streamlining, and creating some awesome examples.  1.0 will be a plug-and-chug real-time app framework.
+
+Tower is soon going to support only Node.js 0.8.0+. This stuff moves fast.
+
+Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
+
+## Contributor Note
+
+All of the base ideas are now pretty much in the Tower codebase, now it's just a matter of fleshing out the edge cases and a few implementations. Here's what's new:
+
+- Background jobs in Redis. The `Model.enqueue` and `Model#enqueue` methods are convention for off-loading expensive tasks to the background. You then run `cake work` and it will start the [kue](https://github.com/LearnBoost/kue) background worker to process items in the different redis queues. That process is running in a totally separate environment, but they can communicate b/c of redis' nice pub/sub api. This still needs to be fleshed out and tested a bit more but the basics are there.
+- Attachments. File uploading is working, as well as image resizing with imagemagick. I've started working on post-processing using background redis jobs as well. Tower should have a standard set of attachment "processors" to make uploading/processing attachments dead-simple (it's still pretty hard in Rails). This includes from any format to standard formats (video/audio/docs/images/etc.), video/audio/image processing/compression, text extraction and resizing, and document processing (pdf text extraction, MS Word to text, etc.). It's all pretty straight forward, just need to wrap command-line tools. See http://documentcloud.github.com/docsplit/.
+- Authentication. I don't think I've merged the authentication code yet, but an older version is here: https://github.com/viatropos/tower-authentication-example. The whole logging in with email/facebook/etc. should be completely solved. Right now mongodb session support is working locally, I will merge it when I finish with some other stuff.
+- Subdomains. Subdomains should be first-class citizens. We need to thoroughly test them in production. JSONP support exists (to do `GET` requests across domains), need to test that out. Need to get a better/leaner URL parser, but what's in there now works. Need to test authentication/sessions/cookies across subdomains.
+- Authorization. I've started on the authorization system (inspired from [cancan](https://github.com/ryanb/cancan/)). It works and is pretty awesome :). Just need to add some controller hooks to make it plug-and-chug.
+- Mass-assignment protection. I've implemented the basics of "mass assignment protection" (see the [Rails Security Guide](http://guides.rubyonrails.org/security.html#mass-assignment)), need to test it out a bit more. Also need to handle input sanitization.
+- Embedded Documents. I've mapped out how this could be implemented but it's still on the todo list.
+- Associations (hasMany, hasManyThrough, belongsTo, hasOne). They all work well (tested manually on the client as well, pretty awesome seeing hasManyThrough relations save on the client). There's a good amount of work to be done on making sure `user.address == address.user`, that kind of reflection stuff (especially for binding on the view). Wrote down a lot of ideas on how to implement an "identity map", but we have to be careful about garbage collection if we're going to store references to the request/controller objects in some hidden "thread" (see some of the recent commits for notes - early/mid July). Also need to make the validations/callbacks more robust for `acceptsNestedAttributesFor`, but it's all working at a basic level.
+- The Cursor. The cursor is _super_ awesome :). There's a ton more ideas on how to make it even more awesome, but for now it does what it's supposed to. I'd like to simplify the notification system eventually (telling the client of model changes).
+- User stamping. This should be a fundamental part of the model layer (similar to time stamping). The base mixin has been started but isn't ready yet - it requires setting up the identity-map/thread idea so you can pass around the `currentUser` transparently between cursors/models in the context of a single request.
+- Versioning. Versioning is a tricky concept to implement, and it is not required for all apps. But it is generic enough and useful enough that it is going to be included in Tower (eventually as a separate sub-package). It allows you to keep a history of model changes (and alongside userstamping, who made those changes). I have started this as well.
+- Soft deleting models. Sometimes you want to allow users to "delete" their data, but you don't _really_ want it deleted from the database. To do this you just add a `deletedAt` field to your model, and then make it so all queries by default ignore models without `deletedAt == null`. You want this kind of stuff to do things like "restore your deleted account", or just know what's happened historically in your app (as a startup for example).
+- Ember Views. This is the next big thing to do, but it's really independent of Tower. Tower can create some helpers like form builders and whatnot, but that might take a long time - particularly b/c there's going to be a lot of work put in to make sure performance is top-notch with all those views.
+- Client Routes. The base code for mapping routes.coffee into the Ember routing system is there, but the Ember API is changing weekly almost so I haven't gotten back to it. It should only take a few hours to wire up.
+
+If you're excited to work on one of these things let me know and I'll point you to where things are and all that. Once all of this stuff is reasonably complete (mid August hopefully), this will merge into master. From there it's going to be "robustifying" everything, and hardcore performance tuning.
 
 ## Default Development Stack
 
+- Ember
+- jQuery
+- Handlebars (templating)
+- Stylus (LESS is also supported)
 - MongoDB (database)
 - Redis (background jobs)
-- CoffeeScript
-- Stylus (LESS is also supported)
 - Mocha (tests)
-- jQuery
+- CoffeeScript
+- Twitter Bootstrap
 
-Includes a database-agnostic ORM with browser (memory) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.
+Includes a database-agnostic ORM with browser (memory and ajax) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby.  Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.
 
 ## Install
 
 ``` bash
-sudo npm install design.io -g
+npm install express@2.x -g # temporary, for design.io
+npm install design.io -g
 npm install tower -g
+```
+
+If you want to hack around in the Tower source, install design.io locally.  It's not included in Tower's `package.json` because I haven't found a way for places like Heroku to ignore `"devDependencies"`, and it has a ruby dependency so I'm leaving it out for now.  Run this in the root directory of your locally cloned Tower repo:
+
+```
+npm install design.io design.io-javascripts
 ```
 
 ## Generate
 
-``` bash
+```
 tower new app
 cd app
 sudo npm install
@@ -56,7 +92,7 @@ forever server.js
 
 Here's how you might organize a blog:
 
-``` bash
+```
 .
 |-- app
 |   |-- client
@@ -118,23 +154,7 @@ Here's how you might organize a blog:
 
 ``` coffeescript
 # config/application.coffee
-class App extends Tower.Application
-  @configure ->
-    @use "favicon", Tower.publicPath + "/favicon.ico"
-    @use "static",  Tower.publicPath, maxAge: Tower.publicCacheDuration
-    @use "profiler" if Tower.env != "production"
-    @use "logger"
-    @use "query"
-    @use "cookieParser", Tower.session.secret
-    @use "session", Tower.session.key
-    @use "bodyParser"
-    @use "csrf"
-    @use "methodOverride", "_method"
-    @use Tower.Middleware.Agent
-    @use Tower.Middleware.Location
-    @use Tower.Middleware.Router
-
-module.exports = global.App = App
+global.App = Tower.Application.create()
 ```
 
 ## Models
@@ -230,7 +250,7 @@ user  = post.author()
 ### Validations
 
 ``` coffeescript
-user = new User
+user = App.User.build()
 user.save() #=> false
 user.errors #=> {"email": ["Email must be present"]}
 user.email  = "me@gmail.com"
@@ -242,7 +262,7 @@ user.errors #=> {}
 
 ``` coffeescript
 # config/routes.coffee
-Tower.Route.draw ->
+App.routes ->
   @match "/login", "sessions#new", via: "get", as: "login"
   @match "/logout", "sessions#destroy", via: "get", as: "logout"
   
@@ -267,21 +287,22 @@ Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/
 
 ### Forms
 
-``` coffeescript
-# app/views/posts/new.coffee
-formFor "post", (f) ->
-  f.fieldset (fields) ->
-    fields.field "title", as: "string"
-    fields.field "body", as: "text"
-  
-  f.fieldset (fields) ->
-    fields.submit "Submit"
+``` html
+# app/client/templates/posts/new.ejs
+<form>
+  <fieldset>
+    <legend></legend>
+    <input name="post[title]" />
+    <textarea name="post[body]" ></textarea>
+    <input type="submit" />
+  </fieldset>
+</form>
 ```
 
 ### Tables
 
-``` coffeescript
-# app/views/posts/index.coffee
+``` html
+<!--  app/client/templates/posts/index.hbs -->
 tableFor "posts", (t) ->
   t.head ->
     t.row ->
@@ -303,58 +324,30 @@ tableFor "posts", (t) ->
 
 ### Layouts
 
-``` coffeescript
-# app/views/layouts/application.coffee
-doctype 5
-html ->
-  head ->
-    meta charset: "utf-8"
+``` html
+<!DOCTYPE html>
+<html>
+  <head>  
+    {{meta charset="utf-8"}}
+    {{title}}
+    {{meta name=description contentLocale="description"}}
+    {{meta name=keywords contentLocale="keywords"}}
+    {{meta name=robots contentLocale="robots"}}
+    {{meta name=author contentLocale="author"}}
+    {{link href=/favicon.png rel="icon shortcut-icon favicon"}} 
 
-    title t("title")
-
-    meta name: "description", content: t("description")
-    meta name: "keywords", content: t("keywords")
-    meta name: "robots", content: t("robots")
-    meta name: "author", content: t("author")
-
-    csrfMetaTag()
-
-    appleViewportMetaTag width: "device-width", max: 1, scalable: false
-    
-    stylesheets "lib", "vendor", "application"
-
-    javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
-    javascripts "vendor", "lib", "application"
-  
-  body role: "application", ->
-    if hasContentFor "templates"
-      yield "templates"
-      
-    nav id: "navigation", role: "navigation", ->
-      div class: "frame", ->
-        partial "shared/navigation"
-        
-    header id: "header", role: "banner", ->
-      div class: "frame", ->
-        partial "shared/header"
-        
-    section id: "body", role: "main", ->
-      div class: "frame", ->
-        yields "body"
-        aside id: "sidebar", role: "complementary", ->
-          if hasContentFor "sidebar"
-            yields "sidebar"
-            
-    footer id: "footer", role: "contentinfo", ->
-      div class: "frame", ->
-        partial "shared/footer"
-        
-  if hasContentFor "popups"
-    aside id: "popups", ->
-      yields "popups"
-      
-  if hasContentFor "bottom"
-    yields "bottom"
+    {{stylesheets application}}
+    {{javascripts vendor lib application}}
+    {{#if Tower.isDevelopment}}
+      {{javascripts development}}
+    {{/if}}
+  </head>
+  <body>
+    <script>
+      App.bootstrap({{json bootstrapData}})
+    </script>
+  </body>
+</html>
 ```
 
 The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
@@ -565,6 +558,18 @@ watch /app\/views\/.+\.mustache/
 npm test
 ```
 
+Run individual test file:
+
+``` bash
+mocha $(find test -name "*persistenceTest.coffee")
+```
+
+Run test matching pattern:
+
+``` bash
+mocha $(find test -name "*persistenceTest.coffee") -g "string property$"
+```
+
 ## Examples
 
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
@@ -580,3 +585,59 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Unsolved Complexities
+
+- Handling transactions from the client. How would you save the data for credit/account (subtract one record, add to another) so if one fails both revert back (if you try to keep it simplified and only POST individual records at a time)? You can do embedded models on MongoDB, and transactions on MySQL perhaps. Then if `acceptsNestedAttributesFor` is specified it will send nested data in JSON POST rather than separate. Obviously it's better to not do this on the server, but we should see if it's possible to do otherwise, and if not, publicize why.
+
+## Decisions (need to finalize)
+
+- for uniqueness validation, if it fails on the client, should it try fetching the record from the server? (and loading the record into the client memory store). Reasons for include having to do less work as a coder (lazy loads data). Reasons against include making HTTP requests to the server without necessarily expecting to - or you may not want it to fetch. Perhaps you can specify an option (`lazy: true`) or something, and on the client if true it will make the request (or `autofetch: true`)
+- For non-transactional (yet still complex) associations, such as `group hasMany users through memberships`, you can save one record at a time, so the client should be instant. But if the first record created fails (say you do `group.members.create()`, which creates a user, then a membership tying the two together), what should the client tell the user? Some suggest a global notification (perhaps an alert bar) saying a more generic message such as "please refresh the page, some data is out of sync". But if the data is very important, ideally the code would know how to take the user (who might click this notification) to a form to try saving the `hasMany through` association again. If it continues to fail, it's probably either a bug in the code, or we should be able to know if the server is having issues (like it's crashed or power went out) - then if it's a bug we can have them notify us (some button perhaps) or if it's a real server problem we prepared for we can notify something like "sorry, having server issues, try again later". Other that that, it's up to you to build the validations properly so the data is saved
+
+## Todo
+
+- use require in the browser to lazy load scripts
+- gruntjs
+- term-css
+- https://github.com/kuno/GeoIP
+- global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
+- make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)
+- http://jsperf.com/angular-vs-knockout-vs-ember/2
+
+## New Stuff (api is todo, can access now through Tower.router)
+
+``` coffeescript
+@resources 'posts'
+@namespace 'admin', ->
+  @resources 'posts'
+```
+
+``` coffeescript
+Tower.urlFor(App.Post)
+Tower.urlFor('root.posts.index')
+```
+
+``` coffeescript
+# GET
+App.indexPosts(title: 'A') # App.action, Tower.action, which one?
+App.showPost(id: 1)
+App.newPost()
+App.editPost(id: 1)
+# Non-GET
+App.createPost()
+App.updatePost(id: 1)
+App.destroyPost(id: 1)
+```
+
+``` html
+{{#each post in App.postsController.all}}
+<a {{action editPost post href=true}}>Edit</a>
+{{/each}}
+```
+
+``` coffeescript
+# @todo
+App.indexAdminPosts() # /admin/posts
+App.indexPostComments(postId: 1) # /posts/1/comments
+```

@@ -1,7 +1,7 @@
 view = null
 user = null
 
-describe 'Tower.View.Table', ->
+describe 'Tower.ViewTable', ->
   beforeEach ->
     view = new Tower.View
     user = new App.User(id: 1, firstName: "Lance")

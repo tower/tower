@@ -29,11 +29,17 @@ favicon.png
 dist/*.gz
 dist/*.coffee
 dist/*.min.js
-wiki
+/wiki
 docs
 test/tmp
 test/example/README.md
 test/example/package.json
 test/example/public/javascripts
 tmp
+<<<<<<< HEAD
 runtests.sh
+=======
+lib
+dist/
+config.json
+>>>>>>> development

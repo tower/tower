@@ -2,11 +2,11 @@ generator       = null
 sourceRoot      = null
 destinationRoot = null
 
-describe 'Tower.Generator.AppGenerator', ->
+describe 'Tower.GeneratorAppGenerator', ->
   before ->
     sourceRoot      = "#{process.cwd()}/lib/tower/server/generator/generators/tower/app"
     destinationRoot = "#{process.cwd()}/test/tmp/myapp"
-    #generator       = new Tower.Generator.AppGenerator(
+    #generator       = new Tower.GeneratorAppGenerator(
     #  sourceRoot: sourceRoot
     #  destinationRoot: destinationRoot
     #  program: {}

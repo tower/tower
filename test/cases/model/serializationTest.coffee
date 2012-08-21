@@ -2,12 +2,11 @@ scope     = null
 criteria  = null
 user      = null
 
-describe 'Tower.Model.Serialization', ->
-  beforeEach ->
-    App.User.store(new Tower.Store.Memory(firstName: "users", type: "User"))
-    
+describe 'Tower.ModelSerialization', -> 
   test "instance.toJSON", ->
-    assert.deepEqual (new App.User(firstName: "Lance")).toJSON(),
+    json = App.User.new(firstName: "Lance").toJSON()
+    
+    expected =
       id:                  undefined,
       createdAt:           undefined,
       likes:               0,
@@ -18,3 +17,6 @@ describe 'Tower.Model.Serialization', ->
       rating:              2.5
       admin:               false
       cachedMembershipIds: []
+      
+    for key, value of expected
+      assert.deepEqual value, json[key]

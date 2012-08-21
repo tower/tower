@@ -3,7 +3,7 @@ user        = null
 router      = null
 
 unless Tower.client
-  describe 'Tower.Controller.Rendering', ->
+  describe 'Tower.ControllerRendering', ->
     beforeEach (done) ->
       Tower.start(done)
 

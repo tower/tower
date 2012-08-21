@@ -7,7 +7,7 @@ describeWith = (store) ->
         App.BaseModel.store(store)
         App.Post.store(store)
 
-        post = new App.Post(rating: 4)
+        post = App.Post.build(rating: 4)
         post.save(done)
 
     afterEach ->
