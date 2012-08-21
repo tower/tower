@@ -27,7 +27,7 @@ module.exports = (grunt) ->
         tasks: ['coffee:app']
       packageJSON:
         files: ['packages/**/package.json']
-        tasks: ['copy:package']
+        tasks: ['copy:packageJSON']
 
   #grunt.loadNpmTasks 'grunt-coffee'
   grunt.registerTask 'default', 'coffee copy'
@@ -84,7 +84,7 @@ module.exports = (grunt) ->
     options = options or {}
     extension = (if extension then extension else ".js")
     dest = path.dirname(destPath) + '/' + path.basename(destPath, ".coffee") + extension
-    console.log dest
+    #console.log dest
     options.bare = true  if options.bare isnt false
     try
       js = coffee.compile(grunt.file.read(src), options)
