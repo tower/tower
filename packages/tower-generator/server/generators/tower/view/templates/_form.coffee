@@ -11,3 +11,15 @@ formFor @<%= model.name %>, (f) ->
   f.fieldset (fields) ->
     fields.submit 'Submit'
 <% } %>
+
+###
+# This is how an input temporarily needs to be built so it works with ember:
+text '{{#with resource}}'
+div class: 'control-group', ->
+  div class: 'controls', ->
+    text '{{view Ember.TextField valueBinding="title"}}'
+    text '{{#with errors}}'
+    span class: 'help-inline error', '{{title}}'
+    text '{{/with}}'
+text '{{/with}}'
+###
