@@ -2,12 +2,14 @@ require './shared'
 require './server/actions'
 require './server/caching'
 require './server/events'
+require './server/flash'
 require './server/net'
 require './server/sockets'
 
 Tower.Controller.include Tower.ControllerActions
 Tower.Controller.include Tower.ControllerCaching
 Tower.Controller.include Tower.ControllerEvents
+Tower.Controller.include Tower.ControllerFlash
 Tower.Controller.include Tower.ControllerNet
 Tower.Controller.include Tower.ControllerSockets
 

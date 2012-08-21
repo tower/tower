@@ -25,6 +25,7 @@ Tower.SupportI18n.load module.exports =
       lessThanOrEqualTo:    "%{attribute} must be less than or equal to %{count}"
       odd:                  "%{attribute} must be odd"
       even:                 "%{attribute} must be even"
+      uniqueness:           "%{attribute} is already in use"
       recordInvalid:        "Validation failed: %{errors}"
       uniqueness:           "%{attribute} must be unique"
       # Append your own errors here or at the model/attributes scope.

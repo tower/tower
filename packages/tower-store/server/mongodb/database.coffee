@@ -24,6 +24,7 @@ Tower.StoreMongodbDatabase =
         @initialized = true
         
         mongo = @lib()
+        
         env   = @parseEnv()
 
         new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) =>

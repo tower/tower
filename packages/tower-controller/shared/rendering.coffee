@@ -158,6 +158,8 @@ Tower.ControllerRendering =
       options.prefixes  ||= []
       options.prefixes.push @collectionName
       options.template ||= (options.file || (options.action || @action))
+      options.locals ||= {}
+      options.locals.flash = @flash()
       options
 
 module.exports = Tower.ControllerRendering
