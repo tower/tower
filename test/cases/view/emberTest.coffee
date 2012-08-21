@@ -20,10 +20,9 @@ describe 'Tower Ember View rendering', ->
       outletName: 'view'
       viewClass:  undefined
       # this is the view object itself, where _context is the controller
-      context:
-        _context: {}
-      controller:
-        _context: {}
+      #context:
+      #  _context: {}
+      controller: {}
 
   test '#_getEmberTemplate', ->
     assert.equal view._getEmberTemplate('computed/template'), 'computed/template!'

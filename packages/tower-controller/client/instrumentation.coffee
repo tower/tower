@@ -1,11 +1,13 @@
 # @mixin
 Tower.ControllerInstrumentation =
+  # @todo refactor
   params: Ember.computed(->
     Tower.router.getStateMeta(Tower.router.get('currentState'), 'serialized')
   ).volatile()
 
+  # @todo refactor
   resource: Ember.computed(->
-    Tower.router.getStateMeta(Tower.router.get('currentState'), 'context')
+    Tower.router.getStateMeta(Tower.router.get('currentState'), 'context') || @get(@get('resourceName'))
   ).volatile()
 
   enter: ->

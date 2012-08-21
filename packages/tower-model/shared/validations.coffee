@@ -91,6 +91,8 @@ Tower.ModelValidations =
     # - after_create
     # - after_save
     # - after_commit
+    #
+    # @todo validate properties when they are set
     validate: (callback) ->
       success         = false
 
@@ -114,6 +116,12 @@ Tower.ModelValidations =
         Tower.async validators, iterator, (error) =>
           if (!(_.isPresent(errors) || error))
             success = true
+
+          # @todo for client, want a way to bind to errors.
+          #   This way triggers bindings to update (good enough for the moment).
+          if Tower.isClient
+            for key, value of errors
+              @set("errors.#{key}", value)
           # @todo need to handle afterValidation callbacks
           complete.call(@)
 

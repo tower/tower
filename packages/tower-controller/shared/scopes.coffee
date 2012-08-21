@@ -58,7 +58,7 @@ Tower.ControllerScopes =
 
         if Tower.isClient
           instance = @instance()
-          instance.set(name, cursor()) unless instance.get(name)
+          instance.set(name, cursor()) if instance && !instance.get(name)
       catch error
         console.log(error.stack || error)
 
