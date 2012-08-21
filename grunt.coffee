@@ -8,8 +8,32 @@ module.exports = (grunt) ->
   files = _.select file.expand(['packages/**/*.coffee']), (i) ->
     !i.match('templates')
 
+  towerFiles = []
+
   grunt.initConfig
     pkg: '<json:package.json>'
+    meta:
+      banner: """
+/*!
+ * Tower.js v<%= pkg.version %>
+ * <%= pkg.homepage %>
+ *
+ * Copyright 2012, Lance Pollard
+ * MIT License.
+ * http://towerjs.org/license
+ *
+ * Date: <%= grunt.template.today('isoDate') %>
+ */
+
+"""
+    concat:
+      tower:
+        src: ['<meta:banner>', towerFiles],
+        dest: 'dist/tower.js'
+      core:       {}
+      model:      {}
+      controller: {}
+
     coffee:
       app:
         src: files
@@ -22,7 +46,6 @@ module.exports = (grunt) ->
         src: 'packages/**/package.json'
         strip: 'packages/'
         dest: 'lib'
-
     watch:
       coffee:
         files: ['<config:coffee.app.src>']
