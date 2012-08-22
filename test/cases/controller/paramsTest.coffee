@@ -17,7 +17,7 @@ describe "Tower.ControllerParams", ->
       
       _.get '/posts', params: params, (response) ->
         posts = response.controller.get('posts')
-        console.log posts # this is having issues on travisci
+        console.log _.stringify(posts) # this is having issues on travisci
         assert.equal 2, posts.length
         assert.deepEqual ['First Post', 'Second Post'], _.map posts, (i) -> i.get('title')
         done()
@@ -43,7 +43,7 @@ describe "Tower.ControllerParams", ->
       
       _.get '/posts', params: params, (response) ->
         posts = response.controller.get('posts')
-        console.log posts # this is having issues on travisci
+        console.log _.stringify(posts) # this is having issues on travisci
         assert.equal 2, posts.length
         assert.deepEqual ['Second Post', 'First Post'], _.map posts, (i) -> i.get('title')
         done()

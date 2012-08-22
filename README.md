@@ -256,26 +256,26 @@ App.User
 user  = App.User.first()
 
 # hasMany "posts"
-posts = user.posts().where(title: "First Post").first()
-post  = user.posts().build(title: "A Post!")
-post  = user.posts().create(title: "A Saved Post!")
-posts = user.posts().all()
+posts = user.get('posts').where(title: "First Post").first()
+post  = user.get('posts').build(title: "A Post!")
+post  = user.get('posts').create(title: "A Saved Post!")
+posts = user.get('posts').all()
 
 post  = App.Post.first()
 
 # belongsTo "author"
-user  = post.author()
+user  = post.get('author')
 ```
 
 ### Validations
 
 ``` coffeescript
 user = App.User.build()
-user.save() #=> false
-user.errors #=> {"email": ["Email must be present"]}
-user.email  = "me@gmail.com"
-user.save() #=> true
-user.errors #=> {}
+user.save()         #=> false
+user.get('errors')  #=> {"email": ["Email must be present"]}
+user.set('email', "me@gmail.com")
+user.save()         #=> true
+user.get('errors')  #=> {}
 ```
 
 ## Routes
@@ -305,71 +305,6 @@ App.routes ->
 
 Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
 
-### Forms
-
-``` html
-# app/client/templates/posts/new.ejs
-<form>
-  <fieldset>
-    <legend></legend>
-    <input name="post[title]" />
-    <textarea name="post[body]" ></textarea>
-    <input type="submit" />
-  </fieldset>
-</form>
-```
-
-### Tables
-
-``` html
-<!--  app/client/templates/posts/index.hbs -->
-tableFor "posts", (t) ->
-  t.head ->
-    t.row ->
-      t.cell "title", sort: true
-      t.cell "body", sort: true
-      t.cell()
-      t.cell()
-      t.cell()
-  t.body ->
-    for post in @posts
-      t.row ->
-        t.cell post.get("title")
-        t.cell post.get("body")
-        t.cell linkTo 'Show', post
-        t.cell linkTo 'Edit', Tower.urlFor(post, action: "edit")
-        t.cell linkTo 'Destroy', post, method: "delete"
-  linkTo 'New Post', Tower.urlFor(App.Post, action: "new")
-```
-
-### Layouts
-
-``` html
-<!DOCTYPE html>
-<html>
-  <head>  
-    {{meta charset="utf-8"}}
-    {{title}}
-    {{meta name=description contentLocale="description"}}
-    {{meta name=keywords contentLocale="keywords"}}
-    {{meta name=robots contentLocale="robots"}}
-    {{meta name=author contentLocale="author"}}
-    {{link href=/favicon.png rel="icon shortcut-icon favicon"}} 
-
-    {{stylesheets application}}
-    {{javascripts vendor lib application}}
-    {{#if Tower.isDevelopment}}
-      {{javascripts development}}
-    {{/if}}
-  </head>
-  <body>
-    <script>
-      App.bootstrap({{json bootstrapData}})
-    </script>
-  </body>
-</html>
-```
-
 The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
 
 ## Styles
@@ -386,11 +321,11 @@ class App.PostsController extends Tower.Controller
       @render "index", locals: posts: posts
     
   new: ->
-    @post = new App.Post
+    @post = App.Post.build()
     @render "new"
     
   create: ->
-    @post = new App.Post(@params.post)
+    @post = App.Post.build(@params.post)
     
     super (success, failure) ->
       @success.html => @render "posts/edit"
@@ -666,3 +601,4 @@ App.indexPostComments(postId: 1) # /posts/1/comments
 
 - `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)
 - todo: need to test installing different versions of node with https://github.com/creationix/nvm
+- https://gist.github.com/1398757
