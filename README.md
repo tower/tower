@@ -641,3 +641,7 @@ App.destroyPost(id: 1)
 App.indexAdminPosts() # /admin/posts
 App.indexPostComments(postId: 1) # /posts/1/comments
 ```
+
+## Changelog
+
+- `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)

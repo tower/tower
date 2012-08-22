@@ -60,3 +60,55 @@ module.exports = (grunt) ->
     catch e
       grunt.log.error "Error in " + src + ":\n" + e
       return false
+
+  grunt.registerMultiTask 'client', 'Build tower for the client', ->
+    fs      = require 'fs'
+    mint    = require 'mint'
+    nodePath = require 'path'
+
+    compileFile = (root, path, level) ->
+      try
+        data = fs.readFileSync path, 'utf-8'
+        # total hack, built 10 minutes at a time over a few months, needs to be rethought, but works
+        data = data.replace /require '([^']+)'\n/g, (_, _path) ->
+          _parent = !!_path.match(/\.\./)
+          if _parent
+            _root = nodePath.resolve(root, _path)
+            _path = _root + '.coffee'
+          else
+            _root = nodePath.resolve(root, '..', _path)
+            _path = _root + '.coffee'
+          try
+            compileFile(_root, _path, level + 1) + "\n\n"
+          catch error
+            console.info _path
+            console.error error.stack
+            ""
+        data = data.replace(/module\.exports\s*=.*\s*/g, "")
+        data + "\n\n"
+        if level == 1
+          outputPath = './dist/' + nodePath.resolve(path, '..').split('/').pop()
+          fs.writeFileSync outputPath + '.coffee', data
+          mint.coffee data, bare: false, (error, result) ->
+            # result = JS_COPYRIGHT + result
+            console.error error.stack if error
+            fs.writeFileSync outputPath + '.js', result
+        data
+      catch error
+        console.log error
+        ""
+
+    buildIt = ->
+      fs.mkdirSync('./dist') unless fs.existsSync('./dist')
+      content = compileFile("./packages/tower", "./packages/tower/client.coffee", 0).replace /Tower\.version *= *.+\n/g, (_) ->
+        version = """
+    Tower.version = "#{grunt.config('pkg.version')}"
+
+    """
+      fs.writeFileSync './dist/tower.coffee', content
+      mint.coffee content, bare: false, (error, result) ->
+        result = grunt.config.process('meta.banner') + result
+        console.error error.stack if error
+        fs.writeFileSync "./dist/tower.js", result
+
+    buildIt()
