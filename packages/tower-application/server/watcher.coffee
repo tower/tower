@@ -15,6 +15,7 @@ Tower.ApplicationWatcher =
       paths:    []
 
   watch: ->
+    return
     # this should use hook.io so we don't have to parse the log file...
     forever = require('forever')
 

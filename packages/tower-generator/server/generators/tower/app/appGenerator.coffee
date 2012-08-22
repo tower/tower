@@ -225,7 +225,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMainInsecure.swf", "WebSocketMainInsecure.swf"
 
-      @template "watch", "Watchfile"
+      @template "grunt.coffee", "grunt.coffee"
 
       # github wiki
       @inside "wiki", ->

@@ -1,5 +1,3 @@
-window.designer ||= new DesignIO('<%= app.name %>', port: 4181)
-
 mocha.setup 'bdd'
 
 global.assert = chai.assert

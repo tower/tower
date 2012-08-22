@@ -102,7 +102,6 @@
     "kue": ">= 0.3.4",
     "socket.io-client": ">= 0.9.5"
   },
-  "optionalDependencies": {},
   "scripts": {
     "test": "make test",
     "docs": "codo",
