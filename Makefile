@@ -35,9 +35,12 @@ watch:
 	grunt start --config ./grunt.coffee
 
 build:
-	cake build
+	grunt build:client --config ./grunt.coffee
+
+dist:
+	grunt dist --config ./grunt.coffee
 
 publish:
 	npm publish
 
-.PHONY: test-memory test-mongodb test test-all check test-browser
+.PHONY: test-memory test-mongodb test test-all check test-browser build dist

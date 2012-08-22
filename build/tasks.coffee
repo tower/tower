@@ -61,7 +61,7 @@ module.exports = (grunt) ->
       grunt.log.error "Error in " + src + ":\n" + e
       return false
 
-  grunt.registerMultiTask 'client', 'Build tower for the client', ->
+  grunt.registerMultiTask 'build', 'Build tower for the client', ->
     fs      = require 'fs'
     mint    = require 'mint'
     nodePath = require 'path'
