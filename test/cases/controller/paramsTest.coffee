@@ -4,15 +4,16 @@ describe "Tower.ControllerParams", ->
   beforeEach (done) ->
     # for travisci...
     console.log 'Tower.ControllerParams.beforeEach...'
-    App.Post.all (error, posts) =>
-      console.log 'BEFORE ANY POSTS', _.stringify(posts) #
-      App.Post.create title: 'First Post', rating: 8, =>
-        App.Post.all (error, posts) =>
-          console.log 'After FIRST POST', _.stringify(posts) #
-          App.Post.create title: 'Second Post', rating: 7, =>
-            App.Post.all (error, posts) =>
-              console.log 'After SECOND POST', _.stringify(posts) #
-              done()
+    App.Post.destroy =>
+      App.Post.all (error, posts) =>
+        console.log 'BEFORE ANY POSTS', _.stringify(posts) #
+        App.Post.create title: 'First Post', rating: 8, =>
+          App.Post.all (error, posts) =>
+            console.log 'After FIRST POST', _.stringify(posts) #
+            App.Post.create title: 'Second Post', rating: 7, =>
+              App.Post.all (error, posts) =>
+                console.log 'After SECOND POST', _.stringify(posts) #
+                done()
 
   beforeEach (done) ->
     Tower.start(done)
