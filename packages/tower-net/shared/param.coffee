@@ -67,6 +67,7 @@ class Tower.NetParam
     string.replace(/^-/, '').replace(/^\+-/, '').replace(/^'|'$/, '').replace('+', ' ').replace(/^\^/, '').replace(/\$$/, '').replace(/^\s+|\s+$/, '')
 
 require './param/array'
+require './param/boolean'
 require './param/date'
 require './param/number'
 require './param/order'

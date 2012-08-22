@@ -149,6 +149,31 @@ describe 'Tower.NetParam', ->
     #  desc:           "-"
     #  geo:            ":lat,:lng,:radius"   # geo=20,-50,7
 
+  describe 'Boolean', ->
+    param = null
+
+    beforeEach ->
+      param = Tower.NetParam.create("published", type: "Boolean")
+
+    test 'true == true', ->
+      cursor = param.toCursor('true')
+      assert.deepEqual cursor.conditions(), {published: true}
+
+    test '1 == true', ->
+      cursor = param.toCursor('1')
+      assert.deepEqual cursor.conditions(), {published: true}
+
+    test 'anything else is "false"', ->
+      cursor = param.toCursor('false')
+      assert.deepEqual cursor.conditions(), {published: false}
+
+      cursor = param.toCursor('asdf')
+      assert.deepEqual cursor.conditions(), {published: false}
+
+    test 'blank is nothing', ->
+      cursor = param.toCursor('')
+      assert.deepEqual cursor.conditions(), {}
+
   describe 'Order', ->
     param = null
 
@@ -180,3 +205,63 @@ describe 'Tower.NetParam', ->
     test 'descending/descending (-/-)', ->
       values = param.parse('createdAt-,likeCount-')
       assert.deepEqual ['createdAt', 'DESC', 'likeCount', 'DESC'], values
+
+  describe 'controller', ->
+    Controller    = null
+    cursor        = null
+
+    buildCursor = (params) ->
+      cursor      = Tower.ModelCursor.create()
+      cursor.make()
+      Controller._buildCursorFromGet(params, cursor)
+
+    beforeEach ->
+      Controller  = App.PostsController
+
+    describe 'Boolean', ->
+      test 'true', ->
+        cursor = buildCursor(published: true)
+        assert.deepEqual cursor.conditions(), {published: true}
+
+      test 'false', ->
+        cursor = buildCursor(published: false)
+        assert.deepEqual cursor.conditions(), {published: false}
+
+      test 'isBlank', ->
+        cursor = buildCursor(published: '')
+        assert.deepEqual cursor.conditions(), {}
+
+    describe 'Order', ->
+      test 'ascending (default)', ->
+        cursor = buildCursor(sort: 'createdAt')
+        assert.deepEqual cursor.toParams().sort, [ [ 'createdAt', 'ASC' ] ]
+
+      test 'ascending (+)', ->
+        cursor = buildCursor(sort: 'createdAt+')
+        assert.deepEqual cursor.toParams().sort, [ [ 'createdAt', 'ASC' ] ]
+
+      test 'ascending (-)', ->
+        cursor = buildCursor(sort: 'createdAt-')
+        assert.deepEqual cursor.toParams().sort, [ [ 'createdAt', 'DESC' ] ]
+
+      test 'ascending/descending (default/-)', ->
+        cursor = buildCursor(sort: 'createdAt,likeCount-')
+        assert.deepEqual cursor.toParams().sort, [ ['createdAt', 'ASC', 'likeCount', 'DESC'] ]
+
+    describe 'Limit', ->
+      test '10', ->
+        cursor = buildCursor(limit: '10')
+        assert.equal cursor.toParams().limit, 10
+
+      test '-10 should not do anything', ->
+        cursor = buildCursor(limit: '-10')
+        assert.equal cursor.toParams().limit, undefined
+
+    describe 'Page', ->
+      test '10', ->
+        cursor = buildCursor(page: '10')
+        assert.equal cursor.toParams().page, 10
+        
+      test '-10 should not do anything', ->
+        cursor = buildCursor(page: '-10')
+        assert.equal cursor.toParams().page, undefined
