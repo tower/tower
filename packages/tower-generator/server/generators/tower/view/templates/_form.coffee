@@ -22,7 +22,7 @@ div class: 'control-group', ->
     span class: 'help-inline error', '{{<%= model.attributes[i].name %>}}'
     text '{{/with}}'
 <% } %>
-    a '{{action submit target="resource"}}', 'Submit User'
+    a '{{action submit target="resource"}}', 'Submit'
 text '{{/with}}'
 <% } %>
 
