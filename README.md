@@ -72,6 +72,20 @@ If you would like to mess around with the tower source code, clone it and start 
 make watch
 ```
 
+Finally, make sure you have mongodb installed and running:
+
+```
+brew install mongodb
+mongod # starts server
+```
+
+If you would like to try out the background-worker code, you can also install and start redis:
+
+```
+brew install redis
+redis-server
+```
+
 ## Generate
 
 ```
