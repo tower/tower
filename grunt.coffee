@@ -10,7 +10,7 @@ module.exports = (grunt) ->
   files = _.select file.expand(['packages/**/*.coffee']), (i) ->
     !i.match('templates')
 
-  towerFiles = []
+  towerFiles = ['lib/tower/client.js']
 
   config =
     pkg: '<json:package.json>'
@@ -60,9 +60,6 @@ module.exports = (grunt) ->
         strip: 'packages/'
         dest: 'lib'
     watch:
-      coffee:
-        files: ['<config:coffee.app.src>']
-        tasks: ['coffee:app']
       packageJSON:
         files: ['packages/**/package.json']
         tasks: ['copy:packageJSON']
@@ -80,8 +77,6 @@ module.exports = (grunt) ->
     #    undef: true
     #    eqnull: true
     #    browser: true
-
-  config.watch = {}
 
   for name in files
     config.coffee[name] =
