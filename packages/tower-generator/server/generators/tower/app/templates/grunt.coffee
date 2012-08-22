@@ -3,6 +3,63 @@
 module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-less')
   grunt.loadNpmTasks('grunt-stylus')
+  async = require('async')
+  mint  = require('mint')
+  coffeecup = require('coffeecup')
+  fs    = require('fs')
+
+  require('tower')
+  # @todo tmp
+  Tower.Application.instance().initialize()
+
+  grunt.registerMultiTask 'templates', 'Compile templates', ->
+    name  = ""
+    taskDone = @async()
+     
+    files   = grunt.file.expand(['app/views/**/*.coffee'])
+    result  = []
+    
+    for file in files
+      continue unless file.match(/app\/views\/.+\.coffee$/)
+      continue unless file.match(/\.coffee$/)
+      result.push [file.replace(/\.coffee$/, ""), fs.readFileSync(file)]
+      
+    template      = "Tower.View.cache =\n"
+    
+    iterator = (item, next) =>
+      name = item[0].replace(/app\/(?:client\/)?views\//, '')#.replace('/', '_')
+      # _table.coffee
+      fileName = name.split('/')
+      fileName = fileName[fileName.length - 1]
+      return next() if fileName.match(/^_/) # if it's a partial, don't include
+      try
+        string = coffeecup.render(item[1])  
+      catch error
+        try
+          prefix  = name.split('/')[0]
+          view    = new Tower.View(collectionName: prefix)
+          opts    = type: 'coffee', inline: true, template: item[1].toString(), prefixes: [prefix]
+          cb = (error, body) =>
+            string = body
+          view.render(opts, cb)
+        catch error
+          console.log item[0], error
+          return next() # so we can still have some templates
+
+      template += "  '#{name}': Ember.Handlebars.compile('"
+      # make it render to HTML for ember
+      template += "#{string}')\n"
+      next()
+      
+    async.forEachSeries result, iterator, (error) =>
+      template += '_.extend(Ember.TEMPLATES, Tower.View.cache)\n'
+      mint.coffee template, bare: true, (error, string) =>
+        if error
+          console.log error
+          return taskDone(error)
+        else
+          fs.writeFileSync "public/javascripts/templates.js", string
+          taskDone()
 
   grunt.registerMultiTask 'copy', 'Copy files to destination folder and replace @VERSION with pkg.version', ->
     replaceVersion = (source) ->
@@ -78,6 +135,10 @@ module.exports = (grunt) ->
     'config/assets.coffee'
   ])
 
+  jsFiles = file.expand([
+    'vendor/javascripts/**/*.js'
+  ])
+
   config =
     pkg: '<json:package.json>'
     coffee:
@@ -101,6 +162,8 @@ module.exports = (grunt) ->
       css:
         src: ['vendor/**/*.css']
         dest: 'public/stylesheets'
+    templates:
+      all: {}
     stylus:
       compile:
         options:
@@ -119,8 +182,16 @@ module.exports = (grunt) ->
       files: [name]
       tasks: ["coffee:#{name}"]
 
+  for name in jsFiles
+    config.copy[name] =
+      src: [name]
+      dest: 'public/javascripts'
+    config.watch[name] =
+      files: [name]
+      tasks: ["copy:#{name}"]
+
   grunt.initConfig(config)
 
   #grunt.loadNpmTasks 'grunt-coffee'
-  grunt.registerTask 'default', 'copy coffee:all less stylus'
+  grunt.registerTask 'default', 'copy:js copy:css coffee:all less stylus templates'
   grunt.registerTask 'start', 'default watch'

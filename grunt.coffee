@@ -1,5 +1,6 @@
 # https://github.com/cowboy/grunt/blob/master/docs/task_init.md
 # https://github.com/kmiyashiro/grunt-mocha
+# https://github.com/shama/grunt-hub/blob/master/tasks/watch.js
 module.exports = (grunt) ->
   require('./build/tasks')(grunt)
 
