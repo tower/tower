@@ -6,7 +6,7 @@ module.exports =
       '/app/client/config/bootstrap'
       '/config/routes'
       '/app/client/controllers/applicationController'
-      '/app/views/templates'
+      '/templates'
       '/app/client/views/layouts/application'
     ]
 

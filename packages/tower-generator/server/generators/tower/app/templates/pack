@@ -52,13 +52,13 @@
     "mocha":                  ">= 0.12.1",
     "chai":                   ">= 0.3.3",
     "sinon":                  ">= 1.3.1",
-    "design.io":              ">= 0.3.0",
-    "design.io-javascripts":  ">= 0.3.0",
-    "design.io-stylesheets":  ">= 0.3.0",
     "knox":                   ">= 0.0.9",
     "gzip":                   ">= 0.1.0",
     "forever":                ">= 0.8.5",
-    "cli-table":              ">= 0.0.1"
+    "cli-table":              ">= 0.0.1",
+    "grunt-less": "~0.1.5",
+    "grunt-stylus": "~0.1.4",
+    "grunt-contrib": "~0.1.7"
   },
   "scripts": {
     "test":                   "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",

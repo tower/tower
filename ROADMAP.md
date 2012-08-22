@@ -25,6 +25,7 @@ You are free to implement any of these features in any order… I'm more of a fa
 - data syncing
 - client routes
 - testing patterns for an app
+- `grunt --config ./grunt.coffee`
 
 ## 0.6.0 - Testing, Robustness
 

@@ -119,7 +119,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js", "socket.io.js"
           @get "https://raw.github.com/viatropos/design.io/master/design.io.js", "design.io.js"
           # @todo make this more customizable
-          @get "https://raw.github.com/viatropos/tower/master/dist/tower.js", "tower.js"
+          @get "http://cloud.github.com/downloads/viatropos/tower/tower.js", "tower.js"
           # Trying out ember's history implementation, which is much lighter
           # @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.js", "history.js"
           # @get "https://raw.github.com/balupton/history.js/master/scripts/uncompressed/history.adapter.jquery.js", "history.adapter.jquery.js"
@@ -225,7 +225,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMain.swf", "WebSocketMain.swf"
         @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/WebSocketMainInsecure.swf", "WebSocketMainInsecure.swf"
 
-      @template "watch", "Watchfile"
+      @template "grunt.coffee", "grunt.coffee"
 
       # github wiki
       @inside "wiki", ->

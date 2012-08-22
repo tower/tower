@@ -56,16 +56,36 @@ Includes a database-agnostic ORM with browser (memory and ajax) and MongoDB supp
 
 ## Install
 
-``` bash
-npm install express@2.x -g # temporary, for design.io
-npm install design.io -g
+```
 npm install tower -g
 ```
 
-If you want to hack around in the Tower source, install design.io locally.  It's not included in Tower's `package.json` because I haven't found a way for places like Heroku to ignore `"devDependencies"`, and it has a ruby dependency so I'm leaving it out for now.  Run this in the root directory of your locally cloned Tower repo:
+You can grab the latest client tower.js [here](http://cloud.github.com/downloads/viatropos/tower/tower.js), although you don't need to (when you generate a new app it will be downloaded automatically).
+
+You will also need [grunt](https://github.com/cowboy/grunt), an awesome build tool:
 
 ```
-npm install design.io design.io-javascripts
+npm install grunt -g
+```
+
+If you would like to mess around with the tower source code, clone it and start the grunt watcher to compile all of the coffeescripts:
+
+```
+make watch
+```
+
+Finally, make sure you have mongodb installed and running:
+
+```
+brew install mongodb
+mongod # starts server
+```
+
+If you would like to try out the background-worker code, you can also install and start redis:
+
+```
+brew install redis
+redis-server
 ```
 
 ## Generate
@@ -641,3 +661,7 @@ App.destroyPost(id: 1)
 App.indexAdminPosts() # /admin/posts
 App.indexPostComments(postId: 1) # /posts/1/comments
 ```
+
+## Changelog
+
+- `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)

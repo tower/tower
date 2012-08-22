@@ -1,6 +1,6 @@
 {
   "name": "tower-mailer",
-  "version": "0.4.1",
+  "version": "@VERSION",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./server.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
