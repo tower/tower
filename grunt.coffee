@@ -56,7 +56,7 @@ module.exports = (grunt) ->
           bare: true
     copy:
       packageJSON:
-        src: 'packages/**/package.json'
+        src: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         strip: 'packages/'
         dest: 'lib'
     watch:
