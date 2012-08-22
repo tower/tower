@@ -14,13 +14,13 @@ describe "Tower.ControllerParams", ->
   describe '#index', ->
     test 'GET', (done) ->
       params = {}
-      
-      _.get '/posts', params: params, (response) ->
-        posts = response.controller.get('posts')
-        console.log _.stringify(posts) # this is having issues on travisci
-        assert.equal 2, posts.length
-        assert.deepEqual ['First Post', 'Second Post'], _.map posts, (i) -> i.get('title')
-        done()
+      App.Post.all (error, posts) =>
+        console.log _.stringify(posts) # travsci why is there an extra post?
+        _.get '/posts', params: params, (response) ->
+          posts = response.controller.get('posts')
+          assert.equal 2, posts.length
+          assert.deepEqual ['First Post', 'Second Post'], _.map posts, (i) -> i.get('title')
+          done()
 
     test 'rating: 8', (done) ->
       params = conditions: JSON.stringify(rating: 8)
@@ -43,7 +43,6 @@ describe "Tower.ControllerParams", ->
       
       _.get '/posts', params: params, (response) ->
         posts = response.controller.get('posts')
-        console.log _.stringify(posts) # this is having issues on travisci
         assert.equal 2, posts.length
         assert.deepEqual ['Second Post', 'First Post'], _.map posts, (i) -> i.get('title')
         done()

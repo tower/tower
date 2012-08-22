@@ -182,21 +182,21 @@ global.App = Tower.Application.create()
 ``` coffeescript
 # app/models/user.coffee
 class App.User extends Tower.Model
-  @field "firstName", required: true
-  @field "lastName"
-  @field "email", format: /\w+@\w+.com/
-  @field "activatedAt", type: "Date", default: -> new Date()
+  @field 'firstName', required: true
+  @field 'lastName'
+  @field 'email', format: /\w+@\w+.com/
+  @field 'activatedAt', type: 'Date', default: -> new Date()
   
-  @hasOne "address", embed: true
+  @hasOne 'address', embed: true
   
-  @hasMany "posts"
-  @hasMany "comments"
+  @hasMany 'posts'
+  @hasMany 'comments'
   
-  @scope "recent", -> createdAt: ">=": -> _(3).days().ago().toDate()
+  @scope 'recent', -> createdAt: '>=': -> _(3).days().ago().toDate()
   
-  @validates "firstName", "email", presence: true
+  @validates 'firstName', 'email', presence: true
   
-  @after "create", "welcome"
+  @after 'create', 'welcome'
   
   welcome: ->
     Tower.Mailer.welcome(@).deliver()
@@ -204,48 +204,48 @@ class App.User extends Tower.Model
 ``` coffeescript
 # app/models/post.coffee
 class App.Post extends Tower.Model
-  @field "title"
-  @field "body"
-  @field "tags", type: ["String"], default: []
-  @field "slug"
+  @field 'title'
+  @field 'body'
+  @field 'tags', type: ['String'], default: []
+  @field 'slug'
   
-  @belongsTo "author", type: "User"
+  @belongsTo 'author', type: 'User'
   
-  @hasMany "comments", as: "commentable"
-  @hasMany "commenters", through: "comments", type: "User"
+  @hasMany 'comments', as: 'commentable'
+  @hasMany 'commenters', through: 'comments', type: 'User'
   
-  @before "validate", "slugify"
+  @before 'validate', 'slugify'
   
   slugify: ->
-    @set "slug", @get("title").replace(/[^a-z0-9]+/g, "-").toLowerCase()
+    @set 'slug', @get('title').replace(/[^a-z0-9]+/g, '-').toLowerCase()
 ```
 ``` coffeescript
 # app/models/comment.coffee
 class App.Comment extends Tower.Model
-  @field "message"
+  @field 'message'
   
-  @belongsTo "author", type: "User"
-  @belongsTo "commentable", polymorphic: true
+  @belongsTo 'author', type: 'User'
+  @belongsTo 'commentable', polymorphic: true
 ```
 ``` coffeescript
 # app/models/address.coffee
 class App.Address extends Tower.Model
-  @field "street"
-  @field "city"
-  @field "state"
-  @field "zip"
-  @field "coordinates", type: "Geo"
+  @field 'street'
+  @field 'city'
+  @field 'state'
+  @field 'zip'
+  @field 'coordinates', type: 'Geo'
   
-  @belongsTo "user", embed: true
+  @belongsTo 'user', embed: true
 ```
 
 ### Chainable Scopes, Queries, and Pagination
 
 ``` coffeescript
 App.User
-  .where(createdAt: ">=": _(2).days().ago(), "<=": new Date())
-  .desc("createdAt")
-  .asc("firstName")
+  .where(createdAt: '>=': _(2).days().ago(), '<=': new Date())
+  .desc('createdAt')
+  .asc('firstName')
   .paginate(page: 5)
   .all()
 ```
@@ -255,15 +255,15 @@ App.User
 ``` coffeescript
 user  = App.User.first()
 
-# hasMany "posts"
-posts = user.get('posts').where(title: "First Post").first()
-post  = user.get('posts').build(title: "A Post!")
-post  = user.get('posts').create(title: "A Saved Post!")
+# hasMany 'posts'
+posts = user.get('posts').where(title: 'First Post').first()
+post  = user.get('posts').build(title: 'A Post!')
+post  = user.get('posts').create(title: 'A Saved Post!')
 posts = user.get('posts').all()
 
 post  = App.Post.first()
 
-# belongsTo "author"
+# belongsTo 'author'
 user  = post.get('author')
 ```
 
@@ -273,7 +273,7 @@ user  = post.get('author')
 user = App.User.build()
 user.save()         #=> false
 user.get('errors')  #=> {"email": ["Email must be present"]}
-user.set('email', "me@gmail.com")
+user.set('email', 'me@gmail.com')
 user.save()         #=> true
 user.get('errors')  #=> {}
 ```
@@ -283,22 +283,22 @@ user.get('errors')  #=> {}
 ``` coffeescript
 # config/routes.coffee
 App.routes ->
-  @match "/login", "sessions#new", via: "get", as: "login"
-  @match "/logout", "sessions#destroy", via: "get", as: "logout"
+  @match '/login', 'sessions#new', via: 'get', as: 'login'
+  @match '/logout', 'sessions#destroy', via: 'get', as: 'logout'
   
-  @resources "posts", ->
-    @resources "comments"
+  @resources 'posts', ->
+    @resources 'comments'
     
-  @namespace "admin", ->
-    @resources "users"
-    @resources "posts", ->
-      @resources "comments"
+  @namespace 'admin', ->
+    @resources 'users'
+    @resources 'posts', ->
+      @resources 'comments'
       
   @constraints subdomain: /^api$/, ->
-    @resources "posts", ->
-      @resources "comments"
+    @resources 'posts', ->
+      @resources 'comments'
       
-  @match "(/*path)", to: "application#index", via: "get"
+  @match '(/*path)', to: 'application#index', via: 'get'
 ```
 
 ## Views
@@ -483,28 +483,6 @@ cake assets:compile
 
 ``` bash
 cake assets:publish
-```
-
-## Watchfile
-
-``` coffeescript
-require('design.io').extension('watchfile')
-
-# stylesheet watcher
-require("design.io-stylesheets")
-  ignore: /(public|node_modules|zzz|less)/
-  outputPath: (path) ->
-    "public/stylesheets/#{path}".replace(/\.(css|styl|less)$/, ".css")
-
-# javascript watcher
-require("design.io-javascripts")
-  ignore:   /(public|node_modules|server|spec.*[sS]pec)/
-  outputPath: (path) ->
-    "public/javascripts/#{path}".replace(/\.(js|coffee)$/, ".js")
-    
-watch /app\/views\/.+\.mustache/
-  update: (path) ->
-    # do anything!
 ```
 
 ## Test
