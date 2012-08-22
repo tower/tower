@@ -47,13 +47,13 @@ describe "Tower.ControllerParams", ->
         assert.deepEqual ['Second Post', 'First Post'], _.map posts, (i) -> i.get('title')
         done()
 
-    # test 'limit: 1', (done) ->
-    #   params = limit: 1
-    #   
-    #   _.post '/posts', params: params, (response) ->
-    #     posts = response.controller.get('posts')
-    #     assert.equal 1, posts.length
-    #     done()
+    test 'limit: 1', (done) ->
+      params = limit: 1
+      
+      _.get '/posts', params: params, (response) ->
+        posts = response.controller.get('posts')
+        assert.equal 1, posts.length
+        done()
 
   test 'date string is serialized to database'
     # params = user: birthdate: _(26).years().ago().toDate()
