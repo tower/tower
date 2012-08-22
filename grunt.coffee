@@ -95,7 +95,7 @@ module.exports = (grunt) ->
   grunt.initConfig(config)
 
   #grunt.loadNpmTasks 'grunt-coffee'
-  grunt.registerTask 'default', 'coffee:all copy dist:client'
+  grunt.registerTask 'default', 'coffee:all copy build:client'
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
 
