@@ -1,15 +1,29 @@
 <% if (app.isStatic) { %>
-formFor @<%= model.name %>, (f) ->
-  f.fieldset (fields) -><% for (var i = 0; i < model.attributes.length; i++) { %>
-    fields.field '<%= model.attributes[i].name %>', as: '<%= model.attributes[i].fieldType %>'<% } %>
-  f.fieldset (fields) ->
-    fields.submit 'Submit'
+text '{{#with resource}}'
+<% for (var i = 0; i < model.attributes.length; i++) { %>
+div class: 'control-group', ->
+  div class: 'controls', ->
+    p "<%= model.attributes[i].humanName %>:"
+    text '{{view Ember.TextField valueBinding="<%= model.attributes[i].name %>"}}'
+    text '{{#with errors}}'
+    span class: 'help-inline error', '{{<%= model.attributes[i].name %>}}'
+    text '{{/with}}'
+<% } %>
+    a '{{action submit target="resource"}}', 'Submit'
+text '{{/with}}'
 <% } else { %>
-formFor @<%= model.name %>, (f) ->
-  f.fieldset (fields) -><% for (var i = 0; i < model.attributes.length; i++) { %>
-    fields.field '<%= model.attributes[i].name %>', as: '<%= model.attributes[i].fieldType %>'<% } %>
-  f.fieldset (fields) ->
-    fields.submit 'Submit'
+text '{{#with resource}}'
+<% for (var i = 0; i < model.attributes.length; i++) { %>
+div class: 'control-group', ->
+  div class: 'controls', ->
+    p "<%= model.attributes[i].humanName %>:"
+    text '{{view Ember.TextField valueBinding="<%= model.attributes[i].name %>"}}'
+    text '{{#with errors}}'
+    span class: 'help-inline error', '{{<%= model.attributes[i].name %>}}'
+    text '{{/with}}'
+<% } %>
+    a '{{action submit target="resource"}}', 'Submit'
+text '{{/with}}'
 <% } %>
 
 ###
