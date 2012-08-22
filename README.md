@@ -93,9 +93,9 @@ redis-server
 ```
 tower new app
 cd app
-sudo npm install
+npm install
 tower generate scaffold Post title:string body:text
-npm test
+tower generate scaffold User firstName:string lastName:string email:string
 node server
 ```
 
@@ -665,3 +665,4 @@ App.indexPostComments(postId: 1) # /posts/1/comments
 ## Changelog
 
 - `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)
+- todo: need to test installing different versions of node with https://github.com/creationix/nvm
