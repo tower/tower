@@ -12,7 +12,7 @@ module.exports = (grunt) ->
 
   towerFiles = []
 
-  grunt.initConfig
+  config =
     pkg: '<json:package.json>'
     meta:
       banner: """
@@ -48,7 +48,7 @@ module.exports = (grunt) ->
         src: ['dist/tower.js']
         dest: 'dist/tower.min.js'
     coffee:
-      app:
+      all:
         src: files
         dest: 'lib'
         strip: 'packages/'
@@ -81,5 +81,21 @@ module.exports = (grunt) ->
     #    eqnull: true
     #    browser: true
 
+  config.watch = {}
+
+  for name in files
+    config.coffee[name] =
+      src: name
+      dest: 'lib'
+      strip: 'packages/'
+      options:
+        bare: true
+    config.watch[name] =
+      files: [name]
+      tasks: ["coffee:#{name}"]
+
+  grunt.initConfig(config)
+
   #grunt.loadNpmTasks 'grunt-coffee'
-  grunt.registerTask 'default', 'coffee copy client'
+  grunt.registerTask 'default', 'coffee:all copy client'
+  grunt.registerTask 'start', 'default watch'
