@@ -1,5 +1,7 @@
-@title = "<%= model.humanName %> #{@<%= model.name %>.toLabel()}"
+@title = "<%= model.humanName %>"
 
+text '{{#with resource}}'
 dl class: "content", -><% for (var i = 0; i < model.attributes.length; i++) { %>
   dt "<%= model.attributes[i].humanName %>:"
-  dd @<%= model.name %>.get("<%= model.attributes[i].name %>")<% } %>
+  dd '{{<%= model.attributes[i].name %>}}'<% } %>
+text '{{/with}}'
