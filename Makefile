@@ -32,7 +32,7 @@ install:
 	npm install -g .
 
 watch:
-	design.io
+	grunt start --config ./grunt.coffee
 
 build:
 	cake build
