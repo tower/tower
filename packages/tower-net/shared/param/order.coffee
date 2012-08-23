@@ -4,6 +4,7 @@
 # you don't want to allow the user to sort specific properties
 class Tower.NetParamOrder extends Tower.NetParam
   parse: (value) ->
+    return value if _.isArray(value)
     values  = []
     array   = value.toString().split(/\s*,/)
 

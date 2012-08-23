@@ -2,8 +2,10 @@
 
 describe "Tower.ControllerParams", ->
   beforeEach (done) ->
-    App.Post.create title: 'First Post', rating: 8, =>
-      App.Post.create title: 'Second Post', rating: 7, done
+    # for travisci... for some reason there is a post created, not sure why
+    App.Post.destroy =>
+      App.Post.create title: 'First Post', rating: 8, =>
+        App.Post.create title: 'Second Post', rating: 7, done
 
   beforeEach (done) ->
     Tower.start(done)
@@ -14,7 +16,6 @@ describe "Tower.ControllerParams", ->
   describe '#index', ->
     test 'GET', (done) ->
       params = {}
-      
       _.get '/posts', params: params, (response) ->
         posts = response.controller.get('posts')
         assert.equal 2, posts.length
@@ -46,13 +47,13 @@ describe "Tower.ControllerParams", ->
         assert.deepEqual ['Second Post', 'First Post'], _.map posts, (i) -> i.get('title')
         done()
 
-    # test 'limit: 1', (done) ->
-    #   params = limit: 1
-    #   
-    #   _.post '/posts', params: params, (response) ->
-    #     posts = response.controller.get('posts')
-    #     assert.equal 1, posts.length
-    #     done()
+    test 'limit: 1', (done) ->
+      params = limit: 1
+      
+      _.get '/posts', params: params, (response) ->
+        posts = response.controller.get('posts')
+        assert.equal 1, posts.length
+        done()
 
   test 'date string is serialized to database'
     # params = user: birthdate: _(26).years().ago().toDate()
