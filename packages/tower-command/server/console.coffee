@@ -52,8 +52,8 @@ class Tower.CommandConsole
 
     client  = repl.context
 
-    client.reload = ->
-      Tower.ModelCursor.include Tower.ModelCursorSync
+    client.reload = =>
+      Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
       app = Tower.Application.instance()
       app.initialize()
       app.stack()
@@ -92,6 +92,7 @@ class Tower.CommandConsole
     process.nextTick client.reload
 
   runCoffee: ->
+    Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
     app = Tower.Application.instance()
     app.initialize()
     app.stack()
@@ -145,17 +146,19 @@ class Tower.CommandConsole
         return
       repl.setPrompt REPL_PROMPT
       backlog = ''
-      try
-        $_ = global.$_
-        returnValue = CoffeeScript.eval "$_=(#{code}\n)", {
-          filename: 'repl'
-          modulename: 'repl'
-        }
-        if returnValue is undefined
-          global.$_ = $_
-        process.stdout.write inspect(returnValue, no, 2, enableColours) + '\n'
-      catch err
-        error err
+      Fiber(->
+        try
+          $_ = global.$_
+          returnValue = CoffeeScript.eval "$_=(#{code}\n)", {
+            filename: 'repl'
+            modulename: 'repl'
+          }
+          if returnValue is undefined
+            global.$_ = $_
+          process.stdout.write inspect(returnValue, no, 2, enableColours) + '\n'
+        catch err
+          error err
+      ).run()
       repl.prompt()
 
     ## Autocompletion
