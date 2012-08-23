@@ -15,3 +15,7 @@
   #   @use 'basicAuth', Tower.httpCredentials.username, Tower.httpCredentials.password
 
   @use Tower.MiddlewareRouter
+
+  # For "web sockets" on heroku:
+  # App.io.configure ->
+  #   App.io.set('transports', ['xhr-polling'])

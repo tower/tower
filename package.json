@@ -81,9 +81,7 @@
     "knox": "0.0.11",
     "gm": "~1.4.1",
     "nodemailer": "~0.3.21",
-    "forever": "~0.10.0",
     "coffee-script": "git://github.com/viatropos/coffee-script.git",
-    "forever-monitor": "~1.1.0",
     "fibers": "~0.6.8"
   },
   "devDependencies": {
