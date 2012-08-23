@@ -1,3 +1,5 @@
+{Sync, MakeSync} = require 'make-sync'
+
 # @mixin
 # This is basically an Ember.Pagination module.
 Tower.ModelCursorFinders =
@@ -83,7 +85,12 @@ Tower.ModelCursorFinders =
     delete @returnArray # tmp
     @find(callback)
 
+
   find: (callback) ->
+    s = MakeSync @findAsync
+    return s.call(@)
+
+  findAsync: (callback) ->
     return @ if @_hasContent(callback)
 
     @_runBeforeFindCallbacksOnStore =>
@@ -100,6 +107,10 @@ Tower.ModelCursorFinders =
     @find(callback)
 
   count: (callback) ->
+    c = MakeSync @countAsync
+    return c.call(@)
+
+  countAsync: (callback) ->
     @_count(callback)
 
   exists: (callback) ->

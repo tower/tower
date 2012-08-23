@@ -1,3 +1,5 @@
+{Sync, MakeSync} = require 'make-sync'
+
 class Tower.CommandConsole
   constructor: (argv) ->
     @program = program = require('commander')
@@ -6,6 +8,7 @@ class Tower.CommandConsole
       .version(Tower.version)
       .option('-e, --environment [value]')
       .option('-c, --coffee')
+      .option('-s --synchronous')
       .option '-h, --help', '''
 \ \ Usage:
 \ \   tower console [options]
@@ -13,6 +16,7 @@ class Tower.CommandConsole
 \ \ Options:
 \ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
 \ \   -c, --coffee                      run in coffeescript mode!
+\ \   -s, --synchronous                 allows for database operations to run synchronously
 \ \   -h, --help                        output usage information
 \ \   -v, --version                     output version number
 \ \ 
@@ -28,10 +32,33 @@ class Tower.CommandConsole
     Tower.env = @program.environment
 
   run: ->
+    # this will work
+    # c = App.Profile.count()
+    # return c
+
+    # then the context gets polluted
     return @runCoffee() if @program.coffee
     repl    = require("repl")
-    client  = repl.start("tower> ").context
+    repl    = repl.start
+      prompt:"tower> "
+      useGlobal: true
+      context: @
+      eval:(cmd, context, filename, callback) -> 
+        cmd = cmd.slice(1,-1)
+        # string = "Sync(function(){#{cmd}})"
+        string= "Sync(function(){#{cmd}})"
+        # console.log(string)
+        result= null
+        try
+          result= eval.call(context,string)
+        catch e
+          console.log e
+        callback(null, result)
 
+    client  = repl.context
+
+
+    client.Sync = Sync
     client.reload = ->
       app = Tower.Application.instance()
       app.initialize()
@@ -66,8 +93,8 @@ class Tower.CommandConsole
 
     client.exit = ->
       process.exit 0
-
-    process.nextTick client.reload
+    Sync =>
+      process.nextTick client.reload
 
   runCoffee: ->
     app = Tower.Application.instance()
