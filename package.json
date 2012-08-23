@@ -81,8 +81,7 @@
     "knox": "0.0.11",
     "gm": "~1.4.1",
     "nodemailer": "~0.3.21",
-    "coffee-script": "git://github.com/viatropos/coffee-script.git",
-    "fibers": "~0.6.8"
+    "coffee-script": "git://github.com/viatropos/coffee-script.git"
   },
   "devDependencies": {
     "cli-table": ">= 0.0.1",
@@ -99,7 +98,8 @@
     "mustache": ">= 0.4.0",
     "jade": ">= 0.22.0",
     "kue": ">= 0.3.4",
-    "socket.io-client": ">= 0.9.5"
+    "socket.io-client": ">= 0.9.5",
+    "fibers": "~0.6.8"
   },
   "scripts": {
     "test": "make test",
