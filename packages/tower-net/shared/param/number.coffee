@@ -1,5 +1,30 @@
 class Tower.NetParamNumber extends Tower.NetParam
+  constructor: (key, options = {}) ->
+    super(key, options)
+    # For `page` and `limit` you don't want to allow negative numbers
+    @allowNegative  = if options.hasOwnProperty('allowNegative') then !!options.allowNegative else true
+    # @todo
+    @allowFloat     = if options.hasOwnProperty('allowFloat') then !!options.allowFloat else true
+    # By default the param will accept ranges, unless explicitly set to false
+    range   = @allowRange  = if options.hasOwnProperty('allowRange') then !!options.allowRange else true
+    @parse  = @parseRange if range
+
   parse: (value) ->
+    values = []
+    if typeof value == 'string'
+      value = parseInt(value)
+    if typeof value == 'number'
+      unless !@allowNegative && value < 0
+        values.push [@parseValue(value, ["$eq"])]
+    values
+
+  # @todo tmp hack
+  extractValue: (value) ->
+    value = @parse(value)[0]
+    value = value[0].value if value?
+    value
+
+  parseRange: (value) ->
     values  = []
     array   = value.split(/[,\|]/)
 

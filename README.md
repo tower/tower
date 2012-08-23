@@ -13,7 +13,7 @@ Follow me [@viatropos](http://twitter.com/viatropos).
 - **Issues**: http://github.com/viatropos/tower/issues
 - **Roadmap**: http://github.com/viatropos/tower/wiki/roadmap
 
-Note, Tower is still very early alpha (0.4.0).  Check out the [roadmap](http://github.com/viatropos/tower/wiki/roadmap) to see where we're going.  If your up for it please contribute!  The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release.  From there, it's performance optimization, workflow streamlining, and creating some awesome examples.  1.0 will be a plug-and-chug real-time app framework.
+Note, Tower is still very early alpha (0.4.0).  Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we're going.  If your up for it please contribute!  The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release.  From there, it's performance optimization, workflow streamlining, and creating some awesome examples.  1.0 will be a plug-and-chug real-time app framework.
 
 Tower is soon going to support only Node.js 0.8.0+. This stuff moves fast.
 
@@ -93,9 +93,9 @@ redis-server
 ```
 tower new app
 cd app
-sudo npm install
+npm install
 tower generate scaffold Post title:string body:text
-npm test
+tower generate scaffold User firstName:string lastName:string email:string
 node server
 ```
 
@@ -182,21 +182,21 @@ global.App = Tower.Application.create()
 ``` coffeescript
 # app/models/user.coffee
 class App.User extends Tower.Model
-  @field "firstName", required: true
-  @field "lastName"
-  @field "email", format: /\w+@\w+.com/
-  @field "activatedAt", type: "Date", default: -> new Date()
+  @field 'firstName', required: true
+  @field 'lastName'
+  @field 'email', format: /\w+@\w+.com/
+  @field 'activatedAt', type: 'Date', default: -> new Date()
   
-  @hasOne "address", embed: true
+  @hasOne 'address', embed: true
   
-  @hasMany "posts"
-  @hasMany "comments"
+  @hasMany 'posts'
+  @hasMany 'comments'
   
-  @scope "recent", -> createdAt: ">=": -> _(3).days().ago().toDate()
+  @scope 'recent', -> createdAt: '>=': -> _(3).days().ago().toDate()
   
-  @validates "firstName", "email", presence: true
+  @validates 'firstName', 'email', presence: true
   
-  @after "create", "welcome"
+  @after 'create', 'welcome'
   
   welcome: ->
     Tower.Mailer.welcome(@).deliver()
@@ -204,48 +204,48 @@ class App.User extends Tower.Model
 ``` coffeescript
 # app/models/post.coffee
 class App.Post extends Tower.Model
-  @field "title"
-  @field "body"
-  @field "tags", type: ["String"], default: []
-  @field "slug"
+  @field 'title'
+  @field 'body'
+  @field 'tags', type: ['String'], default: []
+  @field 'slug'
   
-  @belongsTo "author", type: "User"
+  @belongsTo 'author', type: 'User'
   
-  @hasMany "comments", as: "commentable"
-  @hasMany "commenters", through: "comments", type: "User"
+  @hasMany 'comments', as: 'commentable'
+  @hasMany 'commenters', through: 'comments', type: 'User'
   
-  @before "validate", "slugify"
+  @before 'validate', 'slugify'
   
   slugify: ->
-    @set "slug", @get("title").replace(/[^a-z0-9]+/g, "-").toLowerCase()
+    @set 'slug', @get('title').replace(/[^a-z0-9]+/g, '-').toLowerCase()
 ```
 ``` coffeescript
 # app/models/comment.coffee
 class App.Comment extends Tower.Model
-  @field "message"
+  @field 'message'
   
-  @belongsTo "author", type: "User"
-  @belongsTo "commentable", polymorphic: true
+  @belongsTo 'author', type: 'User'
+  @belongsTo 'commentable', polymorphic: true
 ```
 ``` coffeescript
 # app/models/address.coffee
 class App.Address extends Tower.Model
-  @field "street"
-  @field "city"
-  @field "state"
-  @field "zip"
-  @field "coordinates", type: "Geo"
+  @field 'street'
+  @field 'city'
+  @field 'state'
+  @field 'zip'
+  @field 'coordinates', type: 'Geo'
   
-  @belongsTo "user", embed: true
+  @belongsTo 'user', embed: true
 ```
 
 ### Chainable Scopes, Queries, and Pagination
 
 ``` coffeescript
 App.User
-  .where(createdAt: ">=": _(2).days().ago(), "<=": new Date())
-  .desc("createdAt")
-  .asc("firstName")
+  .where(createdAt: '>=': _(2).days().ago(), '<=': new Date())
+  .desc('createdAt')
+  .asc('firstName')
   .paginate(page: 5)
   .all()
 ```
@@ -255,27 +255,27 @@ App.User
 ``` coffeescript
 user  = App.User.first()
 
-# hasMany "posts"
-posts = user.posts().where(title: "First Post").first()
-post  = user.posts().build(title: "A Post!")
-post  = user.posts().create(title: "A Saved Post!")
-posts = user.posts().all()
+# hasMany 'posts'
+posts = user.get('posts').where(title: 'First Post').first()
+post  = user.get('posts').build(title: 'A Post!')
+post  = user.get('posts').create(title: 'A Saved Post!')
+posts = user.get('posts').all()
 
 post  = App.Post.first()
 
-# belongsTo "author"
-user  = post.author()
+# belongsTo 'author'
+user  = post.get('author')
 ```
 
 ### Validations
 
 ``` coffeescript
 user = App.User.build()
-user.save() #=> false
-user.errors #=> {"email": ["Email must be present"]}
-user.email  = "me@gmail.com"
-user.save() #=> true
-user.errors #=> {}
+user.save()         #=> false
+user.get('errors')  #=> {"email": ["Email must be present"]}
+user.set('email', 'me@gmail.com')
+user.save()         #=> true
+user.get('errors')  #=> {}
 ```
 
 ## Routes
@@ -283,92 +283,27 @@ user.errors #=> {}
 ``` coffeescript
 # config/routes.coffee
 App.routes ->
-  @match "/login", "sessions#new", via: "get", as: "login"
-  @match "/logout", "sessions#destroy", via: "get", as: "logout"
+  @match '/login', 'sessions#new', via: 'get', as: 'login'
+  @match '/logout', 'sessions#destroy', via: 'get', as: 'logout'
   
-  @resources "posts", ->
-    @resources "comments"
+  @resources 'posts', ->
+    @resources 'comments'
     
-  @namespace "admin", ->
-    @resources "users"
-    @resources "posts", ->
-      @resources "comments"
+  @namespace 'admin', ->
+    @resources 'users'
+    @resources 'posts', ->
+      @resources 'comments'
       
   @constraints subdomain: /^api$/, ->
-    @resources "posts", ->
-      @resources "comments"
+    @resources 'posts', ->
+      @resources 'comments'
       
-  @match "(/*path)", to: "application#index", via: "get"
+  @match '(/*path)', to: 'application#index', via: 'get'
 ```
 
 ## Views
 
 Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
-
-### Forms
-
-``` html
-# app/client/templates/posts/new.ejs
-<form>
-  <fieldset>
-    <legend></legend>
-    <input name="post[title]" />
-    <textarea name="post[body]" ></textarea>
-    <input type="submit" />
-  </fieldset>
-</form>
-```
-
-### Tables
-
-``` html
-<!--  app/client/templates/posts/index.hbs -->
-tableFor "posts", (t) ->
-  t.head ->
-    t.row ->
-      t.cell "title", sort: true
-      t.cell "body", sort: true
-      t.cell()
-      t.cell()
-      t.cell()
-  t.body ->
-    for post in @posts
-      t.row ->
-        t.cell post.get("title")
-        t.cell post.get("body")
-        t.cell linkTo 'Show', post
-        t.cell linkTo 'Edit', Tower.urlFor(post, action: "edit")
-        t.cell linkTo 'Destroy', post, method: "delete"
-  linkTo 'New Post', Tower.urlFor(App.Post, action: "new")
-```
-
-### Layouts
-
-``` html
-<!DOCTYPE html>
-<html>
-  <head>  
-    {{meta charset="utf-8"}}
-    {{title}}
-    {{meta name=description contentLocale="description"}}
-    {{meta name=keywords contentLocale="keywords"}}
-    {{meta name=robots contentLocale="robots"}}
-    {{meta name=author contentLocale="author"}}
-    {{link href=/favicon.png rel="icon shortcut-icon favicon"}} 
-
-    {{stylesheets application}}
-    {{javascripts vendor lib application}}
-    {{#if Tower.isDevelopment}}
-      {{javascripts development}}
-    {{/if}}
-  </head>
-  <body>
-    <script>
-      App.bootstrap({{json bootstrapData}})
-    </script>
-  </body>
-</html>
-```
 
 The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
 
@@ -386,11 +321,11 @@ class App.PostsController extends Tower.Controller
       @render "index", locals: posts: posts
     
   new: ->
-    @post = new App.Post
+    @post = App.Post.build()
     @render "new"
     
   create: ->
-    @post = new App.Post(@params.post)
+    @post = App.Post.build(@params.post)
     
     super (success, failure) ->
       @success.html => @render "posts/edit"
@@ -550,28 +485,6 @@ cake assets:compile
 cake assets:publish
 ```
 
-## Watchfile
-
-``` coffeescript
-require('design.io').extension('watchfile')
-
-# stylesheet watcher
-require("design.io-stylesheets")
-  ignore: /(public|node_modules|zzz|less)/
-  outputPath: (path) ->
-    "public/stylesheets/#{path}".replace(/\.(css|styl|less)$/, ".css")
-
-# javascript watcher
-require("design.io-javascripts")
-  ignore:   /(public|node_modules|server|spec.*[sS]pec)/
-  outputPath: (path) ->
-    "public/javascripts/#{path}".replace(/\.(js|coffee)$/, ".js")
-    
-watch /app\/views\/.+\.mustache/
-  update: (path) ->
-    # do anything!
-```
-
 ## Test
 
 ``` bash
@@ -665,3 +578,5 @@ App.indexPostComments(postId: 1) # /posts/1/comments
 ## Changelog
 
 - `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)
+- todo: need to test installing different versions of node with https://github.com/creationix/nvm
+- https://gist.github.com/1398757
