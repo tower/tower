@@ -88,6 +88,8 @@
 # will be destroyed. 
 # 
 # I want this to be an array now, no longer a cursor.
+
+_ = Tower._
 class Tower.ModelCursor extends Tower.Collection
   isCursor: true
 

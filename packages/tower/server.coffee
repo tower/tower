@@ -2,6 +2,7 @@
 require 'ember-metal-node'
 require 'ember-runtime-node'
 require 'ember-states-node'
+require 'make-sync'
 
 require 'underscore.logger'
 

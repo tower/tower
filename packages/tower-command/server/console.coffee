@@ -45,26 +45,25 @@ class Tower.CommandConsole
       context: @
       eval:(cmd, context, filename, callback) -> 
         cmd = cmd.slice(1,-1)
-        # string = "Sync(function(){#{cmd}})"
-        string= "Sync(function(){#{cmd}})"
-        # console.log(string)
-        result= null
-        try
-          result= eval.call(context,string)
-        catch e
-          console.log e
-        callback(null, result)
+        Fiber(->
+          try
+            result = eval.call(context, cmd)
+            callback(null, result)
+          catch error
+            callback(error)
+        ).run()
 
     client  = repl.context
 
-
-    client.Sync = Sync
     client.reload = ->
+      Tower.ModelCursor.include Tower.ModelCursorSync
       app = Tower.Application.instance()
       app.initialize()
       app.stack()
       client.Tower  = Tower
-      client._      = _
+      client.Future = require('fibers/future')
+      client.Fiber = Fiber
+      #client._      = _
       client[Tower.namespace()] = app
       client._r = (name) ->
         (error, value) ->
@@ -93,8 +92,7 @@ class Tower.CommandConsole
 
     client.exit = ->
       process.exit 0
-    Sync =>
-      process.nextTick client.reload
+    process.nextTick client.reload
 
   runCoffee: ->
     app = Tower.Application.instance()
