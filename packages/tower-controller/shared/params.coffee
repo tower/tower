@@ -39,6 +39,28 @@ Tower.ControllerParams =
 
       @metadata().params
 
+    # @todo refactor
+    _buildCursorFromGet: (params, cursor) ->
+      parsers     = @params()
+
+      for name, parser of parsers
+        if params.hasOwnProperty(name)
+          if name == 'sort'
+            cursor.order(parser.parse(params[name]))
+          else if name == 'limit'
+            cursor.limit(parser.extractValue(params[name]))
+          else if name == 'page'
+            cursor.page(parser.extractValue(params[name]))
+          else if typeof params[name] == 'string'
+            # @todo this shouldn't have to necessarily build a cursor, maybe there's a lighter way.
+            cursor.where(parser.toCursor(params[name]))
+          else
+            object = {}
+            object[name] = params[name]
+            cursor.where(object)
+
+      cursor
+
   InstanceMethods:
     # Compile the params defined for this controller into a cursor for querying the database.
     #
@@ -86,21 +108,6 @@ Tower.ControllerParams =
       cursor
 
     _buildCursorFromGet: (cursor) ->
-      parsers     = @constructor.params()
-      params      = @params
-
-      for name, parser of parsers
-        if params.hasOwnProperty(name)
-          if params[name] && typeof params[name] == 'string'
-            # @todo this shouldn't have to necessarily build a cursor, maybe there's a lighter way.
-            cursor.where(parser.toCursor(params[name]))
-          else if name == 'sort'
-            cursor.order(params[name])
-          else
-            object = {}
-            object[name] = params[name]
-            cursor.where(object)
-
-      cursor
+      @constructor._buildCursorFromGet(@get('params'), cursor)
 
 module.exports = Tower.ControllerParams

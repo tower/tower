@@ -1,6 +1,8 @@
 class <%= app.namespace %>.ApplicationController extends Tower.Controller
   @layout 'application'
-
+  
+  @param 'page', type: 'Number', allowRange: false, allowNegative: false
+  @param 'limit', type: 'Number', allowRange: false, allowNegative: false
   @param 'createdAt', type: 'Date'
   @param 'updatedAt', type: 'Date'
 
