@@ -118,7 +118,6 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
           @get "https://raw.github.com/caolan/async/master/lib/async.js", "async.js"
           # https://github.com/viatropos/tiny-require.js
           @get "https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js", "socket.io.js"
-          @get "https://raw.github.com/viatropos/design.io/master/design.io.js", "design.io.js"
           # @todo make this more customizable
           @get "http://cloud.github.com/downloads/viatropos/tower/tower.js", "tower.js"
           # Trying out ember's history implementation, which is much lighter

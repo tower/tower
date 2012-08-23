@@ -46,7 +46,6 @@ module.exports =
     development: [
       '/vendor/javascripts/mocha'
       '/vendor/javascripts/chai'
-      '/vendor/javascripts/design.io'
       '/test/client'
     ]
 
