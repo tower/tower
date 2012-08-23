@@ -103,6 +103,7 @@
   },
   "scripts": {
     "test": "make test",
+    "start": "grunt start --config ./grunt.coffee",
     "docs": "codo",
     "postinstall": "npm install git://github.com/viatropos/coffeecup.git --force && npm install git://github.com/viatropos/coffee-script.git --force"
   }
