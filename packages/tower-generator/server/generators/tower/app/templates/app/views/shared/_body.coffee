@@ -10,6 +10,10 @@ header id: 'header', class: 'header', role: 'banner', ->
   div class: 'container', ->
     partial 'shared/header'
 
+section id: "flash", role: "banner", ->
+  div class: "container", ->
+    partial "shared/flash"
+
 section id: 'content', role: 'main', ->
   div class: 'container', ->
     text '{{outlet}}\n'
