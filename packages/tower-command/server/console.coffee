@@ -30,19 +30,12 @@ class Tower.CommandConsole
     Tower.env = @program.environment
 
   run: ->
-    # this will work
-    # c = App.Profile.count()
-    # return c
-
-    # then the context gets polluted
     return @runCoffee() if @program.coffee
     repl    = require("repl")
     repl    = repl.start
       prompt:"tower> "
-      useGlobal: true
       context: @
       eval:(cmd, context, filename, callback) -> 
-        cmd = cmd.slice(1,-1)
         Fiber(->
           try
             callback(null, eval.call(context, cmd))
