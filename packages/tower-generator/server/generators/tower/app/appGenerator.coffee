@@ -43,6 +43,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
             @template "application.coffee"
           @inside "shared", ->
             @template "_body.coffee"
+            @template "_flash.coffee"
             @template "_footer.coffee"
             @template "_header.coffee"
             @template "_meta.coffee"

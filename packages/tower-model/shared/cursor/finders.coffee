@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 # This is basically an Ember.Pagination module.
 Tower.ModelCursorFinders =
@@ -84,14 +86,7 @@ Tower.ModelCursorFinders =
     @find(callback)
 
   find: (callback) ->
-    return @ if @_hasContent(callback)
-
-    @_runBeforeFindCallbacksOnStore =>
-      @_find (error, records) =>
-        done = =>
-          callback.call(@, error, records) if callback
-          records
-        @_runAfterFindCallbacksOnStore done, _.castArray(records)
+    @_find(callback)
 
   # hack
   findOne: (callback) ->

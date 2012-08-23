@@ -6,6 +6,7 @@ class Tower.CommandConsole
       .version(Tower.version)
       .option('-e, --environment [value]')
       .option('-c, --coffee')
+      .option('-s --synchronous')
       .option '-h, --help', '''
 \ \ Usage:
 \ \   tower console [options]
@@ -13,6 +14,7 @@ class Tower.CommandConsole
 \ \ Options:
 \ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
 \ \   -c, --coffee                      run in coffeescript mode!
+\ \   -s, --synchronous                 allows for database operations to run synchronously
 \ \   -h, --help                        output usage information
 \ \   -v, --version                     output version number
 \ \ 
@@ -28,16 +30,37 @@ class Tower.CommandConsole
     Tower.env = @program.environment
 
   run: ->
+    # this will work
+    # c = App.Profile.count()
+    # return c
+
+    # then the context gets polluted
     return @runCoffee() if @program.coffee
     repl    = require("repl")
-    client  = repl.start("tower> ").context
+    repl    = repl.start
+      prompt:"tower> "
+      useGlobal: true
+      context: @
+      eval:(cmd, context, filename, callback) -> 
+        cmd = cmd.slice(1,-1)
+        Fiber(->
+          try
+            callback(null, eval.call(context, cmd))
+          catch error
+            callback(error)
+        ).run()
+
+    client  = repl.context
 
     client.reload = ->
+      Tower.ModelCursor.include Tower.ModelCursorSync
       app = Tower.Application.instance()
       app.initialize()
       app.stack()
       client.Tower  = Tower
-      client._      = _
+      client.Future = require('fibers/future')
+      client.Fiber = Fiber
+      #client._      = _
       client[Tower.namespace()] = app
       client._r = (name) ->
         (error, value) ->
@@ -66,7 +89,6 @@ class Tower.CommandConsole
 
     client.exit = ->
       process.exit 0
-
     process.nextTick client.reload
 
   runCoffee: ->

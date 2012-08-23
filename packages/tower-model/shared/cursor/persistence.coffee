@@ -1,4 +1,5 @@
 # @mixin
+_ = Tower._
 Tower.ModelCursorPersistence = Ember.Mixin.create
   # Builds records matching the cursors criteria.
   # 

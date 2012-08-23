@@ -1,4 +1,5 @@
 # @mixin
+_ = Tower._
 Tower.ModelCursorOperations = Ember.Mixin.create
   # @todo will refresh this cursor after x milliseconds,
   # useful when you have a cursor with dates in the conditions.
