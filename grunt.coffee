@@ -62,7 +62,7 @@ module.exports = (grunt) ->
         dest: 'lib'
     watch:
       packageJSON:
-        files: ['packages/**/package.json']
+        files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         tasks: ['copy:packageJSON']
     build:
       client: {}
