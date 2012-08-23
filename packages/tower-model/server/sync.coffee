@@ -10,23 +10,27 @@ Tower.ModelCursorSync =
   exists: ->
     @_returnInFuture @_exists
 
-  insert: ->
-    @_returnInFuture @_insert
+  insert: (callback) ->
+    @_returnInFuture @_insert, callback
 
-  update: ->
-    @_returnInFuture @_update
+  update: (callback) ->
+    @_returnInFuture @_update, callback
 
-  destroy: ->
-    @_returnInFuture @_destroy
+  destroy: (callback) ->
+    @_returnInFuture @_destroy, callback
 
-  _returnInFuture: (method) ->
+  _returnInFuture: (method, callback) ->
     future = new Future
 
     method.call @, (error, result) =>
       future.return([error, result])
 
     [error, result] = future.wait()
-    throw error if error
-    result
+    if callback
+      callback.call(@, error, result)
+      result
+    else
+      throw error if error
+      result
 
 Tower.ModelCursor.include Tower.ModelCursorSync

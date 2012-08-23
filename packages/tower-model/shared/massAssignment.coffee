@@ -114,6 +114,6 @@ Tower.ModelMassAssignment =
 
   # @private
   _processRemovedAttributes: (keys) ->
-    console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}" unless Tower.env == 'test'
+    #console.warn "Can't mass-assign protected attributes: #{keys.join(', ')}" unless Tower.env == 'test'
 
 module.exports = Tower.ModelMassAssignment

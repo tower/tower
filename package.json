@@ -84,7 +84,6 @@
     "forever": "~0.10.0",
     "coffee-script": "git://github.com/viatropos/coffee-script.git",
     "forever-monitor": "~1.1.0",
-    "make-sync": "~0.1.1",
     "fibers": "~0.6.8"
   },
   "devDependencies": {

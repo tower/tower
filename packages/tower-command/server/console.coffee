@@ -1,5 +1,3 @@
-{Sync, MakeSync} = require 'make-sync'
-
 class Tower.CommandConsole
   constructor: (argv) ->
     @program = program = require('commander')
@@ -47,8 +45,7 @@ class Tower.CommandConsole
         cmd = cmd.slice(1,-1)
         Fiber(->
           try
-            result = eval.call(context, cmd)
-            callback(null, result)
+            callback(null, eval.call(context, cmd))
           catch error
             callback(error)
         ).run()
