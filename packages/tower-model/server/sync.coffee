@@ -32,5 +32,3 @@ Tower.ModelCursorSync =
     else
       throw error if error
       result
-
-Tower.ModelCursor.include Tower.ModelCursorSync
