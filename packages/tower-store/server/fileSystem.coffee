@@ -1,5 +1,6 @@
 File = require('pathfinder').File
 _ = Tower._
+_path = require('path')
 
 class Tower.StoreFileSystem extends Tower.Store
   # add load paths if you need to, e.g.
@@ -14,12 +15,13 @@ class Tower.StoreFileSystem extends Tower.Store
     prefixes      = query.prefixes || []
     loadPaths     = @loadPaths
     patterns      = []
+    sep           = _path.sep
 
     if typeof(path) == "string"
       for loadPath in loadPaths
         for prefix in prefixes
-          patterns.push new RegExp("#{loadPath}/#{prefix}/#{path}\\.#{ext}")
-        patterns.push new RegExp("#{loadPath}/#{path}\\.#{ext}")
+          patterns.push new RegExp(_.regexpEscape("#{loadPath}#{sep}#{prefix}#{sep}#{path}\.#{ext}"))
+        patterns.push new RegExp(_.regexpEscape("#{loadPath}#{sep}#{path}\.#{ext}"))
     else
       patterns.push path
 
@@ -40,7 +42,7 @@ class Tower.StoreFileSystem extends Tower.Store
     null
 
   defaultPath: (query, callback) ->
-    path  = "#{@loadPaths[0]}/#{query.path}"
+    path  = "#{@loadPaths[0]}#{_path.sep}#{query.path}"
     path  = path.replace(new RegExp("(\\.#{query.ext})?$"), ".#{query.ext}")
 
   create: (cursor, callback) ->
