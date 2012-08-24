@@ -189,10 +189,14 @@ Tower.StoreMongodbSerialization =
     return value unless field
 
     method = @["encode#{field.encodingType}"]
-    value = method.call(@, value, operation) if method
+    # hacky fix
+    if _.isArray(value) && field.encodingType.toLowerCase() == 'string'
+      value = (method.call(@, v, operation) for v in value)
+    else if method
+      value = method.call(@, value, operation)
     value = [value] if operation == '$in' && !_.isArray(value)
     value
-
+    
   decode: (field, value, operation) ->
     return value unless field
     method = @["decode#{field.type}"]
