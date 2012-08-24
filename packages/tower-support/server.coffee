@@ -9,5 +9,5 @@ require('pathfinder').File.glob = ->
     if @exists(path)
       found = require('wrench').readdirSyncRecursive(path)
       for item, index in found
-        result.push(_path.resolve(path, './' + item))
+        result.push(path + _path.sep + item)
   result
