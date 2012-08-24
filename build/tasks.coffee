@@ -61,6 +61,41 @@ module.exports = (grunt) ->
       grunt.log.error "Error in " + src + ":\n" + e
       return false
 
+  # @todo
+  grunt.registerTask 'dependencies', 'Downloads client dependencies and makes them easy to access', ->
+    require('../index.js') # tower
+    agent = require('superagent')
+    fs    = require('fs')
+
+    {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
+
+    processEach = (hash, bundle, next) =>
+      keys    = _.keys(hash)
+      #if bundle
+      #  writeStream = fs.createWriteStream("./dist/#{bundle}", flags: 'a', encoding: 'utf-8')
+      #  writeStream.on 'drain', ->
+      #    #next()
+
+      process = (remote, nextUpload) =>
+        local = hash[remote]
+        agent.get remote, (error, response) =>
+          #writeStream.write(response.text) if writeStream
+          path = "./dist/#{local}"
+          fs.writeFile path, response.text, =>
+            process.nextTick =>
+              grunt.uploadToGithub path, local, nextUpload
+
+      Tower.async keys, upload, next
+
+    # This will then bundle all assets into one file, 
+    # tower.dependencies.js, so you can include it to create quick demos/gists/fiddles.
+    bundleAll = =>
+
+    processEach JAVASCRIPTS, 'tower.dependencies.js', =>
+      processEach STYLESHEETS, 'tower.dependencies.css', =>
+        processEach IMAGES, null, =>
+          processEach SWFS, null, =>
+
   grunt.registerMultiTask 'build', 'Build tower for the client', ->
     fs      = require 'fs'
     mint    = require 'mint'

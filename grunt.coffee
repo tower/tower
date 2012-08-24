@@ -68,6 +68,8 @@ module.exports = (grunt) ->
       client: {}
     uploadToGithub:
       tower: {}
+    dependencies:
+      client: {}
 
     #jshint:
     #  options:
