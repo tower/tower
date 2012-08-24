@@ -1,4 +1,4 @@
-Future = require('fibers/future')
+Future = try require('fibers/future')
 
 Tower.ModelCursorSync =
   find: ->
