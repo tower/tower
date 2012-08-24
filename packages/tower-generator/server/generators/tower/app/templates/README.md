@@ -23,6 +23,8 @@ Next you need to run the watcher to compile your assets. Run this in a new windo
 cake watch
 ```
 
+If you don't have the `cake` command, install coffeescript globally with `npm install -g coffee-script`.
+
 Now your application is fully setup and ready to run with `forever`:
 
 ```
