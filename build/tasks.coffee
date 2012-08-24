@@ -136,11 +136,24 @@ module.exports = (grunt) ->
   grunt.registerHelper 'bundleDependencies', (done) ->
     require('../index.js') # tower
     fs = require('fs')
-    {JAVASCRIPTS} = Tower.GeneratorAppGenerator
+    JAVASCRIPTS = [
+      'underscore'
+      'underscore.string'
+      'moment'
+      'geolib'
+      'validator'
+      'accounting'
+      'inflection'
+      'async'
+      'socket.io'
+      'handlebars'
+      'ember'
+      'tower'
+      'bootstrap/bootstrap-dropdown'
+    ]
     bundlePath  = null
 
-    processEach = (hash, bundle, next) =>
-      keys            = _.keys(hash)
+    processEach = (keys, bundle, next) =>
       currentCallback = null
       bundlePath      = "./dist/#{bundle}"
 
@@ -148,9 +161,9 @@ module.exports = (grunt) ->
       writeStream.on 'drain', ->
         currentCallback() if currentCallback
 
-      iterator = (remote, nextDownload) =>
+      iterator = (local, nextDownload) =>
         currentCallback = nextDownload
-        local           = hash[remote]
+        local           = local + '.js'
         fs.readFile "./dist/#{local}", 'utf-8', (error, content) =>
           next() if writeStream.write(content)
 

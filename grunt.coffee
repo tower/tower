@@ -109,7 +109,7 @@ module.exports = (grunt) ->
     exec  = require('child_process').exec
 
     size        = fs.statSync(local).size
-    contentType = 'text/plain'
+    contentType = require('mime').lookup(local)#'text/plain'
     name        = remote #'tower.js'
     version     = grunt.config('pkg.version')
 
