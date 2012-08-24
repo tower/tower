@@ -62,6 +62,10 @@ module.exports = (grunt) ->
       return false
 
   # @todo
+  #   - create tower.dependencies.js
+  #   - create tower.dependencies.css
+  #   - upload individual client assets to github
+  #   - upload zip of dependencies as well
   grunt.registerTask 'dependencies', 'Downloads client dependencies and makes them easy to access', ->
     require('../index.js') # tower
     agent = require('superagent')
