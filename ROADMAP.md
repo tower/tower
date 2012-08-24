@@ -2,9 +2,7 @@
 
 For 0.5.0, Tower will include the features below.  It's going to be a rolling list.  If you have ideas or features you'd like to see, include them in the section [Potential features](#potential-features) section and we'll move them up if they're in scope.
 
-Let me know if you'd like to implement any of these things, will help speed up the process.
-
-You are free to implement any of these features in any order… I'm more of a fan of doing what you want when you want to, as long as it follows some general plan.  I stay motivated and get way more done that way.
+You are free to contribute any of these features in any order… I'm more of a fan of doing what you want when you want to, as long as it follows some general plan.  I stay motivated and get way more done that way.
 
 > Any features marked with `*` have been started.
 
@@ -14,18 +12,18 @@ You are free to implement any of these features in any order… I'm more of a fa
 
 - awesome generators like rails_wizard
 - javascript and coffeescript versions
-- everything in mongodb has an API for it in the ORM
+- *everything in mongodb has an API for it in the ORM
 - basic ember view patterns established (for tables, forms, and menus)
 - relatively stabilized folder/file structure
-- authentication and authorization
-- file uploading
-- background jobs in redis
+- *authentication and authorization
+- *file uploading
+- *background jobs in redis
 - mailer
 - error pages
-- data syncing
-- client routes
+- *data syncing
+- *client routes
 - testing patterns for an app
-- `grunt --config ./grunt.coffee`
+- ~~`grunt --config ./grunt.coffee`~~
 
 ## 0.6.0 - Testing, Robustness
 
@@ -57,7 +55,7 @@ You are free to implement any of these features in any order… I'm more of a fa
 
 <a name="0.4.1" href="0.4.1"></a>
 
-### 0.4.1 (tests)
+### ✔ 0.4.1 (tests)
 
 - ~~generate `test/models` with example code for scaffold~~
 - ~~generators for tests~~
@@ -81,7 +79,7 @@ You are free to implement any of these features in any order… I'm more of a fa
   - generator code
   - phantomjs for client (and generate apps with different models and test them dynamically)
 - ~~integrate Ember.StateMachine into client side routes (https://gist.github.com/2679013)~~
-- write `render` for client that handles creating ember views
+- ~~write `render` for client that handles creating ember views~~
 - better `redirectTo`
 - better `urlFor`
 - finish resourceful routes
@@ -97,7 +95,7 @@ You are free to implement any of these features in any order… I'm more of a fa
 - redirect helpers at the top level, so you easily write permanent redirects (http://stackoverflow.com/questions/4046960/how-to-redirect-without-www-using-rails-3-rack)
 - namespaced controllers
 - update to express 3.0
-- rails like flash messages
+- *rails like flash messages
 
 <a name="0.4.3" href="0.4.3"></a>
 
