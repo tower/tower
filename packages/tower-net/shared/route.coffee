@@ -107,7 +107,7 @@ class Tower.NetRoute extends Tower.Class
         capture = decodeURIComponent(capture)
         # need a way to convert :id to integer if it's an integer...
         try
-          params[key] = JSON.parse(capture)
+          params[key] = if params.format == 'json' then JSON.parse(capture) else capture
         catch error
           params[key] = capture
 
