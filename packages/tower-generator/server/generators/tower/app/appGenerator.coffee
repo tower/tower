@@ -26,6 +26,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @inside 'client', ->
           @inside 'config', ->
             @template 'bootstrap.coffee'
+            @template 'watch.coffee'
           @inside 'stylesheets', ->
             @template 'application.styl'
           @inside 'controllers', ->
