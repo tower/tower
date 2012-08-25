@@ -218,7 +218,6 @@ class Tower.Application extends Tower.Engine
     @listen()
 
   watch: ->
-    return
     Tower.ApplicationWatcher.watch()
 
 module.exports = Tower.Application

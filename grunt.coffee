@@ -62,12 +62,16 @@ module.exports = (grunt) ->
         dest: 'lib'
     watch:
       packageJSON:
-        files: ['packages/**/package.json']
+        files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         tasks: ['copy:packageJSON']
     build:
       client: {}
     uploadToGithub:
       tower: {}
+    dependencies:
+      client: {}
+    bundleDependencies:
+      client: {}
 
     #jshint:
     #  options:
@@ -100,16 +104,16 @@ module.exports = (grunt) ->
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
 
-  grunt.registerTask 'uploadToGithub', ->
-    taskComplete = @async()
-
+  grunt.registerHelper 'upload2GitHub', (local, remote, done) ->
     fs    = require('fs')
     exec  = require('child_process').exec
 
-    size        = fs.statSync('dist/tower.js').size
-    contentType = 'text/plain'
-    name        = 'tower.js'
+    size        = fs.statSync(local).size
+    contentType = require('mime').lookup(local)#'text/plain'
+    name        = remote #'tower.js'
     version     = grunt.config('pkg.version')
+
+    console.log 'upload', local, remote
 
     exec 'git config --global github.token', (error, token) ->
       throw new Error """
@@ -158,11 +162,15 @@ module.exports = (grunt) ->
             -F "Policy=#{data.policy}"
             -F "Signature=#{data.signature}"
             -F "Content-Type=#{data.mime_type}"
-            -F "file=@dist/#{name}"
+            -F "file=@#{local}"
             https://github.s3.amazonaws.com/
           """.replace(/\n/g, ' ')
 
           exec step2, (error, data) ->
             console.error error if error
-            taskComplete()
-      
+            process.nextTick ->
+              done()
+
+  grunt.registerTask 'uploadToGithub', ->
+    taskComplete = @async()
+    grunt.helper 'upload2GitHub', 'dist/tower.js', 'tower.js', taskComplete

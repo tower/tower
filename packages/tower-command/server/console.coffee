@@ -30,19 +30,12 @@ class Tower.CommandConsole
     Tower.env = @program.environment
 
   run: ->
-    # this will work
-    # c = App.Profile.count()
-    # return c
-
-    # then the context gets polluted
     return @runCoffee() if @program.coffee
     repl    = require("repl")
     repl    = repl.start
       prompt:"tower> "
-      useGlobal: true
       context: @
       eval:(cmd, context, filename, callback) -> 
-        cmd = cmd.slice(1,-1)
         Fiber(->
           try
             callback(null, eval.call(context, cmd))
@@ -52,8 +45,8 @@ class Tower.CommandConsole
 
     client  = repl.context
 
-    client.reload = ->
-      Tower.ModelCursor.include Tower.ModelCursorSync
+    client.reload = =>
+      Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
       app = Tower.Application.instance()
       app.initialize()
       app.stack()
@@ -92,6 +85,7 @@ class Tower.CommandConsole
     process.nextTick client.reload
 
   runCoffee: ->
+    Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
     app = Tower.Application.instance()
     app.initialize()
     app.stack()
@@ -145,17 +139,19 @@ class Tower.CommandConsole
         return
       repl.setPrompt REPL_PROMPT
       backlog = ''
-      try
-        $_ = global.$_
-        returnValue = CoffeeScript.eval "$_=(#{code}\n)", {
-          filename: 'repl'
-          modulename: 'repl'
-        }
-        if returnValue is undefined
-          global.$_ = $_
-        process.stdout.write inspect(returnValue, no, 2, enableColours) + '\n'
-      catch err
-        error err
+      Fiber(->
+        try
+          $_ = global.$_
+          returnValue = CoffeeScript.eval "$_=(#{code}\n)", {
+            filename: 'repl'
+            modulename: 'repl'
+          }
+          if returnValue is undefined
+            global.$_ = $_
+          process.stdout.write inspect(returnValue, no, 2, enableColours) + '\n'
+        catch err
+          error err
+      ).run()
       repl.prompt()
 
     ## Autocompletion
