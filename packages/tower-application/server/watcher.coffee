@@ -38,16 +38,16 @@ Tower.ApplicationWatcher =
 
   watch: ->
     chokidar    = require('chokidar')
-    directories = ['app', 'config']
+    directories = ['app', 'config', 'public']
     clientPath  = new RegExp(_.regexpEscape(_path.join('app', 'client')))
 
     watcher     = chokidar.watch directories,
       # ignore anything NOT matching js|coffee|iced
       ignored: (path) ->
         if path.match(/\./) # if it's a file
-          !path.match(/\.(js|coffee|iced)$/)
+          !path.match(/\.(js|coffee|iced|styl)$/)
         else
-          !path.match(/(app|config)/) || path.match(clientPath)
+          !path.match(/(app|config|public)/) # !path.match(/(app|config|public)/)
       
       persistent: true
     
@@ -56,7 +56,10 @@ Tower.ApplicationWatcher =
     ).on('change', (path) =>
       path = _path.resolve(Tower.root, path)
       if fs.existsSync(path)
-        @fileUpdated(path)
+        if path.match(Tower.publicPath) || path.match(/\.styl$/)
+          @clientFileUpdated(path)
+        else
+          @fileUpdated(path)
       else
         @fileDeleted(path)
     ).on('unlink', (path) =>
@@ -64,6 +67,31 @@ Tower.ApplicationWatcher =
     ).on 'error', (error) ->
       #console.error "Error happened", error
       @
+
+  clientFileCreated: (path) ->
+    @_clientFileChanged('fileCreated', path, fs.readFileSync(path, 'utf-8'))
+
+  clientFileUpdated: (path) ->
+    @_clientFileChanged('fileUpdated', path, fs.readFileSync(path, 'utf-8'))
+
+  _clientFileChanged: (action, path, content) ->
+    data    = path: _path.relative(Tower.root, path)
+    if content?
+      # @todo make css, but grunt is pretty slow so this speeds things up
+      if path.match(/\.styl$/)
+        content = require('mint').stylus content, {}
+        data.path = 'stylesheets/' + data.path.replace(/\.styl$/, '.css')
+      data.content = content
+    data.url = '/' + data.path.replace(new RegExp(_.regexpEscape(_path.sep), 'g'), '/').replace(/^public\//, '')
+    Tower.Application.instance().io.sockets.emit(action, JSON.stringify(data, @_jsonReplacer))
+
+  _jsonReplacer: (key, value) ->
+    if value instanceof RegExp
+      "(function() { return new RegExp('#{value}') })"
+    else if typeof value == "function"
+      "(#{value})"
+    else
+      value
 
   fileCreated: (path) ->
     return if path.match('app/views')

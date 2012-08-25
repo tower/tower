@@ -13,6 +13,8 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
     app
 
   run: ->
+    {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
+
     @inside @app.name, '.', ->
       @template 'gitignore', '.gitignore' unless @program.skipGitfile
       @template 'npmignore', '.npmignore'
@@ -113,14 +115,14 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
       @inside 'vendor', ->
         @inside 'javascripts', ->
           @directory 'bootstrap'
-          @get(remote, local) for remote, local in @constructor.JAVASCRIPTS
+          @get(remote, local) for remote, local of JAVASCRIPTS
         @inside 'stylesheets', ->
           @directory 'bootstrap'
-          @get(remote, local) for remote, local in @constructor.STYLESHEETS
+          @get(remote, local) for remote, local of STYLESHEETS
       @inside 'public/images', ->
-        @get(remote, local) for remote, local in @constructor.IMAGES
+        @get(remote, local) for remote, local of IMAGES
       @inside 'public/swfs', ->
-        @get(remote, local) for remote, local in @constructor.SWFS
+        @get(remote, local) for remote, local of SWFS
 
       @template 'grunt.coffee', 'grunt.coffee'
 
