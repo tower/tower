@@ -40,7 +40,6 @@ Tower.ApplicationWatcher =
     chokidar    = require('chokidar')
     directories = ['app', 'config']
     clientPath  = new RegExp(_.regexpEscape(_path.join('app', 'client')))
-    console.log clientPath
 
     watcher     = chokidar.watch directories,
       # ignore anything NOT matching js|coffee|iced
