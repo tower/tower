@@ -61,6 +61,129 @@ module.exports = (grunt) ->
       grunt.log.error "Error in " + src + ":\n" + e
       return false
 
+  grunt.registerHelper 'downloadDependendencies', (done) ->
+    require('../index.js') # tower
+    agent   = require('superagent')
+    fs      = require('fs')
+    wrench  = require('wrench')
+    _path   = require('path')
+
+    {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
+
+    processEach = (hash, bundle, next) =>
+      keys    = _.keys(hash)
+      #if bundle
+      #  writeStream = fs.createWriteStream("./dist/#{bundle}", flags: 'a', encoding: 'utf-8')
+      #  writeStream.on 'drain', ->
+      #    #next()
+
+      iterator = (remote, nextDownload) =>
+        local = hash[remote]
+        dir   = _path.resolve('./dist', _path.dirname(local))
+
+        wrench.mkdirSyncRecursive(dir)
+
+        agent.get(remote).end (response) =>
+          #writeStream.write(response.text) if writeStream
+
+          path = "./dist/#{local}"
+          fs.writeFile path, response.text, =>
+            process.nextTick nextDownload
+
+      Tower.async keys, iterator, next
+
+    # This will then bundle all assets into one file, 
+    # tower.dependencies.js, so you can include it to create quick demos/gists/fiddles.
+    bundleAll = =>
+
+    processEach JAVASCRIPTS, 'tower.dependencies.js', =>
+      processEach STYLESHEETS, 'tower.dependencies.css', =>
+        processEach IMAGES, null, =>
+          processEach SWFS, null, =>
+            done()
+
+  # @todo
+  #   - create tower.dependencies.js
+  #   - create tower.dependencies.css
+  #   - upload individual client assets to github
+  #   - upload zip of dependencies as well
+  grunt.registerTask 'downloadDependencies', 'Downloads client dependencies and makes them easy to access', ->
+    grunt.helper 'downloadDependencies', @async()
+    
+  grunt.registerHelper 'uploadDependencies', (done) ->
+    require('../index.js') # tower
+    {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
+
+    processEach = (hash, next) =>
+      keys    = _.keys(hash)
+
+      iterator = (remote, nextDownload) =>
+        local = hash[remote]
+        path = "./dist/#{local}"
+        grunt.helper 'upload2GitHub', path, local, nextUpload
+
+      Tower.async keys, iterator, next
+
+    processEach JAVASCRIPTS,  =>
+      processEach STYLESHEETS, =>
+        processEach IMAGES, =>
+          processEach SWFS, =>
+            done()
+
+  grunt.registerTask 'uploadDependencies', 'Downloads client dependencies and makes them easy to access', ->
+    grunt.helper 'uploadDependencies', @async()
+
+  grunt.registerHelper 'bundleDependencies', (done) ->
+    require('../index.js') # tower
+    fs = require('fs')
+    JAVASCRIPTS = [
+      'underscore'
+      'underscore.string'
+      'moment'
+      'geolib'
+      'validator'
+      'accounting'
+      'inflection'
+      'async'
+      'socket.io'
+      'handlebars'
+      'ember'
+      'tower'
+      'bootstrap/bootstrap-dropdown'
+    ]
+    bundlePath  = null
+
+    processEach = (keys, bundle, next) =>
+      currentCallback = null
+      bundlePath      = "./dist/#{bundle}"
+
+      writeStream     = fs.createWriteStream(bundlePath, flags: 'w', encoding: 'utf-8')
+      writeStream.on 'drain', ->
+        currentCallback() if currentCallback
+
+      iterator = (local, nextDownload) =>
+        currentCallback = nextDownload
+        local           = local + '.js'
+        fs.readFile "./dist/#{local}", 'utf-8', (error, content) =>
+          next() if writeStream.write(content)
+
+      Tower.async keys, iterator, =>
+        grunt.helper 'upload2GitHub', bundlePath, bundle, =>
+          process.nextTick next
+
+    processEach JAVASCRIPTS, 'tower.dependencies.js', =>
+      fs.readFile bundlePath, 'utf-8', (error, content) =>
+        require('mint').uglifyjs content, {}, (error, content) ->
+          bundle      = 'tower.dependencies.min.js'
+          bundlePath  = './dist/' + bundle
+          fs.writeFile bundlePath, content, =>
+            process.nextTick =>
+              grunt.helper 'upload2GitHub', bundlePath, bundle, =>
+                done()
+
+  grunt.registerTask 'bundleDependencies', ->
+    grunt.helper 'bundleDependencies', @async()
+
   grunt.registerMultiTask 'build', 'Build tower for the client', ->
     fs      = require 'fs'
     mint    = require 'mint'

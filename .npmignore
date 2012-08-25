@@ -8,3 +8,9 @@ examples/
 favicon.ico
 Watchfile
 doc/
+packages/
+test/
+tmp/
+build/
+.travis.yml
+ROADMAP.md

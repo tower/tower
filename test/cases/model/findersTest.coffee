@@ -226,10 +226,15 @@ describe "Tower.ModelFinders", ->
     describe 'string in array', ->
       beforeEach (done) ->
         attributes = []
-        attributes.push rating: 8, tags: ["ruby", "javascript"]
-        attributes.push rating: 9, tags: ["nodejs", "javascript"]
+        attributes.push rating: 8, tags: ["ruby", "javascript"], slug: 'ruby-javascript'
+        attributes.push rating: 9, tags: ["nodejs", "javascript"], slug: 'nodejs-javascript'
         App.Post.insert(attributes, done)
       
+      test 'anyIn(tags: ["ruby-javascript", "c++"]', (done) ->
+        App.Post.anyIn(slug: ["ruby-javascript", "c++"]).count (err, count) =>
+          assert.equal count, 1
+          done()
+
       test 'anyIn(tags: ["javascript"])', (done) ->
         App.Post.anyIn(tags: ["javascript"]).count (error, count) =>
           assert.equal count, 2

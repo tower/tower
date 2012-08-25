@@ -1,7 +1,9 @@
 var path = require('path');
 require('coffee-script');
 
-if (path.existsSync('./lib/tower.js'))
-  module.exports = require('./lib/tower.js');
+var root = path.join(__dirname, '/lib/tower.js');
+
+if (path.existsSync(root))
+  module.exports = require(root);
 else
-  module.exports = require('./packages/tower.coffee');
+  module.exports = require(path.join(__dirname, '/packages/tower.coffee'));

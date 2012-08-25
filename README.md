@@ -13,9 +13,7 @@ Follow me [@viatropos](http://twitter.com/viatropos).
 - **Issues**: http://github.com/viatropos/tower/issues
 - **Roadmap**: http://github.com/viatropos/tower/wiki/roadmap
 
-Note, Tower is still very early alpha (0.4.0).  Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we're going.  If your up for it please contribute!  The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release.  From there, it's performance optimization, workflow streamlining, and creating some awesome examples.  1.0 will be a plug-and-chug real-time app framework.
-
-Tower is soon going to support only Node.js 0.8.0+. This stuff moves fast.
+Note, Tower is still very early alpha.  Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we're going.  If your up for it please contribute!  The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release.  From there, it's performance optimization, workflow streamlining, and creating some awesome examples.  1.0 will be a plug-and-chug real-time app framework.
 
 Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
 

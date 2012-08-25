@@ -1,5 +1,16 @@
 require 'tower'
-knox  = require 'knox'
+knox  = require('knox')
+spawn = require('child_process').spawn
+
+# Watches and compiles assets to ./public
+task 'watch', ->
+  watcher = spawn('grunt', ['start', '--config', './grunt.coffee'])
+  watcher.stdout.setEncoding('utf8')
+  watcher.stderr.setEncoding('utf8')
+  watcher.stdout.on 'data', (data) ->
+    console.log data.replace(/\n$/m, '') # remove extra line
+  watcher.stderr.on 'data', (data) ->
+    console.log data.replace(/\n$/m, '')
 
 # This uploads all of your assets
 task 'assets:upload', ->
@@ -13,18 +24,18 @@ task 'assets:upload:s3', ->
   client  = knox.createClient Tower.config.credentials.s3
 
   # Start uploading each asset
-  Tower.Application.Assets.upload (from, to, headers, callback) ->
+  Tower.ApplicationAssets.upload (from, to, headers, callback) ->
     client.putFile from, to, headers, callback
 
 # This bundles all of your assets into neat little files
 task 'assets:bundle', ->
   invoke 'environment'
-  Tower.Application.Assets.bundle()
+  Tower.ApplicationAssets.bundle()
 
 # This task displays the sizes of the assets on the current project
 task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset sizes', ->
   invoke 'environment'
-  Tower.Application.Assets.stats()
+  Tower.ApplicationAssets.stats()
 
 # This runs the seed file, which initializes your db with data
 task 'db:seed', ->

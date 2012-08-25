@@ -4,6 +4,7 @@ module.exports =
       '/config/application'
       # "/config/environments/#{Tower.env}"
       '/app/client/config/bootstrap'
+      '/app/client/config/watch'
       '/config/routes'
       '/app/client/controllers/applicationController'
       '/templates'
@@ -26,6 +27,7 @@ module.exports =
       '/vendor/javascripts/socket.io'
       '/vendor/javascripts/handlebars'
       '/vendor/javascripts/ember'
+      '/vendor/javascripts/jstorage.js'
       '/vendor/javascripts/tower'
       # '/vendor/javascripts/uri'
       # '/vendor/javascripts/bootstrap/bootstrap-transition'
@@ -46,7 +48,6 @@ module.exports =
     development: [
       '/vendor/javascripts/mocha'
       '/vendor/javascripts/chai'
-      '/vendor/javascripts/design.io'
       '/test/client'
     ]
 
