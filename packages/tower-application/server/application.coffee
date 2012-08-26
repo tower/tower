@@ -207,11 +207,50 @@ class Tower.Application extends Tower.Engine
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
         @watch() if Tower.watch
+        @initializeServerHooks()
 
   initializeSockets: ->
     unless @io
       Tower.NetConnection.initialize()
       @io   = Tower.NetConnection.listen(@server)
+
+  # This just sends notifications to the server if it's running, so the browser can update.
+  # 
+  # @todo only send events if the server is running
+  initializeConsoleHooks: ->
+    hookio  = require('hook.io')
+    @hook   = hook = hookio.createHook(name: 'tower-console', silent: true)
+    hook.start()
+
+    # Override this method to make it route to hook.io.
+    Tower.notifyConnections = (action, records, callback) ->
+      records = [records] unless records instanceof Array
+      hook.emit 'notifyConnections',
+        action:   action
+        records:  JSON.stringify(records)
+        type:     try records[0].constructor.className()
+
+  # This listens for events from the console so the browser can update
+  initializeServerHooks: ->
+    hookio  = require('hook.io')
+    @hook   = hook = hookio.createHook(name: 'tower-server', silent: true)
+
+    hook.on 'tower-console::notifyConnections', (data) ->
+      if data.type
+        # Need a better way of building records (that allows setting `id`)
+        klass   = Tower.constant(data.type)
+        store   = klass.store()
+        records = _.map JSON.parse(data.records), (attributes) ->
+          store.serializeModel(attributes, true)
+
+        Tower.notifyConnections(data.action, records)
+
+      data    = null
+      klass   = null
+      store   = null
+      records = null
+
+    hook.start()
 
   run: ->
     if Tower.isSinglePage

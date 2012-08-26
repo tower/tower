@@ -56,13 +56,13 @@ class Tower.NetConnection extends Tower.NetConnection
   serverDidUpdate: (records) ->
     @notifyTransport('update', records)
 
-  serverDidDelete: (records) ->
+  serverDidDestroy: (records) ->
     @notifyTransport('destroy', records)
 
   notifyTransport: (action, records) ->
     data =
       action:   action
-      records:  records
+      records:  _.map(records, (i) -> i.toJSON())
       port:     Tower.port # to get around multiple client connection socket problem (todo)
       type:     try records[0].constructor.className()
 

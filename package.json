@@ -82,7 +82,8 @@
     "gm": "~1.4.1",
     "nodemailer": "~0.3.21",
     "coffee-script": "git://github.com/viatropos/coffee-script.git",
-    "chokidar": "~0.4.0"
+    "chokidar": "~0.4.0",
+    "hook.io": "~0.8.10"
   },
   "devDependencies": {
     "cli-table": ">= 0.0.1",

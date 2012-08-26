@@ -114,15 +114,17 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
 
     if Tower.isClient then records else @ # tmp solution
 
+  # @todo need to notify which records are destroyed
   _destroy: (callback) ->
     if @instantiate
       iterator = (record, next) ->
+        Tower.notifyConnections('destroy', [record])
         record.destroy(next)
 
       @_each(@, iterator, callback)
     else
       @store.destroy @, (error, records) =>
-        Tower.notifyConnections('destroy', records) unless error
+        #Tower.notifyConnections('destroy', records) unless error
         callback.call(@, error, records) if callback
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
