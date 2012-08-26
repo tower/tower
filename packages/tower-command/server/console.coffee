@@ -48,6 +48,7 @@ class Tower.CommandConsole
     client.reload = =>
       Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
       app = Tower.Application.instance()
+      app.isConsole = true
       app.initialize()
       app.stack()
       app.watch() if Tower.watch

@@ -56,7 +56,7 @@ Tower.ApplicationWatcher =
     ).on('change', (path) =>
       path = _path.resolve(Tower.root, path)
       if fs.existsSync(path)
-        if path.match(Tower.publicPath) || path.match(/\.styl$/)
+        if !Tower.Application.instance().isConsole && path.match(Tower.publicPath) || path.match(/\.styl$/)
           @clientFileUpdated(path)
         else
           @fileUpdated(path)
