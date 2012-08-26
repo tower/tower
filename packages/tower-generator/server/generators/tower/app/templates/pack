@@ -5,6 +5,7 @@
   "description": "<%= app.description %>",
   "homepage": "http://<%= user.username %>.github.com/<%= app.name %>",
   "main": "./server.js",
+  "subdomain": "<%= app.name %>",
   "author": "'<%= user.name %>' <<%= user.email %>>",
   "keywords": [
     "node"
