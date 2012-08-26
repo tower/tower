@@ -27,7 +27,7 @@ module.exports =
       '/vendor/javascripts/socket.io'
       '/vendor/javascripts/handlebars'
       '/vendor/javascripts/ember'
-      '/vendor/javascripts/jstorage.js'
+      '/vendor/javascripts/jstorage'
       '/vendor/javascripts/tower'
       # '/vendor/javascripts/uri'
       # '/vendor/javascripts/bootstrap/bootstrap-transition'
