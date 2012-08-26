@@ -50,6 +50,7 @@ class Tower.CommandConsole
       app = Tower.Application.instance()
       app.initialize()
       app.stack()
+      app.watch() if Tower.watch
       client.Tower  = Tower
       client.Future = require('fibers/future')
       client.Fiber = Fiber
