@@ -38,7 +38,7 @@ Tower.ApplicationAssets =
         # queue.push name: name, paths: paths, extension: extension, type: type, compressor: compressor
         _console.debug "Bundling public/#{type}/#{name}#{extension}"
         content = ""
-i
+        
         for path in paths
           content += File.read("public/#{type}#{path}#{extension}") + "\n\n"
 
