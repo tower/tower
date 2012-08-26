@@ -111,9 +111,9 @@ Tower.ApplicationAssets =
     images      = _.select File.files("public/images"), (path) -> !!path.match(/\.(gif|ico|png|jpg)$/i)
     fonts       = _.select File.files("public/fonts"), (path) -> !!path.match(/\.(tff|woff|svg|eot)$/i)
     stylesheets = _.select File.files("public/assets"), (path) -> !!path.match(/-[a-f0-9]+\.(css)$/i)
-    stylesheets = _.map stylesheets, (path) -> path.replace(/^public\/assets/, "stylesheets")
+    #stylesheets = _.map stylesheets, (path) -> path.replace(/^public\/assets/, "stylesheets")
     javascripts = _.select File.files("public/assets"), (path) -> !!path.match(/-[a-f0-9]+\.(js)$/i)
-    javascripts = _.map javascripts, (path) -> path.replace(/^public\/assets/, "javascripts")
+    #javascripts = _.map javascripts, (path) -> path.replace(/^public\/assets/, "javascripts")
 
     paths       = _.map images.concat(fonts).concat(stylesheets).concat(javascripts), (path) -> path.replace(/^public\//, "")
 
@@ -142,7 +142,7 @@ Tower.ApplicationAssets =
 
       headers = _.extend {}, cacheHeaders
 
-      if !!path.match(/^(stylesheets|javascripts)/)
+      if !!path.match(/^(stylesheets|javascripts|assets)/)
         headers = _.extend headers, gzipHeaders, {"Etag": File.pathFingerprint(path)}
       else
         headers = _.extend headers, {"Etag": File.digest("public/#{path}")}

@@ -16,6 +16,13 @@ module.exports =
       name: '<%= app.paramName %>-production'
       port: 27017
       host: '127.0.0.1'
+      # for heroku, comment out name/port/host above and just use `url`:
+      #
+      #   url: process.env.MONGOHQ_URL
+      # 
+      # then make sure you have the mongohq heroku addon:
+      #   
+      #   heroku addons:add mongohq:free
 
   redis:
     development:
