@@ -18,6 +18,7 @@ Tower.ControllerInstrumentation =
   enterAction: (action) ->
     Ember.changeProperties =>
       @set('action', action)
+      @set('getFlash', @flash())
       @set(_.toStateName(action), true)
 
   # Called when the route for this controller is found.
