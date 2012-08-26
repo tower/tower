@@ -18,7 +18,7 @@ Tower.ApplicationAssets =
   # @return [Object] the JSON contained in that file.
   loadManifest: ->
     try
-      Tower.assetManifest = JSON.parse(require('fs').readFileSync('public/assets/manifest.json', 'utf-8'))
+      Tower.assetManifest = JSON.parse(require('fs').readFileSync('public/asset-manifest.json', 'utf-8'))
     catch error
       Tower.assetManifest = {}
 
@@ -28,65 +28,63 @@ Tower.ApplicationAssets =
   bundle: ->
     gzip          = require 'gzip'
 
-    exec "rm -r public/assets", ->
-      exec "mkdir public/assets", ->
-        manifest = {}
+    manifest = {}
 
-        bundle = (type, extension, compressor, callback) ->
-          assets      = Tower.config.assets[type]
+    bundle = (type, extension, compressor, callback) ->
+      assets      = Tower.config.assets[type]
 
-          compile = (data, next) ->
-            {name, paths} = data
-            # queue.push name: name, paths: paths, extension: extension, type: type, compressor: compressor
-            _console.debug "Bundling public/assets/#{name}#{extension}"
-            content = ""
+      compile = (data, next) ->
+        {name, paths} = data
+        # queue.push name: name, paths: paths, extension: extension, type: type, compressor: compressor
+        _console.debug "Bundling public/#{type}/#{name}#{extension}"
+        content = ""
+i
+        for path in paths
+          content += File.read("public/#{type}#{path}#{extension}") + "\n\n"
 
-            for path in paths
-              content += File.read("public/#{type}#{path}#{extension}") + "\n\n"
-
-            fs.writeFileSync "public/assets/#{name}#{extension}", content
-
-            process.nextTick ->
-              compressor content, {}, (error, content) ->
-                if error
-                  console.log error
-                  return next(error)
-
-                do (content) =>
-                  result = content
-                  digestPath  = File.digestFile("public/assets/#{name}#{extension}")
-
-                  manifest["#{name}#{extension}"]  = File.basename(digestPath)
-
-                  #gzip result, (error, result) ->
-                  fs.writeFile digestPath, result, ->
-                    next()
-
-          assetBlocks = []
-
-          for name, paths of assets
-            assetBlocks.push name: name, paths: paths
-
-          Tower.async assetBlocks, compile, (error) ->
-            callback(error)
-
-        bundleIterator = (data, next) ->
-          bundle data.type, data.extension, data.compressor, next
-
-        bundles = [
-          {type: "stylesheets", extension: ".css", compressor: mint.yui},
-          {type: "javascripts", extension: ".js", compressor: mint.uglifyjs}
-        ]
+        fs.writeFileSync "public/#{type}/#{name}#{extension}", content
 
         process.nextTick ->
-          Tower.async bundles, bundleIterator, (error) ->
-            throw error if error
-            _console.debug "Writing public/assets/manifest.json"
-            fs.writeFile "public/assets/manifest.json", JSON.stringify(manifest, null, 2), ->
-              process.nextTick ->
-                process.exit()
-            #process.nextTick ->
-            #  invoke 'stats'
+          compressor content, {}, (error, content) ->
+            if error
+              console.log error
+              return next(error)
+
+            do (content) =>
+              result = content
+              digestPath  = File.digestFile("public/#{type}/#{name}#{extension}")
+
+              manifest["#{name}#{extension}"]  = File.basename(digestPath)
+
+              #gzip result, (error, result) ->
+              fs.writeFile digestPath, result, ->
+                next()
+
+      assetBlocks = []
+
+      for name, paths of assets
+        assetBlocks.push name: name, paths: paths
+
+      Tower.async assetBlocks, compile, (error) ->
+        callback(error)
+
+    bundleIterator = (data, next) ->
+      bundle data.type, data.extension, data.compressor, next
+
+    bundles = [
+      {type: "stylesheets", extension: ".css", compressor: mint.yui},
+      {type: "javascripts", extension: ".js", compressor: mint.uglifyjs}
+    ]
+
+    process.nextTick ->
+      Tower.async bundles, bundleIterator, (error) ->
+        throw error if error
+        _console.debug "Writing public/asset-manifest.json"
+        fs.writeFile "public/asset-manifest.json", JSON.stringify(manifest, null, 2), ->
+          process.nextTick ->
+            process.exit()
+        #process.nextTick ->
+        #  invoke 'stats'
 
   # Upload assets to Amazon S3
   #
@@ -111,9 +109,7 @@ Tower.ApplicationAssets =
     images      = _.select File.files("public/images"), (path) -> !!path.match(/\.(gif|ico|png|jpg)$/i)
     fonts       = _.select File.files("public/fonts"), (path) -> !!path.match(/\.(tff|woff|svg|eot)$/i)
     stylesheets = _.select File.files("public/assets"), (path) -> !!path.match(/-[a-f0-9]+\.(css)$/i)
-    #stylesheets = _.map stylesheets, (path) -> path.replace(/^public\/assets/, "stylesheets")
     javascripts = _.select File.files("public/assets"), (path) -> !!path.match(/-[a-f0-9]+\.(js)$/i)
-    #javascripts = _.map javascripts, (path) -> path.replace(/^public\/assets/, "javascripts")
 
     paths       = _.map images.concat(fonts).concat(stylesheets).concat(javascripts), (path) -> path.replace(/^public\//, "")
 
@@ -142,7 +138,7 @@ Tower.ApplicationAssets =
 
       headers = _.extend {}, cacheHeaders
 
-      if !!path.match(/^(stylesheets|javascripts|assets)/)
+      if !!path.match(/^(stylesheets|javascripts)/)
         headers = _.extend headers, gzipHeaders, {"Etag": File.pathFingerprint(path)}
       else
         headers = _.extend headers, {"Etag": File.digest("public/#{path}")}
