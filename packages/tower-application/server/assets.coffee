@@ -153,7 +153,7 @@ i
       unless !!(cached && cached["Etag"] == headers["Etag"])
         cached = _.extend {}, headers
 
-        block "public/#{path.replace(/^(stylesheets|javascripts)/, "assets")}", "/#{path}", headers, (error, result) ->
+        block "public/#{path}", "/#{path}", headers, (error, result) ->
           console.log error if error
 
           process.nextTick ->
