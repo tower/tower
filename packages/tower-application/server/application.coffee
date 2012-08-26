@@ -207,7 +207,7 @@ class Tower.Application extends Tower.Engine
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
         @watch() if Tower.watch
-        @initializeServerHooks()
+        @initializeServerHooks() if Tower.env == 'development'
 
   initializeSockets: ->
     unless @io
