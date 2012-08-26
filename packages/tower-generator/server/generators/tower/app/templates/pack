@@ -39,6 +39,7 @@
     "underscore.string": ">= 0.0.1",
     "mongodb": ">= 0.9.9-7",
     "mint": ">= 0.3.0",
+    "npm": "1.1.32",
     "tower": ">= 0.4.1"
   },
   "devDependencies": {
