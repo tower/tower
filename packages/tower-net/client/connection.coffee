@@ -41,9 +41,10 @@ class Tower.NetConnection extends Tower.NetConnection
     record    = records[0]
     return unless record
     matches   = []
+    app       = Tower.Application.instance()
 
     iterator  = (controller, next) =>
-      App.get(controller).resolveAgainstCursors(action, records, matches, next)
+      app.get(controller).resolveAgainstCursors(action, records, matches, next)
 
     Tower.series @constructor.controllers, iterator, (error) =>
       callback(error, records) if callback

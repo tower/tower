@@ -30,7 +30,7 @@ task 'assets:upload:s3', ->
 # This bundles all of your assets into neat little files
 task 'assets:bundle', ->
   invoke 'environment'
-  Tower.ApplicationAssets.bundle()
+  Tower.ApplicationAssets.bundle(minify: false)
 
 # This task displays the sizes of the assets on the current project
 task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset sizes', ->

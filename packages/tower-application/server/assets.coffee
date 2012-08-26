@@ -25,8 +25,9 @@ Tower.ApplicationAssets =
   # Minify and gzip assets for production.
   #
   # @return [void]
-  bundle: ->
+  bundle: (options = {}) ->
     gzip          = require 'gzip'
+    options.minify = true unless options.hasOwnProperty('minify')
 
     manifest = {}
 
@@ -38,27 +39,30 @@ Tower.ApplicationAssets =
         # queue.push name: name, paths: paths, extension: extension, type: type, compressor: compressor
         _console.debug "Bundling public/#{type}/#{name}#{extension}"
         content = ""
-        
+
         for path in paths
           content += File.read("public/#{type}#{path}#{extension}") + "\n\n"
 
         fs.writeFileSync "public/#{type}/#{name}#{extension}", content
 
-        process.nextTick ->
-          compressor content, {}, (error, content) ->
-            if error
-              console.log error
-              return next(error)
+        if options.minify
+          process.nextTick ->
+            compressor content, {}, (error, content) ->
+              if error
+                console.log error
+                return next(error)
 
-            do (content) =>
-              result = content
-              digestPath  = File.digestFile("public/#{type}/#{name}#{extension}")
+              do (content) =>
+                result = content
+                digestPath  = File.digestFile("public/#{type}/#{name}#{extension}")
 
-              manifest["#{name}#{extension}"]  = File.basename(digestPath)
+                manifest["#{name}#{extension}"]  = File.basename(digestPath)
 
-              #gzip result, (error, result) ->
-              fs.writeFile digestPath, result, ->
-                next()
+                #gzip result, (error, result) ->
+                fs.writeFile digestPath, result, ->
+                  next()
+        else
+          process.nextTick(next)
 
       assetBlocks = []
 

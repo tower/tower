@@ -28,7 +28,7 @@ Tower.View.reopen
       options.view
     else if options.template
       @_getEmberTemplate(options.template)
-      App.get(Tower._.camelize(options.template) + 'View')
+      Tower.Application.instance().get(Tower._.camelize(options.template) + 'View')
 
   renderEmberView: (options) ->
     @parentController().connectOutlet(@_connectOutletOptions(options))
