@@ -201,14 +201,17 @@ class Tower.Application extends Tower.Engine
           console.log('   Try using a different port: `node server -p 3001`')
         #console.log(error.stack)
       
-      unless @io
-        Tower.NetConnection.initialize()
-        @io   = Tower.NetConnection.listen(@server)
+      @initializeSockets()
 
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
         @watch() if Tower.watch
+
+  initializeSockets: ->
+    unless @io
+      Tower.NetConnection.initialize()
+      @io   = Tower.NetConnection.listen(@server)
 
   run: ->
     if Tower.isSinglePage
