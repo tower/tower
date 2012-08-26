@@ -5,6 +5,7 @@ class Tower.GeneratorViewGenerator extends Tower.Generator
     @directory "app/views/#{@view.directory}"
 
     views = [
+      '_flash'
       '_form'
       '_item'
       '_list'

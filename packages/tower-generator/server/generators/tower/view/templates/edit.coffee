@@ -1,5 +1,6 @@
 @title = "Editing <%= model.className %>"
 
+partial "flash"
 partial "form"
 
 contentFor "sidebar", ->
