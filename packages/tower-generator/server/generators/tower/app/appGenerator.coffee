@@ -142,6 +142,7 @@ JAVASCRIPTS =
   'http://cloud.github.com/downloads/viatropos/tower/tower.js': 'tower.js'
   # https://github.com/paulmillr/es6-shim
   'https://raw.github.com/timrwood/moment/master/moment.js': 'moment.js'
+  'https://raw.github.com/andris9/jStorage/72c44323d33bb6a4c3610bdb774184e3a43a230f/jstorage.min.js': 'jstorage.js'
   'https://raw.github.com/medialize/URI.js/gh-pages/src/URI.js': 'uri.js'
   'https://raw.github.com/visionmedia/mocha/master/mocha.js': 'mocha.js'
   'https://raw.github.com/manuelbieh/Geolib/390e9d4e26c05bfdba86fe1a28a8548c58a9b841/geolib.js': 'geolib.js'
