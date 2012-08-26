@@ -8,7 +8,6 @@ examples/
 favicon.ico
 Watchfile
 doc/
-packages/
 test/
 tmp/
 build/
