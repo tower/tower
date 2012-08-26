@@ -155,6 +155,9 @@ Tower.StoreMongodbSerialization =
               _value = _.castArray(_value)
             if _key == '$match'
               _key = '$regex' # @todo tmp
+            # @todo tmp
+            if _key == '$regex' && _value instanceof Array
+              _value = _value[0]
 
             result[key][_key] = @encode field, _value, _key
       else
