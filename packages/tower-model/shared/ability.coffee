@@ -1,3 +1,5 @@
+_ = Tower._
+
 ###
 class App.Ability extends Tower.Ability
   assign: ->

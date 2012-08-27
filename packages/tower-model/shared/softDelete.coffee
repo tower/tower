@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo Inspired from acts_as_paranoid and mongoid::paranoia
 Tower.ModelSoftDelete =
   ClassMethods:

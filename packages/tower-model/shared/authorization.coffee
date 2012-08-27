@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ModelAuthorization =
   ClassMethods:
     # @todo cancan

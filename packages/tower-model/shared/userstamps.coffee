@@ -1,3 +1,5 @@
+_ = Tower._
+
 # https://www.ruby-toolbox.com/categories/Active_Record_User_Stamping
 # This mixin flags the record with the user id who created/updated/deleted it.
 # 

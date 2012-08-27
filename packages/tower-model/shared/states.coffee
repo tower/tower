@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ModelStates =
   isLoaded:  false
   isDirty:   false

@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ModelAuthentication =
   ClassMethods:
     # Like Rails' `has_secure_password`

@@ -1,3 +1,5 @@
+_ = Tower._
+
 # An array or collection of models.
 # 
 # This behaves mostly like a native JavaScript Array, but it is not.
@@ -88,8 +90,6 @@
 # will be destroyed. 
 # 
 # I want this to be an array now, no longer a cursor.
-
-_ = Tower._
 class Tower.ModelCursor extends Tower.Collection
   isCursor: true
 

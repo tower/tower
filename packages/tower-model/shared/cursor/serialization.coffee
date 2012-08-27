@@ -1,5 +1,6 @@
-# @mixin
 _ = Tower._
+
+# @mixin
 Tower.ModelCursorSerialization = Ember.Mixin.create
   isCursor: true
 

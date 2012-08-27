@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo Going to break tower into smaller sub-projects similar to Ember at some point.
 Tower.AttachmentProcessingMixin =
   included: ->

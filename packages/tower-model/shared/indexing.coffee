@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 Tower.ModelIndexing =
   ClassMethods:

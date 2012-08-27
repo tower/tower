@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo Inspired from mongoid::versioning, http://railscasts.com/episodes/255-undo-with-paper-trail?view=asciicast
 # @todo undo/redo example
 Tower.ModelVersioning =

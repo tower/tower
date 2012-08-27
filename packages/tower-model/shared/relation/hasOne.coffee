@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.ModelRelationHasOne extends Tower.ModelRelation
   isHasOne: true
 

@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.ModelRelationHasManyThrough extends Tower.ModelRelationHasMany
   isHasManyThrough: true
 
