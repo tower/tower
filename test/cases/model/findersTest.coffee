@@ -13,7 +13,7 @@ describe "Tower.ModelFinders", ->
   #  App.Post.exists 45, (error, result) -> assert.equal result, false
   #  App.Post.exists (error, result) -> assert.equal result, true
   #  App.Post.exists null, (error, result) -> assert.equal result, false
-  
+
   describe 'basics', ->
     beforeEach (done) ->
       App.Post.insert [{rating: 8}, {rating: 10}], done
@@ -22,7 +22,7 @@ describe "Tower.ModelFinders", ->
       App.Post.all (error, records) =>
         assert.equal records.length, 2
         done()
-    
+
     test 'first', (done) ->
       App.Post.asc("rating").first (error, record) =>
         assert.equal record.get('rating'), 8

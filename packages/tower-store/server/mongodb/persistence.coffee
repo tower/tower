@@ -16,7 +16,7 @@ Tower.StoreMongodbPersistence =
 
       callback.call(@, error, record) if callback
 
-    undefined
+      undefined
 
   # @see Tower.Store#update
   update: (updates, cursor, callback) ->

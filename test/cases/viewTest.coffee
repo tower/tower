@@ -9,11 +9,11 @@ describe "Tower.View", ->
     
   afterEach ->
     Tower.View.engine = "coffee"
-    
+
   describe 'path to files', ->
     test 'loadPaths', ->
       assert.deepEqual store.loadPaths, [ "#{Tower.relativeRoot}/app/views" ]
-      
+
     test "findPath(path: 'custom/engine', ext: 'coffee')", ->
       path = store.findPath(path: 'custom/engine', ext: 'coffee')
       
@@ -41,7 +41,7 @@ describe "Tower.View", ->
       view.render template: 'custom/engine', locals: ENGINE: engine, (error, body) ->
         assert.equal body.trim(), "<h1>I'm jade!</h1>"
         done()
-      
+    
     test 'specifying custom type different from default engine', (done) ->
       Tower.View.engine = 'jade'
       

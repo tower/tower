@@ -9,6 +9,10 @@ class Tower.StoreFileSystem extends Tower.Store
     @loadPaths = loadPaths
     @records   = {}
 
+  # @todo this needs to be modified by the file watcher in tower-application/server/application.coffee
+  getTemplatePaths: ->
+    @_templatePaths ||= File.files.apply(File, @loadPaths)
+
   findPath: (query, callback) ->
     path          = query.path
     ext           = query.ext || ""
@@ -25,7 +29,7 @@ class Tower.StoreFileSystem extends Tower.Store
     else
       patterns.push path
 
-    templatePaths = File.files.apply(File, loadPaths)
+    templatePaths = @getTemplatePaths()
 
     for pattern in patterns
       for templatePath in templatePaths

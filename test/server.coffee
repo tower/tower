@@ -12,6 +12,7 @@ global.chai   = require 'chai'
 global.assert = chai.assert
 assert.isPresent = (value) ->
   assert.ok !!value
+
 global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
@@ -43,7 +44,7 @@ before (done) ->
     done()
   # App.Address.store().collection().ensureIndex {coordinates:"2d"}, done
 
-before (done) ->
+beforeEach (done) ->
   #Tower.Application.instance().teardown()
   Tower.root                    = "#{process.cwd()}/test/example"
   Tower.relativeRoot            = "test/example"
@@ -55,7 +56,7 @@ before (done) ->
   Tower.Application.instance().initialize =>
     done()
 
-before (done) ->
+beforeEach (done) ->
   Tower.store.clean =>
     done()
 
