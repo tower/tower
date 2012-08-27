@@ -131,6 +131,7 @@ class Tower.Application extends Tower.Engine
   configureStores: (configuration = {}, callback) ->
     defaultStoreSet = false
     databaseNames   = _.keys(configuration)
+    defaultDatabase = configuration.default
 
     iterator = (databaseName, next) ->
       databaseConfig = configuration[databaseName]
@@ -142,14 +143,20 @@ class Tower.Application extends Tower.Engine
       catch error
         store = require "#{__dirname}/../../tower-store/server/#{databaseName}"
 
-      if !defaultStoreSet || databaseConfig.default
-        Tower.Model.default('store', store) unless Tower.Model.default('store')
-        defaultStoreSet = true
+      if defaultDatabase?
+        if databaseName == defaultDatabase
+          Tower.Model.default('store', store)
+          defaultStoreSet = true
+      else
+        if !defaultStoreSet || databaseConfig.default
+          Tower.Model.default('store', store) unless Tower.Model.default('store')
+          defaultStoreSet = true
 
       try store.configure Tower.config.databases[databaseName][Tower.env]
       store.initialize(next)
 
     Tower.parallel databaseNames, iterator, =>
+      console.warn 'Default database not set, using Memory store' unless defaultStoreSet
       callback.call(@) if callback
 
   stack: ->
@@ -259,12 +266,15 @@ class Tower.Application extends Tower.Engine
 
     Tower.config.databases ||= {}
 
-    databases = options.databases || options.database
+    databases       = options.databases || options.database
+    defaultDatabase = options.defaultDatabase
 
     if databases
       databases = [databases] unless databases instanceof Array
+      databases.push('default')
 
       Tower.config.databases = _.pick(Tower.config.databases, databases)
+      Tower.config.databases.default = defaultDatabase if defaultDatabase?
 
   _loadAssets: ->
     Tower.ApplicationAssets.loadManifest()

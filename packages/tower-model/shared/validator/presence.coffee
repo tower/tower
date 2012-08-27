@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.ModelValidatorPresence extends Tower.ModelValidator
   validate: (record, attribute, errors, callback) ->
     unless _.isPresent(record.get(attribute))

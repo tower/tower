@@ -6,6 +6,8 @@ require './server/flash'
 require './server/net'
 require './server/sockets'
 
+_ = Tower._
+
 Tower.Controller.include Tower.ControllerActions
 Tower.Controller.include Tower.ControllerCaching
 Tower.Controller.include Tower.ControllerEvents

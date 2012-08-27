@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.ModelValidatorLength extends Tower.ModelValidator
   constructor: (name, value, attributes, options) ->
     name = @valueCheck name, value

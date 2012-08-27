@@ -1,3 +1,5 @@
+_ = Tower._
+
 class Tower.ModelValidatorUniqueness extends Tower.ModelValidator
   constructor: (name, value, attributes, options) ->
     super(name, value, attributes, options)
