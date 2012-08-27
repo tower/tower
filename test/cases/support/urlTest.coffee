@@ -1,5 +1,8 @@
 describe 'Tower.SupportUrl', ->
   urlFor = Tower.urlFor
+
+  afterEach ->
+    Tower.defaultURLOptions = undefined
   
   test 'urlFor("something")', ->
     url = urlFor("something")
@@ -132,3 +135,45 @@ describe 'Tower.SupportUrl', ->
       assert.equal url, "/posts/10?createdAt=2011-12-25..2012-12-25&likes=10..20&title=Node"
   
   test 'trailing slash'
+
+  test 'defaultURLOptions', ->
+    Tower.defaultURLOptions = host: 'example.com'
+    assert.equal urlFor(App.Post), 'http://example.com/posts'
+
+  describe 'Tower.StoreTransportAjax', ->
+    transport = undefined
+    post      = undefined
+
+    before ->
+      require(Tower.srcRoot + '/packages/tower-store/client/transport/ajax')
+      transport = Tower.StoreTransportAjax
+
+      post = App.Post.build()
+      post.set('id', 1)
+
+    test 'urlForCreate', ->
+      assert.equal transport.urlForCreate(post), '/posts'
+      Tower.defaultURLOptions = host: 'example.com'
+      assert.equal transport.urlForCreate(post), 'http://example.com/posts'
+
+    test 'urlForUpdate', ->
+      post.set('isNew', false)
+      assert.equal transport.urlForUpdate(post), '/posts/1'
+      Tower.defaultURLOptions = host: 'example.com'
+      assert.equal transport.urlForUpdate(post), 'http://example.com/posts/1'
+
+    test 'urlForDestroy', ->
+      post.set('isNew', false)
+      assert.equal transport.urlForDestroy(post), '/posts/1'
+      Tower.defaultURLOptions = host: 'example.com'
+      assert.equal transport.urlForDestroy(post), 'http://example.com/posts/1'
+
+    test 'urlForIndex', ->
+      assert.equal transport.urlForIndex(App.Post), '/posts'
+      Tower.defaultURLOptions = host: 'example.com'
+      assert.equal transport.urlForIndex(App.Post), 'http://example.com/posts'
+
+    test 'urlForShow', ->
+      assert.equal transport.urlForShow(App.Post, 1), '/posts/1'
+      Tower.defaultURLOptions = host: 'example.com'
+      assert.equal transport.urlForShow(App.Post, 1), 'http://example.com/posts/1'

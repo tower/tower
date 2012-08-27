@@ -206,7 +206,11 @@ Tower.SupportUrl =
     if last && options.params && !options.schema && last instanceof Tower.Model
       options.schema = last.constructor.fields()
 
-    options.onlyPath = true unless options.hasOwnProperty("onlyPath")
+    if Tower.defaultURLOptions
+      _.defaults(options, Tower.defaultURLOptions)
+    else
+      options.onlyPath = true unless options.hasOwnProperty("onlyPath")
+
     options.path = result
 
     @urlForBase(options)

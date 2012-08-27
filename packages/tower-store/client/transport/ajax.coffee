@@ -98,13 +98,16 @@ Tower.StoreTransportAjax =
       do (record) =>
         @queue =>
           params =
-            url:  Tower.urlFor(record.constructor)
+            url:  @urlForCreate(record)
             type: 'POST'
             data: @toJSON(record)
 
           @ajax({}, params)
             .success(@createSuccess(record, callback))
             .error(@createFailure(record, callback))
+
+  urlForCreate: (record) ->
+    Tower.urlFor(record.constructor)
 
   # Called if a record was successfully created on the server.
   # 
@@ -138,11 +141,14 @@ Tower.StoreTransportAjax =
           params =
             type: 'PUT'
             data: JSON.stringify(data)
-            url:  Tower.urlFor(record)
+            url:  @urlForUpdate(record)
 
           @ajax({}, params)
             .success(@updateSuccess(record, callback))
             .error(@updateFailure(record, callback))
+
+  urlForUpdate: (record) ->
+    Tower.urlFor(record)
 
   updateSuccess: (record, callback) ->
     (data, status, xhr) =>
@@ -158,7 +164,7 @@ Tower.StoreTransportAjax =
       do (record) =>
         @queue =>
           params  =
-          url:        Tower.urlFor(record)
+          url:        @urlForDestroy(record)
           type:       'POST'
           data:       JSON.stringify(
             format:   'json'
@@ -168,6 +174,9 @@ Tower.StoreTransportAjax =
           @ajax({}, params)
             .success(@destroySuccess(record, callback))
             .error(@destroyFailure(record, callback))
+
+  urlForDestroy: (record) ->
+    Tower.urlFor(record)
 
   # @todo
   destroySuccess: (record, callback) ->
@@ -254,7 +263,7 @@ Tower.StoreTransportAjax =
     records
 
   serializeParamsForFind: (cursor) ->
-    url     = Tower.urlFor(cursor.model)
+    url     = @urlForIndex(cursor.model)
     data    = cursor.toParams()
     # tmp until we figure out a better way
     #data.conditions = JSON.stringify(data.conditions) if data.conditions
@@ -263,6 +272,9 @@ Tower.StoreTransportAjax =
     type: 'GET'
     data: $.param(data)
     url:  url
+
+  urlForIndex: (model) ->
+    Tower.urlFor(model)
 
   # Going to merge this during refactoring period.
   # One big copy paste for now :)
@@ -285,7 +297,8 @@ Tower.StoreTransportAjax =
   serializeParamsForFindOne: (cursor) ->
     data    = cursor.toParams()
     delete data.limit
-    url     = Tower.urlFor(cursor.model) + '/' + data.conditions.id
+    # @todo tmp hack!
+    url     = @urlForShow(cursor.model, data.conditions.id)
     # tmp until we figure out a better way
     #data.conditions = JSON.stringify(data.conditions) if data.conditions
     data.format = 'json'
@@ -293,5 +306,8 @@ Tower.StoreTransportAjax =
     type: 'GET'
     data: $.param(data)
     url:  url
+
+  urlForShow: (model, id) ->
+    Tower.urlFor(model) + '/' + id
 
 module.exports = Tower.StoreTransportAjax
