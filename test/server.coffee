@@ -10,6 +10,8 @@ Tower.store = Tower['Store' + _.camelize(store)]
 
 global.chai   = require 'chai'
 global.assert = chai.assert
+assert.isPresent = (value) ->
+  assert.ok !!value
 global.expect = chai.expect
 global.test   = it
 global.sinon  = require 'sinon'
@@ -41,7 +43,7 @@ before (done) ->
     done()
   # App.Address.store().collection().ensureIndex {coordinates:"2d"}, done
 
-beforeEach (done) ->
+before (done) ->
   #Tower.Application.instance().teardown()
   Tower.root                    = "#{process.cwd()}/test/example"
   Tower.relativeRoot            = "test/example"
@@ -53,7 +55,7 @@ beforeEach (done) ->
   Tower.Application.instance().initialize =>
     done()
 
-beforeEach (done) ->
+before (done) ->
   Tower.store.clean =>
     done()
 

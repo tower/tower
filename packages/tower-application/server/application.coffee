@@ -83,6 +83,7 @@ class Tower.Application extends Tower.Engine
     @_super arguments...
 
   initialize: (config, complete) ->
+    #Tower.bench 'application.init', =>
     @_loadBase()
 
     type = typeof config

@@ -48,6 +48,17 @@ _.extend Tower,
     connection = Tower.NetConnection.create().setProperties(socket: socket)
     @connections[connection.toString()] = connection
 
+  # @tod This should be a wrapper for benchmark.js.
+  bench: (name, block) ->
+    if typeof name == 'function'
+      block = name
+      name  = null
+    name ||= _.functionName(block)
+    startDate = new Date()
+    block()
+    endDate   = new Date()
+    console.log name, String(endDate - startDate) + 'ms'
+
   toMixin: ->
     #mixin: ->
     #  Tower.mixin @, arguments...

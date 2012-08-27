@@ -3,10 +3,10 @@ describe "Tower.Application", ->
   
   beforeEach ->
     app = Tower.Application.instance().initialize()
-  
+
   test "load models", ->
-    assert.ok App.Post
+    assert.isPresent !!App.Post
   
   test "load controllers", ->
-    assert.ok App.ApplicationController
-    assert.ok App.PostsController
+    assert.isPresent App.ApplicationController
+    assert.isPresent App.PostsController
