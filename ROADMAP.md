@@ -74,6 +74,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 ### 0.4.2 (controllers)
 
+- fork node.js process to speed up app booting
 - ~~ember.js integration~~
 - more tests
   - generator code
