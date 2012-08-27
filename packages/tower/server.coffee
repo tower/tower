@@ -15,22 +15,24 @@ Tower.version = JSON.parse(require('fs').readFileSync(require('path').normalize(
 
 Tower.logger    = _console
 
-# external libraries, to get around having to use `require` in the browser.
-Tower.modules =
-  validator:  require 'validator'
-  accounting: require 'accounting'
-  moment:     require 'moment'
-  geo:        require 'geolib'
-  inflector:  require 'inflection'
-  async:      require 'async'
-  superagent: require 'superagent'
-  mime:       require 'mime'
-  mint:       require 'mint'
-  kue:        try require 'kue'
-  coffeecup:  require 'coffeecup'
-  socketio:   try require 'socket.io'
-  sockjs:     try require 'sockjs'
-  _:          _
+# External libraries, to get around having to use `require` in the browser.
+# 
+# They are lazy-loaded, to improve perceived startup time.
+Tower._modules =
+  validator:  -> require 'validator'
+  accounting: -> require 'accounting'
+  moment:     -> require 'moment'
+  geo:        -> require 'geolib'
+  inflector:  -> require 'inflection'
+  async:      -> require 'async'
+  superagent: -> require 'superagent'
+  mime:       -> require 'mime'
+  mint:       -> require 'mint'
+  kue:        -> require 'kue'
+  coffeecup:  -> require 'coffeecup'
+  socketio:   -> try require 'socket.io'
+  sockjs:     -> try require 'sockjs'
+  _:          -> _
 
 require '../tower-support/server'
 require '../tower-application/server'

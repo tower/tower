@@ -4,10 +4,9 @@ _ = Tower._
 # https://github.com/cesario/activevalidators
 # https://github.com/rickharrison/validate.js/blob/master/validate.js
 (->
-  validator   = Tower.modules.validator
+  validator   = Tower.module('validator')
   check       = validator.check
   sanitize    = validator.sanitize
-  async       = Tower.modules.async
 
   try
     validator.Validator::error = (msg) ->
@@ -15,20 +14,6 @@ _ = Tower._
       @
   catch error
     console.log error
-
-  # accounting library
-  # http://josscrowcroft.github.com/accounting.js/
-  accounting  = Tower.modules.accounting
-
-  # date library
-  # https://github.com/xaviershay/kronic
-  moment      = Tower.modules.moment
-
-  # geo library
-  geo         = Tower.modules.geo
-
-  # inflector
-  inflector   = Tower.modules.inflector
 
   # others
   # - UPS tracking codes: https://www.ups.com/content/us/en/tracking/help/tracking/tnh.html
@@ -58,7 +43,7 @@ _ = Tower._
       sanitize(value).xss()
 
     distance: ->
-      geo.getDistance(arguments...)
+      Tower.module('geo').getDistance(arguments...)
 
     toInt: (value) ->
       sanitize(value).toInt()
@@ -67,29 +52,29 @@ _ = Tower._
       sanitize(value).toBoolean()
 
     toFixed: ->
-      accounting.toFixed(arguments...)
+      Tower.module('accounting').toFixed(arguments...)
 
     formatCurrency: ->
-      accounting.formatMoney(arguments...)
+      Tower.module('accounting').formatMoney(arguments...)
 
     formatNumber: ->
-      accounting.formatNumber(arguments...)
+      Tower.module('accounting').formatNumber(arguments...)
 
     unformatCurrency: ->
-      accounting.unformat(arguments...)
+      Tower.module('accounting').unformat(arguments...)
 
     unformatCreditCard: (value) ->
       value.toString().replace(/[- ]/g, '')
 
     strftime: (time, format) ->
       time = time.value() if time._wrapped
-      moment(time).format(format)
+      Tower.module('moment')(time).format(format)
 
     now: ->
-      _ moment()._d
+      _ Tower.module('moment')()._d
 
     endOfDay: (value) ->
-      _ moment(value).eod()._d
+      _ Tower.module('moment')(value).eod()._d
 
     endOfWeek: (value) ->
 
@@ -100,7 +85,7 @@ _ = Tower._
     endOfYear: ->
 
     beginningOfDay: (value) ->
-      _ moment(value).sod()._d
+      _ Tower.module('moment')(value).sod()._d
 
     beginningOfWeek: ->
 
@@ -114,26 +99,26 @@ _ = Tower._
 
     toDate: (value) ->
       return value unless value?
-      moment(value)._d
+      Tower.module('moment')(value)._d
 
     withDate: (value) ->
-      moment(value)
+      Tower.module('moment')(value)
 
     days: (value) ->
       _(value * 24 * 60 * 60 * 1000)
 
     fromNow: (value) ->
-      _ moment().add('milliseconds', value)._d
+      _ Tower.module('moment')().add('milliseconds', value)._d
 
     ago: (value) ->
-      _ moment().subtract('milliseconds', value)._d
+      _ Tower.module('moment')().subtract('milliseconds', value)._d
 
     toHuman: (value) ->
-      moment(value).from()
+      Tower.module('moment')(value).from()
 
     humanizeDuration: (from, as = 'days') ->
       from = from.value() if from._wrapped
-      moment.humanizeDuration(from, 'milliseconds')
+      Tower.module('moment').humanizeDuration(from, 'milliseconds')
 
     toS: (array) ->
       _.map array, (item) -> item.toString()
@@ -239,21 +224,21 @@ _ = Tower._
 
   inflections =
     pluralize: ->
-      inflector.pluralize(arguments...)
+      Tower.module('inflector').pluralize(arguments...)
 
     singularize: (name) ->
       return name if name.match(/ss$/) # tmp hack for address
-      inflector.singularize(name)
+      Tower.module('inflector').singularize(name)
 
     camelCase: (value) ->
-      Tower.SupportString.camelize(value)
+      _.camelize(value)
 
   asyncing =
     series: ->
-      Tower.modules.async.series arguments...
+      Tower.module('async').series arguments...
 
     parallel: ->
-      Tower.modules.async.parallel arguments...
+      Tower.module('async').parallel arguments...
 
   _.mixin casting
   _.mixin sanitizing

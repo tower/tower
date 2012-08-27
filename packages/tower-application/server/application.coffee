@@ -102,13 +102,12 @@ class Tower.Application extends Tower.Engine
       @_loadLocales()
       @_loadEnvironment()
       @_loadInitializers()
-
       @configureStores Tower.config.databases, =>
-        @stack()
-
-        @_loadApp()
-
-        done() if done
+        @stack() unless Tower.isConsole
+        unless Tower.lazyLoadApp
+          @_loadApp(done)
+        else
+          done()
 
     @runCallbacks 'initialize', initializer, complete
 
@@ -292,7 +291,7 @@ class Tower.Application extends Tower.Engine
   _loadInitializers: ->
     @_requirePaths File.files("#{Tower.root}/config/initializers")
 
-  _loadApp: ->
+  _loadMVC: ->
     for path in @constructor.autoloadPaths
       # @todo do something more robust, so you can autoload files or directories
       # continue if path.match(/app\/(?:helpers)/) # just did this above
@@ -300,6 +299,16 @@ class Tower.Application extends Tower.Engine
         require "#{Tower.root}/app/controllers/applicationController"
 
       @_requirePaths File.files("#{Tower.root}/#{path}")
+
+  # In development mode, this is called on the first render.
+  # 
+  # This lazily loads all the models/views/controllers, which can be slow.
+  _loadApp: (done) ->
+    @_loadMVC()
+
+    Tower.isInitialized = true
+
+    done() if done
 
   _requirePaths: (paths) ->
     for path in paths

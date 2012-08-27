@@ -59,7 +59,6 @@ _.extend Tower,
     if typeof name == 'function'
       block = name
       name  = null
-    name ||= _.functionName(block)
     if block.length
       startDate = new Date()
       block (result) =>
@@ -269,23 +268,19 @@ _.extend Tower,
     string = Tower._.args(arguments).join("_")
     switch Tower.case
       when "snakecase"
-        Tower.SupportString.underscore(string)
+        _.underscore(string)
       else
-        Tower.SupportString.camelize(string)
+        _.camelize(string)
 
   namespace:  ->
     Tower.Application.instance().toString()#.constructor.className()
 
-  module: (namespace) ->
-    node    = Tower.namespaces[namespace]
-    return node if node
-    parts   = namespace.split(".")
-    node    = Tower
+  modules: {}
 
-    for part in parts
-      node  = node[part] ||= {}
-
-    Tower.namespaces[namespace] = node
+  # The client and server both define a Tower._modules, 
+  # which is a function lazily returning the module.
+  module: (name) ->
+    Tower.modules[name] ||= Tower._modules[name]()
 
   constant: (string) ->
     node  = global

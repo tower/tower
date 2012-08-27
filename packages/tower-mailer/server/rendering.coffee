@@ -46,7 +46,7 @@ Tower.MailerRendering =
       if template
         locals = options.locals || {}
         delete options.locals
-        Tower.modules.mint.render path: template, locals: locals, (error, result) =>
+        Tower.module('mint').render path: template, locals: locals, (error, result) =>
           options.html = result
           callback.call(@, error, options)
       else

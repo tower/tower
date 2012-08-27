@@ -6,7 +6,7 @@ Tower.NetConnectionSockjs =
   getSessionId: (socket) ->
 
   listen: (server) ->
-    io = Tower.modules.socketio.createServer()
+    io = Tower.module('socketio').createServer()
     io.installHandlers(server)
 
     io.on 'connection', (socket) =>

@@ -7,17 +7,18 @@ Tower.logger          = console
 # include underscore.string mixins
 _.mixin(_.string.exports())
 
-Tower.modules =
-  validator:  global
-  accounting: global.accounting
-  moment:     global.moment
-  geo:        global.geolib
-  inflector:  global.inflector # https://github.com/gmosx/inflection
-  async:      global.async # https://github.com/gmosx/inflection
-  coffeecup:  if global.CoffeeCup then global.CoffeeCup else global.CoffeeKup
-  socketio:   try global.io
-  sockjs:     try global.SockJS
-  _:          _
+# @todo lazily load these somehow
+Tower._modules =
+  validator:  -> global
+  accounting: -> global.accounting
+  moment:     -> global.moment
+  geo:        -> global.geolib
+  inflector:  -> global.inflector # https://github.com/gmosx/inflection
+  async:      -> global.async # https://github.com/gmosx/inflection
+  coffeecup:  -> if global.CoffeeCup then global.CoffeeCup else global.CoffeeKup
+  socketio:   -> try global.io
+  sockjs:     -> try global.SockJS
+  _:          -> _
 
 require '../tower-support/client'
 require '../tower-application/client'

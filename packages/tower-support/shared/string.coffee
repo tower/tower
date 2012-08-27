@@ -19,7 +19,7 @@ Tower.SupportString =
           .replace('-', '_').toLowerCase()
 
   singularize: (string) ->
-    Tower.modules.inflector.singularize arguments...
+    Tower.module('inflector').singularize arguments...
 
   repeat: (string, number) ->
     new Array(number + 1).join(string)
@@ -30,7 +30,7 @@ Tower.SupportString =
     else
       string = count
 
-    Tower.modules.inflector.pluralize string
+    Tower.module('inflector').pluralize string
 
   capitalize: (string) -> string.replace Tower.SupportString.capitalize_rx, (m, p1, p2) -> p1 + p2.toUpperCase()
 

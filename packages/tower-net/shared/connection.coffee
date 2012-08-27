@@ -14,7 +14,7 @@ class Tower.NetConnection extends Tower.Class
 
   # Try socket.io, then sockjs
   @initialize: ->
-    if Tower.modules.socketio
+    if Tower.module('socketio')
       @reopenClass Tower.NetConnectionSocketio
     else
       @reopenClass Tower.NetConnectionSockjs

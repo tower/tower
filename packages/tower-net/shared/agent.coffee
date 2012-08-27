@@ -39,7 +39,7 @@ class Tower.NetAgent
     auth        = options.auth
     format      = options.format# || 'form-data'
 
-    newRequest = Tower.modules.superagent[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
+    newRequest = Tower.module('superagent')[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
       .set(headers)
       .send(params)
       .redirects(redirects)

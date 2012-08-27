@@ -4,7 +4,7 @@ Tower.NetConnectionSockjs =
     1
 
   listen: (url) ->
-    @connect(new Tower.modules.sockjs(url))
+    @connect(new Tower.module('sockjs')(url))
 
   registerHandler: (socket, name, handler) ->
     socket.on name, handler

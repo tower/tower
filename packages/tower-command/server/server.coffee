@@ -28,6 +28,7 @@ class Tower.CommandServer
 
       program.help ||= program.rawArgs.length == 3
       
+      # @todo move these onto {Tower.config}
       Tower.isSinglePage = !!program.single
 
       if program.help
@@ -45,6 +46,8 @@ class Tower.CommandServer
       Tower.watch = false
     else
       Tower.watch = true
+
+    Tower.lazyLoadApp  = Tower.env == 'development'
 
     Tower.port  = program.port = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
     

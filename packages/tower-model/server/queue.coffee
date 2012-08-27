@@ -59,7 +59,7 @@ Tower.ModelQueue =
 
       klass = @className()
       # @todo robustify
-      jobs  = Tower.queue ||= Tower.modules.kue.createQueue()
+      jobs  = Tower.queue ||= Tower.module('kue').createQueue()
       queue = options.queue || (_.camelize(klass) + '.' + method) # queue name is "User.welcome", or "Class.method"
 
       # we make a flag if a callback was passed, so we know to call the method with a callback

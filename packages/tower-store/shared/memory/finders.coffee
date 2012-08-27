@@ -88,7 +88,7 @@ Tower.StoreMemoryFinders =
       coordinates = record.get('coordinates')
       coordinates = {latitude: coordinates.lat, longitude: coordinates.lng}
 
-      record.__distance = Tower.SupportGeo.getDistance(center, coordinates)
+      record.__distance = Tower.module('geo').getDistance(center, coordinates)
 
   # Adjusts the given conditions so they can be used
   _prepareConditionsForTesting: (conditions) ->

@@ -158,7 +158,7 @@ Tower.SupportObject =
   #
   # @return [Boolean]
   isBlank: (object) ->
-    switch Tower.modules._.kind(object)
+    switch _.kind(object)
       when "object"
         return false for key, value of object
         return true

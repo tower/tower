@@ -124,8 +124,8 @@ Tower.ViewRendering =
     e       = null
     result  = null
     # tmp hack
-    coffeecup = Tower.modules.coffeecup
     try
+      coffeecup       = Tower.module('coffeecup')
       locals          = options.locals || {}
       locals.renderWithEngine = @renderWithEngine
       locals._readTemplate = @_readTemplate

@@ -25,7 +25,7 @@ Tower.stop = ->
   delete Tower.Controller.testCase
   Tower.Application.instance().server.close()
 
-Tower.modules.superagent.Request::make = (callback) ->
+Tower.module('superagent').Request::make = (callback) ->
   @end (response) ->
     controller = Tower.Controller.testCase
     if controller
@@ -60,7 +60,7 @@ _.request = (method, path, options, callback) ->
   auth        = options.auth
   format      = options.format# || "form-data"
 
-  newRequest = Tower.modules.superagent[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
+  newRequest = Tower.module('superagent')[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
     .set(headers)
     .send(params)
     .redirects(redirects)

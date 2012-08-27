@@ -96,7 +96,7 @@ class Tower.View extends Tower.Class
       @_store ||= new Tower.StoreMemory(name: 'view')
     renderers: {}
     # @todo remove
-    coffeecupTags: if Tower.isServer then _.map(Tower.modules.coffeecup.tags, (i) -> Tower.SupportString.camelize(i, true)) else []
+    coffeecupTags: if Tower.isServer then _.map(Tower.module('coffeecup').tags, (i) -> _.camelize(i, true)) else []
     helper: (object) ->
       _.extend(Tower.View.helpers, object)
 

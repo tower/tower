@@ -6,7 +6,7 @@ Tower.NetConnectionSocketio =
       1
 
   listen: (url) ->
-    @connect(Tower.modules.socketio.connect(url))
+    @connect(Tower.module('socketio').connect(url))
 
   registerHandler: (socket, eventType, handler) ->
     socket.on eventType, (data) =>
