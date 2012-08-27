@@ -1,6 +1,7 @@
 File    = require('pathfinder').File
 _path   = require('path')
 fs      = require('fs')
+_       = Tower._
 
 # @module
 Tower.ApplicationWatcher =

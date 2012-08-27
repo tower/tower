@@ -8,6 +8,7 @@ Pathfinder    = require 'pathfinder'
 File          = Pathfinder.File
 puts          = require('util').puts
 print         = require('util').print
+_             = Tower._
 
 # @module
 # Tower.module "Application.Assets"
