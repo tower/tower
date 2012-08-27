@@ -3,6 +3,7 @@ File    = require('pathfinder').File
 fs      = require('fs')
 server  = null
 io      = null
+_       = Tower._
 
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
@@ -68,8 +69,8 @@ class Tower.Application extends Tower.Engine
       if Tower.isSinglePage
         @_instance = @create()
       else
-        ref = require "#{Tower.root}/config/application"
-        @_instance ||= new ref
+        app = require "#{Tower.root}/config/application"
+        @_instance ||= app.create()
     @_instance
 
   @initializers: ->
@@ -81,51 +82,30 @@ class Tower.Application extends Tower.Engine
     Tower.Application._instance = @
     @_super arguments...
 
-  initialize: (complete) ->
-    require "#{Tower.root}/config/application"
-    require "#{Tower.root}/config/bootstrap"
-    #@runCallbacks "initialize", null, complete
-    configNames = @constructor.configNames
-    reloadMap   = @constructor.reloadMap
+  initialize: (config, complete) ->
+    @_loadBase()
+
+    type = typeof config
+    if type != 'object'
+      if type == 'function'
+        complete  = config
+        config    = {}
+      else
+        config    = {}
+    type = null
 
     initializer = (done) =>
-      requirePaths = (paths) ->
-        for path in paths
-          require(path) if path.match(/\.(coffee|js|iced)$/)
-
-      requirePaths File.files("#{Tower.root}/config/preinitializers")
-
-      for key in configNames
-        config = null
-
-        try
-          config  = require("#{Tower.root}/config/#{key}")
-        catch error
-          config  = {}
-
-        # need a way to get _ to work in the console, which uses _ for last returned value
-        Tower.config[key] = config if Tower.modules._.isPresent(config)
-
-      Tower.ApplicationAssets.loadManifest()
-
-      paths = File.files("#{Tower.root}/config/locales")
-      for path in paths
-        Tower.SupportI18n.load(path) if path.match(/\.(coffee|js|iced)$/)
-
-      # load initializers
-      require "#{Tower.root}/config/environments/#{Tower.env}"
-
-      requirePaths File.files("#{Tower.root}/config/initializers")
+      @_loadPreinitializers()
+      @_loadConfig(config)
+      @_loadAssets()
+      @_loadLocales()
+      @_loadEnvironment()
+      @_loadInitializers()
 
       @configureStores Tower.config.databases, =>
         @stack()
 
-        for path in @constructor.autoloadPaths
-          # @todo do something more robust, so you can autoload files or directories
-          # continue if path.match(/app\/(?:helpers)/) # just did this above
-          if path.match('app/controllers')
-            require "#{Tower.root}/app/controllers/applicationController"
-          requirePaths File.files("#{Tower.root}/#{path}")
+        @_loadApp()
 
         done() if done
 
@@ -140,7 +120,7 @@ class Tower.Application extends Tower.Engine
     @server.handle arguments...
 
   use: ->
-    args        = Tower.modules._.args(arguments)
+    args        = _.args(arguments)
 
     if typeof args[0] == 'string'
       middleware  = args.shift()
@@ -150,13 +130,12 @@ class Tower.Application extends Tower.Engine
 
   configureStores: (configuration = {}, callback) ->
     defaultStoreSet = false
-
-    databaseNames = Tower.modules._.keys(configuration)
+    databaseNames   = _.keys(configuration)
 
     iterator = (databaseName, next) ->
       databaseConfig = configuration[databaseName]
 
-      storeClassName = "Tower.Store#{Tower.modules._.camelize(databaseName)}"
+      storeClassName = "Tower.Store#{_.camelize(databaseName)}"
 
       try
         store = Tower.constant(storeClassName) # This will find Tower.StoreMemory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
@@ -167,9 +146,6 @@ class Tower.Application extends Tower.Engine
         Tower.Model.default('store', store) unless Tower.Model.default('store')
         defaultStoreSet = true
 
-      #Tower.callback 'initialize', name: "#{store.className()}.initialize", (done) ->
-      #  try store.configure Tower.config.databases[databaseName][Tower.env]
-      #  store.initialize done
       try store.configure Tower.config.databases[databaseName][Tower.env]
       store.initialize(next)
 
@@ -261,5 +237,61 @@ class Tower.Application extends Tower.Engine
 
   watch: ->
     Tower.ApplicationWatcher.watch()
+
+  _loadBase: ->
+    require "#{Tower.root}/config/application"
+    require "#{Tower.root}/config/bootstrap"
+
+  _loadPreinitializers: ->
+    @_requirePaths File.files("#{Tower.root}/config/preinitializers")
+
+  _loadConfig: (options) ->
+    for key in @constructor.configNames
+      config = null
+
+      try
+        config  = require("#{Tower.root}/config/#{key}")
+      catch error
+        config  = {}
+
+      # need a way to get _ to work in the console, which uses _ for last returned value
+      Tower.config[key] = config if _.isPresent(config)
+
+    Tower.config.databases ||= {}
+
+    databases = options.databases || options.database
+
+    if databases
+      databases = [databases] unless databases instanceof Array
+
+      Tower.config.databases = _.pick(Tower.config.databases, databases)
+
+  _loadAssets: ->
+    Tower.ApplicationAssets.loadManifest()
+
+  _loadLocales: ->
+    paths = File.files("#{Tower.root}/config/locales")
+    for path in paths
+      Tower.SupportI18n.load(path) if path.match(/\.(coffee|js|iced)$/)
+
+  _loadEnvironment: ->
+    # load initializers
+    try require "#{Tower.root}/config/environments/#{Tower.env}"
+
+  _loadInitializers: ->
+    @_requirePaths File.files("#{Tower.root}/config/initializers")
+
+  _loadApp: ->
+    for path in @constructor.autoloadPaths
+      # @todo do something more robust, so you can autoload files or directories
+      # continue if path.match(/app\/(?:helpers)/) # just did this above
+      if path.match('app/controllers')
+        require "#{Tower.root}/app/controllers/applicationController"
+
+      @_requirePaths File.files("#{Tower.root}/#{path}")
+
+  _requirePaths: (paths) ->
+    for path in paths
+      require(path) if path.match(/\.(coffee|js|iced)$/)
 
 module.exports = Tower.Application

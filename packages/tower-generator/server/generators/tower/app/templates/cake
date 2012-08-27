@@ -48,7 +48,7 @@ task 'environment', ->
 # This initializes your Tower application, used for special taks
   Tower.Application.instance().initialize()
 
-# This displays all of the routs for your Tower app
+# This displays all of the routes for your Tower app
 task 'routes', ->
   invoke 'environment'
 
