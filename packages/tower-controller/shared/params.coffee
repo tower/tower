@@ -42,7 +42,7 @@ Tower.ControllerParams =
     # @todo refactor
     _buildCursorFromGet: (params, cursor) ->
       parsers     = @params()
-
+      
       for name, parser of parsers
         if params.hasOwnProperty(name)
           if name == 'sort'
@@ -58,11 +58,6 @@ Tower.ControllerParams =
             object = {}
             object[name] = params[name]
             cursor.where(object)
-        # @todo make more robust, needs to allow for belongsTo
-        else if name.match(/Id$/)
-          object = {}
-          object[name] = params[name]
-          cursor.where(object)
 
       cursor
 
