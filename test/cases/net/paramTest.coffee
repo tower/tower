@@ -16,6 +16,13 @@ describe 'Tower.NetParam', ->
     test 'NOT match and match string', ->
       cursor  = param.toCursor("-Hello+World")
       assert.deepEqual cursor.conditions(), { "title": "$notMatch": ["Hello"], "$match": ["World"] }
+
+    test 'exact', ->
+      id = '5004bac274a9d10000000002'
+      param.exact = true
+      param.key = param.attribute = 'id'
+      cursor  = param.toCursor('5004bac274a9d10000000002')
+      assert.deepEqual cursor.conditions(), { "id": id}
     
     #test 'regexp', ->
     #  cursor  = param.toCursor("/Hello World/i")
@@ -217,6 +224,12 @@ describe 'Tower.NetParam', ->
 
     beforeEach ->
       Controller  = App.PostsController
+
+    describe 'String', ->
+      test 'exact (userId)', ->
+        id = '5004bac274a9d10000000002'
+        cursor = buildCursor(userId: id)
+        assert.deepEqual cursor.conditions(), {userId: id}
 
     describe 'Boolean', ->
       test 'true', ->

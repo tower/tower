@@ -55,5 +55,17 @@ describe "Tower.ControllerParams", ->
         assert.equal 1, posts.length
         done()
 
+    test 'userId: x', (done) ->
+      App.User.create firstName: 'asdf', (error, user) =>
+        App.Post.first (error, post) =>
+          post.set('userId', user.get('id'))
+          post.save =>
+            params = userId: user.get('id').toString()
+
+            _.get '/posts', params: params, (response) ->
+              posts = response.controller.get('posts')
+              assert.equal 1, posts.length
+              done()
+
   test 'date string is serialized to database'
     # params = user: birthdate: _(26).years().ago().toDate()

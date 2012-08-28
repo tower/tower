@@ -58,6 +58,11 @@ Tower.ControllerParams =
             object = {}
             object[name] = params[name]
             cursor.where(object)
+        # @todo make more robust, needs to allow for belongsTo
+        else if name.match(/Id$/)
+          object = {}
+          object[name] = params[name]
+          cursor.where(object)
 
       cursor
 
@@ -94,6 +99,7 @@ Tower.ControllerParams =
           if key == '$or' || key == '$nor'
             cleanConditions(item) for item in value
           else
+            # @todo make more robust
             delete hash[key] unless parsers.hasOwnProperty(key) || key.match(/Id$/)
 
         hash

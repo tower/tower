@@ -60,6 +60,8 @@ Tower.ControllerResourceful =
       options.key = key
       options.type ||= Tower._.camelize(options.key)
 
+      @param "#{key}Id", exact: true
+
       belongsTo.push(options)
 
     hasParent: ->

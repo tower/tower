@@ -5,6 +5,7 @@ class App.PostsController extends Tower.Controller
   @param 'title'
   @param 'sort', type: 'Order'
   @param 'published', type: 'Boolean'
+  @param 'userId', exact: true
   @param 'page', type: 'Number', allowRange: false, allowNegative: false
   @param 'limit', type: 'Number', allowRange: false, allowNegative: false
 
