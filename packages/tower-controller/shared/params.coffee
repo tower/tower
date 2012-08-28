@@ -94,7 +94,7 @@ Tower.ControllerParams =
           if key == '$or' || key == '$nor'
             cleanConditions(item) for item in value
           else
-            delete hash[key] unless parsers.hasOwnProperty(key)
+            delete hash[key] unless parsers.hasOwnProperty(key) || key.match(/Id$/)
 
         hash
 

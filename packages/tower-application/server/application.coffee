@@ -186,6 +186,8 @@ class Tower.Application extends Tower.Engine
       
       @initializeSockets()
 
+      Tower.port = parseInt(Tower.port)
+
       @server.listen Tower.port, =>
         _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
         value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
