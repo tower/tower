@@ -10,14 +10,14 @@ Tower.GeneratorHelpers =
     @inRoot =>
       if @controller.namespaced
         # @todo, add namespaces and such
-        @injectIntoFile "config/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
+        @injectIntoFile "app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
       else
-        @injectIntoFile "config/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
+        @injectIntoFile "app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
 
   bootstrap: (model) ->
     @inRoot =>
       # bootstrap into client side
-      @injectIntoFile "app/client/config/bootstrap.coffee",
+      @injectIntoFile "app/config/client/bootstrap.coffee",
         "  #{@app.namespace}.#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n",
           after: /bootstrap\ = *\(data\) *-\> *\n/i
           duplicate: false
@@ -29,12 +29,12 @@ Tower.GeneratorHelpers =
         next()
 
 """
-      @injectIntoFile "app/controllers/applicationController.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
+      @injectIntoFile "app/controllers/server/applicationController.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
 
   asset: (path, options = {}) ->
     bundle = options.bundle || "application"
     @inRoot =>
-      @injectIntoFile "config/assets.coffee", "      \'#{path}\'\n",
+      @injectIntoFile "app/config/server/assets.coffee", "      \'#{path}\'\n",
         after: new RegExp("\\s*#{bundle}: *\\[[^\\]]*\\n", "i"),
         duplicate: false
 
@@ -47,11 +47,11 @@ Tower.GeneratorHelpers =
 #"""
 
     @inRoot =>
-      @injectIntoFile "app/views/shared/_navigation.coffee", content, after: pattern, duplicate: false
+      @injectIntoFile "app/templates/shared/layout/_navigation.coffee", content, after: pattern, duplicate: false
 
   locale: (pattern, content) ->
     @inRoot =>
-      @injectIntoFile "config/locales/en.coffee", content, after: pattern, duplicate: false
+      @injectIntoFile "app/config/shared/locales/en.coffee", content, after: pattern, duplicate: false
 
   inRoot: (block) ->
     @inside ".", block
