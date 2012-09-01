@@ -19,9 +19,18 @@ class Tower.CommandNew
       .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)', "coffee")
       .option('-s, --stylesheets <names>', 'Stylesheets to use (defaults to twitter-bootstrap)', array, ["twitter-bootstrap"])
       .option('-t, --test <name>', 'Test framework (defaults to mocha)', "mocha")
+      .option('-j, --javascript [value]', 'Use JavaScript instead of CoffeeScript', false)
       # heroku, nodejitsu, dotcloud, etc.
       .option('-d, --deployment <names>', 'Deployment options (defaults to heroku, only heroku works now)', array, ["heroku"])
+      # @todo autodeploy to heroku: https://api-docs.heroku.com/apps
+      # .option('--heroku [value]', 'Deploy to heroku', true)
+      # .option('--mongohq [value]', 'Use mongohq in production', true)
+      # .option('--redis2go [value]', 'Use redis2go in production', true)
+      #.option('--nodejitsu', 'Deploy to nodejitsu')
+      #.option('--ec2', 'Deploy to nodejitsu')
       .option('-w, --worker <names>', 'Background worker (defaults to kue)', "kue")
+      # @todo Add ability to create github repo
+      #   http://developer.github.com/v3/repos/#create
       .option('-v, --version', 'output version number')
       .option '-h, --help', '''
 \ \ Usage:

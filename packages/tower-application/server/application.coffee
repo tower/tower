@@ -35,35 +35,6 @@ class Tower.Application extends Tower.Engine
     'routes'
   ]
 
-  defaultStack: ->
-    #@use connect.favicon(Tower.publicPath + '/favicon.ico')
-    @use connect.static(Tower.publicPath, maxAge: Tower.publicCacheDuration)
-    @use connect.profiler() if Tower.env != 'production'
-    @use connect.logger()
-    #@use connect.query()
-    #@use connect.cookieParser(Tower.cookieSecret)
-    #@use connect.session secret: Tower.sessionSecret
-    #@use connect.bodyParser()
-    #@use connect.csrf()
-    #@use connect.methodOverride('_method')
-    @use Tower.MiddlewareAgent
-    @use Tower.MiddlewareLocation
-    if Tower.httpCredentials
-      @use connect.basicAuth(Tower.httpCredentials.username, Tower.httpCredentials.password)
-    #@use Tower.MiddlewareRouter
-    @server.get '/', (request, response) =>
-      view = new Tower.View({})
-      fs.readFile "#{Tower.root}/index.coffee", 'utf-8', (error, result) =>
-        view.render template: result, inline: true, type: 'coffee', (error, result) =>
-          if error
-            response.writeHead(404, {})
-            response.write(error.stack || error.toString())
-          else
-            response.writeHead(200, {'Content-Type': 'text/html'})
-            response.write(result)
-          response.end()
-    @middleware
-
   @instance: ->
     unless @_instance
       if Tower.isSinglePage
@@ -238,10 +209,7 @@ class Tower.Application extends Tower.Engine
     hook.start()
 
   run: ->
-    if Tower.isSinglePage
-      @defaultStack()
-    else
-      @initialize()
+    @initialize()
     @listen()
 
   watch: ->

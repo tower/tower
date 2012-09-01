@@ -15,6 +15,10 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
   run: ->
     {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
 
+    # @todo this is going to be based on command-line flag
+    ext       = 'coffee'
+    isCoffee  = ext == 'coffee'
+
     @inside @app.name, '.', ->
       @template 'gitignore', '.gitignore' unless @program.skipGitfile
       @template 'npmignore', '.npmignore'
@@ -23,61 +27,72 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
       @template 'cake', 'Cakefile'
 
       @inside 'app', ->
-        @inside 'client', ->
-          @inside 'config', ->
-            @template 'bootstrap.coffee'
-            @template 'watch.coffee'
-          @inside 'stylesheets', ->
-            @template 'application.styl'
-          @inside 'controllers', ->
-            @template 'applicationController.coffee'
-          @inside 'views', ->
-            @inside 'layouts', ->
-              @template 'application.coffee'
+        @inside 'config', ->
+          @inside 'client', ->
+            @template "bootstrap.#{ext}"
+            @template "watch.#{ext}"
+
+        @inside 'server', ->
+          @template "application.#{ext}"
+          @template "assets.#{ext}"
+          @template "bootstrap.#{ext}"
+          @template "credentials.#{ext}"
+          @template "databases.#{ext}"
+          @template "routes.#{ext}"
+          @template "session.#{ext}"
+
+          @inside 'environments', ->
+            @template "development.#{ext}"
+            @template "production.#{ext}"
+            @template "test.#{ext}"
+
+          @directory 'initializers'
+
+        @inside 'shared', ->
+          @inside 'locales', ->
+            @template "en.#{ext}"
 
         @inside 'controllers', ->
-          @template 'applicationController.coffee'
+          @inside 'client', ->
+            @template "applicationController.#{ext}"
+          @inside 'server', ->
+            @template "applicationController.#{ext}"
 
-        @directory 'models'
+        @inside 'models', ->
+          @directory 'client'
+          @directory 'server'
+          @directory 'shared'
+
+        @inside 'stylesheets', ->
+          @inside 'client', ->
+            @template 'application.styl'
+          @inside 'server', ->
+            @template 'email.styl'
+
+        @inside 'templates', ->
+          @inside 'server', ->
+            @inside 'layouts', ->
+              @template "application.#{ext}"
+              @template "_meta.#{ext}"
+          @inside 'shared', ->
+            @template "welcome.#{ext}"
+            @inside 'layouts', ->
+              @template "_body.#{ext}"
+              @template "_flash.#{ext}"
+              @template "_footer.#{ext}"
+              @template "_header.#{ext}"
+              @template "_navigation.#{ext}"
+              @template "_sidebar.#{ext}"
 
         @inside 'views', ->
-          @template 'welcome.coffee'
-          @inside 'layouts', ->
-            @template 'application.coffee'
-          @inside 'shared', ->
-            @template '_body.coffee'
-            @template '_flash.coffee'
-            @template '_footer.coffee'
-            @template '_header.coffee'
-            @template '_meta.coffee'
-            @template '_navigation.coffee'
-            @template '_sidebar.coffee'
+          @inside 'client', ->
+            @inside 'layouts', ->
+              @template "application.#{ext}"
 
-      @inside 'config', ->
-        @template 'application.coffee'
-        @template 'assets.coffee'
-        @template 'bootstrap.coffee'
-        @template 'credentials.coffee'
-        @template 'databases.coffee'
-        @template 'routes.coffee'
-        @template 'session.coffee'
+      @inside 'data', ->
+        @template "seeds.#{ext}"
 
-        @inside 'environments', ->
-          @template 'development.coffee'
-          @template 'production.coffee'
-          @template 'test.coffee'
-
-        @directory 'initializers'
-
-        @inside 'locales', ->
-          @template 'en.coffee'
-
-      @inside 'db', ->
-        @template 'seeds.coffee'
-
-      @inside 'lib', ->
-        @directory 'tasks'
-
+      @directory 'lib'
       @directory 'log'
 
       @template 'pack', 'package.json'
@@ -90,13 +105,16 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @template 'crossdomain.xml'
         @template 'humans.txt'
         @template 'robots.txt'
+        @directory 'fonts'
         @directory 'images'
         @inside 'javascripts', ->
           @inside 'app', ->
-            @inside 'views', ->
-              @createFile 'templates.js', ''
+            @inside 'templates', ->
+              @inside 'client', ->
+                @createFile 'index.js', ''
         @directory 'stylesheets'
         @directory 'swfs'
+        @directory 'uploads'
 
       @template 'README.md'
 
@@ -107,9 +125,9 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @directory 'factories'
         @directory 'features'
         @directory 'models'
-        @template 'server.coffee'
-        @template 'client.coffee'
+        @template "client.#{ext}"
         @template 'mocha.opts'
+        @template "server.#{ext}"
 
       @directory 'tmp'
       
@@ -125,7 +143,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
       @inside 'public/swfs', ->
         @get(remote, local) for remote, local of SWFS
 
-      @template 'grunt.coffee', 'grunt.coffee'
+      @template "grunt.#{ext}", "grunt.#{ext}"
 
       # github wiki
       @inside 'wiki', ->
