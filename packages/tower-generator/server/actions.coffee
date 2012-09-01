@@ -2,8 +2,6 @@ File        = require('pathfinder').File
 _path       = require('path')
 fs          = require('fs')
 _url        = require('url')
-superagent  = require('superagent')
-wrench      = require('wrench')
 
 File.mkdirpSync = (dir) ->
   dir = _path.resolve(_path.normalize(dir))
@@ -26,7 +24,7 @@ Tower.GeneratorActions =
     error = ->
       console.log "Error downloading #{url}"
 
-    superagent.get url, (response) =>
+    Tower.module('superagent').get url, (response) =>
       if response.ok
         @log "create", path
         File.write path, response.text
@@ -96,7 +94,7 @@ Tower.GeneratorActions =
     result
 
   emptyDirectory: (path) ->
-    #wrench.rmdirSyncRecursive(@destinationPath(path))
+    #Tower.module('wrench').rmdirSyncRecursive(@destinationPath(path))
 
   inside: (directory, sourceDirectory, block) ->
     if typeof sourceDirectory == "function"

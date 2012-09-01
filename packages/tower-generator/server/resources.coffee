@@ -1,4 +1,3 @@
-exec  = require('child_process').exec
 File  = require('pathfinder').File
 fs    = require 'fs'
 

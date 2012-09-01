@@ -1,7 +1,11 @@
-Future  = try require('fibers/future')
+Future  = null
 _       = Tower._
 
 Tower.ModelCursorSync =
+  # The first time it's included, require the future library
+  included: ->
+    Future ||= try require('fibers/future')
+
   find: ->
     @_returnInFuture @_find
 

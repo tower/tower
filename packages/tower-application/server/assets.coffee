@@ -1,13 +1,8 @@
-{exec, spawn} = require 'child_process'
-async         = require 'async'
 fs            = require 'fs'
 path          = require 'path'
-mint          = require 'mint'
 _path         = require 'path'
 Pathfinder    = require 'pathfinder'
 File          = Pathfinder.File
-puts          = require('util').puts
-print         = require('util').print
 _             = Tower._
 
 # @module
@@ -28,6 +23,7 @@ Tower.ApplicationAssets =
   # @return [void]
   bundle: (options = {}) ->
     gzip          = require 'gzip'
+    mint          = Tower.module('mint')
     options.minify = true unless options.hasOwnProperty('minify')
 
     manifest = {}

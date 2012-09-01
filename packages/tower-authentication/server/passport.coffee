@@ -1,4 +1,4 @@
-passport = require('passport')
+passport = null
 # Use passport for authentication.
 #
 # @example
@@ -31,6 +31,8 @@ passport = require('passport')
 #     @use Tower.Middleware.Router
 Tower.Authentication =
   initialize: (block) ->
+    passport = require('passport')
+    
     app = Tower.Application.instance()
 
     app.use passport.initialize()
