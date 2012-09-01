@@ -72,7 +72,13 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 <a name="0.4.2" href="0.4.2"></a>
 
-### 0.4.2 (controllers)
+### 0.4.2 (folders)
+
+- standardize file structure for apps
+
+<a name="0.4.3" href="0.4.3"></a>
+
+### 0.4.3 (controllers)
 
 - fork node.js process to speed up app booting
 - ~~ember.js integration~~
@@ -98,9 +104,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - update to express 3.0
 - *rails like flash messages
 
-<a name="0.4.3" href="0.4.3"></a>
+<a name="0.4.4" href="0.4.4"></a>
 
-### 0.4.3 (views)
+### 0.4.4 (views)
 
 - automatic sorting when new model is added to cursor (`Ember.Sortable`)
 - automatic form validations based on model of client
