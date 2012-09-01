@@ -12,25 +12,25 @@ describe "Tower.View", ->
 
   describe 'path to files', ->
     test 'loadPaths', ->
-      assert.deepEqual store.loadPaths, [ "#{Tower.relativeRoot}/app/views" ]
+      assert.deepEqual store.loadPaths, [ "#{Tower.relativeRoot}/app/templates/shared" ]
 
     test "findPath(path: 'custom/engine', ext: 'coffee')", ->
       path = store.findPath(path: 'custom/engine', ext: 'coffee')
       
-      assert.equal path, "#{Tower.relativeRoot}/app/views/custom/engine.coffee"
+      assert.equal path, "#{Tower.relativeRoot}/app/templates/shared/custom/engine.coffee"
       
       path = store.findPath(path: 'custom2/engine', ext: 'coffee')
 
-      assert.equal path, "#{Tower.relativeRoot}/app/views/custom2/engine.coffee"
+      assert.equal path, "#{Tower.relativeRoot}/app/templates/shared/custom2/engine.coffee"
     
     test "findPath(path: 'engine', ext: 'coffee', prefixes: ['custom'])", ->
       path = store.findPath(path: 'engine', ext: 'coffee', prefixes: ['custom'])
       
-      assert.equal path, "#{Tower.relativeRoot}/app/views/custom/engine.coffee"
+      assert.equal path, "#{Tower.relativeRoot}/app/templates/shared/custom/engine.coffee"
       
       path = store.findPath(path: 'engine', ext: 'coffee', prefixes: ['custom2'])
       
-      assert.equal path, "#{Tower.relativeRoot}/app/views/custom2/engine.coffee"
+      assert.equal path, "#{Tower.relativeRoot}/app/templates/shared/custom2/engine.coffee"
       
   describe 'config', ->
     test 'setting default engine', (done) ->
@@ -57,7 +57,7 @@ describe "Tower.View", ->
         test "findPath(path: 'engine', ext: '#{engine}', prefixes: ['custom'])", ->
           path = store.findPath(path: 'engine', ext: engine, prefixes: ['custom'])
       
-          assert.equal path, "#{Tower.relativeRoot}/app/views/custom/engine.#{engine}"
+          assert.equal path, "#{Tower.relativeRoot}/app/templates/shared/custom/engine.#{engine}"
         
         test "render(template: 'custom/engine.#{engine}')", (done) ->
           view.render template: "custom/engine.#{engine}", locals: ENGINE: engine, (error, body) ->

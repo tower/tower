@@ -1,45 +1,45 @@
 describe 'Tower.Store', ->
   test '.queryOperators', ->
     queryOperators =
-      ">=":       "$gte"
-      "$gte":     "$gte"
-      ">":        "$gt"
-      "$gt":      "$gt"
-      "<=":       "$lte"
-      "$lte":     "$lte"
-      "<":        "$lt"
-      "$lt":      "$lt"
-      "$in":      "$in"
-      "$any":     "$in"
-      "$nin":     "$nin"
-      "$all":     "$all"
-      "=~":       "$regex"
-      "$m":       "$regex"
-      "$regex":   "$regex"
-      "$match":   "$regex"
-      "$notMatch":   "$notMatch"
-      "!~":       "$nm"
-      "$nm":      "$nm"
-      "=":        "$eq"
-      "$eq":      "$eq"
-      "!=":       "$neq"
-      "$neq":     "$neq"
-      "$null":    "$null"
-      "$notNull": "$notNull"
+      '>=':       '$gte'
+      '$gte':     '$gte'
+      '>':        '$gt'
+      '$gt':      '$gt'
+      '<=':       '$lte'
+      '$lte':     '$lte'
+      '<':        '$lt'
+      '$lt':      '$lt'
+      '$in':      '$in'
+      '$any':     '$in'
+      '$nin':     '$nin'
+      '$all':     '$all'
+      '=~':       '$regex'
+      '$m':       '$regex'
+      '$regex':   '$regex'
+      '$match':   '$regex'
+      '$notMatch':   '$notMatch'
+      '!~':       '$nm'
+      '$nm':      '$nm'
+      '=':        '$eq'
+      '$eq':      '$eq'
+      '!=':       '$neq'
+      '$neq':     '$neq'
+      '$null':    '$null'
+      '$notNull': '$notNull'
     
     for key, value of queryOperators
       assert.equal Tower.Store.queryOperators[key], value
   
   test '.atomicModifiers', ->
     atomicModifiers =
-      "$set":     "$set"
-      "$unset":   "$unset"
-      "$push":    "$push"
-      "$pushAll": "$pushAll"
-      "$pull":    "$pull"
-      "$pullAll": "$pullAll"
-      "$inc":     "$inc"
-      "$pop":     "$pop"
+      '$set':     '$set'
+      '$unset':   '$unset'
+      '$push':    '$push'
+      '$pushAll': '$pushAll'
+      '$pull':    '$pull'
+      '$pullAll': '$pullAll'
+      '$inc':     '$inc'
+      '$pop':     '$pop'
     
     for key, value of atomicModifiers
       assert.equal Tower.Store.atomicModifiers[key], value
@@ -49,7 +49,7 @@ describe 'Tower.Store', ->
   
   describe 'configuration', ->
     withReconfiguredDatabase = (configuration, block) ->
-      Tower.Application.configNames = _.without Tower.Application.configNames, "databases"
+      Tower.Application.configNames = _.without Tower.Application.configNames, 'databases'
       Tower.Application.instance().initialize
       Tower.config.databases = configuration
       
@@ -66,13 +66,13 @@ describe 'Tower.Store', ->
       configuration =
         mongodb:
           production:
-            name: "client-production"
+            name: 'client-production'
             port: 27017
-            host: "127.0.0.1"
+            host: '127.0.0.1'
         redis:
           production:
-            name: "client-production"
-            host: "127.0.0.1"
+            name: 'client-production'
+            host: '127.0.0.1'
             port: 6837
       
       withReconfiguredDatabase configuration, =>
@@ -82,14 +82,14 @@ describe 'Tower.Store', ->
       configuration =
         redis:
           production:
-            name: "client-production"
-            host: "127.0.0.1"
+            name: 'client-production'
+            host: '127.0.0.1'
             port: 6837
         mongodb:
           production:
-            name: "client-production"
+            name: 'client-production'
             port: 27017
-            host: "127.0.0.1"
+            host: '127.0.0.1'
             default: true
       
       withReconfiguredDatabase configuration, =>
@@ -126,7 +126,7 @@ describe 'Tower.Store', ->
       @store()
     class Y extends X
     
-    assert.equal A.store().className, "App.A"
-    assert.equal B.store().className, "App.B"
-    assert.equal X.store().className, "App.X"
-    assert.equal Y.store().className, "App.Y"
+    assert.equal A.store().className, 'App.A'
+    assert.equal B.store().className, 'App.B'
+    assert.equal X.store().className, 'App.X'
+    assert.equal Y.store().className, 'App.Y'
