@@ -1,12 +1,12 @@
-describe "Tower.Controller", ->
+describe 'Tower.Controller', ->
   controller  = null
   user        = null
   router      = null
   
   beforeEach (done) ->
     Tower.Route.draw ->
-      @match "/custom",  to: "custom#index"
-      @match "/custom/:id",  to: "custom#show"
+      @match '/custom',  to: 'custom#index'
+      @match '/custom/:id',  to: 'custom#show'
   
     controller  = App.CustomController.create()
     
@@ -14,6 +14,6 @@ describe "Tower.Controller", ->
   
   test 'resource', ->
     controller = App.PostsController.create()
-    assert.equal controller.resourceName, "post"
-    assert.equal controller.collectionName, "posts"
-    assert.equal controller.resourceType, "Post"
+    assert.equal controller.resourceName, 'post'
+    assert.equal controller.collectionName, 'posts'
+    assert.equal controller.resourceType, 'Post'
