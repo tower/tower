@@ -56,7 +56,9 @@
     "cli-table": ">= 0.0.1",
     "grunt-less": "~0.1.5",
     "grunt-stylus": "~0.1.4",
-    "grunt-contrib": "~0.1.7"
+    "grunt-contrib": "~0.1.7",
+    "superagent": ">= 0.4.0",
+    "wrench": ">= 1.3.8"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",

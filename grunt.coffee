@@ -2,7 +2,7 @@
 # https://github.com/kmiyashiro/grunt-mocha
 # https://github.com/shama/grunt-hub/blob/master/tasks/watch.js
 module.exports = (grunt) ->
-  require('./build/tasks')(grunt)
+  require('./packages/tower-tasks/tasks')(grunt)
 
   _     = grunt.utils._
   file  = grunt.file

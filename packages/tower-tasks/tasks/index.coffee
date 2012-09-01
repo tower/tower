@@ -1,5 +1,67 @@
+# https://github.com/kmiyashiro/grunt-mocha
 module.exports = (grunt) ->
   # https://github.com/jquery/jquery-ui/blob/master/build/tasks/build.js
+  fs    = require('fs')
+  async = require('async')
+  mint  = require('mint')
+  _path = require('path')
+
+  try
+    towerPath = require.resolve('tower') # will fail on tower repo
+  catch error
+    towerPath = _path.join(__dirname, '../../index.js')
+
+  grunt.registerMultiTask 'templates', 'Compile templates', ->
+    name  = ""
+    taskDone = @async()
+    
+    files   = grunt.file.expand(['app/templates/**/*.coffee'])
+    result  = []
+    
+    for file in files
+      continue unless file.match(/app\/templates\/.+\.coffee$/)
+      continue unless file.match(/\.coffee$/)
+      # @todo tmp, dont need these for the client
+      continue if file.match('layout/application')# || file.match('shared')
+      result.push [file.replace(/\.coffee$/, ""), fs.readFileSync(file)]
+      
+    template      = "Tower.View.cache =\n"
+    
+    iterator = (item, next) =>
+      name = item[0].replace(/app\/templates\/(?:client|shared)\//, '')#.replace('/', '_')
+      # _table.coffee
+      fileName = name.split('/')
+      fileName = fileName[fileName.length - 1]
+      return next() if fileName.match(/^_/) # if it's a partial, don't include
+      try
+        string = coffeecup.render(item[1])  
+      catch error
+        try
+          prefix  = name.split('/')[0]
+          view    = new Tower.View(collectionName: prefix)
+          opts    = type: 'coffee', inline: true, template: item[1].toString(), prefixes: [prefix]
+          cb = (error, body) =>
+            string = body
+          view.render(opts, cb)
+        catch error
+          console.log item[0], error
+          return next() # so we can still have some templates
+
+      template += "  '#{name}': Ember.Handlebars.compile('"
+      # make it render to HTML for ember
+      template += "#{string}')\n"
+      next()
+      
+    async.forEachSeries result, iterator, (error) =>
+      template += '_.extend(Ember.TEMPLATES, Tower.View.cache)\n'
+      mint.coffee template, bare: true, (error, string) =>
+        if error
+          console.log error
+          return taskDone(error)
+        else
+          fs.writeFileSync "public/javascripts/templates.js", string
+          taskDone()
+
   grunt.registerMultiTask 'copy', 'Copy files to destination folder and replace @VERSION with pkg.version', ->
     replaceVersion = (source) ->
       source.replace /@VERSION/g, grunt.config('pkg.version')
@@ -62,11 +124,10 @@ module.exports = (grunt) ->
       return false
 
   grunt.registerHelper 'downloadDependendencies', (done) ->
-    require('../index.js') # tower
+    require(towerPath) # tower
     agent   = require('superagent')
     fs      = require('fs')
     wrench  = require('wrench')
-    _path   = require('path')
 
     {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
 
@@ -111,7 +172,7 @@ module.exports = (grunt) ->
     grunt.helper 'downloadDependencies', @async()
     
   grunt.registerHelper 'uploadDependencies', (done) ->
-    require('../index.js') # tower
+    require(towerPath) # tower
     {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
 
     processEach = (hash, next) =>
@@ -134,7 +195,7 @@ module.exports = (grunt) ->
     grunt.helper 'uploadDependencies', @async()
 
   grunt.registerHelper 'bundleDependencies', (done) ->
-    require('../index.js') # tower
+    require(towerPath) # tower
     fs = require('fs')
     JAVASCRIPTS = [
       'underscore'

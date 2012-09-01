@@ -87,6 +87,15 @@ brew install redis
 redis-server
 ```
 
+For developing, you may also want to link tower and tower-tasks globally so you can reuse it between multiple projects:
+
+```
+cd <tower repo>
+npm link
+cd lib/tower-tasks
+npm link
+```
+
 ## Generate
 
 ```

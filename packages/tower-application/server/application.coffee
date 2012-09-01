@@ -113,6 +113,7 @@ class Tower.Application extends Tower.Engine
     defaultDatabase = configuration.default
 
     iterator = (databaseName, next) ->
+      return next() if databaseName == 'default'
       databaseConfig = configuration[databaseName]
 
       storeClassName = "Tower.Store#{_.camelize(databaseName)}"
