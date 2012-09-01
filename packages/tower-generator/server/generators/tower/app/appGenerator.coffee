@@ -9,6 +9,9 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
     app.title       = @program.title || _.titleize(_.humanize(app.name))
     app.description = @program.description
     app.keywords    = @program.keywords
+    app.stylesheetEngine = @program.stylesheetEngine
+    app.scriptType  = @program.scriptType
+    app.templateEngine = @program.templateEngine
 
     app
 
@@ -73,22 +76,22 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
 
         @inside 'templates', ->
           @inside 'server', ->
-            @inside 'layouts', ->
-              @template "application.#{scriptType}"
-              @template "_meta.#{scriptType}"
+            @inside 'layout', ->
+              @template "application.#{templateEngine}"
+              @template "_meta.#{templateEngine}"
           @inside 'shared', ->
-            @template "welcome.#{scriptType}"
-            @inside 'layouts', ->
-              @template "_body.#{scriptType}"
-              @template "_flash.#{scriptType}"
-              @template "_footer.#{scriptType}"
-              @template "_header.#{scriptType}"
-              @template "_navigation.#{scriptType}"
-              @template "_sidebar.#{scriptType}"
+            @template "welcome.#{templateEngine}"
+            @inside 'layout', ->
+              @template "_body.#{templateEngine}"
+              @template "_flash.#{templateEngine}"
+              @template "_footer.#{templateEngine}"
+              @template "_header.#{templateEngine}"
+              @template "_navigation.#{templateEngine}"
+              @template "_sidebar.#{templateEngine}"
 
         @inside 'views', ->
           @inside 'client', ->
-            @inside 'layouts', ->
+            @inside 'layout', ->
               @template "application.#{scriptType}"
 
       @inside 'data', ->

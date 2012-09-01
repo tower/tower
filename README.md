@@ -501,6 +501,12 @@ Run test matching pattern:
 mocha $(find test -name "*persistenceTest.coffee") -g "string property$"
 ```
 
+Run tests matching directory and pattern:
+
+``` bash
+mocha $(find test -name "*Test.coffee" | egrep "/*view*/")
+```
+
 ## Examples
 
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)

@@ -1,7 +1,7 @@
 doctype 5
 html ->
   head ->
-    partial 'shared/meta'
+    partial 'server/meta'
   body role: 'application', ->
     # if browserIs 'ie'
     #   javascriptTag 'http://html5shiv.googlecode.com/svn/trunk/html5.js'

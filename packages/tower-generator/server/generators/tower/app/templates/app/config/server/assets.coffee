@@ -8,7 +8,7 @@ module.exports =
       '/app/config/client/routes'
       '/app/controllers/client/applicationController'
       '/templates'
-      '/app/views/client/layouts/application'
+      '/app/views/client/layout/application'
     ]
 
     lib: [

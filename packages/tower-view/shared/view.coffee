@@ -10,7 +10,7 @@ class Tower.View extends Tower.Class
     cache:                                      {}
     engine:                                     'coffee'
     prettyPrint:                                false
-    loadPaths:                                  ['app/views']
+    loadPaths:                                  ['app/templates']
     componentSuffix:                            'widget'
     hintClass:                                  'hint'
     hintTag:                                    'figure'

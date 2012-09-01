@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.MiddlewareRouter = (request, response, callback) ->
   if Tower.isInitialized
     Tower.MiddlewareRouter.render(request, response, callback)

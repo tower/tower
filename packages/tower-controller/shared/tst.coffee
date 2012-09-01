@@ -4,7 +4,7 @@ Tower.start = (port, callback) ->
     callback  = port
     port      = undefined
 
-  Tower.port  = port || 3010
+  Tower.port  = parseInt(port || 3010)
   Tower.Application.instance().server.listen Tower.port, callback
 
 Tower.startWithSocket = (port, callback) ->
@@ -17,7 +17,7 @@ Tower.startWithSocket = (port, callback) ->
   app.io      = require('socket.io').listen(app.server, log: false)
   app.io.set('client store expiration', 0)
   app.io.set('log level', -1)
-  #app.io.set("transports", ["websocket"])
+  #app.io.set('transports', ['websocket'])
   app.server.listen Tower.port, callback
 
 Tower.stop = ->
@@ -35,22 +35,22 @@ Tower.module('superagent').Request::make = (callback) ->
       callback.call @, response
 
 _.get     = ->
-  _.request "get", arguments...
+  _.request 'get', arguments...
 
 _.post    = ->
-  _.request "post", arguments...
+  _.request 'post', arguments...
 
 _.head    = ->
-  _.request "head", arguments...
+  _.request 'head', arguments...
 
 _.put     = ->
-  _.request "put", arguments...
+  _.request 'put', arguments...
 
 _.destroy = ->
-  _.request "del", arguments...
+  _.request 'del', arguments...
 
 _.request = (method, path, options, callback) ->
-  if typeof options == "function"
+  if typeof options == 'function'
     callback  = options
     options   = {}
   options   ||= {}

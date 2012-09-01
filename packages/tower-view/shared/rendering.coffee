@@ -96,7 +96,7 @@ Tower.ViewRendering =
   # @private
   _renderLayout: (body, options, callback) ->
     if options.layout
-      layout  = @_readTemplate("layouts/#{options.layout}", [], options.type)
+      layout  = @_readTemplate("layout/#{options.layout}", [], options.type)
       options.locals.body = body
       @_renderString(layout, options, callback)
     else
@@ -170,7 +170,7 @@ Tower.ViewRendering =
     #cachePath = path.replace(/\.\w+$/, "")
     cachePath = path
     if Tower.isClient
-      cachePath = 'app/views/' + cachePath
+      cachePath = 'app/templates/' + cachePath
       
     result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
     throw new Error("Template '#{template}' was not found.") unless result

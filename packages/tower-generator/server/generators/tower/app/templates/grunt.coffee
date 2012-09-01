@@ -16,20 +16,20 @@ module.exports = (grunt) ->
     name  = ""
     taskDone = @async()
      
-    files   = grunt.file.expand(['app/views/**/*.coffee'])
+    files   = grunt.file.expand(['app/templates/**/*.coffee'])
     result  = []
     
     for file in files
       continue unless file.match(/app\/views\/.+\.coffee$/)
       continue unless file.match(/\.coffee$/)
       # @todo tmp, dont need these for the client
-      continue if file.match('layouts/application') || file.match('shared')
+      continue if file.match('layout/application') || file.match('shared')
       result.push [file.replace(/\.coffee$/, ""), fs.readFileSync(file)]
       
     template      = "Tower.View.cache =\n"
     
     iterator = (item, next) =>
-      name = item[0].replace(/app\/(?:client\/)?views\//, '')#.replace('/', '_')
+      name = item[0].replace(/app\/templates\/(?:client|shared)\//, '')#.replace('/', '_')
       # _table.coffee
       fileName = name.split('/')
       fileName = fileName[fileName.length - 1]

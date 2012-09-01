@@ -130,6 +130,8 @@ class Tower.Application extends Tower.Engine
       callback.call(@) if callback
 
   stack: ->
+    return @ if @isStacked # @todo tmp
+    @isStacked = true
     configs     = @constructor.initializers()
 
     #@server.configure ->
@@ -276,7 +278,8 @@ class Tower.Application extends Tower.Engine
     require(path) for path in paths
 
   _requireAny: (pathStart, pathEnd) ->
-    @_tryToRequire for path in @_buildRequirePaths(pathStart, pathEnd)
+    for path in @_buildRequirePaths(pathStart, pathEnd)
+      @_tryToRequire(path)
 
   _requireFirst: (pathStart, pathEnd) ->
     for path in @_buildRequirePaths(pathStart, pathEnd)
@@ -300,6 +303,7 @@ class Tower.Application extends Tower.Engine
     try
       return require(path) # if fs.existsSync(path)
     catch error
+      console.error(error) if Tower.debug
       null
 
   # @param [String] type 'script', 'stylesheet', 'template'

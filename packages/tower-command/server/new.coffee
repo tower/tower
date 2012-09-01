@@ -24,7 +24,7 @@ command = (argv) ->
     .option('-K, --keywords <keywords>', 'Your project keywords (e.g. "node.js, file uploading, s3")', "")
     .option('-n, --namespace <namespace>', 'Global namespace for your app (defaults to App)', "App")
     .option('-p, --persistence <name>', 'Preconfigure for selected database (options: mongodb)', array, ["mongodb"])
-    .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)', "coffee")
+    .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)')
     .option('-s, --stylesheet-engine <ext>', 'Stylesheet framework', 'styl')
     .option('--include-stylesheets <names>', 'Stylesheets to use (defaults to twitter-bootstrap)', array, ["twitter-bootstrap"])
     .option('-t, --test <name>', 'Test framework (defaults to mocha)', "mocha")
@@ -67,7 +67,7 @@ command = (argv) ->
 
   program.scriptType = if program.useJavascript then 'js' else 'coffee' #'coffee'
   program.stylesheetEngine ||= 'styl'
-  program.templateEngine = program.engine
+  program.templateEngine = program.engine ||= if program.useJavascript then 'ejs' else 'coffee'
 
   program.run = ->
     Tower.Generator.run('app', program: program, appName: program.args[1])
