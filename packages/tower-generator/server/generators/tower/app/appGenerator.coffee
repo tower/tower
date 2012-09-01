@@ -37,7 +37,6 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
             @template "watch.#{scriptType}"
 
           @inside 'server', ->
-            @template "application.#{scriptType}"
             @template "assets.#{scriptType}"
             @template "bootstrap.#{scriptType}"
             @template "credentials.#{scriptType}"
@@ -54,6 +53,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
             @directory 'initializers'
 
           @inside 'shared', ->
+            @template "application.#{scriptType}"
             @inside 'locales', ->
               @template "en.#{scriptType}"
 
