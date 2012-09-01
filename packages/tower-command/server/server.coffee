@@ -50,6 +50,9 @@ class Tower.CommandServer
     Tower.lazyLoadApp  = Tower.env == 'development'
 
     Tower.port  = program.port = if program.port then parseInt(program.port) else (process.env.PORT || 3000) # 1597
+
+    # Tower.isDevelopment, etc.
+    Tower["is#{_.camelize(Tower.env)}"] = true
     
     Tower.Application.instance().run()
 

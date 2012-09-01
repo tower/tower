@@ -10,6 +10,15 @@ class Tower.Application extends Tower.Engine
 
   @before 'initialize', 'setDefaults'
 
+  # Global list of files we've required for the app.
+  # 
+  # This is a cache to prevent fs access, which is slow at reasonable scale.
+  paths: []
+
+  # This is a path with some known key (preinitializers, locales, etc.),
+  # with the value as the array of nested files found for it.
+  pathsByType: {}
+
   # This is a hack
   setDefaults: ->
     true
@@ -79,6 +88,7 @@ class Tower.Application extends Tower.Engine
 
     @runCallbacks 'initialize', initializer, complete
 
+  # @todo
   teardown: ->
     @server.stack.length = 0 # remove middleware
     Tower.Route.clear()
@@ -307,11 +317,15 @@ class Tower.Application extends Tower.Engine
 
   # @param [String] type 'script', 'stylesheet', 'template'
   _selectPaths: (pathStart, pathEnd, type = 'script') ->
-    pattern = @_typeToPattern[type]
+    key     = @_pathCacheKey(pathStart, pathEnd)
+    paths   = @pathsByType[key]
+
+    return paths if paths?
+
+    paths   = []
 
     wrench  = Tower.module('wrench')
-
-    paths = []
+    pattern = @_typeToPattern[type]
 
     for requirePath, index in @_buildRequirePaths(pathStart, pathEnd)
       # The first path we only want the non ./client files
@@ -324,9 +338,7 @@ class Tower.Application extends Tower.Engine
       else
         paths = paths.concat @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath))
 
-    paths = _.select paths, (path) -> path.match(pattern)
-    
-    paths
+    @pathsByType[key] = _.select paths, (path) -> path.match(pattern)
 
   _selectNestedPaths: (dir, paths) ->
     _.select _.map(paths, (path) ->
@@ -339,5 +351,10 @@ class Tower.Application extends Tower.Engine
     script:     /\.(coffee|js|iced)$/
     stylesheet: /\.(css|less|styl|sass)$/
     template:   /\.(jade|ejs|handlebars|html|eco|coffee)/
+
+  _pathCacheKey: (pathStart, pathEnd) ->
+    key     = pathStart
+    key += ",#{pathEnd}" if pathEnd?
+    key
 
 module.exports = Tower.Application

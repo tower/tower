@@ -12,7 +12,7 @@ describe "Tower.View", ->
 
   describe 'path to files', ->
     test 'loadPaths', ->
-      assert.deepEqual store.loadPaths, [ "#{Tower.relativeRoot}/app/templates/shared" ]
+      assert.deepEqual store.loadPaths, [ "#{Tower.relativeRoot}/app/templates/shared", "#{Tower.relativeRoot}/app/templates/server" ]
 
     test "findPath(path: 'custom/engine', ext: 'coffee')", ->
       path = store.findPath(path: 'custom/engine', ext: 'coffee')
