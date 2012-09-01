@@ -276,25 +276,43 @@ class Tower.Application extends Tower.Engine
     require(path) for path in paths
 
   _requireAny: (pathStart, pathEnd) ->
-    @_tryToRequire _path.join(Tower.root, pathStart, 'shared', pathEnd)
-    @_tryToRequire _path.join(Tower.root, pathStart, 'server', pathEnd)
+    @_tryToRequire for path in @_buildRequirePaths(pathStart, pathEnd)
 
   _requireFirst: (pathStart, pathEnd) ->
-    @_tryToRequire(_path.join(Tower.root, pathStart, 'shared', pathEnd)) || 
-    @_tryToRequire(_path.join(Tower.root, pathStart, 'server', pathEnd))
+    for path in @_buildRequirePaths(pathStart, pathEnd)
+      result = @_tryToRequire(path)
+      return result if result?
+    null
+
+  # @todo this should be cached (along with _selectPaths)
+  #   so when running tests and resetting the app state doesn't have to
+  #   do it over and over again. It will have to be updated though
+  #   by the watcher when a file is changed.
+  _buildRequirePaths: (pathStart, pathEnd) ->
+    [
+      _path.join(Tower.root, pathStart, pathEnd)
+      _path.join(Tower.root, pathStart, 'shared', pathEnd)
+      _path.join(Tower.root, pathStart, 'server', pathEnd)
+    ]
 
   # @todo try to optimize this
   _tryToRequire: (path) ->
-    try require(path) # if fs.existsSync(path)
+    try
+      return require(path) # if fs.existsSync(path)
+    catch error
+      null
 
   # @param [String] type 'script', 'stylesheet', 'template'
   _selectPaths: (pathStart, pathEnd, type = 'script') ->
     pattern = @_typeToPattern[type]
 
-    paths = File.files(_path.join(Tower.root, pathStart, 'shared', pathEnd))
-      .concat(File.files(_path.join(Tower.root, pathStart, 'server', pathEnd)))
+    paths = []
+    for requirePath in @_buildRequirePaths(pathStart, pathEnd)
+      paths = paths.concat(File.files(requirePath))
 
-    _.select paths, (path) -> path.match(pattern)
+    paths = _.select paths, (path) -> path.match(pattern)
+    
+    paths
 
   # Paths to match against
   _typeToPattern:

@@ -19,14 +19,16 @@ global.sinon  = require 'sinon'
 global.async  = require 'async'
 global.cb     = true # some library has a global leak...
 
-Tower.root            = process.cwd() + "/test/example"
-Tower.publicPath      = Tower.root + "/public"
+_path = require('path')
+
+Tower.root            = _path.join(process.cwd(), '/test/example')
+Tower.publicPath      = _path.join(Tower.root, '/public')
 Tower.env             = "test"
 Tower.View.loadPaths  = ["./test/example/app/views"]
 Tower.port            = 3001
 
 # hack to only use database we've specified
-config = require(Tower.root + '/config/databases')
+config = require(_path.join(Tower.root, '/app/config/server/databases'))
 for key, value of config
   delete config[key] unless key == store
 
