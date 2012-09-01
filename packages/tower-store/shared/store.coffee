@@ -111,8 +111,8 @@ class Tower.Store extends Tower.Class
   init: (options = {}) ->
     @_super arguments...
 
-    @name       = options.name
-    @className  = options.type || Tower.namespaced(Tower.SupportString.camelize(Tower.SupportString.singularize(@name)))
+    @name       = options.name if options.name?
+    @className  = options.type || Tower.namespaced(_.camelize(_.singularize(@name))) if @name
 
   _defaultOptions: (options) ->
     options

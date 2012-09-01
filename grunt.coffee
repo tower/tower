@@ -7,6 +7,8 @@ module.exports = (grunt) ->
   _     = grunt.utils._
   file  = grunt.file
 
+  githubDownloadStore = null
+
   # CoffeeScript files
   files = _.select file.expand(['packages/**/*.coffee']), (i) ->
     !i.match('templates')
@@ -86,7 +88,7 @@ module.exports = (grunt) ->
     #    eqnull: true
     #    browser: true
 
-  for name in files
+  files.forEach (name) ->
     config.coffee[name] =
       src: name
       dest: 'lib'
@@ -104,73 +106,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
 
-  grunt.registerHelper 'upload2GitHub', (local, remote, done) ->
-    fs    = require('fs')
-    exec  = require('child_process').exec
-
-    size        = fs.statSync(local).size
-    contentType = require('mime').lookup(local)#'text/plain'
-    name        = remote #'tower.js'
-    version     = grunt.config('pkg.version')
-
-    console.log 'upload', local, remote
-
-    exec 'git config --global github.token', (error, token) ->
-      throw new Error """
-      Make sure you have created a GitHub token.
-      git config --global github.token <hash>
-      """ if error
-
-      removeExisting = (callback) ->
-        step0 = """
-        curl https://api.github.com/repos/viatropos/tower/downloads?access_token=#{token}
-        """
-
-        exec step0, (error, data) ->
-          data      = JSON.parse(data)
-          downloads = if grunt.utils._.isArray(data) then data else []
-          existing  = null
-          for download in downloads
-            if download.name == name
-              existing = download
-              break
-          if existing
-            step00 = """
-            curl -X DELETE https://api.github.com/repos/viatropos/tower/downloads/#{existing.id}?access_token=#{token}
-            """
-            exec step00, callback
-          else
-            callback()
-
-      removeExisting ->
-        step1 = """
-        curl -X POST 
-          -d '{"name": "#{name}","size": #{size},"description": "#{version}","content_type": "#{contentType}"}' 
-          https://api.github.com/repos/viatropos/tower/downloads?access_token=#{token}
-        """.replace(/\n/g, '')
-        
-        exec step1, (error, data) ->
-          data = JSON.parse(data)
-
-          step2 = """
-            curl
-            -F "key=#{data.path}"
-            -F "acl=#{data.acl}"
-            -F "success_action_status=201"
-            -F "Filename=#{data.name}"
-            -F "AWSAccessKeyId=#{data.accesskeyid}"
-            -F "Policy=#{data.policy}"
-            -F "Signature=#{data.signature}"
-            -F "Content-Type=#{data.mime_type}"
-            -F "file=@#{local}"
-            https://github.s3.amazonaws.com/
-          """.replace(/\n/g, ' ')
-
-          exec step2, (error, data) ->
-            console.error error if error
-            process.nextTick ->
-              done()
-
   grunt.registerTask 'uploadToGithub', ->
     taskComplete = @async()
-    grunt.helper 'upload2GitHub', 'dist/tower.js', 'tower.js', taskComplete
+    grunt.helper 'uploadToGitHub', 'dist/tower.js', 'tower.js', taskComplete

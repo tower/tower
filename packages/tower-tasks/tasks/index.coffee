@@ -89,6 +89,27 @@ module.exports = (grunt) ->
       copyFile fileName, target + grunt.template.process(@data.renames[fileName], grunt.config())
     grunt.log.writeln 'Renamed ' + renameCount + ' files.'  if renameCount
 
+  grunt.registerHelper 'uploadToGitHub', (local, remote, done) ->
+    console.log 'Uploading', local, 'to GitHub...', remote
+
+    # @todo initialize this better
+    withStore = (block) =>
+      unless githubDownloadStore
+        githubDownloadStore = Tower.GithubDownloadStore.create()
+        githubDownloadStore.configure =>
+          block(githubDownloadStore)
+      else
+        block(githubDownloadStore)
+
+    withStore (store) =>
+      criteria =
+        from:         local
+        to:           remote
+        name:         remote
+        description:  grunt.config('pkg.version')
+
+      store.update criteria, done
+
   # https://github.com/avalade/grunt-coffee
   path = require("path")
   # CoffeeScript

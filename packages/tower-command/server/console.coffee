@@ -131,6 +131,7 @@ class Tower.CommandConsole
     # Attempt to evaluate the command. If there's an exception, print it out instead
     # of exiting.
     run = (buffer) ->
+      require('fibers/future')
       if !buffer.toString().trim() and !backlog
         repl.prompt()
         return
@@ -145,6 +146,7 @@ class Tower.CommandConsole
       Fiber(->
         try
           $_ = global.$_
+          _ = Tower._
           returnValue = CoffeeScript.eval "$_=(#{code}\n)", {
             filename: 'repl'
             modulename: 'repl'

@@ -62,5 +62,10 @@ Tower.render              = (string, options = {}) ->
 
 Tower.domain              = 'localhost'
 
+_path = require('path')
+
+Tower.joinPath = ->
+  _path.join(arguments...)
+
 Tower.run = (argv) ->
   (new Tower.CommandServer(argv)).run()

@@ -32,5 +32,8 @@ require '../tower-middleware/server'
 Tower.goTo = (string, params) ->
   # History.pushState(params, params?.title, string)
 
+Tower.joinPath = ->
+  _.args(arguments).join('/')
+
 # compile pattern for location?
 # location = new RegExp(window.location.hostname)
