@@ -120,9 +120,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - test files reload when changed (integration test)
 - test assets can be served with gzip
 
-<a name="0.4.4" href="0.4.4"></a>
+<a name="0.4.5" href="0.4.5"></a>
 
-### 0.4.4 (models)
+### 0.4.5 (models)
 
 - ~~uniqueness validation (database should not save a record unless specified attributes are globally unique (i.e. username))~~
 - ~~email/phone validation (and other common validation helpers)~~
@@ -145,9 +145,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - i18n (internationalization/localization, how to organize the random labels in the app, and prepare for translation into other languages)
 - confirmation validation (password confirmation, agree to terms, etc.)
 
-<a name="0.4.5" href="0.4.5"></a>
+<a name="0.4.6" href="0.4.6"></a>
 
-### 0.4.5 (model extensions)
+### 0.4.6 (model extensions)
 
 - *authentication
 - *authorization ([tower-model/shared/ability.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-model/shared/ability.coffee))
@@ -158,27 +158,27 @@ You are free to contribute any of these features in any order… I'm more of a f
 - get progress bar feedback for streaming file uploads
   - http://debuggable.com/posts/streaming-file-uploads-with-node-js:4ac094b2-b6c8-4a7f-bd07-28accbdd56cb
 
-<a name="0.4.6" href="0.4.6"></a>
+<a name="0.4.7" href="0.4.7"></a>
 
-### 0.4.6 (sockets)
+### 0.4.7 (sockets)
 
 - ~~push notifications (web socket integration into the controllers)~~
 - ~~swappable sockets api (sock.ly, socket.io)~~
 - ~~subscribe/notifications~~
 - write lots of tests for this
 
-<a name="0.4.7" href="0.4.7"></a>
+<a name="0.4.8" href="0.4.8"></a>
 
-### 0.4.7 (background jobs, emails)
+### 0.4.8 (background jobs, emails)
 
 - ~~Test the mailer on heroku~~
 - ~~background queuing with redis (`User.queue("welcome", 1)` vs. `User.welcome(1)`, for background processing) - https://github.com/technoweenie/coffee-resque~~
 - test running background jobs on heroku and nodejitsu
 - inline css in email templates
 
-<a name="0.4.8" href="0.4.8"></a>
+<a name="0.4.9" href="0.4.9"></a>
 
-### 0.4.8 (helpers, configuration)
+### 0.4.9 (helpers, configuration)
 
 - add underscore helpers
   - pixel transforms  (px to em to percent to rem)
@@ -193,9 +193,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - customize template engine, orm, and test framework in App.config
 - create normalized file/directory api (wrench, pathfinder, findit... need to merge this stuff into one)
 
-<a name="0.4.9" href="0.4.9"></a>
+<a name="0.4.10" href="0.4.10"></a>
 
-### 0.4.9 (cleanup, optimizations, documentation)
+### 0.4.10 (cleanup, optimizations, documentation)
 
 - autocomplete in the terminal (rubymine, node-inspector)
 - autoreload in the console (using hook.io)
