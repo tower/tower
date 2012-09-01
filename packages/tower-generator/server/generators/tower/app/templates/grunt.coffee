@@ -20,10 +20,10 @@ module.exports = (grunt) ->
     result  = []
     
     for file in files
-      continue unless file.match(/app\/views\/.+\.coffee$/)
+      continue unless file.match(/app\/templates\/.+\.coffee$/)
       continue unless file.match(/\.coffee$/)
       # @todo tmp, dont need these for the client
-      continue if file.match('layout/application') || file.match('shared')
+      continue if file.match('layout/application')# || file.match('shared')
       result.push [file.replace(/\.coffee$/, ""), fs.readFileSync(file)]
       
     template      = "Tower.View.cache =\n"
