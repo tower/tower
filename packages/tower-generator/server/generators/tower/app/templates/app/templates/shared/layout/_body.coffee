@@ -4,15 +4,15 @@ if hasContentFor 'templates'
 nav id: 'navigation', class: 'navbar', role: 'navigation', ->
   div class: 'navbar-inner', ->
     div class: 'container', ->
-      partial 'shared/navigation'
+      partial 'layout/navigation'
 
 header id: 'header', class: 'header', role: 'banner', ->
   div class: 'container', ->
-    partial 'shared/header'
+    partial 'layout/header'
 
 section id: "flash", role: "banner", ->
   div class: "container", ->
-    partial "shared/flash"
+    partial "layout/flash"
 
 section id: 'content', role: 'main', ->
   div class: 'container', ->
@@ -24,4 +24,4 @@ section id: 'content', role: 'main', ->
 
 footer id: 'footer', class: 'footer', role: 'contentinfo', ->
   div class: 'container', ->
-    partial 'shared/footer'
+    partial 'layout/footer'

@@ -109,12 +109,12 @@ Tower.ApplicationWatcher =
       new RegExp(_.regexpEscape(string))
 
     # this is a tmp solution, more robust coming later.
-    if path.match(pattern(_path.join('app', 'views')))
+    if path.match(pattern(_path.join('app', 'templates')))
       Tower.View.cache = {}
     else if path.match(pattern(_path.join('app', 'helpers')))
       @reloadPath path, =>
         @reloadPaths _path.join(Tower.root, 'app', 'controllers')
-    else if path.match(pattern(_path.join('config', 'assets.coffee')))
+    else if path.match(pattern(_path.join('config/server', 'assets.coffee')))
       @reloadPath path, (error, config) =>
         Tower.config.assets = config || {}
         Tower.ApplicationAssets.loadManifest()
@@ -129,7 +129,7 @@ Tower.ApplicationWatcher =
       klassName = klassName.split('.')
       klassName.pop()
       klassName = klassName.join('.')
-      klassName = Tower._.camelize(klassName)
+      klassName = _.camelize(klassName)
       klass = try Tower.constant(klassName)
       # the klass may not exist if you just created a blank file
       # and then defined a model (which means the file was "updated")
@@ -139,15 +139,18 @@ Tower.ApplicationWatcher =
         subclasses = klass.subclasses.getEach('__name__')
 
         for name, index in subclasses
-          subclasses[index] = _path.join(directory, Tower._.camelize(name, true))
+          subclasses[index] = _path.join(directory, _.camelize(name, true))
 
         @reloadPath path, =>
           @reloadPaths subclasses, =>
             if isController
-              @reloadPath('config/routes.coffee')
-    else if path.match(/config\/routes\.(?:coffee|js|iced)/)
+              # @todo refactor
+              paths = Tower.Application.instance()._buildRequirePaths('app/config', 'routes')
+              for path in paths
+                try @reloadPath(path)
+    else if path.match(/config\/(server|shared)\/routes\.(?:coffee|js|iced)/)
       @reloadPath(path)
-    else if path.match(/config\/locales\/(\w+)\.(?:coffee|js|iced)/)
+    else if path.match(/config\/(server|shared)\/locales\/(\w+)\.(?:coffee|js|iced)/)
       language = RegExp.$1
       @reloadPath path, (error, locale) =>
         Tower.SupportI18n.load(locale, language)

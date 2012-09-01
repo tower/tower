@@ -15,8 +15,6 @@ Tower.ControllerMetadata =
     metadata: ->
       @_metadata ||= {}
 
-      _ = Tower._
-
       className               = @className()
       metadata                = @_metadata[className]
       return metadata if metadata

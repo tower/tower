@@ -41,7 +41,6 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
             @template "bootstrap.#{scriptType}"
             @template "credentials.#{scriptType}"
             @template "databases.#{scriptType}"
-            @template "routes.#{scriptType}"
             @template "session.#{scriptType}"
 
             @inside 'environments', ->
@@ -56,6 +55,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
             @template "application.#{scriptType}"
             @inside 'locales', ->
               @template "en.#{scriptType}"
+            @template "routes.#{scriptType}"
 
         @inside 'controllers', ->
           @inside 'client', ->

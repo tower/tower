@@ -5,7 +5,7 @@ module.exports =
       # "/config/environments/#{Tower.env}"
       '/app/config/client/bootstrap'
       '/app/config/client/watch'
-      '/app/config/client/routes'
+      '/app/config/shared/routes'
       '/app/controllers/client/applicationController'
       '/templates'
       '/app/views/client/layout/application'

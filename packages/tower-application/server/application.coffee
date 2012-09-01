@@ -1,5 +1,3 @@
-connect = require('express')
-File    = require('pathfinder').File
 fs      = require('fs')
 _path   = require('path')
 server  = null
@@ -84,13 +82,14 @@ class Tower.Application extends Tower.Engine
   teardown: ->
     @server.stack.length = 0 # remove middleware
     Tower.Route.clear()
-    delete require.cache[require.resolve("#{Tower.root}/app/config/server/routes")]
+    # delete require.cache[require.resolve("#{Tower.root}/app/config/server/routes")]
 
   handle: ->
     @server.handle arguments...
 
   use: ->
     args        = _.args(arguments)
+    connect     = require('express')
 
     if typeof args[0] == 'string'
       middleware  = args.shift()
@@ -310,13 +309,27 @@ class Tower.Application extends Tower.Engine
   _selectPaths: (pathStart, pathEnd, type = 'script') ->
     pattern = @_typeToPattern[type]
 
+    wrench  = Tower.module('wrench')
+
     paths = []
-    for requirePath in @_buildRequirePaths(pathStart, pathEnd)
-      paths = paths.concat(File.files(requirePath))
+
+    for requirePath, index in @_buildRequirePaths(pathStart, pathEnd)
+      # The first path we only want the top-level files (i.e. no ./client)
+      continue unless fs.existsSync(requirePath)
+      if index == 0
+        paths = paths.concat @_selectNestedPaths(requirePath, fs.readdirSync(requirePath))
+      else
+        paths = paths.concat @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath))
 
     paths = _.select paths, (path) -> path.match(pattern)
     
     paths
+
+  _selectNestedPaths: (dir, paths) ->
+    _.select _.map(paths, (path) ->
+      _path.join(dir, path)
+    ), (path) ->
+      !fs.statSync(path).isDirectory()
 
   # Paths to match against
   _typeToPattern:

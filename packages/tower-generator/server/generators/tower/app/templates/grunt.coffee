@@ -129,12 +129,16 @@ module.exports = (grunt) ->
 
   # CoffeeScript files
   files = file.expand([
-    'app/!(views)/**/*.coffee'
+    'app/!(templates)/**/*.coffee'
     'test/**/*.coffee'
-    'config/locales/**/*.coffee'
-    'config/application.coffee'
-    'config/routes.coffee'
-    'config/assets.coffee'
+    'config/shared/locales/**/*.coffee'
+    'config/server/locales/**/*.coffee'
+    'config/shared/application.coffee'
+    'config/server/application.coffee'
+    'config/shared/routes.coffee'
+    'config/server/routes.coffee'
+    'config/shared/assets.coffee'
+    'config/shared/assets.coffee'
   ])
 
   jsFiles = file.expand([
@@ -155,7 +159,7 @@ module.exports = (grunt) ->
         dest: 'public/stylesheets/vendor/stylesheets/bootstrap/bootstrap.css'
     watch:
       stylus:
-        files: ['app/client/stylesheets/application.styl']
+        files: ['app/stylesheets/client/application.styl']
         tasks: ['stylus']
     copy:
       js:
@@ -172,7 +176,7 @@ module.exports = (grunt) ->
           #'include css': true
           'paths': ['app/client/stylesheets']
         files:
-          'public/stylesheets/app/client/stylesheets/application.css': 'app/client/stylesheets/application.styl'
+          'public/stylesheets/app/stylesheets/client/application.css': 'app/stylesheets/client/application.styl'
 
   for name in files
     config.coffee[name] =

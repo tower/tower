@@ -33,6 +33,8 @@ Tower._modules =
   socketio:   -> try require 'socket.io'
   sockjs:     -> try require 'sockjs'
   _:          -> _
+  wrench:     -> require 'wrench'
+  File:       -> require('pathfinder').File
 
 require '../tower-support/server'
 require '../tower-application/server'
@@ -48,7 +50,7 @@ require '../tower-generator/server'
 
 Tower.watch = true
 
-Tower.View.store(new Tower.StoreFileSystem(['app/views']))
+Tower.View.store(new Tower.StoreFileSystem(['app/templates/shared', 'app/templates/server']))
 Tower.root                = process.cwd()
 Tower.publicPath          = process.cwd() + '/public'
 Tower.publicCacheDuration = 60 * 1000

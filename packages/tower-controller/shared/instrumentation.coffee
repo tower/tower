@@ -14,11 +14,11 @@ Tower.ControllerInstrumentation =
       params.conditions = JSON.parse(params.conditions) if typeof params.conditions == 'string'
 
       unless params.format
-        accept = @request?.headers?["accept"]
-        acceptFormat = accept?.split(",")
+        accept = @request?.headers?['accept']
+        acceptFormat = accept?.split(',')
 
         if accept is undefined
-          try params.format = require('mime').extension(request.header("content-type"))
+          try params.format = require('mime').extension(request.header('content-type'))
         else
           try params.format = require('mime').extension(acceptFormat[0])
 

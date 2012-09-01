@@ -13,22 +13,22 @@ _ = Tower._
 Tower.SupportCallbacks =
   ClassMethods:
     before: ->
-      @appendCallback "before", arguments...
+      @appendCallback 'before', arguments...
 
     # @example
     #   class App.User extends Tower.Model
-    #     @before "save", "beforeSave"
+    #     @before 'save', 'beforeSave'
     #
     #     beforeSave: (callback) ->
     #       # before
     #       callback.call @
     #       # after
     after: ->
-      @appendCallback "after", arguments...
+      @appendCallback 'after', arguments...
 
     callback: ->
       args = _.args(arguments)
-      args = ["after"].concat args unless args[0].match(/^(?:before|around|after)$/)
+      args = ['after'].concat args unless args[0].match(/^(?:before|around|after)$/)
       @appendCallback args...
 
     removeCallback: (action, phase, run) ->
@@ -36,14 +36,16 @@ Tower.SupportCallbacks =
 
     appendCallback: (phase) ->
       args = _.args(arguments, 1)
-      if typeof args[args.length - 1] != "object"
+      if typeof args[args.length - 1] != 'object'
         method    = args.pop()
-      if typeof args[args.length - 1] == "object"
+      if typeof args[args.length - 1] == 'object'
         options   = args.pop()
       method    ||= args.pop()
       options   ||= {}
 
       callbacks   = @callbacks()
+
+      console.log @toString() + 'appendCallback', phase, method, options
 
       for filter in args
         callback = callbacks[filter] ||= new Tower.SupportCallbacksChain
@@ -59,14 +61,18 @@ Tower.SupportCallbacks =
       @_callbacks ||= {}
 
   runCallbacks: (kind, options, block, complete) ->
-    if typeof options == "function"
+    if typeof options == 'function'
       complete  = block
       block     = options
       options   = {}
 
     options   ||= {}
 
+    console.log arguments
+
     chain = @constructor.callbacks()[kind]
+    console.log @constructor.callbacks()
+    console.log chain
 
     if chain
       chain.run(@, options, block, complete)
@@ -129,27 +135,27 @@ class Tower.SupportCallback
     @method       = method
     @conditions   = conditions
 
-    conditions.only   = _.castArray(conditions.only) if conditions.hasOwnProperty("only")
-    conditions.except = _.castArray(conditions.except) if conditions.hasOwnProperty("except")
+    conditions.only   = _.castArray(conditions.only) if conditions.hasOwnProperty('only')
+    conditions.except = _.castArray(conditions.except) if conditions.hasOwnProperty('except')
 
   run: (binding, options, next) ->
     conditions  = @conditions
 
-    if options && options.hasOwnProperty("name")
-      if conditions.hasOwnProperty("only")
+    if options && options.hasOwnProperty('name')
+      if conditions.hasOwnProperty('only')
         return next() if _.indexOf(conditions.only, options.name) == -1
-      else if conditions.hasOwnProperty("except")
+      else if conditions.hasOwnProperty('except')
         return next() if _.indexOf(conditions.except, options.name) != -1
 
     method      = @method
-    if typeof method == "string"
+    if typeof method == 'string'
       throw new Error("The method `#{method}` doesn't exist") unless binding[method]
       method      = binding[method]
 
     switch method.length
       when 0
         result = method.call binding
-        next(if result == false then new Error("Callback did not pass") else null)
+        next(if result == false then new Error('Callback did not pass') else null)
       else
         method.call binding, next
 
