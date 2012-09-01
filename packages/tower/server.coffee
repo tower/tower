@@ -3,6 +3,9 @@ require 'ember-metal-node'
 require 'ember-runtime-node'
 require 'ember-states-node'
 
+# @todo actually remove warning in pathfinder module
+require('path').existsSync = require('fs').existsSync
+
 require 'underscore.logger'
 
 global._ = require 'underscore'
