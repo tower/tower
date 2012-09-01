@@ -9,7 +9,7 @@
   },
 
   welcome: function() {
-    this.render('welcome', locals: {bootstrapData: bootstrapData});
+    this.render('welcome', {locals: {bootstrapData: bootstrapData}});
   },
 
   // Example of how you might bootstrap a one-page application.

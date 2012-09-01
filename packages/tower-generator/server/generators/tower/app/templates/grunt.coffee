@@ -15,7 +15,7 @@ module.exports = (grunt) ->
   grunt.registerMultiTask 'templates', 'Compile templates', ->
     name  = ""
     taskDone = @async()
-     
+    
     files   = grunt.file.expand(['app/templates/**/*.coffee'])
     result  = []
     
