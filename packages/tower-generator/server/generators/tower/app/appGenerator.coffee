@@ -15,48 +15,50 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
   run: ->
     {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
 
-    # @todo this is going to be based on command-line flag
-    ext       = 'coffee'
-    isCoffee  = ext == 'coffee'
+    scriptType        = @program.scriptType
+    isCoffee          = scriptType == 'coffee'
+    templateEngine    = @program.templateEngine
+    stylesheetEngine  = @program.stylesheetEngine || 'styl'
 
     @inside @app.name, '.', ->
       @template 'gitignore', '.gitignore' unless @program.skipGitfile
       @template 'npmignore', '.npmignore'
       @template 'slugignore', '.slugignore' unless @program.skipProcfile
 
-      @template 'cake', 'Cakefile'
+      @template 'cake', 'Cakefile' if isCoffee 
 
       @inside 'app', ->
         @inside 'config', ->
           @inside 'client', ->
-            @template "bootstrap.#{ext}"
-            @template "watch.#{ext}"
+            @template "bootstrap.#{scriptType}"
+            @template "watch.#{scriptType}"
 
-        @inside 'server', ->
-          @template "application.#{ext}"
-          @template "assets.#{ext}"
-          @template "bootstrap.#{ext}"
-          @template "credentials.#{ext}"
-          @template "databases.#{ext}"
-          @template "routes.#{ext}"
-          @template "session.#{ext}"
+          @inside 'server', ->
+            @template "application.#{scriptType}"
+            @template "assets.#{scriptType}"
+            @template "bootstrap.#{scriptType}"
+            @template "credentials.#{scriptType}"
+            @template "databases.#{scriptType}"
+            @template "routes.#{scriptType}"
+            @template "session.#{scriptType}"
 
-          @inside 'environments', ->
-            @template "development.#{ext}"
-            @template "production.#{ext}"
-            @template "test.#{ext}"
+            @inside 'environments', ->
+              if isCoffee # @todo tmp
+                @template "development.#{scriptType}"
+                @template "production.#{scriptType}"
+                @template "test.#{scriptType}"
 
-          @directory 'initializers'
+            @directory 'initializers'
 
-        @inside 'shared', ->
-          @inside 'locales', ->
-            @template "en.#{ext}"
+          @inside 'shared', ->
+            @inside 'locales', ->
+              @template "en.#{scriptType}"
 
         @inside 'controllers', ->
           @inside 'client', ->
-            @template "applicationController.#{ext}"
+            @template "applicationController.#{scriptType}"
           @inside 'server', ->
-            @template "applicationController.#{ext}"
+            @template "applicationController.#{scriptType}"
 
         @inside 'models', ->
           @directory 'client'
@@ -65,32 +67,32 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
 
         @inside 'stylesheets', ->
           @inside 'client', ->
-            @template 'application.styl'
+            @template "application.#{stylesheetEngine}"
           @inside 'server', ->
-            @template 'email.styl'
+            @template "email.#{stylesheetEngine}"
 
         @inside 'templates', ->
           @inside 'server', ->
             @inside 'layouts', ->
-              @template "application.#{ext}"
-              @template "_meta.#{ext}"
+              @template "application.#{scriptType}"
+              @template "_meta.#{scriptType}"
           @inside 'shared', ->
-            @template "welcome.#{ext}"
+            @template "welcome.#{scriptType}"
             @inside 'layouts', ->
-              @template "_body.#{ext}"
-              @template "_flash.#{ext}"
-              @template "_footer.#{ext}"
-              @template "_header.#{ext}"
-              @template "_navigation.#{ext}"
-              @template "_sidebar.#{ext}"
+              @template "_body.#{scriptType}"
+              @template "_flash.#{scriptType}"
+              @template "_footer.#{scriptType}"
+              @template "_header.#{scriptType}"
+              @template "_navigation.#{scriptType}"
+              @template "_sidebar.#{scriptType}"
 
         @inside 'views', ->
           @inside 'client', ->
             @inside 'layouts', ->
-              @template "application.#{ext}"
+              @template "application.#{scriptType}"
 
       @inside 'data', ->
-        @template "seeds.#{ext}"
+        @template "seeds.#{scriptType}"
 
       @directory 'lib'
       @directory 'log'
@@ -125,9 +127,9 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @directory 'factories'
         @directory 'features'
         @directory 'models'
-        @template "client.#{ext}"
+        @template "client.#{scriptType}"
         @template 'mocha.opts'
-        @template "server.#{ext}"
+        @template "server.#{scriptType}"
 
       @directory 'tmp'
       
@@ -143,7 +145,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
       @inside 'public/swfs', ->
         @get(remote, local) for remote, local of SWFS
 
-      @template "grunt.#{ext}", "grunt.#{ext}"
+      @template "grunt.#{scriptType}", "grunt.#{scriptType}"
 
       # github wiki
       @inside 'wiki', ->

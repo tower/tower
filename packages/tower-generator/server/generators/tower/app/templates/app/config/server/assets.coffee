@@ -1,14 +1,14 @@
 module.exports =
   javascripts:
     application: [
-      '/config/application'
+      '/app/config/shared/application'
       # "/config/environments/#{Tower.env}"
-      '/app/client/config/bootstrap'
-      '/app/client/config/watch'
-      '/config/routes'
-      '/app/client/controllers/applicationController'
+      '/app/config/client/bootstrap'
+      '/app/config/client/watch'
+      '/app/config/client/routes'
+      '/app/controllers/client/applicationController'
       '/templates'
-      '/app/client/views/layouts/application'
+      '/app/views/client/layouts/application'
     ]
 
     lib: [
@@ -53,7 +53,7 @@ module.exports =
 
   stylesheets:
     application: [
-      '/app/client/stylesheets/application'
+      '/app/stylesheets/client/application'
     ]
 
     lib: [

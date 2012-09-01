@@ -1,6 +1,7 @@
 connect = require('express')
 File    = require('pathfinder').File
 fs      = require('fs')
+_path   = require('path')
 server  = null
 io      = null
 _       = Tower._
@@ -25,6 +26,7 @@ class Tower.Application extends Tower.Engine
     'app/presenters'
     'app/mailers'
     'app/middleware'
+    'app/jobs'
   ]
 
   @configNames: [
@@ -37,11 +39,8 @@ class Tower.Application extends Tower.Engine
 
   @instance: ->
     unless @_instance
-      if Tower.isSinglePage
-        @_instance = @create()
-      else
-        app = require "#{Tower.root}/config/application"
-        @_instance ||= app.create()
+      app = require "#{Tower.root}/app/config/shared/application"
+      @_instance ||= app.create()
     @_instance
 
   @initializers: ->
@@ -85,7 +84,7 @@ class Tower.Application extends Tower.Engine
   teardown: ->
     @server.stack.length = 0 # remove middleware
     Tower.Route.clear()
-    delete require.cache[require.resolve("#{Tower.root}/config/routes")]
+    delete require.cache[require.resolve("#{Tower.root}/app/config/server/routes")]
 
   handle: ->
     @server.handle arguments...
@@ -216,20 +215,15 @@ class Tower.Application extends Tower.Engine
     Tower.ApplicationWatcher.watch()
 
   _loadBase: ->
-    require "#{Tower.root}/config/application"
-    require "#{Tower.root}/config/bootstrap"
+    @_requireAny 'app/config', 'application'
+    @_requireAny 'app/config', 'bootstrap'
 
   _loadPreinitializers: ->
-    @_requirePaths File.files("#{Tower.root}/config/preinitializers")
+    @_requirePaths @_selectPaths('app/config', 'preinitializers')
 
   _loadConfig: (options) ->
     for key in @constructor.configNames
-      config = null
-
-      try
-        config  = require("#{Tower.root}/config/#{key}")
-      catch error
-        config  = {}
+      config = @_requireFirst('app/config', key) || {}
 
       # need a way to get _ to work in the console, which uses _ for last returned value
       Tower.config[key] = config if _.isPresent(config)
@@ -250,25 +244,23 @@ class Tower.Application extends Tower.Engine
     Tower.ApplicationAssets.loadManifest()
 
   _loadLocales: ->
-    paths = File.files("#{Tower.root}/config/locales")
-    for path in paths
-      Tower.SupportI18n.load(path) if path.match(/\.(coffee|js|iced)$/)
+    Tower.SupportI18n.load(path) for path in @_selectPaths('app/config', 'locales')
 
   _loadEnvironment: ->
     # load initializers
-    try require "#{Tower.root}/config/environments/#{Tower.env}"
+    @_requireAny 'app/config', "environments/#{Tower.env}"
 
   _loadInitializers: ->
-    @_requirePaths File.files("#{Tower.root}/config/initializers")
+    @_requirePaths @_selectPaths('app/config', 'initializers')
 
   _loadMVC: ->
     for path in @constructor.autoloadPaths
       # @todo do something more robust, so you can autoload files or directories
       # continue if path.match(/app\/(?:helpers)/) # just did this above
       if path.match('app/controllers')
-        require "#{Tower.root}/app/controllers/applicationController"
+        @_requireAny 'app/controllers', 'applicationController'
 
-      @_requirePaths File.files("#{Tower.root}/#{path}")
+      @_requirePaths @_selectPaths(path)
 
   # In development mode, this is called on the first render.
   # 
@@ -281,7 +273,33 @@ class Tower.Application extends Tower.Engine
     done() if done
 
   _requirePaths: (paths) ->
-    for path in paths
-      require(path) if path.match(/\.(coffee|js|iced)$/)
+    require(path) for path in paths
+
+  _requireAny: (pathStart, pathEnd) ->
+    @_tryToRequire _path.join(Tower.root, pathStart, 'shared', pathEnd)
+    @_tryToRequire _path.join(Tower.root, pathStart, 'server', pathEnd)
+
+  _requireFirst: (pathStart, pathEnd) ->
+    @_tryToRequire(_path.join(Tower.root, pathStart, 'shared', pathEnd)) || 
+    @_tryToRequire(_path.join(Tower.root, pathStart, 'server', pathEnd))
+
+  # @todo try to optimize this
+  _tryToRequire: (path) ->
+    try require(path) # if fs.existsSync(path)
+
+  # @param [String] type 'script', 'stylesheet', 'template'
+  _selectPaths: (pathStart, pathEnd, type = 'script') ->
+    pattern = @_typeToPattern[type]
+
+    paths = File.files(_path.join(Tower.root, pathStart, 'shared', pathEnd))
+      .concat(File.files(_path.join(Tower.root, pathStart, 'server', pathEnd)))
+
+    _.select paths, (path) -> path.match(pattern)
+
+  # Paths to match against
+  _typeToPattern:
+    script:     /\.(coffee|js|iced)$/
+    stylesheet: /\.(css|less|styl|sass)$/
+    template:   /\.(jade|ejs|handlebars|html|eco|coffee)/
 
 module.exports = Tower.Application

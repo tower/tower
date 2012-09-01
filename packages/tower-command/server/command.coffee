@@ -1,3 +1,6 @@
+# @todo This should `require` the minimal amount of code possible, 
+#   to execute as fast as possible.
+# 
 # @module
 Tower.Command =
   # Short names to invoke commands.
@@ -16,7 +19,9 @@ Tower.Command =
     command = 'info' if !command || !!command.match(/^-/)
     command = @aliases[command] if @aliases.hasOwnProperty(command)
     #throw new Error('You must give tower a command (e.g. 'tower new my-app' or 'tower server')') unless command
-    command = new Tower['Command' + Tower.SupportString.camelize(command)](argv)
+    # @todo in the process of making the commands just functions instead of classes,
+    #   and so they don't require the Tower namespace directly, to speed up execution.
+    command = new Tower['Command' + _.camelize(command)](argv)
     command.run()
 
 module.exports = Tower.Command

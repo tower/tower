@@ -3,8 +3,8 @@ class Tower.GeneratorAssetsGenerator extends Tower.Generator
 
   run: ->
     @inside "app", '.', ->
-      @inside "client", '.', ->
-        @inside "stylesheets", '.', ->
+      @inside "stylesheets", '.', ->
+        @inside "client", '.', ->
           #@template "stylesheet.css", "#{@model.pluralName}.styl"
         #@inside "controllers", '.', ->
         #  @template "controller.coffee", "#{@model.pluralName}Controller.coffee"

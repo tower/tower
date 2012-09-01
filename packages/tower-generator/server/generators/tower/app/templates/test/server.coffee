@@ -1,6 +1,6 @@
 require 'tower'
 
-global.chai     = require "chai"
+global.chai     = require 'chai'
 global.assert   = chai.assert
 global.expect   = chai.expect
 global.sinon    = require 'sinon'
@@ -22,7 +22,7 @@ before (done) ->
 
 # Run this before each action
 beforeEach (done) ->
-  if Tower.client
+  if Tower.isClient
     Tower.StoreMemory.clean(done)
   else
     Tower.StoreMongodb.clean(done)
