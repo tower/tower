@@ -52,7 +52,7 @@ beforeEach (done) ->
   Tower.relativeRoot            = "test/example"
   Tower.publicPath              = "#{Tower.root}/public"
   Tower.View.engine             = "coffee"
-  Tower.View.store().loadPaths  = ["test/example/app/templates/shared"]
+  Tower.View.store().loadPaths  = ["test/example/app/templates/shared", "test/example/app/templates/server"]
   
   # @todo this doesn't look like it's running every time.
   Tower.Application.instance().initialize =>

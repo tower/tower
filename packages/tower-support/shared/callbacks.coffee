@@ -45,8 +45,6 @@ Tower.SupportCallbacks =
 
       callbacks   = @callbacks()
 
-      console.log @toString() + 'appendCallback', phase, method, options
-
       for filter in args
         callback = callbacks[filter] ||= new Tower.SupportCallbacksChain
         callback.push phase, method, options
@@ -68,11 +66,7 @@ Tower.SupportCallbacks =
 
     options   ||= {}
 
-    console.log arguments
-
     chain = @constructor.callbacks()[kind]
-    console.log @constructor.callbacks()
-    console.log chain
 
     if chain
       chain.run(@, options, block, complete)

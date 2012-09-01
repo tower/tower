@@ -314,10 +314,13 @@ class Tower.Application extends Tower.Engine
     paths = []
 
     for requirePath, index in @_buildRequirePaths(pathStart, pathEnd)
-      # The first path we only want the top-level files (i.e. no ./client)
+      # The first path we only want the non ./client files
       continue unless fs.existsSync(requirePath)
       if index == 0
-        paths = paths.concat @_selectNestedPaths(requirePath, fs.readdirSync(requirePath))
+        # fs.readdirSync(requirePath))
+        clientDir = _path.join(requirePath, 'client')
+        paths = paths.concat _.select @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath)), (path) ->
+          !path.match(clientDir)
       else
         paths = paths.concat @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath))
 
