@@ -10,7 +10,7 @@ describe 'Tower.StoreMongodb', ->
     Tower.StoreMongodb.config = __config
 
   test 'url', ->
-    config.url = "mongodb://heroku_user:asdfasdfasdf@data123.mongolab.com:29197/heroku_app"
+    config.url = 'mongodb://heroku_user:asdfasdfasdf@data123.mongolab.com:29197/heroku_app'
 
     expected =
       name: 'heroku_app'

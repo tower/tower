@@ -6,12 +6,30 @@ module.exports = (grunt) ->
 
   _     = grunt.utils._
   file  = grunt.file
+  _path = require('path')
 
   githubDownloadStore = null
 
   # CoffeeScript files
-  files = _.select file.expand(['packages/**/*.coffee']), (i) ->
+  srcPaths = _.select file.expand([
+    'packages/**/*.coffee'
+  ]), (i) ->
     !i.match('templates')
+
+  clientTestPaths = file.expand([
+    'test/cases/*/shared/**/*.coffee'
+    'test/cases/*/client/**/*.coffee'
+  ])
+
+  clientTestDestinationPath = 'test/example/public/javascripts'
+
+  clientTestMap = {}
+  testCasesPath = _path.relative(process.cwd(), 'test/cases')
+
+  clientTestPaths.forEach (path) ->
+    key   = path.replace(testCasesPath, '').split(_path.sep)[1]
+    array = clientTestMap[key] ||= []
+    array.push(path)
 
   towerFiles = ['lib/tower/client.js']
 
@@ -52,11 +70,16 @@ module.exports = (grunt) ->
         dest: 'dist/tower.min.js'
     coffee:
       all:
-        src: files
+        src: srcPaths
         dest: 'lib'
         strip: 'packages/'
         options:
           bare: true
+      tests:
+        src: clientTestPaths
+        dest: clientTestDestinationPath
+        options:
+          bare: false
     copy:
       packageJSON:
         src: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
@@ -74,6 +97,8 @@ module.exports = (grunt) ->
       client: {}
     bundleDependencies:
       client: {}
+    bundleTests:
+      client: {}
 
     #jshint:
     #  options:
@@ -88,7 +113,7 @@ module.exports = (grunt) ->
     #    eqnull: true
     #    browser: true
 
-  files.forEach (name) ->
+  srcPaths.forEach (name) ->
     config.coffee[name] =
       src: name
       dest: 'lib'
@@ -99,10 +124,38 @@ module.exports = (grunt) ->
       files: [name]
       tasks: ["coffee:#{name}"]
 
+  # clientTestPaths.forEach (name) ->
+
+  concatTestsCommand = []
+
+  for key, value of clientTestMap
+    dest = _path.join(clientTestDestinationPath, 'test/cases', key + '.js')
+
+    concatTestCommand = "concat:#{key}Tests"
+    concatTestsCommand.push(concatTestCommand)
+
+    for name in value
+      config.coffee[name] =
+        src: name
+        dest: clientTestDestinationPath
+        options:
+          bare: false
+      config.watch[name] =
+        files: [name]
+        tasks: ["coffee:#{name}", concatTestCommand]
+
+    src = _.map value, (i) ->
+      _path.join(clientTestDestinationPath, i).replace(/\.coffee$/, '.js')
+    
+    config.concat["#{key}Tests"] =
+      src: src
+      dest: dest
+
   grunt.initConfig(config)
 
   #grunt.loadNpmTasks 'grunt-coffee'
-  grunt.registerTask 'default', 'coffee:all copy build:client'
+  grunt.registerTask 'concat:tests', concatTestsCommand.join(' ')
+  grunt.registerTask 'default', 'coffee:all copy build:client coffee:tests concat:tests'
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
 

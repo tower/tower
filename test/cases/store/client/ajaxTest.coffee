@@ -1,114 +1,107 @@
-if Tower.isClient
-  describeWith = (store) ->
-    describe "Tower.StoreTransportAjax (#{store.className()})", ->
-      beforeEach ->
-        App.User.store(store)
+describe 'Tower.StoreTransportAjax', ->
+  describe 'params', ->
+    test 'conditions', ->
+      criteria  = App.User.where(firstName: '=~': 'L').compile()
 
-      describe 'params', ->
-        test 'conditions', ->
-          criteria  = App.User.where(firstName: '=~': 'L').compile()
+      params    = criteria.toJSON()
 
-          params    = criteria.toJSON()
+      expected  =
+        conditions:
+          firstName: '=~': 'L'
 
-          expected  =
-            conditions:
-              firstName: '=~': 'L'
+      assert.deepEqual expected, params
 
-          assert.deepEqual expected, params
+    test 'conditions, pagination and sort', ->
+      criteria  = App.User.where(firstName: {'=~': 'L'}, lastName: {'=~': 'l'}).page(2).limit(2).asc('lastName').compile()
 
-        test 'conditions, pagination and sort', ->
-          criteria  = App.User.where(firstName: {'=~': 'L'}, lastName: {'=~': 'l'}).page(2).limit(2).asc('lastName').compile()
+      params    = criteria.toJSON()
 
-          params    = criteria.toJSON()
+      expected  =
+        conditions:
+          firstName: '=~': 'L'
+          lastName: '=~': 'l'
+        limit: 2
+        page: 2
+        sort: [
+          ['lastName', 'asc']
+        ]
 
-          expected  =
-            conditions:
-              firstName: '=~': 'L'
-              lastName: '=~': 'l'
-            limit: 2
-            page: 2
-            sort: [
-              ['lastName', 'asc']
-            ]
+      assert.deepEqual expected, params
 
-          assert.deepEqual expected, params
+  describe 'create', ->
+    test 'success', (done) ->
+      user = App.User.build(firstName: 'Lance')
 
-      describe 'create', ->
-        test 'success', (done) ->
-          user = App.User.build(firstName: 'Lance')
+      Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
+        console.log updatedUser.get('id')
+        assert.ok !error
+        done()
 
-          Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
-            console.log updatedUser.get('id')
-            assert.ok !error
-            done()
-
-        #test 'failure', (done) ->
-        #  user = App.User.build()
+    #test 'failure', (done) ->
+    #  user = App.User.build()
 #
-        #  Tower.StoreTransportAjax.create user, (error, updatedUser) =>
-        #    assert.ok !error
-        #    done()
+    #  Tower.StoreTransportAjax.create user, (error, updatedUser) =>
+    #    assert.ok !error
+    #    done()
 #
-        #test 'error (before it even makes a request)', (done) ->
-        #  user = {}
+    #test 'error (before it even makes a request)', (done) ->
+    #  user = {}
 #
-        #  Tower.StoreTransportAjax.create user, (error, updatedUser) =>
-        #    assert.ok !error
-        #   done()
+    #  Tower.StoreTransportAjax.create user, (error, updatedUser) =>
+    #    assert.ok !error
+    #   done()
 
-      describe 'update', ->
-        user = null
+  describe 'update', ->
+    user = null
 
-        # need to create some records on the server first...
-        beforeEach (done) ->
-          user = App.User.build(firstName: 'Lance')
+    # need to create some records on the server first...
+    beforeEach (done) ->
+      user = App.User.build(firstName: 'Lance')
 
-          Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
-            user = updatedUser
+      Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
+        user = updatedUser
 
-            done()
+        done()
 
-        test 'success', (done) ->
-          user.set('firstName', 'John')
+    test 'success', (done) ->
+      user.set('firstName', 'John')
 
-          console.log user
+      console.log user
 
-          Tower.StoreTransportAjax.update user, (error, updatedUser) =>
-            console.log error
-            console.log updatedUser
-            done()
+      Tower.StoreTransportAjax.update user, (error, updatedUser) =>
+        console.log error
+        console.log updatedUser
+        done()
 
-        test 'failure'
-        test 'error'
+    test 'failure'
+    test 'error'
 
-      describe 'destroy', ->
-        user = null
+  describe 'destroy', ->
+    user = null
 
-        # need to create some records on the server first...
-        beforeEach (done) ->
-          user = App.User.build(firstName: 'Lance')
+    # need to create some records on the server first...
+    beforeEach (done) ->
+      user = App.User.build(firstName: 'Lance')
 
-          Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
-            user = updatedUser
+      Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
+        user = updatedUser
 
-            done()
+        done()
 
-        test 'success', (done) ->
-          Tower.StoreTransportAjax.destroy user, (error, destroyedUser) =>
-            console.log error
-            console.log destroyedUser
-            done()
+    test 'success', (done) ->
+      Tower.StoreTransportAjax.destroy user, (error, destroyedUser) =>
+        console.log error
+        console.log destroyedUser
+        done()
 
-        test 'failure'
-        test 'error'
+    test 'failure'
+    test 'error'
 
-      describe 'find', ->
-        test 'conditions', (done) ->
-          criteria  = App.User.where(firstName: 'L').compile()
-          
-          Tower.StoreTransportAjax.find criteria, (error, data) =>
-            console.log error.stack if error
-            console.log data
-            done()
-
-  describeWith(Tower.StoreMemory)
+  describe 'find', ->
+    test 'conditions', (done) ->
+      criteria  = App.User.where(firstName: 'L').compile()
+      
+      Tower.StoreTransportAjax.find criteria, (error, data) =>
+        console.log error.stack if error
+        console.log data
+        done()

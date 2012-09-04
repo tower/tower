@@ -1,5 +1,3 @@
-window.designer ||= new DesignIO("client", port: 4181)
-
 mocha.setup(ui: 'bdd', timeout: 5000)
 
 global.assert = chai.assert
@@ -13,7 +11,7 @@ global.naughty        = null
 
 $ ->
   app = Tower.Application.instance()
-  Tower.env = "test"
+  Tower.env = 'test'
   
   before (done) ->
     app.initialize()

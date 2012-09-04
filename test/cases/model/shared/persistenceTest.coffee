@@ -1,15 +1,6 @@
 user      = null
 
-Array.prototype.ARRAY_TO_STRING = ->
-  result  = '['
-  length  = @length - 1
-  @forEach (item, index) ->
-    result += item.toString()
-    result += ', ' if (index != length)
-  result += ']'
-  result
-
-describe "Tower.ModelPersistence", ->
+describe 'Tower.ModelPersistence', ->
   describe 'new', ->
     test '#isNew', ->
       user = new App.User

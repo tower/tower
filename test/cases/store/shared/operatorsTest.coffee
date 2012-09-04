@@ -1,13 +1,13 @@
 class App.OperatorsTest extends Tower.Model
-  @field "string", type: "String"
-  @field "integer", type: "Integer"
-  @field "float", type: "Float"
-  @field "date", type: "Date"
-  @field "object", type: "Object", default: {}
-  @field "arrayString", type: ["String"], default: []
-  @field "arrayObject", type: ["Object"], default: []
+  @field 'string', type: 'String'
+  @field 'integer', type: 'Integer'
+  @field 'float', type: 'Float'
+  @field 'date', type: 'Date'
+  @field 'object', type: 'Object', default: {}
+  @field 'arrayString', type: ['String'], default: []
+  @field 'arrayObject', type: ['Object'], default: []
 
-describe "Tower.StoreOperators", ->
+describe 'Tower.StoreOperators', ->
   o = Tower.StoreOperators
   r = null
   t = null

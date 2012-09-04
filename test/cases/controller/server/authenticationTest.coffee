@@ -1,2 +1,2 @@
-describe "Tower.ControllerAuthentication", ->
+describe 'Tower.ControllerAuthentication', ->
   # http://lance:viatropos@local

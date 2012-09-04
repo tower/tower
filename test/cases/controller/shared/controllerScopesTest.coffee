@@ -1,15 +1,8 @@
-class App.Controller_Scopes_MetdataController extends Tower.Controller
-  @resource 'post'
-
-  currentUser: Ember.computed ->
-    user = App.User.build()
-    user.set('id', 5)
-    user
-
 describe 'Tower.ControllerScopes', ->
-  C = App.Controller_Scopes_MetdataController
+  C = null
 
   beforeEach ->
+    C = App.ControllerScopesMetdataController
     C.metadata().scopes = {}
     C.metadata().scopeNames = []
     C._instance = undefined
