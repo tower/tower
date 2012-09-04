@@ -75,6 +75,8 @@ You are free to contribute any of these features in any order… I'm more of a f
 ### 0.4.2 (folders)
 
 - standardize file structure for apps
+- client-side test setup (with phantomjs)
+- move tests to model/shared, etc.
 
 <a name="0.4.3" href="0.4.3"></a>
 
@@ -103,6 +105,8 @@ You are free to contribute any of these features in any order… I'm more of a f
 - namespaced controllers
 - update to express 3.0
 - *rails like flash messages
+- rename flattened namespaces (e.g. change `Tower.ModelCursor` to `Tower.Cursor`, which was originally `Tower.Model.Cursor`)
+- standardize folder structure for app tests
 
 <a name="0.4.4" href="0.4.4"></a>
 
@@ -319,3 +323,8 @@ These are next, larger features.  These will be included in earlier releases if 
 - need to figure out how to append fields to a model base class after the other models have been subclassed.
 - convert modules to `Ember.Mixin` objects. 
 - convert all `class X` in tower to `.extend`, just javascript
+
+## Helpful Libraries
+
+- https://github.com/isaacs/rimraf (removing files cross platform)
+- https://github.com/paulmillr/chokidar

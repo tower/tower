@@ -91,9 +91,9 @@ _ = Tower._
 # 
 # I want this to be an array now, no longer a cursor.
 class Tower.ModelCursor extends Tower.Collection
-  isCursor: true
 
-  @make: ->
+Tower.ModelCursor.reopenClass
+  make: ->
     #if Ember.EXTEND_PROTOTYPES
     #  array = []
     #  array.isCursor = true
@@ -102,6 +102,10 @@ class Tower.ModelCursor extends Tower.Collection
     cursor = @create()
     cursor.set('content', Ember.A([]))
     cursor
+
+Tower.ModelCursor.reopen
+  defaultLimit: 20
+  isCursor:     true
 
   init: (attr = {}) ->
     attr.content ||= Ember.A([]) if Tower.isClient

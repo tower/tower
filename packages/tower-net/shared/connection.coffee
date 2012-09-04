@@ -7,22 +7,25 @@
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
 class Tower.NetConnection extends Tower.Class
+
+Tower.NetConnection.reopenClass
   # still figuring out how to organize this stuff...
-  @transport:   undefined
-  @controllers: []
-  @handlers:    Ember.Map.create()
+  transport:   undefined
+  controllers: []
+  handlers:    Ember.Map.create()
 
   # Try socket.io, then sockjs
-  @initialize: ->
+  initialize: ->
     if Tower.module('socketio')
       @reopenClass Tower.NetConnectionSocketio
     else
       @reopenClass Tower.NetConnectionSockjs
 
   # @addHandler '/posts/something'
-  @addHandler: (name, handler) ->
+  addHandler: (name, handler) ->
     @handlers.set(name, handler)
 
+Tower.NetConnection.reopen
   registerHandlers: ->
     @constructor.handlers.forEach (eventType, handler) =>
       @on(eventType, handler)

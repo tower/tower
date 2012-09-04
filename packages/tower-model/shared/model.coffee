@@ -11,6 +11,7 @@ _ = Tower._
 class Tower.Model extends Tower.Class
   @reopen Ember.Evented
 
+Tower.Model.reopen
   errors: null
   readOnly: false
   previousChanges: undefined

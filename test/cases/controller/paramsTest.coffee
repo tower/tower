@@ -1,6 +1,4 @@
-# make sure params as strings get properly serialized (integration test)
-
-describe "Tower.ControllerParams", ->
+describe 'Tower.ControllerParams', ->
   beforeEach (done) ->
     # for travisci... for some reason there is a post created, not sure why
     App.Post.destroy =>

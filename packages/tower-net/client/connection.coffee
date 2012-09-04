@@ -7,7 +7,9 @@
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
 class Tower.NetConnection extends Tower.NetConnection
-  @connect: (socket, callback) ->
+
+Tower.NetConnection.reopenClass
+  connect: (socket, callback) ->
     socket.on 'connect', =>
       id = @getId(socket)
       connection = Tower.NetConnection.create(socket: socket).connect()
@@ -16,12 +18,13 @@ class Tower.NetConnection extends Tower.NetConnection
       Tower.connections[id] = connection
       callback(null, connection) if callback
 
-  @disconnect: ->
+  disconnect: ->
     return unless Tower.connection
 
     Tower.connection.destroy =>
       Tower.connection = undefined
 
+Tower.NetConnection.reopen
   connect: ->
     # tmp solution to get data syncing working, then will refactor/robustify
     @on 'sync', (data) =>

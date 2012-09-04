@@ -1,12 +1,11 @@
 // node test/example/server --static true
+process.env.TOWER_ROOT = __dirname;
 
 require("coffee-script");
-require("../../lib/tower")
+require("../../lib/tower");
 
-Tower.root = process.cwd() + '/test/example'
-Tower.publicPath    = Tower.root + "/public"
 Tower.View.engine = "coffee"
-Tower.View.store().loadPaths = ["test/example/app/views"]
+Tower.View.store().loadPaths = ["test/example/app/templates"]
 
 Tower.watch = false
 

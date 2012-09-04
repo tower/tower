@@ -594,3 +594,19 @@ App.indexPostComments(postId: 1) # /posts/1/comments
 - `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)
 - todo: need to test installing different versions of node with https://github.com/creationix/nvm
 - https://gist.github.com/1398757
+
+## Contributing to Tower
+
+### Running Tests
+
+Run server tests:
+
+```
+make test
+```
+
+To run client tests, first start the test server on port `3210`, and then run phantomjs:
+
+```
+node test/example -p 3210
+```
