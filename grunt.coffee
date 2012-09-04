@@ -88,7 +88,7 @@ module.exports = (grunt) ->
       clientForTests:
         src: ['dist/tower.js']
         strip: 'dist/'
-        dest: _path.join(clientTestDestinationPath, 'vendor/javascripts')
+        dest: _path.join('test/example', 'vendor/javascripts')
     watch:
       packageJSON:
         files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
@@ -146,7 +146,7 @@ module.exports = (grunt) ->
           bare: false
       config.watch[name] =
         files: [name]
-        tasks: ["coffee:#{name}", concatTestCommand]
+        tasks: ["coffee:#{name}"]#, concatTestCommand]
 
     src = _.map value, (i) ->
       _path.join(clientTestDestinationPath, i).replace(/\.coffee$/, '.js')
@@ -154,6 +154,10 @@ module.exports = (grunt) ->
     config.concat["#{key}Tests"] =
       src: src
       dest: dest
+
+    # @todo need to copy file to test/x when it changes
+    #for name in src
+    #  config.concat[name]
 
   grunt.initConfig(config)
 

@@ -329,7 +329,8 @@ describe 'other', ->
 
       done()
 
-  if Tower.store.className() == 'Memory'
+  # @todo tmp hack
+  if Tower.isServer && Tower.store.className() == 'Memory'
     test 'that client id is replaced', (done) ->
       id    = 'random client id'
       user.set('_cid', id)

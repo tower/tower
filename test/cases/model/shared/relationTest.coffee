@@ -2,11 +2,11 @@ membership  = null
 group       = null
 user        = null
 
-describe "Tower.ModelRelation", ->
+describe 'Tower.ModelRelation', ->
   beforeEach (done) ->
     async.series [
       (callback) =>
-        App.User.create firstName: "Lance", (error, record) =>
+        App.User.create firstName: 'Lance', (error, record) =>
           user = record
           callback()
       (callback) =>
@@ -22,16 +22,16 @@ describe "Tower.ModelRelation", ->
   
   describe 'inverseOf', ->
     test 'noInverse_noInverse', ->
-      assert.notEqual "noInverse_noInverse", try App.Parent.relation("noInverse_noInverse").inverse().name
+      assert.notEqual 'noInverse_noInverse', try App.Parent.relation('noInverse_noInverse').inverse().name
       
     test 'parent: noInverse_withInverse, child: withInverse_noInverse', ->
-      assert.equal "withInverse_noInverse", App.Parent.relation("noInverse_withInverse").inverse().name
+      assert.equal 'withInverse_noInverse', App.Parent.relation('noInverse_withInverse').inverse().name
       
     test 'withInverse_withInverse', ->
-      assert.equal "withInverse_withInverse", App.Parent.relation("withInverse_withInverse").inverse().name
+      assert.equal 'withInverse_withInverse', App.Parent.relation('withInverse_withInverse').inverse().name
       
     test 'parent: withInverse_noInverse, child: noInverse_withInverse', ->
-      assert.equal "noInverse_withInverse", App.Parent.relation("withInverse_noInverse").inverse().name
+      assert.equal 'noInverse_withInverse', App.Parent.relation('withInverse_noInverse').inverse().name
 
   describe 'HasMany', ->
     describe '.create', ->
@@ -50,7 +50,7 @@ describe "Tower.ModelRelation", ->
         cursor = user.get('polymorphicMemberships').cursor
         cursor.compileForInsert()
         
-        assert.deepEqual cursor.conditions(), { joinableId: user.get('id'), joinableType: "User" }
+        assert.deepEqual cursor.conditions(), { joinableId: user.get('id'), joinableType: 'User' }
         
       test 'insert relationship model', (done) ->
         user.get('memberships').create groupId: group.get('id'), (error, membership) =>
@@ -70,7 +70,7 @@ describe "Tower.ModelRelation", ->
         assert.deepEqual cursor.conditions(), { userId: user.get('id') }
 
       test 'update relationship model', (done) ->
-        user.get('memberships').update kind: "guest", (error, memberships) =>
+        user.get('memberships').update kind: 'guest', (error, memberships) =>
           assert.equal memberships.length, 1
           assert.equal memberships[0].get('kind'), 'guest'
           App.Membership.count (error, count) =>
@@ -98,7 +98,7 @@ describe "Tower.ModelRelation", ->
             done()
             
       #test 'destroy relationship model if parent is destroyed (dependent: true)', (done) ->
-      #  App.User.create firstName: "Lance", (error, user) =>
+      #  App.User.create firstName: 'Lance', (error, user) =>
       #    user.dependentMemberships().create =>
       #      user.destroy =>
       #        App.DependentMembership.count (error, count) =>
@@ -119,22 +119,22 @@ describe "Tower.ModelRelation", ->
         relation        = cursor.relation
         throughRelation = cursor.throughRelation
         
-        assert.equal throughRelation.type, "App.Membership"
-        assert.equal throughRelation.targetType, "App.Membership"
-        assert.equal throughRelation.name, "memberships"
-        assert.equal throughRelation.ownerType, "App.User"
-        assert.equal throughRelation.foreignKey, "userId"
+        assert.equal throughRelation.type, 'App.Membership'
+        assert.equal throughRelation.targetType, 'App.Membership'
+        assert.equal throughRelation.name, 'memberships'
+        assert.equal throughRelation.ownerType, 'App.User'
+        assert.equal throughRelation.foreignKey, 'userId'
         
         inverseRelation = relation.inverseThrough(throughRelation)
-        assert.equal inverseRelation.name, "group"
-        assert.equal inverseRelation.type, "App.Group"
-        assert.equal inverseRelation.foreignKey, "groupId"
+        assert.equal inverseRelation.name, 'group'
+        assert.equal inverseRelation.type, 'App.Group'
+        assert.equal inverseRelation.foreignKey, 'groupId'
         
       test 'insertThroughRelation', (done) ->
         cursor        = user.get('groups').cursor
         
         cursor.insertThroughRelation group, (error, record) =>
-          assert.equal record.constructor.className(), "Membership"
+          assert.equal record.constructor.className(), 'Membership'
           assert.equal record.get('groupId').toString(), group.get('id').toString()
           assert.equal record.get('userId').toString(), user.get('id').toString()
           done()
@@ -176,7 +176,7 @@ describe "Tower.ModelRelation", ->
   
     describe '.update', ->
       beforeEach (done) ->
-        user.get('groups').create {name: "Starbucks"}, {}, done
+        user.get('groups').create {name: 'Starbucks'}, {}, done
       
       test 'update all groups', (done) ->
         user.get('groups').update name: "Peet's", =>

@@ -3,7 +3,7 @@ describe 'Tower.StoreTransportAjax', ->
     test 'conditions', ->
       criteria  = App.User.where(firstName: '=~': 'L').compile()
 
-      params    = criteria.toJSON()
+      params    = criteria.toParams()
 
       expected  =
         conditions:
@@ -14,7 +14,7 @@ describe 'Tower.StoreTransportAjax', ->
     test 'conditions, pagination and sort', ->
       criteria  = App.User.where(firstName: {'=~': 'L'}, lastName: {'=~': 'l'}).page(2).limit(2).asc('lastName').compile()
 
-      params    = criteria.toJSON()
+      params    = criteria.toParams()
 
       expected  =
         conditions:

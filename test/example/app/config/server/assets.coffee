@@ -11,16 +11,17 @@ testCases   = _.select testCases, (path) ->
   return false if path.match(/\/test\/cases\/[^\/]+\.js/)
   true
   
-testModels  = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
+testFixtures = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
   
-testModels  = _.select testModels, (path) ->
-  path.match(/models|controllers/) && !path.match('client')
+testModels  = _.select testFixtures, (path) ->
+  path.match(/models\//)
 
-testModels = testModels.concat [
-  "/app/client/controllers/testUsersController"
-]
-  
+testControllers  = _.select testFixtures, (path) ->
+  path.match(/controllers\//)
+
+testControllers.push('/app/controllers/client/testUsersController')
+
 module.exports =
   javascripts:
     application: [
@@ -29,9 +30,9 @@ module.exports =
       '/app/config/client/bootstrap'
       '/app/config/shared/routes'
       '/app/controllers/client/applicationController'
-      '/templates'
+      # '/templates'
       '/app/views/client/layout/application'
-    ].concat(testModels)
+    ].concat(testModels).concat(testControllers)
     
     lib: [
       

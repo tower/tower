@@ -17,7 +17,7 @@ coordinates =
 placeCoordinates = coordinates.paris
 
 # @todo fix mongodb (one small conversion issue)
-if Tower.store.className() == 'Memory'
+if Tower.isClient || Tower.store.className() == 'Memory'
   describe "Tower.Geo", ->
     #test 'orderByDistance', ->
     #  data = []

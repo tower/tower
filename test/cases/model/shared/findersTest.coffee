@@ -2,8 +2,11 @@ describe "Tower.ModelFinders", ->
   beforeEach (done) ->
     # @todo I have no idea why adding this makes it work 
     # (b/c it's also in test/server.coffee beforeEach hook)
-    Tower.store.clean =>
-      done()
+    if Tower.isServer
+      Tower.store.clean =>
+        done()
+    else
+      App.Post.store().constructor.clean(done)
 
   #test 'exists', ->
   #  App.Post.exists 1, (error, result) -> assert.equal result, true
@@ -401,7 +404,8 @@ describe "Tower.ModelFinders", ->
         assert.equal posts[0].get('title').length, 6
         done()
 
-    if Tower.store.className() == 'Memory'
+    # @todo
+    if Tower.isServer && Tower.store.className() == 'Memory'
       test 'returns array/cursor', ->
         posts = App.Post.all()#page(2).asc('title').all()
         assert.equal posts.length, 18

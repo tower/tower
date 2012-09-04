@@ -2,18 +2,18 @@ record  = null
 data    = null
 
 class App.DataTest extends Tower.Model
-  @field "title"
-  @field "tags", type: "Array"
-  @field "likes", type: "Integer", default: 0
+  @field 'title'
+  @field 'tags', type: 'Array'
+  @field 'likes', type: 'Integer', default: 0
   
-  @hasMany "dataItemTests"
+  @hasMany 'dataItemTests'
   
 class App.DataItemTest extends Tower.Model
-  @field "title"
+  @field 'title'
   
-  @belongsTo "dataTest"
+  @belongsTo 'dataTest'
 
-describe "Tower.ModelData", ->
+describe 'Tower.ModelData', ->
   describe 'data', ->
     beforeEach ->
       record  = App.DataTest.build()

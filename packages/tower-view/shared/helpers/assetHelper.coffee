@@ -1,9 +1,11 @@
+_ = Tower._
+
 # @mixin
 # @todo make this work in not just coffeecup but all of them.
 Tower.ViewAssetHelper =
   javascripts: ->
-    sources = Tower._.args(arguments)
-    options = Tower._.extractOptions(sources)
+    sources = _.args(arguments)
+    options = _.extractOptions(sources)
     options.namespace = 'javascripts'
     options.extension = 'js'
     paths = _extractAssetPaths sources, options
@@ -40,6 +42,7 @@ Tower.ViewAssetHelper =
 
     if Tower.env == 'production'
       manifest  = Tower.assetManifest
+      # @todo potentially some caching here, key: [sources]
       for source in sources
         unless !!source.match(/^(http|\/{2})/)
           continue unless assets[source]?
@@ -57,6 +60,15 @@ Tower.ViewAssetHelper =
           if paths
             for path in paths
               result.push("/#{namespace}#{path}.#{extension}")
+
+      # @todo for all the places using functionality like `only` and `except`,
+      #   it should be able to handle an array of glob paths and regexps.
+      only = options.only
+      only = new RegExp(only.join('|')) if _.isArray(only)
+
+      if _.isRegExp(only)
+        result = _.select result, (source) ->
+          !!source.match(only)
 
     result
 

@@ -1,4 +1,4 @@
-describe "Tower.ModelIndexing", ->
+describe 'Tower.ModelIndexing', ->
   test '.index()', (done) ->
     indexes = App.Project.indexes()
     

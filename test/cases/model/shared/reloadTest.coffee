@@ -1,4 +1,4 @@
-describe "Tower.Model#reload", ->
+describe 'Tower.Model#reload', ->
   user = null
   referenceUser = null
 

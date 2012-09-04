@@ -4,7 +4,7 @@ criteria  = null
 user      = null
 record    = null
 
-describe "Tower.ModelValidation", ->
+describe 'Tower.ModelValidation', ->
   beforeEach (done) ->
     user    = App.User.build()
     user.set('id', 1)

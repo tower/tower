@@ -17,17 +17,10 @@ html ->
 
       # @todo tmp hack way of limiting what tests are run.
       if @params.test
-        tests   = _.map @params.test.split(/,\s+/), (i) ->
-          _.regexpEscape(i)
-
-        pattern = new RegExp(tests.join('|'), 'i')
-
-        for js in Tower.config.assets.javascripts.tests
-          if js.match(pattern)
-            javascriptTag "/javascripts#{js}.js"
+        javascripts 'tests', only: _.map(@params.test.split(/,\s*/), (i) -> _.regexpEscape(i))
       else
         javascripts 'tests'
 
     script "App.bootstrap(#{JSON.stringify(@bootstrapData, null, [])})" if @bootstrapData
     
-    div id: "mocha", ->
+    div id: 'mocha', ->

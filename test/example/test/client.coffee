@@ -1,4 +1,4 @@
-mocha.setup(ui: 'bdd', timeout: 5000)
+mocha.setup(ui: 'bdd', timeout: 2000)
 
 global.assert = chai.assert
 global.expect = chai.expect
@@ -9,9 +9,13 @@ global.__flash_getTopLocation     = null
 global.event_handlers = null
 global.naughty        = null
 
+assert.isPresent = (value) ->
+  assert.ok !!value
+
 $ ->
   app = Tower.Application.instance()
   Tower.env = 'test'
+  Tower.store = Tower.StoreMemory
   
   before (done) ->
     #app.initialize()
@@ -20,6 +24,6 @@ $ ->
 
   beforeEach (done) ->
     #Tower.Application.instance().initialize()
-    done()
+    Tower.store.clean(done)
   #mocha.globals ["__flash_getWindowLocation", "__flash_getTopLocation"]
   mocha.run()

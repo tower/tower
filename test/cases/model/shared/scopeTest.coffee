@@ -2,13 +2,13 @@ scope     = null
 criteria  = null
 user      = null
 
-describe "Tower.ModelScope", ->
+describe 'Tower.ModelScope', ->
   beforeEach (done) ->
     async.series [
       (callback) => 
-        App.User.insert id: 1, firstName: "Lance", callback
+        App.User.insert id: 1, firstName: 'Lance', callback
       (callback) =>
-        App.User.insert id: 2, firstName: "Dane", callback
+        App.User.insert id: 2, firstName: 'Dane', callback
     ], done
   
   test 'where(firstName: "Lance")', (done) ->
