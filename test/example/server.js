@@ -5,7 +5,8 @@ require("coffee-script");
 require("../../lib/tower");
 
 Tower.View.engine = "coffee"
-Tower.View.store().loadPaths = ["test/example/app/templates"]
+// must run `node server` relative to this test/example folder
+Tower.View.store().loadPaths = ["app/templates/shared", "app/templates/server"]
 
 Tower.watch = false
 

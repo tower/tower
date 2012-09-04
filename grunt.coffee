@@ -85,6 +85,10 @@ module.exports = (grunt) ->
         src: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         strip: 'packages/'
         dest: 'lib'
+      clientForTests:
+        src: ['dist/tower.js']
+        strip: 'dist/'
+        dest: _path.join(clientTestDestinationPath, 'vendor/javascripts')
     watch:
       packageJSON:
         files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
@@ -129,7 +133,7 @@ module.exports = (grunt) ->
   concatTestsCommand = []
 
   for key, value of clientTestMap
-    dest = _path.join(clientTestDestinationPath, 'test/cases', key + '.js')
+    dest = _path.join(clientTestDestinationPath, 'test/cases', key + 'Test.js')
 
     concatTestCommand = "concat:#{key}Tests"
     concatTestsCommand.push(concatTestCommand)
@@ -155,7 +159,7 @@ module.exports = (grunt) ->
 
   #grunt.loadNpmTasks 'grunt-coffee'
   grunt.registerTask 'concat:tests', concatTestsCommand.join(' ')
-  grunt.registerTask 'default', 'coffee:all copy build:client coffee:tests concat:tests'
+  grunt.registerTask 'default', 'coffee:all copy:packageJSON build:client copy:clientForTests coffee:tests concat:tests'
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
 
