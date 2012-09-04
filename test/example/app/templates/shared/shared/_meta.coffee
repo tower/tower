@@ -24,13 +24,14 @@ link href: "/favicon.png", rel: "icon shortcut-icon favicon"
 #if contentFor "headStyleSheets"
 #  yield "headStyleSheets"
 
-javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+script '''
+window.ENV                  = {};
+ENV.VIEW_PRESERVES_CONTEXT  = true;
+ENV.CP_DEFAULT_CACHEABLE    = true;
+ENV.FORCE_JQUERY            = true; // tmp, so ember doesn't require 1.7
+'''
+
+javascriptTag "https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"
   
 #if contentFor "headJavaScripts"
 #  yield "headJavaScripts"
-
-contentFor "bottom", ->  
-  javascripts "vendor" 
-  javascripts "lib", "application"
-  if Tower.env == "development"
-    javascripts "development"

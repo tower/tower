@@ -14,12 +14,12 @@ $ ->
   Tower.env = 'test'
   
   before (done) ->
-    app.initialize()
-    app.listen()
+    #app.initialize()
+    #app.listen()
     done()
 
   beforeEach (done) ->
-    Tower.Application.instance().initialize()
+    #Tower.Application.instance().initialize()
     done()
   #mocha.globals ["__flash_getWindowLocation", "__flash_getTopLocation"]
   mocha.run()

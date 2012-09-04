@@ -41,10 +41,9 @@ test/example/public/javascripts
 test/example/public/stylesheets
 test/example/vendor/**/*
 tmp
-<<<<<<< HEAD
+
 runtests.sh
 =======
 lib
 dist/
 config.json
->>>>>>> development
