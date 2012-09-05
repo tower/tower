@@ -25,8 +25,8 @@ Tower.ControllerResourceful =
       if typeof options == 'string'
         options                 =
           name: options
-          type: Tower._.camelize(options)
-          collectionName: Tower._.pluralize(options)
+          type: _.camelize(options)
+          collectionName: _.pluralize(options)
 
       metadata.resourceName     = options.name if options.name
 
@@ -58,9 +58,10 @@ Tower.ControllerResourceful =
       options ||= {}
 
       options.key = key
-      options.type ||= Tower._.camelize(options.key)
+      options.type ||= _.camelize(options.key)
 
-      @param "#{key}Id", exact: true
+      # @todo needs better support for `hasMany through`
+      @param "#{key}Id", exact: true, type: 'Id'
 
       belongsTo.push(options)
 
@@ -69,11 +70,11 @@ Tower.ControllerResourceful =
       belongsTo.length > 0
 
     actions: ->
-      args    = Tower._.flatten(_.args(arguments))
-      options = Tower._.extractOptions(args)
+      args    = _.flatten(_.args(arguments))
+      options = _.extractOptions(args)
 
       actions         = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy']
-      actionsToRemove = Tower._.difference(actions, args, options.except || [])
+      actionsToRemove = _.difference(actions, args, options.except || [])
 
       for action in actionsToRemove
         @[action] = null
@@ -193,7 +194,7 @@ Tower.ControllerResourceful =
       for relation in belongsTo
         param         = relation.param || "#{relation.key}Id"
         if params.hasOwnProperty(param)
-          relation = Tower._.extend({}, relation)
+          relation = _.extend({}, relation)
           relation.param = param
           return relation
       return null

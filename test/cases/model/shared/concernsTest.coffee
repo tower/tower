@@ -1,3 +1,3 @@
-#describe "Tower.ModelConcern", ->
+#describe "Tower.ModelMixin", ->
 #  test 'concern included', ->
-#    assert.ok App.Concernable.hasOwnProperty('welcome')
+#    assert.ok App.Mixinable.hasOwnProperty('welcome')

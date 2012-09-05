@@ -1,7 +1,7 @@
-App.EmailConcern =
+App.EmailMixin =
   ClassMethods:
     welcome: (id) ->
-      App.Concernable.find id, (error, record) =>
+      App.User.find id, (error, record) =>
         App.Notifier.welcome(record).deliver()
   
   welcome: ->

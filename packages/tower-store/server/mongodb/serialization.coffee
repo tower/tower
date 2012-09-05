@@ -130,6 +130,7 @@ Tower.StoreMongodbSerialization =
 
   # title: 'santa'
   # createdAt: '<': new Date()
+  # @todo DBref and objectId
   serializeConditions: (cursor) ->
     schema  = @schema()
     result  = {}

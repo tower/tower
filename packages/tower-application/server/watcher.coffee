@@ -60,7 +60,7 @@ Tower.ApplicationWatcher =
         if !Tower.Application.instance().isConsole && path.match(Tower.publicPath) || path.match(/\.styl$/)
           @clientFileUpdated(path)
         else
-          @fileUpdated(path)
+          @fileUpdated(path) unless path.match("#{_path.sep}client#{_path.sep}")
       else
         @fileDeleted(path)
     ).on('unlink', (path) =>
