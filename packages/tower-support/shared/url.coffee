@@ -159,6 +159,8 @@ Tower.SupportUrl =
     else
       result += path
 
+    result += ".#{options.format}" if options.format? && !result.match(new RegExp('\.' + options.format + '$'))
+
     result += "?#{Tower.SupportUrl.toQuery(params, schema)}" unless _.isBlank(params)
     result += "##{Tower.SupportUrl.toQuery(options.anchor)}" if options.anchor
     result

@@ -75,11 +75,17 @@ _.request = (method, path, options, callback) ->
   else
     newRequest
 
-global.testIndex = (url, params, block) ->
-  testRequest 'get', url, params, block
+global.testIndex = global.testShow = ->
+  testRequest 'get', arguments...
   
-global.testCreate = (url, params, block) ->
-  testRequest 'post', url, params, block
+global.testCreate = ->
+  testRequest 'post', arguments...
+
+global.testUpdate = ->
+  testRequest 'put', arguments...
+
+global.testDestroy = ->
+  testRequest 'del', arguments...
 
 # @example This is without the helper
 #   test '/posts.json', (done) ->
@@ -103,12 +109,40 @@ global.testCreate = (url, params, block) ->
 #     assert.equal result.slug, 'three'
 #
 #     done()
-global.testRequest = (method, url, params, block) ->
-  if typeof params == 'function'
-    block   = params
-    params  = {}
+# 
+# @example Overloading this method
+#   testShow '/posts/:id.json', urlFor(post)
+global.testRequest = (method, url, params, block, other) ->
+  description = url
 
-  test "#{url} #{JSON.stringify(params)}", (done) ->
+  if typeof params == 'function'
+    unless block? # both params and block are functions
+      block   = params
+      params  = {}
+  else if typeof params == 'string'
+    url     = params
+    if typeof block == 'object'
+      params  = block
+      block   = other
+    else
+      params  = {}
+
+  description += " #{JSON.stringify(params)}" if !!params && typeof params == 'object'
+
+  test description, (done) ->
+    # so we can wait until after the before blocks
+    params = params() if typeof params == 'function'
+    
+    if typeof params == 'string'
+      url     = params
+      params  = null
+
+    if typeof block == 'object'
+      params  = block
+      block   = other
+
+    params ||= {}
+
     _[method] url, params: params, (response) ->
       if block
         if block.length
