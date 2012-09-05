@@ -31,4 +31,4 @@ Tower.Controller.reopenClass extended: ->
   @
 
 require './server/renderers'
-require './shared/tst'
+require './shared/testHelper'

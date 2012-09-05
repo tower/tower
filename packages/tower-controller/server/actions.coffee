@@ -13,9 +13,11 @@ Tower.ControllerActions =
 
   # Default implementation for the 'create' action.
   create: (callback) ->
-    @_create (format) =>
-      format.html => @redirectTo action: 'show'
-      format.json => @render json: @resource, status: 200
+    @_create (success, failure) =>
+      success.html => @redirectTo action: 'show'
+      failure.html => @redirectTo action: 'show'
+      success.json => @render json: @resource, status: 200
+      failure.json => @render json: {errors: @resource.errors}, status: 404
 
   # Default implementation for the 'show' action.
   show: ->

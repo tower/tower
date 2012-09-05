@@ -15,6 +15,10 @@ class Tower.ControllerResponder
 
   respond: (callback) ->
     callback.call @controller, @ if callback
+    @_respond()
+
+  # @todo tmp hack, should be merged with `respond`
+  _respond: ->
     method  = @["_#{@controller.format}"]
     if method then method.call(@) else @toFormat()
 
@@ -31,6 +35,7 @@ class Tower.ControllerResponder
       else
         @displayErrors()
     catch error
+      console.log error
       @_apiBehavior(error)
 
   _navigationBehavior: (error) ->

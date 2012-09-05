@@ -20,10 +20,11 @@ Tower.startWithSocket = (port, callback) ->
   #app.io.set('transports', ['websocket'])
   app.server.listen Tower.port, callback
 
-Tower.stop = ->
+Tower.stop = (callback) ->
   Tower.port = 3010
   delete Tower.Controller.testCase
   Tower.Application.instance().server.close()
+  callback() if callback
 
 Tower.module('superagent').Request::make = (callback) ->
   @end (response) ->
@@ -74,3 +75,46 @@ _.request = (method, path, options, callback) ->
   else
     newRequest
 
+global.testIndex = (url, params, block) ->
+  testRequest 'get', url, params, block
+  
+global.testCreate = (url, params, block) ->
+  testRequest 'post', url, params, block
+
+# @example This is without the helper
+#   test '/posts.json', (done) ->
+#     params =
+#       post:
+#         title: 'Three'
+#   
+#     post '/posts.json', params: params, (response) =>
+#       result = response.body
+#   
+#       assert.equal result.title, 'Three'
+#       assert.equal result.slug, 'three'
+#   
+#       done()
+# 
+# @example This is with the helper
+#   testCreate '/posts.json', post: title: 'Three', (done) ->
+#     result = @result
+#
+#     assert.equal result.title, 'Three'
+#     assert.equal result.slug, 'three'
+#
+#     done()
+global.testRequest = (method, url, params, block) ->
+  if typeof params == 'function'
+    block   = params
+    params  = {}
+
+  test "#{url} #{JSON.stringify(params)}", (done) ->
+    _[method] url, params: params, (response) ->
+      if block
+        if block.length
+          block.call(response, done)
+        else
+          block.call(response)
+          done()
+      else
+        done()

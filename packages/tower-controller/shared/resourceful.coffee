@@ -92,6 +92,7 @@ Tower.ControllerResourceful =
       return @failure(error, callback) if error
       @respondWith scope.build(), callback
 
+  # @todo make this default
   respondWithStatus: (success, callback) ->
     options = records: (@resource || @collection)
 
@@ -102,9 +103,16 @@ Tower.ControllerResourceful =
       callback.call @, successResponder, failureResponder
 
       if success
-        successResponder[format].call @
+        successResponder._respond()
       else
-        failureResponder[format].call @, error
+        failureResponder._respond()
+
+      # format = @get('format')
+      # 
+      # if success
+      #   successResponder[format].call @, callback
+      # else
+      #   failureResponder[format].call @, callback
     else
       Tower.ControllerResponder.respond(@, options, callback)
 
