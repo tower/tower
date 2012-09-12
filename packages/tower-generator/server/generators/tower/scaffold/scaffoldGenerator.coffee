@@ -1,11 +1,12 @@
 class Tower.GeneratorScaffoldGenerator extends Tower.Generator
-  sourceRoot: __dirname
+  @reopen
+    sourceRoot: __dirname
 
-  run: ->
-    @generate "model"
-    @generate "view"
-    @generate "controller"
-    #@generate "helper"
-    @generate "assets"
+    run: ->
+      @generate "model"
+      @generate "view"
+      @generate "controller"
+      #@generate "helper"
+      @generate "assets"
 
 module.exports = Tower.GeneratorScaffoldGenerator

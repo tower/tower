@@ -7,90 +7,89 @@
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
 class Tower.NetConnection extends Tower.NetConnection
+  @reopenClass
+    connect: (socket, callback) ->
+      socket.on 'connect', =>
+        id = @getId(socket)
+        connection = Tower.NetConnection.create(socket: socket).connect()
+        connection.id = id
+        Tower.connection = connection
+        Tower.connections[id] = connection
+        callback(null, connection) if callback
 
-Tower.NetConnection.reopenClass
-  connect: (socket, callback) ->
-    socket.on 'connect', =>
-      id = @getId(socket)
-      connection = Tower.NetConnection.create(socket: socket).connect()
-      connection.id = id
-      Tower.connection = connection
-      Tower.connections[id] = connection
-      callback(null, connection) if callback
+    disconnect: ->
+      return unless Tower.connection
 
-  disconnect: ->
-    return unless Tower.connection
+      Tower.connection.destroy =>
+        Tower.connection = undefined
 
-    Tower.connection.destroy =>
-      Tower.connection = undefined
+  @reopen
+    connect: ->
+      # tmp solution to get data syncing working, then will refactor/robustify
+      @on 'sync', (data) =>
+        @serverDidChange(data) unless Tower.NetConnection.transport.requesting # tmp hack to prevent client data from appearing twice (only on the one who performed action)
 
-Tower.NetConnection.reopen
-  connect: ->
-    # tmp solution to get data syncing working, then will refactor/robustify
-    @on 'sync', (data) =>
-      @serverDidChange(data) unless Tower.NetConnection.transport.requesting # tmp hack to prevent client data from appearing twice (only on the one who performed action)
+      @registerHandlers()
 
-    @registerHandlers()
+      @
 
-    @
+    notify: (action, records, callback) ->
+      # @todo
+      records = _.castArray(records)#[records] unless records instanceof Array
 
-  notify: (action, records, callback) ->
+      @clientDidChange(action, records, callback)
+
+    resolve: (action, records, callback) ->
+      record    = records[0]
+      return unless record
+      matches   = []
+      app       = Tower.Application.instance()
+
+      iterator  = (controller, next) =>
+        app.get(controller).resolveAgainstCursors(action, records, matches, next)
+
+      Tower.series @constructor.controllers, iterator, (error) =>
+        callback(error, records) if callback
+
+      matches
+
+    # This is called when a record is modified from the client
+    # 
+    # all records must be of the same type for now.
+    clientDidChange: (action, records, callback) ->
+      @resolve action, records, (error, matches) =>
+        @["clientDid#{_.camelize(action)}"](matches, callback)
+
+    # This is called when the server record changed
+    serverDidChange: (data) ->
+      @["serverDid#{_.camelize(data.action)}"](data)
+
+    serverDidCreate: (data) ->
+      try Tower.constant(data.type).load(data.records)
+
+    serverDidUpdate: (data) ->
+      try Tower.constant(data.type).load(data.records)
+
     # @todo
-    records = _.castArray(records)#[records] unless records instanceof Array
+    serverDidDestroy: (data) ->
+      try Tower.constant(data.type).unload(data.records)
 
-    @clientDidChange(action, records, callback)
+    clientDidLoad: (records) ->
+      @resolve('create', records)
 
-  resolve: (action, records, callback) ->
-    record    = records[0]
-    return unless record
-    matches   = []
-    app       = Tower.Application.instance()
+    # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
+    # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
+    clientDidCreate: (records, callback) ->
+      @notifyTransport('create', records, callback)
 
-    iterator  = (controller, next) =>
-      app.get(controller).resolveAgainstCursors(action, records, matches, next)
+    clientDidUpdate: (records) ->
+      @notifyTransport('update', records)
 
-    Tower.series @constructor.controllers, iterator, (error) =>
-      callback(error, records) if callback
+    clientDidDestroy: (records) ->
+      @notifyTransport('destroy', records)
 
-    matches
-
-  # This is called when a record is modified from the client
-  # 
-  # all records must be of the same type for now.
-  clientDidChange: (action, records, callback) ->
-    @resolve action, records, (error, matches) =>
-      @["clientDid#{_.camelize(action)}"](matches, callback)
-
-  # This is called when the server record changed
-  serverDidChange: (data) ->
-    @["serverDid#{_.camelize(data.action)}"](data)
-
-  serverDidCreate: (data) ->
-    try Tower.constant(data.type).load(data.records)
-
-  serverDidUpdate: (data) ->
-    try Tower.constant(data.type).load(data.records)
-
-  # @todo
-  serverDidDestroy: (data) ->
-    try Tower.constant(data.type).unload(data.records)
-
-  clientDidLoad: (records) ->
-    @resolve('create', records)
-
-  # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
-  # 2. Once there are no more records for a specific controller type, the records don't need to be queried.
-  clientDidCreate: (records, callback) ->
-    @notifyTransport('create', records, callback)
-
-  clientDidUpdate: (records) ->
-    @notifyTransport('update', records)
-
-  clientDidDestroy: (records) ->
-    @notifyTransport('destroy', records)
-
-  notifyTransport: (action, records, callback) ->
-    @constructor.transport[action](records, callback) if @constructor.transport?
+    notifyTransport: (action, records, callback) ->
+      @constructor.transport[action](records, callback) if @constructor.transport?
 
 require './connection/socketio'
 require './connection/sockjs'

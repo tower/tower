@@ -61,59 +61,58 @@ Tower.ControllerParams =
 
       cursor
 
-  InstanceMethods:
-    # Compile the params defined for this controller into a cursor for querying the database.
-    #
-    # @note The cursor is memoized.
-    #
-    # @return [Tower.ModelCursor]
-    cursor: ->
-      return @_cursor if @_cursor
+  # Compile the params defined for this controller into a cursor for querying the database.
+  #
+  # @note The cursor is memoized.
+  #
+  # @return [Tower.ModelCursor]
+  cursor: ->
+    return @_cursor if @_cursor
 
-      cursor = Tower.ModelCursor.create()
-      cursor.make()
-      
-      if @params.conditions # @request.method.toUpperCase() == 'POST'
-        @_cursor = @_buildCursorFromPost(cursor)
-      else
-        @_cursor = @_buildCursorFromGet(cursor)
+    cursor = Tower.ModelCursor.create()
+    cursor.make()
+    
+    if @params.conditions # @request.method.toUpperCase() == 'POST'
+      @_cursor = @_buildCursorFromPost(cursor)
+    else
+      @_cursor = @_buildCursorFromGet(cursor)
 
-      @_cursor
+    @_cursor
 
-    _buildCursorFromPost: (cursor) ->
-      parsers     = @constructor.params()
-      params      = @params
-      conditions  = @params.conditions
-      page        = @params.page
-      limit       = @params.limit
-      sort        = @params.sort
+  _buildCursorFromPost: (cursor) ->
+    parsers     = @constructor.params()
+    params      = @params
+    conditions  = @params.conditions
+    page        = @params.page
+    limit       = @params.limit
+    sort        = @params.sort
 
-      # @todo
-      cleanConditions = (hash) ->
-        for key, value of hash
-          if key == '$or' || key == '$nor'
-            cleanConditions(item) for item in value
-          else
-            # @todo make more robust
-            # You should only be able to query the id when
-            # it is:
-            # - included in a route (e.g. nested routes, userId, etc.),
-            # - defined by `belongsTo` on the controller
-            # - defined by `param` on the controller
-            delete hash[key] unless parsers.hasOwnProperty(key) || key.match(/id$/i)
+    # @todo
+    cleanConditions = (hash) ->
+      for key, value of hash
+        if key == '$or' || key == '$nor'
+          cleanConditions(item) for item in value
+        else
+          # @todo make more robust
+          # You should only be able to query the id when
+          # it is:
+          # - included in a route (e.g. nested routes, userId, etc.),
+          # - defined by `belongsTo` on the controller
+          # - defined by `param` on the controller
+          delete hash[key] unless parsers.hasOwnProperty(key) || key.match(/id$/i)
 
-        hash
+      hash
 
-      conditions = cleanConditions(conditions)
+    conditions = cleanConditions(conditions)
 
-      cursor.where(conditions)
-      cursor.order(sort)  if sort && sort.length
-      cursor.limit(limit) if limit
-      cursor.page(page)   if page
+    cursor.where(conditions)
+    cursor.order(sort)  if sort && sort.length
+    cursor.limit(limit) if limit
+    cursor.page(page)   if page
 
-      cursor
+    cursor
 
-    _buildCursorFromGet: (cursor) ->
-      @constructor._buildCursorFromGet(@get('params'), cursor)
+  _buildCursorFromGet: (cursor) ->
+    @constructor._buildCursorFromGet(@get('params'), cursor)
 
 module.exports = Tower.ControllerParams

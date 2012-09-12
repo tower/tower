@@ -1,31 +1,32 @@
 _ = Tower._
 
 class Tower.ModelRelationHasManyThrough extends Tower.ModelRelationHasMany
-  isHasManyThrough: true
+  @reopen
+    isHasManyThrough: true
 
-  init: (options) ->
-    @_super arguments...
+    init: (options) ->
+      @_super arguments...
 
-    if @through && !options.type
-      @throughRelation = throughRelation = @owner.relation(@through)
-      options.type ||= throughRelation.targetType
+      if @through && !options.type
+        @throughRelation = throughRelation = @owner.relation(@through)
+        options.type ||= throughRelation.targetType
 
-  # Relation on the associated object that maps back to this relation.
-  #
-  # @return [Tower.ModelRelation]
-  inverseThrough: (relation) ->
-    relations = relation.targetKlass().relations()
+    # Relation on the associated object that maps back to this relation.
+    #
+    # @return [Tower.ModelRelation]
+    inverseThrough: (relation) ->
+      relations = relation.targetKlass().relations()
 
-    if relation.inverseOf
-      return relations[relation.inverseOf]
-    else
-      name  = @name
-      type  = @type
-      for name, relation of relations
-        # need a way to check if class extends another class in coffeescript...
-        return relation if relation.inverseOf == name
-      for name, relation of relations
-        return relation if relation.targetType == type
+      if relation.inverseOf
+        return relations[relation.inverseOf]
+      else
+        name  = @name
+        type  = @type
+        for name, relation of relations
+          # need a way to check if class extends another class in coffeescript...
+          return relation if relation.inverseOf == name
+        for name, relation of relations
+          return relation if relation.targetType == type
 
 Tower.ModelRelationHasManyThroughCursorMixin = Ember.Mixin.create Tower.ModelRelationHasManyCursorMixin,
   isHasManyThrough: true
@@ -137,11 +138,12 @@ Tower.ModelRelationHasManyThroughCursorMixin = Ember.Mixin.create Tower.ModelRel
       callback.call @, error, throughRecords if callback
 
 class Tower.ModelRelationHasManyThroughCursor extends Tower.ModelRelationCursor
-  @makeOld: ->
-    array = []
-    array.isCursor = true
-    Tower.ModelRelationCursorMixin.apply(array)
-    Tower.ModelRelationHasManyThroughCursorMixin.apply(array)
+  @reopenClass
+    makeOld: ->
+      array = []
+      array.isCursor = true
+      Tower.ModelRelationCursorMixin.apply(array)
+      Tower.ModelRelationHasManyThroughCursorMixin.apply(array)
 
   @include Tower.ModelRelationHasManyThroughCursorMixin
 

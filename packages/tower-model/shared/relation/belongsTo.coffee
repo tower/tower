@@ -1,26 +1,27 @@
 _ = Tower._
 
 class Tower.ModelRelationBelongsTo extends Tower.ModelRelation
-  isBelongsTo: true
-  
-  init: (owner, name, options = {}) ->
-    @_super arguments...
+  @reopen
+    isBelongsTo: true
+    
+    init: (owner, name, options = {}) ->
+      @_super arguments...
 
-    @foreignKey = "#{name}Id"
+      @foreignKey = "#{name}Id"
 
-    owner.field(@foreignKey, type: "Id")
+      owner.field(@foreignKey, type: "Id")
 
-    # this is kind of a hack until it becomes clear how to accomplish in the ember api
-    mixins    = owner.PrototypeMixin.mixins
-    computed  = mixins[mixins.length - 1].properties[@foreignKey]
-    computed._dependentKeys.push(@name)
+      # this is kind of a hack until it becomes clear how to accomplish in the ember api
+      mixins    = owner.PrototypeMixin.mixins
+      computed  = mixins[mixins.length - 1].properties[@foreignKey]
+      computed._dependentKeys.push(@name)
 
-    if @polymorphic
-      @foreignType = "#{name}Type"
-      owner.field(@foreignType, type: 'String')
+      if @polymorphic
+        @foreignType = "#{name}Type"
+        owner.field(@foreignType, type: 'String')
 
-    #owner.prototype[name] = ->
-    #  @relation(name)
+      #owner.prototype[name] = ->
+      #  @relation(name)
 
 Tower.ModelRelationBelongsToCursorMixin = Ember.Mixin.create
   isBelongsTo: true
@@ -43,11 +44,12 @@ Tower.ModelRelationBelongsToCursorMixin = Ember.Mixin.create
     @where(id: $in: [@owner.get(relation.foreignKey)])
 
 class Tower.ModelRelationBelongsToCursor extends Tower.ModelRelationCursor
-  @makeOld: ->
-    array = []
-    array.isCursor = true
-    Tower.ModelRelationCursorMixin.apply(array)
-    Tower.ModelRelationBelongsToCursorMixin.apply(array)
+  @reopenClass
+    makeOld: ->
+      array = []
+      array.isCursor = true
+      Tower.ModelRelationCursorMixin.apply(array)
+      Tower.ModelRelationBelongsToCursorMixin.apply(array)
 
   @include Tower.ModelRelationBelongsToCursorMixin
 

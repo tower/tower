@@ -6,356 +6,358 @@ _       = Tower._
 
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
-  @_callbacks: {}
+  @reopenClass
+    _callbacks: {}
+
+    autoloadPaths: [
+      'app/helpers'
+      'app/concerns'
+      'app/models'
+      'app/controllers'
+      'app/presenters'
+      'app/mailers'
+      'app/middleware'
+      'app/jobs'
+    ]
+
+    configNames: [
+      'session'
+      'assets'
+      'credentials'
+      'databases'
+      'routes'
+    ]
+
+    instance: ->
+      unless @_instance
+        app = require "#{Tower.root}/app/config/shared/application"
+        @_instance ||= app.create()
+      @_instance
+
+    initializers: ->
+      @_initializers ||= []
 
   @before 'initialize', 'setDefaults'
 
-  # Global list of files we've required for the app.
-  # 
-  # This is a cache to prevent fs access, which is slow at reasonable scale.
-  paths: []
+  @reopen
+    # Global list of files we've required for the app.
+    # 
+    # This is a cache to prevent fs access, which is slow at reasonable scale.
+    paths: []
 
-  # This is a path with some known key (preinitializers, locales, etc.),
-  # with the value as the array of nested files found for it.
-  pathsByType: {}
+    # This is a path with some known key (preinitializers, locales, etc.),
+    # with the value as the array of nested files found for it.
+    pathsByType: {}
 
-  # This is a hack
-  setDefaults: ->
-    true
+    # This is a hack
+    setDefaults: ->
+      true
 
-  errorHandlers: []
+    errorHandlers: []
 
-  @autoloadPaths: [
-    'app/helpers'
-    'app/concerns'
-    'app/models'
-    'app/controllers'
-    'app/presenters'
-    'app/mailers'
-    'app/middleware'
-    'app/jobs'
-  ]
+    init: ->
+      throw new Error('Already initialized application') if Tower.Application._instance
+      @server ||= require('express').createServer()
+      Tower.Application._instance = @
+      @_super arguments...
 
-  @configNames: [
-    'session'
-    'assets'
-    'credentials'
-    'databases'
-    'routes'
-  ]
+    initialize: (config, complete) ->
+      #Tower.bench 'application.init', =>
+      @_loadBase()
 
-  @instance: ->
-    unless @_instance
-      app = require "#{Tower.root}/app/config/shared/application"
-      @_instance ||= app.create()
-    @_instance
-
-  @initializers: ->
-    @_initializers ||= []
-
-  init: ->
-    throw new Error('Already initialized application') if Tower.Application._instance
-    @server ||= require('express').createServer()
-    Tower.Application._instance = @
-    @_super arguments...
-
-  initialize: (config, complete) ->
-    #Tower.bench 'application.init', =>
-    @_loadBase()
-
-    type = typeof config
-    if type != 'object'
-      if type == 'function'
-        complete  = config
-        config    = {}
-      else
-        config    = {}
-    type = null
-
-    initializer = (done) =>
-      @_loadPreinitializers()
-      @_loadConfig(config)
-      @_loadAssets()
-      @_loadLocales()
-      @_loadEnvironment()
-      @_loadInitializers()
-      @configureStores Tower.config.databases, =>
-        @stack() unless Tower.isConsole
-        unless Tower.lazyLoadApp
-          @_loadApp(done)
+      type = typeof config
+      if type != 'object'
+        if type == 'function'
+          complete  = config
+          config    = {}
         else
-          done()
+          config    = {}
+      type = null
 
-    @runCallbacks 'initialize', initializer, complete
+      initializer = (done) =>
+        @_loadPreinitializers()
+        @_loadConfig(config)
+        @_loadAssets()
+        @_loadLocales()
+        @_loadEnvironment()
+        @_loadInitializers()
+        @configureStores Tower.config.databases, =>
+          @stack() unless Tower.isConsole
+          unless Tower.lazyLoadApp
+            @_loadApp(done)
+          else
+            done()
 
-  # @todo
-  teardown: ->
-    @server.stack.length = 0 # remove middleware
-    Tower.Route.clear()
-    # delete require.cache[require.resolve("#{Tower.root}/app/config/server/routes")]
+      @runCallbacks 'initialize', initializer, complete
 
-  handle: ->
-    @server.handle arguments...
+    # @todo
+    teardown: ->
+      @server.stack.length = 0 # remove middleware
+      Tower.Route.clear()
+      # delete require.cache[require.resolve("#{Tower.root}/app/config/server/routes")]
 
-  use: ->
-    args        = _.args(arguments)
-    connect     = require('express')
+    handle: ->
+      @server.handle arguments...
 
-    if typeof args[0] == 'string'
-      middleware  = args.shift()
-      @server.use connect[middleware] args...
-    else
-      @server.use args...
+    use: ->
+      args        = _.args(arguments)
+      connect     = require('express')
 
-  configureStores: (configuration = {}, callback) ->
-    defaultStoreSet = false
-    databaseNames   = _.keys(configuration)
-    defaultDatabase = configuration.default
-
-    iterator = (databaseName, next) ->
-      return next() if databaseName == 'default'
-      databaseConfig = configuration[databaseName]
-
-      storeClassName = "Tower.Store#{_.camelize(databaseName)}"
-
-      try
-        store = Tower.constant(storeClassName) # This will find Tower.StoreMemory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
-      catch error
-        store = require "#{__dirname}/../../tower-store/server/#{databaseName}"
-
-      if defaultDatabase?
-        if databaseName == defaultDatabase
-          Tower.Model.default('store', store)
-          defaultStoreSet = true
+      if typeof args[0] == 'string'
+        middleware  = args.shift()
+        @server.use connect[middleware] args...
       else
-        if !defaultStoreSet || databaseConfig.default
-          Tower.Model.default('store', store) unless Tower.Model.default('store')
-          defaultStoreSet = true
+        @server.use args...
 
-      try store.configure Tower.config.databases[databaseName][Tower.env]
-      store.initialize(next)
+    configureStores: (configuration = {}, callback) ->
+      defaultStoreSet = false
+      databaseNames   = _.keys(configuration)
+      defaultDatabase = configuration.default
 
-    Tower.parallel databaseNames, iterator, =>
-      console.warn 'Default database not set, using Memory store' unless defaultStoreSet
-      callback.call(@) if callback
+      iterator = (databaseName, next) ->
+        return next() if databaseName == 'default'
+        databaseConfig = configuration[databaseName]
 
-  stack: ->
-    return @ if @isStacked # @todo tmp
-    @isStacked = true
-    configs     = @constructor.initializers()
+        storeClassName = "Tower.Store#{_.camelize(databaseName)}"
 
-    #@server.configure ->
-    for config in configs
-      config.call(@)
+        try
+          store = Tower.constant(storeClassName) # This will find Tower.StoreMemory instead of trying to load it from ./store/ (which it won't find since it's in core/store directory)…
+        catch error
+          store = require "#{__dirname}/../../tower-store/server/#{databaseName}"
 
-    @
+        if defaultDatabase?
+          if databaseName == defaultDatabase
+            Tower.Model.default('store', store)
+            defaultStoreSet = true
+        else
+          if !defaultStoreSet || databaseConfig.default
+            Tower.Model.default('store', store) unless Tower.Model.default('store')
+            defaultStoreSet = true
 
-  get: ->
-    @server.get arguments...
+        try store.configure Tower.config.databases[databaseName][Tower.env]
+        store.initialize(next)
 
-  post: ->
-    @server.post arguments...
+      Tower.parallel databaseNames, iterator, =>
+        console.warn 'Default database not set, using Memory store' unless defaultStoreSet
+        callback.call(@) if callback
 
-  put: ->
-    @server.put arguments...
+    stack: ->
+      return @ if @isStacked # @todo tmp
+      @isStacked = true
+      configs     = @constructor.initializers()
 
-  listen: ->
-    unless Tower.env == 'test'
-      @server.on 'error', (error) ->
-        if error.errno == 'EADDRINUSE'
-          console.log('   Try using a different port: `node server -p 3001`')
-        #console.log(error.stack)
-      
-      @initializeSockets()
+      #@server.configure ->
+      for config in configs
+        config.call(@)
 
-      Tower.port = parseInt(Tower.port)
+      @
 
-      @server.listen Tower.port, =>
-        _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
-        value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
-        @watch() if Tower.watch
-        @initializeServerHooks() if Tower.env == 'development'
+    get: ->
+      @server.get arguments...
 
-  initializeSockets: ->
-    unless @io
-      Tower.NetConnection.initialize()
-      @io   = Tower.NetConnection.listen(@server)
+    post: ->
+      @server.post arguments...
 
-  # This just sends notifications to the server if it's running, so the browser can update.
-  # 
-  # @todo only send events if the server is running
-  initializeConsoleHooks: ->
-    hookio  = require('hook.io')
-    @hook   = hook = hookio.createHook(name: 'tower-console', silent: true)
-    hook.start()
+    put: ->
+      @server.put arguments...
 
-    # Override this method to make it route to hook.io.
-    Tower.notifyConnections = (action, records, callback) ->
-      records = [records] unless records instanceof Array
-      hook.emit 'notifyConnections',
-        action:   action
-        records:  JSON.stringify(records)
-        type:     try records[0].constructor.className()
+    listen: ->
+      unless Tower.env == 'test'
+        @server.on 'error', (error) ->
+          if error.errno == 'EADDRINUSE'
+            console.log('   Try using a different port: `node server -p 3001`')
+          #console.log(error.stack)
+        
+        @initializeSockets()
 
-  # This listens for events from the console so the browser can update
-  initializeServerHooks: ->
-    hookio  = require('hook.io')
-    @hook   = hook = hookio.createHook(name: 'tower-server', silent: true)
+        Tower.port = parseInt(Tower.port)
 
-    hook.on 'tower-console::notifyConnections', (data) ->
-      if data.type
-        # Need a better way of building records (that allows setting `id`)
-        klass   = Tower.constant(data.type)
-        store   = klass.store()
-        records = _.map JSON.parse(data.records), (attributes) ->
-          store.serializeModel(attributes, true)
+        @server.listen Tower.port, =>
+          _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
+          value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
+          @watch() if Tower.watch
+          @initializeServerHooks() if Tower.env == 'development'
 
-        Tower.notifyConnections(data.action, records)
+    initializeSockets: ->
+      unless @io
+        Tower.NetConnection.initialize()
+        @io   = Tower.NetConnection.listen(@server)
 
-      data    = null
-      klass   = null
-      store   = null
-      records = null
+    # This just sends notifications to the server if it's running, so the browser can update.
+    # 
+    # @todo only send events if the server is running
+    initializeConsoleHooks: ->
+      hookio  = require('hook.io')
+      @hook   = hook = hookio.createHook(name: 'tower-console', silent: true)
+      hook.start()
 
-    hook.start()
+      # Override this method to make it route to hook.io.
+      Tower.notifyConnections = (action, records, callback) ->
+        records = [records] unless records instanceof Array
+        hook.emit 'notifyConnections',
+          action:   action
+          records:  JSON.stringify(records)
+          type:     try records[0].constructor.className()
 
-  run: ->
-    @initialize()
-    @listen()
+    # This listens for events from the console so the browser can update
+    initializeServerHooks: ->
+      hookio  = require('hook.io')
+      @hook   = hook = hookio.createHook(name: 'tower-server', silent: true)
 
-  watch: ->
-    Tower.ApplicationWatcher.watch()
+      hook.on 'tower-console::notifyConnections', (data) ->
+        if data.type
+          # Need a better way of building records (that allows setting `id`)
+          klass   = Tower.constant(data.type)
+          store   = klass.store()
+          records = _.map JSON.parse(data.records), (attributes) ->
+            store.serializeModel(attributes, true)
 
-  _loadBase: ->
-    @_requireAny 'app/config', 'application'
-    @_requireAny 'app/config', 'bootstrap'
+          Tower.notifyConnections(data.action, records)
 
-  _loadPreinitializers: ->
-    @_requirePaths @_selectPaths('app/config', 'preinitializers')
+        data    = null
+        klass   = null
+        store   = null
+        records = null
 
-  _loadConfig: (options) ->
-    for key in @constructor.configNames
-      config = @_requireFirst('app/config', key) || {}
+      hook.start()
 
-      # need a way to get _ to work in the console, which uses _ for last returned value
-      Tower.config[key] = config if _.isPresent(config)
+    run: ->
+      @initialize()
+      @listen()
 
-    Tower.config.databases ||= {}
+    watch: ->
+      Tower.ApplicationWatcher.watch()
 
-    databases       = options.databases || options.database
-    defaultDatabase = options.defaultDatabase
+    _loadBase: ->
+      @_requireAny 'app/config', 'application'
+      @_requireAny 'app/config', 'bootstrap'
 
-    if databases
-      databases = [databases] unless databases instanceof Array
-      databases.push('default')
+    _loadPreinitializers: ->
+      @_requirePaths @_selectPaths('app/config', 'preinitializers')
 
-      Tower.config.databases = _.pick(Tower.config.databases, databases)
-      Tower.config.databases.default = defaultDatabase if defaultDatabase?
+    _loadConfig: (options) ->
+      for key in @constructor.configNames
+        config = @_requireFirst('app/config', key) || {}
 
-  _loadAssets: ->
-    Tower.ApplicationAssets.loadManifest()
+        # need a way to get _ to work in the console, which uses _ for last returned value
+        Tower.config[key] = config if _.isPresent(config)
 
-  _loadLocales: ->
-    Tower.SupportI18n.load(path) for path in @_selectPaths('app/config', 'locales')
+      Tower.config.databases ||= {}
 
-  _loadEnvironment: ->
-    # load initializers
-    @_requireAny 'app/config', "environments/#{Tower.env}"
+      databases       = options.databases || options.database
+      defaultDatabase = options.defaultDatabase
 
-  _loadInitializers: ->
-    @_requirePaths @_selectPaths('app/config', 'initializers')
+      if databases
+        databases = [databases] unless databases instanceof Array
+        databases.push('default')
 
-  _loadMVC: ->
-    for path in @constructor.autoloadPaths
-      # @todo do something more robust, so you can autoload files or directories
-      # continue if path.match(/app\/(?:helpers)/) # just did this above
-      if path.match('app/controllers')
-        @_requireAny 'app/controllers', 'applicationController'
+        Tower.config.databases = _.pick(Tower.config.databases, databases)
+        Tower.config.databases.default = defaultDatabase if defaultDatabase?
 
-      @_requirePaths @_selectPaths(path)
+    _loadAssets: ->
+      Tower.ApplicationAssets.loadManifest()
 
-  # In development mode, this is called on the first render.
-  # 
-  # This lazily loads all the models/views/controllers, which can be slow.
-  _loadApp: (done) ->
-    @_loadMVC()
+    _loadLocales: ->
+      Tower.SupportI18n.load(path) for path in @_selectPaths('app/config', 'locales')
 
-    Tower.isInitialized = true
+    _loadEnvironment: ->
+      # load initializers
+      @_requireAny 'app/config', "environments/#{Tower.env}"
 
-    done() if done
+    _loadInitializers: ->
+      @_requirePaths @_selectPaths('app/config', 'initializers')
 
-  _requirePaths: (paths) ->
-    require(path) for path in paths
+    _loadMVC: ->
+      for path in @constructor.autoloadPaths
+        # @todo do something more robust, so you can autoload files or directories
+        # continue if path.match(/app\/(?:helpers)/) # just did this above
+        if path.match('app/controllers')
+          @_requireAny 'app/controllers', 'applicationController'
 
-  _requireAny: (pathStart, pathEnd) ->
-    for path in @_buildRequirePaths(pathStart, pathEnd)
-      @_tryToRequire(path)
+        @_requirePaths @_selectPaths(path)
 
-  _requireFirst: (pathStart, pathEnd) ->
-    for path in @_buildRequirePaths(pathStart, pathEnd)
-      result = @_tryToRequire(path)
-      return result if result?
-    null
+    # In development mode, this is called on the first render.
+    # 
+    # This lazily loads all the models/views/controllers, which can be slow.
+    _loadApp: (done) ->
+      @_loadMVC()
 
-  # @todo this should be cached (along with _selectPaths)
-  #   so when running tests and resetting the app state doesn't have to
-  #   do it over and over again. It will have to be updated though
-  #   by the watcher when a file is changed.
-  _buildRequirePaths: (pathStart, pathEnd) ->
-    [
-      _path.join(Tower.root, pathStart, pathEnd)
-      _path.join(Tower.root, pathStart, 'shared', pathEnd)
-      _path.join(Tower.root, pathStart, 'server', pathEnd)
-    ]
+      Tower.isInitialized = true
 
-  # @todo try to optimize this
-  _tryToRequire: (path) ->
-    try
-      return require(path) # if fs.existsSync(path)
-    catch error
-      console.error(error) if Tower.debug
+      done() if done
+
+    _requirePaths: (paths) ->
+      require(path) for path in paths
+
+    _requireAny: (pathStart, pathEnd) ->
+      for path in @_buildRequirePaths(pathStart, pathEnd)
+        @_tryToRequire(path)
+
+    _requireFirst: (pathStart, pathEnd) ->
+      for path in @_buildRequirePaths(pathStart, pathEnd)
+        result = @_tryToRequire(path)
+        return result if result?
       null
 
-  # @param [String] type 'script', 'stylesheet', 'template'
-  _selectPaths: (pathStart, pathEnd, type = 'script') ->
-    key     = @_pathCacheKey(pathStart, pathEnd)
-    paths   = @pathsByType[key]
+    # @todo this should be cached (along with _selectPaths)
+    #   so when running tests and resetting the app state doesn't have to
+    #   do it over and over again. It will have to be updated though
+    #   by the watcher when a file is changed.
+    _buildRequirePaths: (pathStart, pathEnd) ->
+      [
+        _path.join(Tower.root, pathStart, pathEnd)
+        _path.join(Tower.root, pathStart, 'shared', pathEnd)
+        _path.join(Tower.root, pathStart, 'server', pathEnd)
+      ]
 
-    return paths if paths?
+    # @todo try to optimize this
+    _tryToRequire: (path) ->
+      try
+        return require(path) # if fs.existsSync(path)
+      catch error
+        console.error(error) if Tower.debug
+        null
 
-    paths   = []
+    # @param [String] type 'script', 'stylesheet', 'template'
+    _selectPaths: (pathStart, pathEnd, type = 'script') ->
+      key     = @_pathCacheKey(pathStart, pathEnd)
+      paths   = @pathsByType[key]
 
-    wrench  = Tower.module('wrench')
-    pattern = @_typeToPattern[type]
+      return paths if paths?
 
-    for requirePath, index in @_buildRequirePaths(pathStart, pathEnd)
-      # The first path we only want the non ./client files
-      continue unless fs.existsSync(requirePath)
-      if index == 0
-        # fs.readdirSync(requirePath))
-        clientDir = _path.join(requirePath, 'client')
-        paths = paths.concat _.select @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath)), (path) ->
-          !path.match(clientDir)
-      else
-        paths = paths.concat @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath))
+      paths   = []
 
-    @pathsByType[key] = _.select paths, (path) -> path.match(pattern)
+      wrench  = Tower.module('wrench')
+      pattern = @_typeToPattern[type]
 
-  _selectNestedPaths: (dir, paths) ->
-    _.select _.map(paths, (path) ->
-      _path.join(dir, path)
-    ), (path) ->
-      !fs.statSync(path).isDirectory()
+      for requirePath, index in @_buildRequirePaths(pathStart, pathEnd)
+        # The first path we only want the non ./client files
+        continue unless fs.existsSync(requirePath)
+        if index == 0
+          # fs.readdirSync(requirePath))
+          clientDir = _path.join(requirePath, 'client')
+          paths = paths.concat _.select @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath)), (path) ->
+            !path.match(clientDir)
+        else
+          paths = paths.concat @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath))
 
-  # Paths to match against
-  _typeToPattern:
-    script:     /\.(coffee|js|iced)$/
-    stylesheet: /\.(css|less|styl|sass)$/
-    template:   /\.(jade|ejs|handlebars|html|eco|coffee)/
+      @pathsByType[key] = _.select paths, (path) -> path.match(pattern)
 
-  _pathCacheKey: (pathStart, pathEnd) ->
-    key     = pathStart
-    key += ",#{pathEnd}" if pathEnd?
-    key
+    _selectNestedPaths: (dir, paths) ->
+      _.select _.map(paths, (path) ->
+        _path.join(dir, path)
+      ), (path) ->
+        !fs.statSync(path).isDirectory()
+
+    # Paths to match against
+    _typeToPattern:
+      script:     /\.(coffee|js|iced)$/
+      stylesheet: /\.(css|less|styl|sass)$/
+      template:   /\.(jade|ejs|handlebars|html|eco|coffee)/
+
+    _pathCacheKey: (pathStart, pathEnd) ->
+      key     = pathStart
+      key += ",#{pathEnd}" if pathEnd?
+      key
 
 module.exports = Tower.Application

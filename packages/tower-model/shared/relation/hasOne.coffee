@@ -1,7 +1,8 @@
 _ = Tower._
 
 class Tower.ModelRelationHasOne extends Tower.ModelRelation
-  isHasOne: true
+  @reopen
+    isHasOne: true
 
 # @todo deal with only allowing one record per association (either error or override).
 Tower.ModelRelationHasOneCursorMixin = Ember.Mixin.create
@@ -49,11 +50,12 @@ Tower.ModelRelationHasOneCursorMixin = Ember.Mixin.create
     @where(data)
 
 class Tower.ModelRelationHasOneCursor extends Tower.ModelRelationCursor
-  @makeOld: ->
-    array = []
-    array.isCursor = true
-    Tower.ModelRelationCursorMixin.apply(array)
-    Tower.ModelRelationHasOneCursorMixin.apply(array)
+  @reopenClass
+    makeOld: ->
+      array = []
+      array.isCursor = true
+      Tower.ModelRelationCursorMixin.apply(array)
+      Tower.ModelRelationHasOneCursorMixin.apply(array)
 
   @include Tower.ModelRelationHasOneCursorMixin
 

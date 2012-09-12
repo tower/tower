@@ -15,26 +15,28 @@ class Tower.Controller extends Tower.Collection
   @reopenClass Tower.SupportEventEmitter
   @include  Tower.SupportEventEmitter
 
-  @instance: ->
-    @_instance ||= new @ # @create()
+  @reopenClass
+    instance: ->
+      @_instance ||= new @ # @create()
 
-  init: ->
-    @_super arguments...
-    @constructor._instance = @
-    @headers              = {}
-    @status               = 200
-    @request              = null
-    @response             = null
-    @params               = {}
-    @query                = {}
+  @reopen
+    init: ->
+      @_super arguments...
+      @constructor._instance = @
+      @headers              = {}
+      @status               = 200
+      @request              = null
+      @response             = null
+      @params               = {}
+      @query                = {}
 
-    metadata              = @constructor.metadata()
+      metadata              = @constructor.metadata()
 
-    @resourceName         = metadata.resourceName
-    @resourceType         = metadata.resourceType
-    @collectionName       = metadata.collectionName
+      @resourceName         = metadata.resourceName
+      @resourceType         = metadata.resourceType
+      @collectionName       = metadata.collectionName
 
-    @formats              = if Tower.isClient then ['html'] else _.keys(metadata.mimes)
-    @hasParent            = @constructor.hasParent()
+      @formats              = if Tower.isClient then ['html'] else _.keys(metadata.mimes)
+      @hasParent            = @constructor.hasParent()
 
 module.exports = Tower.Controller

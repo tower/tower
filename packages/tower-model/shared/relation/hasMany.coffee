@@ -5,8 +5,9 @@ _ = Tower._
 # @note Thinking about making ./referenced and ./embedded copies,
 #   similar to how Mongoid does it.
 class Tower.ModelRelationHasMany extends Tower.ModelRelation
-  isHasMany: true
-  isCollection: true
+  @reopen
+    isHasMany: true
+    isCollection: true
   # @option options [String|Function] beforeAdd Callback before an item is added.
   # @option options [String|Function] afterAdd Callback after an item is added.
 
@@ -299,11 +300,12 @@ Tower.ModelRelationHasManyCursorMixin = Ember.Mixin.create
     rootRelation.cursor.records = rootRelation.cursor.records.concat _.castArray(records)
 
 class Tower.ModelRelationHasManyCursor extends Tower.ModelRelationCursor
-  @makeOld: ->
-    array = []
-    array.isCursor = true
-    Tower.ModelRelationCursorMixin.apply(array)
-    Tower.ModelRelationHasManyCursorMixin.apply(array)
+  @reopenClass
+    makeOld: ->
+      array = []
+      array.isCursor = true
+      Tower.ModelRelationCursorMixin.apply(array)
+      Tower.ModelRelationHasManyCursorMixin.apply(array)
 
   @include Tower.ModelRelationHasManyCursorMixin
 
