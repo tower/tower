@@ -39,9 +39,7 @@ Tower.StoreTransportAjax =
       # @todo maybe this simple test should be an underscore helper...
       separator     = if params.url.match('?') then '&' else '?'
       params.url    = "#{params.url}#{separator}#{callbackParam}"
-
-    params.url = 
-
+      
     params
 
   toJSON: (record, method, format) ->
