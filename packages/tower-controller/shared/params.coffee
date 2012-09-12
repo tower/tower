@@ -95,7 +95,12 @@ Tower.ControllerParams =
             cleanConditions(item) for item in value
           else
             # @todo make more robust
-            delete hash[key] unless parsers.hasOwnProperty(key) || key.match(/Id$/)
+            # You should only be able to query the id when
+            # it is:
+            # - included in a route (e.g. nested routes, userId, etc.),
+            # - defined by `belongsTo` on the controller
+            # - defined by `param` on the controller
+            delete hash[key] unless parsers.hasOwnProperty(key) || key.match(/id$/i)
 
         hash
 

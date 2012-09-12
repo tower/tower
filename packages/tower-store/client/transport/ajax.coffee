@@ -18,7 +18,31 @@ Tower.StoreTransportAjax =
     headers:     {'X-Requested-With': 'XMLHttpRequest'}
 
   ajax: (params, defaults) ->
-    $.ajax($.extend({}, @defaults, defaults, params))
+    $.ajax(@serializeParams(params, defaults))
+
+  serializeParams: (params, defaults) ->
+    params = _.extend({}, @defaults, defaults, params)
+
+    # need to use jsonp if you're using GET cross-domain
+    params = @_adjustParamsForJSONP(params) if params.type == 'GET' && params.dataType == 'json'
+
+    params
+
+  _adjustParamsForJSONP: (params) ->
+    params.dataType = 'jsonp'
+    delete params.contentType
+    # @todo we should come up with a pattern for keeping the url in a URI.js object,
+    # and only turn it into a string in the $.ajax method.
+    # add callback for jquery
+    unless params.url.match(/[\?\&]callback=.+/)
+      callbackParam = 'callback=?'
+      # @todo maybe this simple test should be an underscore helper...
+      separator     = if params.url.match('?') then '&' else '?'
+      params.url    = "#{params.url}#{separator}#{callbackParam}"
+
+    params.url = 
+
+    params
 
   toJSON: (record, method, format) ->
     data          = {}
@@ -32,6 +56,7 @@ Tower.StoreTransportAjax =
     # and that just about seems impossible.
     # data._socketId = Tower.connection.id
     data.format   = format
+
     JSON.stringify(data)
 
   disable: (callback) ->
@@ -191,12 +216,8 @@ Tower.StoreTransportAjax =
     # {users: [user1, user1...], conditions: {}, page: 2, limit: 20, sort: []}
     # and all we need to do is load it back into the cursor
     (data, status, xhr) =>
-      try
-        #callback(null, cursor.build(data))
-        data = cursor.model.load(data)
-        callback(null, data) if callback
-      catch error
-        callback(error) if callback
+      data = cursor.model.load(data)
+      callback(null, data) if callback
 
   findFailure: (cursor, callback) ->
     @failure(cursor, callback)

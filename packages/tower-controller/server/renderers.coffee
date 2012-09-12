@@ -10,12 +10,16 @@ Tower.Controller.addRenderers
   # handle and parse your JSON from, such as `function1234567({your: 'data'})`.
   # You need JSONP to do `GET` requests across domains (even subdomains).
   json: (json, options, callback) ->
+    jsonpCallback = if options.callback != false
+      options.callback || @params.callback
+
     unless typeof(json) == 'string'
       if @params.pretty && @params.pretty.toString() == 'true'
         json = JSON.stringify(json, null, 2)
       else
         json = JSON.stringify(json)
-    json = "#{options.callback}(#{json})" if options.callback
+
+    json = "#{jsonpCallback}(#{json})" if jsonpCallback?
     @headers['Content-Type'] ||= require('mime').lookup('json')
     callback null, json if callback
     json

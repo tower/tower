@@ -24,6 +24,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - *client routes
 - testing patterns for an app
 - ~~`grunt --config ./grunt.coffee`~~
+- make it more obvious that there is hook.io integration (http://vimeo.com/33288036)
 
 ## 0.6.0 - Testing, Robustness
 

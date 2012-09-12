@@ -65,5 +65,65 @@ describe 'Tower.ControllerParams', ->
               assert.equal 1, posts.length
               done()
 
+    describe 'JSON API', ->
+      post        = null
+      firstPostId = null
+      lastPostId  = null
+
+      beforeEach (done) ->
+        App.Post.all (error, records) =>
+          post = records[0]
+          firstPostId = post.get('id').toString()
+          lastPostId  = records[1].get('id').toString()
+
+          done()
+
+      describe 'id', ->
+        test '=', (done) ->
+          params = conditions: id: firstPostId
+
+          _.get '/posts', params: params, (response) ->
+            posts = response.controller.get('posts')
+            assert.equal 1, posts.length
+            assert.equal firstPostId, posts[0].get('id').toString()
+            done()
+
+        test '$eq', (done) ->
+          params = conditions: id: $eq: firstPostId
+
+          _.get '/posts', params: params, (response) ->
+            posts = response.controller.get('posts')
+            assert.equal 1, posts.length
+            assert.equal firstPostId, posts[0].get('id').toString()
+            done()
+
+        # @todo doesn't work in mongodb
+        #test '$neq', (done) ->
+        #  params = conditions: id: $neq: firstPostId
+        #
+        #  _.get '/posts', params: params, (response) ->
+        #    posts = response.controller.get('posts')
+        #    assert.equal 1, posts.length
+        #    assert.equal lastPostId, posts[0].get('id').toString()
+        #    done()
+
+        test '$in', (done) ->
+          params = conditions: id: $in: [firstPostId]
+
+          _.get '/posts', params: params, (response) ->
+            posts = response.controller.get('posts')
+            assert.equal 1, posts.length
+            assert.equal firstPostId, posts[0].get('id').toString()
+            done()
+
+        test '$nin', (done) ->
+          params = conditions: id: $nin: [firstPostId]
+
+          _.get '/posts', params: params, (response) ->
+            posts = response.controller.get('posts')
+            assert.equal 1, posts.length
+            assert.equal lastPostId, posts[0].get('id').toString()
+            done()
+
   test 'date string is serialized to database'
     # params = user: birthdate: _(26).years().ago().toDate()

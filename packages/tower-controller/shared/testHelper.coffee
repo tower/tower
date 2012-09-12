@@ -1,3 +1,28 @@
+# @todo Add method to mocha so you can both pass
+#   args to the test description and use those args in the test.
+# @example
+#   testWith '/users.json', {user: firstName: 'John'}, (params, done) ->
+#     post '/users.json', params, ->
+#       assert.equal @body.firstName, 'John'
+# 
+#       done()
+global.testWith = ->
+  if arguments.length > 2
+    args  = _.args(arguments)
+    fn    = if typeof args[args.length - 1] == 'function' then args.pop() else null
+    title = _.map(args, (arg) -> JSON.stringify(arg)).join(' ')
+    args.shift() # remote title
+    test title, (done) ->
+      # if it's the same length of the args + 1
+      if fn.length == (args.length + 1)
+        args.push(done)
+        fn.apply(@, args)
+      else
+        fn.apply(@, args)
+        done()
+  else
+    test(arguments...)
+
 # https://raw.github.com/plessbd/superagent/f6e7a85555bbd1a70babf62b4d0c0ec674f3d2f5/lib/node/index.js
 Tower.start = (port, callback) ->
   if typeof port == 'function'
@@ -85,7 +110,7 @@ global.testUpdate = ->
   testRequest 'put', arguments...
 
 global.testDestroy = ->
-  testRequest 'del', arguments...
+  testRequest 'destroy', arguments...
 
 # @example This is without the helper
 #   test '/posts.json', (done) ->

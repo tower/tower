@@ -200,4 +200,18 @@ class Tower.Store extends Tower.Class
     else
       @find(cursor, callback)
 
+  # This is called by {Tower.Cursor#find} or {Tower.Store#find}.
+  # 
+  # If you pass a hash to {Tower.Store#find} it will convert it to a cursor;
+  # once it has a cursor it then passes it to this method. This is purely an optimization.
+  # 
+  # @todo
+  findWithCursor: ->
+
+  createWithCursor: ->
+
+  updateWithCursor: ->
+
+  destroyWithCursor: ->
+
 module.exports = Tower.Store

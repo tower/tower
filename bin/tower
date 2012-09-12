@@ -1,2 +1,4 @@
 #!/usr/bin/env node
-require('../lib/tower').Command.run(process.argv);
+var path = require('path');
+
+require(path.resolve('../lib/tower')).Command.run(process.argv);

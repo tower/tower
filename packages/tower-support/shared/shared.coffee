@@ -170,10 +170,12 @@ _.extend Tower,
     if Tower.autoNotifyCursors
       Ember.run.schedule('sync', @, @notifyCursors)
 
-  notifyCursors: ->
+  notifyCursors: (force) ->
     cursors = {}
 
-    for path of Tower.cursorsToUpdate
+    paths = _.keys(if force then Tower.cursors else Tower.cursorsToUpdate)
+
+    for path of paths
       cursor = Tower.getCursor(path)
       # this just makes it so we don't run the same one twice
       cursors[Ember.guidFor(cursor)] = cursor if cursor
