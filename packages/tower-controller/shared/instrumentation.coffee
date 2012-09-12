@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 Tower.ControllerInstrumentation =
   InstanceMethods:
@@ -32,7 +34,7 @@ Tower.ControllerInstrumentation =
         # value == {"coverImage": {path: '/tmp/123.png'}, "attachments": [{path: '/tmp/456.png'}]}
         for key, value of files
           params[key] ||= {} # "profile"
-          Tower._.extend(params[key], value)
+          _.extend(params[key], value)
 
       @format   = params.format
       @action   = params.action

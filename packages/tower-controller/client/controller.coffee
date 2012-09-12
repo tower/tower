@@ -1,8 +1,10 @@
+_ = Tower._
+
 Tower.Controller.reopenClass
   extended: ->
     object    = {}
     name      = @className()
-    camelName = Tower._.camelize(name, true)
+    camelName = _.camelize(name, true)
 
     object[camelName] = Ember.computed(->
       Tower.router.get(camelName)
@@ -19,4 +21,4 @@ Tower.Controller.reopenClass
     @
 
   instance: ->
-    Tower.Application.instance().get(Tower._.camelize(@className(), true))
+    Tower.Application.instance().get(_.camelize(@className(), true))

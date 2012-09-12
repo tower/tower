@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ControllerActions =  
   # Default implementation for the 'index' action.
   index: ->
@@ -58,7 +60,7 @@ Tower.ControllerActions =
   _create: (callback) ->
     @createResource (error, resource) =>
       return @failure(error, callback) unless resource
-      @respondWithStatus Tower._.isBlank(resource.errors), callback
+      @respondWithStatus _.isBlank(resource.errors), callback
 
   # @private
   _show: (callback) ->
@@ -75,7 +77,7 @@ Tower.ControllerActions =
     @findResource (error, resource) =>
       return @failure(error, callback) if error
       resource.updateAttributes @params[@resourceName], (error) =>
-        @respondWithStatus !!!error && Tower._.isBlank(resource.errors), callback
+        @respondWithStatus !!!error && _.isBlank(resource.errors), callback
 
   # @private
   _destroy: (callback) ->

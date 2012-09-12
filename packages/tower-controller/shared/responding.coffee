@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @mixin
 Tower.ControllerResponding =
   ClassMethods:
@@ -15,15 +17,15 @@ Tower.ControllerResponding =
     # @return [Function] Return this controller.
     respondTo: ->
       mimes     = @mimes()
-      args      = Tower._.args(arguments)
+      args      = _.args(arguments)
 
       if typeof args[args.length - 1] == 'object'
         options = args.pop()
       else
         options = {}
 
-      only      = Tower._.toArray(options.only) if options.only
-      except    = Tower._.toArray(options.except) if options.except
+      only      = _.toArray(options.only) if options.only
+      except    = _.toArray(options.except) if options.except
 
       for name in args
         mimes[name]         = {}
@@ -77,7 +79,7 @@ Tower.ControllerResponding =
     #         success.json => @render json: users
     #         failure.json => @render text: 'Error!', status: 404
     respondWith: ->
-      args      = Tower._.args(arguments)
+      args      = _.args(arguments)
       callback  = null
 
       if typeof(args[args.length - 1]) == 'function'
@@ -105,9 +107,9 @@ Tower.ControllerResponding =
         success = false
 
         if config.except
-          success = !Tower._.include(config.except, action)
+          success = !_.include(config.except, action)
         else if config.only
-          success = Tower._.include(config.only, action)
+          success = _.include(config.only, action)
         else
           success = true
 

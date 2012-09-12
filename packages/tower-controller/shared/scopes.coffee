@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ControllerScopes =
   ClassMethods:
     # @example
@@ -49,7 +51,7 @@ Tower.ControllerScopes =
         scope = scope.toCursor() if scope.toCursor
 
         metadata.scopes[name] = scope
-        metadata.scopeNames.push(name) if Tower._.indexOf(metadata.scopeNames, name) == -1
+        metadata.scopeNames.push(name) if _.indexOf(metadata.scopeNames, name) == -1
 
         object = {}
         object[name] = scope
@@ -67,7 +69,7 @@ Tower.ControllerScopes =
     cursors   = @constructor.metadata().scopes
     matches   ||= Ember.Map.create() unless Tower.isClient
 
-    keys      = Tower._.keys(cursors)
+    keys      = _.keys(cursors)
 
     if Tower.isClient
       cursorMethod  = switch action

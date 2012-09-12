@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @include Tower.SupportCallbacks
 # @include Tower.SupportEventEmitter
 # @include Tower.ControllerCallbacks
@@ -32,7 +34,7 @@ class Tower.Controller extends Tower.Collection
     @resourceType         = metadata.resourceType
     @collectionName       = metadata.collectionName
 
-    @formats              = if Tower.isClient then ['html'] else Tower._.keys(metadata.mimes)
+    @formats              = if Tower.isClient then ['html'] else _.keys(metadata.mimes)
     @hasParent            = @constructor.hasParent()
 
 module.exports = Tower.Controller
