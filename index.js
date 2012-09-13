@@ -1,6 +1,8 @@
 var path = require('path');
 
-require('./coffee-inheritance');
+try {
+  require('./coffee-inheritance');
+} catch (e) {}
 
 // require tower
 var root = path.join(__dirname, 'lib/tower.js');

@@ -52,20 +52,33 @@
     "tower": "./bin/tower"
   },
   "dependencies": {
-    "underscore": ">= 1.3.3"
+    "underscore": ">= 1.3.3",
+    "underscore.string": ">= 2.x",
+    "underscore.logger": ">= 0.3.1",
+    "mime": ">= 1.2.4",
+    "qs": ">= 0.3.1",
+    "async": ">= 0.1.12",
+    "mint": ">= 0.3.4",
+    "pathfinder": ">= 0.1.5",
+    "commander": ">= 0.4.0",
+    "express": "2.x",
+    "URIjs": ">= 1.4.2",
+    "moment": ">= 1.5.1",
+    "node-uuid": ">= 1.3.0",
+    "geolib": ">= 0.0.1",
+    "superagent": ">= 0.4.0",
+    "validator": ">= 0.4.5",
+    "accounting": ">= 0.3.2",
+    "inflection": ">= 1.2.0",
+    "ember-metal-node": ">= 0.9.7",
+    "ember-runtime-node": ">= 0.9.7",
+    "ember-states-node": ">= 0.9.7",
+    "wrench": ">= 1.3.8"
   },
   "devDependencies": {
-    "cli-table": ">= 0.0.1",
-    "findit": ">= 0.1.1",
-    "ejs": ">= 0.6.1",
-    "gzip": ">= 0.1.0",
-    "knox": "0.0.11",
-    "mongodb": ">= 0.9.9-8",
-    "fibers": "~0.6.8",
-    "chokidar": "~0.4.0"
+    "findit": ">= 0.1.1"
   },
   "testDependencies": {
-    "nodemailer": "~0.3.21",
     "stylus": ">= 0.29.0",
     "uglify-js": ">= 1.1.1",
     "mocha": ">= 0.8.1",
@@ -74,20 +87,30 @@
     "eco": ">= 0.1.0",
     "mustache": ">= 0.4.0",
     "jade": ">= 0.22.0",
-    "kue": ">= 0.3.4"
-  },
-  "globalDependencies": {
+    "kue": ">= 0.3.4",
+    "mongodb": ">= 0.9.9-8",
+    "coffee-script": ">= 1.3.3",
+    "coffeecup": ">= 0.3.17",
+    "gzip": ">= 0.1.0",
+    "chokidar": "~0.4.0",
+    "knox": "0.0.11",
+    "socket.io": ">= 0.8.7",
+    "socket.io-client": ">= 0.9.5",
     "hook.io": "~0.8.10"
   },
+  "globalDependencies": {
+    "ejs": ">= 0.6.1",
+    "fibers": "~0.6.8"
+  },
   "localDependencies": {
-    "socket.io": ">= 0.8.7",
-    "socket.io-client": ">= 0.9.5"
+    "useragent": ">= 1.0.5",
+    "gm": "~1.4.1",
+    "temp": "~0.4.0"
   },
   "scripts": {
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
     "docs": "codo",
-    "postinstall": "npm install $(./bin/dependencies)",
-    "install-dev": "npm install nodemailer stylus uglify-js mocha chai sinon eco mustache jade kue"
+    "postinstall": "$(./bin/dependencies)"
   }
 }

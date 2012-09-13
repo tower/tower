@@ -1,3 +1,9 @@
+# @todo remove
+try
+  coffeecupTags = if Tower.isServer then _.map(Tower.module('coffeecup').tags, (i) -> _.camelize(i, true)) else []
+catch error
+  coffeecupTags = []
+
 # @include Tower.ViewAssetHelper
 # @include Tower.ViewComponentHelper
 # @include Tower.ViewHeadHelper
@@ -95,8 +101,7 @@ class Tower.View extends Tower.Class
       @_store = store if store
       @_store ||= new Tower.StoreMemory(name: 'view')
     renderers: {}
-    # @todo remove
-    coffeecupTags: if Tower.isServer then _.map(Tower.module('coffeecup').tags, (i) -> _.camelize(i, true)) else []
+    coffeecupTags: coffeecupTags
     helper: (object) ->
       _.extend(Tower.View.helpers, object)
 

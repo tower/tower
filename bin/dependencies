@@ -7,31 +7,72 @@
 var fs = require('fs');
 var path = require('path');
 
+
 // @todo normalize install/global directories in a more robust way, for comparison.
-var normalize = function(directory) {
+function normalize(directory) {
   return directory.split(path.sep).slice(0, 3).join(path.sep);
 }
 
+function uniq(array) {
+  return Object.keys(arrayToHash(array));
+};
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(item) {
+    if (!hash[item]) {
+      hash[item] = true;
+    }
+  });
+
+  return hash;
+}
+
+// Old code, but maybe useful later.
+//
 // '/usr/local/lib/node_modules/tower' => '/usr/local'
 // 'C:\Program Files (x86)\nodejs\node_modules\tower' => 'C:\Program Files (x86)\nodejs'
-var installDirectory = normalize(process.cwd());
+//var installDirectory = normalize(process.cwd());
 // '/usr/local/Cellar/node/0.8.2/bin'
-var globalDirectory = normalize(path.dirname(process.execPath));
+//var globalDirectory = normalize(path.dirname(process.execPath));
+//var isGlobal = installDirectory === globalDirectory;
+
+// this lets us know if we ran `npm install` vs. `npm link tower`, etc.
+// the ORIGINAL npm command args
+var npmArgs;
+if (process.env.npm_config_argv) {
+  npmArgs = JSON.parse(process.env.npm_config_argv).original;
+} else {
+  npmArgs = [];
+}
+var npmOptions = arrayToHash(npmArgs);
+var isGlobal = !!(npmOptions['-g'] || npmOptions['--global']);
+var isGlobalLink = !!(npmArgs[0] == 'link' && npmArgs.length == 1);
+var isLocalLink = !!(npmArgs[0] == 'link' && npmArgs.length > 1 && npmArgs[0].charAt(0) != '-');
 
 var packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 var dependencies;
 
-if (installDirectory === globalDirectory) {
-  // if you're installing it globally, only include bare minimum.
-  dependencies = Object.keys(packageJSON['globalDependencies']);
+var testDependencies = Object.keys(packageJSON['testDependencies']);
+var globalDependencies = Object.keys(packageJSON['globalDependencies']);
+var localDependencies = Object.keys(packageJSON['localDependencies']);
+
+// if it's installed from the git repo, install everything.
+if (!isLocalLink && !isGlobalLink && fs.existsSync('.gitignore')) {
+  dependencies = testDependencies.concat(globalDependencies).concat(localDependencies);
 } else {
-  // otherwise install like normal.
-  dependencies = Object.keys(packageJSON['localDependencies']);
+  if (isGlobal || isGlobalLink) {
+    // if you're installing it globally, only include bare minimum.
+    dependencies = globalDependencies;
+  } else if (isLocalLink) {
+    // otherwise install like normal.
+    dependencies = localDependencies;
+  }
 }
 
-// if it's installed from the git repo, then also install the test dependencies.
-if (fs.existsSync('.gitignore')) {
-  dependencies = dependencies.concat(Object.keys(packageJSON['testDependencies']));
+if (dependencies && dependencies.length) {
+  process.stdout.write('npm install ' + uniq(dependencies).join(' '));
+} else {
+  // console.log('linked to local');
 }
-
-process.stdout.write(dependencies.join(' '));

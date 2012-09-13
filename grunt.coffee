@@ -95,9 +95,9 @@ module.exports = (grunt) ->
       packageJSON:
         files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         tasks: ['copy:packageJSON']
-      mainPackageJSON:
-        files: ['package.json']
-        tasks: ['injectTestDependencies:packageJSON']
+      #mainPackageJSON:
+      #  files: ['package.json']
+      #  tasks: ['injectTestDependencies:packageJSON']
     build:
       client: {}
     uploadToGithub:
