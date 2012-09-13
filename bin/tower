@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 var path = require('path');
 
+//try {
+//  require('fibers')
+//} catch (error) {}
+
 try {
   require('tower');
 } catch (error) {
