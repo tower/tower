@@ -7,5 +7,5 @@ var script = path.join(process.env.PWD, 'scripts', 'tower');
 if (fs.existsSync(script)) {
   require(script);
 } else {
-  require(path.resolve(__dirname, '../lib/tower')).Command.run(process.argv);
+  require(path.resolve(__dirname, '../index.js')).Command.run(process.argv);
 }
