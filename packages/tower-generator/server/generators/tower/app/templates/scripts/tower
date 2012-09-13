@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+
+require('tower').Command.run(process.argv);

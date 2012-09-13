@@ -4,14 +4,12 @@ var fs = require('fs');
 var path = require('path');
 var script = path.join(process.env.PWD, 'scripts', 'tower');
 
-//try {
-//  require('fibers')
-//} catch (error) {}
+try {
+  require('fibers')
+} catch (error) {}
 
 if (fs.existsSync(script)) {
   require(script);
 } else {
-  require(path.resolve(__dirname, '../lib/tower'));
+  require(path.resolve(__dirname, '../lib/tower')).Command.run(process.argv);
 }
-
-Tower.Command.run(process.argv);
