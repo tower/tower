@@ -4,10 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var script = path.join(process.env.PWD, 'scripts', 'tower');
 
-try {
-  require('fibers')
-} catch (error) {}
-
 if (fs.existsSync(script)) {
   require(script);
 } else {

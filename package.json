@@ -96,11 +96,11 @@
     "knox": "0.0.11",
     "socket.io": ">= 0.8.7",
     "socket.io-client": ">= 0.9.5",
-    "hook.io": "~0.8.10"
+    "hook.io": "~0.8.10",
+    "fibers": "~0.6.8"
   },
   "globalDependencies": {
-    "ejs": ">= 0.6.1",
-    "fibers": "~0.6.8"
+    "ejs": ">= 0.6.1"
   },
   "localDependencies": {
     "useragent": ">= 1.0.5",
