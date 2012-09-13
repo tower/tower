@@ -63,6 +63,24 @@ module.exports = (grunt) ->
           fs.writeFileSync "public/javascripts/templates.js", string
           taskDone()
 
+  grunt.registerMultiTask 'injectTestDependencies', 'Modify files in place', ->
+    done  = @async()
+    files = grunt.file.expandFiles(@file.src)
+
+    iterator = (filePath, next) =>
+      process.nextTick ->
+        packageJSON = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+
+        if testDependencies = packageJSON['testDependencies']
+          packageJSON['scripts']['install-dev'] = "npm install #{Object.keys(testDependencies).join(' ')}"
+          process.nextTick ->
+            fs.writeFileSync(filePath, JSON.stringify(packageJSON, null, 2))
+            next()
+        else
+          next()
+
+    async.forEachSeries files, iterator, done
+
   grunt.registerMultiTask 'copy', 'Copy files to destination folder and replace @VERSION with pkg.version', ->
     replaceVersion = (source) ->
       source.replace /@VERSION/g, grunt.config('pkg.version')

@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+// process.env.NODE_PATH.split(':'), process.config.variables.node_prefix
+// global npm on windows: C:\Program Files (x86)\nodejs\node_modules\
+// global node on windows: process.execPath == C:\Program Files (x86)\nodejs\node.exe
+// if process.cwd().match(dirname(process.execPath)) then maybe assume it's npm install -g
+var fs = require('fs');
+var path = require('path');
+
+// @todo normalize install/global directories in a more robust way, for comparison.
+var normalize = function(directory) {
+  return directory.split(path.sep).slice(0, 3).join(path.sep);
+}
+
+// '/usr/local/lib/node_modules/tower' => '/usr/local'
+// 'C:\Program Files (x86)\nodejs\node_modules\tower' => 'C:\Program Files (x86)\nodejs'
+var installDirectory = normalize(process.cwd());
+// '/usr/local/Cellar/node/0.8.2/bin'
+var globalDirectory = normalize(path.dirname(process.execPath));
+
+var packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+var dependencies;
+
+if (installDirectory === globalDirectory) {
+  // if you're installing it globally, only include bare minimum.
+  dependencies = Object.keys(packageJSON['globalDependencies']);
+} else {
+  // otherwise install like normal.
+  dependencies = Object.keys(packageJSON['localDependencies']);
+}
+
+// if it's installed from the git repo, then also install the test dependencies.
+if (fs.existsSync('.gitignore')) {
+  dependencies = dependencies.concat(Object.keys(packageJSON['testDependencies']));
+}
+
+process.stdout.write(dependencies.join(' '));

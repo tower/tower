@@ -95,6 +95,9 @@ module.exports = (grunt) ->
       packageJSON:
         files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         tasks: ['copy:packageJSON']
+      mainPackageJSON:
+        files: ['package.json']
+        tasks: ['injectTestDependencies:packageJSON']
     build:
       client: {}
     uploadToGithub:
@@ -105,6 +108,9 @@ module.exports = (grunt) ->
       client: {}
     bundleTests:
       client: {}
+    injectTestDependencies:
+      packageJSON:
+        src: ['package.json']
 
     #jshint:
     #  options:
@@ -168,6 +174,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', 'coffee:all copy:packageJSON build:client copy:clientForTests coffee:tests concat:tests'
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
+  grunt.registerTask ''
 
   grunt.registerTask 'uploadToGithub', ->
     taskComplete = @async()

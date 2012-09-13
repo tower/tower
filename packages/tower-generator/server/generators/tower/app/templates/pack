@@ -35,17 +35,19 @@
     "npm": ">= 1"
   },
   "dependencies": {
-    "underscore": ">= 0.0.1",
-    "underscore.string": ">= 0.0.1",
     "mongodb": ">= 0.9.9-7",
     "mint": ">= 0.3.0",
-    "npm": ">= 1.1.32",
+    "socket.io": ">= 0.8.7",
+    "socket.io-client": ">= 0.9.5",
     "tower": ">= 0.4.1",
     "coffee-script": ">= 1.3.3",
     "coffeecup": ">= 0.3.0"
   },
+  "optionalDependencies": {
+    "nodemailer": "~0.3.21"
+  },
   "devDependencies": {
-    "stylus": ">= 0.17.0",
+    "stylus": ">= 0.29.0",
     "less": ">= 1.2.2",
     "uglify-js": ">= 1.1.1",
     "pathfinder": ">= 0.3.0",

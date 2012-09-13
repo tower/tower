@@ -29,7 +29,8 @@ whitespace:
 	cake clean
 
 install:
-	npm install -g .
+	npm install
+	npm install-dev
 
 watch:
 	grunt start --config ./grunt.coffee
