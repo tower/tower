@@ -102,6 +102,7 @@ npm link
 tower new app
 cd app
 npm install
+cake watch
 tower generate scaffold Post title:string body:text
 tower generate scaffold User firstName:string lastName:string email:string
 node server
