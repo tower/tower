@@ -50,9 +50,10 @@ var npmOptions = arrayToHash(npmArgs);
 var isGlobal = !!(npmOptions['-g'] || npmOptions['--global']);
 var isGlobalLink = !!(npmArgs[0] == 'link' && npmArgs.length == 1);
 var isLocalLink = !!(npmArgs[0] == 'link' && npmArgs.length > 1 && npmArgs[0].charAt(0) != '-');
+var isRemote = !!npmArgs.join(' ').match('git://')
 
 var packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
-var dependencies;
+var dependencies = [];
 
 var testDependencies = Object.keys(packageJSON['testDependencies']);
 var globalDependencies = Object.keys(packageJSON['globalDependencies']);
@@ -60,14 +61,18 @@ var localDependencies = Object.keys(packageJSON['localDependencies']);
 
 // if it's installed from the git repo, install everything.
 if (!isLocalLink && !isGlobalLink && fs.existsSync('.gitignore')) {
-  dependencies = testDependencies.concat(globalDependencies).concat(localDependencies);
+  dependencies = dependencies.concat(testDependencies).concat(globalDependencies).concat(localDependencies);
 } else {
   if (isGlobal || isGlobalLink) {
     // if you're installing it globally, only include bare minimum.
-    dependencies = globalDependencies;
+    dependencies = dependencies.concat(globalDependencies);
   } else if (isLocalLink) {
     // otherwise install like normal.
-    dependencies = localDependencies;
+    dependencies = dependencies.concat(localDependencies);
+  }
+  // if installing from github, you'll have to compile the source.
+  if (isRemote) {
+    dependencies.push('coffee-script@">=1.3.3"');
   }
 }
 
