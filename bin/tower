@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var file = require('fs');
+var fs = require('fs');
 var path = require('path');
 var script = path.join(process.env.PWD, 'scripts', 'tower');
 
@@ -8,9 +8,9 @@ var script = path.join(process.env.PWD, 'scripts', 'tower');
 //  require('fibers')
 //} catch (error) {}
 
-try {
-  require('tower');
-} catch (error) {
+if (fs.existsSync(script)) {
+  require(script);
+} else {
   require(path.resolve(__dirname, '../lib/tower'));
 }
 
