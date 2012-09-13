@@ -124,8 +124,8 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
 
         @template 'README.md'
         
-        # @inside 'scripts', ->
-        #   @template 'tower'
+        @inside 'scripts', ->
+          @template 'tower'
 
         @template 'server.js'
 
