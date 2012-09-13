@@ -8,12 +8,14 @@ var helpers = require('coffee-script/lib/coffee-script/helpers');
 var Literal = nodes.Literal;
 var Extends = nodes.Extends;
 var Code = nodes.Code;
+var Class = nodes.Class;
 var Param = nodes.Param;
 var Block = nodes.Block;
 var Call = nodes.Call;
 var Assign = nodes.Assign;
 var Value = nodes.Value;
 var Parens = nodes.Parens;
+var Access = nodes.Access;
 var If = nodes.If;
 var Arr = nodes.Arr;
 var compact = helpers.compact;
@@ -38,6 +40,103 @@ var SIMPLENUM = /^[+-]?\d+$/;
 var METHOD_DEF = RegExp("^(?:(" + IDENTIFIER_STR + ")\\.prototype(?:\\.(" + IDENTIFIER_STR + ")|\\[(\"(?:[^\\\\\"\\r\\n]|\\\\.)*\"|'(?:[^\\\\'\\r\\n]|\\\\.)*')\\]|\\[(0x[\\da-fA-F]+|\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)\\]))|(" + IDENTIFIER_STR + ")$");
 var IS_STRING = /^['"]/;
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+Class.prototype.addProperties = function(node, name, o) {
+  var assign, base, exprs, func, props;
+  props = node.base.properties.slice(0);
+  exprs = (function() {
+    var _results;
+    _results = [];
+    while (assign = props.shift()) {
+      if (assign instanceof Assign) {
+        base = assign.variable.base;
+        delete assign.context;
+        func = assign.value;
+        if (base.value === 'constructor') {
+          if (this.ctor) {
+            throw new Error('cannot define more than one constructor in a class');
+          }
+          if (func.bound) {
+            throw new Error('cannot define a constructor as a bound function');
+          }
+          if (func instanceof Code) {
+            assign = this.ctor = func;
+          } else {
+            this.externalCtor = o.scope.freeVariable('class');
+            assign = new Assign(new Literal(this.externalCtor), func);
+          }
+        } else {
+          if (assign.variable["this"]) {
+            assign._isClassProp = true;
+            func["static"] = true;
+            if (func.bound) {
+              func.context = name;
+            }
+          } else {
+            assign._isInstanceProp = true;
+            assign.variable = new Value(new Literal(name), [new Access(new Literal('prototype')), new Access(base)]);
+            if (func instanceof Code && func.bound) {
+              this.boundFuncs.push(base);
+              func.bound = false;
+            }
+          }
+        }
+      }
+      _results.push(assign);
+    }
+    return _results;
+  }).call(this);
+  return compact(exprs);
+};
+
+Class.prototype.compileNode = function(o) {
+  var call, decl, e, i, key, klass, lname, name, params, value, _i, _len, _ref2, _ref3;
+  decl = this.determineName();
+  name = decl || '_Class';
+  if (name.reserved) {
+    name = "_" + name;
+  }
+  lname = new Literal(name);
+  this.hoistDirectivePrologue();
+  this.setContext(name);
+  this.walkBody(name, o);
+  if (this.parent) {
+    this.superClass = new Literal(o.scope.freeVariable('super', false));
+    this.body.expressions.unshift(new Extends(lname, this.superClass));
+  }
+  this.ensureConstructor(name);
+  this.body.spaced = true;
+  if (!(this.ctor instanceof Code)) {
+    this.body.expressions.unshift(this.ctor);
+  }
+  this.body.expressions.push(lname);
+  (_ref2 = this.body.expressions).unshift.apply(_ref2, this.directives);
+  _ref3 = this.body.expressions;
+  for (i = _i = 0, _len = _ref3.length; _i < _len; i = ++_i) {
+    e = _ref3[i];
+    if (e._isInstanceProp) {
+      key = e.variable.properties[e.variable.properties.length - 1].name.toString();
+      value = e.value;
+      this.body.expressions[i] = this.hookBodyExpression('instance', name, key, value);
+    } else if (e._isClassProp) {
+      key = e.variable.properties[e.variable.properties.length - 1].name.toString();
+      value = e.value;
+      this.body.expressions[i] = this.hookBodyExpression('class', name, key, value);
+    }
+  }
+  this.addBoundFunctions(o);
+  call = Closure.wrap(this.body);
+  if (this.parent) {
+    call.args.push(this.parent);
+    params = call.variable.params || call.variable.base.params;
+    params.push(new Param(this.superClass));
+  }
+  klass = new Parens(call, true);
+  if (this.variable) {
+    klass = new Assign(this.variable, klass);
+  }
+  return klass.compile(o);
+}
 
 Code.prototype.compileNode = function(o) {
   var code, exprs, i, idt, lit, name, p, param, params, ref, splats, uniqs, val, wasEmpty, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
@@ -189,7 +288,7 @@ Extends.prototype.compile = function(o) {
   return new nodes.Assign(this.child, new nodes.Call(new nodes.Value(new nodes.Literal(utility('extends'))), [this.child, this.parent])).compile(o);
 };
 
-nodes.Class.prototype.compileNode = function(o) {
+Class.prototype.compileNode = function(o) {
   var call, decl, e, i, key, klass, lname, name, params, value, _i, _len, _ref2, _ref3;
   decl = this.determineName();
   name = decl || '_Class';
@@ -236,6 +335,34 @@ nodes.Class.prototype.compileNode = function(o) {
     klass = new Assign(this.variable, klass);
   }
   return klass.compile(o);
+};
+
+Class.prototype.hookBodyExpression = function(type, name, key, value) {
+  var clazz, keyL, newExpression, util;
+  if (type === 'instance') {
+    util = new Literal(utility('defineProperty'));
+  } else if (type === 'class') {
+    util = new Literal(utility('defineStaticProperty'));
+  } else {
+    throw new Error('hookBodyExpression() requires type of class or instance');
+  }
+  clazz = new Literal(name);
+  keyL = new Literal(key);
+  if (value instanceof Code) {
+    value.klass = name;
+    if (!(value.name != null)) {
+      value.name = key;
+    }
+    if (value.bound) {
+      value.context = name;
+    }
+  }
+  newExpression = new Call(new Value(util), [clazz, keyL, value]);
+  newExpression.klass = name;
+  if (newExpression.bound) {
+    newExpression.context = name;
+  }
+  return newExpression;
 };
 
 utility = function(name) {

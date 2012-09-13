@@ -4,7 +4,7 @@
 module.exports = (grunt) ->
   require('./packages/tower-tasks/tasks')(grunt)
 
-  require('./coffee')
+  require('./coffee-inheritance')
 
   _     = grunt.utils._
   file  = grunt.file

@@ -1,32 +1,34 @@
 class Tower.StoreMemory extends Tower.Store
-  @stores: ->
-    @_stores ||= []
+  @reopenClass
+    stores: ->
+      @_stores ||= []
 
-  @clean: (callback) ->
-    stores = @stores()
+    clean: (callback) ->
+      stores = @stores()
 
-    store.clean() for store in stores
+      store.clean() for store in stores
 
-    callback() if callback
+      callback() if callback
 
-  init: (options) ->
-    @_super arguments...
+  @reopen
+    init: (options) ->
+      @_super arguments...
 
-    @initialize()
+      @initialize()
 
-  initialize: ->
-    @constructor.stores().push @
+    initialize: ->
+      @constructor.stores().push @
 
-    @records  = Ember.Map.create()
-    @lastId   = 1
+      @records  = Ember.Map.create()
+      @lastId   = 1
 
-    Ember.set(@, 'batch', new Tower.StoreBatch)
+      Ember.set(@, 'batch', new Tower.StoreBatch)
 
-  clean: ->
-    @records  = Ember.Map.create()
+    clean: ->
+      @records  = Ember.Map.create()
 
-  commit: ->
-    Ember.get(@, 'batch').commit()
+    commit: ->
+      Ember.get(@, 'batch').commit()
 
 require './memory/calculations'
 require './memory/finders'
