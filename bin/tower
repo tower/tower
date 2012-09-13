@@ -2,6 +2,7 @@
 
 var file = require('fs');
 var path = require('path');
+var local_script = path.join(process.env.PWD, 'scripts', 'tower');
 
 //try {
 //  require('fibers')
