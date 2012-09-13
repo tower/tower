@@ -74,10 +74,10 @@ class Tower.Store extends Tower.Class
 
     env: ->
       @config
-
-  @reopen
+      
     supports: {}
 
+  @reopen
     addIndex: (name, options) ->
 
     serialize: (data, saved = false) ->

@@ -100,9 +100,10 @@ class Tower.View extends Tower.Class
     helper: (object) ->
       _.extend(Tower.View.helpers, object)
 
-  init: (context = {}) ->
-    @_super arguments...
+  @reopen
+    init: (context = {}) ->
+      @_super arguments...
 
-    @_context = context
+      @_context = context
 
 module.exports = Tower.View

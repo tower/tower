@@ -1,6 +1,9 @@
 var path = require('path');
-require('coffee-script');
 
+console.log('here')
+require('./coffee');
+
+// require tower
 var root = path.join(__dirname, 'lib/tower.js');
 
 if (path.existsSync(root))

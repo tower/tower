@@ -4,6 +4,8 @@
 module.exports = (grunt) ->
   require('./packages/tower-tasks/tasks')(grunt)
 
+  require('./coffee')
+
   _     = grunt.utils._
   file  = grunt.file
   _path = require('path')
