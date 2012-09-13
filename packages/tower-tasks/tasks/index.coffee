@@ -83,7 +83,7 @@ module.exports = (grunt) ->
 
   grunt.registerMultiTask 'copy', 'Copy files to destination folder and replace @VERSION with pkg.version', ->
     replaceVersion = (source) ->
-      source.replace /@VERSION/g, grunt.config('pkg.version')
+      source.replace /version": "([^"]+)/g, 'version": "' + grunt.config('pkg.version')
 
     copyFile = (src, dest) ->
       if /(js|css|json)$/.test(src)

@@ -5,7 +5,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
     sourceRoot: __dirname
 
     buildApp: (name = @appName) ->
-      app = super(name)
+      app = @_super(name)
 
       app.title       = @program.title || _.titleize(_.humanize(app.name))
       app.description = @program.description

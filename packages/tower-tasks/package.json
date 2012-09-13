@@ -1,6 +1,6 @@
 {
   "name": "tower-tasks",
-  "version": "@VERSION",
+  "version": "0.4.2-pre",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./tasks/index.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
