@@ -87,15 +87,6 @@ brew install redis
 redis-server
 ```
 
-For developing, you may also want to link tower and tower-tasks globally so you can reuse it between multiple projects:
-
-```
-cd <tower repo>
-npm link
-cd lib/tower-tasks
-npm link
-```
-
 ## Generate
 
 ```
@@ -118,77 +109,139 @@ forever server.js
 
 ## Structure
 
-Here's how you might organize a blog:
+Here's the structure of a newly generated app with a `Post` model:
 
 ```
 .
-|-- app
-|   |-- client
-|   |   |-- stylesheets
-|   |-- controllers
-|   |   |-- admin
-|   |   |   |-- postsController.coffee
-|   |   |   `-- usersController.coffee
-|   |   |-- commentsController.coffee
-|   |   |-- postsController.coffee
-|   |   |-- sessionsController.coffee
-|   |   `-- usersController.coffee
-|   |-- models
-|   |   |-- comment.coffee
-|   |   |-- post.coffee
-|   |   `-- user.coffee
-|   |-- views
-|   |   |-- admin
-|   |   |   `-- posts
-|   |   |       |-- _form.coffee
-|   |   |       |-- edit.coffee
-|   |   |       |-- index.coffee
-|   |   |       |-- new.coffee
-|   |   |       |-- show.coffee
-|   |   |-- layouts
-|   |   |   `-- application.coffee
-|   |   |-- shared
-|   |   `-- posts
-|   |       |-- index.coffee
-|   |       `-- show.coffee
-|   `-- helpers
-|       |-- admin
-|       |   |-- postsHelper.coffee
-|       |   `-- usersHelper.coffee
-|       `-- postsHelper.coffee
-`-- config
-|    |-- application.coffee
-|    |-- assets.coffee
-|    |-- databases.coffee
-|    |-- environments
-|       |-- development.coffee
-|       |-- production.coffee
-|       `-- test.coffee
-|    |-- locale
-|       `-- en.coffee
-|    |-- routes.coffee
-`-- test
-|    |-- helper.coffee
-|    |-- models
-|    |   |-- postTest.coffee
-|    |   |-- userTest.coffee
-|    `-- acceptance
-|        |-- login.coffee
-|        |-- signup.coffee
-|        `-- posts.coffee
+├── app
+│   ├── config
+│   │   ├── client
+│   │   │   ├── bootstrap.coffee
+│   │   │   └── watch.coffee
+│   │   ├── server
+│   │   │   ├── environments
+│   │   │   │   ├── development.coffee
+│   │   │   │   ├── production.coffee
+│   │   │   │   └── test.coffee
+│   │   │   ├── initializers
+│   │   │   ├── assets.coffee
+│   │   │   ├── bootstrap.coffee
+│   │   │   ├── credentials.coffee
+│   │   │   ├── databases.coffee
+│   │   │   └── session.coffee
+│   │   └── shared
+│   │       ├── locales
+│   │       │   └── en.coffee
+│   │       ├── application.coffee
+│   │       └── routes.coffee
+│   ├── controllers
+│   │   ├── client
+│   │   │   ├── applicationController.coffee
+│   │   │   └── postsController.coffee
+│   │   └── server
+│   │       ├── applicationController.coffee
+│   │       └── postsController.coffee
+│   ├── models
+│   │   ├── client
+│   │   ├── server
+│   │   └── shared
+│   │       └── post.coffee
+│   ├── stylesheets
+│   │   ├── client
+│   │   │   └── application.styl
+│   │   └── server
+│   │       └── email.styl
+│   ├── templates
+│   │   ├── server
+│   │   │   └── layout
+│   │   │       ├── _meta.coffee
+│   │   │       └── application.coffee
+│   │   └── shared
+│   │       ├── layout
+│   │       │   ├── _body.coffee
+│   │       │   ├── _flash.coffee
+│   │       │   ├── _footer.coffee
+│   │       │   ├── _header.coffee
+│   │       │   ├── _navigation.coffee
+│   │       │   └── _sidebar.coffee
+│   │       ├── posts
+│   │       │   ├── _flash.coffee
+│   │       │   ├── _form.coffee
+│   │       │   ├── _item.coffee
+│   │       │   ├── _list.coffee
+│   │       │   ├── _table.coffee
+│   │       │   ├── edit.coffee
+│   │       │   ├── index.coffee
+│   │       │   ├── new.coffee
+│   │       │   └── show.coffee
+│   │       └── welcome.coffee
+│   └── views
+│       └── client
+│           ├── layout
+│           │   └── application.coffee
+│           └── posts
+│               ├── form.coffee
+│               ├── index.coffee
+│               └── show.coffee
+├── data
+│   └── seeds.coffee
+├── lib
+├── log
+├── public
+│   ├── fonts
+│   ├── images
+│   ├── javascripts
+│   ├── stylesheets
+│   ├── swfs
+│   ├── uploads
+│   ├── 404.html
+│   ├── 500.html
+│   ├── favicon.ico
+│   ├── humans.txt
+│   └── robots.txt
+├── scripts
+│   └── tower
+├── test
+│   ├── cases
+│   │   ├── controllers
+│   │   │   ├── client
+│   │   │   └── server
+│   │           └── postsControllerTest.coffee
+│   │   ├── features
+│   │   │   └── client
+│   │   └── models
+│   │       ├── client
+│   │       ├── server
+│   │       └── shared
+│   │           └── postTest.coffee
+│   ├── factories
+│   │   └── postFactory.coffee
+│   ├── client.coffee
+│   ├── mocha.opts
+│   └── server.coffee
+├── tmp
+├── wiki
+│   ├── _sidebar.md
+│   └── home.md
+├── Cakefile
+├── grunt.coffee
+├── package.json
+├── Procfile
+├── README.md
+└── server.js
 ```
 
 ## Application
 
 ``` coffeescript
-# config/application.coffee
+# app/config/shared/application.coffee
 global.App = Tower.Application.create()
 ```
 
 ## Models
 
 ``` coffeescript
-# app/models/user.coffee
+# app/models/shared/user.coffee
 class App.User extends Tower.Model
   @field 'firstName', required: true
   @field 'lastName'
@@ -209,8 +262,9 @@ class App.User extends Tower.Model
   welcome: ->
     Tower.Mailer.welcome(@).deliver()
 ```
+
 ``` coffeescript
-# app/models/post.coffee
+# app/models/shared/post.coffee
 class App.Post extends Tower.Model
   @field 'title'
   @field 'body'
@@ -227,16 +281,18 @@ class App.Post extends Tower.Model
   slugify: ->
     @set 'slug', @get('title').replace(/[^a-z0-9]+/g, '-').toLowerCase()
 ```
+
 ``` coffeescript
-# app/models/comment.coffee
+# app/models/shared/comment.coffee
 class App.Comment extends Tower.Model
   @field 'message'
   
   @belongsTo 'author', type: 'User'
   @belongsTo 'commentable', polymorphic: true
 ```
+
 ``` coffeescript
-# app/models/address.coffee
+# app/models/shared/address.coffee
 class App.Address extends Tower.Model
   @field 'street'
   @field 'city'
@@ -322,42 +378,42 @@ It's all using Twitter Bootstrap, so check out their docs.  http://twitter.githu
 ## Controllers
 
 ``` coffeescript
-# app/controllers/postsController.coffee
+# app/controllers/server/postsController.coffee
 class App.PostsController extends Tower.Controller
   index: ->
     App.Post.all (error, posts) =>
-      @render "index", locals: posts: posts
+      @render 'index', locals: posts: posts
     
   new: ->
     @post = App.Post.build()
-    @render "new"
+    @render 'new'
     
   create: ->
     @post = App.Post.build(@params.post)
     
     super (success, failure) ->
-      @success.html => @render "posts/edit"
-      @success.json => @render text: "success!"
-      @failure.html => @render text: "Error", status: 404
-      @failure.json => @render text: "Error", status: 404
+      @success.html => @render 'posts/edit'
+      @success.json => @render text: 'success!'
+      @failure.html => @render text: 'Error', status: 404
+      @failure.json => @render text: 'Error', status: 404
     
   show: ->
     App.Post.find @params.id, (error, post) =>
-      @render "show"
+      @render 'show'
     
   edit: ->
     App.Post.find @params.id, (error, post) =>
-      @render "edit"
+      @render 'edit'
     
   update: ->
     App.Post.find @params.id, (error, post) =>
       post.updateAttributes @params.post, (error) =>
-        @redirectTo action: "show"
+        @redirectTo action: 'show'
     
   destroy: ->
     App.Post.find @params.id, (error, post) =>
       post.destroy (error) =>
-        @redirectTo action: "index"
+        @redirectTo action: 'index'
 ```
 
 Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).  The default implementation is actually a lot more robust than that, just wanted to show a simple example.
@@ -365,25 +421,25 @@ Actually, all that's built in!  So for the simple case you don't even need to wr
 ## Databases
 
 ``` coffeescript
-# config/databases.coffee
+# app/config/server/databases.coffee
 module.exports =
   mongodb:
     development:
-      name: "app-development"
+      name: 'app-development'
       port: 27017
-      host: "127.0.0.1"
+      host: '127.0.0.1'
     test:
-      name: "app-test"
+      name: 'app-test'
       port: 27017
-      host: "127.0.0.1"
+      host: '127.0.0.1'
     staging:
-      name: "app-staging"
+      name: 'app-staging'
       port: 27017
-      host: "127.0.0.1"
+      host: '127.0.0.1'
     production:
-      name: "app-production"
+      name: 'app-production'
       port: 27017
-      host: "127.0.0.1"
+      host: '127.0.0.1'
 ```
 
 ## Mailers
@@ -392,35 +448,35 @@ module.exports =
 class App.Notification extends Tower.Mailer
   # app/views/mailers/welcome.coffee template
   @welcome: (user) ->
-    @mail to: user.email, from: "me@gmail.com"
+    @mail to: user.email, from: 'me@gmail.com'
 ```
 
 ## Internationalization
 
 ``` coffeescript
-# config/locales/en.coffee
+# app/config/shared/locales/en.coffee
 module.exports =
-  hello: "world"
+  hello: 'world'
   forms:
     titles:
-      signup: "Signup"
+      signup: 'Signup'
   pages:
     titles:
-      home: "Welcome to %{site}"
+      home: 'Welcome to %{site}'
   posts:
     comments:
-      none: "No comments"
-      one: "1 comment"
-      other: "%{count} comments"
+      none: 'No comments'
+      one: '1 comment'
+      other: '%{count} comments'
   messages:
     past:
-      none: "You never had any messages"
-      one: "You had 1 message"
-      other: "You had %{count} messages"
+      none: 'You never had any messages'
+      one: 'You had 1 message'
+      other: 'You had %{count} messages'
     present:
-      one: "You have 1 message"
+      one: 'You have 1 message'
     future:
-      one: "You might have 1 message"
+      one: 'You might have 1 message'
 ```
 
 ## Helpers
@@ -447,33 +503,33 @@ It's built on [connect](http://github.com/sencha/connect), so you can use any of
 ## Assets
 
 ``` coffeescript
-# config/assets.coffee
+# app/config/server/assets.coffee
 module.exports =
   javascripts:
     vendor: [
-      "/vendor/javascripts/jquery.js"
-      "/vendor/javascripts/underscore.js"
-      "/vendor/javascripts/socket.io"
-      "/vendor/javascripts/tower.js"
+      '/vendor/javascripts/jquery.js'
+      '/vendor/javascripts/underscore.js'
+      '/vendor/javascripts/socket.io'
+      '/vendor/javascripts/tower.js'
     ]
     
     lib: [
-      "/lib/grid.js"
-      "/lib/profiler.js"
+      '/lib/grid.js'
+      '/lib/profiler.js'
     ]
     
     application: [
-      "/app/models/post.js"
-      "/app/models/comment.js"
+      '/app/models/shared/post.js'
+      '/app/models/shared/comment.js'
     ]
     
   stylesheets:
     vendor: [
-      "/vendor/stylesheets/reset.css"
+      '/vendor/stylesheets/reset.css'
     ]
     application: [
-      "/app/assets/stylesheets/application.css"
-      "/app/assets/stylesheets/theme.css"
+      '/app/assets/stylesheets/application.css'
+      '/app/assets/stylesheets/theme.css'
     ]
 ```
 
