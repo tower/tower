@@ -134,7 +134,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
             @inside 'features', '.', ->
               @directory 'client'
               @inside 'server', '.', ->
-                @template "apiTest.#{scriptType}"
+                #@template "apiTest.#{scriptType}"
             @inside 'models', ->
               @directory 'client'
               @directory 'server'
@@ -142,6 +142,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
 
           @directory 'factories'
 
+        @inside 'test', ->
           @template "client.#{scriptType}"
           @template 'mocha.opts'
           @template "server.#{scriptType}"

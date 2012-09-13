@@ -1,4 +1,10 @@
 #!/usr/bin/env node
 var path = require('path');
 
-require(path.resolve('../lib/tower')).Command.run(process.argv);
+try {
+  require('tower');
+} catch (error) {
+  require(path.resolve(__dirname, '../lib/tower'));
+}
+
+Tower.Command.run(process.argv);
