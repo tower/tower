@@ -3,11 +3,15 @@ class Tower.GeneratorModelGenerator extends Tower.Generator
     sourceRoot: __dirname
 
     run: ->
-      @directory "app/models"
-      @template "model.coffee", "app/models/#{@model.name}.coffee"
-      @template "factory.coffee", "test/factories/#{@model.name}Factory.coffee"
-      @asset "/app/models/#{@model.name}"
+      # @todo
+      scriptType = 'coffee'
+
+      @directory 'app/models'
+      @directory 'app/models/shared'
+      @template "model.#{scriptType}", "app/models/shared/#{@model.name}.#{scriptType}"
+      @template "factory.#{scriptType}", "test/factories/#{@model.name}Factory.#{scriptType}"
+      @asset "/app/models/shared/#{@model.name}"
       @bootstrap @model
-      @generate "mocha:model"
+      @generate 'mocha:model'
 
 module.exports = Tower.GeneratorModelGenerator

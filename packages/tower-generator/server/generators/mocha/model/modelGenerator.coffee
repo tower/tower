@@ -2,8 +2,11 @@ class Tower.GeneratorMochaModelGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
-    @directory "test/models"
-    @template "model.coffee", "test/models/#{@model.name}Test.coffee"
-    @asset "/test/models/#{@model.name}Test", bundle: "development"
+    @directory 'test/cases/models'
+    @directory 'test/cases/models/client'
+    @directory 'test/cases/models/server'
+    @directory 'test/cases/models/shared'
+    @template 'model.coffee', "test/cases/models/shared/#{@model.name}Test.coffee"
+    @asset "/test/cases/models/shared/#{@model.name}Test", bundle: 'development'
 
 module.exports = Tower.GeneratorMochaModelGenerator
