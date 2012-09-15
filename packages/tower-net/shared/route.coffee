@@ -118,7 +118,8 @@ class Tower.NetRoute extends Tower.Class
       request.params  = params
 
       if controller
-        controller      = Tower.constant(Tower.namespaced(@controller.className)).create()
+        controller      = Tower.constant(Tower.namespaced(controller.className)).create()
+
       controller
 
     get: (name) ->

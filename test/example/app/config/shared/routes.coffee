@@ -1,4 +1,5 @@
 Tower.Route.draw ->
+  @match "/", to: "application#welcome"
   @match "/sign-in", to: "sessions#new", via: "get", as: "login"
 
   # test routes
@@ -44,6 +45,5 @@ Tower.Route.draw ->
   @resources 'posts'
   @resources 'users'
   #@match '/users', via: ['post'], to: 'users#index'
-  @match "/", to: "application#welcome"
 
   @resources "posts"

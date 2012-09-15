@@ -19,8 +19,14 @@ test-memory:
 test-mongodb:
 	$(CMD) $(SRC) --store mongodb
 
-test-browser:
-	$(shell phantomjs test/client.js) # file://localhost$(DIR)/test/client/index.html
+start-client-test-server:
+	cd test/example
+	grunt --config ./grunt.coffee
+	cd ../..
+	node test/example -p 3210
+
+test-client:
+	phantomjs test/client.coffee http://localhost:3210/?test=model,support,application,store
 
 clean:
 	rm -rf lib/*
@@ -44,4 +50,4 @@ dist:
 publish:
 	npm publish
 
-.PHONY: test-memory test-mongodb test test-all check test-browser build dist
+.PHONY: test-memory test-mongodb test test-all check test-client build dist start-client-test-server

@@ -166,6 +166,7 @@ class Tower.Application extends Tower.Engine
         @server.on 'error', (error) ->
           if error.errno == 'EADDRINUSE'
             console.log('   Try using a different port: `node server -p 3001`')
+            process.exit()
           #console.log(error.stack)
         
         @initializeSockets()

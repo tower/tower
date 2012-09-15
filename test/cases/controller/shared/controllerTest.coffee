@@ -7,6 +7,8 @@ describe 'Tower.Controller', ->
     Tower.Route.draw ->
       @match '/custom',  to: 'custom#index'
       @match '/custom/:id',  to: 'custom#show'
+
+    console.log 'here'
   
     controller  = App.CustomController.create()
     

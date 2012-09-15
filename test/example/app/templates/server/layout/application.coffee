@@ -22,5 +22,4 @@ html ->
         javascripts 'tests'
 
     script "App.bootstrap(#{JSON.stringify(@bootstrapData, null, [])})" if @bootstrapData
-    
     div id: 'mocha', ->

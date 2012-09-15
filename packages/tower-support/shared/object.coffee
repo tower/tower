@@ -69,6 +69,7 @@ Tower.SupportObject =
   functionName: (fn) ->
     return fn.__name__ if fn.__name__
     return fn.name if fn.name
+    #return fn.toString() if Ember.Object.detect(fn)
     fn.toString().match(/\W*function\s+([\w\$]+)\(/)?[1]
 
   castArray: (object) ->

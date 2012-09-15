@@ -2,7 +2,7 @@
 process.env.TOWER_ROOT = __dirname;
 
 require("coffee-script");
-require("../../lib/tower");
+require("../..");
 
 Tower.View.engine = "coffee"
 // must run `node server` relative to this test/example folder

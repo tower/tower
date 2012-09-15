@@ -2,8 +2,10 @@ language: node_js
 node_js:
   - 0.8
 install: npm install
+# @todo once `make test-client` is working
 #before_script:
-#  - "export DISPLAY=:99.0"
-#  - "sh -e /etc/init.d/xvfb start"
-#  - "cake build"
-#script: "cake test[all]"
+#  - "cd test/example"
+#  - "grunt --config ./grunt.coffee"
+#  - "cd ../.."
+#  - "node test/example -p 3210"
+#  - sleep 3 # give Web server some time to bind to sockets, etc
