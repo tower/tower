@@ -1,4 +1,2 @@
-@title = "Listing <%= model.namePlural %>"
-
-partial "flash"
-partial "table"
+<%= app.namespace %>.<%= model.classNamePlural %>IndexView = Ember.View.extend
+  templateName: '<%= view.directory %>/index'

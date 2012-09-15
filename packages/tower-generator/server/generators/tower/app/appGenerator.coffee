@@ -136,7 +136,8 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
               @directory 'server'
             @inside 'features', '.', ->
               @directory 'client'
-              @inside 'server', '.', ->
+              @directory 'server'
+              #@inside 'server', '.', ->
                 #@template "apiTest.#{scriptType}"
             @inside 'models', ->
               @directory 'client'

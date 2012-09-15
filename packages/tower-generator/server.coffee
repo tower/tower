@@ -15,6 +15,7 @@ Tower.GeneratorMocha = {}
 
 require './server/generators/tower/app/appGenerator'
 require './server/generators/tower/model/modelGenerator'
+require './server/generators/tower/template/templateGenerator'
 require './server/generators/tower/view/viewGenerator'
 require './server/generators/tower/controller/controllerGenerator'
 require './server/generators/tower/helper/helperGenerator'
