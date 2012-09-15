@@ -2,7 +2,9 @@ class Tower.GeneratorMochaControllerGenerator extends Tower.Generator
   sourceRoot: __dirname
 
   run: ->
-    @directory "test/controllers"
-    @template "controller.coffee", "test/controllers/#{@model.namePlural}ControllerTest.coffee", ->
+    @directory 'test/cases/controllers'
+    @directory 'test/cases/controllers/client'
+    @directory 'test/cases/controllers/server'
+    @template 'controller.coffee', "test/cases/controllers/server/#{@model.namePlural}ControllerTest.coffee", ->
 
 module.exports = Tower.GeneratorMochaControllerGenerator

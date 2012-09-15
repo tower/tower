@@ -3,6 +3,9 @@ class Tower.GeneratorViewGenerator extends Tower.Generator
     sourceRoot: __dirname
 
     run: ->
+      # @todo
+      scriptType = 'coffee'
+
       @directory "app/templates/shared/#{@view.directory}"
 
       views = [
@@ -18,7 +21,7 @@ class Tower.GeneratorViewGenerator extends Tower.Generator
       ]
 
       for view in views
-        @template "#{view}.coffee", "app/templates/shared/#{@view.directory}/#{view}.coffee"
+        @template "#{view}.#{scriptType}", "app/templates/shared/#{@view.directory}/#{view}.#{scriptType}"
 
       views = [
         'form'
@@ -27,7 +30,7 @@ class Tower.GeneratorViewGenerator extends Tower.Generator
       ]
 
       for view in views
-        @template "client/#{view}.coffee", "app/views/client/#{@view.directory}/#{view}.coffee"
+        @template "client/#{view}.#{scriptType}", "app/views/client/#{@view.directory}/#{view}.#{scriptType}"
         @asset "/app/views/client/#{@view.directory}/#{view}"
 
 module.exports = Tower.GeneratorViewGenerator
