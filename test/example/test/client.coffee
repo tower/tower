@@ -26,4 +26,7 @@ $ ->
     #Tower.Application.instance().initialize()
     Tower.store.clean(done)
   #mocha.globals ["__flash_getWindowLocation", "__flash_getTopLocation"]
-  mocha.run()
+  unless window.mochaPhantomJS
+    process.stdout ||= {}
+    process.stdout.write = -> console.log(arguments...)
+    mocha.run()

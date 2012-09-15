@@ -1,44 +1,106 @@
 # https://github.com/metaskills/mocha-phantomjs
 # https://github.com/kmiyashiro/grunt-mocha
-args = phantom.args
-if args.length < 1 or args.length > 2
-  console.log "Usage: #{phantom.scriptName} <URL> <timeout>"
-  phantom.exit 1
 
 #phantom.viewportSize =
 #  width: 800
 #  height: 600
 
-page = require('webpage').create()
+columns = parseInt(require('system').env.COLUMNS or 75) * .75 | 0
+page = null
 
-page.onConsoleMessage = (message) ->
-  console.log(message)
+exit = (msg) ->
+  console.log msg if msg
+  phantom.exit 1
 
-page.open args[0], (status) ->
-  testCompletion = ->
-    page.evaluate ->
-      return true if $('#mocha #stats .progress')
-      false
+finish = ->
+  phantom.exit page.evaluate -> mocha.phantomjs?.failures
 
-  printTestResults = ->
-    page.evaluate ->
-      console.log document.body.querySelector(".description").innerText
-      list = document.body.querySelectorAll("div.jasmine_reporter > div.suite.failed")
-      i = 0
-      while i < list.length
-        el = list[i]
-        desc = el.querySelectorAll(".description")
-        console.log ""
-        j = 0
-        while j < desc.length
-          console.log desc[j].innerText
-          ++j
-        ++i
+dotLog = (columns) ->
+  # dot reporter
+  process.cursor.margin = 2
+  process.cursor.CRMatcher = /\u001b\[\d\dm\․\u001b\[0m/
+  process.stdout.columns = columns
+  process.stdout.allowedFirstNewLine = false
+  process.stdout.write = (string) ->
+    if string is '\n  '
+      unless process.stdout.allowedFirstNewLine
+        process.stdout.allowedFirstNewLine = true
+      else
+        return
+    else if string.match(process.cursor.CRMatcher)
+      if process.cursor.count is process.stdout.columns
+        process.cursor.count = 0
+        forward = process.cursor.margin
+        string = process.cursor.forwardN(forward) + string
+      else
+        forward = process.cursor.margin + process.cursor.count
+        string = process.cursor.up + process.cursor.forwardN(forward) + string
+      ++process.cursor.count
+    console.log string
 
-    phantom.exit()
+setupClient = ->
+  if page.evaluate(-> window.mocha?)
+    page.injectJs 'mocha-extensions.js'
+    page.evaluate dotLog, columns
+  else
+    exit "Failed to find mocha on the page."
 
-  #waitFor testCompletion, printTestResults
-  setTimeout phantom.exit, 3000
+runMocha = ->
+  page.evaluate runner
+  mochaStarted = page.evaluate -> mocha?.phantomjs?.runner or false
+  if mochaStarted
+    mochaRunAt = new Date().getTime()
+    waitForMocha()
+  else
+    exit "Failed to start mocha."
+
+waitForMocha = ->
+  ended = !!(page.evaluate -> mocha.phantomjs?.ended)
+  if ended then finish() else setTimeout(waitForMocha, 1000)
+
+runner = ->
+  try
+    mocha.setup ui: 'bdd', timeout: 2000, reporter: mocha.reporters.Dot # mocha.reporters.JSON
+    mocha.phantomjs = failures: 0, ended: false, run: false
+    mocha.phantomjs.runner = mocha.run()
+    if mocha.phantomjs.runner
+      mocha.phantomjs.runner.on 'end', ->
+        #mocha.phantomjs.failures = exitures
+        mocha.phantomjs.ended = true
+  catch error
+    console.log(error.toString())
+    false
+
+run = ->
+  args = phantom.args
+
+  if args.length < 1 or args.length > 2
+    console.log "Usage: #{phantom.scriptName} <URL> <timeout>"
+    phantom.exit 1
+
+  url = args[0]
+
+  page = require('webpage').create()
+
+  page.onInitialized = => 
+    page.evaluate -> window.mochaPhantomJS = true
+
+  page.onConsoleMessage = (message) ->
+    console.log(message)
+
+  page.onLoadFinished = (status) =>
+    if status isnt 'success' then onLoadFailed() else onLoadSuccess()
+
+  onLoadSuccess = ->
+    setupClient()
+    runMocha()
+
+  onLoadFailed = ->
+    exit "Failed to load the page. Check the url: #{url}"
+
+  page.open url
+
+run()
 
 # # A bit of a hack until we can figure this out on Travis
 # tries = 0
@@ -49,39 +111,3 @@ page.open args[0], (status) ->
 # end
 # 
 # success &&= $?.success?
-
-###
-exec  = require("child_process").exec
-forever = require("forever")
-Hook  = require("hook.io").Hook
-hook  = new Hook(name: "tower-test", debug: true, silent: false)
-url   = "http://localhost:3000"
-
-browsers =
-  names:    ["chrome", "safari", "firefox", "opera"]
-  # chrome: ["/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome", "--user-data-dir=/tmp", url]
-  chrome:   """open -a "Google Chrome" #{url}"""
-  safari:   """open -a "Safari" #{url}"""
-  firefox:  """open -a "Firefox" #{url}"""
-  opera:    """open -a "Opera" #{url}"""
-  
-next = (callback) ->
-  browser = browsers[browser.names.shift()]
-  if browser
-    exec browser
-  else
-    hook.kill()
-
-hook.on "design.io-server::tower-test::ready", =>
-  next()
-  #exec "open #{url}"
-
-hook.on "design.io-server::tower-test::client::log", (data, callback, event) =>
-  # data == spec output from browser
-  if data.type == "test"
-    console.log data
-    if data.phase == "complete"
-      next()
-  
-hook.start()
-###

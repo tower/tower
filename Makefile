@@ -20,13 +20,11 @@ test-mongodb:
 	$(CMD) $(SRC) --store mongodb
 
 start-client-test-server:
-	cd test/example
-	grunt --config ./grunt.coffee
-	cd ../..
-	node test/example -p 3210
+	cd test/example && grunt --config ./grunt.coffee
+	cd test/example && node server -p 3210
 
 test-client:
-	phantomjs test/client.coffee http://localhost:3210/?test=model,support,application,store
+	phantomjs test/client.coffee http://localhost:3210/?test=application,support,model,store
 
 clean:
 	rm -rf lib/*
