@@ -60,7 +60,10 @@ waitForMocha = ->
 
 runner = ->
   try
-    mocha.setup ui: 'bdd', timeout: 2000, reporter: mocha.reporters.Dot # mocha.reporters.JSON
+    # `ignoreLeaks: true` significantly speeds the tests up
+    # because otherwise, before and after each test it iterates through
+    # and compares all of the global variables (before/after each beforeEach block too!).
+    mocha.setup ui: 'bdd', timeout: 2000, ignoreLeaks: true, reporter: mocha.reporters.Dot # mocha.reporters.JSON
     mocha.phantomjs = failures: 0, ended: false, run: false
     mocha.phantomjs.runner = mocha.run()
     if mocha.phantomjs.runner
