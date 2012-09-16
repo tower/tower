@@ -41,6 +41,7 @@ test/example/public/javascripts
 test/example/public/stylesheets
 test/example/vendor/**/*
 tmp
+/components
 
 runtests.sh
 =======
