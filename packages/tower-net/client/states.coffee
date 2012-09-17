@@ -1,4 +1,9 @@
 Tower.Router = Ember.Router.extend
+  urlForEvent: (eventName) ->
+    path = @._super(eventName);
+    if path == ''
+      path = '/'
+    path
   initialState: 'root'
   # @todo 'history' throws an error in ember
   location:     Ember.HistoryLocation.create()
@@ -119,8 +124,8 @@ Tower.Router = Ember.Router.extend
         routeName = '/'
 
         # @todo tmp hack
-        if r[i] == r[0] || r[i] == 'new'
-          routeName += r[i]
+        if (r[i] == r[0] || r[i] == 'new') && r[i] != 'root'
+            routeName += r[i]
 
         # @todo tmp hack
         # Basically, create methods like `showUser` and `indexUsers`, which
@@ -130,7 +135,10 @@ Tower.Router = Ember.Router.extend
           Tower.router.root[methodName] = Ember.State.transitionTo(r.join('.'))
           Tower.router.root.eventTransitions[methodName] = r.join('.')
         
-        s = @createControllerActionState(controllerName, r[i], routeName)
+        myAction = r[i]
+        myAction = route.options.action if route.options.action?
+        
+        s = @createControllerActionState(controllerName, myAction, routeName)
         state.setupChild(states, r[i], s)
         state = s
 
