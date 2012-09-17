@@ -135,7 +135,10 @@ Tower.Router = Ember.Router.extend
           Tower.router.root[methodName] = Ember.State.transitionTo(r.join('.'))
           Tower.router.root.eventTransitions[methodName] = r.join('.')
         
-        s = @createControllerActionState(controllerName, r[i], routeName)
+        myAction = r[i]
+        myAction = route.options.action if route.options.action?
+        
+        s = @createControllerActionState(controllerName, myAction, routeName)
         state.setupChild(states, r[i], s)
         state = s
 
