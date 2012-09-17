@@ -1,4 +1,9 @@
 Tower.Router = Ember.Router.extend
+  urlForEvent: (eventName) ->
+    path = @._super(eventName);
+    if path == ''
+      path = '/'
+    path
   initialState: 'root'
   # @todo 'history' throws an error in ember
   location:     Ember.HistoryLocation.create()
@@ -119,8 +124,7 @@ Tower.Router = Ember.Router.extend
         routeName = '/'
 
         # @todo tmp hack
-        if r[i] == r[0] || r[i] == 'new'
-          if r[i] != 'root'
+        if (r[i] == r[0] || r[i] == 'new') && r[i] != 'root'
             routeName += r[i]
 
         # @todo tmp hack
