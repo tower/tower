@@ -120,7 +120,8 @@ Tower.Router = Ember.Router.extend
 
         # @todo tmp hack
         if r[i] == r[0] || r[i] == 'new'
-          routeName += r[i]
+          if r[i] != 'root'
+            routeName += r[i]
 
         # @todo tmp hack
         # Basically, create methods like `showUser` and `indexUsers`, which
