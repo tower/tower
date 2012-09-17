@@ -15,7 +15,7 @@ exit = (msg) ->
 finish = ->
   phantom.exit page.evaluate -> mocha.phantomjs?.failures
 
-dotLog = (columns) ->
+dotLog = (columns = 56) ->
   # dot reporter
   process.cursor.margin = 2
   process.cursor.CRMatcher = /\u001b\[\d\dm\․\u001b\[0m/
@@ -56,7 +56,7 @@ runMocha = ->
 
 waitForMocha = ->
   ended = !!(page.evaluate -> mocha.phantomjs?.ended)
-  if ended then finish() else setTimeout(waitForMocha, 1000)
+  if ended then finish() else setTimeout(waitForMocha, 100)
 
 runner = ->
   try
