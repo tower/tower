@@ -74,22 +74,32 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 - *some sort of `updateAll`|`deleteAll` ​functionality for controllers (array of ids)*
 - *rails like flash messages
-- error hooks for controllers
-- better route2ember map
 - finish resourceful routes
 - finalize resourceful controller actions (see https://github.com/josevalim/inherited_resources)
+
+##### Server
+
+- ~~update to express 3.0~~
+- error hooks for controllers
 - better `redirectTo`
 - better `urlFor`
 - test subdomains on heroku/nodejitsu
 - basic controller logging/subscriptions
 - https helper methods
 - namespaced controllers
-- update to express 3.0
 - test jsonp
-- store params on the client as you change state
 - "api endpoints" documentation
+- restart server if crashed
+  - https://github.com/learnboost/up
+  - http://stackoverflow.com/questions/9558360/node-js-reliability-for-large-application
 
-Other random things:
+##### Client
+
+- better route2ember map
+- better controller scopes
+- store params on the client as you change state
+
+##### Other random things
 
 - compile all test/cases into tests.js to render on towerjs.org
 - need to figure out how to append fields to a model base class after the other models have been subclassed.
