@@ -24,6 +24,7 @@ pkg
 
 ## PROJECT::SPECIFIC
 
+/log
 doc
 node_modules
 spec/secrets.coffee

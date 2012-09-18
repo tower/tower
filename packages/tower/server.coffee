@@ -86,12 +86,11 @@ _.extend Tower,
   # @todo make Tower.root an Ember.computed property
   setRoot: (path) ->
     path ||= (process.env.TOWER_ROOT || process.cwd())
-
     while !Tower.testIfRoot(path) && path != '/' # @todo some check to not traverse all the way to the root "/" path (windows and *nix)
       path = _path.join(path, '..')
 
     Tower.root = path unless path == '/'
-
+    
     throw new Error('Could not find Tower.root') unless Tower.root?
 
     Tower.publicPath = Tower.joinPath(Tower.root, 'public')
@@ -101,6 +100,9 @@ _.extend Tower,
 # It will silently set it, so you don't have to explicitly set it.
 # But if you want to do things differently than convention, you'll
 # have to call `Tower.setRoot(path)` yourself.
-try Tower.setRoot()
+try
+  Tower.setRoot()
+catch error
+  console.log error
 
 Tower.View.store(new Tower.StoreFileSystem(['app/templates/shared', 'app/templates/server']))

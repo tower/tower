@@ -11,7 +11,7 @@ describe 'Tower.View', ->
     Tower.View.cache = {}
     
   test 'partial', ->
-    Tower.View.cache["#{Tower.relativeRoot}/app/templates/shared/shared/_meta.coffee"] = """
+    Tower.View.cache["app/templates/shared/shared/_meta.coffee"] = """
       meta charset: "utf-8"
       title "Tower.js - Full Stack JavaScript Framework for Node.js and the Browser"
     """
@@ -38,7 +38,7 @@ describe 'Tower.View', ->
 """
   
   test "partial with collection", ->
-    Tower.View.cache["#{Tower.relativeRoot}/app/templates/shared/posts/_item.coffee"] = """
+    Tower.View.cache["app/templates/shared/posts/_item.coffee"] = """
       li class: "post", -> post.get("title")
     """
     
@@ -66,7 +66,7 @@ describe 'Tower.View', ->
 """
   
   test "partial with locals", ->
-    Tower.View.cache["#{Tower.relativeRoot}/app/templates/shared/posts/_item.coffee"] = """
+    Tower.View.cache["app/templates/shared/posts/_item.coffee"] = """
       li class: "post", -> post.get("title")
     """
     
@@ -89,12 +89,12 @@ describe 'Tower.View', ->
 """
 
   test "partials within partials with locals", ->
-    Tower.View.cache["#{Tower.relativeRoot}/app/templates/shared/posts/_item.coffee"] = """
+    Tower.View.cache["app/templates/shared/posts/_item.coffee"] = """
       li class: "post", ->
         partial "posts/header", locals: post: post
     """
     
-    Tower.View.cache["#{Tower.relativeRoot}/app/templates/shared/posts/_header.coffee"] = """
+    Tower.View.cache["app/templates/shared/posts/_header.coffee"] = """
       header ->
         h1 post.get("title")
     """

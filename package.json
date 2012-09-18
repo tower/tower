@@ -6,6 +6,11 @@
   "main": "./index.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
+    "mvc",
+    "web-framework",
+    "ruby-on-rails",
+    "express",
+    "tower",
     "framework",
     "rails",
     "node"
@@ -103,12 +108,8 @@
     "socket.io-client": ">= 0.9.5",
     "fibers": "~0.6.8"
   },
-  "globalDependencies": {
-    
-  },
-  "localDependencies": {
-
-  },
+  "globalDependencies": {},
+  "localDependencies": {},
   "scripts": {
     "test": "make test && make test-client",
     "start": "grunt start --config ./grunt.coffee",

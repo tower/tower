@@ -172,7 +172,7 @@ Tower.ViewRendering =
     if Tower.isClient
       cachePath = 'app/templates/' + cachePath
       
-    result    = @constructor.cache[cachePath] || require('fs').readFileSync(path, 'utf-8').toString()
+    result    = @constructor.cache[cachePath] || require('fs').readFileSync(require('path').join(Tower.root, path), 'utf-8').toString()
     throw new Error("Template '#{template}' was not found.") unless result
     result
 
