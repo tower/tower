@@ -178,4 +178,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'uploadToGithub', ->
     taskComplete = @async()
-    grunt.helper 'uploadToGitHub', 'dist/tower.js', 'tower.js', taskComplete
+    grunt.helper 'uploadToGitHub', 'dist/tower.js', "tower-#{grunt.config('pkg.version')}.js", taskComplete

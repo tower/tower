@@ -10,7 +10,7 @@ module.exports = (grunt) ->
   try
     towerPath = require.resolve('tower') # will fail on tower repo
   catch error
-    towerPath = _path.join(__dirname, '../../index.js')
+    towerPath = _path.join(__dirname, '../../../index.js')
 
   grunt.registerMultiTask 'templates', 'Compile templates', ->
     name  = ""
@@ -110,6 +110,7 @@ module.exports = (grunt) ->
     grunt.log.writeln 'Renamed ' + renameCount + ' files.'  if renameCount
 
   grunt.registerHelper 'uploadToGitHub', (local, remote, done) ->
+    require(towerPath)
     console.log 'Uploading', local, 'to GitHub...', remote
 
     # @todo initialize this better
@@ -126,6 +127,7 @@ module.exports = (grunt) ->
         from:         local
         to:           remote
         name:         remote
+        repo:         'tower'
         description:  grunt.config('pkg.version')
 
       store.update criteria, done

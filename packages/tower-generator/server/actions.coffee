@@ -24,7 +24,17 @@ Tower.GeneratorActions =
     error = ->
       console.log "Error downloading #{url}"
 
-    Tower.module('superagent').get url, (response) =>
+    request = Tower.module('superagent').get(url).buffer(true)
+    # Cache buster so if the author uploads newer version to same path
+    # we get the new version rather than our locally cached version.
+
+    if url.match('cloud.github.com')
+      request.set('Pragma', 'no-cache')
+      request.set('Cache-Control', 'no-cache')
+      # S3 doesn't seem to read the `no-cache` headers above, but adding this works:
+      request.set('Accept-Encoding', 'gzip,deflate,sdch')
+
+    request.end (response) =>
       if response.ok
         @log "create", path
         File.write path, response.text
