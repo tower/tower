@@ -36,7 +36,9 @@ ifeq ($(shell which phantomjs),) # if it's blank
 	$(error PhantomJS is not installed. Download from http://phantomjs.org or run `brew install phantomjs` if you have Homebrew)
 endif
 
-test: test-memory test-mongodb
+test: test-server test-client
+
+test-server: test-memory test-mongodb
 
 test-memory:
 	$(CMD) $(SRC) --store memory

@@ -111,7 +111,7 @@
   "globalDependencies": {},
   "localDependencies": {},
   "scripts": {
-    "test": "make test && make test-client",
+    "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
     "docs": "codo",
     "postinstall": "$(./bin/dependencies)"
