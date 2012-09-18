@@ -48,6 +48,9 @@ test-client:
 	phantomjs test/client.coffee http://localhost:3210/?test=support,application,store,model
 
 setup-test-client: check-phantomjs check-grunt
+	./bin/tower new example
+	mv example/vendor test/example
+	rm -rf ./example
 	$(GRUNT) --config ./grunt.coffee
 	cd test/example && pwd && npm install .
 	$(GRUNT) --config ./test/example/grunt.coffee

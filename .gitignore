@@ -41,7 +41,7 @@ test/example/public/javascripts
 test/example/public/stylesheets
 test/example/public/swfs
 test/example/public/images
-test/example/vendor
+test/example/vendor/
 tmp
 /components
 
