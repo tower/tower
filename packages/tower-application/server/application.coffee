@@ -57,7 +57,13 @@ class Tower.Application extends Tower.Engine
 
     init: ->
       throw new Error('Already initialized application') if Tower.Application._instance
-      @server ||= require('express').createServer()
+      @app = require('express')()
+      @server = require('http').createServer(@app)
+      # http://stackoverflow.com/questions/7185074/heroku-nodejs-http-to-https-ssl-forced-redirect
+      # http://stackoverflow.com/questions/7450940/automatic-https-connection-redirect-with-node-js-express
+      # http://stackoverflow.com/questions/11485880/heroku-error-h13-on-expressjs-node-https-server
+      # https://github.com/visionmedia/express/issues/1166
+      # @httpsServer = require('https').createServer(server_options,app).listen(413)
       Tower.Application._instance = @
       @_super arguments...
 
@@ -97,17 +103,17 @@ class Tower.Application extends Tower.Engine
       # delete require.cache[require.resolve("#{Tower.root}/app/config/server/routes")]
 
     handle: ->
-      @server.handle arguments...
+      @app.handle arguments...
 
     use: ->
       args        = _.args(arguments)
-      connect     = require('express')
+      express     = require('express')
 
       if typeof args[0] == 'string'
         middleware  = args.shift()
-        @server.use connect[middleware] args...
+        @app.use express[middleware] args...
       else
-        @server.use args...
+        @app.use args...
 
     configureStores: (configuration = {}, callback) ->
       defaultStoreSet = false
@@ -153,17 +159,17 @@ class Tower.Application extends Tower.Engine
       @
 
     get: ->
-      @server.get arguments...
+      @app.get arguments...
 
     post: ->
-      @server.post arguments...
+      @app.post arguments...
 
     put: ->
-      @server.put arguments...
+      @app.put arguments...
 
     listen: ->
       unless Tower.env == 'test'
-        @server.on 'error', (error) ->
+        @app.on 'error', (error) ->
           if error.errno == 'EADDRINUSE'
             console.log('   Try using a different port: `node server -p 3001`')
             process.exit()

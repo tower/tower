@@ -552,6 +552,13 @@ Run tests matching directory and pattern:
 mocha $(find test -name "*Test.coffee" | egrep "/*view*/")
 ```
 
+[Run tests *not* matching directory and pattern](http://stackoverflow.com/a/12255734/169992):
+
+``` bash
+# run all tests except for client tests
+mocha $(find test -name client -prune -o -name '*Test.coffee' -print)
+```
+
 ## Examples
 
 - [Facebook/Twitter Authentication (Passport)](https://github.com/viatropos/tower-authentication-example)
