@@ -76,7 +76,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 <a name="0.4.2" href="0.4.2"></a>
 
-### 0.4.2 (folders)
+### ✔ 0.4.2 (folders)
 
 - ~~rename flattened namespaces (e.g. change `Tower.ModelCursor` to `Tower.Cursor`, which was originally `Tower.Model.Cursor`)~~
 - ~~standardize file structure for apps~~
