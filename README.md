@@ -1,4 +1,4 @@
-# Tower.js <img src="http://i.imgur.com/e3VLW.png"/>
+# Tower.js <img src="http://cloud.github.com/downloads/viatropos/tower/tower.png"/>
 
 > Full Stack Web Framework for Node.js and the Browser.
 
@@ -79,130 +79,6 @@ To restart your server automatically if it crashes, run with forever:
 ```
 npm install forever -g
 forever server.js
-```
-
-## Structure
-
-Here's the structure of a newly generated app with a `Post` model:
-
-```
-.
-├── app
-│   ├── config
-│   │   ├── client
-│   │   │   ├── bootstrap.coffee
-│   │   │   └── watch.coffee
-│   │   ├── server
-│   │   │   ├── environments
-│   │   │   │   ├── development.coffee
-│   │   │   │   ├── production.coffee
-│   │   │   │   └── test.coffee
-│   │   │   ├── initializers
-│   │   │   ├── assets.coffee
-│   │   │   ├── bootstrap.coffee
-│   │   │   ├── credentials.coffee
-│   │   │   ├── databases.coffee
-│   │   │   └── session.coffee
-│   │   └── shared
-│   │       ├── locales
-│   │       │   └── en.coffee
-│   │       ├── application.coffee
-│   │       └── routes.coffee
-│   ├── controllers
-│   │   ├── client
-│   │   │   ├── applicationController.coffee
-│   │   │   └── postsController.coffee
-│   │   └── server
-│   │       ├── applicationController.coffee
-│   │       └── postsController.coffee
-│   ├── models
-│   │   ├── client
-│   │   ├── server
-│   │   └── shared
-│   │       └── post.coffee
-│   ├── stylesheets
-│   │   ├── client
-│   │   │   └── application.styl
-│   │   └── server
-│   │       └── email.styl
-│   ├── templates
-│   │   ├── server
-│   │   │   └── layout
-│   │   │       ├── _meta.coffee
-│   │   │       └── application.coffee
-│   │   └── shared
-│   │       ├── layout
-│   │       │   ├── _body.coffee
-│   │       │   ├── _flash.coffee
-│   │       │   ├── _footer.coffee
-│   │       │   ├── _header.coffee
-│   │       │   ├── _navigation.coffee
-│   │       │   └── _sidebar.coffee
-│   │       ├── posts
-│   │       │   ├── _flash.coffee
-│   │       │   ├── _form.coffee
-│   │       │   ├── _item.coffee
-│   │       │   ├── _list.coffee
-│   │       │   ├── _table.coffee
-│   │       │   ├── edit.coffee
-│   │       │   ├── index.coffee
-│   │       │   ├── new.coffee
-│   │       │   └── show.coffee
-│   │       └── welcome.coffee
-│   └── views
-│       └── client
-│           ├── layout
-│           │   └── application.coffee
-│           └── posts
-│               ├── form.coffee
-│               ├── index.coffee
-│               └── show.coffee
-├── data
-│   └── seeds.coffee
-├── lib
-├── log
-├── public
-│   ├── fonts
-│   ├── images
-│   ├── javascripts
-│   ├── stylesheets
-│   ├── swfs
-│   ├── uploads
-│   ├── 404.html
-│   ├── 500.html
-│   ├── favicon.ico
-│   ├── humans.txt
-│   └── robots.txt
-├── scripts
-│   └── tower
-├── test
-│   ├── cases
-│   │   ├── controllers
-│   │   │   ├── client
-│   │   │   └── server
-│   │           └── postsControllerTest.coffee
-│   │   ├── features
-│   │   │   └── client
-│   │   └── models
-│   │       ├── client
-│   │       ├── server
-│   │       └── shared
-│   │           └── postTest.coffee
-│   ├── factories
-│   │   └── postFactory.coffee
-│   ├── client.coffee
-│   ├── mocha.opts
-│   └── server.coffee
-├── tmp
-├── wiki
-│   ├── _sidebar.md
-│   └── home.md
-├── Cakefile
-├── grunt.coffee
-├── package.json
-├── Procfile
-├── README.md
-└── server.js
 ```
 
 ## Application
@@ -339,16 +215,6 @@ App.routes ->
   @match '(/*path)', to: 'application#index', via: 'get'
 ```
 
-## Views
-
-Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
-
-The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
-
-## Styles
-
-It's all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
-
 ## Controllers
 
 ``` coffeescript
@@ -389,6 +255,20 @@ class App.PostsController extends Tower.Controller
       post.destroy (error) =>
         @redirectTo action: 'index'
 ```
+
+## Views
+
+Views are all Ember.
+
+## Templates
+
+Templates adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
+
+The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
+
+## Styles
+
+It's all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
 
 Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).  The default implementation is actually a lot more robust than that, just wanted to show a simple example.
 
@@ -507,6 +387,131 @@ module.exports =
     ]
 ```
 
+## Structure
+
+Here's the structure of a newly generated app with a `Post` model:
+
+```
+.
+├── app
+│   ├── config
+│   │   ├── client
+│   │   │   ├── bootstrap.coffee
+│   │   │   └── watch.coffee
+│   │   ├── server
+│   │   │   ├── environments
+│   │   │   │   ├── development.coffee
+│   │   │   │   ├── production.coffee
+│   │   │   │   └── test.coffee
+│   │   │   ├── initializers
+│   │   │   ├── assets.coffee
+│   │   │   ├── bootstrap.coffee
+│   │   │   ├── credentials.coffee
+│   │   │   ├── databases.coffee
+│   │   │   └── session.coffee
+│   │   └── shared
+│   │       ├── locales
+│   │       │   └── en.coffee
+│   │       ├── application.coffee
+│   │       └── routes.coffee
+│   ├── controllers
+│   │   ├── client
+│   │   │   ├── applicationController.coffee
+│   │   │   └── postsController.coffee
+│   │   └── server
+│   │       ├── applicationController.coffee
+│   │       └── postsController.coffee
+│   ├── models
+│   │   ├── client
+│   │   ├── server
+│   │   └── shared
+│   │       └── post.coffee
+│   ├── stylesheets
+│   │   ├── client
+│   │   │   └── application.styl
+│   │   └── server
+│   │       └── email.styl
+│   ├── templates
+│   │   ├── server
+│   │   │   └── layout
+│   │   │       ├── _meta.coffee
+│   │   │       └── application.coffee
+│   │   └── shared
+│   │       ├── layout
+│   │       │   ├── _body.coffee
+│   │       │   ├── _flash.coffee
+│   │       │   ├── _footer.coffee
+│   │       │   ├── _header.coffee
+│   │       │   ├── _navigation.coffee
+│   │       │   └── _sidebar.coffee
+│   │       ├── posts
+│   │       │   ├── _flash.coffee
+│   │       │   ├── _form.coffee
+│   │       │   ├── _item.coffee
+│   │       │   ├── _list.coffee
+│   │       │   ├── _table.coffee
+│   │       │   ├── edit.coffee
+│   │       │   ├── index.coffee
+│   │       │   ├── new.coffee
+│   │       │   └── show.coffee
+│   │       └── welcome.coffee
+│   └── views
+│       └── client
+│           ├── layout
+│           │   └── application.coffee
+│           └── posts
+│               ├── form.coffee
+│               ├── index.coffee
+│               └── show.coffee
+├── data
+│   └── seeds.coffee
+├── lib
+├── log
+├── public
+│   ├── fonts
+│   ├── images
+│   ├── javascripts
+│   ├── stylesheets
+│   ├── swfs
+│   ├── uploads
+│   ├── 404.html
+│   ├── 500.html
+│   ├── favicon.ico
+│   ├── humans.txt
+│   └── robots.txt
+├── scripts
+│   └── tower
+├── test
+│   ├── cases
+│   │   ├── controllers
+│   │   │   ├── client
+│   │   │   └── server
+│   │           └── postsControllerTest.coffee
+│   │   ├── features
+│   │   │   └── client
+│   │   └── models
+│   │       ├── client
+│   │       ├── server
+│   │       └── shared
+│   │           └── postTest.coffee
+│   ├── factories
+│   │   └── postFactory.coffee
+│   ├── client.coffee
+│   ├── mocha.opts
+│   └── server.coffee
+├── tmp
+├── wiki
+│   ├── _sidebar.md
+│   └── home.md
+├── Cakefile
+├── grunt.coffee
+├── package.json
+├── Procfile
+├── README.md
+└── server.js
+```
+
+
 All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor`, and wherever else you might put things.  The default is to use stylus for css in `/app/assets/stylesheets`.
 
 By having this `assets.coffee` file, you can specify exactly how you want to compile your files for the client so it's as optimized and cacheable as possible in production.
@@ -613,7 +618,7 @@ make build-test-client
 make start-test-client
 ```
 
-Then run the tests (through uses phantomjs)
+Then run the tests (uses phantomjs)
 
 ```
 make test-client

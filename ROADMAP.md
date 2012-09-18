@@ -68,8 +68,6 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~standardize folder structure for app tests~~
 - ~~finalize tower.js internal code organization~~
 
-Since this point, tower has a fairly robust development/build workflow to make it as simple as possible to contribute.
-
 <a name="0.4.3" href="0.4.3"></a>
 
 ### 0.4.3 (controllers)
