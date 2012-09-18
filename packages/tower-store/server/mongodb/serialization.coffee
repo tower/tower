@@ -173,9 +173,9 @@ Tower.StoreMongodbSerialization =
   # hint
   # explain
   serializeOptions: (cursor) ->
-    limit         = cursor.get('limit')
-    sort          = cursor.get('order')
-    offset        = cursor.get('offset')
+    limit         = cursor.getCriteria('limit')
+    sort          = cursor.getCriteria('order')
+    offset        = cursor.getCriteria('offset')
     options       = {}
     options.limit = limit if limit
 

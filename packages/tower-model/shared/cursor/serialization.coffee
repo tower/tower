@@ -31,11 +31,8 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
   # Get the conditions, order, limit, fields, offset, or other private variables.
   # 
   # @todo remove this old helper
-  get: (key) ->
-    if key == 'content'
-      Ember.get(@, key)
-    else
-      @["_#{key}"]
+  getCriteria: (key) ->
+    @["_#{key}"]
 
   # Wondering how this should be invalidated, other than manually calling
   # cursor.propertyDidChange('observableFields'). You don't want to invalidate
@@ -191,11 +188,11 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
   toParams: ->
     data          = {}
     
-    sort          = @get('order')
+    sort          = @_order
     conditions    = @conditions()
     page          = @currentPage
-    limit         = @get('limit')
-    includes      = @get('includes')
+    limit         = @_limit
+    includes      = @_includes
     
     data.sort       = sort if sort && sort.length
     operators = Tower.StoreOperators.MAP
