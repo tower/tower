@@ -39,7 +39,9 @@ test/example/README.md
 # test/example/package.json
 test/example/public/javascripts
 test/example/public/stylesheets
-test/example/vendor/**/*
+test/example/public/swfs
+test/example/public/images
+test/example/vendor
 tmp
 /components
 
