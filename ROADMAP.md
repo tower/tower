@@ -6,11 +6,12 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 > Any features marked with `*` have been started.
 
-<a name="features-0.5.0" href="features-0.5.0"></a>
-
 ## 0.5.0 - Full Featured Release
 
+**High-level Goals**:
+
 - awesome generators like rails_wizard
+- useful default theme
 - javascript and coffeescript versions
 - *everything in mongodb has an API for it in the ORM
 - basic ember view patterns established (for tables, forms, and menus)
@@ -25,23 +26,6 @@ You are free to contribute any of these features in any order… I'm more of a f
 - testing patterns for an app
 - ~~`grunt --config ./grunt.coffee`~~
 - make it more obvious that there is hook.io integration (http://vimeo.com/33288036)
-
-## 0.6.0 - Testing, Robustness
-
-## 0.7.0 - Performance Tuning
-
-## 0.8.0 - Multiple Databases, Batch Requests, Content Processing
-
-- postgresql
-- mysql
-- sqlite
-- cassandra
-- redis
-- neo4j
-- database migrations
-- transaction support
-- batch requests
-- video/audio/image processing
 
 <a name="0.4.0" href="0.4.0"></a>
 
@@ -73,6 +57,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~ember.js integration~~
 - ~~integrate Ember.StateMachine into client side routes (https://gist.github.com/2679013)~~
 - ~~write `render` for client that handles creating ember views~~
+- ~~add `cid` or equaivalent (client id)~~
 
 <a name="0.4.2" href="0.4.2"></a>
 
@@ -82,6 +67,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~standardize file structure for apps~~
 - ~~client-side test setup (with phantomjs)~~
 - ~~standardize folder structure for app tests~~
+- ~~finalize tower.js internal code organization~~
+
+Since this point, tower has a fairly robust development/build workflow to make it as simple as possible to contribute.
 
 <a name="0.4.3" href="0.4.3"></a>
 
@@ -103,9 +91,16 @@ You are free to contribute any of these features in any order… I'm more of a f
 - test jsonp
 - store params on the client as you change state
 
+Other random things:
+
+- compile all test/cases into tests.js to render on towerjs.org
+- need to figure out how to append fields to a model base class after the other models have been subclassed.
+- convert modules to `Ember.Mixin` objects. 
+- convert all `class X` in tower to `.extend`, just javascript
+
 <a name="0.4.4" href="0.4.4"></a>
 
-### 0.4.4 (views)
+### 0.4.4 (templates, views)
 
 - automatic sorting when new model is added to cursor (`Ember.Sortable`)
 - automatic form validations based on model of client
@@ -135,6 +130,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - migrations (at least the general class/file structure, so if you add a field to mongodb there's a space for you to write code to update your models with the new values).
 - make `metadata` and `fields` (and all class accessor-like methods) use `get` as ember computable properties.
 - *remove dependency on mongodb
+- bindable criteria (params passed to cursors)
 - nested field queries ("addresses.city", etc.)
 - basic model logging (so you can see things like database queries)
 - *mongo embedded documents
@@ -142,6 +138,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - make `store` global, so you only have to apply it once, not per model. makes testing easier.
 - i18n (internationalization/localization, how to organize the random labels in the app, and prepare for translation into other languages)
 - confirmation validation (password confirmation, agree to terms, etc.)
+- think about making scopes use `get()`, so `App.User.get('recent')`. This way they can be used in views.
+
+By this point, the models, views, templates, and controllers should be fairly complete.
 
 <a name="0.4.6" href="0.4.6"></a>
 
@@ -151,10 +150,6 @@ You are free to contribute any of these features in any order… I'm more of a f
 - *authorization ([tower-model/shared/ability.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-model/shared/ability.coffee))
 - *test storing images on s3 ([tower-store/server/s3.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-store/server/s3.coffee))
 - *image/asset/attachment model api (see https://github.com/thoughtbot/paperclip) ([tower-model/shared/attachment.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-model/shared/attachment.coffee))
-- add extension generator
-- add library generator
-- get progress bar feedback for streaming file uploads
-  - http://debuggable.com/posts/streaming-file-uploads-with-node-js:4ac094b2-b6c8-4a7f-bd07-28accbdd56cb
 
 <a name="0.4.7" href="0.4.7"></a>
 
@@ -163,6 +158,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~push notifications (web socket integration into the controllers)~~
 - ~~swappable sockets api (sock.ly, socket.io)~~
 - ~~subscribe/notifications~~
+- document the cursor/pub-sub api
 - write lots of tests for this
 
 <a name="0.4.8" href="0.4.8"></a>
@@ -173,6 +169,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~background queuing with redis (`User.queue("welcome", 1)` vs. `User.welcome(1)`, for background processing) - https://github.com/technoweenie/coffee-resque~~
 - test running background jobs on heroku and nodejitsu
 - inline css in email templates
+- make logs write to `./log` folder.
 
 <a name="0.4.9" href="0.4.9"></a>
 
@@ -193,22 +190,22 @@ You are free to contribute any of these features in any order… I'm more of a f
 - http caching methods in the controller
 - redirect helpers at the top level, so you easily write permanent redirects (http://stackoverflow.com/questions/4046960/how-to-redirect-without-www-using-rails-3-rack)
 - create normalized file/directory api (wrench, pathfinder, findit... need to merge this stuff into one)
+- handle app config:
+  ``` ruby
+  config.encoding = "utf-8"
+  config.filter_parameters += [:password, :password_confirmation]
+  config.time_zone = "Pacific Time (US & Canada)"
+  ```
 
 <a name="0.4.10" href="0.4.10"></a>
 
 ### 0.4.10 (cleanup, optimizations, documentation)
 
 - autocomplete in the terminal (rubymine, node-inspector)
-- autoreload in the console (using hook.io)
+- ~~autoreload in the console (using hook.io)~~
 - *chunk code into parts for the client, so you can use only bare minimum if desired (so you can do things like `require('tower-model')`)
-- ~~finalize tower.js internal code organization~~
-- optimize file watching (either optimize design.io or reimplement using new node > 0.8 features)
-  - remove ruby dependency if possible
-  - make css @import compiler smarter
-  - test and make sure it compiles all files on the first run
-  - deleting/creating files isn't registering anymore, fix.
-- document code
-- Add generator for translating different locales in tower.
+- deleting/creating files isn't registering anymore, fix.
+- document code.
 - standardize `Tower.x` api for global helper methods.
 
 <a name="0.5.0" href="0.5.0"></a>
@@ -229,28 +226,33 @@ You are free to contribute any of these features in any order… I'm more of a f
 - integrate `"use strict";` into the codebase if possible
 - benchmarks folder with stress tests
 
-## Other todos
+## 0.6.0 - Testing, Robustness
 
-- compile all test/cases into tests.js to render on towerjs.org
+## 0.7.0 - Performance Tuning
+
+## 0.8.0 - Multiple Databases, Batch Requests, Content Processing
+
+- postgresql
+- mysql
+- sqlite
+- cassandra
+- redis
+- neo4j
+- database migrations
+- transaction support
+- batch requests
+- video/audio/image processing
+
+## Other
+
+### Nice-to-haves
+
 - port most/all rails tests
-- test `included` and `extended` callbacks
-- make javascripts compile with function wrapper in Watchfile (for client)
-- add `cid` or equaivalent
-- think about making scopes use `get()`, so `App.User.get('recent')`. This way they can be used in views.
-- handle app config:
-  ``` ruby
-  config.encoding = "utf-8"
-  config.filter_parameters += [:password, :password_confirmation]
-  config.time_zone = "Pacific Time (US & Canada)"
-  ```
-- make logs write to `./log` folder.
-
-## Separate plugins
-
-- Make a mocha web console reporter.
-- User stamping
-- Versioning
-- Advanced (lucene) search (down the road)
+- add extension generator
+- add library generator
+- get progress bar feedback for streaming file uploads
+  - http://debuggable.com/posts/streaming-file-uploads-with-node-js:4ac094b2-b6c8-4a7f-bd07-28accbdd56cb
+- Add generator for translating different locales in tower.
 
 ### TowerPassport
 
@@ -295,7 +297,14 @@ tabs ->
       table id: 'posts-table', data: App.Post.all()
 ```
 
-## Support for alternative data stores (as plugins) 
+### Other plugins
+
+- Make a mocha web console reporter.
+- User stamping
+- Versioning
+- Advanced (lucene) search (down the road)
+
+## Alternative data stores
 
 These are next, larger features.  These will be included in earlier releases if a member of the community contributes them.  Otherwise they might be approached after the 0.5.0 release according to community requests.
 
@@ -311,16 +320,10 @@ These are next, larger features.  These will be included in earlier releases if 
 
 ## Potential Features
 
-- hierarchical models (nested sets)
 - ~~state machine (see [https://github.com/pluginaweek/stateMachine](https://github.com/pluginaweek/stateMachine))~~ Ember.js has this built in!
+- hierarchical models (nested sets)
 - need to think about having a separate library like https://github.com/flamejs/flame.js that handles common components.  Definitely tower should work without this, but these components may be useful.
-- fork node.js process to speed up app booting (can't do this, looked into)
-
-## Random Issues
-
-- need to figure out how to append fields to a model base class after the other models have been subclassed.
-- convert modules to `Ember.Mixin` objects. 
-- convert all `class X` in tower to `.extend`, just javascript
+- ~~fork node.js process to speed up app booting (not possible, can't do this, looked into)~~
 
 ## Helpful Libraries
 
