@@ -108,8 +108,11 @@ Tower.Router = Ember.Router.extend
     state   = @root
     controllerName = route.controller.name
     methodName = route.options.name if route.options.name?
-    Tower.router.root[methodName] = Ember.State.transitionTo(methodName)
-    Tower.router.root.eventTransitions[methodName] = methodName
+    fit = methodName
+    fit = 'index' if methodName == 'showRoot'
+    
+    Tower.router.root[methodName] = Ember.State.transitionTo(fit)
+    Tower.router.root.eventTransitions[methodName] = fit
     
     myAction = route.options.action if route.options.action?
     
@@ -118,7 +121,8 @@ Tower.Router = Ember.Router.extend
     if !states
         states = {}
         Ember.set(state, 'states', states)
-    state.setupChild(states, methodName, s)
+    
+    state.setupChild(states, fit, s)
 
     undefined
 
