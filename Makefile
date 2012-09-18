@@ -4,14 +4,10 @@ CMD = ./node_modules/mocha/bin/mocha
 DIR = $(shell pwd)
 GRUNT = grunt
 FOREVER = forever
-TEST_URL = http://localhost:3210/?test=support,application,store,model
-
-# @todo make this into a method
-#define checkmodule
-#endef
-#
-#check-grunt:
-#	 $(call checkmodule,grunt,./node_modules/grunt/bin/grunt)
+PORT = 3210
+TEST_URL = http://localhost:$(PORT)/?test=support,application,store,model
+CLIENT_PID = null
+TEST_SERVER_PATH = test/example/server
 
 check-grunt:
 ifeq ($(shell which $(GRUNT)),)
@@ -59,7 +55,22 @@ setup-test-client: check-phantomjs check-grunt
 	$(GRUNT) --config ./test/example/grunt.coffee
 
 start-test-client:
-	cd test/example && node server -p 3210
+	node $(TEST_SERVER_PATH) -p $(PORT)
+
+start-test-client-conditionally: test-client-pid
+ifeq ($(CLIENT_PID),)
+	$(shell node $(TEST_SERVER_PATH) -p $(PORT) &)
+else
+	@echo Server already running on port $(PORT)
+endif
+
+test-client-pid:
+	$(eval CLIENT_PID = $(call get-pids,node $(TEST_SERVER_PATH)))
+	@echo $(CLIENT_PID): node $(TEST_SERVER_PATH) -p $(PORT)
+
+stop-test-client: test-client-pid
+
+client: start-test-client test-client
 
 define open-browser
 	open -a "$(1)" $(TEST_URL)\&complete=close
@@ -81,6 +92,7 @@ test-all:
 	for i in $(STORES); do ./node_modules/mocha/bin/mocha $(SRC) --store $$i; done
 
 clean:
+	rm -rf dist/*
 	rm -rf lib/*
 
 whitespace:
@@ -90,7 +102,7 @@ install:
 	npm install
 	npm install-dev
 
-watch:
+watch: clean
 	$(GRUNT) start --config ./grunt.coffee
 
 build:
@@ -101,5 +113,19 @@ dist:
 
 publish:
 	npm publish
+
+define kill-processes
+	@echo 'killing processes...'
+	@echo $(call get-processes,$(1))
+	kill -9 $(call get-pids,$(1))
+endef
+
+define get-pids
+	$(shell ps -ef | grep -e '$(1)' | grep -v grep | awk '{print $$2}')
+endef
+
+define get-processes
+	$(shell ps -ef | grep -e '$(1)' | grep -v grep)
+endef
 
 .PHONY: test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever setup-test-client start-test-client
