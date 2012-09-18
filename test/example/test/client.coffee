@@ -29,4 +29,8 @@ $ ->
   unless window.mochaPhantomJS
     process.stdout ||= {}
     process.stdout.write = -> console.log(arguments...)
-    mocha.run()
+    runner = mocha.run()
+    runner.on 'end', ->
+      if !runner.failures && window.location.href.match('complete=close')
+        window.open('', '_self', '')
+        window.close()

@@ -4,6 +4,7 @@ CMD = ./node_modules/mocha/bin/mocha
 DIR = $(shell pwd)
 GRUNT = grunt
 FOREVER = forever
+TEST_URL = http://localhost:3210/?test=support,application,store,model
 
 # @todo make this into a method
 #define checkmodule
@@ -45,7 +46,7 @@ test-mongodb:
 	$(CMD) $(SRC) --store mongodb
 
 test-client:
-	phantomjs test/client.coffee http://localhost:3210/?test=support,application,store,model
+	phantomjs test/client.coffee $(TEST_URL)
 
 setup-test-client: check-phantomjs check-grunt
 	# tmp way of downloading vendor files
@@ -59,6 +60,22 @@ setup-test-client: check-phantomjs check-grunt
 
 start-test-client:
 	cd test/example && node server -p 3210
+
+define open-browser
+	open -a "$(1)" $(TEST_URL)\&complete=close
+endef
+
+test-firefox:
+	$(call open-browser,Firefox)
+
+test-safari:
+	$(call open-browser,Safari)
+
+test-chrome:
+	$(call open-browser,"Google\ Chrome")
+
+test-opera:
+	$(call open-browser,Opera)
 
 test-all:
 	for i in $(STORES); do ./node_modules/mocha/bin/mocha $(SRC) --store $$i; done
