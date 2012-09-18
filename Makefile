@@ -9,6 +9,9 @@ TEST_URL = http://localhost:$(PORT)/?test=support,application,store,model
 CLIENT_PID = null
 TEST_SERVER_PATH = test/example/server
 
+all: clean
+	$(GRUNT) --config ./grunt.coffee
+
 check-grunt:
 ifeq ($(shell which $(GRUNT)),)
 	$(eval GRUNT = $(shell pwd)/node_modules/grunt/bin/grunt)
@@ -128,4 +131,4 @@ define get-processes
 	$(shell ps -ef | grep -e '$(1)' | grep -v grep)
 endef
 
-.PHONY: test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever setup-test-client start-test-client
+.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever setup-test-client start-test-client

@@ -57,3 +57,9 @@ Not using Redis yet.
 sudo npm install -g design.io forever
 npm install -g tower
 ```
+
+## Others
+
+```
+brew install tree
+```

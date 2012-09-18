@@ -18,27 +18,6 @@ Note, Tower is still very early alpha. Check out the [roadmap](https://github.co
 
 Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
 
-## Contributor Note
-
-All of the base ideas are now pretty much in the Tower codebase, now it's just a matter of fleshing out the edge cases and a few implementations. Here's what's new:
-
-- Background jobs in Redis. The `Model.enqueue` and `Model#enqueue` methods are convention for off-loading expensive tasks to the background. You then run `cake work` and it will start the [kue](https://github.com/LearnBoost/kue) background worker to process items in the different redis queues. That process is running in a totally separate environment, but they can communicate b/c of redis' nice pub/sub api. This still needs to be fleshed out and tested a bit more but the basics are there.
-- Attachments. File uploading is working, as well as image resizing with imagemagick. I've started working on post-processing using background redis jobs as well. Tower should have a standard set of attachment "processors" to make uploading/processing attachments dead-simple (it's still pretty hard in Rails). This includes from any format to standard formats (video/audio/docs/images/etc.), video/audio/image processing/compression, text extraction and resizing, and document processing (pdf text extraction, MS Word to text, etc.). It's all pretty straight forward, just need to wrap command-line tools. See http://documentcloud.github.com/docsplit/.
-- Authentication. I don't think I've merged the authentication code yet, but an older version is here: https://github.com/viatropos/tower-authentication-example. The whole logging in with email/facebook/etc. should be completely solved. Right now mongodb session support is working locally, I will merge it when I finish with some other stuff.
-- Subdomains. Subdomains should be first-class citizens. We need to thoroughly test them in production. JSONP support exists (to do `GET` requests across domains), need to test that out. Need to get a better/leaner URL parser, but what's in there now works. Need to test authentication/sessions/cookies across subdomains.
-- Authorization. I've started on the authorization system (inspired from [cancan](https://github.com/ryanb/cancan/)). It works and is pretty awesome :). Just need to add some controller hooks to make it plug-and-chug.
-- Mass-assignment protection. I've implemented the basics of "mass assignment protection" (see the [Rails Security Guide](http://guides.rubyonrails.org/security.html#mass-assignment)), need to test it out a bit more. Also need to handle input sanitization.
-- Embedded Documents. I've mapped out how this could be implemented but it's still on the todo list.
-- Associations (hasMany, hasManyThrough, belongsTo, hasOne). They all work well (tested manually on the client as well, pretty awesome seeing hasManyThrough relations save on the client). There's a good amount of work to be done on making sure `user.address == address.user`, that kind of reflection stuff (especially for binding on the view). Wrote down a lot of ideas on how to implement an "identity map", but we have to be careful about garbage collection if we're going to store references to the request/controller objects in some hidden "thread" (see some of the recent commits for notes - early/mid July). Also need to make the validations/callbacks more robust for `acceptsNestedAttributesFor`, but it's all working at a basic level.
-- The Cursor. The cursor is _super_ awesome :). There's a ton more ideas on how to make it even more awesome, but for now it does what it's supposed to. I'd like to simplify the notification system eventually (telling the client of model changes).
-- User stamping. This should be a fundamental part of the model layer (similar to time stamping). The base mixin has been started but isn't ready yet - it requires setting up the identity-map/thread idea so you can pass around the `currentUser` transparently between cursors/models in the context of a single request.
-- Versioning. Versioning is a tricky concept to implement, and it is not required for all apps. But it is generic enough and useful enough that it is going to be included in Tower (eventually as a separate sub-package). It allows you to keep a history of model changes (and alongside userstamping, who made those changes). I have started this as well.
-- Soft deleting models. Sometimes you want to allow users to "delete" their data, but you don't _really_ want it deleted from the database. To do this you just add a `deletedAt` field to your model, and then make it so all queries by default ignore models without `deletedAt == null`. You want this kind of stuff to do things like "restore your deleted account", or just know what's happened historically in your app (as a startup for example).
-- Ember Views. This is the next big thing to do, but it's really independent of Tower. Tower can create some helpers like form builders and whatnot, but that might take a long time - particularly b/c there's going to be a lot of work put in to make sure performance is top-notch with all those views.
-- Client Routes. The base code for mapping routes.coffee into the Ember routing system is there, but the Ember API is changing weekly almost so I haven't gotten back to it. It should only take a few hours to wire up.
-
-If you're excited to work on one of these things let me know and I'll point you to where things are and all that. Once all of this stuff is reasonably complete (mid August hopefully), this will merge into master. From there it's going to be "robustifying" everything, and hardcore performance tuning.
-
 ## Default Development Stack
 
 - Ember
@@ -85,6 +64,25 @@ If you would like to try out the background-worker code, you can also install an
 ```
 brew install redis
 redis-server
+```
+
+### Contributing to Tower
+
+#### Running Tests
+
+Run server tests:
+
+```
+make watch
+make test
+```
+
+To run client tests, first start the test server on port `3210`, and then run phantomjs:
+
+```
+make setup-test-client
+make start-test-client
+make test-client
 ```
 
 ## Generate
@@ -576,6 +574,7 @@ mocha $(find test -name "*Test.coffee" | egrep "/*view*/")
 
 ## Examples
 
+- [Facebook/Twitter Authentication (Passport)](https://github.com/viatropos/tower-authentication-example)
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
 
 ## License
@@ -589,81 +588,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## Unsolved Complexities
-
-- Handling transactions from the client. How would you save the data for credit/account (subtract one record, add to another) so if one fails both revert back (if you try to keep it simplified and only POST individual records at a time)? You can do embedded models on MongoDB, and transactions on MySQL perhaps. Then if `acceptsNestedAttributesFor` is specified it will send nested data in JSON POST rather than separate. Obviously it's better to not do this on the server, but we should see if it's possible to do otherwise, and if not, publicize why.
-
-## Decisions (need to finalize)
-
-- for uniqueness validation, if it fails on the client, should it try fetching the record from the server? (and loading the record into the client memory store). Reasons for include having to do less work as a coder (lazy loads data). Reasons against include making HTTP requests to the server without necessarily expecting to - or you may not want it to fetch. Perhaps you can specify an option (`lazy: true`) or something, and on the client if true it will make the request (or `autofetch: true`)
-- For non-transactional (yet still complex) associations, such as `group hasMany users through memberships`, you can save one record at a time, so the client should be instant. But if the first record created fails (say you do `group.members.create()`, which creates a user, then a membership tying the two together), what should the client tell the user? Some suggest a global notification (perhaps an alert bar) saying a more generic message such as "please refresh the page, some data is out of sync". But if the data is very important, ideally the code would know how to take the user (who might click this notification) to a form to try saving the `hasMany through` association again. If it continues to fail, it's probably either a bug in the code, or we should be able to know if the server is having issues (like it's crashed or power went out) - then if it's a bug we can have them notify us (some button perhaps) or if it's a real server problem we prepared for we can notify something like "sorry, having server issues, try again later". Other that that, it's up to you to build the validations properly so the data is saved
-
-## Todo
-
-- use require in the browser to lazy load scripts
-- gruntjs
-- term-css
-- https://github.com/kuno/GeoIP
-- global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
-- make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)
-- http://jsperf.com/angular-vs-knockout-vs-ember/2
-
-## New Stuff (api is todo, can access now through Tower.router)
-
-``` coffeescript
-@resources 'posts'
-@namespace 'admin', ->
-  @resources 'posts'
-```
-
-``` coffeescript
-Tower.urlFor(App.Post)
-Tower.urlFor('root.posts.index')
-```
-
-``` coffeescript
-# GET
-App.indexPosts(title: 'A') # App.action, Tower.action, which one?
-App.showPost(id: 1)
-App.newPost()
-App.editPost(id: 1)
-# Non-GET
-App.createPost()
-App.updatePost(id: 1)
-App.destroyPost(id: 1)
-```
-
-``` html
-{{#each post in App.postsController.all}}
-<a {{action editPost post href=true}}>Edit</a>
-{{/each}}
-```
-
-``` coffeescript
-# @todo
-App.indexAdminPosts() # /admin/posts
-App.indexPostComments(postId: 1) # /posts/1/comments
-```
-
-## Changelog
-
-- `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)
-- todo: need to test installing different versions of node with https://github.com/creationix/nvm
-- https://gist.github.com/1398757
-
-## Contributing to Tower
-
-### Running Tests
-
-Run server tests:
-
-```
-make test
-```
-
-To run client tests, first start the test server on port `3210`, and then run phantomjs:
-
-```
-node test/example -p 3210
-```
