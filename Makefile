@@ -14,7 +14,7 @@ FOREVER = forever
 
 check-grunt:
 ifeq ($(shell which $(GRUNT)),)
-	$(eval GRUNT = ./node_modules/grunt/bin/grunt)
+	$(eval GRUNT = $(shell pwd)/node_modules/grunt/bin/grunt)
 ifeq ($(shell which ./node_modules/grunt/bin/grunt),)	
 	npm install grunt
 endif
@@ -22,7 +22,7 @@ endif
 
 check-forever:
 ifeq ($(shell which $(FOREVER)),)
-	$(eval FOREVER = ./node_modules/forever/bin/forever)
+	$(eval FOREVER = $(shell pwd)/node_modules/forever/bin/forever)
 ifeq ($(shell which ./node_modules/forever/bin/forever),)	
 	npm install forever
 endif
