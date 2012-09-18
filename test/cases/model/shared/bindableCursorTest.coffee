@@ -61,13 +61,13 @@ describe 'Tower.ModelCursor (bindable)', ->
 
   test 'list model fields it\'s watching', ->
     cursor.where(string: /string/)
-    assert.deepEqual cursor.getPath('observableFields').sort(), ['string']
+    assert.deepEqual cursor.get('observableFields').sort(), ['string']
 
     cursor.desc('createdAt').propertyDidChange('observableFields')
-    assert.deepEqual cursor.getPath('observableFields').sort(), ['createdAt', 'string']
+    assert.deepEqual cursor.get('observableFields').sort(), ['createdAt', 'string']
 
     cursor.where(string: '!=': 'strings', '=~': /string/).propertyDidChange('observableFields')
-    assert.deepEqual cursor.getPath('observableFields').sort(), ['createdAt', 'string']
+    assert.deepEqual cursor.get('observableFields').sort(), ['createdAt', 'string']
 
   test 'Tower.cursors updates when cursor.observable() is called', ->
     assert.equal _.keys(Tower.cursors).length, 0

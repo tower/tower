@@ -405,27 +405,27 @@ describe "Tower.DispatchRouteDSL", ->
         
         @match '/some/path', to: 'sessions#update'
 
-      assert.equal Tower.stateManager.getPath('currentState.name'), 'root'
+      assert.equal Tower.stateManager.get('currentState.name'), 'root'
       
       Tower.stateManager.goToState('login')
       
-      assert.equal Tower.stateManager.getPath('currentState.name'), 'login'
+      assert.equal Tower.stateManager.get('currentState.name'), 'login'
       
       Tower.stateManager.goToState('some.path')
       
-      assert.equal Tower.stateManager.getPath('currentState.name'), 'path'
-      assert.equal Tower.stateManager.getPath('currentState.path'), 'some.path'
+      assert.equal Tower.stateManager.get('currentState.name'), 'path'
+      assert.equal Tower.stateManager.get('currentState.path'), 'some.path'
       
     test 'resourceful routes', ->
       Tower.Route.draw ->
         @resources 'posts'
 
       Tower.stateManager.goToState('posts.index')
-      assert.equal Tower.stateManager.getPath('currentState.path'), 'posts.index'
+      assert.equal Tower.stateManager.get('currentState.path'), 'posts.index'
 
       Tower.stateManager.goToState('posts.new')
-      assert.equal Tower.stateManager.getPath('currentState.path'), 'posts.new'
+      assert.equal Tower.stateManager.get('currentState.path'), 'posts.new'
 
       Tower.stateManager.goToState('posts.create')
-      assert.equal Tower.stateManager.getPath('currentState.path'), 'posts.create'
+      assert.equal Tower.stateManager.get('currentState.path'), 'posts.create'
 ###

@@ -1,4 +1,4 @@
-mocha.setup(ui: 'bdd', timeout: 2000)
+mocha.setup(ui: 'bdd', timeout: 2000, ignoreLeaks: true)
 
 global.assert = chai.assert
 global.expect = chai.expect

@@ -24,7 +24,7 @@ start-client-test-server:
 	cd test/example && node server -p 3210
 
 test-client:
-	phantomjs test/client.coffee http://localhost:3210/?test=application,support,model,store
+	phantomjs test/client.coffee http://localhost:3210/?test=support,application,store,model
 
 clean:
 	rm -rf lib/*

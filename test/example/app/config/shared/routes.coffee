@@ -44,6 +44,12 @@ Tower.Route.draw ->
   
   @resources 'posts'
   @resources 'users'
+
+  # for the client, so we can test saving them with ajax
+  # @resources 'addresses'
+  # @resources 'groups'
+  # @resources 'memberships'
+  # @resources 'parents'
   #@match '/users', via: ['post'], to: 'users#index'
 
   @resources "posts"

@@ -62,25 +62,26 @@ describe 'Tower.ModelScope', ->
         assert.equal users[0].get("type"), "Admin"
 
         done()
-        
-  describe 'returning cursor', ->
-    test '.insert', (done) ->
-      cursor = App.User.insert firstName: "Baldwin", likes: 10, (error, user) =>
-        process.nextTick =>
-          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
-          done()
-    
-    test '.update', (done) ->
-      cursor = App.User.update firstName: "Baldwin", (error, user) =>
-        process.nextTick =>
-          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
-          done()
-    
-    test '.destroy', (done) ->
-      cursor = App.User.destroy (error, user) =>
-        process.nextTick =>
-          assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
-          done()
+  
+  # @todo this isn't quite right, need to think about this some more
+  # describe 'returning cursor', ->
+  #   test '.insert', (done) ->
+  #     cursor = App.User.create firstName: "Baldwin", likes: 10, (error, user) =>
+  #       process.nextTick =>
+  #         assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
+  #         done()
+  #   
+  #   test '.update', (done) ->
+  #     cursor = App.User.update firstName: "Baldwin", (error, user) =>
+  #       process.nextTick =>
+  #         assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
+  #         done()
+  #   
+  #   test '.destroy', (done) ->
+  #     cursor = App.User.destroy (error, user) =>
+  #       process.nextTick =>
+  #         assert.isTrue cursor.isCursor, 'cursor instanceof Tower.ModelCursor'
+  #         done()
         
   describe 'global callback', ->
     beforeEach ->

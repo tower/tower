@@ -37,7 +37,7 @@ Tower.StoreTransportAjax =
     unless params.url.match(/[\?\&]callback=.+/)
       callbackParam = 'callback=?'
       # @todo maybe this simple test should be an underscore helper...
-      separator     = if params.url.match('?') then '&' else '?'
+      separator     = if params.url.match(/\?/) then '&' else '?'
       params.url    = "#{params.url}#{separator}#{callbackParam}"
       
     params

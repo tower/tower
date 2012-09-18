@@ -101,13 +101,16 @@ Tower.StoreMemoryFinders =
 if Tower.isClient
   Tower.StoreMemoryFinders.fetch = (cursor, callback) ->
     method = if cursor._limit == 1 then 'findOne' else 'find'
-    Tower.NetConnection.transport[method] cursor, (error, records) =>
-      #records = @load(records)
-      if callback
-        callback(error, records)
-      else if Tower.debug
-        console.log(records)
+    if Tower.NetConnection.transport
+      Tower.NetConnection.transport[method] cursor, (error, records) =>
+        #records = @load(records)
+        if callback
+          callback(error, records)
+        else if Tower.debug
+          console.log(records)
 
-      records
+        records
+    else
+      @[method](cursor, callback)
 
 module.exports = Tower.StoreMemoryFinders

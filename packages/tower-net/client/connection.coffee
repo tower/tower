@@ -27,7 +27,9 @@ class Tower.NetConnection extends Tower.NetConnection
     connect: ->
       # tmp solution to get data syncing working, then will refactor/robustify
       @on 'sync', (data) =>
-        @serverDidChange(data) unless Tower.NetConnection.transport.requesting # tmp hack to prevent client data from appearing twice (only on the one who performed action)
+        # tmp hack to prevent client data from appearing twice (only on the one who performed action)
+        if !Tower.NetConnection.transport || !Tower.NetConnection.transport.requesting
+          @serverDidChange(data)
 
       @registerHandlers()
 

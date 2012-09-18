@@ -110,7 +110,7 @@
 
   },
   "scripts": {
-    "test": "make test",
+    "test": "make test && make test-client",
     "start": "grunt start --config ./grunt.coffee",
     "docs": "codo",
     "postinstall": "$(./bin/dependencies)"
