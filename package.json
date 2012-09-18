@@ -101,7 +101,6 @@
     "knox": "0.0.11",
     "socket.io": ">= 0.8.7",
     "socket.io-client": ">= 0.9.5",
-    "hook.io": "~0.8.10",
     "fibers": "~0.6.8"
   },
   "globalDependencies": {
