@@ -3,3 +3,4 @@
 --ui bdd
 --timeout 4000
 --slow 75
+--ignore-leaks
