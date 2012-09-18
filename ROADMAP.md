@@ -10,22 +10,21 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 **High-level Goals**:
 
+- ~~relatively stabilized folder/file structure~~
+- ~~`grunt integration`~~
+- *data syncing
+- *everything in mongodb has an API for it in the ORM
+- *authentication and authorization
+- *file uploading
+- *client routes
+- *background jobs in redis
+- *mailer
+- *testing patterns for an app
 - awesome generators like rails_wizard
 - useful default theme
 - javascript and coffeescript versions
-- *everything in mongodb has an API for it in the ORM
-- basic ember view patterns established (for tables, forms, and menus)
-- relatively stabilized folder/file structure
-- *authentication and authorization
-- *file uploading
-- *background jobs in redis
-- mailer
 - error pages
-- *data syncing
-- *client routes
-- testing patterns for an app
-- ~~`grunt --config ./grunt.coffee`~~
-- make it more obvious that there is hook.io integration (http://vimeo.com/33288036)
+- basic ember view patterns established (for tables, forms, and menus)
 
 <a name="0.4.0" href="0.4.0"></a>
 
@@ -75,11 +74,12 @@ Since this point, tower has a fairly robust development/build workflow to make i
 
 ### 0.4.3 (controllers)
 
+- *some sort of `updateAll`|`deleteAll` ​functionality for controllers (array of ids)*
+- *rails like flash messages
 - error hooks for controllers
 - better route2ember map
 - finish resourceful routes
 - finalize resourceful controller actions (see https://github.com/josevalim/inherited_resources)
-- *some sort of `updateAll`|`deleteAll` ​functionality for controllers (array of ids)*
 - better `redirectTo`
 - better `urlFor`
 - test subdomains on heroku/nodejitsu
@@ -87,7 +87,6 @@ Since this point, tower has a fairly robust development/build workflow to make i
 - https helper methods
 - namespaced controllers
 - update to express 3.0
-- *rails like flash messages
 - test jsonp
 - store params on the client as you change state
 
@@ -125,15 +124,15 @@ Other random things:
 - ~~`model#reload`~~
 - ~~acceptsNestedAttributes~~
 - ~~mass assignment security~~
+- ~~remove dependency on mongodb~~
+- *mongo embedded documents
 - test index creation in mongodb
 - test inheritance with type property
 - migrations (at least the general class/file structure, so if you add a field to mongodb there's a space for you to write code to update your models with the new values).
 - make `metadata` and `fields` (and all class accessor-like methods) use `get` as ember computable properties.
-- *remove dependency on mongodb
 - bindable criteria (params passed to cursors)
 - nested field queries ("addresses.city", etc.)
 - basic model logging (so you can see things like database queries)
-- *mongo embedded documents
 - completely finish (robustness-wise) all different types of query conditions (`find(id: null) # find by null`, `where(name: "!=": "x")`, `find(address: city: "San Diego") # nested doc/object queries`, etc)
 - make `store` global, so you only have to apply it once, not per model. makes testing easier.
 - i18n (internationalization/localization, how to organize the random labels in the app, and prepare for translation into other languages)
@@ -158,7 +157,7 @@ By this point, the models, views, templates, and controllers should be fairly co
 - ~~push notifications (web socket integration into the controllers)~~
 - ~~swappable sockets api (sock.ly, socket.io)~~
 - ~~subscribe/notifications~~
-- document the cursor/pub-sub api
+- *document the cursor/pub-sub api
 - write lots of tests for this
 
 <a name="0.4.8" href="0.4.8"></a>
@@ -176,14 +175,14 @@ By this point, the models, views, templates, and controllers should be fairly co
 ### 0.4.9 (helpers, configuration)
 
 - add underscore helpers
-  - pixel transforms  (px to em to percent to rem)
-  - color transforms  (hsl to rgb to hex, etc.)
-  - unit transforms   (miles to km, etc.)
-  - geo transforms    (lat/lng to x/y in pixels, etc.)
-  - date helpers
-  - string helpers
+  - *geo transforms (lat/lng to x/y in pixels, etc.)
+  - *date helpers
+  - *string helpers
+  - *validators
+  - pixel transforms (px to em to percent to rem)
+  - color transforms (hsl to rgb to hex, etc.)
+  - unit transforms (miles to km, etc.)
   - number helpers
-  - validators
   - masking input fields (phone numbers, social security, email, money, etc.)
 - customize template engine, orm, and test framework in App.config
 - switch to parsing url params with URI.js
