@@ -36,7 +36,7 @@ dist/*.min.js
 docs
 test/tmp
 test/example/README.md
-test/example/package.json
+# test/example/package.json
 test/example/public/javascripts
 test/example/public/stylesheets
 test/example/vendor/**/*
