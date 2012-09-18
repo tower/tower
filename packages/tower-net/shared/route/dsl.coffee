@@ -91,6 +91,7 @@ class Tower.NetRouteDSL
     @match path,            _.extend(action: "destroy", state: "#{name}.destroy", method: "DELETE", options)
 
   resources: (name, options, block) ->
+    console.log('resouces');
     if typeof options == 'function'
       block     = options
       options   = {}
