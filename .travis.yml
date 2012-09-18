@@ -5,7 +5,7 @@ install: npm install
 services: mongodb
 # @todo once `make test-client` is working
 before_script:
-  - "npm install grunt"
+  - "npm install grunt grunt-less grunt-stylus"
   - "make setup-test-client"
   - "make start-test-client &"
   - sleep 3
