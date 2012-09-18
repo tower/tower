@@ -49,7 +49,7 @@ test-client:
 
 setup-test-client: check-phantomjs check-grunt
 	$(GRUNT) --config ./grunt.coffee
-	cd test/example && $(GRUNT) --config ./grunt.coffee
+	$(GRUNT) --config ./test/example/grunt.coffee
 
 start-test-client:
 	cd test/example && node server -p 3210
