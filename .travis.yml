@@ -5,8 +5,10 @@ install: npm install
 services: mongodb
 # @todo once `make test-client` is working
 before_script:
-  - "make start-client-test-server &"
-  - sleep 5
+  - "npm install grunt"
+  - "make setup-test-client"
+  - "make start-test-client &"
+  - sleep 3
 #  - "cd test/example"
 #  - "grunt --config ./grunt.coffee"
 #  - "cd ../.."
