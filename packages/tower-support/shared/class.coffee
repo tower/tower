@@ -19,6 +19,9 @@ if typeof Ember != 'undefined'
       object[key] = value
       @reopen(object)
 
+  # In Ember 1.0pre+, Ember.Application is dependent on the browser.
+  Ember.Application = Ember.Namespace.extend() unless Ember.Application
+
   Ember.Object.reopenClass(coffeescriptMixin)
   Ember.Namespace.reopenClass(coffeescriptMixin)
   Ember.Application.reopenClass(coffeescriptMixin)
