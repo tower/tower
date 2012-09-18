@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - 0.8
 install: npm install
+services: mongodb
 # @todo once `make test-client` is working
 #before_script:
 #  - "cd test/example"
