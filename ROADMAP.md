@@ -70,44 +70,38 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~basic tests for socket.io~~
 - ~~generate `test/controllers` with example code for scaffold~~
 - ~~NODE_ENV=production~~
+- ~~ember.js integration~~
+- ~~integrate Ember.StateMachine into client side routes (https://gist.github.com/2679013)~~
+- ~~write `render` for client that handles creating ember views~~
 
 <a name="0.4.2" href="0.4.2"></a>
 
 ### 0.4.2 (folders)
 
-- standardize file structure for apps
-- client-side test setup (with phantomjs)
-- move tests to model/shared, etc.
+- ~~rename flattened namespaces (e.g. change `Tower.ModelCursor` to `Tower.Cursor`, which was originally `Tower.Model.Cursor`)~~
+- ~~standardize file structure for apps~~
+- ~~client-side test setup (with phantomjs)~~
+- ~~standardize folder structure for app tests~~
 
 <a name="0.4.3" href="0.4.3"></a>
 
 ### 0.4.3 (controllers)
 
-- fork node.js process to speed up app booting
-- ~~ember.js integration~~
-- more tests
-  - generator code
-  - phantomjs for client (and generate apps with different models and test them dynamically)
-- ~~integrate Ember.StateMachine into client side routes (https://gist.github.com/2679013)~~
-- ~~write `render` for client that handles creating ember views~~
+- error hooks for controllers
+- better route2ember map
+- finish resourceful routes
+- finalize resourceful controller actions (see https://github.com/josevalim/inherited_resources)
+- *some sort of `updateAll`|`deleteAll` ​functionality for controllers (array of ids)*
 - better `redirectTo`
 - better `urlFor`
-- finish resourceful routes
-- better controller rendering
-- some sort of `updateAll`|`deleteAll` ​functionality for controllers (array of ids)
-- finalize resourceful controller actions (see https://github.com/josevalim/inherited_resources)
-- error hooks for controllers
 - test subdomains on heroku/nodejitsu
-- switch to parsing url params with URI.js
 - basic controller logging/subscriptions
 - https helper methods
-- http caching methods in the controller
-- redirect helpers at the top level, so you easily write permanent redirects (http://stackoverflow.com/questions/4046960/how-to-redirect-without-www-using-rails-3-rack)
 - namespaced controllers
 - update to express 3.0
 - *rails like flash messages
-- rename flattened namespaces (e.g. change `Tower.ModelCursor` to `Tower.Cursor`, which was originally `Tower.Model.Cursor`)
-- standardize folder structure for app tests
+- test jsonp
+- store params on the client as you change state
 
 <a name="0.4.4" href="0.4.4"></a>
 
@@ -116,11 +110,10 @@ You are free to contribute any of these features in any order… I'm more of a f
 - automatic sorting when new model is added to cursor (`Ember.Sortable`)
 - automatic form validations based on model of client
 - error/stacktrace printing when view fails to fully render
-- finish table builder
-- make form builder more robust
 - 404/etc error pages
 - error handling on forms when validation error
-- test client side view rendering with coffeecup
+- finish table builder
+- make form builder more robust
 - test client side view rendering with ember
 - test files reload when changed (integration test)
 - test assets can be served with gzip
@@ -137,14 +130,14 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~`model#reload`~~
 - ~~acceptsNestedAttributes~~
 - ~~mass assignment security~~
+- test index creation in mongodb
+- test inheritance with type property
 - migrations (at least the general class/file structure, so if you add a field to mongodb there's a space for you to write code to update your models with the new values).
 - make `metadata` and `fields` (and all class accessor-like methods) use `get` as ember computable properties.
 - *remove dependency on mongodb
-- test index creation in mongodb
 - nested field queries ("addresses.city", etc.)
 - basic model logging (so you can see things like database queries)
 - *mongo embedded documents
-- test inheritance with type property
 - completely finish (robustness-wise) all different types of query conditions (`find(id: null) # find by null`, `where(name: "!=": "x")`, `find(address: city: "San Diego") # nested doc/object queries`, etc)
 - make `store` global, so you only have to apply it once, not per model. makes testing easier.
 - i18n (internationalization/localization, how to organize the random labels in the app, and prepare for translation into other languages)
@@ -196,6 +189,9 @@ You are free to contribute any of these features in any order… I'm more of a f
   - validators
   - masking input fields (phone numbers, social security, email, money, etc.)
 - customize template engine, orm, and test framework in App.config
+- switch to parsing url params with URI.js
+- http caching methods in the controller
+- redirect helpers at the top level, so you easily write permanent redirects (http://stackoverflow.com/questions/4046960/how-to-redirect-without-www-using-rails-3-rack)
 - create normalized file/directory api (wrench, pathfinder, findit... need to merge this stuff into one)
 
 <a name="0.4.10" href="0.4.10"></a>
@@ -318,6 +314,7 @@ These are next, larger features.  These will be included in earlier releases if 
 - hierarchical models (nested sets)
 - ~~state machine (see [https://github.com/pluginaweek/stateMachine](https://github.com/pluginaweek/stateMachine))~~ Ember.js has this built in!
 - need to think about having a separate library like https://github.com/flamejs/flame.js that handles common components.  Definitely tower should work without this, but these components may be useful.
+- fork node.js process to speed up app booting (can't do this, looked into)
 
 ## Random Issues
 
