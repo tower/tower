@@ -197,17 +197,6 @@ By this point, the models, views, templates, and controllers should be fairly co
   config.time_zone = "Pacific Time (US & Canada)"
   ```
 
-<a name="0.4.10" href="0.4.10"></a>
-
-### 0.4.10 (cleanup, optimizations, documentation)
-
-- autocomplete in the terminal (rubymine, node-inspector)
-- ~~autoreload in the console (using hook.io)~~
-- *chunk code into parts for the client, so you can use only bare minimum if desired (so you can do things like `require('tower-model')`)
-- deleting/creating files isn't registering anymore, fix.
-- document code.
-- standardize `Tower.x` api for global helper methods.
-
 <a name="0.5.0" href="0.5.0"></a>
 
 ### 0.5.0 (theme)
@@ -218,6 +207,10 @@ By this point, the models, views, templates, and controllers should be fairly co
 - make sure templates have proper escaping (xss protection)
 - http://rails-admin-tb.herokuapp.com/admin/league
 
+<a name="0.6.0" href="0.6.0"></a>
+
+## 0.6.0 - Testing, Robustness
+
 <a name="0.5.1" href="0.5.1"></a>
 
 ### 0.5.1 (benchmarking)
@@ -226,9 +219,22 @@ By this point, the models, views, templates, and controllers should be fairly co
 - integrate `"use strict";` into the codebase if possible
 - benchmarks folder with stress tests
 
-## 0.6.0 - Testing, Robustness
+<a name="0.5.2" href="0.5.2"></a>
+
+### 0.5.2 (cleanup, optimizations, documentation)
+
+- autocomplete in the terminal (rubymine, node-inspector)
+- ~~autoreload in the console (using hook.io)~~
+- *chunk code into parts for the client, so you can use only bare minimum if desired (so you can do things like `require('tower-model')`)
+- deleting/creating files isn't registering anymore, fix.
+- document code.
+- standardize `Tower.x` api for global helper methods.
+
+<a name="0.7.0" href="0.7.0"></a>
 
 ## 0.7.0 - Performance Tuning
+
+<a name="0.8.0" href="0.8.0"></a>
 
 ## 0.8.0 - Multiple Databases, Batch Requests, Content Processing
 
