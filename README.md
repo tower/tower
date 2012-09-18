@@ -46,12 +46,6 @@ You will also need [grunt](https://github.com/cowboy/grunt), an awesome build to
 npm install grunt -g
 ```
 
-If you would like to mess around with the tower source code, clone it and start the grunt watcher to compile all of the coffeescripts:
-
-```
-make watch
-```
-
 Finally, make sure you have mongodb installed and running:
 
 ```
