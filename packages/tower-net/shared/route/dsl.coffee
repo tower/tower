@@ -129,7 +129,7 @@ class Tower.NetRouteDSL
   member: ->
 
   root: (options) ->
-    @match '/', _.extend(as: "root", options)
+    @match '/', _.extend({state: "root.index", name: 'showRoot', method: ['GET']}, options)
 
   _extractOptions: ->
     args            = _.args(arguments)

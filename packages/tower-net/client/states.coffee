@@ -1,6 +1,6 @@
 Tower.Router = Ember.Router.extend
-  urlForEvent: (eventName) ->
-    path = @._super(eventName);
+  urlForEvent: (eventName, contexts...) ->
+    path = @._super(eventName, contexts...);
     if path == ''
       path = '/'
     path
@@ -29,10 +29,10 @@ Tower.Router = Ember.Router.extend
     name = _.camelize(name, true) #=> postsController
 
     # @todo tmp hack
-    if action == 'show' || action == 'destroy' || action == 'update'
-      route += ':id'
-    else if action == 'edit'
-      route += ':id/edit'
+    #if action == 'show' || action == 'destroy' || action == 'update'
+    #  route += ':id'
+    #else if action == 'edit'
+    #  route += ':id/edit'
 
     # isIndexActive, isShowActive
     # actionMethod  = "#{action}#{_.camelize(name).replace(/Controller$/, '')}"
@@ -102,47 +102,23 @@ Tower.Router = Ember.Router.extend
       path = path.join('.')
 
     return undefined if !path || path == ""
-
-    r       = path.split('.')
+    
+    routeName = route.options.path.replace(".:format?", "")
+    
     state   = @root
     controllerName = route.controller.name
-
-    i       = 0
-    n       = r.length
-
-    while i < n
-      states = Ember.get(state, 'states')
-
-      if !states
+    methodName = route.options.name if route.options.name?
+    Tower.router.root[methodName] = Ember.State.transitionTo(methodName)
+    Tower.router.root.eventTransitions[methodName] = methodName
+    
+    myAction = route.options.action if route.options.action?
+    
+    s = @createControllerActionState(controllerName, myAction, routeName)
+    states = Ember.get(state, 'states')
+    if !states
         states = {}
         Ember.set(state, 'states', states)
-
-      s = Ember.get(states, r[i])
-      if s
-        state = s
-      else
-        routeName = '/'
-
-        # @todo tmp hack
-        if (r[i] == r[0] || r[i] == 'new') && r[i] != 'root'
-            routeName += r[i]
-
-        # @todo tmp hack
-        # Basically, create methods like `showUser` and `indexUsers`, which
-        # will call Ember.State.transitionTo('users.show'), pass the correct context, etc.
-        if !controllerName.toLowerCase().match(r[i])
-          methodName = r[i] + _.singularize(_.camelize(controllerName.replace('Controller', '')))
-          Tower.router.root[methodName] = Ember.State.transitionTo(r.join('.'))
-          Tower.router.root.eventTransitions[methodName] = r.join('.')
-        
-        myAction = r[i]
-        myAction = route.options.action if route.options.action?
-        
-        s = @createControllerActionState(controllerName, myAction, routeName)
-        state.setupChild(states, r[i], s)
-        state = s
-
-      i++
+    state.setupChild(states, methodName, s)
 
     undefined
 
