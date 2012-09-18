@@ -48,6 +48,8 @@ test-client:
 	phantomjs test/client.coffee http://localhost:3210/?test=support,application,store,model
 
 setup-test-client: check-phantomjs check-grunt
+	# tmp way of downloading vendor files
+	rm -rf test/example/vendor
 	./bin/tower new example
 	mv example/vendor test/example
 	rm -rf ./example

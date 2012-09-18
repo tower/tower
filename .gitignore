@@ -33,6 +33,7 @@ dist/*.gz
 dist/*.coffee
 dist/*.min.js
 /wiki
+/example
 docs
 test/tmp
 test/example/README.md
