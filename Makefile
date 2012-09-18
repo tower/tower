@@ -49,7 +49,7 @@ test-mongodb:
 test-client:
 	phantomjs test/client.coffee $(TEST_URL)
 
-setup-test-client: check-phantomjs check-grunt
+build-test-client: check-phantomjs check-grunt
 	# tmp way of downloading vendor files
 	rm -rf test/example/vendor
 	./bin/tower new example
@@ -133,4 +133,4 @@ define get-processes
 	$(shell ps -ef | grep -e '$(1)' | grep -v grep)
 endef
 
-.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever setup-test-client start-test-client
+.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever build-test-client start-test-client

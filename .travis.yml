@@ -3,9 +3,8 @@ node_js:
   - 0.8
 install: npm install
 services: mongodb
-# @todo once `make test-client` is working
 before_script:
   - "npm install grunt"
-  - "make setup-test-client"
+  - "make build-test-client"
   - "make start-test-client &"
   - sleep 3

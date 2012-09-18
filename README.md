@@ -117,7 +117,7 @@ make test-server
 To run client tests, first compile the test app and start its server:
 
 ```
-make setup-test-client
+make build-test-client
 make start-test-client
 ```
 
