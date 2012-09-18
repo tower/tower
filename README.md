@@ -60,79 +60,6 @@ brew install redis
 redis-server
 ```
 
-### Contributing to Tower
-
-```
-git clone https://github.com/viatropos/tower.git
-cd tower
-```
-
-#### Building Tower
-
-You can build Tower manually with:
-
-```
-make
-```
-
-Or you can have it recompile the files when you change them:
-
-```
-make watch
-```
-
-#### "Linking" Tower
-
-You can symlink your local tower repo to your global npm node_modules directory, which makes it so you can use it in your apps (so if you make changes to the tower repo, you'll see them in your app). Very useful.
-
-In the tower repo:
-
-```
-npm link
-```
-
-In a tower app:
-
-```
-npm link tower
-```
-
-If you want to try installing tower from the remote npm registry, you can just unlink it and run `npm install`:
-
-```
-npm unlink tower
-npm install tower
-```
-
-Using `npm link` makes it very easy to mess with the source.
-
-#### Running Tests
-
-In the tower repo, run server tests with:
-
-```
-make test-server
-```
-
-To run client tests, first compile the test app and start its server:
-
-```
-make build-test-client
-make start-test-client
-```
-
-Then run the tests (through uses phantomjs)
-
-```
-make test-client
-```
-
-If you don't have phantomjs you can install it with:
-
-```
-brew install phantomjs
-```
-
 ## Generate
 
 ```
@@ -624,6 +551,79 @@ mocha $(find test -name "*Test.coffee" | egrep "/*view*/")
 
 - [Facebook/Twitter Authentication (Passport)](https://github.com/viatropos/tower-authentication-example)
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
+
+## Contributing to Tower
+
+```
+git clone https://github.com/viatropos/tower.git
+cd tower
+```
+
+### Building Tower
+
+You can build Tower manually with:
+
+```
+make
+```
+
+Or you can have it recompile the files when you change them:
+
+```
+make watch
+```
+
+### "Linking" Tower
+
+You can symlink your local tower repo to your global npm node_modules directory, which makes it so you can use it in your apps (so if you make changes to the tower repo, you'll see them in your app). Very useful.
+
+In the tower repo:
+
+```
+npm link
+```
+
+In a tower app:
+
+```
+npm link tower
+```
+
+If you want to try installing tower from the remote npm registry, you can just unlink it and run `npm install`:
+
+```
+npm unlink tower
+npm install tower
+```
+
+Using `npm link` makes it very easy to mess with the source.
+
+### Running Tests
+
+In the tower repo, run server tests with:
+
+```
+make test-server
+```
+
+To run client tests, first compile the test app and start its server:
+
+```
+make build-test-client
+make start-test-client
+```
+
+Then run the tests (through uses phantomjs)
+
+```
+make test-client
+```
+
+If you don't have phantomjs you can install it with:
+
+```
+brew install phantomjs
+```
 
 ## License
 
