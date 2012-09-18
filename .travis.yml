@@ -9,8 +9,3 @@ before_script:
   - "make setup-test-client"
   - "make start-test-client &"
   - sleep 3
-#  - "cd test/example"
-#  - "grunt --config ./grunt.coffee"
-#  - "cd ../.."
-#  - "node test/example -p 3210"
-#  - sleep 3 # give Web server some time to bind to sockets, etc

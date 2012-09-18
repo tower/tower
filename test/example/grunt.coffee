@@ -6,7 +6,18 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-less')
   grunt.loadNpmTasks('grunt-stylus')
 
-  require(__dirname + '/../../index').Application.instance().initialize
+  process.env.TOWER_ROOT = __dirname
+
+  require("coffee-script")
+  require(__dirname + '/../..')
+
+  Tower.View.engine = "coffee"
+  # must run `node server` relative to this test/example folder
+  Tower.View.store().loadPaths = ["app/templates/shared", "app/templates/server"]
+
+  Tower.watch = false
+
+  Tower.Application.instance().initialize
     databases:        ['memory']
     defaultDatabase:  'memory'
 

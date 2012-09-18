@@ -49,6 +49,7 @@ test-client:
 
 setup-test-client: check-phantomjs check-grunt
 	$(GRUNT) --config ./grunt.coffee
+	cd test/example && pwd && npm install .
 	$(GRUNT) --config ./test/example/grunt.coffee
 
 start-test-client:
