@@ -51,7 +51,7 @@ Tower.GeneratorHelpers =
 
   navigation: (key, path) ->
     pattern = /div *class: *'nav-collapse' *, *->\s+ul *class: *'nav', *-> */
-    content = """\n    li ->
+    content = """\n    li '{{bindAttr class="App.#{@model.className}Controller.isActive:active"}}', ->
 \ \ \ \ \ \ a '{{action index#{@model.className} href=true}}', t('links.#{key}')
 """
 #    content = """\n    navItem t('links.#{key}'), #{path}
