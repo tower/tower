@@ -105,6 +105,9 @@ Tower.ApplicationWatcher =
     delete require.cache[require.resolve(path)]
 
   fileUpdated: (path) ->
+    app = Tower.Application.instance()
+    app._loadApp() unless app.isInitialized
+
     pattern = (string) ->
       new RegExp(_.regexpEscape(string))
 
@@ -134,9 +137,16 @@ Tower.ApplicationWatcher =
       # the klass may not exist if you just created a blank file
       # and then defined a model (which means the file was "updated")
       unless klass
+        # in case the app hasn't fully loaded but you changed something
         require(path)
       else
-        subclasses = klass.subclasses.getEach('__name__')
+        app = Tower.Application.instance()
+        subclasses = []
+
+        for key in _.keys(app)
+          value = app[key]
+          if klass != value && klass.detect(value)
+            subclasses.push(key)
 
         for name, index in subclasses
           subclasses[index] = _path.join(directory, _.camelize(name, true))
