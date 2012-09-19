@@ -110,8 +110,6 @@ class Tower.Application extends Tower.Engine
       express     = require('express')
       app = @app
 
-      console.log args
-
       if typeof args[0] == 'string'
         middleware  = args.shift()
         app.use express[middleware] args...
@@ -295,6 +293,13 @@ class Tower.Application extends Tower.Engine
       Tower.isInitialized = true
 
       done() if done
+
+    requireDirectory: (path, type = 'script') ->
+      wrench  = Tower.module('wrench')
+      pattern = @_typeToPattern[type]
+      for file in files = wrench.readdirSyncRecursive(path)
+        require(_path.join(Tower.root, path, file)) if file.match(pattern)
+      files
 
     _requirePaths: (paths) ->
       require(path) for path in paths

@@ -40,7 +40,7 @@ task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset
 # This runs the seed file, which initializes your db with data
 task 'db:seed', ->
   require('tower').Application.instance().initialize =>
-    require './db/seeds'
+    require './data/seeds'
 
 # This puts your Tower app in production mode, used for special tasks
 task 'environment', ->

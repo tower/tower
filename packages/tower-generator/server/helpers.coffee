@@ -14,6 +14,17 @@ Tower.GeneratorHelpers =
       else
         @injectIntoFile "app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
 
+  seed: (model) ->
+    string = """
+\ \ (callback) =>
+\ \ \ \ _(20).timesAsync callback, (next) =>
+\ \ \ \ \ \ Tower.Factory.create '#{@model.name}', (error, record) =>
+\ \ \ \ \ \ \ \ console.log _.stringify(record)
+\ \ \ \ \ \ \ \ next()
+
+"""
+    @injectIntoFile "data/seeds.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
+
   bootstrap: (model) ->
     @inRoot =>
       # bootstrap into client side
