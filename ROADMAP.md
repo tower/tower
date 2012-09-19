@@ -108,22 +108,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 <a name="0.4.4" href="0.4.4"></a>
 
-### 0.4.4 (templates, views)
-
-- automatic sorting when new model is added to cursor (`Ember.Sortable`)
-- automatic form validations based on model of client
-- error/stacktrace printing when view fails to fully render
-- 404/etc error pages
-- error handling on forms when validation error
-- finish table builder
-- make form builder more robust
-- test client side view rendering with ember
-- test files reload when changed (integration test)
-- test assets can be served with gzip
-
-<a name="0.4.5" href="0.4.5"></a>
-
-### 0.4.5 (models)
+### 0.4.4 (models)
 
 - ~~uniqueness validation (database should not save a record unless specified attributes are globally unique (i.e. username))~~
 - ~~email/phone validation (and other common validation helpers)~~
@@ -147,6 +132,21 @@ You are free to contribute any of these features in any order… I'm more of a f
 - i18n (internationalization/localization, how to organize the random labels in the app, and prepare for translation into other languages)
 - confirmation validation (password confirmation, agree to terms, etc.)
 - think about making scopes use `get()`, so `App.User.get('recent')`. This way they can be used in views.
+
+<a name="0.4.5" href="0.4.5"></a>
+
+### 0.4.5 (templates, views)
+
+- automatic sorting when new model is added to cursor (`Ember.Sortable`)
+- automatic form validations based on model of client
+- error/stacktrace printing when view fails to fully render
+- 404/etc error pages
+- error handling on forms when validation error
+- finish table builder
+- make form builder more robust
+- test client side view rendering with ember
+- test files reload when changed (integration test)
+- test assets can be served with gzip
 
 By this point, the models, views, templates, and controllers should be fairly complete.
 

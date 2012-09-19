@@ -57,7 +57,7 @@ class Tower.Application extends Tower.Engine
 
     init: ->
       throw new Error('Already initialized application') if Tower.Application._instance
-      @app = require('express')()
+      @app ||= require('express')()
       @server = require('http').createServer(@app)
       # http://stackoverflow.com/questions/7185074/heroku-nodejs-http-to-https-ssl-forced-redirect
       # http://stackoverflow.com/questions/7450940/automatic-https-connection-redirect-with-node-js-express
@@ -108,12 +108,15 @@ class Tower.Application extends Tower.Engine
     use: ->
       args        = _.args(arguments)
       express     = require('express')
+      app = @app
+
+      console.log args
 
       if typeof args[0] == 'string'
         middleware  = args.shift()
-        @app.use express[middleware] args...
+        app.use express[middleware] args...
       else
-        @app.use args...
+        app.use args...
 
     configureStores: (configuration = {}, callback) ->
       defaultStoreSet = false

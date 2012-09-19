@@ -1,7 +1,6 @@
 <%= app.namespace %>.configure ->
   @use 'favicon', Tower.publicPath + '/favicon.png'
   @use 'static',  Tower.publicPath, maxAge: Tower.publicCacheDuration
-  @use 'profiler' if Tower.env != 'production'
   @use 'logger'
   @use 'query'
   @use 'cookieParser', Tower.config.session.key
