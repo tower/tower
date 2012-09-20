@@ -25,6 +25,9 @@ class App.CustomController extends Tower.Controller
   testNoCallback: ->
     @testNoCallbackCalled = true
     @render text: 'testNoCallback!'
+
+  testIP: ->
+    @render text: @get('ip')
   
   renderUser: ->
     

@@ -80,6 +80,8 @@ You are free to contribute any of these features in any order… I'm more of a f
 ##### Server
 
 - ~~update to express 3.0~~
+- add api to get remote ip address
+- add api to get [rough] geo from ip address
 - error hooks for controllers
 - better `redirectTo`
 - better `urlFor`
@@ -210,6 +212,8 @@ By this point, the models, views, templates, and controllers should be fairly co
 - https://github.com/kuno/GeoIP
 - global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
 - http://jsperf.com/angular-vs-knockout-vs-ember/2
+- have a built in list of every city/state/country/etc (some "standard" set). for select boxes and geolocation.
+- google maps/places api integration, and foursquare api integration (generic geo api wrapper)
 
 <a name="0.5.0" href="0.5.0"></a>
 

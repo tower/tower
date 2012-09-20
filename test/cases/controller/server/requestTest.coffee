@@ -18,6 +18,11 @@ describe "Tower.Controller (Integration)", ->
 
   test "App.CamelCasedControllerName and routes"
 
+  test 'ip address', (done) ->
+    _.get '/custom/testIP', (response) ->
+      assert.equal response.text, '127.0.0.1'
+      done()
+
   describe "/test-routes", ->
     test "/get", (done) ->
       _.get "/test-routes/get", (response) ->

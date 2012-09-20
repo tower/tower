@@ -1,5 +1,9 @@
 # @module
 Tower.ControllerNet =
+  ip: Ember.computed(->
+    @request.ip
+  ).cacheable()
+
   # @todo
   head: (status, options = {}) ->
     if typeof status == 'object'

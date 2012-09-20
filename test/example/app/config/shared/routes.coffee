@@ -30,6 +30,7 @@ Tower.Route.draw ->
     "renderJsonHelloWorldWithStatus"
     "testCreateCallback"
     "testNoCallback"
+    "testIP"
   #  "renderCoffeeKupInline"
   ]
 
