@@ -39,8 +39,15 @@ task 'assets:stats', 'Table displaying uncompressed, minified, and gzipped asset
 
 # This runs the seed file, which initializes your db with data
 task 'db:seed', ->
-  require('tower').Application.instance().initialize =>
+  App = require('tower').Application.instance()
+  App.initialize =>
     require './data/seeds'
+
+task 'db:drop', ->
+  App = require('tower').Application.instance()
+  App.initialize =>
+    Tower.StoreMongodb.clean()
+    process.nextTick(process.exit)
 
 # This puts your Tower app in production mode, used for special tasks
 task 'environment', ->

@@ -12,12 +12,12 @@ describe 'Tower.GeneratorResources', ->
     generator   = new Tower.Generator(silent: true)
     
   test '#generateRandom("hex")', ->
-    assert.match generator.generateRandom("hex"), /^\b[0-9a-fA-F]+\b$/
+    assert.match generator.generateRandom('hex'), /^\b[0-9a-fA-F]+\b$/
     
   test '#buildRelation', ->
     expected  = { name: 'user', type: 'belongsTo', humanName: 'User' }
 
-    assert.deepEqual expected, generator.buildRelation('belongsTo', "User")
+    assert.deepEqual expected, generator.buildRelation('belongsTo', 'User')
     
   test '#buildModel("user")', ->
     expected  =
@@ -101,7 +101,7 @@ describe 'Tower.GeneratorResources', ->
         fieldType: 'string'
         value:     'A title'
       
-      attribute = generator.buildAttribute("title")
+      attribute = generator.buildAttribute('title')
       
       for key, value of expected
         assert.deepEqual value, attribute[key]
@@ -114,7 +114,7 @@ describe 'Tower.GeneratorResources', ->
         fieldType: 'string'
         value:     "A tags"
 
-      attribute = generator.buildAttribute("tags", "Array")
+      attribute = generator.buildAttribute('tags', 'Array')
 
       for key, value of expected
         assert.deepEqual value, attribute[key]
