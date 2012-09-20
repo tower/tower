@@ -16,7 +16,7 @@ describe 'Tower.GeneratorResources', ->
     
   test '#buildRelation', ->
     expected  = { name: 'user', type: 'belongsTo', humanName: 'User' }
-    
+
     assert.deepEqual expected, generator.buildRelation('belongsTo', "User")
     
   test '#buildModel("user")', ->
@@ -31,12 +31,15 @@ describe 'Tower.GeneratorResources', ->
       paramNamePlural:     'users'
       humanName:           'User'
       attributes:          []
-      relations:           []
+      relations:
+        belongsTo: []
+        hasOne: []
+        hasMany: []
       namespacedDirectory: ''
       viewDirectory:       '/users'
       namespaced:          ''
       
-    model = generator.buildModel('user', "App")
+    model = generator.buildModel('user', 'App')
       
     for key, value of expected
       assert.deepEqual value, model[key]
@@ -53,12 +56,15 @@ describe 'Tower.GeneratorResources', ->
       paramNamePlural:     'camel-cases'
       humanName:           'Camel case'
       attributes:          []
-      relations:           []
+      relations:
+        belongsTo: []
+        hasOne: []
+        hasMany: []
       namespacedDirectory: ''
       viewDirectory:       '/camelCases'
       namespaced:          ''
     
-    model = generator.buildModel('camelCase', "App")
+    model = generator.buildModel('camelCase', 'App')
     
     for key, value of expected
       assert.deepEqual value, model[key]
@@ -86,17 +92,16 @@ describe 'Tower.GeneratorResources', ->
     for key, value of expected
       assert.deepEqual value, view[key]
       
-  describe '#builtAttribute', ->
+  describe '#buildAttribute', ->
     test 'name: "title"', ->
       expected =
         name:      'title'
         type:      'String'
         humanName: 'Title'
         fieldType: 'string'
-        default:   null
         value:     'A title'
       
-      attribute = generator.builtAttribute("title")
+      attribute = generator.buildAttribute("title")
       
       for key, value of expected
         assert.deepEqual value, attribute[key]
@@ -107,10 +112,9 @@ describe 'Tower.GeneratorResources', ->
         type:      'Array'
         humanName: 'Tags'
         fieldType: 'string'
-        default:   null
         value:     "A tags"
 
-      attribute = generator.builtAttribute("tags", "Array")
+      attribute = generator.buildAttribute("tags", "Array")
 
       for key, value of expected
         assert.deepEqual value, attribute[key]

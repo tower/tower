@@ -41,7 +41,7 @@ Tower.GeneratorResources =
 
       result.join(', ')
 
-  builtAttribute: (name, type = 'string', options = {}) ->
+  buildAttribute: (name, type = 'string', options = {}) ->
     unless options.hasOwnProperty('default')
       defaultValue = switch type.toLowerCase()
         when 'integer' then 0
@@ -188,7 +188,7 @@ Tower.GeneratorResources =
       if isRelation
         relations[key].push @buildRelation(key, _.camelize(type), options)
       else
-        attributes.push @builtAttribute(key, _.camelize(type), options)
+        attributes.push @buildAttribute(key, _.camelize(type), options)
 
     name:                 name
     namespace:            appNamespace
