@@ -3,10 +3,10 @@ class <%= app.namespace %>.ApplicationController extends Tower.Controller
 
   @param 'page', type: 'Number', allowRange: false, allowNegative: false
   @param 'limit', type: 'Number', allowRange: false, allowNegative: false
-  @param 'createdAt', type: 'Date'
-  @param 'updatedAt', type: 'Date'
   @param 'sort', type: 'Order'
   @param 'fields', type: 'Array'
+  @param 'createdAt', type: 'Date'
+  @param 'updatedAt', type: 'Date'
 
   @beforeAction 'bootstrap'#, only: 'welcome'
 
