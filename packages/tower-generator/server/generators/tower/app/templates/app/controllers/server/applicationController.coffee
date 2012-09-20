@@ -5,7 +5,7 @@ class <%= app.namespace %>.ApplicationController extends Tower.Controller
   @param 'limit', type: 'Number', allowRange: false, allowNegative: false
   @param 'createdAt', type: 'Date'
   @param 'updatedAt', type: 'Date'
-  # @param 'sort', type: 'Order'
+  @param 'sort', type: 'Order'
 
   @beforeAction 'bootstrap'#, only: 'welcome'
 

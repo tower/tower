@@ -47,6 +47,12 @@ Tower.ControllerParams =
         if params.hasOwnProperty(name)
           if name == 'sort'
             cursor.order(parser.parse(params[name]))
+          else if name == 'fields'
+            fields = _.select(_.flatten(parser.parse(params[name])), (i) ->
+              i.value
+            )
+            fields = _.flatten _.map fields, (i) -> i.value
+            cursor.select(fields)
           else if name == 'limit'
             cursor.limit(parser.extractValue(params[name]))
           else if name == 'page'

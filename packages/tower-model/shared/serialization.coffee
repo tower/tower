@@ -31,6 +31,7 @@ Tower.ModelSerialization =
   # @private
   _serializableHash: (options = {}) ->
     result = {}
+    fields = @get('fields')
 
     attributeNames = _.keys(@constructor.fields())
 
@@ -38,6 +39,10 @@ Tower.ModelSerialization =
       attributeNames = _.union(_.toArray(only), attributeNames)
     else if except = options.except
       attributeNames = _.difference(_.toArray(except), attributeNames)
+
+    if fields && fields.length
+      fields.push('id')
+      attributeNames = _.intersection(attributeNames, fields)
 
     for name in attributeNames
       result[name] = @_readAttributeForSerialization(name)
