@@ -6,6 +6,7 @@ class <%= app.namespace %>.ApplicationController extends Tower.Controller
   @param 'createdAt', type: 'Date'
   @param 'updatedAt', type: 'Date'
   @param 'sort', type: 'Order'
+  @param 'fields', type: 'Array'
 
   @beforeAction 'bootstrap'#, only: 'welcome'
 
