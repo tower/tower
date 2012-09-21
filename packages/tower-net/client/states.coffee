@@ -90,7 +90,32 @@ Tower.Router = Ember.Router.extend
             controller.exit()
           else
             controller.exitAction(action)
+  
+  insertRoutePart: (segment, pathPart, leaf, route, action, state) ->
+    
+    controllerName = route.controller.name
+    methodName = route.options.name
 
+    if leaf
+      Tower.router.root[methodName] = Ember.State.transitionTo(route.options.state)
+      Tower.router.root.eventTransitions[methodName] = route.options.state
+    else
+      action = "find"
+    
+    routeName = "/" + segment
+    
+    
+    states = Ember.get(state, 'states')
+    if !states
+        states = {}
+        Ember.set(state, 'states', states)
+    
+    s = Ember.get(states, pathPart)
+    if !s
+      s = @createControllerActionState(controllerName, action, routeName)
+      state.setupChild(states, pathPart, s)
+    s
+  
   insertRoute: (route) ->
     if route.state
       path = route.state
@@ -101,28 +126,40 @@ Tower.Router = Ember.Router.extend
 
       path = path.join('.')
 
-    return undefined if !path || path == ""
+    return undefined if !path || path == "" || !route.options.action? 
+    return undefined unless route.options.method.indexOf("GET") > -1
     
     routeName = route.options.path.replace(".:format?", "")
     
     state   = @root
-    controllerName = route.controller.name
+    controllerName = 
     methodName = route.options.name if route.options.name?
-    fit = methodName
-    fit = 'index' if methodName == 'showRoot'
     
-    Tower.router.root[methodName] = Ember.State.transitionTo(fit)
-    Tower.router.root.eventTransitions[methodName] = fit
+    #match path parts to url segments
+    pathParts = path.split(".")
+    routeParts = routeName.split("/")
+    routeParts.shift()
     
-    myAction = route.options.action if route.options.action?
+    #calculate the portion of the url that is our action path
+    nsParts = routeParts.slice(0, pathParts.length-1)
+    routeParts = routeParts.slice(pathParts.length-1)
+    routeParts = routeParts.join("/")
+    #merge it back into one traversable path
+    nsParts.push(routeParts)
+    routeParts = nsParts
+
     
-    s = @createControllerActionState(controllerName, myAction, routeName)
-    states = Ember.get(state, 'states')
-    if !states
-        states = {}
-        Ember.set(state, 'states', states)
     
-    state.setupChild(states, fit, s)
+    
+    c = 0
+    pathParts.forEach (part) =>
+      
+      segment = routeParts[c]
+      c++
+      leaf = (c == (pathParts.length)) 
+      action = "find"
+      action = route.options.action if leaf
+      state = @insertRoutePart(segment, part, leaf, route, action, state)
 
     undefined
 
