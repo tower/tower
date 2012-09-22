@@ -215,6 +215,11 @@ By this point, the models, views, templates, and controllers should be fairly co
 - have a built in list of every city/state/country/etc (some "standard" set). for select boxes and geolocation.
 - google maps/places api integration, and foursquare api integration (generic geo api wrapper)
 - awesome demo/faker data system that will allow you do cool things like: 1) generate models over a time interval, where they follow some statistical distribution (I did this using http://rb-gsl.rubyforge.org/files/rdoc/screenshot_rdoc.html in rails to create users who bought deals to create a semi-realistic demo dashboard back in the day), 2) tailor demo urls/usernames to something like your facebook friends or links you've posted in your twitter feed for example, etc.
+- pretty-print helpers for tables/records in the terminal
+  - you could even potentially edit the data in the terminal using ascii escape codes! That would be cool.
+  - http://www.gnu.org/software/oleo/doc/oleo.html
+  - http://www.linuxjournal.com/article/10699
+  - https://github.com/sferik/t
 
 <a name="0.5.0" href="0.5.0"></a>
 

@@ -180,6 +180,10 @@ Tower.ModelAttributes =
     # @todo Use this to set multiple attributes in a more optimized way.
     setAttributes: (attributes) ->
 
+    getEach: (fields...) ->
+      _.map _.flatten(fields), (i) =>
+        @get(i)
+
     # @todo same as below, might want to redo api
     # setAttributeWithOperation: (operation, key, value) ->
 
