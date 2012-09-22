@@ -119,6 +119,10 @@ dist:
 publish:
 	npm publish
 
+docs:
+	rm -rf doc/*
+	codo $(shell find packages/* -name templates -prune -o -name '*.coffee' -print) --title 'Tower API Documentation'
+
 define kill-processes
 	@echo 'killing processes...'
 	@echo $(call get-processes,$(1))

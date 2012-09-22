@@ -120,7 +120,7 @@
   "scripts": {
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
-    "docs": "codo",
+    "docs": "make docs",
     "postinstall": "$(./bin/dependencies)"
   }
 }

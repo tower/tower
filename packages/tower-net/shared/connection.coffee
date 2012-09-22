@@ -1,14 +1,11 @@
-# This should somehow integrate with the future {Tower.StoreTransaction} class,
-# to bundle up modifications.
-# 
 # This doesn't need to be used on the client.  The client just needs a set of cursors.
 # e_dub: One way you could handle when to let go of the memory is when the user changes resources. so let's say the user is flipping through a list of users, and you keep that stuff in memory, then when they find the user they want, they click on that users posts, now you let go of your users list and start hanging onto the posts
 # 
 # This class should store the currentUser and currentAbility objects
 # so there's a quick way to filter data by user and role.
-class Tower.NetConnection extends Tower.Class
+class Tower.NetConnectionBase extends Tower.Class
 
-Tower.NetConnection.reopenClass
+Tower.NetConnectionBase.reopenClass
   # still figuring out how to organize this stuff...
   transport:   undefined
   controllers: []
@@ -25,7 +22,7 @@ Tower.NetConnection.reopenClass
   addHandler: (name, handler) ->
     @handlers.set(name, handler)
 
-Tower.NetConnection.reopen
+Tower.NetConnectionBase.reopen
   registerHandlers: ->
     @constructor.handlers.forEach (eventType, handler) =>
       @on(eventType, handler)
@@ -55,4 +52,4 @@ Tower.NetConnection.reopen
   on: (eventType, handler) ->
     @constructor.registerHandler(@socket, eventType, handler)
 
-module.exports = Tower.NetConnection
+module.exports = Tower.NetConnectionBase
