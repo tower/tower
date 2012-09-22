@@ -90,7 +90,10 @@ You are free to contribute any of these features in any order… I'm more of a f
 - https helper methods
 - namespaced controllers
 - test jsonp
+- integrate clusters and make sure it works on heroku
+- standardize/finish the `URL` object (should be an ember object with computable properties)
 - "api endpoints" documentation
+- some way to cache routes so it doesn't have to iterate through every route for each request.
 - restart server if crashed
   - https://github.com/learnboost/up
   - http://stackoverflow.com/questions/9558360/node-js-reliability-for-large-application
@@ -134,6 +137,11 @@ You are free to contribute any of these features in any order… I'm more of a f
 - i18n (internationalization/localization, how to organize the random labels in the app, and prepare for translation into other languages)
 - confirmation validation (password confirmation, agree to terms, etc.)
 - think about making scopes use `get()`, so `App.User.get('recent')`. This way they can be used in views.
+- a direct database-2-request JSON stream, so you can optimize `index` requests, not having to instantiate models at all.
+- perhaps a `App.User.on 'create', (error, record) ->` api for globally hooking into record persistence (pub/sub)
+- if no `id` or array of ids are sent to `destroy` on a store (such as mongodb), then send the `cursor.toParams()` to the connected client so they remove those records.
+- remove the `Tower.ModelScope` wrapper class.
+- the store should be higher level, so a "google maps store" would provide a somewhat REST API to a few resources (place, location, business, etc.) So the store has a set of models/tables/collections it manages.
 
 <a name="0.4.5" href="0.4.5"></a>
 
@@ -149,6 +157,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - test client side view rendering with ember
 - test files reload when changed (integration test)
 - test assets can be served with gzip
+- masking input fields (phone numbers, social security, email, money, etc.)
 
 By this point, the models, views, templates, and controllers should be fairly complete.
 
@@ -194,7 +203,6 @@ By this point, the models, views, templates, and controllers should be fairly co
   - color transforms (hsl to rgb to hex, etc.)
   - unit transforms (miles to km, etc.)
   - number helpers
-  - masking input fields (phone numbers, social security, email, money, etc.)
 - customize template engine, orm, and test framework in App.config
 - switch to parsing url params with URI.js
 - http caching methods in the controller
