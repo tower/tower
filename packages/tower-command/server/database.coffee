@@ -36,6 +36,9 @@
 # - `write("\033[?25h")` #=> shows the cursor
 # - `write("\033[5m")` #=> blink on
 # - `write("\033[25m")` #=> blink off
+# 
+# @example
+#   tower select posts --select id,createdAt --where 'createdAt: $gte: _(1).days().ago()' --order createdAt- --limit 10 --page 2
 class Tower.CommandDatabase
   constructor: (argv) ->
     @program = program = require('commander')
