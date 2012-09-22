@@ -83,7 +83,8 @@
     "useragent": ">= 1.0.5",
     "gm": "~1.4.1",
     "temp": "~0.4.0",
-    "crc": "~0.2.0"
+    "crc": "~0.2.0",
+    "ansi": "~0.1.2"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
@@ -109,7 +110,10 @@
     "socket.io": ">= 0.8.7",
     "socket.io-client": ">= 0.9.5",
     "fibers": "~0.6.8",
-    "cli-table": "0.0.2"
+    "cli-table": "0.0.2",
+    "ttys": "0.0.3",
+    "cheerio": "~0.9.2",
+    "colors": "~0.6.0-1"
   },
   "globalDependencies": {},
   "localDependencies": {},

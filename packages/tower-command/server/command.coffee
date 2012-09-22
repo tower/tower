@@ -17,6 +17,9 @@ Tower.Command =
   run: (argv) ->
     command = argv[2]
     command = 'info' if !command || !!command.match(/^-/)
+    if command == 'select'
+      command = 'database'
+      argv.splice(2, 1, 'database', 'list')
     command = @aliases[command] if @aliases.hasOwnProperty(command)
     #throw new Error('You must give tower a command (e.g. 'tower new my-app' or 'tower server')') unless command
     # @todo in the process of making the commands just functions instead of classes,
