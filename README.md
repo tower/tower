@@ -12,7 +12,7 @@ Follow me [@viatropos](http://twitter.com/viatropos).
 - **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
 - **Issues**: https://github.com/viatropos/tower/issues
 - **Roadmap**: https://github.com/viatropos/tower/blob/master/ROADMAP.md
-- **Latest Docs**: https://github.com/viatropos/tower-docs
+- **Latest Docs**: https://github.com/viatropos/tower/wiki
 
 Note, Tower is still very early alpha. Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we're going. If your up for it please contribute! The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release. From there, it's performance optimization, workflow streamlining, and creating some awesome examples. 1.0 will be a plug-and-chug real-time app framework.
 
