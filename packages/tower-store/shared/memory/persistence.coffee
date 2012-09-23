@@ -50,7 +50,7 @@ Tower.StoreMemoryPersistence =
   # but acting like it's been deleted on the client.
   # @todo need to refactor and think about some more.
   unload: (records) ->
-    records = @_unload(data)
+    records = @_unload(records)
     Tower.notifyConnections('unload', records)
     records
 
