@@ -103,7 +103,7 @@
     "socket.io-client": ">= 0.9.5",
     "hook.io": "git://github.com/j-mcnally/hook.io",
     "fibers": "~0.6.8",
-    "node-obj-watch": "0.1.0"
+    "node-obj-watch": ">= 0.1.1"
   },
   "globalDependencies": {
     
