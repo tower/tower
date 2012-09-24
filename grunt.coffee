@@ -4,6 +4,12 @@
 module.exports = (grunt) ->
   require('./packages/tower-tasks/tasks')(grunt)
 
+  try
+    require('./wiki/grunt')(grunt)
+    hasWiki = true
+  catch error
+    hasWiki = false
+
   require('./coffee-inheritance')
 
   _     = grunt.utils._
@@ -166,6 +172,13 @@ module.exports = (grunt) ->
     # @todo need to copy file to test/x when it changes
     #for name in src
     #  config.concat[name]
+
+  if hasWiki
+    config.wiki =
+      toc: true
+    config.watch['wiki:toc'] =
+      files: ['wiki/_sidebar.md']
+      tasks: ['wiki:toc']
 
   grunt.initConfig(config)
 
