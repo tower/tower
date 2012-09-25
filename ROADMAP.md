@@ -111,6 +111,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - convert modules to `Ember.Mixin` objects. 
 - convert all `class X` in tower to `.extend`, just javascript
 - for tower development, compile and load client sub-packages to improve workflow.
+- better error reporting w/ coffeescript (`options = bare: true, filename: filePath`)
 
 <a name="0.4.4" href="0.4.4"></a>
 
@@ -435,3 +436,9 @@ App.destroyPost(id: 1)
 App.indexAdminPosts() # /admin/posts
 App.indexPostComments(postId: 1) # /posts/1/comments
 ```
+
+## Other Random Things
+
+- jsparse
+- https://github.com/jondot/graphene
+- https://github.com/rwldrn/jquery-hive

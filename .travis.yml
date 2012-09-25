@@ -1,8 +1,13 @@
 language: node_js
 node_js:
   - 0.8
+branches:
+  only:
+    - master
 install: npm install
 services: mongodb
+before_install:
+  rm .gitmodules
 before_script:
   - "npm install grunt"
   - "make build-test-client"
