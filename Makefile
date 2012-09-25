@@ -96,6 +96,13 @@ test-opera:
 test-all:
 	for i in $(STORES); do ./node_modules/mocha/bin/mocha $(SRC) --store $$i; done
 
+# make push message='Committing changes'
+push:
+	cd wiki && git add . && git commit -a -m 'updates' && git push
+	git add .
+	git commit -a -m '$(message)'
+	git push origin master
+
 clean:
 	rm -rf dist/*
 	rm -rf lib/*

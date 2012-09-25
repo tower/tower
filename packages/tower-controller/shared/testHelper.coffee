@@ -96,9 +96,11 @@ _.request = (method, path, options, callback) ->
 
   params.format = format if format
 
-  newRequest = newRequest.send(params)# unless _.isBlank(params)
+  newRequest = newRequest.send(params) unless _.isBlank(params)
 
   newRequest = newRequest.auth(auth.username, auth.password) if auth
+
+  console.log path, params, format, headers
 
   # content-type of json on a GET request throws error if `strict` in connect json parser
   newRequest = newRequest.type(format) if format && method != 'get'
