@@ -4,7 +4,7 @@
 
 Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built for the client and server from the ground up.
 
-<!-- [![Build Status](https://secure.travis-ci.org/viatropos/tower.png)](http://travis-ci.org/viatropos/tower) -->
+[![Build Status](https://secure.travis-ci.org/viatropos/tower.png)](http://travis-ci.org/viatropos/tower)
 
 Follow me [@viatropos](http://twitter.com/viatropos).
 
