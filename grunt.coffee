@@ -187,15 +187,17 @@ module.exports = (grunt) ->
       all:
         src: wikiFiles
 
-    wikiFiles.forEach (wikiFile) ->
-      slug = _.parameterize(wikiFile)
-
-      config.watch[slug] =
-        files: [wikiFile]
-        tasks: ["wikiLinks:#{slug}"]
-      config.wikiLinks[slug] =
-        src: wikiFile
-      config
+    #wikiFiles.forEach (wikiFile) ->
+    #  slug = _.parameterize(wikiFile)
+    #
+    #  #config.watch[slug] =
+    #  #  files: [wikiFile]
+    #  #  tasks: ["wikiLinks:#{slug}"]
+    #  config.wikiLinks[slug] =
+    #    src: wikiFile
+    #    dest: wikiFile
+    #  
+    #  config
 
   grunt.initConfig(config)
 
