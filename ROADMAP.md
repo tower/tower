@@ -110,6 +110,7 @@ You are free to contribute any of these features in any order… I'm more of a f
 - need to figure out how to append fields to a model base class after the other models have been subclassed.
 - convert modules to `Ember.Mixin` objects. 
 - convert all `class X` in tower to `.extend`, just javascript
+- for tower development, compile and load client sub-packages to improve workflow.
 
 <a name="0.4.4" href="0.4.4"></a>
 
