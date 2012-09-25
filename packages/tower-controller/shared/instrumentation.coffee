@@ -13,7 +13,7 @@ Tower.ControllerInstrumentation =
     params    = @params
     # tmp, but need to think about his more
     params.conditions = JSON.parse(params.conditions) if typeof params.conditions == 'string'
-
+    
     unless params.format
       accept = @request?.headers?['accept']
       acceptFormat = accept?.split(',')

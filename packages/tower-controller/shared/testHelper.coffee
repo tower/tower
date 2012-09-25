@@ -97,9 +97,15 @@ _.request = (method, path, options, callback) ->
   params.format = format if format
 
   isBlank = _.isBlank(params)
-  params  = JSON.stringify(params) if method == 'get' && !isBlank
-  console.log params
-  newRequest = newRequest.send(params) unless isBlank
+
+  if method == 'get'
+    # since we want it to deserialize the JSON numbers as numbers not strings.
+    if params.conditions? && typeof params.conditions == 'object'
+      params.conditions = JSON.stringify(params.conditions)
+
+    newRequest.query(params) unless isBlank
+  else
+    newRequest = newRequest.send(params) unless isBlank
 
   newRequest = newRequest.auth(auth.username, auth.password) if auth
 

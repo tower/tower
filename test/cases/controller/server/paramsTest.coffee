@@ -21,9 +21,9 @@ describe 'Tower.ControllerParams', ->
         done()
 
     test 'rating: 8', (done) ->
-      params = conditions: JSON.stringify(rating: 8)
+      params = conditions: rating: 8
       
-      _.get '/posts', params: params, (response) ->
+      _.get '/posts.json', params: params, (response) ->
         posts = response.controller.get('posts')
         assert.equal 1, posts.length
         done()
