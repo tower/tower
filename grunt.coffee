@@ -11,8 +11,9 @@ module.exports = (grunt) ->
     hasWiki = false
 
   require('./coffee-inheritance')
+  require('./index.js') # require towerRoot/index.js
 
-  _     = grunt.utils._
+  _     = Tower._
   file  = grunt.file
   _path = require('path')
 
@@ -175,10 +176,26 @@ module.exports = (grunt) ->
 
   if hasWiki
     config.wiki =
-      toc: true
+      toc:    true
     config.watch['wiki:toc'] =
       files: ['wiki/_sidebar.md']
       tasks: ['wiki:toc']
+    wikiFiles = file.expand([
+      'wiki/en/**/*.md'
+    ])
+    config.wikiLinks =
+      all:
+        src: wikiFiles
+
+    wikiFiles.forEach (wikiFile) ->
+      slug = _.parameterize(wikiFile)
+
+      config.watch[slug] =
+        files: [wikiFile]
+        tasks: ["wikiLinks:#{slug}"]
+      config.wikiLinks[slug] =
+        src: wikiFile
+      config
 
   grunt.initConfig(config)
 
