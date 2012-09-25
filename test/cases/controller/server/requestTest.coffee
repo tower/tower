@@ -93,13 +93,6 @@ describe "Tower.Controller (Integration)", ->
       
         done()
       
-    test "/test-json/default params: format: 'json'", (done) ->
-      _.get "/test-json/default", params: format: 'json', (response) ->
-        assert.deepEqual { value: 'defaultMethod in JSON' }, response.body
-        assert.equal 200, response.status
-
-        done()
-      
     test "/test-json/default headers: accept: application/json", (done) ->
       _.get "/test-json/default", headers: 'accept': 'application/json', (response) ->
         assert.deepEqual { value: 'defaultMethod in JSON' }, response.body
