@@ -96,19 +96,19 @@ unless Tower.client
     test 'renderJsonHelloWorld', (done) ->
       _.get '/custom/renderJsonHelloWorld', ->
         assert.equal @body, JSON.stringify(hello: "world")
-        assert.equal @headers["Content-Type"], "application/json"
+        assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
         done()
       
     test 'renderJsonHelloWorldWithParams', (done) ->
       _.get '/custom/renderJsonHelloWorldWithParams', params: hello: "world", ->
         assert.equal @body, JSON.stringify(hello: "world")
-        assert.equal @headers["Content-Type"], "application/json"
+        assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
         assert.equal @status, 200
         done()
       
     test 'renderJsonHelloWorldWithStatus', (done) ->
       _.get '/custom/renderJsonHelloWorldWithStatus', ->
         assert.equal @body, JSON.stringify(hello: "world")
-        assert.equal @headers["Content-Type"], "application/json"
+        assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
         assert.equal @status, 401
         done()

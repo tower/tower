@@ -4,6 +4,28 @@ Tower.ControllerNet =
     @request.ip
   ).cacheable()
 
+  # @todo maybe an underscore helper?
+  # 
+  # @example convert from utf-8 to ISO-8859-1
+  #   @encodeContent 'utf-8', 'ISO-8859-1'
+  #   @encodeContent 'utf-8', 'ISO-8859-1//TRANSLIT'
+  #   
+  encodeContent: (string, from, to) ->
+    Buffer  = require('buffer').Buffer
+    Iconv   = require('iconv').Iconv
+    to = to.toUpperCase()
+    to += '//TRANSLIT' if to == 'ISO-8859-1'
+    iconv   = new Iconv(from.toUpperCase(), to)
+    buffer  = iconv.convert(string)
+    buffer.toString()
+
+  setContentType: (type, encoding = @encoding) ->
+    type += "; charset=#{encoding}" if encoding?
+    @headers['Content-Type'] = type
+
+  getContentType: ->
+    @headers['Content-Type']
+
   # @todo
   head: (status, options = {}) ->
     if typeof status == 'object'

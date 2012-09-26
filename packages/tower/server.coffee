@@ -21,6 +21,9 @@ Tower.version = JSON.parse(fs.readFileSync(_path.normalize("#{__dirname}/../../p
 
 Tower.logger    = _console
 
+# @todo put in a better place
+Tower.defaultEncoding = 'utf-8'
+
 # External libraries, to get around having to use `require` in the browser.
 # 
 # They are lazy-loaded, to improve perceived startup time.

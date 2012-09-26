@@ -1,4 +1,4 @@
-describe "Tower.DispatchRouteDSL", ->
+describe "Tower.RouteDSL", ->
   describe "route", ->
     it "should match routes with keys", ->
       route = new Tower.Route(path: "/users/:id/:tag")

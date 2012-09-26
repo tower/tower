@@ -42,6 +42,16 @@ Tower.Route.draw ->
   @match "/custom/:id/edit", to: "custom#edit"
   @match "/custom/:id", to: "custom#update", via: ["put"]
   @match "/custom/:id", to: "custom#destroy", via: ["delete"]
+
+  actions = [
+    'acceptJSON'
+    'acceptUndefined'
+    'acceptCharsetUTF8'
+    'acceptCharsetISO'
+  ]
+
+  for action in actions
+    @match "/headers/#{action}", to: "headers##{action}"
   
   @resources 'posts'
   @resources 'users'

@@ -19,8 +19,14 @@ Tower.Controller.addRenderers
       else
         json = JSON.stringify(json)
 
+    unless @getContentType()
+      @setContentType(require('mime').lookup('json'))
+      # @todo make more robust
+      if @encoding != 'utf-8'
+        json = @encodeContent(json, 'utf-8', @encoding)
+
     json = "#{jsonpCallback}(#{json})" if jsonpCallback?
-    @headers['Content-Type'] ||= require('mime').lookup('json')
+
     callback null, json if callback
     json
 
