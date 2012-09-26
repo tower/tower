@@ -91,6 +91,7 @@ class Tower.NetRouteDSL
     @match path,            _.extend(action: "destroy", state: "#{name}.destroy", method: "DELETE", options)
 
   resources: (name, options, block) ->
+    console.log('resouces');
     if typeof options == 'function'
       block     = options
       options   = {}
@@ -109,7 +110,6 @@ class Tower.NetRouteDSL
     one   = _.singularize(many)
 
     camelOne = _.camelize(one)
-
     @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, method: ['GET'], options)
     @match "#{path}/new",       _.extend(action: "new",     state: "#{many}.new",     name: "new#{camelOne}", options)
     @match path,                _.extend(action: "create",  state: "#{many}.create",  method: "POST", options)
@@ -128,7 +128,7 @@ class Tower.NetRouteDSL
   member: ->
 
   root: (options) ->
-    @match '/', _.extend(as: "root", options)
+    @match '/', _.extend({state: "root.index", name: 'showRoot', method: ['GET']}, options)
 
   _extractOptions: ->
     args            = _.args(arguments)

@@ -1,5 +1,6 @@
 require './shared'
 _path = require('path')
+Tower.Support.on_load = require('node-obj-watch').on_load
 
 # @todo tmp hack
 require('pathfinder').File.glob = ->

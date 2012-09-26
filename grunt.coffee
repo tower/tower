@@ -141,7 +141,7 @@ module.exports = (grunt) ->
         bare: true
     config.watch[name] =
       files: [name]
-      tasks: ["coffee:#{name}"]
+      tasks: ["coffee:#{name}", "build:client"]
 
   # clientTestPaths.forEach (name) ->
 

@@ -1,6 +1,6 @@
 Tower.Router = Ember.Router.extend
-  urlForEvent: (eventName) ->
-    path = @._super(eventName);
+  urlForEvent: (eventName, contexts...) ->
+    path = @._super(eventName, contexts...);
     if path == ''
       path = '/'
     path
@@ -29,10 +29,10 @@ Tower.Router = Ember.Router.extend
     name = _.camelize(name, true) #=> postsController
 
     # @todo tmp hack
-    if action == 'show' || action == 'destroy' || action == 'update'
-      route += ':id'
-    else if action == 'edit'
-      route += ':id/edit'
+    #if action == 'show' || action == 'destroy' || action == 'update'
+    #  route += ':id'
+    #else if action == 'edit'
+    #  route += ':id/edit'
 
     # isIndexActive, isShowActive
     # actionMethod  = "#{action}#{_.camelize(name).replace(/Controller$/, '')}"
@@ -90,7 +90,32 @@ Tower.Router = Ember.Router.extend
             controller.exit()
           else
             controller.exitAction(action)
+  
+  insertRoutePart: (segment, pathPart, leaf, route, action, state) ->
+    
+    controllerName = route.controller.name
+    methodName = route.options.name
 
+    if leaf
+      Tower.router.root[methodName] = Ember.State.transitionTo(route.options.state)
+      Tower.router.root.eventTransitions[methodName] = route.options.state
+    else
+      action = "find"
+    
+    routeName = "/" + segment
+    
+    
+    states = Ember.get(state, 'states')
+    if !states
+        states = {}
+        Ember.set(state, 'states', states)
+    
+    s = Ember.get(states, pathPart)
+    if !s
+      s = @createControllerActionState(controllerName, action, routeName)
+      state.setupChild(states, pathPart, s)
+    s
+  
   insertRoute: (route) ->
     if route.state
       path = route.state
@@ -101,48 +126,40 @@ Tower.Router = Ember.Router.extend
 
       path = path.join('.')
 
-    return undefined if !path || path == ""
-
-    r       = path.split('.')
+    return undefined if !path || path == "" || !route.options.action? 
+    return undefined unless route.options.method.indexOf("GET") > -1
+    
+    routeName = route.options.path.replace(".:format?", "")
+    
     state   = @root
-    controllerName = route.controller.name
+    controllerName = 
+    methodName = route.options.name if route.options.name?
+    
+    #match path parts to url segments
+    pathParts = path.split(".")
+    routeParts = routeName.split("/")
+    routeParts.shift()
+    
+    #calculate the portion of the url that is our action path
+    nsParts = routeParts.slice(0, pathParts.length-1)
+    routeParts = routeParts.slice(pathParts.length-1)
+    routeParts = routeParts.join("/")
+    #merge it back into one traversable path
+    nsParts.push(routeParts)
+    routeParts = nsParts
 
-    i       = 0
-    n       = r.length
-
-    while i < n
-      states = Ember.get(state, 'states')
-
-      if !states
-        states = {}
-        Ember.set(state, 'states', states)
-
-      s = Ember.get(states, r[i])
-      if s
-        state = s
-      else
-        routeName = '/'
-
-        # @todo tmp hack
-        if (r[i] == r[0] || r[i] == 'new') && r[i] != 'root'
-            routeName += r[i]
-
-        # @todo tmp hack
-        # Basically, create methods like `showUser` and `indexUsers`, which
-        # will call Ember.State.transitionTo('users.show'), pass the correct context, etc.
-        if !controllerName.toLowerCase().match(r[i])
-          methodName = r[i] + _.singularize(_.camelize(controllerName.replace('Controller', '')))
-          Tower.router.root[methodName] = Ember.State.transitionTo(r.join('.'))
-          Tower.router.root.eventTransitions[methodName] = r.join('.')
-        
-        myAction = r[i]
-        myAction = route.options.action if route.options.action?
-        
-        s = @createControllerActionState(controllerName, myAction, routeName)
-        state.setupChild(states, r[i], s)
-        state = s
-
-      i++
+    
+    
+    
+    c = 0
+    pathParts.forEach (part) =>
+      
+      segment = routeParts[c]
+      c++
+      leaf = (c == (pathParts.length)) 
+      action = "find"
+      action = route.options.action if leaf
+      state = @insertRoutePart(segment, part, leaf, route, action, state)
 
     undefined
 

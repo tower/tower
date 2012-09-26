@@ -85,7 +85,8 @@
     "temp": "~0.4.0",
     "crc": "~0.2.0",
     "ansi": "~0.1.2",
-    "iconv": "~1.2.3"
+    "iconv": "~1.2.3",
+    "node-obj-watch": ">= 0.1.1"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
@@ -108,6 +109,13 @@
     "gzip": ">= 0.1.0",
     "chokidar": "~0.4.0",
     "knox": "0.0.11",
+    "fibers": "~0.6.8"
+
+  },
+  "globalDependencies": {
+    
+  },
+  "localDependencies": {
     "socket.io": ">= 0.9.10",
     "socket.io-client": ">= 0.9.10",
     "fibers": "~0.6.8",
@@ -116,8 +124,6 @@
     "cheerio": ">= 0.10.0",
     "colors": "~0.6.0-1"
   },
-  "globalDependencies": {},
-  "localDependencies": {},
   "scripts": {
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
