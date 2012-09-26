@@ -6,7 +6,7 @@
 // if process.cwd().match(dirname(process.execPath)) then maybe assume it's npm install -g
 var fs = require('fs');
 var path = require('path');
-
+var os = require('os');
 
 // @todo normalize install/global directories in a more robust way, for comparison.
 function normalize(directory) {
@@ -58,6 +58,13 @@ var dependencies = [];
 var testDependencies = Object.keys(packageJSON['testDependencies']);
 var globalDependencies = Object.keys(packageJSON['globalDependencies']);
 var localDependencies = Object.keys(packageJSON['localDependencies']);
+
+// if you're linking to local app on mac/linux, assuming you have built the project,
+// copy the new tower project.
+//if (isLocalLink && os.platform().match(/darwin|linux/)) {
+//  process.stdout.write('rm vendor/javascripts/tower.js');
+//  process.stdout.write('cp ' + path.join(__dirname, '../dist/tower.js') + ' vendor/javascripts/tower.js');
+//}
 
 // if it's installed from the git repo, install everything.
 if (!isLocalLink && !isGlobalLink && fs.existsSync('.gitignore')) {
