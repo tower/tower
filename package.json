@@ -80,7 +80,7 @@
     "temp": "~0.4.0",
     "socket.io": ">= 0.8.7",
     "socket.io-client": ">= 0.9.5",
-    "hook.io": "git://github.com/j-mcnally/hook.io.git",
+    "hook.io": "0.8.10",
     "node-obj-watch": ">= 0.1.1"
   },
   "devDependencies": {
