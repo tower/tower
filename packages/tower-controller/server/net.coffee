@@ -26,9 +26,6 @@ Tower.ControllerNet =
   getContentType: ->
     @headers['Content-Type']
 
-  etag: (content) ->
-    require('express/lib/utils').etag(content)
-
   # @todo
   head: (status, options = {}) ->
     if typeof status == 'object'

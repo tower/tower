@@ -1,4 +1,6 @@
 Tower.MiddlewareLocation = (request, response, next) ->
+  response.cacheControl ||= {}
+
   unless request.location
     if request.url.match(/^http/)
       url = request.url

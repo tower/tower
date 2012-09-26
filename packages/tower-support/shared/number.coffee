@@ -2,6 +2,12 @@ Tower.SupportNumber =
   isInt: (n) ->
     n == +n && n == (n|0)
 
+  toInt: (object) ->
+    switch _.kind(object)
+      when 'date' then object.getTime()
+      else
+        parseInt(object)
+
   isFloat: (n) ->
     n == +n && n != (n|0)
 

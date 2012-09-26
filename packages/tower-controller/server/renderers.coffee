@@ -25,6 +25,8 @@ Tower.Controller.addRenderers
       #if @encoding != 'utf-8'
       #  json = @encodeContent(json, 'utf-8', @encoding)
 
+    @setDefaultCacheControl() # @todo
+
     json = "#{jsonpCallback}(#{json})" if jsonpCallback?
 
     callback null, json if callback

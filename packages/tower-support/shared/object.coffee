@@ -2,6 +2,20 @@ specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'Insta
 _ = Tower._
 
 Tower.SupportObject =
+  getCacheKey: (key) ->
+    if key.hasOwnProperty('cacheKey')
+      Ember.get(key, 'cacheKey')
+    else if _.isArray(key)
+      _.toPath(_.map(key, (i) -> _.getCacheKey(i)))
+    else
+      _.toPath(key)
+
+  toPath: (object) ->
+    if _.isArray(object)
+      object.join('/')
+    else
+      object.toString()
+
   modules: (object) ->
     args = _.args(arguments, 1)
 
