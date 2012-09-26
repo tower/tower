@@ -104,6 +104,8 @@ describe 'controller/server/headersTest', ->
 
     describe 'non-standard', ->
       test 'X-Requested-With'
+      test 'X-CSRF-Token'
+      test 'X-HTTP-Method-Override'
 
   describe 'response', ->
     describe 'standard', ->
@@ -138,9 +140,11 @@ describe 'controller/server/headersTest', ->
       test 'Via'
       test 'Warning'
       test 'WWW-Authenticate'
+      # Upgrade: WebSocket
 
     describe 'non-standard', ->
       test 'X-Frame-Options'
       test 'X-XSS-Protection'
       # Recommends the preferred rendering engine (often a backward-compatibility mode) to use to display the content. Also used to activate Chrome Frame in Internet Explorer.
       test 'X-UA-Compatible'
+      test 'X-Response-time'
