@@ -107,8 +107,8 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
       @_each @, iterator, callback
     else
       @store.update updates, @, (error, result) =>
-        #records = @data
-        Tower.notifyConnections('update', @data[0]) unless error
+        records = @data[0]
+        Tower.notifyConnections('update', @data) unless error
         callback.call(@, error, records) if callback
         # this should go into some Ember runLoop thing
         # it should also be moved to the store

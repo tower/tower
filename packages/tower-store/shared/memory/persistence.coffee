@@ -5,9 +5,14 @@ Tower.StoreMemoryPersistence =
   # Load models into the store (for non-persistent stores).
   #
   # @return [Array] Returns array of added records.
-  load: (data) ->
+  load: (data, action) ->
     records = @_load(data)
+    if action is "update"
+      for record in records
+        record.reload()
+
     Tower.notifyConnections('load', records)
+
     records
 
   _load: (data) ->
