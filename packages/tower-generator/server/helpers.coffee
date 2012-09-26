@@ -14,6 +14,17 @@ Tower.GeneratorHelpers =
       else
         @injectIntoFile "app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
 
+  seed: (model) ->
+    string = """
+\ \ (callback) =>
+\ \ \ \ _(20).timesAsync callback, (next) =>
+\ \ \ \ \ \ Tower.Factory.create '#{@model.name}', (error, record) =>
+\ \ \ \ \ \ \ \ console.log _.stringify(record)
+\ \ \ \ \ \ \ \ next()
+
+"""
+    @injectIntoFile "data/seeds.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
+
   bootstrap: (model) ->
     @inRoot =>
       # bootstrap into client side
@@ -40,7 +51,7 @@ Tower.GeneratorHelpers =
 
   navigation: (key, path) ->
     pattern = /div *class: *'nav-collapse' *, *->\s+ul *class: *'nav', *-> */
-    content = """\n    li ->
+    content = """\n    li '{{bindAttr class="App.#{@model.className}Controller.isActive:active"}}', ->
 \ \ \ \ \ \ a '{{action index#{@model.className} href=true}}', t('links.#{key}')
 """
 #    content = """\n    navItem t('links.#{key}'), #{path}

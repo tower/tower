@@ -24,13 +24,14 @@ command = (argv) ->
     .option('-K, --keywords <keywords>', 'Your project keywords (e.g. "node.js, file uploading, s3")', "")
     .option('-n, --namespace <namespace>', 'Global namespace for your app (defaults to App)', "App")
     .option('-p, --persistence <name>', 'Preconfigure for selected database (options: mongodb)', array, ["mongodb"])
-    .option('-e, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)')
+    .option('-E, --engine <engine>', 'Preconfigure for template engine (options: coffeekup/jade/eco/ejs)')
     .option('-s, --stylesheet-engine <ext>', 'Stylesheet framework', 'styl')
     .option('--include-stylesheets <names>', 'Stylesheets to use (defaults to twitter-bootstrap)', array, ["twitter-bootstrap"])
     .option('-t, --test <name>', 'Test framework (defaults to mocha)', "mocha")
     .option('-j, --use-javascript [value]', 'Use JavaScript instead of CoffeeScript', false)
     # heroku, nodejitsu, dotcloud, etc.
     .option('-d, --deployment <names>', 'Deployment options (defaults to heroku, only heroku works now)', array, ["heroku"])
+    # .option('-e, --executable', 'Include an executable file in ./bin/<name>')
     # @todo autodeploy to heroku: https://api-docs.heroku.com/apps
     # .option('--heroku [value]', 'Deploy to heroku', true)
     # .option('--mongohq [value]', 'Use mongohq in production', true)

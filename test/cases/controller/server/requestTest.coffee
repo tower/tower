@@ -18,6 +18,11 @@ describe "Tower.Controller (Integration)", ->
 
   test "App.CamelCasedControllerName and routes"
 
+  test 'ip address', (done) ->
+    _.get '/custom/testIP', (response) ->
+      assert.equal response.text, '127.0.0.1'
+      done()
+
   describe "/test-routes", ->
     test "/get", (done) ->
       _.get "/test-routes/get", (response) ->
@@ -88,24 +93,17 @@ describe "Tower.Controller (Integration)", ->
       
         done()
       
-    test "/test-json/default params: format: 'json'", (done) ->
-      _.get "/test-json/default", params: format: 'json', (response) ->
+    test "/test-json/default headers: accept: application/json", (done) ->
+      _.get "/test-json/default", headers: 'accept': 'application/json', (response) ->
         assert.deepEqual { value: 'defaultMethod in JSON' }, response.body
         assert.equal 200, response.status
 
         done()
       
-    test "/test-json/default headers: content-type: application/json", (done) ->
-      _.get "/test-json/default", headers: 'content-type': 'application/json', (response) ->
-        assert.deepEqual { value: 'defaultMethod in JSON' }, response.body
-        assert.equal 200, response.status
-
-        done()
-      
-    test "POST /test-json/post headers: content-type: application/json", (done) ->
+    test "POST /test-json/post headers: accept: application/json", (done) ->
       data =
         headers:
-          'content-type': 'application/json'
+          'accept': 'application/json'
         params:
           data:
             postData: "JSON!"

@@ -22,9 +22,9 @@ describe 'Tower.ModelCursor (bindable)', ->
     
   test 'addObserver', (done) ->
     record = App.BindableCursorTest.build()
-    
-    cursor.addObserver "length", (_, key, value) ->
-      assert.ok value, "addObserver length called"
+
+    cursor.addObserver 'length', ->
+      assert.equal 1, cursor.get('length'), 'addObserver length called'
       done()
     
     Ember.run ->
@@ -38,11 +38,8 @@ describe 'Tower.ModelCursor (bindable)', ->
       App.BindableCursorTest.build()
     ]
     
-    cursor.addObserver "length", (_, key, value) ->
-      assert.ok value, "addObserver length called"
-      assert.equal value, 2
-      # why isn't this working?
-      # assert.equal cursor.get('length'), 2
+    cursor.addObserver 'length', ->
+      assert.equal cursor.get('length'), 2, 'addObserver length called'
       done()
 
     cursor.pushMatching(records)
@@ -55,8 +52,8 @@ describe 'Tower.ModelCursor (bindable)', ->
     
     cursor.where(string: /string/)
 
-    cursor.addObserver "length", (_, key, value) ->
-      assert.equal value, 1, "addObserver length called"
+    cursor.addObserver 'length', ->
+      assert.equal cursor.get('length'), 1, 'addObserver length called'
       # assert.equal cursor.length, 1
       done()
 
@@ -64,13 +61,13 @@ describe 'Tower.ModelCursor (bindable)', ->
 
   test 'list model fields it\'s watching', ->
     cursor.where(string: /string/)
-    assert.deepEqual cursor.getPath('observableFields').sort(), ['string']
+    assert.deepEqual cursor.get('observableFields').sort(), ['string']
 
     cursor.desc('createdAt').propertyDidChange('observableFields')
-    assert.deepEqual cursor.getPath('observableFields').sort(), ['createdAt', 'string']
+    assert.deepEqual cursor.get('observableFields').sort(), ['createdAt', 'string']
 
     cursor.where(string: '!=': 'strings', '=~': /string/).propertyDidChange('observableFields')
-    assert.deepEqual cursor.getPath('observableFields').sort(), ['createdAt', 'string']
+    assert.deepEqual cursor.get('observableFields').sort(), ['createdAt', 'string']
 
   test 'Tower.cursors updates when cursor.observable() is called', ->
     assert.equal _.keys(Tower.cursors).length, 0

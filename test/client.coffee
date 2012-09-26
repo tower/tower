@@ -15,7 +15,7 @@ exit = (msg) ->
 finish = ->
   phantom.exit page.evaluate -> mocha.phantomjs?.failures
 
-dotLog = (columns) ->
+dotLog = (columns = 56) ->
   # dot reporter
   process.cursor.margin = 2
   process.cursor.CRMatcher = /\u001b\[\d\dm\․\u001b\[0m/
@@ -56,14 +56,15 @@ runMocha = ->
 
 waitForMocha = ->
   ended = !!(page.evaluate -> mocha.phantomjs?.ended)
-  if ended then finish() else setTimeout(waitForMocha, 1000)
+  if ended then finish() else setTimeout(waitForMocha, 100)
 
 runner = ->
   try
     # `ignoreLeaks: true` significantly speeds the tests up
     # because otherwise, before and after each test it iterates through
     # and compares all of the global variables (before/after each beforeEach block too!).
-    mocha.setup ui: 'bdd', timeout: 2000, ignoreLeaks: true, reporter: mocha.reporters.Dot # mocha.reporters.JSON
+    mocha.reporter 'dot'
+    mocha.setup ui: 'bdd', timeout: 2000, ignoreLeaks: true # mocha.reporters.JSON
     mocha.phantomjs = failures: 0, ended: false, run: false
     mocha.phantomjs.runner = mocha.run()
     if mocha.phantomjs.runner

@@ -1,11 +1,15 @@
 language: node_js
 node_js:
   - 0.8
+branches:
+  only:
+    - master
 install: npm install
-# @todo once `make test-client` is working
-#before_script:
-#  - "cd test/example"
-#  - "grunt --config ./grunt.coffee"
-#  - "cd ../.."
-#  - "node test/example -p 3210"
-#  - sleep 3 # give Web server some time to bind to sockets, etc
+services: mongodb
+before_install:
+  rm .gitmodules
+before_script:
+  - "npm install grunt"
+  - "make build-test-client"
+  - "make start-test-client &"
+  - sleep 3

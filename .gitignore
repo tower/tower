@@ -24,6 +24,7 @@ pkg
 
 ## PROJECT::SPECIFIC
 
+/log
 doc
 node_modules
 spec/secrets.coffee
@@ -33,13 +34,16 @@ dist/*.gz
 dist/*.coffee
 dist/*.min.js
 /wiki
+/example
 docs
 test/tmp
 test/example/README.md
-test/example/package.json
+# test/example/package.json
 test/example/public/javascripts
 test/example/public/stylesheets
-test/example/vendor/**/*
+test/example/public/swfs
+test/example/public/images
+test/example/vendor/
 tmp
 /components
 

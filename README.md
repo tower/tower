@@ -1,4 +1,4 @@
-# Tower.js <img src="http://i.imgur.com/e3VLW.png"/>
+# Tower.js <img src="http://cloud.github.com/downloads/viatropos/tower/tower.png"/>
 
 > Full Stack Web Framework for Node.js and the Browser.
 
@@ -12,32 +12,11 @@ Follow me [@viatropos](http://twitter.com/viatropos).
 - **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
 - **Issues**: https://github.com/viatropos/tower/issues
 - **Roadmap**: https://github.com/viatropos/tower/blob/master/ROADMAP.md
-- **Latest Docs**: https://github.com/viatropos/tower-docs
+- **Latest Docs**: https://github.com/viatropos/tower/wiki
 
 Note, Tower is still very early alpha. Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we're going. If your up for it please contribute! The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release. From there, it's performance optimization, workflow streamlining, and creating some awesome examples. 1.0 will be a plug-and-chug real-time app framework.
 
 Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
-
-## Contributor Note
-
-All of the base ideas are now pretty much in the Tower codebase, now it's just a matter of fleshing out the edge cases and a few implementations. Here's what's new:
-
-- Background jobs in Redis. The `Model.enqueue` and `Model#enqueue` methods are convention for off-loading expensive tasks to the background. You then run `cake work` and it will start the [kue](https://github.com/LearnBoost/kue) background worker to process items in the different redis queues. That process is running in a totally separate environment, but they can communicate b/c of redis' nice pub/sub api. This still needs to be fleshed out and tested a bit more but the basics are there.
-- Attachments. File uploading is working, as well as image resizing with imagemagick. I've started working on post-processing using background redis jobs as well. Tower should have a standard set of attachment "processors" to make uploading/processing attachments dead-simple (it's still pretty hard in Rails). This includes from any format to standard formats (video/audio/docs/images/etc.), video/audio/image processing/compression, text extraction and resizing, and document processing (pdf text extraction, MS Word to text, etc.). It's all pretty straight forward, just need to wrap command-line tools. See http://documentcloud.github.com/docsplit/.
-- Authentication. I don't think I've merged the authentication code yet, but an older version is here: https://github.com/viatropos/tower-authentication-example. The whole logging in with email/facebook/etc. should be completely solved. Right now mongodb session support is working locally, I will merge it when I finish with some other stuff.
-- Subdomains. Subdomains should be first-class citizens. We need to thoroughly test them in production. JSONP support exists (to do `GET` requests across domains), need to test that out. Need to get a better/leaner URL parser, but what's in there now works. Need to test authentication/sessions/cookies across subdomains.
-- Authorization. I've started on the authorization system (inspired from [cancan](https://github.com/ryanb/cancan/)). It works and is pretty awesome :). Just need to add some controller hooks to make it plug-and-chug.
-- Mass-assignment protection. I've implemented the basics of "mass assignment protection" (see the [Rails Security Guide](http://guides.rubyonrails.org/security.html#mass-assignment)), need to test it out a bit more. Also need to handle input sanitization.
-- Embedded Documents. I've mapped out how this could be implemented but it's still on the todo list.
-- Associations (hasMany, hasManyThrough, belongsTo, hasOne). They all work well (tested manually on the client as well, pretty awesome seeing hasManyThrough relations save on the client). There's a good amount of work to be done on making sure `user.address == address.user`, that kind of reflection stuff (especially for binding on the view). Wrote down a lot of ideas on how to implement an "identity map", but we have to be careful about garbage collection if we're going to store references to the request/controller objects in some hidden "thread" (see some of the recent commits for notes - early/mid July). Also need to make the validations/callbacks more robust for `acceptsNestedAttributesFor`, but it's all working at a basic level.
-- The Cursor. The cursor is _super_ awesome :). There's a ton more ideas on how to make it even more awesome, but for now it does what it's supposed to. I'd like to simplify the notification system eventually (telling the client of model changes).
-- User stamping. This should be a fundamental part of the model layer (similar to time stamping). The base mixin has been started but isn't ready yet - it requires setting up the identity-map/thread idea so you can pass around the `currentUser` transparently between cursors/models in the context of a single request.
-- Versioning. Versioning is a tricky concept to implement, and it is not required for all apps. But it is generic enough and useful enough that it is going to be included in Tower (eventually as a separate sub-package). It allows you to keep a history of model changes (and alongside userstamping, who made those changes). I have started this as well.
-- Soft deleting models. Sometimes you want to allow users to "delete" their data, but you don't _really_ want it deleted from the database. To do this you just add a `deletedAt` field to your model, and then make it so all queries by default ignore models without `deletedAt == null`. You want this kind of stuff to do things like "restore your deleted account", or just know what's happened historically in your app (as a startup for example).
-- Ember Views. This is the next big thing to do, but it's really independent of Tower. Tower can create some helpers like form builders and whatnot, but that might take a long time - particularly b/c there's going to be a lot of work put in to make sure performance is top-notch with all those views.
-- Client Routes. The base code for mapping routes.coffee into the Ember routing system is there, but the Ember API is changing weekly almost so I haven't gotten back to it. It should only take a few hours to wire up.
-
-If you're excited to work on one of these things let me know and I'll point you to where things are and all that. Once all of this stuff is reasonably complete (mid August hopefully), this will merge into master. From there it's going to be "robustifying" everything, and hardcore performance tuning.
 
 ## Default Development Stack
 
@@ -65,12 +44,6 @@ You will also need [grunt](https://github.com/cowboy/grunt), an awesome build to
 
 ```
 npm install grunt -g
-```
-
-If you would like to mess around with the tower source code, clone it and start the grunt watcher to compile all of the coffeescripts:
-
-```
-make watch
 ```
 
 Finally, make sure you have mongodb installed and running:
@@ -106,130 +79,6 @@ To restart your server automatically if it crashes, run with forever:
 ```
 npm install forever -g
 forever server.js
-```
-
-## Structure
-
-Here's the structure of a newly generated app with a `Post` model:
-
-```
-.
-├── app
-│   ├── config
-│   │   ├── client
-│   │   │   ├── bootstrap.coffee
-│   │   │   └── watch.coffee
-│   │   ├── server
-│   │   │   ├── environments
-│   │   │   │   ├── development.coffee
-│   │   │   │   ├── production.coffee
-│   │   │   │   └── test.coffee
-│   │   │   ├── initializers
-│   │   │   ├── assets.coffee
-│   │   │   ├── bootstrap.coffee
-│   │   │   ├── credentials.coffee
-│   │   │   ├── databases.coffee
-│   │   │   └── session.coffee
-│   │   └── shared
-│   │       ├── locales
-│   │       │   └── en.coffee
-│   │       ├── application.coffee
-│   │       └── routes.coffee
-│   ├── controllers
-│   │   ├── client
-│   │   │   ├── applicationController.coffee
-│   │   │   └── postsController.coffee
-│   │   └── server
-│   │       ├── applicationController.coffee
-│   │       └── postsController.coffee
-│   ├── models
-│   │   ├── client
-│   │   ├── server
-│   │   └── shared
-│   │       └── post.coffee
-│   ├── stylesheets
-│   │   ├── client
-│   │   │   └── application.styl
-│   │   └── server
-│   │       └── email.styl
-│   ├── templates
-│   │   ├── server
-│   │   │   └── layout
-│   │   │       ├── _meta.coffee
-│   │   │       └── application.coffee
-│   │   └── shared
-│   │       ├── layout
-│   │       │   ├── _body.coffee
-│   │       │   ├── _flash.coffee
-│   │       │   ├── _footer.coffee
-│   │       │   ├── _header.coffee
-│   │       │   ├── _navigation.coffee
-│   │       │   └── _sidebar.coffee
-│   │       ├── posts
-│   │       │   ├── _flash.coffee
-│   │       │   ├── _form.coffee
-│   │       │   ├── _item.coffee
-│   │       │   ├── _list.coffee
-│   │       │   ├── _table.coffee
-│   │       │   ├── edit.coffee
-│   │       │   ├── index.coffee
-│   │       │   ├── new.coffee
-│   │       │   └── show.coffee
-│   │       └── welcome.coffee
-│   └── views
-│       └── client
-│           ├── layout
-│           │   └── application.coffee
-│           └── posts
-│               ├── form.coffee
-│               ├── index.coffee
-│               └── show.coffee
-├── data
-│   └── seeds.coffee
-├── lib
-├── log
-├── public
-│   ├── fonts
-│   ├── images
-│   ├── javascripts
-│   ├── stylesheets
-│   ├── swfs
-│   ├── uploads
-│   ├── 404.html
-│   ├── 500.html
-│   ├── favicon.ico
-│   ├── humans.txt
-│   └── robots.txt
-├── scripts
-│   └── tower
-├── test
-│   ├── cases
-│   │   ├── controllers
-│   │   │   ├── client
-│   │   │   └── server
-│   │           └── postsControllerTest.coffee
-│   │   ├── features
-│   │   │   └── client
-│   │   └── models
-│   │       ├── client
-│   │       ├── server
-│   │       └── shared
-│   │           └── postTest.coffee
-│   ├── factories
-│   │   └── postFactory.coffee
-│   ├── client.coffee
-│   ├── mocha.opts
-│   └── server.coffee
-├── tmp
-├── wiki
-│   ├── _sidebar.md
-│   └── home.md
-├── Cakefile
-├── grunt.coffee
-├── package.json
-├── Procfile
-├── README.md
-└── server.js
 ```
 
 ## Application
@@ -366,16 +215,6 @@ App.routes ->
   @match '(/*path)', to: 'application#index', via: 'get'
 ```
 
-## Views
-
-Views adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
-
-The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
-
-## Styles
-
-It's all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
-
 ## Controllers
 
 ``` coffeescript
@@ -416,6 +255,20 @@ class App.PostsController extends Tower.Controller
       post.destroy (error) =>
         @redirectTo action: 'index'
 ```
+
+## Views
+
+Views are all Ember.
+
+## Templates
+
+Templates adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
+
+The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
+
+## Styles
+
+It's all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
 
 Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).  The default implementation is actually a lot more robust than that, just wanted to show a simple example.
 
@@ -534,6 +387,131 @@ module.exports =
     ]
 ```
 
+## Structure
+
+Here's the structure of a newly generated app with a `Post` model:
+
+```
+.
+├── app
+│   ├── config
+│   │   ├── client
+│   │   │   ├── bootstrap.coffee
+│   │   │   └── watch.coffee
+│   │   ├── server
+│   │   │   ├── environments
+│   │   │   │   ├── development.coffee
+│   │   │   │   ├── production.coffee
+│   │   │   │   └── test.coffee
+│   │   │   ├── initializers
+│   │   │   ├── assets.coffee
+│   │   │   ├── bootstrap.coffee
+│   │   │   ├── credentials.coffee
+│   │   │   ├── databases.coffee
+│   │   │   └── session.coffee
+│   │   └── shared
+│   │       ├── locales
+│   │       │   └── en.coffee
+│   │       ├── application.coffee
+│   │       └── routes.coffee
+│   ├── controllers
+│   │   ├── client
+│   │   │   ├── applicationController.coffee
+│   │   │   └── postsController.coffee
+│   │   └── server
+│   │       ├── applicationController.coffee
+│   │       └── postsController.coffee
+│   ├── models
+│   │   ├── client
+│   │   ├── server
+│   │   └── shared
+│   │       └── post.coffee
+│   ├── stylesheets
+│   │   ├── client
+│   │   │   └── application.styl
+│   │   └── server
+│   │       └── email.styl
+│   ├── templates
+│   │   ├── server
+│   │   │   └── layout
+│   │   │       ├── _meta.coffee
+│   │   │       └── application.coffee
+│   │   └── shared
+│   │       ├── layout
+│   │       │   ├── _body.coffee
+│   │       │   ├── _flash.coffee
+│   │       │   ├── _footer.coffee
+│   │       │   ├── _header.coffee
+│   │       │   ├── _navigation.coffee
+│   │       │   └── _sidebar.coffee
+│   │       ├── posts
+│   │       │   ├── _flash.coffee
+│   │       │   ├── _form.coffee
+│   │       │   ├── _item.coffee
+│   │       │   ├── _list.coffee
+│   │       │   ├── _table.coffee
+│   │       │   ├── edit.coffee
+│   │       │   ├── index.coffee
+│   │       │   ├── new.coffee
+│   │       │   └── show.coffee
+│   │       └── welcome.coffee
+│   └── views
+│       └── client
+│           ├── layout
+│           │   └── application.coffee
+│           └── posts
+│               ├── form.coffee
+│               ├── index.coffee
+│               └── show.coffee
+├── data
+│   └── seeds.coffee
+├── lib
+├── log
+├── public
+│   ├── fonts
+│   ├── images
+│   ├── javascripts
+│   ├── stylesheets
+│   ├── swfs
+│   ├── uploads
+│   ├── 404.html
+│   ├── 500.html
+│   ├── favicon.ico
+│   ├── humans.txt
+│   └── robots.txt
+├── scripts
+│   └── tower
+├── test
+│   ├── cases
+│   │   ├── controllers
+│   │   │   ├── client
+│   │   │   └── server
+│   │           └── postsControllerTest.coffee
+│   │   ├── features
+│   │   │   └── client
+│   │   └── models
+│   │       ├── client
+│   │       ├── server
+│   │       └── shared
+│   │           └── postTest.coffee
+│   ├── factories
+│   │   └── postFactory.coffee
+│   ├── client.coffee
+│   ├── mocha.opts
+│   └── server.coffee
+├── tmp
+├── wiki
+│   ├── _sidebar.md
+│   └── home.md
+├── Cakefile
+├── grunt.coffee
+├── package.json
+├── Procfile
+├── README.md
+└── server.js
+```
+
+
 All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor`, and wherever else you might put things.  The default is to use stylus for css in `/app/assets/stylesheets`.
 
 By having this `assets.coffee` file, you can specify exactly how you want to compile your files for the client so it's as optimized and cacheable as possible in production.
@@ -574,9 +552,90 @@ Run tests matching directory and pattern:
 mocha $(find test -name "*Test.coffee" | egrep "/*view*/")
 ```
 
+[Run tests *not* matching directory and pattern](http://stackoverflow.com/a/12255734/169992):
+
+``` bash
+# run all tests except for client tests
+mocha $(find test -name client -prune -o -name '*Test.coffee' -print)
+```
+
 ## Examples
 
+- [Facebook/Twitter Authentication (Passport)](https://github.com/viatropos/tower-authentication-example)
 - [towerjs.org (project site)](https://github.com/viatropos/towerjs.org)
+
+## Contributing to Tower
+
+```
+git clone https://github.com/viatropos/tower.git
+cd tower
+```
+
+### Building Tower
+
+You can build Tower manually with:
+
+```
+make
+```
+
+Or you can have it recompile the files when you change them:
+
+```
+make watch
+```
+
+### "Linking" Tower
+
+You can symlink your local tower repo to your global npm node_modules directory, which makes it so you can use it in your apps (so if you make changes to the tower repo, you'll see them in your app). Very useful.
+
+In the tower repo:
+
+```
+npm link
+```
+
+In a tower app:
+
+```
+npm link tower
+```
+
+If you want to try installing tower from the remote npm registry, you can just unlink it and run `npm install`:
+
+```
+npm unlink tower
+npm install tower
+```
+
+Using `npm link` makes it very easy to mess with the source.
+
+### Running Tests
+
+In the tower repo, run server tests with:
+
+```
+make test-server
+```
+
+To run client tests, first compile the test app and start its server:
+
+```
+make build-test-client
+make start-test-client
+```
+
+Then run the tests (uses phantomjs)
+
+```
+make test-client
+```
+
+If you don't have phantomjs you can install it with:
+
+```
+brew install phantomjs
+```
 
 ## License
 
@@ -589,81 +648,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## Unsolved Complexities
-
-- Handling transactions from the client. How would you save the data for credit/account (subtract one record, add to another) so if one fails both revert back (if you try to keep it simplified and only POST individual records at a time)? You can do embedded models on MongoDB, and transactions on MySQL perhaps. Then if `acceptsNestedAttributesFor` is specified it will send nested data in JSON POST rather than separate. Obviously it's better to not do this on the server, but we should see if it's possible to do otherwise, and if not, publicize why.
-
-## Decisions (need to finalize)
-
-- for uniqueness validation, if it fails on the client, should it try fetching the record from the server? (and loading the record into the client memory store). Reasons for include having to do less work as a coder (lazy loads data). Reasons against include making HTTP requests to the server without necessarily expecting to - or you may not want it to fetch. Perhaps you can specify an option (`lazy: true`) or something, and on the client if true it will make the request (or `autofetch: true`)
-- For non-transactional (yet still complex) associations, such as `group hasMany users through memberships`, you can save one record at a time, so the client should be instant. But if the first record created fails (say you do `group.members.create()`, which creates a user, then a membership tying the two together), what should the client tell the user? Some suggest a global notification (perhaps an alert bar) saying a more generic message such as "please refresh the page, some data is out of sync". But if the data is very important, ideally the code would know how to take the user (who might click this notification) to a form to try saving the `hasMany through` association again. If it continues to fail, it's probably either a bug in the code, or we should be able to know if the server is having issues (like it's crashed or power went out) - then if it's a bug we can have them notify us (some button perhaps) or if it's a real server problem we prepared for we can notify something like "sorry, having server issues, try again later". Other that that, it's up to you to build the validations properly so the data is saved
-
-## Todo
-
-- use require in the browser to lazy load scripts
-- gruntjs
-- term-css
-- https://github.com/kuno/GeoIP
-- global timestamps/userstamps config boolean, to DRY model `@timestamps()` if desired
-- make tower into subpackages: (model/client, model/server, model/shared, controller/client, etc...)
-- http://jsperf.com/angular-vs-knockout-vs-ember/2
-
-## New Stuff (api is todo, can access now through Tower.router)
-
-``` coffeescript
-@resources 'posts'
-@namespace 'admin', ->
-  @resources 'posts'
-```
-
-``` coffeescript
-Tower.urlFor(App.Post)
-Tower.urlFor('root.posts.index')
-```
-
-``` coffeescript
-# GET
-App.indexPosts(title: 'A') # App.action, Tower.action, which one?
-App.showPost(id: 1)
-App.newPost()
-App.editPost(id: 1)
-# Non-GET
-App.createPost()
-App.updatePost(id: 1)
-App.destroyPost(id: 1)
-```
-
-``` html
-{{#each post in App.postsController.all}}
-<a {{action editPost post href=true}}>Edit</a>
-{{/each}}
-```
-
-``` coffeescript
-# @todo
-App.indexAdminPosts() # /admin/posts
-App.indexPostComments(postId: 1) # /posts/1/comments
-```
-
-## Changelog
-
-- `brew install tree`, then you can type command `tree` to see project structure (https://github.com/cowboy/grunt-node-example)
-- todo: need to test installing different versions of node with https://github.com/creationix/nvm
-- https://gist.github.com/1398757
-
-## Contributing to Tower
-
-### Running Tests
-
-Run server tests:
-
-```
-make test
-```
-
-To run client tests, first start the test server on port `3210`, and then run phantomjs:
-
-```
-node test/example -p 3210
-```

@@ -104,6 +104,12 @@ Tower.SupportObject =
   isHash: (object) ->
     object && object.constructor == Object
 
+  timesAsync: (n, complete, iterator) ->
+    i     = 0
+    test  = -> i++ <= n
+
+    Tower.module('async').whilst(test, iterator, complete)
+
   # A more robust implementation of `typeof`.
   #
   # Returns a string of the object type. This makes it so you don't have to
@@ -113,24 +119,24 @@ Tower.SupportObject =
   kind: (object) ->
     type = typeof(object)
     switch type
-      when "object"
-        return "array"      if _.isArray(object)
-        return "arguments"  if _.isArguments(object)
-        return "boolean"    if _.isBoolean(object)
-        return "date"       if _.isDate(object)
-        return "regex"      if _.isRegExp(object)
-        return "NaN"        if _.isNaN(object)
-        return "null"       if _.isNull(object)
-        return "undefined"  if _.isUndefined(object)
-        return "object"
-      when "number"
-        return "integer"    if object == +object && object == (object|0)
-        return "float"      if object == +object && object != (object|0)
-        return "NaN"        if _.isNaN(object)
-        return "number"
-      when "function"
-        return "regex"      if _.isRegExp(object)
-        return "function"
+      when 'object'
+        return 'array'      if _.isArray(object)
+        return 'arguments'  if _.isArguments(object)
+        return 'boolean'    if _.isBoolean(object)
+        return 'date'       if _.isDate(object)
+        return 'regex'      if _.isRegExp(object)
+        return 'NaN'        if _.isNaN(object)
+        return 'null'       if _.isNull(object)
+        return 'undefined'  if _.isUndefined(object)
+        return 'object'
+      when 'number'
+        return 'integer'    if object == +object && object == (object|0)
+        return 'float'      if object == +object && object != (object|0)
+        return 'NaN'        if _.isNaN(object)
+        return 'number'
+      when 'function'
+        return 'regex'      if _.isRegExp(object)
+        return 'function'
       else
         return type
 

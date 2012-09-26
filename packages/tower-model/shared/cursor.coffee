@@ -106,10 +106,6 @@ class Tower.ModelCursor extends Tower.Collection
     defaultLimit: 20
     isCursor:     true
 
-    init: (attr = {}) ->
-      attr.content ||= Ember.A([]) if Tower.isClient
-      @_super(attr)
-
 # https://github.com/emberjs/ember.js/issues/1051
 Tower.ModelCursor.toString = -> 'Tower.ModelCursor'
 # @todo refactor this
@@ -131,6 +127,6 @@ Tower.ModelCursorMixin = Ember.Mixin.create(
 #if Ember.EXTEND_PROTOTYPES
 #  Tower.ModelCursorMixin.without.apply(Tower.ModelCursorMixin, ['length', 'isCursor']).apply(Array.prototype)
 
-Tower.ModelCursor.include(Tower.ModelCursorMixin)
+Tower.ModelCursor.reopen(Tower.ModelCursorMixin)
 
 module.exports = Tower.ModelCursor

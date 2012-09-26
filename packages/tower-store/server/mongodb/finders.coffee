@@ -21,6 +21,7 @@ Tower.StoreMongodbFinders =
           docs = @serialize(docs, true)
 
           for model in docs
+            model.set('fields', options.fields) if options.fields
             model.set('isNew', false)
 
       callback.call(@, error, docs) if callback

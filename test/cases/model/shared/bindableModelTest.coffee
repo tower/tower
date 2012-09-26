@@ -10,16 +10,15 @@ describe 'Tower.Model (bindable)', ->
     record = App.BindableTest.build()
     
   test 'string', (done) ->
-    record.addObserver 'string', (o, key, value) ->
-      assert.equal 'abc', value
+    record.addObserver 'string', (sender, key, value, rev) ->
       assert.equal 'abc', record.get('string')
       done()
-      
-    record.set 'string', 'abc'
+    
+    Ember.run ->
+      record.set 'string', 'abc'
     
   test 'integer', (done) ->
-    record.addObserver 'integer', (o, key, value) ->
-      assert.equal 10, value
+    record.addObserver 'integer', (sender, key) ->
       assert.equal 10, record.get('integer')
       done()
 
@@ -28,8 +27,7 @@ describe 'Tower.Model (bindable)', ->
   test 'date', (done) ->
     now = new Date
     
-    record.addObserver 'date', (o, key, value) ->
-      assert.equal now.getTime(), value.getTime()
+    record.addObserver 'date', (sender, key) ->
       assert.equal now.getTime(), record.get('date').getTime()
       done()
 

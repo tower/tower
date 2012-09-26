@@ -1,11 +1,16 @@
 {
   "name": "tower",
-  "version": "0.4.2-1",
+  "version": "0.4.2-3",
   "description": "Full Stack Web Framework for Node.js and the Browser",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./index.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
+    "mvc",
+    "web-framework",
+    "ruby-on-rails",
+    "express",
+    "tower",
     "framework",
     "rails",
     "node"
@@ -61,43 +66,44 @@
     "mint": ">= 0.3.4",
     "pathfinder": ">= 0.1.5",
     "commander": ">= 0.4.0",
-    "express": "2.x",
+    "express": "3.x",
     "URIjs": ">= 1.4.2",
-    "moment": ">= 1.5.1",
+    "moment": ">= 1.7.0",
     "node-uuid": ">= 1.3.0",
-    "geolib": ">= 0.0.1",
-    "superagent": ">= 0.4.0",
+    "geolib": ">= 1.1.8",
+    "superagent": ">= 0.9.4",
     "validator": ">= 0.4.5",
     "accounting": ">= 0.3.2",
     "inflection": ">= 1.2.0",
-    "ember-metal-node": ">= 0.9.7",
-    "ember-runtime-node": ">= 0.9.7",
-    "ember-states-node": ">= 0.9.7",
+    "ember-metal-node": ">= 1.0.0-pre",
+    "ember-runtime-node": ">= 1.0.0-pre",
+    "ember-states-node": ">= 1.0.0-pre",
     "coffee-script": ">= 1.3.3",
     "wrench": ">= 1.3.8",
     "useragent": ">= 1.0.5",
     "gm": "~1.4.1",
     "temp": "~0.4.0",
-    "socket.io": ">= 0.8.7",
-    "socket.io-client": ">= 0.9.5",
-    "hook.io": "0.8.10",
+    "crc": "~0.2.0",
+    "ansi": "~0.1.2",
+    "iconv": "~1.2.3",
     "node-obj-watch": ">= 0.1.1"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
-    "ejs": ">= 0.6.1"
+    "ejs": ">= 0.6.1",
+    "Faker": ">= 0.1.3"
   },
   "testDependencies": {
     "stylus": ">= 0.29.0",
     "uglify-js": ">= 1.1.1",
-    "mocha": ">= 0.8.1",
+    "mocha": ">= 1.5.0",
     "chai": ">= 0.3.3",
     "sinon": ">= 1.3.1",
     "eco": ">= 0.1.0",
     "mustache": ">= 0.4.0",
     "jade": ">= 0.22.0",
     "kue": ">= 0.3.4",
-    "mongodb": ">= 0.9.9-8",
+    "mongodb": ">= 1.1.7",
     "coffee-script": ">= 1.3.3",
     "coffeecup": ">= 0.3.17",
     "gzip": ">= 0.1.0",
@@ -110,12 +116,18 @@
     
   },
   "localDependencies": {
-
+    "socket.io": ">= 0.9.10",
+    "socket.io-client": ">= 0.9.10",
+    "fibers": "~0.6.8",
+    "cli-table": "0.0.2",
+    "ttys": "0.0.3",
+    "cheerio": ">= 0.10.0",
+    "colors": "~0.6.0-1"
   },
   "scripts": {
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
-    "docs": "codo",
+    "docs": "make docs",
     "postinstall": "$(./bin/dependencies)"
   }
 }

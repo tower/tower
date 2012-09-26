@@ -37,7 +37,7 @@ describe 'Tower.ControllerScopes', ->
       assert.isTrue C.instance().get('all').isCursor, "scope instanceof Tower.ModelCursor"
 
     test '"writtenBy(currentUser)"', ->
-      C.scope 'writtenBy', -> App.Post.where(userId: @getPath('currentUser.id'))
+      C.scope 'writtenBy', -> App.Post.where(userId: @get('currentUser.id'))
 
       assert.deepEqual _.keys(C.metadata().scopes), ['writtenBy']
       assert.isFunction C.metadata().scopes['writtenBy']

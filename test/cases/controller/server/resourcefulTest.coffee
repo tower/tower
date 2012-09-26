@@ -18,36 +18,36 @@ describe "Tower.ControllerResourceful", ->
   describe 'format: "json"', ->
     describe "success", ->
       test '#index', (done) ->
-        _.get "/custom", format: "json", (response) ->
+        _.get '/custom', format: 'json', (response) ->
           resources = response.body
           assert.isArray resources
           assert.isArray @collection
-          assert.equal typeof(@resource), "undefined"
+          assert.equal typeof(@resource), 'undefined'
           assert.equal resources.length, 1
-          assert.equal resources[0].firstName, "Lance"
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal resources[0].firstName, 'Lance'
+          assert.equal @headers['Content-Type'], 'application/json; charset=utf-8'
           
           App.User.count (error, count) =>
             assert.equal count, 1
             done()
           
       test '#new', (done) ->
-        _.get '/custom/new', format: "json", ->
+        _.get '/custom/new', format: 'json', ->
           resource = JSON.parse(@body)
-          assert.equal typeof(@collection), "undefined"
-          assert.equal typeof(@resource), "object"
+          assert.equal typeof(@collection), 'undefined'
+          assert.equal typeof(@resource), 'object'
           assert.equal resource.firstName, undefined
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal @headers['Content-Type'], 'application/json; charset=utf-8'
         
           App.User.count (error, count) =>
             assert.equal count, 1
             done()
       
       test '#create', (done) ->
-        _.post '/custom', format: "json", params: user: firstName: "Lance", (response) ->
+        _.post '/custom', format: 'json', params: user: firstName: 'Lance', (response) ->
           resource = response.body
-          assert.equal resource.firstName, "Lance"
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal resource.firstName, 'Lance'
+          assert.equal @headers['Content-Type'], 'application/json; charset=utf-8'
         
           App.User.count (error, count) =>
             assert.equal count, 2
@@ -58,7 +58,7 @@ describe "Tower.ControllerResourceful", ->
           resource = JSON.parse(@body)
           assert.equal resource.firstName, "Lance"
           assert.ok resource.id
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
         
           App.User.count (error, count) =>
             assert.equal count, 1
@@ -69,7 +69,7 @@ describe "Tower.ControllerResourceful", ->
           resource = JSON.parse(@body)
           assert.equal resource.firstName, "Lance"
           assert.ok resource.id
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
         
           App.User.count (error, count) =>
             assert.equal count, 1
@@ -80,7 +80,7 @@ describe "Tower.ControllerResourceful", ->
           resource = JSON.parse(@body)
           assert.equal resource.firstName, "Dane"
           assert.ok resource.id
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
           
           App.User.find user.get('id'), (error, user) =>
             assert.equal user.get("firstName"), "Dane"
@@ -95,7 +95,7 @@ describe "Tower.ControllerResourceful", ->
           assert.equal resource.firstName, "Lance"
           # still thinking about this one, but pretty sure it shouldn't be null yet.
           assert.notEqual resource.id, undefined
-          assert.equal @headers["Content-Type"], "application/json"
+          assert.equal @headers["Content-Type"], 'application/json; charset=utf-8'
           
           App.User.count (error, count) =>
             assert.equal count, 0

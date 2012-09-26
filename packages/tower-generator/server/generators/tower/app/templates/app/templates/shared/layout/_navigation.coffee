@@ -8,4 +8,4 @@ div class: 'nav-collapse', ->
         b class: 'caret'
       ul class: 'dropdown-menu', ->
         li ->
-          linkTo 'Tower.js', 'https://github.com/viatropos/tower-docs'
+          linkTo 'Tower.js', 'https://github.com/viatropos/tower/wiki'

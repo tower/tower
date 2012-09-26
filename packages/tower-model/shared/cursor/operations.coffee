@@ -79,7 +79,7 @@ Tower.ModelCursorOperations = Ember.Mixin.create
   # Reverses the query so it can find the last one.
   reverseSort: ->
     # need to work on this one.
-    order = @get('order')
+    order = @getCriteria('order')
     order = @_order = [['createdAt', 'asc']] unless order.length
     for orderItem, i in order
       orderItem[1] = if orderItem[1] == 'asc' then 'desc' else 'asc'
@@ -202,7 +202,7 @@ Tower.ModelCursorOperations = Ember.Mixin.create
   # @todo Maybe we should make the `count` query part of the `paginate` method instead.
   page: (page) ->
     @limit(@_limit || Tower.ModelCursor::defaultLimit)
-    limit = @get('limit')
+    limit = @getCriteria('limit')
     Ember.set @, 'currentPage', page
     @offset((Math.max(1, page) - 1) * limit)
 
@@ -250,7 +250,7 @@ Tower.ModelCursorOperations = Ember.Mixin.create
   eagerLoad: (records, callback) ->
     return callback() unless records && records.length
 
-    includes  = @get('includes')
+    includes  = @getCriteria('includes')
 
     return callback() if _.isBlank(includes)
 

@@ -4,9 +4,16 @@
 module.exports = (grunt) ->
   require('./packages/tower-tasks/tasks')(grunt)
 
-  require('./coffee-inheritance')
+  try
+    require('./wiki/grunt')(grunt)
+    hasWiki = true
+  catch error
+    hasWiki = false
 
-  _     = grunt.utils._
+  require('./coffee-inheritance')
+  require('./index.js') # require towerRoot/index.js
+
+  _     = Tower._
   file  = grunt.file
   _path = require('path')
 
@@ -167,6 +174,31 @@ module.exports = (grunt) ->
     #for name in src
     #  config.concat[name]
 
+  if hasWiki
+    config.wiki =
+      toc:    true
+    config.watch['wiki:toc'] =
+      files: ['wiki/_sidebar.md']
+      tasks: ['wiki:toc']
+    wikiFiles = file.expand([
+      'wiki/en/**/*.md'
+    ])
+    config.wikiLinks =
+      all:
+        src: wikiFiles
+
+    #wikiFiles.forEach (wikiFile) ->
+    #  slug = _.parameterize(wikiFile)
+    #
+    #  #config.watch[slug] =
+    #  #  files: [wikiFile]
+    #  #  tasks: ["wikiLinks:#{slug}"]
+    #  config.wikiLinks[slug] =
+    #    src: wikiFile
+    #    dest: wikiFile
+    #  
+    #  config
+
   grunt.initConfig(config)
 
   #grunt.loadNpmTasks 'grunt-coffee'
@@ -178,4 +210,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'uploadToGithub', ->
     taskComplete = @async()
-    grunt.helper 'uploadToGitHub', 'dist/tower.js', 'tower.js', taskComplete
+    grunt.helper 'uploadToGitHub', 'dist/tower.js', "tower-#{grunt.config('pkg.version')}.js", taskComplete

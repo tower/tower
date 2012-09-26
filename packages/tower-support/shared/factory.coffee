@@ -1,5 +1,23 @@
 _ = Tower._
 
+Tower.random = (key) ->
+  Tower.random[key]()
+
+_.extend Tower.random,
+  boolean:    -> Math.round(Math.random(1)) == 1
+  email:      -> require('Faker').Internet.email()
+  userName:   -> require('Faker').Internet.userName()
+  domain:     -> require('Faker').Internet.domainName()
+  domainName: -> require('Faker').Internet.domainName()
+  fullName:   -> require('Faker').Name.fullName()
+  firstName:  -> require('Faker').Name.firstName()
+  lastName:   -> require('Faker').Name.lastName()
+  phone:      -> require('Faker').PhoneNumber.phoneNumber()
+  words:      -> require('Faker').Lorem.words()
+  sentence:   -> require('Faker').Lorem.sentence()
+  paragraph:  -> require('Faker').Lorem.paragraph()
+  paragraphs: -> require('Faker').Lorem.paragraphs()
+
 class Tower.Factory
   @definitions: {}
 

@@ -12,7 +12,8 @@ class Tower.StoreFileSystem extends Tower.Store
 
     # @todo this needs to be modified by the file watcher in tower-application/server/application.coffee
     getTemplatePaths: ->
-      @_templatePaths ||= File.files.apply(File, @loadPaths)
+      @_templatePaths ||= _.map File.files.apply(File, _.map(@loadPaths, (i) -> _path.join(Tower.root, i))), (i) ->
+        _path.relative(Tower.root, i)
 
     findPath: (query, callback) ->
       path          = query.path

@@ -13,7 +13,7 @@ describe 'Tower.NetConnection', ->
       assert.isTrue !!(connection.get('postsController') instanceof App.PostsController)
 
   test 'scopes', ->
-    scope = connection.getPath('postsController.all')
+    scope = connection.get('postsController.all')
     assert.isTrue scope.isCursor, 'scope instanceof Tower.ModelCursor'
 
   test 'resolve', ->

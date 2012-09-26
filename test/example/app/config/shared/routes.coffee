@@ -30,6 +30,7 @@ Tower.Route.draw ->
     "renderJsonHelloWorldWithStatus"
     "testCreateCallback"
     "testNoCallback"
+    "testIP"
   #  "renderCoffeeKupInline"
   ]
 
@@ -41,9 +42,25 @@ Tower.Route.draw ->
   @match "/custom/:id/edit", to: "custom#edit"
   @match "/custom/:id", to: "custom#update", via: ["put"]
   @match "/custom/:id", to: "custom#destroy", via: ["delete"]
+
+  actions = [
+    'acceptJSON'
+    'acceptUndefined'
+    'acceptCharsetUTF8'
+    'acceptCharsetISO'
+  ]
+
+  for action in actions
+    @match "/headers/#{action}", to: "headers##{action}"
   
   @resources 'posts'
   @resources 'users'
+
+  # for the client, so we can test saving them with ajax
+  # @resources 'addresses'
+  # @resources 'groups'
+  # @resources 'memberships'
+  # @resources 'parents'
   #@match '/users', via: ['post'], to: 'users#index'
 
   @resources "posts"

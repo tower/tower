@@ -8,7 +8,7 @@ Tower.Command =
     c: 'console'
     g: 'generate'
     s: 'server'
-
+    
   # Figure out the command you want to run, then run it.
   #
   # @param [Array] argv Command line arguments (['node', 'tower', 'new', 'blog'])
@@ -17,11 +17,19 @@ Tower.Command =
   run: (argv) ->
     command = argv[2]
     command = 'info' if !command || !!command.match(/^-/)
+    if command == 'select'
+      command = 'database'
+      argv.splice(2, 1, 'database', 'list')
     command = @aliases[command] if @aliases.hasOwnProperty(command)
     #throw new Error('You must give tower a command (e.g. 'tower new my-app' or 'tower server')') unless command
     # @todo in the process of making the commands just functions instead of classes,
     #   and so they don't require the Tower namespace directly, to speed up execution.
-    command = new Tower['Command' + _.camelize(command)](argv)
-    command.run()
+    switch command
+      when 'install' then 'x' # @todo install ./bin/dependencies
+      when 'exec'
+        @exec(argv[3])
+      else
+        command = new Tower['Command' + _.camelize(command)](argv)
+        command.run()
 
 module.exports = Tower.Command

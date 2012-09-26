@@ -53,54 +53,54 @@ describe 'Tower.ModelCursor', ->
       cursor.order "firstName", "asc"
       
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('order'), [[ 'firstName', 'asc' ]]
+      assert.deepEqual cursor.getCriteria('order'), [[ 'firstName', 'asc' ]]
   
     test 'sort by two properties', ->
       cursor.order "firstName", "asc"
       cursor.order "lastName", "desc"
       
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('order'), [[ 'firstName', 'asc' ], [ 'lastName', 'desc' ]]
+      assert.deepEqual cursor.getCriteria('order'), [[ 'firstName', 'asc' ], [ 'lastName', 'desc' ]]
 
     test 'sort default equals `asc`', ->
       cursor.order "firstName"
       
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('order'), [[ 'firstName', 'asc' ]]
+      assert.deepEqual cursor.getCriteria('order'), [[ 'firstName', 'asc' ]]
       
   describe '#limit', ->
     it 'should limit', ->
       cursor.limit 20
       
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('limit'), 20
+      assert.deepEqual cursor.getCriteria('limit'), 20
       
     it 'should override limit', ->
       cursor.limit 20
       cursor.limit 100
 
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('limit'), 100
+      assert.deepEqual cursor.getCriteria('limit'), 100
       
   describe '#offset', ->
     it 'should offset', ->
       cursor.offset 20
       
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('offset'), 20
+      assert.deepEqual cursor.getCriteria('offset'), 20
       
     it 'should override offset', ->
       cursor.offset 20
       cursor.offset 100
 
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('offset'), 100
+      assert.deepEqual cursor.getCriteria('offset'), 100
       
   describe '#paginate', ->
     test 'page', ->
       cursor.page(20)
       assert.deepEqual cursor.conditions(), {}
-      assert.deepEqual cursor.get('offset'), 380
+      assert.deepEqual cursor.getCriteria('offset'), 380
       
   describe 'integrated queries', ->
     test 'query, sort, and pagination', ->
@@ -119,9 +119,9 @@ describe 'Tower.ModelCursor', ->
       assert.deepEqual conditions.name['!~'].toString(), /[a-z]/.toString()
       assert.deepEqual conditions.name['=~'].toString(), /[0-9]/.toString()
       
-      assert.deepEqual cursor.get('limit'), 20
-      assert.deepEqual cursor.get('offset'), 20
-      assert.deepEqual cursor.get('order'), [["name", "asc"]]
+      assert.deepEqual cursor.getCriteria('limit'), 20
+      assert.deepEqual cursor.getCriteria('offset'), 20
+      assert.deepEqual cursor.getCriteria('order'), [["name", "asc"]]
       
   test '#clone', ->
     assert.ok cursor.clone()

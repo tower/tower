@@ -52,7 +52,7 @@ class Tower.CommandConsole
       app.initialize()
       app.stack()
       app.watch() if Tower.watch
-      app.initializeConsoleHooks()
+      # app.initializeConsoleHooks()
       client.Tower  = Tower
       client.Future = require('fibers/future')
       client.Fiber = Fiber

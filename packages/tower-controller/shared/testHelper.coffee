@@ -85,15 +85,32 @@ _.request = (method, path, options, callback) ->
   redirects   = if options.redirects? then options.redirects else 5
   auth        = options.auth
   format      = options.format# || "form-data"
+  method      = method.toLowerCase()
 
-  newRequest = Tower.module('superagent')[method.toLowerCase()]("http://localhost:#{Tower.port}#{path}")
+  # @todo maybe we want to give some slack and convert to `accept` header?
+  throw new Error('The "content-type" header is only valid for PUT/POST') if headers['content-type'] && method == 'get'
+
+  newRequest = Tower.module('superagent')[method]("http://localhost:#{Tower.port}#{path}")
     .set(headers)
-    .send(params)
     .redirects(redirects)
+
+  params.format = format if format
+
+  isBlank = _.isBlank(params)
+
+  if method == 'get'
+    # since we want it to deserialize the JSON numbers as numbers not strings.
+    if params.conditions? && typeof params.conditions == 'object'
+      params.conditions = JSON.stringify(params.conditions)
+
+    newRequest.query(params) unless isBlank
+  else
+    newRequest = newRequest.send(params) unless isBlank
 
   newRequest = newRequest.auth(auth.username, auth.password) if auth
 
-  newRequest = newRequest.type(format) if format
+  # content-type of json on a GET request throws error if `strict` in connect json parser
+  newRequest = newRequest.type(format) if format && method != 'get'
 
   if callback
     newRequest.make(callback)

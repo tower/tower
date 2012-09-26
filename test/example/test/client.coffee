@@ -1,4 +1,4 @@
-mocha.setup(ui: 'bdd', timeout: 2000)
+mocha.setup(ui: 'bdd', timeout: 2000, ignoreLeaks: true)
 
 global.assert = chai.assert
 global.expect = chai.expect
@@ -29,4 +29,8 @@ $ ->
   unless window.mochaPhantomJS
     process.stdout ||= {}
     process.stdout.write = -> console.log(arguments...)
-    mocha.run()
+    runner = mocha.run()
+    runner.on 'end', ->
+      if !runner.failures && window.location.href.match('complete=close')
+        window.open('', '_self', '')
+        window.close()

@@ -64,6 +64,9 @@ module.exports = (grunt) ->
         files:
           'public/stylesheets/app/stylesheets/client/application.css': 'app/stylesheets/client/application.styl'
 
+  # @todo if you `npm link tower` to this app, then it should
+  # copy the dist/tower.js to vendor/javascripts/tower.js when it changes.
+
   scriptPaths.forEach (name) ->
     config.coffee[name] =
       src: name

@@ -33,8 +33,7 @@ describe 'Tower.StoreTransportAjax', ->
       user = App.User.build(firstName: 'Lance')
 
       Tower.StoreTransportAjax.create [user], (error, updatedUser) =>
-        console.log updatedUser.get('id')
-        assert.ok !error
+        assert.isTrue !!updatedUser
         done()
 
     #test 'failure', (done) ->
@@ -66,11 +65,8 @@ describe 'Tower.StoreTransportAjax', ->
     test 'success', (done) ->
       user.set('firstName', 'John')
 
-      console.log user
-
-      Tower.StoreTransportAjax.update user, (error, updatedUser) =>
-        console.log error
-        console.log updatedUser
+      Tower.StoreTransportAjax.update [user], (error, updatedUser) =>
+        assert.isTrue !!updatedUser
         done()
 
     test 'failure'
@@ -89,9 +85,8 @@ describe 'Tower.StoreTransportAjax', ->
         done()
 
     test 'success', (done) ->
-      Tower.StoreTransportAjax.destroy user, (error, destroyedUser) =>
-        console.log error
-        console.log destroyedUser
+      Tower.StoreTransportAjax.destroy [user], (error, destroyedUser) =>
+        assert.isTrue !!destroyedUser
         done()
 
     test 'failure'
@@ -102,6 +97,5 @@ describe 'Tower.StoreTransportAjax', ->
       criteria  = App.User.where(firstName: 'L').compile()
       
       Tower.StoreTransportAjax.find criteria, (error, data) =>
-        console.log error.stack if error
-        console.log data
+        assert.isTrue !!data
         done()

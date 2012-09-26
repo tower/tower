@@ -6,11 +6,12 @@ Tower.ControllerInstrumentation =
   call: (request, response, next) ->
     @request  = request
     @response = response
-    @params   = request.params   || {}
+    @params   = params  = request.params   || {}
+    @headers  = {}
     @cookies  = request.cookies  || {}
     @query    = request.query    || {}
     @session  = request.session  || {}
-    params    = @params
+
     # tmp, but need to think about his more
     params.conditions = JSON.parse(params.conditions) if typeof params.conditions == 'string'
 
@@ -26,6 +27,10 @@ Tower.ControllerInstrumentation =
       params.format ||= 'html'
       params.format = 'html' if params.format.toLowerCase() == 'form' # @todo tmp hack
 
+    encoding = request.headers?['accept-charset']
+
+    @encoding = encoding ||= Tower.defaultEncoding
+
     # @todo maybe move this into middleware (merging files with params)
     if files = request.files
       # {"profile": {"coverImage": {path: '/tmp/123.png'}, "attachments": [{path: '/tmp/456.png'}]}}
@@ -37,7 +42,6 @@ Tower.ControllerInstrumentation =
 
     @format   = params.format
     @action   = params.action
-    @headers  = {}
     @callback = next
     @process()
 

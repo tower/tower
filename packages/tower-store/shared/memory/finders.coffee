@@ -10,8 +10,6 @@ Tower.StoreMemoryFinders =
 
     usingGeo    = @_conditionsUseGeo(conditions)
 
-    options     = cursor
-
     # If $near, calculate and add __distance to all records. Remove $near from conditions
     if usingGeo
       @_calculateDistances(records, @_getCoordinatesFromConditions(conditions))
@@ -24,9 +22,9 @@ Tower.StoreMemoryFinders =
       for record in records
         result.push(record)
 
-    sort        = if usingGeo then @_getGeoSortCriteria() else options.get('order')
-    limit       = options.get('limit')# || Tower.Store.defaultLimit
-    startIndex  = options.get('offset') || 0
+    sort        = if usingGeo then @_getGeoSortCriteria() else cursor.getCriteria('order')
+    limit       = cursor.getCriteria('limit')# || Tower.Store.defaultLimit
+    startIndex  = cursor.getCriteria('offset') || 0
 
     result    = @sort(result, sort) if sort.length
 
@@ -102,14 +100,17 @@ Tower.StoreMemoryFinders =
 # @todo move this to client folder
 if Tower.isClient
   Tower.StoreMemoryFinders.fetch = (cursor, callback) ->
-    method = if cursor.get('limit') == 1 then 'findOne' else 'find'
-    Tower.NetConnection.transport[method] cursor, (error, records) =>
-      #records = @load(records)
-      if callback
-        callback(error, records)
-      else if Tower.debug
-        console.log(records)
+    method = if cursor._limit == 1 then 'findOne' else 'find'
+    if Tower.NetConnection.transport
+      Tower.NetConnection.transport[method] cursor, (error, records) =>
+        #records = @load(records)
+        if callback
+          callback(error, records)
+        else if Tower.debug
+          console.log(records)
 
-      records
+        records
+    else
+      @[method](cursor, callback)
 
 module.exports = Tower.StoreMemoryFinders

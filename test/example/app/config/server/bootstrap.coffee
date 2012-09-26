@@ -9,6 +9,10 @@ App.configure ->
   @use 'bodyParser', uploadDir: './public/uploads'
   #@use 'csrf'
   @use 'methodOverride', '_method'
+  # don't expose your platform to hackers
+  @use (request, response, next) ->
+    response.removeHeader('X-Powered-By')
+    next()
   @use Tower.MiddlewareAgent
   @use Tower.MiddlewareLocation
   #if Tower.httpCredentials && Tower.branch != 'development'

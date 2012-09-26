@@ -24,7 +24,7 @@ _path = require('path')
 Tower.root            = _path.join(process.cwd(), '/test/example')
 Tower.publicPath      = _path.join(Tower.root, '/public')
 Tower.env             = "test"
-Tower.View.loadPaths  = ["./test/example/app/views"]
+Tower.View.loadPaths  = ["app/views"]
 Tower.port            = 3001
 
 # hack to only use database we've specified
@@ -49,10 +49,9 @@ before (done) ->
 beforeEach (done) ->
   #Tower.Application.instance().teardown()
   Tower.root                    = "#{process.cwd()}/test/example"
-  Tower.relativeRoot            = "test/example"
   Tower.publicPath              = "#{Tower.root}/public"
   Tower.View.engine             = "coffee"
-  Tower.View.store().loadPaths  = ["test/example/app/templates/shared", "test/example/app/templates/server"]
+  Tower.View.store().loadPaths  = ["app/templates/shared", "app/templates/server"]
   
   # @todo this doesn't look like it's running every time.
   Tower.Application.instance().initialize =>
