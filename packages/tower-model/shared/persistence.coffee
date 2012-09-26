@@ -48,9 +48,9 @@ Tower.ModelPersistence =
     # @param [Array] records array of objects or models (so you can pass in JSON).
     #
     # @return [Array] will return the array of models.
-    load: (records) ->
+    load: (records, action) ->
       # Tower.ModelCursor.pushMatching @store().load(records)
-      @store().load(records)
+      @store().load(records, action)
 
     # For memory store, if records were deleted on the server 
     # and need to be removed on the connected clients.

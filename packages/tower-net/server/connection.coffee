@@ -44,7 +44,7 @@ class Tower.NetConnection extends Tower.NetConnectionBase
 
     # This is called when the server record changed
     serverDidChange: (action, records) ->
-      @resolve action, records, (error, matches) =>
+      @resolve action, records, (error, matches) =>      
         @["serverDid#{_.camelize(action)}"](records)
 
     # 1. Once one record is matched against a controller it doesn't need to be matched against any other cursor.
