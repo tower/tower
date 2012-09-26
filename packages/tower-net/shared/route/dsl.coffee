@@ -110,7 +110,6 @@ class Tower.NetRouteDSL
     one   = _.singularize(many)
 
     camelOne = _.camelize(one)
-    console.log(many)
     @match path,                _.extend(action: "index",   state: "#{many}.index",   name: many, method: ['GET'], options)
     @match "#{path}/new",       _.extend(action: "new",     state: "#{many}.new",     name: "new#{camelOne}", options)
     @match path,                _.extend(action: "create",  state: "#{many}.create",  method: "POST", options)

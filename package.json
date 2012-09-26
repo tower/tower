@@ -77,7 +77,11 @@
     "wrench": ">= 1.3.8",
     "useragent": ">= 1.0.5",
     "gm": "~1.4.1",
-    "temp": "~0.4.0"
+    "temp": "~0.4.0",
+    "socket.io": ">= 0.8.7",
+    "socket.io-client": ">= 0.9.5",
+    "hook.io": "git://github.com/j-mcnally/hook.io.git",
+    "node-obj-watch": ">= 0.1.1"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
@@ -99,11 +103,8 @@
     "gzip": ">= 0.1.0",
     "chokidar": "~0.4.0",
     "knox": "0.0.11",
-    "socket.io": ">= 0.8.7",
-    "socket.io-client": ">= 0.9.5",
-    "hook.io": "git://github.com/j-mcnally/hook.io",
-    "fibers": "~0.6.8",
-    "node-obj-watch": ">= 0.1.1"
+    "fibers": "~0.6.8"
+
   },
   "globalDependencies": {
     
