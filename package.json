@@ -86,7 +86,8 @@
     "crc": "~0.2.0",
     "ansi": "~0.1.2",
     "iconv": "~1.2.3",
-    "connect": ">= 2.4.6"
+    "connect": ">= 2.4.6",
+    "fresh": ">= 0.1.0"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
