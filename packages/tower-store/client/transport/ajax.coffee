@@ -154,7 +154,6 @@ Tower.StoreTransportAjax =
 
   update: (records, callback) ->
     for record in records
-      record.set('isDirty', true)
       do (record) =>
         @queue =>
           data = {}
