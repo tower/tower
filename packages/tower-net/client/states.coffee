@@ -56,24 +56,25 @@ Tower.Router = Ember.Router.extend
 
       enter: (router, transition) ->
         @_super(router, transition)
-
-        console.log "enter: #{@name}" if Tower.debug
+        console.log "enter: #{@name}" #if Tower.debug
         controller  = Ember.get(Tower.Application.instance(), name)
 
         if controller
-          if @name == controller.collectionName
+          if @name == controller.collectionName || @childStates.length > 0 
             controller.enter()
           else
             controller.enterAction(action)
 
       connectOutlets: (router, params) ->
-        console.log "connectOutlets: #{@name}" if Tower.debug
         controller  = Ember.get(Tower.Application.instance(), name)
-
         # controller.call(router, @, params)
         # if @action == state.name, call action
         # else if state.name == @collectionName call @enter
         if controller
+          #if this isn't a leaf don't run the code
+          if @childStates.length > 0
+            return 
+
           return if @name == controller.collectionName
           controller.call(router, params)
 
@@ -132,7 +133,6 @@ Tower.Router = Ember.Router.extend
     routeName = route.options.path.replace(".:format?", "")
     
     state   = @root
-    controllerName = 
     methodName = route.options.name if route.options.name?
     
     #match path parts to url segments
