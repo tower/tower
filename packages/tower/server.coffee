@@ -89,7 +89,8 @@ _.extend Tower,
   # @todo make Tower.root an Ember.computed property
   setRoot: (path) ->
     path ||= (process.env.TOWER_ROOT || process.cwd())
-    while path.match(new RegExp(_.regexpEscape(_path.sep), 'g')).length > 1
+    while !Tower.testIfRoot(path) && path != _path.sep
+    # while path.match(new RegExp(_.regexpEscape(_path.sep), 'g')).length > 1
       path = _path.join(path, '..')
 
     Tower.root = path unless path == _path.sep
