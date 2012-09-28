@@ -1,10 +1,10 @@
+PATH_SEP = $(shell node -e "console.log(require('path').sep)")
 SRC = $(shell find test/cases -name client -prune -o -name '*Test.coffee' -print)
 STORES = memory mongodb
 CMD = node_modules/mocha/bin/mocha
 DIR = $(shell pwd)
 GRUNT = grunt
 FOREVER = forever
-PATH_SEP = $(shell node -e "console.log(require('path').sep)")
 # darwin (mac), linux, win32 (windows)
 OS = $(shell node -e "console.log(require('os').platform())")
 DEPENDENCIES = bin$(PATH_SEP)dependencies
@@ -54,13 +54,6 @@ endif
 check-phantomjs:
 ifeq ($(shell which phantomjs),) # if it's blank
 	$(error PhantomJS is not installed. Download from http://phantomjs.org or run `brew install phantomjs` if you have Homebrew)
-endif
-
-install-dependencies:
-ifeq (win32,$(OS))
-	$(shell $(DEPENDENCIES))
-else
-	$(shell $(DEPENDENCIES))
 endif
 
 test: test-server test-client
@@ -139,7 +132,6 @@ whitespace:
 
 install:
 	npm install
-	npm install-dev
 
 watch: clean
 	$(GRUNT) start --config $(RUN)grunt.coffee
