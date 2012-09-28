@@ -1,6 +1,6 @@
 SRC = $(shell find test/cases -name client -prune -o -name '*Test.coffee' -print)
 STORES = memory mongodb
-CMD = ./node_modules/mocha/bin/mocha
+CMD = node_modules/mocha/bin/mocha
 DIR = $(shell pwd)
 GRUNT = grunt
 FOREVER = forever
@@ -9,21 +9,37 @@ TEST_URL = http://localhost:$(PORT)/?test=support,application,store,model
 CLIENT_PID = null
 TEST_SERVER_PATH = test/example/server
 
-all: clean
-	$(GRUNT) --config ./grunt.coffee
+PATH_SEP = $(shell node -e "console.log(require('path').sep)")
+# darwin (mac), linux, win32 (windows)
+OS = $(shell node -e "console.log(require('os').platform())")
+DEPENDENCIES = bin$(PATH_SEP)dependencies
 
+ifeq (win32,$(OS))
+	# Windows:
+	RUN = 
+else
+	# Unix
+	RUN = ./
+endif
+
+install-dependencies:
+	$(shell $(DEPENDENCIES))
+
+all: clean
+	$(GRUNT) --config $(RUN)grunt.coffee
+	
 check-grunt:
 ifeq ($(shell which $(GRUNT)),)
-	$(eval GRUNT = $(shell pwd)/node_modules/grunt/bin/grunt)
-ifeq ($(shell which ./node_modules/grunt/bin/grunt),)	
+	$(eval GRUNT = $(shell pwd)$(PATH_SEP)node_modules$(PATH_SEP)grunt$(PATH_SEP)bin$(PATH_SEP)grunt)
+ifeq ($(shell which $(RUN)node_modules$(PATH_SEP)grunt$(PATH_SEP)bin$(PATH_SEP)grunt),)	
 	npm install grunt
 endif
 endif
 
 check-forever:
 ifeq ($(shell which $(FOREVER)),)
-	$(eval FOREVER = $(shell pwd)/node_modules/forever/bin/forever)
-ifeq ($(shell which ./node_modules/forever/bin/forever),)	
+	$(eval FOREVER = $(shell pwd)$(PATH_SEP)node_modules$(PATH_SEP)forever/bin$(PATH_SEP)forever)
+ifeq ($(shell which node_modules$(PATH_SEP)forever$(PATH_SEP)bin$(PATH_SEP)forever),)	
 	npm install forever
 endif
 endif
@@ -47,17 +63,17 @@ test-mongodb:
 	$(CMD) $(SRC) --store mongodb
 
 test-client:
-	phantomjs test/client.coffee $(TEST_URL)
+	phantomjs test$(PATH_SEP)client.coffee $(TEST_URL)
 
 build-test-client: check-phantomjs check-grunt
 	# tmp way of downloading vendor files
-	rm -rf test/example/vendor
-	./bin/tower new example
-	mv example/vendor test/example
-	rm -rf ./example
-	$(GRUNT) --config ./grunt.coffee
-	cd test/example && pwd && npm install .
-	$(GRUNT) --config ./test/example/grunt.coffee
+	rm -rf test$(PATH_SEP)example$(PATH_SEP)vendor
+	$(RUN)bin$(PATH_SEP)tower new example
+	mv example$(PATH_SEP)vendor test$(PATH_SEP)example
+	rm -rf $(RUN)example
+	$(GRUNT) --config $(RUN)grunt.coffee
+	cd test$(PATH_SEP)example && pwd && npm install .
+	$(GRUNT) --config $(RUN)test$(PATH_SEP)example$(PATH_SEP)grunt.coffee
 
 start-test-client:
 	node $(TEST_SERVER_PATH) -p $(PORT)
@@ -94,7 +110,7 @@ test-opera:
 	$(call open-browser,Opera)
 
 test-all:
-	for i in $(STORES); do ./node_modules/mocha/bin/mocha $(SRC) --store $$i; done
+	for i in $(STORES); do $(RUN)node_modules$(PATH_SEP)mocha$(PATH_SEP)bin$(PATH_SEP)mocha $(SRC) --store $$i; done
 
 # make push message='Committing changes'
 push:
@@ -115,13 +131,13 @@ install:
 	npm install-dev
 
 watch: clean
-	$(GRUNT) start --config ./grunt.coffee
+	$(GRUNT) start --config $(RUN)grunt.coffee
 
 build:
-	$(GRUNT) build:client --config ./grunt.coffee
+	$(GRUNT) build:client --config $(RUN)grunt.coffee
 
 dist:
-	$(GRUNT) dist --config ./grunt.coffee
+	$(GRUNT) dist --config $(RUN)grunt.coffee
 
 publish:
 	npm publish
