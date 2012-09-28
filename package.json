@@ -123,6 +123,6 @@
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
     "docs": "make docs",
-    "postinstall": "node bin/dependencies"
+    "postinstall": "make install-dependencies"
   }
 }
