@@ -1,10 +1,12 @@
 require 'tower'
 knox  = require('knox')
 spawn = require('child_process').spawn
+which = require('which').sync
 
 # Watches and compiles assets to ./public
 task 'watch', ->
-  watcher = spawn('grunt', ['start', '--config', './grunt.coffee'])
+  grunt   = which('grunt')
+  watcher = spawn(grunt, ['start', '--config', './grunt.coffee']) 
   watcher.stdout.setEncoding('utf8')
   watcher.stderr.setEncoding('utf8')
   watcher.stdout.on 'data', (data) ->
