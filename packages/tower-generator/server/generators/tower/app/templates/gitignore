@@ -10,7 +10,7 @@
 /node_modules
 
 # Ignore all logfiles and tempfiles.
-/log/*.log
+*.log
 /tmp
 
 ## Ignore all generated files
@@ -26,5 +26,6 @@
 # *.patch
 # *.psd
 # *.pdf
-# .DS_Store
-# npm-debug.log
+.DS_Store
+npm-debug.log
+*.tmproj
