@@ -19,7 +19,6 @@ File.mkdirpSync = (dir) ->
 
 Tower.GeneratorActions =
   get: (url, to, retries=0) ->
-    return unless url.match('cloud')
     path  = @destinationPath(to)
 
     error = =>
