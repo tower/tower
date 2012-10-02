@@ -16,10 +16,10 @@ class Tower.StoreFileSystem extends Tower.Store
         _path.relative(Tower.root, i)
 
     findPath: (query, callback) ->
-      path          = query.path
+      path          = query.path.replace(/\//g, _path.sep)
       ext           = query.ext || ""
       prefixes      = query.prefixes || []
-      loadPaths     = @loadPaths
+      loadPaths     = _.map @loadPaths, (i) -> i.replace(/\//g, _path.sep)
       patterns      = []
       sep           = _path.sep
 
@@ -32,7 +32,7 @@ class Tower.StoreFileSystem extends Tower.Store
         patterns.push path
 
       templatePaths = @getTemplatePaths()
-
+      
       for pattern in patterns
         for templatePath in templatePaths
           if !!templatePath.match(pattern)
