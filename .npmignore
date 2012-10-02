@@ -1,6 +1,5 @@
 .DS_Store
 .git/
-Makefile
 wiki/
 docs/
 dist/

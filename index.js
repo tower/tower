@@ -2,8 +2,11 @@ var fs = require('fs');
 var path = require('path');
 
 try {
-  require('./coffee-inheritance');
-} catch (e) {}
+  require('./coffee-inheritance.js');
+} catch (e) {
+  //if (process.env.DEBUG)
+  console.log(e);
+}
 
 // node path resolution was broken before
 if (process.platform == 'win32' && process.version <= 'v0.8.5') {

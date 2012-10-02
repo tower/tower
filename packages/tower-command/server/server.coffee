@@ -52,7 +52,7 @@ class Tower.CommandServer
     # process.env.PORT == heroku, node community convention
     # process.env.port == azure
     # can't use parseInt b/c azure gives you crazy value.
-    port = program.port || process.env.PORT || process.env.port || 3000
+    port = parseInt(program.port) || process.env.PORT || process.env.port || 3000
 
     Tower.port  = program.port = process.env.PORT = process.env.port = port
 
