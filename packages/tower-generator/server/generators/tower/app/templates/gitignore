@@ -29,3 +29,4 @@
 .DS_Store
 npm-debug.log
 *.tmproj
+azure_error
