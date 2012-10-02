@@ -5,6 +5,7 @@ class Tower.CommandGenerate
     # tower generate template
     # tower generate model
     # tower generate library # a plugin/module/extension
+    # @todo default to not overriding the files w/o the --force option.
     # @todo Need to implement these options
     #
     # @example --controller option for defining belongsTo
@@ -12,6 +13,10 @@ class Tower.CommandGenerate
     #
     # @example --seed 20 (or without number, generates default of 100, enough to explore pagination)
     #   tower generate scaffold Comment body:string --seed 100
+    # 
+    # @todo for `$ tower generate service TwitterService --homepage http://twitter.com/`
+    #   it should fetch the page and get metadata about the page to add to the class
+    # or even `tower generate service http://twitter.com` and have it get a good name
     program
       .version(Tower.version)
       .option('-v, --version')

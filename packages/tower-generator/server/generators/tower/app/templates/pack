@@ -41,7 +41,8 @@
     "socket.io": ">= 0.8.7",
     "async": ">= 0.1.12",
     "socket.io-client": ">= 0.9.5",
-    "tower": ">= 0.4.1"
+    "tower": ">= 0.4.1",
+    "which": ">= 1.0.5"
   },
   "optionalDependencies": {
     "nodemailer": "~0.3.21",

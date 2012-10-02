@@ -1,13 +1,9 @@
-PATH_SEP = $(shell node -e "console.log(require('path').sep)")
 SRC = $(shell find test/cases -name client -prune -o -name '*Test.coffee' -print)
 STORES = memory mongodb
 CMD = node_modules/mocha/bin/mocha
 DIR = $(shell pwd)
 GRUNT = grunt
 FOREVER = forever
-# darwin (mac), linux, win32 (windows)
-OS = $(shell node -e "console.log(require('os').platform())")
-DEPENDENCIES = bin$(PATH_SEP)dependencies
 PORT = 3210
 TEST_URL = http://localhost:$(PORT)/?test=support,application,store,model
 CLIENT_PID = null
@@ -132,6 +128,7 @@ whitespace:
 
 install:
 	npm install
+	npm install-dev
 
 watch: clean
 	$(GRUNT) start --config $(RUN)grunt.coffee
