@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var script = path.join(process.env.PWD, 'scripts', 'tower');
+var script = path.join(process.cwd(), 'scripts' , 'tower');
 
 if (fs.existsSync(script)) {
   require(script);
