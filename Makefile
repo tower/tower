@@ -11,7 +11,7 @@ TEST_SERVER_PATH = test/example/server
 
 PATH_SEP = $(shell node -e "console.log(require('path').sep)")
 # darwin (mac), linux, win32 (windows)
-OS = $(shell node -e "console.log(require('os').platform())")
+OS = $(shell node -e "console.log(process.platform)")
 DEPENDENCIES = bin$(PATH_SEP)dependencies
 
 ifeq (win32,$(OS))
