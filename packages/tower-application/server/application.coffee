@@ -146,7 +146,8 @@ class Tower.Application extends Tower.Engine
         store.initialize(next)
 
       Tower.parallel databaseNames, iterator, =>
-        console.warn 'Default database not set, using Memory store' unless defaultStoreSet
+        # @todo azure seems to fail if console.warn is called?
+        console.log 'Default database not set, using Memory store' unless defaultStoreSet
         callback.call(@) if callback
 
     stack: ->
@@ -178,8 +179,6 @@ class Tower.Application extends Tower.Engine
           #console.log(error.stack)
         
         @initializeSockets()
-
-        Tower.port = parseInt(Tower.port)
 
         @server.listen Tower.port, =>
           _console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
