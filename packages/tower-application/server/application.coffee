@@ -349,8 +349,7 @@ class Tower.Application extends Tower.Engine
         # The first path we only want the non ./client files
         continue unless fs.existsSync(requirePath)
         if index == 0
-          # fs.readdirSync(requirePath))
-          clientDir = _path.join(requirePath, 'client')
+          clientDir = new RegExp(_.regexpEscape(_path.join(requirePath, 'client')), 'g')
           paths = paths.concat _.select @_selectNestedPaths(requirePath, wrench.readdirSyncRecursive(requirePath)), (path) ->
             !path.match(clientDir)
         else

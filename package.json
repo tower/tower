@@ -1,6 +1,6 @@
 {
   "name": "tower",
-  "version": "0.4.2-8",
+  "version": "0.4.2-9",
   "description": "Full Stack Web Framework for Node.js and the Browser",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./index.js",
