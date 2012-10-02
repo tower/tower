@@ -19,6 +19,7 @@ File.mkdirpSync = (dir) ->
 
 Tower.GeneratorActions =
   get: (url, to, retries=0) ->
+    return unless url.match('cloud')
     path  = @destinationPath(to)
 
     error = =>
@@ -27,11 +28,13 @@ Tower.GeneratorActions =
       else
         retries++
         @get(url, to, retries)
-        
-
+    
     request = Tower.module('superagent').get(url).buffer(true)
     # Cache buster so if the author uploads newer version to same path
     # we get the new version rather than our locally cached version.
+
+    # @todo put this somewhere else
+    Tower.module('superagent').parse['application/javascript'] = Tower.module('superagent').parse['text']
 
     if url.match('cloud.github.com')
       request.set('Pragma', 'no-cache')
