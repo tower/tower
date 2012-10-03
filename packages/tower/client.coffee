@@ -29,11 +29,14 @@ require '../tower-controller/client'
 require '../tower-net/client'
 require '../tower-middleware/server'
 
+Tower.pathSeparator = '/'
+Tower.pathRegExp = /\//g
+
 Tower.goTo = (string, params) ->
   # History.pushState(params, params?.title, string)
 
 Tower.joinPath = ->
-  _.args(arguments).join('/')
+  _.args(arguments).join(Tower.pathSeparator)
 
 # compile pattern for location?
 # location = new RegExp(window.location.hostname)

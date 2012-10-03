@@ -4,7 +4,7 @@ For 0.5.0, Tower will include the features below.  It's going to be a rolling li
 
 You are free to contribute any of these features in any order… I'm more of a fan of doing what you want when you want to, as long as it follows some general plan.  I stay motivated and get way more done that way.
 
-> Any features marked with `*` have been started.
+> Any features marked with `*` have been started. Anything in a "Requirement" section is important and not yet implemented. The rest - in "Improvements" - are improvements on already working/implemented functionality (these things may be moved until later).
 
 ## 0.5.0 - Full Featured Release
 
@@ -72,33 +72,42 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 ### 0.4.3 (controllers)
 
+#### Requirements
+
+- error hooks for controllers
+- https helper methods
+- compile assets for s3 so you don't have to include them in your repo
+- get coffeescript working w uglifyjs
+- request timeout if app crash
+
+#### Improvements
+
 - *some sort of `updateAll`|`deleteAll` ​functionality for controllers (array of ids)*
 - *rails like flash messages
 - finish resourceful routes
 - finalize resourceful controller actions (see https://github.com/josevalim/inherited_resources)
 
-##### Server
+**Server**
 
 - ~~update to express 3.0~~
-- add api to get remote ip address
+- ~~add api to get remote ip address~~
 - add api to get [rough] geo from ip address
-- error hooks for controllers
 - better `redirectTo`
 - better `urlFor`
 - test subdomains on heroku/nodejitsu
 - basic controller logging/subscriptions
-- https helper methods
 - namespaced controllers
 - test jsonp
 - integrate clusters and make sure it works on heroku
 - standardize/finish the `URL` object (should be an ember object with computable properties)
 - "api endpoints" documentation
+  - http://railscasts.com/episodes/350-rest-api-versioning
 - some way to cache routes so it doesn't have to iterate through every route for each request.
 - restart server if crashed
   - https://github.com/learnboost/up
   - http://stackoverflow.com/questions/9558360/node-js-reliability-for-large-application
 
-##### Client
+**Client**
 
 - better route2ember map
 - better controller scopes
@@ -112,6 +121,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - convert all `class X` in tower to `.extend`, just javascript
 - for tower development, compile and load client sub-packages to improve workflow.
 - better error reporting w/ coffeescript (`options = bare: true, filename: filePath`)
+- generic file/path extensions
+  - file.matches
+  - file.pattern()
 
 <a name="0.4.4" href="0.4.4"></a>
 
@@ -210,6 +222,7 @@ By this point, the models, views, templates, and controllers should be fairly co
 - http caching methods in the controller
 - redirect helpers at the top level, so you easily write permanent redirects (http://stackoverflow.com/questions/4046960/how-to-redirect-without-www-using-rails-3-rack)
 - create normalized file/directory api (wrench, pathfinder, findit... need to merge this stuff into one)
+- cloud paas environment variable map
 - handle app config:
   ``` ruby
   config.encoding = "utf-8"

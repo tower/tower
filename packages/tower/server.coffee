@@ -61,6 +61,8 @@ _.extend Tower,
   watch: true
   publicCacheDuration: 60 * 1000
   domain: 'localhost'
+  pathSeparator: _path.sep
+  pathRegExp: new RegExp(_.regexpEscape(_path.sep), 'g')
 
   render: (string, options = {}) ->
     Tower.modules.mint.render(options.type, string, options)

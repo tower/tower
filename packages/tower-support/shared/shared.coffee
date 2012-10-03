@@ -20,6 +20,7 @@ _.extend Tower,
   config:           {}
   namespaces:       {}
   metadata:         {}
+
   tryRequire: (paths) ->
     paths = _.flatten(paths)
     for path in paths
