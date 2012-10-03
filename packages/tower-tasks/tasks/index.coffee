@@ -18,27 +18,35 @@ module.exports = (grunt) ->
     
     files   = grunt.file.expand(['app/templates/**/*.coffee'])
     result  = []
+
+    pathSeparator = Tower.pathSeparator
+    pathSeparatorEscaped = Tower.pathSeparatorEscaped
+
+    templatePath  = new RegExp("app#{pathSeparatorEscaped}templates#{pathSeparatorEscaped}.+\.coffee$")
+    coffeePattern = /\.coffee$/
+    layoutPath    = new RegExp("layout#{pathSeparatorEscaped}application")
+    namePattern   = new RegExp("app#{pathSeparatorEscaped}templates#{pathSeparatorEscaped}(?:client|shared)#{pathSeparatorEscaped}")
     
     for file in files
-      continue unless file.match(/app\/templates\/.+\.coffee$/)
-      continue unless file.match(/\.coffee$/)
+      continue unless file.match(templatePath)
+      continue unless file.match(coffeePattern)
       # @todo tmp, dont need these for the client
-      continue if file.match('layout/application')# || file.match('shared')
-      result.push [file.replace(/\.coffee$/, ""), fs.readFileSync(file)]
+      continue if file.match(layoutPath)# || file.match('shared')
+      result.push [file.replace(coffeePattern, ""), fs.readFileSync(file)]
       
     template      = "Tower.View.cache =\n"
     
     iterator = (item, next) =>
-      name = item[0].replace(/app\/templates\/(?:client|shared)\//, '')#.replace('/', '_')
+      name = item[0].replace(namePattern, '')#.replace('/', '_')
       # _table.coffee
-      fileName = name.split('/')
+      fileName = name.split(pathSeparator)
       fileName = fileName[fileName.length - 1]
       return next() if fileName.match(/^_/) # if it's a partial, don't include
       try
         string = coffeecup.render(item[1])  
       catch error
         try
-          prefix  = name.split('/')[0]
+          prefix  = name.split(pathSeparator)[0]
           view    = new Tower.View(collectionName: prefix)
           opts    = type: 'coffee', inline: true, template: item[1].toString(), prefixes: [prefix]
           cb = (error, body) =>
@@ -136,7 +144,7 @@ module.exports = (grunt) ->
   path = require("path")
   # CoffeeScript
   grunt.registerMultiTask "coffee", "Compile CoffeeScript files", ->
-    dest = @file.dest + '/'
+    dest = @file.dest + Tower.pathSeparator
     options = @data.options
     strip = @data.strip
     extension = @data.extension
@@ -155,7 +163,7 @@ module.exports = (grunt) ->
     js = ""
     options = options or {}
     extension = (if extension then extension else ".js")
-    dest = path.dirname(destPath) + '/' + path.basename(destPath, ".coffee") + extension
+    dest = path.dirname(destPath) + Tower.pathSeparator + path.basename(destPath, ".coffee") + extension
     #console.log dest
     options.bare = true  if options.bare isnt false
     try

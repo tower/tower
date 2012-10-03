@@ -62,6 +62,7 @@ _.extend Tower,
   publicCacheDuration: 60 * 1000
   domain: 'localhost'
   pathSeparator: _path.sep
+  pathSeparatorEscaped: _.regexpEscape(_path.sep)
   pathRegExp: new RegExp(_.regexpEscape(_path.sep), 'g')
 
   render: (string, options = {}) ->
