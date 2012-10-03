@@ -8,6 +8,10 @@ PORT = 3210
 TEST_URL = http://localhost:$(PORT)/?test=support,application,store,model
 CLIENT_PID = null
 TEST_SERVER_PATH = test/example/server
+# if node version is less than 8 (if you know how to clean this up, would love to know).
+NODE_VERSION = $(shell node --version)
+NODE_VERSION_LT_8 = $(shell node -e "console.log(process.version < 'v0.8.0')")
+NODE_VERSION_LT_6	= $(shell node -e "console.log(process.version < 'v0.6.0')")
 
 PATH_SEP = $(shell node -e "console.log(require('path').sep)")
 # darwin (mac), linux, win32 (windows)
@@ -24,6 +28,20 @@ endif
 
 install-dependencies:
 	$(shell $(DEPENDENCIES))
+
+check-node-version:
+ifeq ($(NODE_VERSION_LT_8),true)
+	@echo ""
+ifeq ($(NODE_VERSION_LT_6),true)
+	@echo "> You're using an unsupported version of node ($(NODE_VERSION))."
+else
+	@echo "> You're using an outdated version of node ($(NODE_VERSION))."
+endif
+	@echo "> Please upgrade to the latest version node >= v0.8.2."
+	@echo ""
+endif
+
+post-install: install-dependencies check-node-version
 
 all: clean
 	$(GRUNT) --config $(RUN)grunt.coffee
@@ -160,4 +178,4 @@ define get-processes
 	$(shell ps -ef | grep -e '$(1)' | grep -v grep)
 endef
 
-.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever build-test-client start-test-client
+.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever build-test-client start-test-client post-install check-node-version

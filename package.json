@@ -124,6 +124,6 @@
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",
     "docs": "make docs",
-    "postinstall": "make install-dependencies"
+    "postinstall": "make post-install"
   }
 }
