@@ -322,7 +322,7 @@ module.exports = (grunt) ->
         data = data.replace(/module\.exports\s*=.*\s*/g, "")
         data + "\n\n"
         if level == 1
-          outputPath = './dist/' + nodePath.resolve(path, '..').split('/').pop()
+          outputPath = ".#{_path.sep}dist#{_path.sep}" + nodePath.resolve(path, '..').split(_path.sep).pop()
           fs.writeFileSync outputPath + '.coffee', data
           mint.coffee data, bare: false, (error, result) ->
             # result = JS_COPYRIGHT + result
