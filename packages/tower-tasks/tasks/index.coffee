@@ -19,7 +19,7 @@ module.exports = (grunt) ->
     files   = grunt.file.expand(['app#{_path.sep}templates#{_path.sep}**#{_path.sep}*.coffee'])
     result  = []
 
-    pathSeparator = Tower.pathSeparator
+    pathSeparator = _path.sep
     pathSeparatorEscaped = Tower.pathSeparatorEscaped
 
     templatePath  = new RegExp("app#{pathSeparatorEscaped}templates#{pathSeparatorEscaped}.+\.coffee$")
@@ -144,7 +144,7 @@ module.exports = (grunt) ->
   path = require("path")
   # CoffeeScript
   grunt.registerMultiTask "coffee", "Compile CoffeeScript files", ->
-    dest = @file.dest + Tower.pathSeparator
+    dest = @file.dest + _path.sep
     options = @data.options
     strip = @data.strip
     extension = @data.extension
@@ -163,7 +163,7 @@ module.exports = (grunt) ->
     js = ""
     options = options or {}
     extension = (if extension then extension else ".js")
-    dest = path.dirname(destPath) + Tower.pathSeparator + path.basename(destPath, ".coffee") + extension
+    dest = path.dirname(destPath) + _path.sep + path.basename(destPath, ".coffee") + extension
     #console.log dest
     options.bare = true  if options.bare isnt false
     try
@@ -334,7 +334,6 @@ module.exports = (grunt) ->
         ""
 
     buildIt = ->
-      #fs.exists 
       fs.mkdirSync(".#{_path.sep}dist") unless fs.existsSync(".#{_path.sep}dist")
       content = compileFile(".#{_path.sep}packages#{_path.sep}tower", ".#{_path.sep}packages#{_path.sep}tower#{_path.sep}client.coffee", 0).replace /Tower\.version *= *.+\n/g, (_) ->
         version = """
