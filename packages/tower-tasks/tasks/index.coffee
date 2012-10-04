@@ -10,13 +10,13 @@ module.exports = (grunt) ->
   try
     towerPath = require.resolve('tower') # will fail on tower repo
   catch error
-    towerPath = _path.join(__dirname, '../../../index.js')
+    towerPath = _path.join(__dirname, '..#{_path.sep}..#{_path.sep}..#{_path.sep}index.js')
 
   grunt.registerMultiTask 'templates', 'Compile templates', ->
     name  = ""
     taskDone = @async()
     
-    files   = grunt.file.expand(['app/templates/**/*.coffee'])
+    files   = grunt.file.expand(['app#{_path.sep}templates#{_path.sep}**#{_path.sep}*.coffee'])
     result  = []
 
     pathSeparator = Tower.pathSeparator
@@ -68,7 +68,7 @@ module.exports = (grunt) ->
           console.log error
           return taskDone(error)
         else
-          fs.writeFileSync "public/javascripts/templates.js", string
+          fs.writeFileSync "public#{_path.sep}javascripts#{_path.sep}templates.js", string
           taskDone()
 
   grunt.registerMultiTask 'injectTestDependencies', 'Modify files in place', ->
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
         grunt.file.copy src, dest
 
     files = grunt.file.expandFiles(@file.src)
-    target = @file.dest + '/'
+    target = @file.dest + _path.sep
     strip = @data.strip
     renameCount = 0
     fileName = undefined
@@ -191,14 +191,14 @@ module.exports = (grunt) ->
 
       iterator = (remote, nextDownload) =>
         local = hash[remote]
-        dir   = _path.resolve('./dist', _path.dirname(local))
+        dir   = _path.resolve('.#{_path.sep}dist', _path.dirname(local))
 
         wrench.mkdirSyncRecursive(dir)
 
         agent.get(remote).end (response) =>
           #writeStream.write(response.text) if writeStream
 
-          path = "./dist/#{local}"
+          path = ".#{_path.sep}dist#{_path.sep}#{local}"
           fs.writeFile path, response.text, =>
             process.nextTick nextDownload
 
@@ -231,7 +231,7 @@ module.exports = (grunt) ->
 
       iterator = (remote, nextDownload) =>
         local = hash[remote]
-        path = "./dist/#{local}"
+        path = ".#{_path.sep}dist#{_path.sep}#{local}"
         grunt.helper 'upload2GitHub', path, local, nextUpload
 
       Tower.async keys, iterator, next
@@ -261,13 +261,13 @@ module.exports = (grunt) ->
       'handlebars'
       'ember'
       'tower'
-      'bootstrap/bootstrap-dropdown'
+      "bootstrap#{_path.sep}bootstrap-dropdown"
     ]
     bundlePath  = null
 
     processEach = (keys, bundle, next) =>
       currentCallback = null
-      bundlePath      = "./dist/#{bundle}"
+      bundlePath      = ".#{_path.sep}dist#{_path.sep}#{bundle}"
 
       writeStream     = fs.createWriteStream(bundlePath, flags: 'w', encoding: 'utf-8')
       writeStream.on 'drain', ->
@@ -276,7 +276,7 @@ module.exports = (grunt) ->
       iterator = (local, nextDownload) =>
         currentCallback = nextDownload
         local           = local + '.js'
-        fs.readFile "./dist/#{local}", 'utf-8', (error, content) =>
+        fs.readFile ".#{_path.sep}dist#{_path.sep}#{local}", 'utf-8', (error, content) =>
           next() if writeStream.write(content)
 
       Tower.async keys, iterator, =>
@@ -287,7 +287,7 @@ module.exports = (grunt) ->
       fs.readFile bundlePath, 'utf-8', (error, content) =>
         require('mint').uglifyjs content, {}, (error, content) ->
           bundle      = 'tower.dependencies.min.js'
-          bundlePath  = './dist/' + bundle
+          bundlePath  = '.#{_path.sep}dist#{_path.sep}' + bundle
           fs.writeFile bundlePath, content, =>
             process.nextTick =>
               grunt.helper 'upload2GitHub', bundlePath, bundle, =>
@@ -334,16 +334,17 @@ module.exports = (grunt) ->
         ""
 
     buildIt = ->
-      fs.mkdirSync('./dist') unless fs.existsSync('./dist')
-      content = compileFile("./packages/tower", "./packages/tower/client.coffee", 0).replace /Tower\.version *= *.+\n/g, (_) ->
+      #fs.exists 
+      fs.mkdirSync(".#{_path.sep}dist") unless fs.existsSync(".#{_path.sep}dist")
+      content = compileFile(".#{_path.sep}packages#{_path.sep}tower", ".#{_path.sep}packages#{_path.sep}tower#{_path.sep}client.coffee", 0).replace /Tower\.version *= *.+\n/g, (_) ->
         version = """
     Tower.version = "#{grunt.config('pkg.version')}"
 
     """
-      fs.writeFileSync './dist/tower.coffee', content
+      fs.writeFileSync ".#{_path.sep}dist#{_path.sep}tower.coffee", content
       mint.coffee content, bare: false, (error, result) ->
         result = grunt.config.process('meta.banner') + result
         console.error error.stack if error
-        fs.writeFileSync "./dist/tower.js", result
+        fs.writeFileSync ".#{_path.sep}dist#{_path.sep}tower.js", result
 
     buildIt()
