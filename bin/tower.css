@@ -11,6 +11,10 @@ value {
   color: white;
 }
 
+keyword {
+  text-decoration: underline;
+}
+
 caret {
   color: grey;
 }

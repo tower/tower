@@ -37,6 +37,15 @@ function repeat(string, times) {
   return new Array(isNaN(times) ? 1 : ++times).join(string);
 }
 
+function sentence(array) {
+  if (array.length > 1) {
+    var last = array.pop();
+    return array.join(', ') + ' and ' + last;
+  } else {
+    return array[0];
+  }
+}
+
 // strips ansi escape sequences from string
 function clean(string) {
   '\u001b[m'
@@ -144,6 +153,7 @@ if (command == 'dependencies2') {
   var _renderWelcome = css.compile('{welcome}', style);
   var _renderComment = css.compile('{comment}', style);
   var _renderWarning = css.compile('{warning}', style);
+  var _renderKeyword = css.compile('{keyword}', style);
 
   function renderWelcome(string) {
     return _renderWelcome({welcome: string});
@@ -167,6 +177,10 @@ if (command == 'dependencies2') {
 
   function renderWarning(string) {
     return _renderWarning({warning: string});
+  }
+
+  function renderKeyword(string) {
+    return _renderKeyword({keyword: string});
   }
 
   var message = [''];
@@ -208,24 +222,23 @@ if (command == 'dependencies2') {
       message.push('');
     }
 
-    /* Not sure if there is a clean way to tell if this stuff is installed cross-platform.
+    /* Not sure if there is a clean way to tell if this stuff is installed cross-platform.*/
     var missing = installed.missing;
 
     if (missing.length) {
-      message.push('Please install the following before continuing:');
+      message.push('Make sure to install ' + sentence(missing.map(renderKeyword)) + ' before continuing:');
       message.push('');
       
       missing.forEach(function(command) {
-        var directions = '  ' + command;
         if (installDirections[command]) {
-          directions += ': `' + installDirections[command] + '`';
+          message.push(renderCode(installDirections[command]));
+        } else {
+          // @todo
         }
-        message.push(directions);
       });
 
       message.push('');
     }
-    */
 
     message.push(renderHeader('Create an app', ':'));
     message.push('');
