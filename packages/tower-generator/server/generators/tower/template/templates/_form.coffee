@@ -1,11 +1,12 @@
 text '{{#with resource}}'
 form ->
   fieldset ->
-    ul class: 'fields', -><% for (var i = 0; i < model.attributes.length; i++) { %>
+    ul class: 'fields', -><% for (var i = 0; i < model.attributes.length; i++) { var attributes = model.attributes[i]; %>
       li class: 'control-group', ->
         div class: 'controls', ->
-          label '<%= model.attributes[i].humanName %>:'
-          text '{{view Ember.TextField valueBinding="<%= model.attributes[i].name %>"}}'
+          label '<%= attributes.humanName %>:'<% if (attributes.fieldType == 'text') { %>
+          text '{{view Ember.TextArea valueBinding="<%= attributes.name %>"}}'<% } else { %>
+          text '{{view Ember.TextField valueBinding="<%= attributes.name %>"}}'<% } %>
           text '{{#with errors}}'
           span class: 'help-inline error', '{{<%= model.attributes[i].name %>}}'
           text '{{/with}}'<% } %>
