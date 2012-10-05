@@ -60,7 +60,7 @@
     "knox": ">= 0.0.11",
     "gzip": ">= 0.1.0",
     "cli-table": ">= 0.0.1",
-    "grunt-less": "~0.1.5",
+    "grunt-contrib-less": ">= 0.3.0",
     "grunt-stylus": "~0.1.4",
     "grunt-contrib": "~0.1.7",
     "superagent": ">= 0.4.0",

@@ -1,6 +1,6 @@
 {
   "name": "tower",
-  "version": "0.4.2-12",
+  "version": "0.4.2-13",
   "description": "Full Stack Web Framework for Node.js and the Browser",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./index.js",
@@ -88,7 +88,8 @@
     "connect": ">= 2.4.6",
     "fresh": ">= 0.1.0",
     "which": ">= 1.0.5",
-    "term-css": "~1.0.0"
+    "term-css": "~1.0.0",
+    "grunt-contrib-less": "~0.3.0"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
