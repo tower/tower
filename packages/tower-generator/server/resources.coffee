@@ -68,7 +68,7 @@ Tower.GeneratorResources =
         when 'datetime', 'timestamp'      then 'datetime'
         when 'date'                       then 'date'
         when 'text'                       then 'text'
-        when 'boolean'                    then 'checkbox'
+        when 'boolean'                    then 'boolean'
         else
           'string'
 
