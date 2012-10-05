@@ -7,7 +7,7 @@ var path = require('path');
 var script = path.join(process.cwd(), 'scripts' , 'tower');
 
 if (process.env.TOWER_COMMAND == '-v')
-  process.env.TOWER_COMMAND = 'new'
+  process.env.TOWER_COMMAND = 'new';
 
 if (fs.existsSync(script)) {
   require(script);
