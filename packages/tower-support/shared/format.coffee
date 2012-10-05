@@ -4,16 +4,16 @@ _ = Tower._
 # https://github.com/cesario/activevalidators
 # https://github.com/rickharrison/validate.js/blob/master/validate.js
 (->
-  validator   = Tower.module('validator')
-  check       = validator.check
-  sanitize    = validator.sanitize
-
   try
+    validator   = Tower.module('validator')
+    check       = validator.check
+    sanitize    = validator.sanitize
+
     validator.Validator::error = (msg) ->
       @_errors.push(msg)
       @
   catch error
-    console.log error
+    console.log error if Tower.isClient
 
   # others
   # - UPS tracking codes: https://www.ups.com/content/us/en/tracking/help/tracking/tnh.html
@@ -223,9 +223,6 @@ _ = Tower._
         _.isLuhn(value)
 
   inflections =
-    pluralize: ->
-      Tower.module('inflector').pluralize(arguments...)
-
     singularize: (name) ->
       return name if name.match(/ss$/) # tmp hack for address
       Tower.module('inflector').singularize(name)

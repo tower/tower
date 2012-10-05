@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo Add method to mocha so you can both pass
 #   args to the test description and use those args in the test.
 # @example

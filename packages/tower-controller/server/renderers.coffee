@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.Controller.addRenderers
   text: (text, options, callback) ->
     text = JSON.stringify(text) unless typeof(text) == 'string'

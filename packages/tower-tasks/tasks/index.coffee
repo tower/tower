@@ -10,13 +10,13 @@ module.exports = (grunt) ->
   try
     towerPath = require.resolve('tower') # will fail on tower repo
   catch error
-    towerPath = _path.join(__dirname, '..#{_path.sep}..#{_path.sep}..#{_path.sep}index.js')
+    towerPath = _path.join(__dirname, "..#{_path.sep}..#{_path.sep}..#{_path.sep}index.js")
 
   grunt.registerMultiTask 'templates', 'Compile templates', ->
     name  = ""
     taskDone = @async()
     
-    files   = grunt.file.expand(['app#{_path.sep}templates#{_path.sep}**#{_path.sep}*.coffee'])
+    files   = grunt.file.expand(["app#{_path.sep}templates#{_path.sep}**#{_path.sep}*.coffee"])
     result  = []
 
     pathSeparator = _path.sep
@@ -32,10 +32,10 @@ module.exports = (grunt) ->
       continue unless file.match(coffeePattern)
       # @todo tmp, dont need these for the client
       continue if file.match(layoutPath)# || file.match('shared')
-      result.push [file.replace(coffeePattern, ""), fs.readFileSync(file)]
+      result.push [file.replace(coffeePattern, ""), fs.readFileSync(file, 'utf-8')]
       
     template      = "Tower.View.cache =\n"
-    
+
     iterator = (item, next) =>
       name = item[0].replace(namePattern, '')#.replace('/', '_')
       # _table.coffee
@@ -142,6 +142,7 @@ module.exports = (grunt) ->
 
   # https://github.com/avalade/grunt-coffee
   path = require("path")
+
   # CoffeeScript
   grunt.registerMultiTask "coffee", "Compile CoffeeScript files", ->
     dest = @file.dest + _path.sep
@@ -191,7 +192,7 @@ module.exports = (grunt) ->
 
       iterator = (remote, nextDownload) =>
         local = hash[remote]
-        dir   = _path.resolve('.#{_path.sep}dist', _path.dirname(local))
+        dir   = _path.resolve(".#{_path.sep}dist", _path.dirname(local))
 
         wrench.mkdirSyncRecursive(dir)
 

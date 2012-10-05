@@ -4,7 +4,7 @@ class Tower.ViewForm extends Tower.ViewComponent
     @model      = args.shift() || new Tower.Model
 
     if typeof @model == "string"
-      klass     = try Tower.constant(Tower.SupportString.camelize(@model))
+      klass     = try Tower.constant(_.camelize(@model))
       @model    = new klass if klass
 
     @attributes = @_extractAttributes(options)
@@ -30,7 +30,7 @@ class Tower.ViewForm extends Tower.ViewComponent
     attributes.class            = options["class"] if options.hasOwnProperty("class")
     #@mergeClass attributes, config.formClass
     attributes.id               = options.id if options.hasOwnProperty("id")
-    attributes.id             ||= Tower.SupportString.parameterize("#{@model.constructor.className()}-form")
+    attributes.id             ||= _.parameterize("#{@model.constructor.className()}-form")
     attributes.enctype          = "multipart/form-data" if (options.multipart || attributes.multipart == true)
     attributes.role             = "form"
     attributes.novalidate       = "true" # needs to be true b/c the error popups are horribly ugly!# if options.validate == false

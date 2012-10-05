@@ -45,7 +45,7 @@ class Tower.ModelRelation extends Tower.Class
       owner               = @owner
       name                = @name
       className           = owner.className()
-      # @type               = Tower.namespaced(options.type || Tower.SupportString.camelize(Tower.SupportString.singularize(name)))
+      # @type               = Tower.namespaced(options.type || _.camelize(_.singularize(name)))
       @type               = Tower.namespaced(options.type || _.camelize(_.singularize(name)))
       @ownerType          = Tower.namespaced(className)
       @dependent        ||= false

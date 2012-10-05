@@ -1,6 +1,9 @@
 _ = Tower._
 
-if typeof Ember != 'undefined'
+if typeof global['Ember'] != 'undefined'
+  Ember.Map::toArray = ->
+    Tower._.values(@values)
+
   coffeescriptMixin =
     __extend: (child) ->
       object = Ember.Object.extend.apply @
@@ -27,17 +30,20 @@ if typeof Ember != 'undefined'
   Ember.Application.reopenClass(coffeescriptMixin)
   Ember.ArrayProxy.reopenClass(coffeescriptMixin)
   Ember.ArrayController.reopenClass(coffeescriptMixin)
+
   if Ember.ObjectProxy
     Ember.ObjectProxy.reopenClass(coffeescriptMixin)
     Ember.ObjectController.reopenClass(coffeescriptMixin)
-  Ember.State.reopenClass(coffeescriptMixin)
-  Ember.StateManager.reopenClass(coffeescriptMixin)
 
   Tower.Class       = Ember.Object.extend(className: -> @constructor.className())
   Tower.Namespace   = Ember.Namespace.extend()
   Tower.Collection  = Ember.ArrayController.extend()
-  Tower.State       = Ember.State.extend()
-  Tower.StateMachine  = Ember.StateManager.extend()
+  
+  if Ember.State
+    Ember.State.reopenClass(coffeescriptMixin)
+    Ember.StateManager.reopenClass(coffeescriptMixin)
+    Tower.State       = Ember.State.extend()
+    Tower.StateMachine  = Ember.StateManager.extend()
 
   towerMixin        = Tower.toMixin()
 
@@ -45,8 +51,10 @@ if typeof Ember != 'undefined'
   Tower.Namespace.reopenClass(towerMixin)
   Ember.Application.reopenClass(towerMixin)
   Tower.Collection.reopenClass(towerMixin)
-  Tower.State.reopenClass(towerMixin)
-  Tower.StateMachine.reopenClass(towerMixin)
+
+  if Tower.State
+    Tower.State.reopenClass(towerMixin)
+    Tower.StateMachine.reopenClass(towerMixin)
 
   if Ember.View
     Ember.View.reopenClass(coffeescriptMixin)
@@ -73,7 +81,7 @@ if typeof Ember != 'undefined'
   #if Tower.nativeExtensions
   #  _.extend(Function.prototype, coffeescriptMixin, towerMixin)
 else
-  throw new Error('Must include Ember.js')
+  #throw new Error('Must include Ember.js')
   #class Tower.Class
   #
   #_.extend Tower.Class, Tower.toMixin()

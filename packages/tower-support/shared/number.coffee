@@ -1,4 +1,4 @@
-Tower.SupportNumber =
+Tower._.mixin
   isInt: (n) ->
     n == +n && n == (n|0)
 
@@ -16,5 +16,3 @@ Tower.SupportNumber =
 
   randomIntBetween: (min, max) ->
     min + Math.floor(Math.random() * ((max - min) + 1))
-
-module.exports = Tower.SupportNumber

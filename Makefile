@@ -45,14 +45,6 @@ ifeq ($(shell which $(RUN)node_modules$(PATH_SEP)grunt$(PATH_SEP)bin$(PATH_SEP)g
 endif
 endif
 
-check-forever:
-ifeq ($(shell which $(FOREVER)),)
-	$(eval FOREVER = $(shell pwd)$(PATH_SEP)node_modules$(PATH_SEP)forever/bin$(PATH_SEP)forever)
-ifeq ($(shell which node_modules$(PATH_SEP)forever$(PATH_SEP)bin$(PATH_SEP)forever),)	
-	npm install forever
-endif
-endif
-
 # ps -ef | awk '/node server -p 3210/{print $2}' | wc -l | awk '{print $1}'
 # check-server: check-forever
 
@@ -169,4 +161,4 @@ define get-processes
 	$(shell ps -ef | grep -e '$(1)' | grep -v grep)
 endef
 
-.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever build-test-client start-test-client post-install
+.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt build-test-client start-test-client post-install

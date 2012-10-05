@@ -34,11 +34,11 @@ Tower.ApplicationAssets =
       compile = (data, next) ->
         {name, paths} = data
         # queue.push name: name, paths: paths, extension: extension, type: type, compressor: compressor
-        _console.debug "Bundling public/#{type}/#{name}#{extension}"
+        console.debug "Bundling public/#{type}/#{name}#{extension}"
         content = ""
 
         for path in paths
-          content += File.read("public/#{type}#{path}#{extension}") + "\n\n"
+          content += fs.readFileSync("public/#{type}#{path}#{extension}", 'utf-8') + "\n\n"
 
         fs.writeFileSync "public/#{type}/#{name}#{extension}", content
 
@@ -80,7 +80,7 @@ Tower.ApplicationAssets =
     process.nextTick ->
       Tower.async bundles, bundleIterator, (error) ->
         throw error if error
-        _console.debug "Writing public/asset-manifest.json"
+        console.debug "Writing public/asset-manifest.json"
         fs.writeFile "public/asset-manifest.json", JSON.stringify(manifest, null, 2), ->
           process.nextTick ->
             process.exit()
@@ -105,7 +105,7 @@ Tower.ApplicationAssets =
 
     config = try Tower.config.credentials.s3
     if config && config.bucket
-      _console.debug "Uploading to #{config.bucket}"
+      console.debug "Uploading to #{config.bucket}"
 
     images      = _.select File.files("public/images"), (path) -> !!path.match(/\.(gif|ico|png|jpg)$/i)
     fonts       = _.select File.files("public/fonts"), (path) -> !!path.match(/\.(tff|woff|svg|eot)$/i)
@@ -135,7 +135,7 @@ Tower.ApplicationAssets =
 
     # images
     upload    = (path, next) ->
-      _console.debug "Uploading /#{path}"
+      console.debug "Uploading /#{path}"
 
       headers = _.extend {}, cacheHeaders
 

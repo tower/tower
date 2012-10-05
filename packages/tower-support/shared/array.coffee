@@ -1,7 +1,7 @@
 nativeIndexOf = Array.prototype.indexOf
 _ = Tower._
 
-Tower.SupportArray =
+_.mixin
   toStringIndexOf: (array, item, isSorted) ->
     return -1 unless array?
 

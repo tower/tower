@@ -1,3 +1,5 @@
+_ = Tower._
+
 Tower.ControllerFlash =
   # Both send and recieve flash messages
   flash: (type, msg) ->

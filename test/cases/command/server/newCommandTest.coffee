@@ -1,5 +1,6 @@
 command = ->
   defaultArgs = ['node', 'tower', 'new', 'blog']
+  Tower.Command.load('new')
   (new Tower.CommandNew(defaultArgs.concat(_.args(arguments)))).program
 
 describe 'Tower.CommandNew', ->

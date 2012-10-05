@@ -106,8 +106,8 @@ var isMac = process.platform == 'darwin';
 var isWindows = process.platform == 'win32';
 var isLinux = process.platform == 'linux';
 
-if (command == 'dependencies2') {
-  var packageJSON = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+if (command == 'dependencies') {
+  var packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8'));
   var dependencies = [];
 
   var testDependencies = Object.keys(packageJSON['testDependencies']);
@@ -128,7 +128,7 @@ if (command == 'dependencies2') {
     if (isGlobal || isGlobalLink) {
       // if you're installing it globally, only include bare minimum.
       dependencies = dependencies.concat(globalDependencies);
-    } else if (isLocalLink) {
+    } else if (!isLocalLink) {
       // otherwise install like normal.
       dependencies = dependencies.concat(localDependencies);
     }

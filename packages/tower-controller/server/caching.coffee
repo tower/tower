@@ -1,6 +1,7 @@
+_ = Tower._
+
 # @module
 Tower.ControllerCaching =
-  
   etag: (content) ->
     require('express/lib/utils').etag(content)
 

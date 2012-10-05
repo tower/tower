@@ -1,7 +1,7 @@
 specialProperties = ['included', 'extended', 'prototype', 'ClassMethods', 'InstanceMethods']
 _ = Tower._
 
-Tower.SupportObject =
+_.mixin
   getCacheKey: (key) ->
     if key.hasOwnProperty('cacheKey')
       Ember.get(key, 'cacheKey')
@@ -54,7 +54,7 @@ Tower.SupportObject =
     for node in args
       for key, value of node when key not in specialProperties
         if object[key] && _.isHash(value)# && typeof value == 'object'
-          object[key] = Tower.SupportObject.deepMerge(object[key], value)
+          object[key] = _.deepMerge(object[key], value)
         else
           object[key] = value # don't think this is actually cloning...
     object
@@ -69,7 +69,7 @@ Tower.SupportObject =
           if _.isArray(oldValue)
             object[key] = oldValue.concat value
           else if typeof oldValue == "object" && typeof value == "object"
-            object[key] = Tower.SupportObject.deepMergeWithArrays(object[key], value)
+            object[key] = _.deepMergeWithArrays(object[key], value)
           else
             object[key] = value
         else
@@ -167,7 +167,7 @@ Tower.SupportObject =
   #
   # @return [Boolean]
   isPresent: (object) ->
-    !Tower.SupportObject.isBlank(object)
+    !_.isBlank(object)
 
   # Checks if the object is "blank", defined below.
   #
@@ -284,5 +284,3 @@ Tower.SupportObject =
     for key, value of object
       delete object[key] if object.hasOwnProperty(key)
     object
-
-module.exports = Tower.SupportObject

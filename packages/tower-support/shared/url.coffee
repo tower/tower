@@ -144,7 +144,7 @@ Tower.SupportUrl =
 
       unless options.protocol == false
         result += options.protocol || "http"
-        result += ":" unless result.match(Tower.SupportRegExp.regexpEscape(":|//"))
+        result += ":" unless result.match(_.regexpEscape(":|//"))
 
       result += "//" unless result.match("//")
       result += @rewriteAuthentication(options)
@@ -185,9 +185,9 @@ Tower.SupportUrl =
       route = Tower.Route.find(options.route)
       result = route.urlFor() if route
     else if options.controller && options.action
-      route   = Tower.Route.findByControllerOptions(name: Tower.SupportString.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
+      route   = Tower.Route.findByControllerOptions(name: _.camelize(options.controller).replace(/(Controller)?$/, "Controller"), action: options.action)
       if route
-        result  = "/" + Tower.SupportString.parameterize(options.controller)
+        result  = "/" + _.parameterize(options.controller)
     else
       for item in args
         result += "/"

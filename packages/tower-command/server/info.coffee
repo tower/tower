@@ -1,10 +1,10 @@
-class Tower.CommandInfo
-  constructor: (argv) ->
-    @program = program = require('commander')
-    program
-      .version(Tower.version)
-      .option('-v, --version')
-      .option '-h, --help', '''
+module.exports = command = (argv) ->
+  program = require('commander')
+  
+  program
+    .version(Tower.version)
+    .option('-v, --version')
+    .option '-h, --help', '''
 \ \ Usage:
 \ \   tower [command] [options]
 \ \ 
@@ -18,15 +18,10 @@ class Tower.CommandInfo
 \ \   -v, --version                     output version number
 \ \ 
 '''
-    program.parse(argv)
+  program.parse(argv)
 
-    program.help ||= program.rawArgs.length == 2
+  program.help ||= program.rawArgs.length == 2
 
-    if program.help
-      console.log program.options[program.options.length - 1].description
-      process.exit()
-
-  run: ->
-
-
-module.exports = Tower.CommandInfo
+  if program.help
+    console.log program.options[program.options.length - 1].description
+    process.exit()

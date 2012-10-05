@@ -1,8 +1,4 @@
-Ember.Map::toArray = ->
-  Tower._.values(@values)
-
-#global.T = Tower
-_ = global._
+_ = Tower._
 
 _.extend Tower,
   nativeExtensions: true
@@ -15,7 +11,7 @@ _.extend Tower,
   publicPath:       "/"
   case:             "camelcase"
   accessors:        typeof(window) == "undefined"
-  logger:           if typeof(_console) != 'undefined' then _console else console
+  logger:           if typeof(global['_console']) != 'undefined' then _console else console
   structure:        "standard"
   config:           {}
   namespaces:       {}
@@ -32,7 +28,6 @@ _.extend Tower,
   # isTest: false
   # isDevelopment: false
   # isProduction: false
-  _:                _
   subscribe: ->
     Tower.Application.instance().subscribe arguments...
 
@@ -48,30 +43,6 @@ _.extend Tower,
   createConnection: (socket) ->
     connection = Tower.NetConnection.create().setProperties(socket: socket)
     @connections[connection.toString()] = connection
-
-  # @todo This should be a wrapper for benchmark.js.
-  # 
-  # @example
-  #   Tower.bench 'create', (done) =>
-  #     App.Post.create(done)
-  #   Tower.bench 'require("tower")', =>
-  #     require('tower')
-  bench: (name, block) ->
-    if typeof name == 'function'
-      block = name
-      name  = null
-    if block.length
-      startDate = new Date()
-      block (result) =>
-        endDate = new Date()
-        console.log name, String(endDate - startDate) + 'ms'
-        result
-    else
-      startDate = new Date()
-      result    = block()
-      endDate   = new Date()
-      console.log name, String(endDate - startDate) + 'ms'
-      result
 
   toMixin: ->
     #mixin: ->

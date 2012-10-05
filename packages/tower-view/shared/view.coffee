@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @todo remove
 try
   coffeecupTags = if Tower.isServer then _.map(Tower.module('coffeecup').tags, (i) -> _.camelize(i, true)) else []

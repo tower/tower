@@ -16,10 +16,9 @@ describe 'Issue105', ->
       done()
 
   test 'handle request with unknown format', (done) ->
-    options =
-      format: 'form'
-    _.destroy '/posts/' + post.get('id'), options, (response) ->
+    options = format: 'form'
 
+    _.destroy "/posts/#{post.get('id')}", options, (response) ->
       App.Post.find post.get('id'), (err, resource) ->
         assert.equal resource, undefined
         done()

@@ -1,3 +1,5 @@
+_ = Tower._
+
 # @module
 Tower.ControllerNet =
   ip: Ember.computed(->

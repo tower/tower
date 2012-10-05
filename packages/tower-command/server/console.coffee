@@ -60,7 +60,7 @@ class Tower.CommandConsole
       client[Tower.namespace()] = app
       client._r = (name) ->
         (error, value) ->
-          #args = Tower.SupportArray.args(arguments)
+          #args = _.args(arguments)
           #error = args.shift()
           if error
             console.log(error)

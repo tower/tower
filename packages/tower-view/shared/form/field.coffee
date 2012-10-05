@@ -7,15 +7,15 @@ class Tower.ViewFormField extends Tower.ViewComponent
     result.join(" ")
 
   toId: (options = {}) ->
-    result = if typeof(@model) == 'object' then Tower.SupportString.parameterize(@model.constructor.className()) else @model
+    result = if typeof(@model) == 'object' then _.parameterize(@model.constructor.className()) else @model
     result += "-#{options.parentIndex}" if options.parentIndex
-    result += "-#{Tower.SupportString.parameterize(@attribute)}"
+    result += "-#{_.parameterize(@attribute)}"
     result += "-#{options.type || "field"}"
     result += "-#{@index}" if @index?
     result
 
   toParam: (options = {}) ->
-    result = if typeof(@model) == 'object' then Tower.SupportString.camelize(@model.constructor.className(), true) else @model
+    result = if typeof(@model) == 'object' then _.camelize(@model.constructor.className(), true) else @model
     result += "[#{options.parentIndex}]" if options.parentIndex
     result += "[#{@attribute}]"
     result += "[#{@index}]" if @index?
@@ -33,7 +33,7 @@ class Tower.ViewFormField extends Tower.ViewComponent
 
     field           = @model.constructor.fields()[@attribute] if typeof(@model) == 'object' # || new Tower.ModelAttribute
 
-    options.as    ||= if field then Tower.SupportString.camelize(field.type, true) else "string"
+    options.as    ||= if field then _.camelize(field.type, true) else "string"
     @inputType      = inputType = options.as
     @required       = !!(field && field.required == true)
 
@@ -77,7 +77,7 @@ class Tower.ViewFormField extends Tower.ViewComponent
 
     @validate       = options.validate != false
 
-    classes         = [inputType, Tower.SupportString.parameterize(@attribute), @inputHTML.class]
+    classes         = [inputType, _.parameterize(@attribute), @inputHTML.class]
 
     unless ["submit", "fieldset"].indexOf(inputType) > -1
       classes.push if field && field.required then Tower.View.requiredClass else Tower.View.optionalClass
