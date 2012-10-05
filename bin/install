@@ -201,6 +201,7 @@ if (command == 'dependencies2') {
     installDirections.git = 'brew install git';
     installDirections.mongodb = 'brew install mongodb';
     installDirections.redis = 'brew install redis';
+    installDirections.heroku = 'gem install heroku';
   }
 
   checkInstalled(commands, function(installed) {
@@ -224,6 +225,9 @@ if (command == 'dependencies2') {
 
     /* Not sure if there is a clean way to tell if this stuff is installed cross-platform.*/
     var missing = installed.missing;
+
+    // todo need better api
+    missing.splice(missing.indexOf('heroku'), 1);
 
     if (missing.length) {
       message.push('Make sure to install ' + sentence(missing.map(renderKeyword)) + ' before continuing:');
@@ -292,7 +296,7 @@ if (command == 'dependencies2') {
     message = ['/' + border + '\\'].concat(message)
 
     message.push('\\' + border + '/');
-    message.push('');
+    message.push('', '');
 
     process.stdout.write(message.join('\n'));
 
