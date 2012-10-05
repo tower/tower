@@ -9,8 +9,8 @@ Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built 
 Follow me [@viatropos](http://twitter.com/viatropos).
 
 - **IRC**: #towerjs on irc.freenode.net
-- **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
 - **Issues**: https://github.com/viatropos/tower/issues
+- **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
 - **Roadmap**: https://github.com/viatropos/tower/blob/master/ROADMAP.md
 - **Latest Docs**: https://github.com/viatropos/tower/wiki
 

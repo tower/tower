@@ -16,7 +16,7 @@ NODE_VERSION_LT_6	= $(shell node -e "console.log(process.version < 'v0.6.0')")
 PATH_SEP = $(shell node -e "console.log(require('path').sep)")
 # darwin (mac), linux, win32 (windows)
 OS = $(shell node -e "console.log(process.platform)")
-DEPENDENCIES = bin$(PATH_SEP)dependencies
+INSTALL = bin$(PATH_SEP)install
 
 ifeq (win32,$(OS))
 	# Windows:
@@ -27,21 +27,12 @@ else
 endif
 
 install-dependencies:
-	$(shell $(DEPENDENCIES))
+	@$(shell $(INSTALL) dependencies)
 
-check-node-version:
-ifeq ($(NODE_VERSION_LT_8),true)
-	@echo ""
-ifeq ($(NODE_VERSION_LT_6),true)
-	@echo "> You're using an unsupported version of node ($(NODE_VERSION))."
-else
-	@echo "> You're using an outdated version of node ($(NODE_VERSION))."
-endif
-	@echo "> Please upgrade to the latest version node >= v0.8.2."
-	@echo ""
-endif
+install-message:
+	@$(INSTALL) message
 
-post-install: install-dependencies check-node-version
+post-install: install-dependencies install-message
 
 all: clean
 	$(GRUNT) --config $(RUN)grunt.coffee
@@ -178,4 +169,4 @@ define get-processes
 	$(shell ps -ef | grep -e '$(1)' | grep -v grep)
 endef
 
-.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever build-test-client start-test-client post-install check-node-version
+.PHONY: all test-memory test-mongodb test test-all test-client build dist check-phantomjs check-grunt check-forever build-test-client start-test-client post-install

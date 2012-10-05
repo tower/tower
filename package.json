@@ -87,8 +87,8 @@
     "ansi": "~0.1.2",
     "connect": ">= 2.4.6",
     "fresh": ">= 0.1.0",
-    "coffee-script": ">= 1.3.3",
-    "which": ">= 1.0.5"
+    "which": ">= 1.0.5",
+    "term-css": "~1.0.0"
   },
   "devDependencies": {
     "findit": ">= 0.1.1",
