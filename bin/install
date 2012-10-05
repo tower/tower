@@ -195,7 +195,8 @@ if (command == 'dependencies2') {
   };
 
   var installDirections = {
-    'coffee-script': 'npm install coffee-script -g'
+    'coffee-script': 'npm install coffee-script -g',
+    'grunt': 'npm install grunt -g'
   };
 
   if (isMac) {
@@ -207,7 +208,7 @@ if (command == 'dependencies2') {
 
   checkInstalled(commands, function(installed) {
     message.push(renderWelcome('Tower is installed!'));
-    message.push('')
+    message.push('');
 
     if (process.version < 'v0.8.0') {
       var supportLevel;
@@ -268,28 +269,28 @@ if (command == 'dependencies2') {
       message.push(renderCode('git commit -a -m "first commit"'));
       message.push(renderCode('heroku create'));
       message.push(renderCode('git push heroku master'));
-      message.push('')
+      message.push('');
     }
 
     message.push(renderHeader('More info', ':'));
     message.push('');
     message.push(renderItem('IRC', '    #towerjs'));
     message.push(renderItem('Docs', '   http://github.com/viatropos/tower/wiki'));
-    message.push(renderItem('Roadmap', 'https://github.com/viatropos/tower/blob/master/ROADMAP.md'))
+    message.push(renderItem('Roadmap', 'https://github.com/viatropos/tower/blob/master/ROADMAP.md'));
     message.push('');
     
     var max = 0;
     var length;
+
+    function pad(string, length) {
+      return '|  ' + string + repeat(' ', max - length) + '  |';
+    }
 
     message.forEach(function(line, i) {
       length = clean(line).length;
       max = Math.max(max, length);
       message[i] = {string: line, length: length};
     });
-
-    function pad(string, length) {
-      return '|  ' + string + repeat(' ', max - length) + '  |';
-    }
 
     message.forEach(function(object, i) {
       message[i] = pad(object.string, object.length);
@@ -303,6 +304,5 @@ if (command == 'dependencies2') {
     message.push('', '');
 
     process.stdout.write(message.join('\n'));
-
   });
 }
