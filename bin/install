@@ -190,6 +190,7 @@ if (command == 'dependencies2') {
     mongodb: 'mongod',
     //redis: 'redis-server',
     heroku: 'heroku',
+    grunt: 'grunt',
     'coffee-script': 'cake'
   };
 
@@ -224,7 +225,7 @@ if (command == 'dependencies2') {
     }
 
     // Not sure if there is a clean way to tell if this stuff is installed cross-platform.
-    var missing = ['git', 'mongodb']//installed.missing;
+    var missing = installed.missing;
 
     // todo need better api
     var i = missing.indexOf('heroku');
