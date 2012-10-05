@@ -2,8 +2,8 @@
 module.exports = (grunt) ->
   file = grunt.file
 
-  grunt.loadNpmTasks('grunt-less')
-  grunt.loadNpmTasks('grunt-stylus')
+  grunt.loadNpmTasks('grunt-contrib-less')
+  grunt.loadNpmTasks('grunt-contrib-stylus')
 
   require('tower').Application.instance().initialize
     databases:        ['memory']
