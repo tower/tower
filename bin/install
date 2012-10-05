@@ -143,7 +143,7 @@ if (command == 'dependencies2') {
   } else {
     // console.log('linked to local');
   }
-} else if (command == 'message') { // this one doesn't install anything
+} else if (command == 'message' && isGlobal && !isGlobalLink) { // this one doesn't install anything
   var style = fs.readFileSync(path.join(__dirname, 'tower.css'), 'utf8');
   var css = require('term-css');
 
@@ -223,23 +223,26 @@ if (command == 'dependencies2') {
       message.push('');
     }
 
-    /* Not sure if there is a clean way to tell if this stuff is installed cross-platform.*/
-    var missing = installed.missing;
+    // Not sure if there is a clean way to tell if this stuff is installed cross-platform.
+    var missing = ['git', 'mongodb']//installed.missing;
 
     // todo need better api
-    missing.splice(missing.indexOf('heroku'), 1);
+    var i = missing.indexOf('heroku');
+    if (i >= 0)
+      missing.splice(i, 1);
 
     if (missing.length) {
-      message.push('Make sure to install ' + sentence(missing.map(renderKeyword)) + ' before continuing:');
+      message.push('Please install ' + sentence(missing.map(renderKeyword)) + ' before continuing:');
       message.push('');
+      message.push('  https://github.com/viatropos/tower/wiki/Development-and-Workflow-Tips');
       
-      missing.forEach(function(command) {
-        if (installDirections[command]) {
-          message.push(renderCode(installDirections[command]));
-        } else {
-          // @todo
-        }
-      });
+      // missing.forEach(function(command) {
+      //   if (installDirections[command]) {
+      //     message.push(renderCode(installDirections[command]));
+      //   } else {
+      //     // @todo
+      //   }
+      // });
 
       message.push('');
     }
