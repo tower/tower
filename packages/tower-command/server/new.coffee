@@ -71,7 +71,6 @@ command = (argv) ->
   program.templateEngine = program.engine ||= if program.useJavascript then 'ejs' else 'coffee'
 
   program.run = ->
-    throw new Error('here')
     Tower.Generator.run('app', program: program, appName: program.args[1])
   
   program

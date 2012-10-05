@@ -1,50 +1,49 @@
-class Tower.Generator extends Tower.Class
-  @reopenClass
-    run: (type, options) ->
-      klass = @buildGenerator(type)
-      new klass(options)
+_ = Tower._
 
-    buildGenerator: (type) ->
-      # tower generate model
-      # tower generate mocha:model
-      nodes   = type.split(':')
-      nodes[nodes.length - 1] += 'Generator'
+class Tower.Generator# extends Tower.Class
+  @include: (mixin) ->
+    _.extend(@::, mixin)
 
-      for node, i in nodes
-        nodes[i] = _.camelize(node)
+  @run: (type, options) ->
+    klass = @buildGenerator(type)
+    new klass(options)
 
-      klass = Tower['Generator' + nodes.join('')]
+  @buildGenerator: (type) ->
+    # tower generate model
+    # tower generate mocha:model
+    nodes   = type.split(':')
+    nodes[nodes.length - 1] += 'Generator'
 
-      klass
+    for node, i in nodes
+      nodes[i] = _.camelize(node)
 
-  @reopen
-    sourceRoot: __dirname
+    klass = Tower['Generator' + nodes.join('')]
 
-    init: (options = {}) ->
-      @_super arguments...
+    klass
 
-      options.program ||= {}
-      _.extend @, options
+  sourceRoot: __dirname
 
-      unless @appName
-        name = process.cwd().split('/')
-        @appName = name[name.length - 1]
+  constructor: (options = {}) ->
+    options.program ||= {}
+    _.extend @, options
 
-      @destinationRoot  ||= process.cwd()
+    unless @appName
+      name = process.cwd().split('/')
+      @appName = name[name.length - 1]
 
-      @currentSourceDirectory = @currentDestinationDirectory = '.'
+    @destinationRoot  ||= process.cwd()
 
-      unless @app
-        @app          = @buildApp()
-        @user             = {}
-        @buildUser (user) =>
-          @user   = user
-          @model  = @buildModel(@modelName, @app.className, @program.args) if @modelName
-          if @model
-            @view       = @buildView(@modelName)
-            @controller = @buildController(@modelName)
-          @run()
+    @currentSourceDirectory = @currentDestinationDirectory = '.'
 
-    run: ->
+    unless @app
+      @app          = @buildApp()
+      @user             = {}
+      @buildUser (user) =>
+        @user   = user
+        @model  = @buildModel(@modelName, @app.className, @program.args) if @modelName
+        if @model
+          @view       = @buildView(@modelName)
+          @controller = @buildController(@modelName)
+        @run()
 
-module.exports = Tower.Generator
+  run: ->

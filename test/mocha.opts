@@ -1,6 +1,6 @@
 --require coffee-script ./test/server.coffee
 --reporter dot
 --ui bdd
---timeout 4000
+--timeout 3000
 --slow 75
 --ignore-leaks

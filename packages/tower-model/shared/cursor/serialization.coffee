@@ -279,7 +279,7 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
         if _.isArray(oldValue)
           object[key] = oldValue.concat value
         else if typeof oldValue == 'object' && typeof value == 'object'
-          object[key] = Tower.SupportObject.deepMergeWithArrays(object[key], value)
+          object[key] = _.deepMergeWithArrays(object[key], value)
         else
           object[key] = value
       else

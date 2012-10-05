@@ -1,3 +1,5 @@
+_ = Tower._
+
 require './shared'
 require './server/actions'
 require './server/caching'
@@ -5,8 +7,6 @@ require './server/events'
 require './server/flash'
 require './server/net'
 require './server/sockets'
-
-_ = Tower._
 
 Tower.Controller.include Tower.ControllerActions
 Tower.Controller.include Tower.ControllerCaching

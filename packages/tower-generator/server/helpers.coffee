@@ -1,6 +1,4 @@
-exec  = require("child_process").exec
-File  = require("pathfinder").File
-fs    = require 'fs'
+_ = Tower._
 
 # @mixin
 Tower.GeneratorHelpers =
@@ -66,5 +64,3 @@ Tower.GeneratorHelpers =
 
   inRoot: (block) ->
     @inside ".", block
-
-module.exports = Tower.GeneratorHelpers

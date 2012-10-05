@@ -1,19 +1,18 @@
 class Tower.GeneratorViewGenerator extends Tower.Generator
-  @reopen
-    sourceRoot: __dirname
+  sourceRoot: __dirname
 
-    run: ->
-      # @todo
-      scriptType = 'coffee'
+  run: ->
+    # @todo
+    scriptType = 'coffee'
 
-      views = [
-        'form'
-        'index'
-        'show'
-      ]
+    views = [
+      'form'
+      'index'
+      'show'
+    ]
 
-      for view in views
-        @template "#{view}.#{scriptType}", "app/views/client/#{@view.directory}/#{view}.#{scriptType}"
-        @asset "/app/views/client/#{@view.directory}/#{view}"
+    for view in views
+      @template "#{view}.#{scriptType}", "app/views/client/#{@view.directory}/#{view}.#{scriptType}"
+      @asset "/app/views/client/#{@view.directory}/#{view}"
 
 module.exports = Tower.GeneratorViewGenerator

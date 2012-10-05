@@ -1,3 +1,5 @@
+_ = Tower._
+
 # Don't need this for the client, @todo, remove for client.
 class Tower.ControllerResponder
   @respond: (controller, options, callback) ->

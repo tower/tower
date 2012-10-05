@@ -1,176 +1,175 @@
 twitterBootstrapCommit = 'aaabe2a46c64e7d9ffd5735dba2db4f3cf9906f5'
 
 class Tower.GeneratorAppGenerator extends Tower.Generator
-  @reopen
-    sourceRoot: __dirname
+  sourceRoot: __dirname
 
-    buildApp: (name = @appName) ->
-      app = @_super(name)
+  buildApp: (name = @appName) ->
+    app = super(name)
 
-      app.title       = @program.title || _.titleize(_.humanize(app.name))
-      app.description = @program.description
-      app.keywords    = @program.keywords
-      app.stylesheetEngine = @program.stylesheetEngine
-      app.scriptType  = @program.scriptType
-      app.templateEngine = @program.templateEngine
+    app.title       = @program.title || _.titleize(_.humanize(app.name))
+    app.description = @program.description
+    app.keywords    = @program.keywords
+    app.stylesheetEngine = @program.stylesheetEngine
+    app.scriptType  = @program.scriptType
+    app.templateEngine = @program.templateEngine
 
-      app
+    app
 
-    run: ->
-      {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
+  run: ->
+    {JAVASCRIPTS, STYLESHEETS, IMAGES, SWFS} = Tower.GeneratorAppGenerator
 
-      scriptType        = @program.scriptType
-      isCoffee          = scriptType == 'coffee'
-      templateEngine    = @program.templateEngine
-      stylesheetEngine  = @program.stylesheetEngine || 'styl'
+    scriptType        = @program.scriptType
+    isCoffee          = scriptType == 'coffee'
+    templateEngine    = @program.templateEngine
+    stylesheetEngine  = @program.stylesheetEngine || 'styl'
 
-      @inside @app.name, '.', ->
-        @template 'gitignore', '.gitignore' unless @program.skipGitfile
-        @template 'npmignore', '.npmignore'
-        @template 'slugignore', '.slugignore' unless @program.skipProcfile
+    @inside @app.name, '.', ->
+      @template 'gitignore', '.gitignore' unless @program.skipGitfile
+      @template 'npmignore', '.npmignore'
+      @template 'slugignore', '.slugignore' unless @program.skipProcfile
 
-        @template 'cake', 'Cakefile' if isCoffee 
+      @template 'cake', 'Cakefile' if isCoffee 
 
-        @inside 'app', ->
-          @inside 'config', ->
-            @inside 'client', ->
-              @template "bootstrap.#{scriptType}"
-              @template "watch.#{scriptType}"
+      @inside 'app', ->
+        @inside 'config', ->
+          @inside 'client', ->
+            @template "bootstrap.#{scriptType}"
+            @template "watch.#{scriptType}"
 
-            @inside 'server', ->
-              @template "assets.#{scriptType}"
-              @template "bootstrap.#{scriptType}"
-              @template "credentials.#{scriptType}"
-              @template "databases.#{scriptType}"
-              @template "session.#{scriptType}"
+          @inside 'server', ->
+            @template "assets.#{scriptType}"
+            @template "bootstrap.#{scriptType}"
+            @template "credentials.#{scriptType}"
+            @template "databases.#{scriptType}"
+            @template "session.#{scriptType}"
 
-              @inside 'environments', ->
-                if isCoffee # @todo tmp
-                  @template "development.#{scriptType}"
-                  @template "production.#{scriptType}"
-                  @template "test.#{scriptType}"
+            @inside 'environments', ->
+              if isCoffee # @todo tmp
+                @template "development.#{scriptType}"
+                @template "production.#{scriptType}"
+                @template "test.#{scriptType}"
 
-              @directory 'initializers'
+            @directory 'initializers'
 
-            @inside 'shared', ->
+          @inside 'shared', ->
+            @template "application.#{scriptType}"
+            @inside 'locales', ->
+              @template "en.#{scriptType}"
+            @template "routes.#{scriptType}"
+
+        @inside 'controllers', ->
+          @inside 'client', ->
+            @template "applicationController.#{scriptType}"
+          @inside 'server', ->
+            @template "applicationController.#{scriptType}"
+
+        @inside 'models', ->
+          @directory 'client'
+          @directory 'server'
+          @directory 'shared'
+
+        @inside 'stylesheets', ->
+          @inside 'client', ->
+            @template "application.#{stylesheetEngine}"
+          @inside 'server', ->
+            @template "email.#{stylesheetEngine}"
+
+        @inside 'templates', ->
+          @inside 'server', ->
+            @inside 'layout', ->
+              @template "application.#{templateEngine}"
+              @template "_meta.#{templateEngine}"
+          @inside 'shared', ->
+            @template "welcome.#{templateEngine}"
+            @inside 'layout', ->
+              @template "_body.#{templateEngine}"
+              @template "_flash.#{templateEngine}"
+              @template "_footer.#{templateEngine}"
+              @template "_header.#{templateEngine}"
+              @template "_navigation.#{templateEngine}"
+              @template "_sidebar.#{templateEngine}"
+
+        @inside 'views', ->
+          @inside 'client', ->
+            @inside 'layout', ->
               @template "application.#{scriptType}"
-              @inside 'locales', ->
-                @template "en.#{scriptType}"
-              @template "routes.#{scriptType}"
 
+      @inside 'data', ->
+        @template "seeds.#{scriptType}"
+
+      @directory 'lib'
+      @directory 'log'
+
+      @template 'pack', 'package.json'
+      @template 'Procfile' unless @program.skipProcfile
+
+      @inside 'public', ->
+        @template '404.html'
+        @template '500.html'
+        @template 'fav.png', 'favicon.png'
+        @template 'crossdomain.xml'
+        @template 'humans.txt'
+        @template 'robots.txt'
+        @directory 'fonts'
+        @directory 'images'
+        @inside 'javascripts', ->
+          @inside 'app', ->
+            @inside 'templates', ->
+              @inside 'client', ->
+                @createFile 'index.js', ''
+        @directory 'stylesheets'
+        @directory 'swfs'
+        @directory 'uploads'
+
+      @template 'README.md'
+      
+      @inside 'scripts', ->
+        @template 'tower'
+
+      @template 'server.js'
+
+      @inside 'test', '.', ->
+        @inside 'cases', '.', ->
           @inside 'controllers', ->
-            @inside 'client', ->
-              @template "applicationController.#{scriptType}"
-            @inside 'server', ->
-              @template "applicationController.#{scriptType}"
-
+            @directory 'client'
+            @directory 'server'
+          @inside 'features', '.', ->
+            @directory 'client'
+            @directory 'server'
+            #@inside 'server', '.', ->
+              #@template "apiTest.#{scriptType}"
           @inside 'models', ->
             @directory 'client'
             @directory 'server'
             @directory 'shared'
 
-          @inside 'stylesheets', ->
-            @inside 'client', ->
-              @template "application.#{stylesheetEngine}"
-            @inside 'server', ->
-              @template "email.#{stylesheetEngine}"
+        @directory 'factories'
 
-          @inside 'templates', ->
-            @inside 'server', ->
-              @inside 'layout', ->
-                @template "application.#{templateEngine}"
-                @template "_meta.#{templateEngine}"
-            @inside 'shared', ->
-              @template "welcome.#{templateEngine}"
-              @inside 'layout', ->
-                @template "_body.#{templateEngine}"
-                @template "_flash.#{templateEngine}"
-                @template "_footer.#{templateEngine}"
-                @template "_header.#{templateEngine}"
-                @template "_navigation.#{templateEngine}"
-                @template "_sidebar.#{templateEngine}"
+      @inside 'test', ->
+        @template "client.#{scriptType}"
+        @template 'mocha.opts'
+        @template "server.#{scriptType}"
 
-          @inside 'views', ->
-            @inside 'client', ->
-              @inside 'layout', ->
-                @template "application.#{scriptType}"
+      @directory 'tmp'
+      
+      @inside 'vendor', ->
+        @inside 'javascripts', ->
+          @directory 'bootstrap'
+          @get(remote, local) for remote, local of JAVASCRIPTS
+        @inside 'stylesheets', ->
+          @directory 'bootstrap'
+          @get(remote, local) for remote, local of STYLESHEETS
+      @inside 'public/images', ->
+        @get(remote, local) for remote, local of IMAGES
+      @inside 'public/swfs', ->
+        @get(remote, local) for remote, local of SWFS
 
-        @inside 'data', ->
-          @template "seeds.#{scriptType}"
+      @template "grunt.#{scriptType}", "grunt.#{scriptType}"
 
-        @directory 'lib'
-        @directory 'log'
-
-        @template 'pack', 'package.json'
-        @template 'Procfile' unless @program.skipProcfile
-
-        @inside 'public', ->
-          @template '404.html'
-          @template '500.html'
-          @template 'fav.png', 'favicon.png'
-          @template 'crossdomain.xml'
-          @template 'humans.txt'
-          @template 'robots.txt'
-          @directory 'fonts'
-          @directory 'images'
-          @inside 'javascripts', ->
-            @inside 'app', ->
-              @inside 'templates', ->
-                @inside 'client', ->
-                  @createFile 'index.js', ''
-          @directory 'stylesheets'
-          @directory 'swfs'
-          @directory 'uploads'
-
-        @template 'README.md'
-        
-        @inside 'scripts', ->
-          @template 'tower'
-
-        @template 'server.js'
-
-        @inside 'test', '.', ->
-          @inside 'cases', '.', ->
-            @inside 'controllers', ->
-              @directory 'client'
-              @directory 'server'
-            @inside 'features', '.', ->
-              @directory 'client'
-              @directory 'server'
-              #@inside 'server', '.', ->
-                #@template "apiTest.#{scriptType}"
-            @inside 'models', ->
-              @directory 'client'
-              @directory 'server'
-              @directory 'shared'
-
-          @directory 'factories'
-
-        @inside 'test', ->
-          @template "client.#{scriptType}"
-          @template 'mocha.opts'
-          @template "server.#{scriptType}"
-
-        @directory 'tmp'
-        
-        @inside 'vendor', ->
-          @inside 'javascripts', ->
-            @directory 'bootstrap'
-            @get(remote, local) for remote, local of JAVASCRIPTS
-          @inside 'stylesheets', ->
-            @directory 'bootstrap'
-            @get(remote, local) for remote, local of STYLESHEETS
-        @inside 'public/images', ->
-          @get(remote, local) for remote, local of IMAGES
-        @inside 'public/swfs', ->
-          @get(remote, local) for remote, local of SWFS
-
-        @template "grunt.#{scriptType}", "grunt.#{scriptType}"
-
-        # github wiki
-        @inside 'wiki', ->
-          @template 'home.md'
-          @template '_sidebar.md'
+      # github wiki
+      @inside 'wiki', ->
+        @template 'home.md'
+        @template '_sidebar.md'
 
 JAVASCRIPTS =
   # https://github.com/eriwen/javascript-stacktrace

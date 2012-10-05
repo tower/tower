@@ -48,7 +48,7 @@ Tower.ModelMetadata =
       @_url = switch typeof options
         when 'object'
           if options.parent
-            url = "/#{Tower.SupportString.parameterize(Tower.SupportString.pluralize(options.parent))}/:#{Tower.SupportString.camelize(options.parent, true)}/#{@toParam()}"
+            url = "/#{_.parameterize(_.pluralize(options.parent))}/:#{_.camelize(options.parent, true)}/#{@toParam()}"
         else
           options
 

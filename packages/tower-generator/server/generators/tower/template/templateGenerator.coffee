@@ -1,26 +1,25 @@
 class Tower.GeneratorTemplateGenerator extends Tower.Generator
-  @reopen
-    sourceRoot: __dirname
+  sourceRoot: __dirname
 
-    run: ->
-      # @todo
-      scriptType = 'coffee'
+  run: ->
+    # @todo
+    scriptType = 'coffee'
 
-      @directory "app/templates/shared/#{@view.directory}"
+    @directory "app/templates/shared/#{@view.directory}"
 
-      templates = [
-        '_flash'
-        '_form'
-        '_item'
-        '_list'
-        '_table'
-        'edit'
-        'index'
-        'new'
-        'show'
-      ]
+    templates = [
+      '_flash'
+      '_form'
+      '_item'
+      '_list'
+      '_table'
+      'edit'
+      'index'
+      'new'
+      'show'
+    ]
 
-      for template in templates
-        @template "#{template}.#{scriptType}", "app/templates/shared/#{@view.directory}/#{template}.#{scriptType}"
+    for template in templates
+      @template "#{template}.#{scriptType}", "app/templates/shared/#{@view.directory}/#{template}.#{scriptType}"
 
 module.exports = Tower.GeneratorViewGenerator

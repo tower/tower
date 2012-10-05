@@ -1,5 +1,5 @@
-File  = require('pathfinder').File
-fs    = require 'fs'
+_ = Tower._
+fs = require 'fs'
 
 # @mixin
 Tower.GeneratorResources =
@@ -253,8 +253,8 @@ Tower.GeneratorResources =
     user        = {}
 
     try
-      if File.exists(gitFile)
-        lines     = File.read(gitFile).split('\n')
+      if fs.existsSync(gitFile)
+        lines     = fs.readFileSync(gitFile, 'utf-8').split('\n')
         for line in lines
           if line.charAt(0) != '#' && line.match(/\S/)
             if line.match(/^\[(.*)\]$/)

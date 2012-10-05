@@ -1,3 +1,4 @@
+_ = Tower._
 fs    = require 'fs'
 path  = require 'path'
 

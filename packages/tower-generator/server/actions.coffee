@@ -1,19 +1,18 @@
-File        = require('pathfinder').File
+_ = Tower._
 _path       = require('path')
 fs          = require('fs')
-_url        = require('url')
 
-File.mkdirpSync = (dir) ->
+fs.mkdirpSync = (dir) ->
   dir = _path.resolve(_path.normalize(dir))
   try
-    fs.mkdirSync(dir, parseInt("0755"))
+    fs.mkdirSync(dir, parseInt('0755'))
   catch e
     switch e.errno
       when 47
         break
       when 34
-        @mkdirpSync _path.dirname(dir)
-        return @mkdirpSync(dir)
+        fs.mkdirpSync _path.dirname(dir)
+        return fs.mkdirpSync(dir)
       else
         console.error(e)
 
@@ -43,40 +42,40 @@ Tower.GeneratorActions =
 
     request.end (response) =>
       if response.ok
-        @log "create", path
-        File.write path, response.text
+        @log 'create', path
+        fs.writeFileSync path, response.text
       else
         error()
 
   log: (action, path) ->
     return if @silent
-    return if action == "create" && File.exists(path)
+    return if action == 'create' && fs.existsSync(path)
 
     key = switch action
-      when "destroy"
+      when 'destroy'
         `'   \x1b[36mremove\x1b[0m'`
       else
         `'   \x1b[36m'` + action + `'\x1b[0m'`
 
-    console.log("#{key} : #{File.relativePath(path)}")
+    console.log("#{key} : #{_path.relative(process.cwd(), path)}")
 
   injectIntoFile: (path, options, callback) ->
-    string = ""
+    string = ''
 
-    if typeof options == "string"
+    if typeof options == 'string'
       string    = options
       options   = callback
       callback  = undefined
-    if typeof options == "function"
+    if typeof options == 'function'
       callback  = options
       options   = {}
 
     options ||= {}
 
     path    = @destinationPath(path)
-    data    = File.read(path)
+    data    = fs.readFileSync(path, 'utf-8')
 
-    if typeof callback == "function"
+    if typeof callback == 'function'
       data = callback.call @, data
     else if options.before
       unless options.duplicate == false && data.match(_.regexpEscape(string))
@@ -87,26 +86,28 @@ Tower.GeneratorActions =
     else # after
       data = data + string
 
-    @log "update", path
+    @log 'update', path
 
     fs.writeFileSync path, data
 
   readFile: (file, callback) ->
-    fs.readFile(file, "utf-8", callback)
+    fs.readFile(file, 'utf-8', callback)
 
   createFile: (path, data, callback) ->
     path = @destinationPath(path)
-    @log "create", path
-    File.write path, data, callback
+    @log 'create', path
+    fs.mkdirpSync _path.dirname(path)
+    fs.writeFileSync path, data
+    callback() if typeof callback == 'function'
 
   destinationPath: (path) ->
     return path if path.match(/^\//)
-    _path.normalize File.join(@destinationRoot, @currentDestinationDirectory, path)
+    _path.normalize _path.join(@destinationRoot, @currentDestinationDirectory, path)
 
   createDirectory: (name, callback) ->
     path = @destinationPath(name)
-    @log "create", path
-    result = File.mkdirpSync(path)
+    @log 'create', path
+    result = fs.mkdirpSync(path)
     callback.call @, result if callback
     result
 
@@ -114,14 +115,14 @@ Tower.GeneratorActions =
     #Tower.module('wrench').rmdirSyncRecursive(@destinationPath(path))
 
   inside: (directory, sourceDirectory, block) ->
-    if typeof sourceDirectory == "function"
+    if typeof sourceDirectory == 'function'
       block           = sourceDirectory
       sourceDirectory = directory
 
     currentSourceDirectory        = @currentSourceDirectory
-    @currentSourceDirectory       = File.join(@currentSourceDirectory, sourceDirectory)
+    @currentSourceDirectory       = _path.join(@currentSourceDirectory, sourceDirectory)
     currentDestinationDirectory   = @currentDestinationDirectory
-    @currentDestinationDirectory  = File.join(@currentDestinationDirectory, directory)
+    @currentDestinationDirectory  = _path.join(@currentDestinationDirectory, directory)
     block.call @
     @currentSourceDirectory       = currentSourceDirectory
     @currentDestinationDirectory  = currentDestinationDirectory
@@ -129,36 +130,39 @@ Tower.GeneratorActions =
   copyFile: (source) ->
     {args, options, block} = @_args(arguments, 1)
     destination = args[0] || source
-    source = File.expandPath(@findInSourcePaths(source))
+    # @todo
+    source = _path.resolve(@findInSourcePaths(source))
 
-    data = File.read(source)
+    data = fs.readFileSync(source, 'utf-8')
 
     @createFile destination, data, block
 
   linkFile: (source) ->
     {args, options, block} = @_args(arguments, 1)
     destination = args.first || source
-    source = File.expandPath(@findInSourcePaths(source))
+    # @todo
+    source = _path.resolve(@findInSourcePaths(source))
 
     @createLink destination, source, options
 
   template: (source) ->
     {args, options, block} = @_args(arguments, 1)
     destination = args[0] || source.replace(/\.tt$/, '')
+    # @todo
+    source  = _path.resolve(@findInSourcePaths(source))
 
-    source  = File.expandPath(@findInSourcePaths(source))
-
-    data    = @render(File.read(source), @locals())
+    data    = @render(fs.readFileSync(source, 'utf-8'), @locals())
 
     @createFile destination, data, options
 
   render: (string, options = {}) ->
     require('ejs').render(string, options)
 
+  # @todo
   chmod: (path, mode, options = {}) ->
-    return unless behavior == "invoke"
-    path = File.expandPath(path, destination_root)
-    @sayStatus "chmod", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
+    return unless behavior == 'invoke'
+    path = _path.resolve(path, destination_root)
+    @sayStatus 'chmod', @relativeToOriginalDestinationRoot(path), options.fetch('verbose', true)
     File.chmod(mode, path) unless options.pretend
 
   prependToFile: (path) ->
@@ -190,11 +194,11 @@ Tower.GeneratorActions =
     @insertIntoFile(path, args...)
 
   gsubFile: (path, flag) ->
-    return unless behavior == "invoke"
+    return unless behavior == 'invoke'
     {args, options, block} = @_args(arguments, 2)
 
-    path = File.expandPath(path, destination_root)
-    @sayStatus "gsub", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
+    path = _path.resolve(path, destination_root)
+    @sayStatus 'gsub', @relativeToOriginalDestinationRoot(path), options.fetch('verbose', true)
 
     unless options.pretend
       content = File.binread(path)
@@ -211,7 +215,7 @@ Tower.GeneratorActions =
     @removeFile arguments...
 
   _invokeWithConflictCheck: (block) ->
-    if File.exists(path)
+    if fs.existsSync(path)
       @_onConflictBehavior(block)
     else
       @sayStatus "create", "green"
@@ -238,7 +242,7 @@ Tower.GeneratorActions =
     args: args, options: options, block: block
 
   findInSourcePaths: (path) ->
-    File.expandPath(File.join(@sourceRoot, "templates", @currentSourceDirectory, path))
+    _path.resolve(_path.join(@sourceRoot, "templates", @currentSourceDirectory, path))
 
 Tower.GeneratorActions.file = Tower.GeneratorActions.createFile
 Tower.GeneratorActions.directory = Tower.GeneratorActions.createDirectory

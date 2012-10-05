@@ -1,21 +1,21 @@
 _ = Tower._
 
-Tower.SupportString =
-  camelize_rx:    /(?:^|_|\-|\/)(.)/g
-  capitalize_rx:  /(^|\s)([a-z])/g
-  underscore_rx1: /([A-Z]+)([A-Z][a-z])/g
-  underscore_rx2: /([a-z\d])([A-Z])/g
+_.camelize_rx =    /(?:^|_|\-|\/)(.)/g
+_.capitalize_rx =  /(^|\s)([a-z])/g
+_.underscore_rx1 = /([A-Z]+)([A-Z][a-z])/g
+_.underscore_rx2 = /([a-z\d])([A-Z])/g
 
+_.mixin
   constantize: (string, scope = global) ->
-    scope[Tower.SupportString.camelize(string)]
+    scope[_.camelize(string)]
 
   camelize: (string, firstLetterLower) ->
-    string = string.replace Tower.SupportString.camelize_rx, (str, p1) -> p1.toUpperCase()
+    string = string.replace _.camelize_rx, (str, p1) -> p1.toUpperCase()
     if firstLetterLower then string.substr(0,1).toLowerCase() + string.substr(1) else string
 
   underscore: (string) ->
-    string.replace(Tower.SupportString.underscore_rx1, '$1_$2')
-          .replace(Tower.SupportString.underscore_rx2, '$1_$2')
+    string.replace(_.underscore_rx1, '$1_$2')
+          .replace(_.underscore_rx2, '$1_$2')
           .replace('-', '_').toLowerCase()
 
   singularize: (string) ->
@@ -32,7 +32,7 @@ Tower.SupportString =
 
     Tower.module('inflector').pluralize string
 
-  capitalize: (string) -> string.replace Tower.SupportString.capitalize_rx, (m, p1, p2) -> p1 + p2.toUpperCase()
+  capitalize: (string) -> string.replace _.capitalize_rx, (m, p1, p2) -> p1 + p2.toUpperCase()
 
   trim: (string) -> if string then string.trim() else ""
 
@@ -62,7 +62,7 @@ Tower.SupportString =
     # > This week's http://t.co/f2HvvZ1u
     # 1. "this-weeks-tco"
     # 2. "this-weeks-httptco"
-    Tower.SupportString.underscore(string)
+    _.underscore(string)
       #.replace(/'/, '') # week's => weeks
       .replace(/\.([^\.])/, (__, $1) -> $1) # node.js => nodejs (instead of node-js)
       .replace(/[^a-z0-9]+/g, "-") # replace every other non-word character with "-"
@@ -87,4 +87,4 @@ Tower.SupportString =
     else
       JSON.stringify(object)
 
-module.exports = Tower.SupportString
+module.exports = _

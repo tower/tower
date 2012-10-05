@@ -1,11 +1,13 @@
 var fs = require('fs');
 var path = require('path');
 
-try {
-  require('./coffee-inheritance.js');
-} catch (e) {
-  //if (process.env.DEBUG)
-  console.log(e);
+if (process.env.TOWER_COMMAND != 'new') {
+  try {
+    require('./coffee-inheritance.js');
+  } catch (e) {
+    //if (process.env.DEBUG)
+    console.log(e);
+  } 
 }
 
 // node path resolution was broken before

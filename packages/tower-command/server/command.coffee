@@ -1,8 +1,13 @@
+_ = Tower._
+
 # @todo This should `require` the minimal amount of code possible, 
 #   to execute as fast as possible.
 # 
 # @module
 Tower.Command =
+  load: (name) ->
+    require "./#{name}"
+
   # Short names to invoke commands.
   aliases:
     c: 'console'
@@ -29,7 +34,11 @@ Tower.Command =
       when 'exec'
         @exec(argv[3])
       else
-        command = new Tower['Command' + _.camelize(command)](argv)
-        command.run()
+        fn = Tower.Command.load(command)
+        if command == 'info'
+          fn(argv)
+        else
+          command = new Tower['Command' + _.camelize(command)](argv)
+          command.run()
 
 module.exports = Tower.Command

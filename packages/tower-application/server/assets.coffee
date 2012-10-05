@@ -38,7 +38,7 @@ Tower.ApplicationAssets =
         content = ""
 
         for path in paths
-          content += File.read("public/#{type}#{path}#{extension}") + "\n\n"
+          content += fs.readFileSync("public/#{type}#{path}#{extension}", 'utf-8') + "\n\n"
 
         fs.writeFileSync "public/#{type}/#{name}#{extension}", content
 
