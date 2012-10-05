@@ -102,7 +102,7 @@ module.exports = (grunt) ->
         grunt.file.copy src, dest
 
     files = grunt.file.expandFiles(@file.src)
-    target = @file.dest + '/'
+    target = @file.dest + Tower.pathSeparator
     strip = @data.strip
     renameCount = 0
     fileName = undefined
