@@ -12,14 +12,12 @@ _path.existsSync = fs.existsSync
 global._ = require 'underscore'
 _.mixin(require('underscore.string'))
 
-require 'underscore.logger'
-
 module.exports  = global.Tower = Tower = Ember.Namespace.create()
 
 # reads and sets the latest version on startup
 Tower.version = JSON.parse(fs.readFileSync(_path.normalize("#{__dirname}/../../package.json"))).version
 
-Tower.logger    = _console
+Tower.logger    = console
 
 # @todo put in a better place
 Tower.defaultEncoding = 'utf-8'
@@ -46,14 +44,14 @@ Tower._modules =
   File:       -> require('pathfinder').File
 
 require '../tower-support/server'
-require '../tower-application/server'
-require '../tower-store/server'
-require '../tower-model/server'
-require '../tower-view/server'
-require '../tower-controller/server'
-require '../tower-net/server'
-require '../tower-mailer/server'
-require '../tower-middleware/server'
+#require '../tower-application/server'
+#require '../tower-store/server'
+#require '../tower-model/server'
+#require '../tower-view/server'
+#require '../tower-controller/server'
+#require '../tower-net/server'
+#require '../tower-mailer/server'
+#require '../tower-middleware/server'
 require '../tower-command/server'
 require '../tower-generator/server'
 
@@ -111,4 +109,4 @@ try
 catch error
   console.log error
 
-Tower.View.store(new Tower.StoreFileSystem(['app/templates/shared', 'app/templates/server']))
+Tower.View.store(new Tower.StoreFileSystem(['app/templates/shared', 'app/templates/server'])) if Tower.View

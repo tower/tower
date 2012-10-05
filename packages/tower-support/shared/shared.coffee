@@ -15,7 +15,7 @@ _.extend Tower,
   publicPath:       "/"
   case:             "camelcase"
   accessors:        typeof(window) == "undefined"
-  logger:           if typeof(_console) != 'undefined' then _console else console
+  logger:           if typeof(global['_console']) != 'undefined' then _console else console
   structure:        "standard"
   config:           {}
   namespaces:       {}
