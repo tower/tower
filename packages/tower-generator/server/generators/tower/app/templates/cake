@@ -64,7 +64,40 @@ task 'routes', ->
   result  = []
   routes  = Tower.Route.all()
 
-  result
+  methods =
+    GET:    'GET'
+    POST:   'POST'
+    PUT:    'PUT'
+    DELETE: 'DELETE'
+
+  rows  = []
+  max   = [0, 0, 0, 0]
+
+  # @todo build an ascii table without any borders
+  routes.forEach (route, i) ->
+    route.options.to ||= _.camelize(route.controller.name, true).replace(/Controller$/, '') + "##{route.controller.action}"
+    row = []
+
+    method = methods[route.methods[0].toUpperCase()]
+    path = route.path.replace('.:format?', '')
+
+    row.push method
+    row.push path
+    row.push route.options.to
+    row.push "curl -X #{method} http://localhost:3000#{path}.json"
+
+    max.forEach (value, j) ->
+      max[j] = Math.max(value, row[j].length)
+
+    rows.push(row)
+
+  rows.forEach (row, i) ->
+    row.forEach (column, j) ->
+      row[j] = column + _.repeat(' ', max[j] - column.length + 4)
+
+    rows[i] = row.join('')
+
+  process.exit()
 
 task 'jobs', ->
   # make sure tower is loaded so we can get models
