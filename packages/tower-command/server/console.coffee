@@ -10,6 +10,9 @@ class Tower.CommandConsole
       .option('-e, --environment [value]')
       .option('-j, --javascript')
       .option('-s --synchronous')
+      # @todo so you can login to your heroku console or whatever without having to do it separately:
+      #   tower console -s -r heroku
+      .option('-r --remote')
       .option '-h, --help', '''
 \ \ Usage:
 \ \   tower console [options]
@@ -180,20 +183,22 @@ class Tower.CommandConsole
 
       backlog = ''
 
-      historyWriteStream.write(code.trim() + '\n')
-
       Fiber(->
         try
           $_ = global.$_
           _ = Tower._
-          returnValue = CoffeeScript.eval "$_=(#{code}\n)", {
+          returnValue = CoffeeScript.eval "$_ = __ = (#{code}\n)", {
             filename: 'repl'
             modulename: 'repl'
           }
           if returnValue is undefined
-            global.$_ = $_
+            global.$_ = global.__ = $_
           process.stdout.write inspect(returnValue, no, 2, enableColours)
           pressEnter()
+          # write history only if it's been successful
+          code = code.trim()
+          if repl.history[repl.history.length - 1] != code
+            historyWriteStream.write(code + '\n')
         catch err
           error err
       ).run()
