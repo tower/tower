@@ -101,10 +101,15 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
     records     = undefined
 
     if @instantiate
+      @returnArray = true
+
       iterator = (record, next) =>
         record.updateAttributes(updates, next)
 
-      @_each @, iterator, callback
+      @_each @, iterator, (error, result) =>
+        records = result
+        callback.call(@, error, records) if callback
+        records
     else
       @store.update updates, @, (error, result) =>
         records = @data[0]
@@ -113,7 +118,8 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
         # this should go into some Ember runLoop thing
         # it should also be moved to the store
 
-    if Tower.isClient then records else @ # tmp solution
+    records
+    #if Tower.isClient then records else @ # tmp solution
 
   # @todo need to notify which records are destroyed
   _destroy: (callback) ->

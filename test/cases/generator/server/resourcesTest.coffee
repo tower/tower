@@ -96,7 +96,7 @@ describe 'Tower.GeneratorResources', ->
     test 'name: "title"', ->
       expected =
         name:      'title'
-        type:      'String'
+        type:      'string'
         humanName: 'Title'
         fieldType: 'string'
         value:     'A title'
