@@ -78,6 +78,9 @@ if typeof global['Ember'] != 'undefined'
     values[Ember.guidFor(newKey)] = value
     undefined
 
+  Array::toJSON = ->
+    _.map @, (item) -> if item.toJSON then item.toJSON() else item
+
   #if Tower.nativeExtensions
   #  _.extend(Function.prototype, coffeescriptMixin, towerMixin)
 else

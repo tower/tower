@@ -307,7 +307,7 @@ _.extend Tower,
   parallel: (array, iterator, callback = ->) ->
     return callback() unless array.length
     completed = 0
-    iterate = ->
+
     Tower.each array, (x) ->
       iterator x, (error) ->
         if error

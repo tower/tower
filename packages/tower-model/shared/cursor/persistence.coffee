@@ -124,7 +124,7 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
 
       @_each(@, iterator, callback)
     else
-      @select('id').find (error, recordsWithOnlyIds) =>
+      @model.where(id: $in: @ids).select('id').all (error, recordsWithOnlyIds) =>
         @store.destroy @, (error, records) =>
           Tower.notifyConnections('destroy', recordsWithOnlyIds) unless error
           callback.call(@, error, records) if callback

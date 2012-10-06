@@ -55,20 +55,18 @@ Tower.GeneratorResources =
       name:       name
       options:    options
       type:       switch type.toLowerCase()
-        when 'text' then 'String'
+        when 'text' then 'string'
+        when 'currency' then 'decimal'
         else
-          _.camelize(type)
+          type
 
       humanName:  _.humanize(name)
 
-      fieldType:  switch type.toLowerCase()
-        when 'integer'                    then 'number'
-        when 'float', 'decimal', 'string' then 'string'
-        when 'time'                       then 'time'
-        when 'datetime', 'timestamp'      then 'datetime'
-        when 'date'                       then 'date'
-        when 'text'                       then 'text'
-        when 'boolean'                    then 'boolean'
+      fieldType:  switch type
+        when 'float', 'decimal', 'integer', 'number'
+        , 'string', 'time', 'date', 'text', 'boolean'
+        , 'currency', 'array', 'geo'
+          type
         else
           'string'
 

@@ -5,7 +5,7 @@ class Tower.CommandConsole
     program
       .version(Tower.version)
       .option('-e, --environment [value]')
-      .option('-c, --coffee')
+      .option('-j, --javascript')
       .option('-s --synchronous')
       .option '-h, --help', '''
 \ \ Usage:
@@ -13,15 +13,15 @@ class Tower.CommandConsole
 \ \ 
 \ \ Options:
 \ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
-\ \   -c, --coffee                      run in coffeescript mode!
-\ \   -s, --synchronous                 allows for database operations to run synchronously
+\ \   -j, --javascript                  run in javascript mode (coffee-script mode is default)
+\ \   -s, --synchronous                 allows for database operations to run synchronously, via node fibers
 \ \   -h, --help                        output usage information
 \ \   -v, --version                     output version number
 \ \ 
 '''
     program.parse(argv)
 
-    program.environment ||= "development"
+    program.environment ||= 'development'
 
     if program.help
       console.log program.options[program.options.length - 1].description
@@ -30,7 +30,7 @@ class Tower.CommandConsole
     Tower.env = @program.environment
 
   run: ->
-    return @runCoffee() if @program.coffee
+    return @runCoffee() unless @program.javascript
     repl    = require("repl")
     repl    = repl.start
       prompt:"tower> "
@@ -153,7 +153,8 @@ class Tower.CommandConsole
           }
           if returnValue is undefined
             global.$_ = $_
-          process.stdout.write inspect(returnValue, no, 2, enableColours) + '\n'
+          process.stdout.write inspect(returnValue, no, 2, enableColours)
+          process.stdin.emit('keypress', '\u001b[6n', { name: 'enter', ctrl: false, meta: false, shift: false })
         catch err
           error err
       ).run()
