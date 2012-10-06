@@ -123,12 +123,18 @@ Tower.ModelCursorPersistence = Ember.Mixin.create
 
   # @todo need to notify which records are destroyed
   _destroy: (callback) ->
+    records     = undefined
+
     if @instantiate
+      @returnArray = true
       iterator = (record, next) ->
         Tower.notifyConnections('destroy', [record])
         record.destroy(next)
 
-      @_each(@, iterator, callback)
+      @_each @, iterator, (error, result) =>
+        records = result
+        callback.call(@, error, records) if callback
+        records
     else
       @model.where(id: $in: @ids).select('id').all (error, recordsWithOnlyIds) =>
         @store.destroy @, (error, records) =>
