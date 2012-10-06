@@ -1,3 +1,6 @@
+_path = require('path')
+fs = require('fs')
+
 class Tower.CommandConsole
   constructor: (argv) ->
     @program = program = require('commander')
@@ -107,6 +110,17 @@ class Tower.CommandConsole
     {Script}     = require 'vm'
     Module       = require 'module'
 
+    historyPath = _path.join(Tower.root, 'tmp', 'replHistory.coffee')
+    # https://github.com/substack/node-humbug/blob/master/index.js
+    #Stream = require('stream')
+    #historyStream = new Stream
+    #historyStream.readable = true
+    #historyStream.writable = true
+    #historyStream.write = (buf) ->
+    #historyStream.end = ->
+    #historyStream.destroy = historyStream.end
+    #process.stdin.pipe(historyStream)
+
     # REPL Setup
 
     # Config
@@ -119,6 +133,27 @@ class Tower.CommandConsole
     # Start by opening up `stdin` and `stdout`.
     stdin = process.openStdin()
     stdout = process.stdout
+
+    # It's pretty involved to read one line at a time up and down a file...
+    # Saving for later, just reading in memory for now
+    #historyReadStream   = fs.createReadStream(historyPath, flags: 'r', encoding: 'utf-8')
+    historyWriteStream  = fs.createWriteStream(historyPath, flags: 'a', encoding: 'utf-8')
+    history = if fs.existsSync(historyPath) then fs.readFileSync(historyPath, 'utf-8').split('\n').reverse() else []
+    historyIndex = 0
+    #
+    #historyWriteStream.on 'drain', ->
+    #
+    #historyReadStream.pause()
+    #historyReadStream.up = ->
+    #  historyReadStream.resume()
+    #historyReadStream.down = ->
+    #  historyReadStream.resume()
+    #
+    #historyReadStream.on 'data', (data) ->
+    #  console.log 'stream data!', data
+
+    pressEnter = ->
+      process.stdin.emit('keypress', '\u001b[6n', { name: 'enter', ctrl: false, meta: false, shift: false })
 
     # Log an error.
     error = (err) ->
@@ -142,7 +177,11 @@ class Tower.CommandConsole
         repl.prompt()
         return
       repl.setPrompt REPL_PROMPT
+
       backlog = ''
+
+      historyWriteStream.write(code.trim() + '\n')
+
       Fiber(->
         try
           $_ = global.$_
@@ -154,7 +193,7 @@ class Tower.CommandConsole
           if returnValue is undefined
             global.$_ = $_
           process.stdout.write inspect(returnValue, no, 2, enableColours)
-          process.stdin.emit('keypress', '\u001b[6n', { name: 'enter', ctrl: false, meta: false, shift: false })
+          pressEnter()
         catch err
           error err
       ).run()
@@ -205,6 +244,9 @@ class Tower.CommandConsole
     else
       repl = readline.createInterface stdin, stdout, autocomplete
 
+    repl.historyIndex = historyIndex
+    repl.history = history
+
     repl.on 'attemptClose', ->
       if backlog
         backlog = ''
@@ -216,6 +258,8 @@ class Tower.CommandConsole
 
     repl.on 'close', ->
       process.stdout.write '\n'
+      #historyReadStream.destroy()
+      historyWriteStream.destroySoon()
       stdin.destroy()
 
     repl.on 'line', run
