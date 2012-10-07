@@ -70,14 +70,26 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 <a name="0.4.3" href="0.4.3"></a>
 
-### 0.4.3 (controllers)
+### 0.4.3 (installation, platform support)
+
+- ~~get tower src development installation working on mac~~
+- ~~get tower src development installation working on linux~~
+- ~~get deployment working on windows azure~~
+- get npm installation working on windows 7
+- make sure `tower console -s` works on windows
+- get tower src development installation working on windows
+- get working on ie8+
+- get coffeescript working w uglifyjs
+
+<a name="0.4.4" href="0.4.4"></a>
+
+### 0.4.4 (controllers)
 
 #### Requirements
 
 - error hooks for controllers
 - https helper methods
 - compile assets for s3 so you don't have to include them in your repo
-- get coffeescript working w uglifyjs
 - request timeout if app crash
 
 #### Improvements
@@ -113,21 +125,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - better controller scopes
 - store params on the client as you change state
 
-##### Other random things
+<a name="0.4.5" href="0.4.5"></a>
 
-- compile all test/cases into tests.js to render on towerjs.org
-- need to figure out how to append fields to a model base class after the other models have been subclassed.
-- convert modules to `Ember.Mixin` objects. 
-- convert all `class X` in tower to `.extend`, just javascript
-- for tower development, compile and load client sub-packages to improve workflow.
-- better error reporting w/ coffeescript (`options = bare: true, filename: filePath`)
-- generic file/path extensions
-  - file.matches
-  - file.pattern()
-
-<a name="0.4.4" href="0.4.4"></a>
-
-### 0.4.4 (models)
+### 0.4.5 (models)
 
 - ~~uniqueness validation (database should not save a record unless specified attributes are globally unique (i.e. username))~~
 - ~~email/phone validation (and other common validation helpers)~~
@@ -157,9 +157,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - remove the `Tower.ModelScope` wrapper class.
 - the store should be higher level, so a "google maps store" would provide a somewhat REST API to a few resources (place, location, business, etc.) So the store has a set of models/tables/collections it manages.
 
-<a name="0.4.5" href="0.4.5"></a>
+<a name="0.4.6" href="0.4.6"></a>
 
-### 0.4.5 (templates, views)
+### 0.4.6 (templates, views)
 
 - automatic sorting when new model is added to cursor (`Ember.Sortable`)
 - automatic form validations based on model of client
@@ -175,18 +175,18 @@ You are free to contribute any of these features in any order… I'm more of a f
 
 By this point, the models, views, templates, and controllers should be fairly complete.
 
-<a name="0.4.6" href="0.4.6"></a>
+<a name="0.4.7" href="0.4.7"></a>
 
-### 0.4.6 (model extensions)
+### 0.4.7 (model extensions)
 
 - *authentication
 - *authorization ([tower-model/shared/ability.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-model/shared/ability.coffee))
 - *test storing images on s3 ([tower-store/server/s3.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-store/server/s3.coffee))
 - *image/asset/attachment model api (see https://github.com/thoughtbot/paperclip) ([tower-model/shared/attachment.coffee](https://github.com/viatropos/tower/blob/a6acf7ecfd5f7ed5d501fdd0c2adc2f0b828c1c6/packages/tower-model/shared/attachment.coffee))
 
-<a name="0.4.7" href="0.4.7"></a>
+<a name="0.4.8" href="0.4.8"></a>
 
-### 0.4.7 (sockets)
+### 0.4.8 (sockets)
 
 - ~~push notifications (web socket integration into the controllers)~~
 - ~~swappable sockets api (sock.ly, socket.io)~~
@@ -194,9 +194,9 @@ By this point, the models, views, templates, and controllers should be fairly co
 - *document the cursor/pub-sub api
 - write lots of tests for this
 
-<a name="0.4.8" href="0.4.8"></a>
+<a name="0.4.9" href="0.4.9"></a>
 
-### 0.4.8 (background jobs, emails)
+### 0.4.9 (background jobs, emails)
 
 - ~~Test the mailer on heroku~~
 - ~~background queuing with redis (`User.queue("welcome", 1)` vs. `User.welcome(1)`, for background processing) - https://github.com/technoweenie/coffee-resque~~
@@ -204,9 +204,9 @@ By this point, the models, views, templates, and controllers should be fairly co
 - inline css in email templates
 - make logs write to `./log` folder.
 
-<a name="0.4.9" href="0.4.9"></a>
+<a name="0.4.10" href="0.4.10"></a>
 
-### 0.4.9 (helpers, configuration)
+### 0.4.10 (helpers, configuration)
 
 - add underscore helpers
   - *geo transforms (lat/lng to x/y in pixels, etc.)
@@ -318,6 +318,16 @@ All of the base ideas are now pretty much in the Tower codebase, now it's just a
 If you're excited to work on one of these things let me know and I'll point you to where things are and all that. Once all of this stuff is reasonably complete (mid August hopefully), this will merge into master. From there it's going to be "robustifying" everything, and hardcore performance tuning.
 
 ## Other
+
+- compile all test/cases into tests.js to render on towerjs.org
+- for tower development, compile and load client sub-packages to improve workflow.
+- better error reporting w/ coffeescript (`options = bare: true, filename: filePath`)
+- need to figure out how to append fields to a model base class after the other models have been subclassed.
+- convert modules to `Ember.Mixin` objects. 
+- convert all `class X` in tower to `.extend`, just javascript
+- generic file/path extensions
+  - file.matches
+  - file.pattern()
 
 ### Nice-to-haves
 
