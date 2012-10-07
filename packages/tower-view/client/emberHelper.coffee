@@ -42,7 +42,7 @@ Tower.View.reopen
     outletName: options.outlet || 'view' # default value in ember
     viewClass:  @findEmberView(options)
     #context:    options.data || @#get('content')
-    controller: @_context # this is the Tower.View instance
+    controller: @_context # `this` is the Tower.View instance
 
   # Gets the ember template from `Ember.TEMPLATES`, which might be a computed property.
   _getEmberTemplate: (name) ->
