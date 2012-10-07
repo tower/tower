@@ -67,7 +67,7 @@ class Tower.NetConnection extends Tower.NetConnectionBase
       try Tower.constant(data.type).load(data.records)
 
     serverDidUpdate: (data) ->
-      try Tower.constant(data.type).load(data.records, "update")
+      try Tower.constant(data.type).load(data.records, 'update')
 
     # @todo
     serverDidDestroy: (data) ->

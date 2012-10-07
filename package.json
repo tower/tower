@@ -119,8 +119,7 @@
     "colors": "~0.6.0-1"
   },
   "globalDependencies": {},
-  "localDependencies": {
-  },
+  "localDependencies": {},
   "scripts": {
     "test": "make test",
     "start": "grunt start --config ./grunt.coffee",

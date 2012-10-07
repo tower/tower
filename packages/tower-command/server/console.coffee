@@ -36,6 +36,14 @@ class Tower.CommandConsole
     Tower.env = @program.environment
 
   run: ->
+    Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
+    app = Tower.Application.instance()
+    app.isConsole = true
+    app.initialize()
+    app.stack()
+    app.watch() if Tower.watch
+    app.initializeConsoleHooks()
+
     return @runCoffee() unless @program.javascript
     repl    = require("repl")
     repl    = repl.start
@@ -52,13 +60,6 @@ class Tower.CommandConsole
     client  = repl.context
 
     client.reload = =>
-      Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
-      app = Tower.Application.instance()
-      app.isConsole = true
-      app.initialize()
-      app.stack()
-      app.watch() if Tower.watch
-      # app.initializeConsoleHooks()
       client.Tower  = Tower
       client.Future = require('fibers/future')
       client.Fiber = Fiber
@@ -94,10 +95,6 @@ class Tower.CommandConsole
     process.nextTick client.reload
 
   runCoffee: ->
-    Tower.ModelCursor.include Tower.ModelCursorSync if @program.synchronous
-    app = Tower.Application.instance()
-    app.initialize()
-    app.stack()
     # Copied from coffee-script/lib/coffee-script/repl.coffee
     #
     # A very simple Read-Eval-Print-Loop. Compiles one line at a time to JavaScript

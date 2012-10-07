@@ -4,6 +4,8 @@ server  = null
 io      = null
 _       = Tower._
 
+Tower.tcpPort = 6969
+
 # Entry point to your application.
 class Tower.Application extends Tower.Engine
   @reopenClass
@@ -94,6 +96,8 @@ class Tower.Application extends Tower.Engine
             @_loadApp(done)
           else
             done()
+            process.nextTick =>
+              @_loadApp()
 
       @runCallbacks 'initialize', initializer, complete
 
@@ -184,7 +188,7 @@ class Tower.Application extends Tower.Engine
           console.info("Tower #{Tower.env} server listening on port #{Tower.port}")
           value.applySocketEventHandlers() for key, value of @ when key.match /(Controller)$/
           @watch() if Tower.watch
-          # @initializeServerHooks() if Tower.env == 'development'
+          @initializeServerHooks() if Tower.env == 'development'
 
     initializeSockets: ->
       unless @io
@@ -195,39 +199,60 @@ class Tower.Application extends Tower.Engine
     # 
     # @todo only send events if the server is running
     initializeConsoleHooks: ->
-      hookio  = require('hook.io')
-      @hook   = hook = hookio.createHook(name: 'tower-console', silent: true)
-      hook.start()
+      net   = require('net')
+
+      client = new net.Socket()
+      client.connect Tower.tcpPort, 'localhost', ->
+
+      # data sent from server
+      # @todo nothing to be done here, but possibly printing error to console?
+      # client.on 'data', (data) ->
+
+      # Add a 'close' event handler for the client socket
+      client.on 'close', ->
+        console.log 'Console hooks have exited'
+
+      process.on 'exit', ->
+        client.destroy()
 
       # Override this method to make it route to hook.io.
       Tower.notifyConnections = (action, records, callback) ->
         records = [records] unless records instanceof Array
-        hook.emit 'notifyConnections',
+        client.write JSON.stringify
           action:   action
-          records:  JSON.stringify(records)
+          records:  records
           type:     try records[0].constructor.className()
 
     # This listens for events from the console so the browser can update
     initializeServerHooks: ->
-      hookio  = require('hook.io')
-      @hook   = hook = hookio.createHook(name: 'tower-server', silent: true)
+      net = require('net')
 
-      hook.on 'tower-console::notifyConnections', (data) ->
-        if data.type
-          # Need a better way of building records (that allows setting `id`)
-          klass   = Tower.constant(data.type)
-          store   = klass.store()
-          records = _.map JSON.parse(data.records), (attributes) ->
-            store.serializeModel(attributes, true)
+      net.createServer((sock) ->
+        # console.log sock.remoteAddress + ':' + sock.remotePort
+        sock.on 'data', (data) ->
+          try
+            data = JSON.parse(data.toString())
 
-          Tower.notifyConnections(data.action, records)
+            if data.type
+              # Need a better way of building records (that allows setting `id`)
+              klass   = Tower.constant(data.type)
+              store   = klass.store()
+              records = _.map data.records, (attributes) ->
+                store.serializeModel(attributes, true)
 
-        data    = null
-        klass   = null
-        store   = null
-        records = null
+              Tower.notifyConnections(data.action, records)
 
-      hook.start()
+            data    = null
+            klass   = null
+            store   = null
+            records = null
+          catch error
+            console.log error
+
+        # sock.on 'close', (data) ->
+          # console.log 'CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort
+
+      ).listen(Tower.tcpPort, 'localhost')
 
     run: ->
       @initialize()

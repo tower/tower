@@ -7,7 +7,8 @@ Tower.StoreMemoryPersistence =
   # @return [Array] Returns array of added records.
   load: (data, action) ->
     records = @_load(data)
-    if action is "update"
+
+    if action == 'update'
       for record in records
         record.reload()
 
