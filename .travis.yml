@@ -6,8 +6,6 @@ branches:
     - master
 install: npm install
 services: mongodb
-before_install:
-  rm .gitmodules
 before_script:
   - "npm install grunt"
   - "make build-test-client"
