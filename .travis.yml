@@ -7,7 +7,7 @@ branches:
 install: npm install
 services: mongodb
 before_script:
-  - "npm install coffee-script"
+  - "make install-dependencies"
   - "npm install grunt"
   - "make build-test-client"
   - "make start-test-client &"
