@@ -39,9 +39,6 @@ describe 'file paths', ->
       'testJsonController.coffee',
       'testRoutesController.coffee',
       'usersController.coffee'
-    ], (i) -> Tower.joinPath(root, i)
+    ].sort(), (i) -> Tower.joinPath(root, i)
 
-    assert.deepEqual App.selectPaths('app/controllers'), expected
-
-  test 'process.env.TOWER_ROOT', ->
-    console.log process.env.TOWER_ROOT
+    assert.deepEqual App.selectPaths('app/controllers').sort(), expected

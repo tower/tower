@@ -62,9 +62,9 @@ describe 'Tower.File', ->
       'testJsonController.coffee',
       'testRoutesController.coffee',
       'usersController.coffee'
-    ]
+    ].sort()
 
-    assert.deepEqual Tower.entriesSync(dir), expected
+    assert.deepEqual Tower.entriesSync(dir).sort(), expected
     
     Tower.entries dir, (error, entries) =>
       assert.deepEqual entries, expected
@@ -98,7 +98,7 @@ describe 'Tower.File', ->
       'testJsonController.coffee',
       'testRoutesController.coffee',
       'usersController.coffee'
-    ], (i) -> Tower.join(dir, i)
+    ].sort(), (i) -> Tower.join(dir, i)
 
-    assert.deepEqual Tower.files(dir), expected
-    assert.deepEqual Tower.files([dir]), expected
+    assert.deepEqual Tower.files(dir).sort(), expected
+    assert.deepEqual Tower.files([dir]).sort(), expected
