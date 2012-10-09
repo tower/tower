@@ -19,7 +19,7 @@ module.exports = (grunt) ->
     files   = grunt.file.expand(["app#{_path.sep}templates#{_path.sep}**#{_path.sep}*.coffee"])
     result  = []
 
-    pathSeparator = _path.sep
+    pathSeparator = '/'
     pathSeparatorEscaped = '/'
 
     templatePath  = new RegExp("app#{pathSeparatorEscaped}templates#{pathSeparatorEscaped}.+\.coffee$")
