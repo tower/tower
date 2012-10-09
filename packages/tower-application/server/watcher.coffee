@@ -1,4 +1,3 @@
-File    = require('pathfinder').File
 _path   = require('path')
 fs      = require('fs')
 _       = Tower._
@@ -174,7 +173,7 @@ Tower.ApplicationWatcher =
       callback(null, result) if callback
 
   reloadPaths: (directory, callback) ->
-    for path in File.files(directory)
+    for path in Tower.module('File').files(directory)
       if path.match(/\.(?:coffee|js|iced)$/)
         @reloadPath(path)
 

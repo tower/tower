@@ -135,7 +135,7 @@ if (command == 'dependencies') {
     if (isGlobal || isGlobalLink) {
       // if you're installing it globally, only include bare minimum.
       dependencies = dependencies.concat(globalDependencies);
-    } else if (!isLocalLink) {
+    } else if (!isLocalLink || !fs.existsSync('.gitignore')) {
       // otherwise install like normal.
       dependencies = dependencies.concat(localDependencies);
     }

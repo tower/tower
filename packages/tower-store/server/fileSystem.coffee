@@ -1,5 +1,5 @@
-File = require('pathfinder').File
 _ = Tower._
+fs = require('fs')
 _path = require('path')
 
 class Tower.StoreFileSystem extends Tower.Store
@@ -12,6 +12,7 @@ class Tower.StoreFileSystem extends Tower.Store
 
     # @todo this needs to be modified by the file watcher in tower-application/server/application.coffee
     getTemplatePaths: ->
+      File = Tower.module('File')
       @_templatePaths ||= _.map File.files.apply(File, _.map(@loadPaths, (i) -> _path.join(Tower.root, i))), (i) ->
         _path.relative(Tower.root, i)
 
@@ -44,7 +45,7 @@ class Tower.StoreFileSystem extends Tower.Store
 
     find: (query, callback) ->
       path = @findPath query
-      return (File.read(path) || "") if path
+      return (fs.readFileSync(path, 'utf-8') || "") if path
       null
 
     defaultPath: (query, callback) ->

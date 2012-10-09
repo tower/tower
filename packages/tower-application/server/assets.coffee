@@ -1,8 +1,6 @@
 fs            = require 'fs'
 path          = require 'path'
 _path         = require 'path'
-Pathfinder    = require 'pathfinder'
-File          = Pathfinder.File
 _             = Tower._
 
 # @module
@@ -51,9 +49,9 @@ Tower.ApplicationAssets =
 
               do (content) =>
                 result = content
-                digestPath  = File.digestFile("public/#{type}/#{name}#{extension}")
+                digestPath  = Tower.module('File').digestFile("public/#{type}/#{name}#{extension}")
 
-                manifest["#{name}#{extension}"]  = File.basename(digestPath)
+                manifest["#{name}#{extension}"]  = Tower.module('File').basename(digestPath)
 
                 #gzip result, (error, result) ->
                 fs.writeFile digestPath, result, ->
@@ -91,6 +89,7 @@ Tower.ApplicationAssets =
   #
   # @return [void]
   upload: (block) ->
+    File          = Tower.module('File')
     gzip          = require 'gzip'
 
     cachePath = "tmp/asset-cache.json"
@@ -98,7 +97,7 @@ Tower.ApplicationAssets =
     fs.mkdirSync "tmp" unless _path.existsSync("tmp")
 
     try
-      assetCache  = if File.exists(cachePath) then JSON.parse(File.read(cachePath)) else {}
+      assetCache  = if fs.existsSync(cachePath) then JSON.parse(fs.readFileSync(cachePath, 'utf-8')) else {}
     catch error
       console.log error.message
       assetCache  = {}
@@ -128,7 +127,7 @@ Tower.ApplicationAssets =
 
     process.on 'exit', ->
       # :) this should use the not createWriteStream API (https://gist.github.com/2947293)
-      File.write(cachePath, JSON.stringify(assetCache, null, 2))
+      fs.writeFileSync(cachePath, JSON.stringify(assetCache, null, 2))
 
     process.on 'SIGINT', ->
       process.exit()
