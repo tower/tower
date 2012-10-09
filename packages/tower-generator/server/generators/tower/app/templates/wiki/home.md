@@ -29,7 +29,7 @@ Read up on [testing Tower.js apps](http://towerjs.org/guides/testing).
 
 - [Tower.js](http://towerjs.org/guides)
 - [MongoDB](http://www.mongodb.org/display/DOCS/Advanced+Queries)
-- [Node.js](http://nodejs.org/docs/v0.6.11/api/fs.html)
+- [Node.js](http://nodejs.org/api/)
 - [Mocha](https://github.com/visionmedia/mocha)
 - [CoffeeScript](http://coffeescript.org/)
 - [Stylus](http://learnboost.github.com/stylus/)

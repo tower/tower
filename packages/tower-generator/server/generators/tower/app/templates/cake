@@ -3,16 +3,23 @@ knox  = require('knox')
 spawn = require('child_process').spawn
 which = require('which').sync
 
-# Watches and compiles assets to ./public
-task 'watch', ->
+spawnGrunt = (args) ->
   grunt   = which('grunt')
-  watcher = spawn(grunt, ['start', '--config', './grunt.coffee']) 
+  watcher = spawn(grunt, args) 
   watcher.stdout.setEncoding('utf8')
   watcher.stderr.setEncoding('utf8')
   watcher.stdout.on 'data', (data) ->
     console.log data.replace(/\n$/m, '') # remove extra line
   watcher.stderr.on 'data', (data) ->
     console.log data.replace(/\n$/m, '')
+
+# Watches and compiles assets to ./public
+task 'watch', ->
+  spawnGrunt ['start', '--config', './grunt.coffee']
+
+# Compiles assets to ./public (see `task 'watch'` for persistent compilation)
+task 'build', ->
+  spawnGrunt ['--config', './grunt.coffee']
 
 # This uploads all of your assets
 task 'assets:upload', ->
