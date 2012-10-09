@@ -107,8 +107,15 @@ var isWindows = process.platform == 'win32';
 var isLinux = process.platform == 'linux';
 
 if (command == 'dependencies') {
-  var packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8'));
+  var packageJSONPath = path.join(__dirname, '..', 'package.json');
+  var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath, 'utf-8'));
   var dependencies = [];
+
+  // @todo
+  // packageJSON.from == path where node module came from
+  // maybe have a `debug` version where you install tower debug
+  // and copy/paste your output to a gist so we can know the value different
+  // operating systems put into package.json
 
   var testDependencies = Object.keys(packageJSON['testDependencies']);
   var globalDependencies = Object.keys(packageJSON['globalDependencies']);
