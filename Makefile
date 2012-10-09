@@ -149,7 +149,7 @@ build:
 dist:
 	$(GRUNT) dist --config $(RUN)grunt.coffee
 
-publish:
+publish: dist
 	npm publish
 
 docs:
