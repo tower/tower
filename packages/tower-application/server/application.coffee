@@ -199,60 +199,9 @@ class Tower.Application extends Tower.Engine
     # 
     # @todo only send events if the server is running
     initializeConsoleHooks: ->
-      net   = require('net')
-
-      client = new net.Socket()
-      client.connect Tower.tcpPort, 'localhost', ->
-
-      # data sent from server
-      # @todo nothing to be done here, but possibly printing error to console?
-      # client.on 'data', (data) ->
-
-      # Add a 'close' event handler for the client socket
-      client.on 'close', ->
-        console.log 'Console hooks have exited'
-
-      process.on 'exit', ->
-        client.destroy()
-
-      # Override this method to make it route to hook.io.
-      Tower.notifyConnections = (action, records, callback) ->
-        records = [records] unless records instanceof Array
-        client.write JSON.stringify
-          action:   action
-          records:  records
-          type:     try records[0].constructor.className()
 
     # This listens for events from the console so the browser can update
     initializeServerHooks: ->
-      net = require('net')
-
-      net.createServer((sock) ->
-        # console.log sock.remoteAddress + ':' + sock.remotePort
-        sock.on 'data', (data) ->
-          try
-            data = JSON.parse(data.toString())
-
-            if data.type
-              # Need a better way of building records (that allows setting `id`)
-              klass   = Tower.constant(data.type)
-              store   = klass.store()
-              records = _.map data.records, (attributes) ->
-                store.serializeModel(attributes, true)
-
-              Tower.notifyConnections(data.action, records)
-
-            data    = null
-            klass   = null
-            store   = null
-            records = null
-          catch error
-            console.log error
-
-        # sock.on 'close', (data) ->
-          # console.log 'CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort
-
-      ).listen(Tower.tcpPort, 'localhost')
 
     run: ->
       @initialize()
