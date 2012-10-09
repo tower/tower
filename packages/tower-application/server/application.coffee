@@ -215,7 +215,7 @@ class Tower.Application extends Tower.Engine
       @_requireAny 'app/config', 'bootstrap'
 
     _loadPreinitializers: ->
-      @_requirePaths @_selectPaths('app/config', 'preinitializers')
+      @_requirePaths @selectPaths('app/config', 'preinitializers')
 
     _loadConfig: (options) ->
       for key in @constructor.configNames
@@ -240,14 +240,14 @@ class Tower.Application extends Tower.Engine
       Tower.ApplicationAssets.loadManifest()
 
     _loadLocales: ->
-      Tower.SupportI18n.load(path) for path in @_selectPaths('app/config', 'locales')
+      Tower.SupportI18n.load(path) for path in @selectPaths('app/config', 'locales')
 
     _loadEnvironment: ->
       # load initializers
       @_requireAny 'app/config', "environments/#{Tower.env}"
 
     _loadInitializers: ->
-      @_requirePaths @_selectPaths('app/config', 'initializers')
+      @_requirePaths @selectPaths('app/config', 'initializers')
 
     _loadMVC: ->
       for path in @constructor.autoloadPaths
@@ -256,7 +256,7 @@ class Tower.Application extends Tower.Engine
         if path.match('app/controllers')
           @_requireAny 'app/controllers', 'applicationController'
 
-        @_requirePaths @_selectPaths(path)
+        @_requirePaths @selectPaths(path)
 
     # In development mode, this is called on the first render.
     # 
@@ -288,7 +288,7 @@ class Tower.Application extends Tower.Engine
         return result if result?
       null
 
-    # @todo this should be cached (along with _selectPaths)
+    # @todo this should be cached (along with selectPaths)
     #   so when running tests and resetting the app state doesn't have to
     #   do it over and over again. It will have to be updated though
     #   by the watcher when a file is changed.
@@ -308,7 +308,7 @@ class Tower.Application extends Tower.Engine
         null
 
     # @param [String] type 'script', 'stylesheet', 'template'
-    _selectPaths: (pathStart, pathEnd, type = 'script') ->
+    selectPaths: (pathStart, pathEnd, type = 'script') ->
       key     = @_pathCacheKey(pathStart, pathEnd)
       paths   = @pathsByType[key]
 
