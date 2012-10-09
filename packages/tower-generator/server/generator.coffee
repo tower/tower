@@ -26,6 +26,7 @@ class Tower.Generator# extends Tower.Class
   constructor: (options = {}) ->
     options.program ||= {}
     _.extend @, options
+    @silent = !!options.program.quiet unless @hasOwnProperty('silent')
 
     unless @appName
       name = process.cwd().split('/')

@@ -29,6 +29,7 @@ command = (argv) ->
     .option('--include-stylesheets <names>', 'Stylesheets to use (defaults to twitter-bootstrap)', array, ["twitter-bootstrap"])
     .option('-t, --test <name>', 'Test framework (defaults to mocha)', "mocha")
     .option('-j, --use-javascript [value]', 'Use JavaScript instead of CoffeeScript', false)
+    .option('-q, --quiet', 'Prevent logging any generator output to the console')
     # heroku, nodejitsu, dotcloud, etc.
     .option('-d, --deployment <names>', 'Deployment options (defaults to heroku, only heroku works now)', array, ["heroku"])
     # .option('-e, --executable', 'Include an executable file in ./bin/<name>')
@@ -51,6 +52,7 @@ command = (argv) ->
 \ \   -D, --description <description>   project tagline (one sentence)
 \ \   -K, --keywords <keywords>         project keywords (e.g. "node.js, file uploading, s3")
 \ \   -n, --namespace <namespace>       global namespace for your app (defaults to YourProjectName)
+\ \   -q, --quiet                       Prevent logging any generator output to the console
 \ \   -h, --help                        output usage information
 \ \   -v, --version                     output version number
 \ \   --skip-procfile                   skip creating a Procfile (for deploying to Heroku)
@@ -65,6 +67,8 @@ command = (argv) ->
   if program.help
     console.log program.options[program.options.length - 1].description
     process.exit()
+
+  program.silent = program.quiet
 
   program.scriptType = if program.useJavascript then 'js' else 'coffee' #'coffee'
   program.stylesheetEngine ||= 'styl'

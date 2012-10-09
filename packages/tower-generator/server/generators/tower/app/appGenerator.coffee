@@ -1,5 +1,8 @@
 twitterBootstrapCommit = 'aaabe2a46c64e7d9ffd5735dba2db4f3cf9906f5'
 
+fs = require('fs')
+_path = require('path')
+
 class Tower.GeneratorAppGenerator extends Tower.Generator
   sourceRoot: __dirname
 
@@ -112,17 +115,14 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @template 'robots.txt'
         @directory 'fonts'
         @directory 'images'
-        @inside 'javascripts', ->
-          @inside 'app', ->
-            @inside 'templates', ->
-              @inside 'client', ->
-                @createFile 'index.js', ''
+        @directory 'javascripts'
         @directory 'stylesheets'
         @directory 'swfs'
         @directory 'uploads'
 
       @template 'README.md'
       
+      # @todo chmod 755
       @inside 'scripts', ->
         @template 'tower'
 
@@ -151,19 +151,34 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         @template "server.#{scriptType}"
 
       @directory 'tmp'
-      
-      @inside 'vendor', ->
-        @inside 'javascripts', ->
-          @directory 'bootstrap'
-          @get(remote, local) for remote, local of JAVASCRIPTS
-        @inside 'stylesheets', ->
-          @directory 'bootstrap'
-          @get(remote, local) for remote, local of STYLESHEETS
-      @inside 'public/images', ->
-        @get(remote, local) for remote, local of IMAGES
-      @inside 'public/swfs', ->
-        @get(remote, local) for remote, local of SWFS
+        
+      # if tower bundled client files already
+      vendorPath = _path.join(Tower.srcRoot, 'vendor')
+      vendorPathExists = fs.existsSync(vendorPath)
 
+      copyVendor = (source, destination) =>
+        Tower.module('wrench').copyDirSyncRecursive(_path.join(vendorPath, source), @destinationPath(destination))
+
+      unless vendorPathExists
+        @inside 'vendor', ->
+          @inside 'javascripts', ->
+            @directory 'bootstrap'
+            @get(remote, local) for remote, local of JAVASCRIPTS
+          @inside 'stylesheets', ->
+            @directory 'bootstrap'
+            @get(remote, local) for remote, local of STYLESHEETS
+        @inside 'public/images', ->
+          @get(remote, local) for remote, local of IMAGES
+      #@inside 'public/swfs', ->
+      #  @get(remote, local) for remote, local of SWFS
+      else
+        @directory 'vendor/javascripts'
+        @directory 'vendor/stylesheets'
+        copyVendor('javascripts', 'vendor/javascripts')
+        copyVendor('stylesheets', 'vendor/stylesheets')
+        copyVendor('images', 'public/images')
+
+      # @todo grunt should only recompile file changes
       @template "grunt.#{scriptType}", "grunt.#{scriptType}"
 
       # github wiki

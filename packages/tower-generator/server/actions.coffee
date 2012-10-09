@@ -20,6 +20,8 @@ Tower.GeneratorActions =
   get: (url, to, retries=0) ->
     path  = @destinationPath(to)
 
+    superagent = Tower.module('superagent')
+
     error = =>
       if retries > 3
         console.log "Error downloading #{url}"
@@ -27,12 +29,20 @@ Tower.GeneratorActions =
         retries++
         @get(url, to, retries)
     
-    request = Tower.module('superagent').get(url).buffer(true)
+    request = superagent.get(url).buffer(true)
     # Cache buster so if the author uploads newer version to same path
     # we get the new version rather than our locally cached version.
 
     # @todo put this somewhere else
-    Tower.module('superagent').parse['application/javascript'] = Tower.module('superagent').parse['text']
+    superagent.parse['application/javascript'] = superagent.parse['text']
+    superagent.parse['binary'] = (res, fn) ->
+      res.setEncoding('binary')
+      res.text = '';
+      res.on 'data', (chunk) -> res.text += chunk
+      res.on 'end', fn
+
+    superagent.parse['image/png'] = superagent.parse['binary']
+    superagent.parse['application/x-shockwave-flash'] = superagent.parse['binary']
 
     if url.match('cloud.github.com')
       request.set('Pragma', 'no-cache')
@@ -43,7 +53,11 @@ Tower.GeneratorActions =
     request.end (response) =>
       if response.ok
         @log 'create', path
-        fs.writeFileSync path, response.text
+        # @todo better approach
+        if response.type == 'image/png'
+          fs.writeFileSync path, response.text, 'binary'
+        else
+          fs.writeFileSync path, response.text
       else
         error()
 

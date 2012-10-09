@@ -76,6 +76,15 @@ build-test-client: check-phantomjs check-grunt
 	cd test$(PATH_SEP)example && pwd && npm install .
 	$(GRUNT) --config $(RUN)test$(PATH_SEP)example$(PATH_SEP)grunt.coffee
 
+freeze-vendor-files:
+	@echo Downloading client files to $(RUN)vendor ...
+	@rm -rf $(RUN)vendor
+	@rm -rf $(RUN)example
+	@$(RUN)bin$(PATH_SEP)tower new example --quiet
+	@mv example$(PATH_SEP)vendor vendor
+	@mv example$(PATH_SEP)public/images vendor
+	#@mv example$(PATH_SEP)public/swfs vendor
+
 start-test-client:
 	node $(TEST_SERVER_PATH) -p $(PORT)
 
