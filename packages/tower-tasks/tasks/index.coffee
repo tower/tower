@@ -20,7 +20,7 @@ module.exports = (grunt) ->
     result  = []
 
     pathSeparator = _path.sep
-    pathSeparatorEscaped = Tower.pathSeparatorEscaped
+    pathSeparatorEscaped = '/'
 
     templatePath  = new RegExp("app#{pathSeparatorEscaped}templates#{pathSeparatorEscaped}.+\.coffee$")
     coffeePattern = /\.coffee$/
