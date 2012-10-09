@@ -570,6 +570,7 @@ mocha $(find test -name client -prune -o -name '*Test.coffee' -print)
 ```
 git clone https://github.com/viatropos/tower.git
 cd tower
+make install-dependencies
 ```
 
 ### Building Tower
