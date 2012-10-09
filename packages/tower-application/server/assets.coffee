@@ -36,39 +36,35 @@ Tower.ApplicationAssets =
         content = ''
 
         for path in paths
-          content += Tower.readFileSync("public/#{type}#{path}#{extension}", 'utf-8') + "\n\n"
+          content += Tower.readFileSync(Tower.join('public', "#{type}#{path}#{extension}"), 'utf-8') + "\n\n"
 
-        Tower.writeFileSync "public/#{type}/#{name}#{extension}", content
+        writeFile = (content) ->
+          fingerprint   = Tower.fingerprint(content)
+          digestPath    = Tower.pathWithFingerprint(Tower.join('public', "#{type}/#{name}#{extension}"), fingerprint)
+          manifest["#{name}#{extension}"]  = Tower.basename(digestPath)
+
+          #gzip result, (error, result) ->
+          Tower.writeFile digestPath, content, ->
+            process.nextTick(next)
 
         if options.minify
-          process.nextTick ->
-            compressor content, {}, (error, content) ->
-              if error
-                console.log error
-                return next(error)
-
-              do (content) =>
-                result = content
-                digestPath  = Tower.digestFileSync("public/#{type}/#{name}#{extension}")
-
-                manifest["#{name}#{extension}"]  = Tower.basename(digestPath)
-
-                #gzip result, (error, result) ->
-                Tower.writeFile digestPath, result, ->
-                  next()
+          compressor content, {}, (error, content) ->
+            if error
+              console.log error
+              return next(error)
+            writeFile(content)
         else
-          process.nextTick(next)
+          writeFile(content)
 
       assetBlocks = []
 
       for name, paths of assets
-        assetBlocks.push name: name, paths: paths
+        assetBlocks.push(name: name, paths: paths)
 
-      Tower.async assetBlocks, compile, (error) ->
-        callback(error)
+      Tower.async assetBlocks, compile, callback
 
     bundleIterator = (data, next) ->
-      bundle data.type, data.extension, data.compressor, next
+      bundle(data.type, data.extension, data.compressor, next)
 
     bundles = [
       {type: "stylesheets", extension: ".css", compressor: mint.yui},

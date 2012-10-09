@@ -11,14 +11,11 @@ describe 'Tower.File', ->
       assert.ok !!stat
       done()
 
-  test 'digestPath', (done) ->
-    expected = '67574c7b406bb0064c686db97d00943e'
+  test 'fingerprint', ->
+    expected  = '67574c7b406bb0064c686db97d00943e'
+    string    = Tower.readFileSync(path)
 
-    assert.equal expected, Tower.digestPathSync(path)
-
-    Tower.digestPath path, (error, digest) =>
-      assert.equal expected, digest
-      done()
+    assert.equal expected, Tower.fingerprint(string)
 
   test 'pathFingerprint', ->
     expected = '67574c7b406bb0064c686db97d00943e'

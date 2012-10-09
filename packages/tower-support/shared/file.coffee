@@ -185,7 +185,7 @@ Tower._.extend Tower,
     @basename(path).replace(new RegExp(@extname(path) + '$'), '')
   
   digestFileSync: (path) ->
-    @pathWithFingerprint(path, @digestPathSync(path))
+    @pathWithFingerprint(path, @digestString(@readFileSync(path, 'utf-8')))
     
   pathFingerprint: (path) ->
     result = @basename(path).match(/-([0-9a-f]{32})\.?/)
@@ -200,31 +200,9 @@ Tower._.extend Tower,
   # see http://nodejs.org/docs/latest/api/crypto.html#crypto_crypto_createhash_algorithm
   digestHash: ->
     Tower.module('crypto').createHash(Tower.hashingAlgorithm)
-    
-  digestPath: (path, data, callback) ->
-    @stat path, (error, stat) =>
-      unless stat?
-        callback.call(@) if callback
-        return
 
-      hash = @digestHash()
-
-      if typeof data == 'function'
-        callback = data
-        data = null
-
-      unless data?
-        @readFile path, 'utf-8', (error, data) =>
-          callback.call(@, error, hash.update(data).digest('hex'))
-      else
-        callback.call(@, null, hash.update(data).digest('hex'))
-
-  digestPathSync: (path, data) ->
-    stat = @statSync(path)
-    return unless stat?
-    data ||= @readFileSync(path)
-    return unless data?
-    @digestHash().update(data).digest('hex')
+  fingerprint: (string) ->
+    @digestHash().update(string).digest('hex')
     
   stale: (path) ->
     oldMtime  = @PATHS[path]
