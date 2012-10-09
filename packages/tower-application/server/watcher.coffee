@@ -173,7 +173,7 @@ Tower.ApplicationWatcher =
       callback(null, result) if callback
 
   reloadPaths: (directory, callback) ->
-    for path in Tower.module('File').files(directory)
+    for path in Tower.files(directory)
       if path.match(/\.(?:coffee|js|iced)$/)
         @reloadPath(path)
 

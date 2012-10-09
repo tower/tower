@@ -1,14 +1,11 @@
 generator       = null
 sourceRoot      = null
 destinationRoot = null
-File            = require('pathfinder').File
-fs              = require 'fs'
-wrench          = require 'wrench'
 cakefileDestination = null
 
 describe 'Tower.GeneratorResources', ->
   beforeEach ->
-    wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp", true)
+    Tower.removeDirectorySync("#{process.cwd()}/test/tmp")
     generator   = new Tower.Generator(silent: true)
     
   test '#generateRandom("hex")', ->

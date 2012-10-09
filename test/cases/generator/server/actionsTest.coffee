@@ -1,22 +1,19 @@
 generator       = null
 sourceRoot      = null
 destinationRoot = null
-File            = require('pathfinder').File
-fs              = require 'fs'
-wrench          = require 'wrench'
 cakefileDestination = null
 
 describe 'Tower.GeneratorActions', ->
   beforeEach ->
-    try wrench.rmdirSyncRecursive("#{process.cwd()}/test/tmp", true)
+    try Tower.removeDirectorySync("#{process.cwd()}/test/tmp")
     sourceRoot          = process.cwd() + "/packages/tower-generator/server/generators/tower/app"
     destinationRoot     = process.cwd() + "/test/tmp"
-    cakefileDestination = File.join(destinationRoot, "Cakefile")
-    fs.unlinkSync cakefileDestination if File.exists(cakefileDestination)
+    cakefileDestination = Tower.join(destinationRoot, "Cakefile")
+    Tower.removeFileSync cakefileDestination if Tower.existsSync(cakefileDestination)
     generator   = new Tower.Generator(silent: true, sourceRoot: sourceRoot, destinationRoot: destinationRoot)
   
   test '#findInSourcePaths', ->
-    assert.equal generator.findInSourcePaths("cake"), File.join(sourceRoot, "templates", "cake")
+    assert.equal generator.findInSourcePaths("cake"), Tower.join(sourceRoot, "templates", "cake")
     
   test '#destinationPath(relativePath)', ->
     assert.equal generator.destinationPath("Cakefile"), cakefileDestination
@@ -25,10 +22,10 @@ describe 'Tower.GeneratorActions', ->
     assert.equal generator.destinationPath(cakefileDestination), cakefileDestination
     
   test '#copyFile', (done) ->
-    assert.isFalse File.exists(cakefileDestination)
+    assert.isFalse Tower.existsSync(cakefileDestination)
     
     generator.copyFile "cake", "Cakefile", =>
-      assert.isTrue File.exists(cakefileDestination), "File #{cakefileDestination} doesn't exist"
+      assert.isTrue Tower.existsSync(cakefileDestination), "File #{cakefileDestination} doesn't exist"
       done()
   
   test '#readFile', (done) ->
@@ -50,7 +47,7 @@ describe 'Tower.GeneratorActions', ->
     directory = "./a/b/c/d"
     
     generator.createDirectory directory, (error, result) =>
-      assert.isTrue File.exists("./test/tmp/#{directory}"), "Directory #{directory} doesn't exist"
+      assert.isTrue Tower.existsSync("./test/tmp/#{directory}"), "Directory #{directory} doesn't exist"
       done()
   
   test '#directory', ->

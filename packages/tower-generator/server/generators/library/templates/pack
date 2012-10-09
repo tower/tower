@@ -38,14 +38,9 @@
   },
   "devDependencies": {
     "coffee-script":          ">= 1.1.3",
-    "pathfinder":             ">= 0.3.0",
     "mocha":                  ">= 0.12.1",
     "chai":                   ">= 0.3.3",
-    "sinon":                  ">= 1.3.1",
-    "design.io":              ">= 0.3.0",
-    "design.io-javascripts":  ">= 0.3.0",
-    "design.io-stylesheets":  ">= 0.3.0",
-    "forever":                ">= 0.8.5"
+    "sinon":                  ">= 1.3.1"
   },
   "scripts": {
     "test":                   "./node_modules/mocha/bin/mocha $(find test -name \"*Test.coffee\")",

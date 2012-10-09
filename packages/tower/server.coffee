@@ -1,9 +1,6 @@
 _path     = require('path')
 fs        = require('fs')
 
-# @todo actually remove warning in pathfinder module
-_path.existsSync = fs.existsSync
-
 if process.env.TOWER_COMMAND == 'new'
   # this is to speed up the app generator, which doesn't need ember.
   module.exports  = global.Tower = {isNew: true, toString: -> 'Tower'}
@@ -36,7 +33,8 @@ Tower._modules =
   sockjs:     -> try require 'sockjs'
   _:          -> _
   wrench:     -> require 'wrench'
-  File:       -> require('pathfinder').File
+  crypto:     -> require('crypto')
+  mkdirp:     -> require('mkdirp')
 
 Tower._ = require 'underscore' # takes 15-20ms just to load underscore
 Tower._.mixin(require('underscore.string')) # add this takes 30ms

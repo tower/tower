@@ -1,9 +1,8 @@
-File = require('pathfinder').File
 _path = require('path')
 
 testCasesPath = "#{Tower.root}/public/javascripts/test/cases"
 
-testCases   = _.map File.files(testCasesPath), (path) ->
+testCases   = _.map Tower.files(testCasesPath), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
 
 testCases   = _.select testCases, (path) ->
@@ -11,7 +10,7 @@ testCases   = _.select testCases, (path) ->
   return false if path.match(/\/test\/cases\/[^\/]+\.js/)
   true
   
-testFixtures = _.map File.files("#{Tower.root}/public/javascripts/app"), (path) ->
+testFixtures = _.map Tower.files("#{Tower.root}/public/javascripts/app"), (path) ->
   path.replace("#{Tower.root}/public/javascripts", "").replace(/\.js$/, "")
   
 testModels  = _.select testFixtures, (path) ->

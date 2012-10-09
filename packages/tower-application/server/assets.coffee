@@ -12,7 +12,7 @@ Tower.ApplicationAssets =
   # @return [Object] the JSON contained in that file.
   loadManifest: ->
     try
-      Tower.assetManifest = JSON.parse(require('fs').readFileSync('public/asset-manifest.json', 'utf-8'))
+      Tower.assetManifest = JSON.parse(Tower.readFileSync('public/asset-manifest.json', 'utf-8'))
     catch error
       Tower.assetManifest = {}
 
@@ -32,13 +32,13 @@ Tower.ApplicationAssets =
       compile = (data, next) ->
         {name, paths} = data
         # queue.push name: name, paths: paths, extension: extension, type: type, compressor: compressor
-        console.debug "Bundling public/#{type}/#{name}#{extension}"
-        content = ""
+        console.log "Bundling public/#{type}/#{name}#{extension}"
+        content = ''
 
         for path in paths
-          content += fs.readFileSync("public/#{type}#{path}#{extension}", 'utf-8') + "\n\n"
+          content += Tower.readFileSync("public/#{type}#{path}#{extension}", 'utf-8') + "\n\n"
 
-        fs.writeFileSync "public/#{type}/#{name}#{extension}", content
+        Tower.writeFileSync "public/#{type}/#{name}#{extension}", content
 
         if options.minify
           process.nextTick ->
@@ -49,12 +49,12 @@ Tower.ApplicationAssets =
 
               do (content) =>
                 result = content
-                digestPath  = Tower.module('File').digestFile("public/#{type}/#{name}#{extension}")
+                digestPath  = Tower.digestFileSync("public/#{type}/#{name}#{extension}")
 
-                manifest["#{name}#{extension}"]  = Tower.module('File').basename(digestPath)
+                manifest["#{name}#{extension}"]  = Tower.basename(digestPath)
 
                 #gzip result, (error, result) ->
-                fs.writeFile digestPath, result, ->
+                Tower.writeFile digestPath, result, ->
                   next()
         else
           process.nextTick(next)
@@ -78,8 +78,8 @@ Tower.ApplicationAssets =
     process.nextTick ->
       Tower.async bundles, bundleIterator, (error) ->
         throw error if error
-        console.debug "Writing public/asset-manifest.json"
-        fs.writeFile "public/asset-manifest.json", JSON.stringify(manifest, null, 2), ->
+        console.log 'Writing public/asset-manifest.json'
+        Tower.writeFile "public/asset-manifest.json", JSON.stringify(manifest, null, 2), ->
           process.nextTick ->
             process.exit()
         #process.nextTick ->
@@ -89,27 +89,24 @@ Tower.ApplicationAssets =
   #
   # @return [void]
   upload: (block) ->
-    File          = Tower.module('File')
-    gzip          = require 'gzip'
-
-    cachePath = "tmp/asset-cache.json"
-
-    fs.mkdirSync "tmp" unless _path.existsSync("tmp")
+    gzip = require 'gzip'
+    cachePath = 'tmp/asset-cache.json'
+    fs.mkdirSync('tmp') unless Tower.existsSync('tmp')
 
     try
-      assetCache  = if fs.existsSync(cachePath) then JSON.parse(fs.readFileSync(cachePath, 'utf-8')) else {}
+      assetCache  = if Tower.existsSync(cachePath) then JSON.parse(Tower.readFileSync(cachePath, 'utf-8')) else {}
     catch error
       console.log error.message
       assetCache  = {}
 
     config = try Tower.config.credentials.s3
     if config && config.bucket
-      console.debug "Uploading to #{config.bucket}"
+      console.log "Uploading to #{config.bucket}"
 
-    images      = _.select File.files("public/images"), (path) -> !!path.match(/\.(gif|ico|png|jpg)$/i)
-    fonts       = _.select File.files("public/fonts"), (path) -> !!path.match(/\.(tff|woff|svg|eot)$/i)
-    stylesheets = _.select File.files("public/assets"), (path) -> !!path.match(/-[a-f0-9]+\.(css)$/i)
-    javascripts = _.select File.files("public/assets"), (path) -> !!path.match(/-[a-f0-9]+\.(js)$/i)
+    images      = _.select Tower.files('public/images'), (path) -> !!path.match(/\.(gif|ico|png|jpg)$/i)
+    fonts       = _.select Tower.files('public/fonts'), (path) -> !!path.match(/\.(tff|woff|svg|eot)$/i)
+    stylesheets = _.select Tower.files('public/assets'), (path) -> !!path.match(/-[a-f0-9]+\.(css)$/i)
+    javascripts = _.select Tower.files('public/assets'), (path) -> !!path.match(/-[a-f0-9]+\.(js)$/i)
 
     paths       = _.map images.concat(fonts).concat(stylesheets).concat(javascripts), (path) -> path.replace(/^public\//, "")
 
@@ -118,30 +115,30 @@ Tower.ApplicationAssets =
 
     # http://code.google.com/intl/en/speed/page-speed/docs/caching.html#LeverageBrowserCaching
     cacheHeaders    =
-      "Cache-Control":  "public"
-      "Expires":        expirationDate.toUTCString()
+      'Cache-Control':  'public'
+      'Expires':        expirationDate.toUTCString()
 
     gzipHeaders     = {}
-      #"Content-Encoding": "gzip"
-      #"Vary":             "Accept-Encoding"
+      #'Content-Encoding': 'gzip'
+      #'Vary':             'Accept-Encoding'
 
     process.on 'exit', ->
       # :) this should use the not createWriteStream API (https://gist.github.com/2947293)
-      fs.writeFileSync(cachePath, JSON.stringify(assetCache, null, 2))
+      Tower.writeFileSync(cachePath, JSON.stringify(assetCache, null, 2))
 
     process.on 'SIGINT', ->
       process.exit()
 
     # images
     upload    = (path, next) ->
-      console.debug "Uploading /#{path}"
+      console.log "Uploading /#{path}"
 
       headers = _.extend {}, cacheHeaders
 
       if !!path.match(/^(stylesheets|javascripts)/)
-        headers = _.extend headers, gzipHeaders, {"Etag": File.pathFingerprint(path)}
+        headers = _.extend headers, gzipHeaders, {'Etag': Tower.pathFingerprint(path)}
       else
-        headers = _.extend headers, {"Etag": File.digest("public/#{path}")}
+        headers = _.extend headers, {'Etag': Tower.digestPathSync("public/#{path}")}
 
       # This won't do anything for assets with md5 hash, 
       # since old bundles are removed. Need to make more robust.
@@ -150,7 +147,7 @@ Tower.ApplicationAssets =
       # (it would be ideal if you could do this all in 1 request, with "if not match" or whatever).
       cached    = assetCache[path]
 
-      unless !!(cached && cached["Etag"] == headers["Etag"])
+      unless !!(cached && cached['Etag'] == headers['Etag'])
         cached = _.extend {}, headers
 
         block "public/#{path}", "/#{path}", headers, (error, result) ->
@@ -166,7 +163,7 @@ Tower.ApplicationAssets =
       console.log(error) if error
       # change this, it causes cake command to freeze (well, not exit).
       process.nextTick ->
-        fs.writeFile cachePath, JSON.stringify(assetCache, null, 2), ->
+        Tower.writeFile cachePath, JSON.stringify(assetCache, null, 2), ->
           process.nextTick ->
             process.exit()
 
@@ -189,10 +186,10 @@ Tower.ApplicationAssets =
 
     for big, small of manifest
       path = "public/assets/#{small}"
-      stat = fs.statSync(path)
+      stat = Tower.statSync(path)
       compressedSize = stat.size / 1000.0
       path = "public/assets/#{big}"
-      stat = fs.statSync(path)
+      stat = Tower.statSync(path)
       normalSize = stat.size / 1000.0
 
       percent = (1 - (compressedSize / normalSize)) * 100.0
@@ -201,8 +198,8 @@ Tower.ApplicationAssets =
       compressedSize  = compressedSize.toFixed(1)
       normalSize      = normalSize.toFixed(1)
 
-      if compressedSize == normalSize == "0.0"
-        percent = "-"
+      if compressedSize == normalSize == '0.0'
+        percent = '-'
       else
         percent = "#{percent}%"
 

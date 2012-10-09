@@ -1,5 +1,4 @@
 require '../index.js'
-File  = require('pathfinder').File
 
 # mocha $(find test -name "*attributesTest.coffee") --store mongodb
 store = require('commander').option('--store [name]', 'Store to run tests against', 'memory').parse(process.argv).store

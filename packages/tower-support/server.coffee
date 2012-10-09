@@ -1,4 +1,5 @@
 require './shared'
+require './shared/file'
 
 unless Tower.isNew
   require './shared/number'
@@ -15,17 +16,3 @@ unless Tower.isNew
   require './shared/locale/en'
   require './shared/format'
   require './shared/factory'
-
-unless Tower.isNew
-  _path = require('path')
-
-  # @todo tmp hack
-  require('pathfinder').File.glob = ->
-    paths   = Array.prototype.slice.call(arguments, 0, arguments.length)
-    result  = []
-    for path in paths
-      if @exists(path)
-        found = require('wrench').readdirSyncRecursive(path)
-        for item, index in found
-          result.push(path + _path.sep + item)
-    result
