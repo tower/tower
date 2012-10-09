@@ -46,6 +46,7 @@ test/example/public/images
 test/example/vendor/
 tmp
 /components
+/vendor
 
 runtests.sh
 =======

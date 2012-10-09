@@ -27,7 +27,7 @@ Tower.StoreMongodbDatabase =
         
         env   = @parseEnv()
 
-        new mongo.Db(env.name, new mongo.Server(env.host, env.port, {})).open (error, client) =>
+        new mongo.Db(env.name, new mongo.Server(env.host, env.port, {}), {safe: false}).open (error, client) =>
           throw error if error
           if env.username && env.password
             client.authenticate env.username, env.password, (error) =>
