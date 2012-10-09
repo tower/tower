@@ -67,7 +67,7 @@ describe 'Tower.File', ->
     assert.deepEqual Tower.entriesSync(dir).sort(), expected
     
     Tower.entries dir, (error, entries) =>
-      assert.deepEqual entries, expected
+      assert.deepEqual entries.sort(), expected
       done()
 
   test 'absolutePath', ->
