@@ -75,11 +75,9 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~get tower src development installation working on mac~~
 - ~~get tower src development installation working on linux~~
 - ~~get deployment working on windows azure~~
-- get npm installation working on windows 7
+- ~~get npm installation working on windows 7~~
 - make sure `tower console -s` works on windows
 - get tower src development installation working on windows
-- get working on ie8+
-- get coffeescript working w uglifyjs
 
 <a name="0.4.4" href="0.4.4"></a>
 
@@ -328,6 +326,8 @@ If you're excited to work on one of these things let me know and I'll point you 
 - generic file/path extensions
   - file.matches
   - file.pattern()
+- get working on ie8+
+- get coffeescript working w uglifyjs
 
 ### Nice-to-haves
 
