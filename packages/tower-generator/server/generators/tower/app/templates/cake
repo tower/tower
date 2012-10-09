@@ -2,8 +2,11 @@ require 'tower'
 knox  = require('knox')
 spawn = require('child_process').spawn
 which = require('which').sync
+path  = require('path')
 
-spawnGrunt = (args) ->
+spawnGrunt = (args = []) ->
+  args.push('--config', path.join(process.cwd(), 'grunt.coffee'))
+
   grunt   = which('grunt')
   watcher = spawn(grunt, args) 
   watcher.stdout.setEncoding('utf8')
@@ -15,11 +18,11 @@ spawnGrunt = (args) ->
 
 # Watches and compiles assets to ./public
 task 'watch', ->
-  spawnGrunt ['start', '--config', './grunt.coffee']
+  spawnGrunt ['start']
 
 # Compiles assets to ./public (see `task 'watch'` for persistent compilation)
 task 'build', ->
-  spawnGrunt ['--config', './grunt.coffee']
+  spawnGrunt()
 
 # This uploads all of your assets
 task 'assets:upload', ->
@@ -86,12 +89,12 @@ task 'routes', ->
     row = []
 
     method = methods[route.methods[0].toUpperCase()]
-    path = route.path.replace('.:format?', '')
+    routePath = route.path.replace('.:format?', '')
 
     row.push method
-    row.push path
+    row.push routePath
     row.push route.options.to
-    row.push "curl -X #{method} http://localhost:3000#{path}.json"
+    row.push "curl -X #{method} http://localhost:3000#{routePath}.json"
 
     max.forEach (value, j) ->
       max[j] = Math.max(value, row[j].length)
