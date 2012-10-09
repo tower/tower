@@ -83,7 +83,6 @@ freeze-vendor-files:
 	@$(RUN)bin$(PATH_SEP)tower new example --quiet
 	@mv example$(PATH_SEP)vendor vendor
 	@mv example$(PATH_SEP)public/images vendor
-	#@mv example$(PATH_SEP)public/swfs vendor
 
 start-test-client:
 	node $(TEST_SERVER_PATH) -p $(PORT)
@@ -149,7 +148,7 @@ build:
 dist:
 	$(GRUNT) dist --config $(RUN)grunt.coffee
 
-publish: dist
+publish: dist freeze-vendor-files
 	npm publish
 
 docs:
