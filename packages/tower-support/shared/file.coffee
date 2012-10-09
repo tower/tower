@@ -27,9 +27,9 @@ Tower._.extend Tower,
     
     fs.writeFile(path, data, callback)
     
-  writeFileSync: (path, data) ->
+  writeFileSync: (path) ->
     @createDirectorySync @dirname(path)
-    fs.writeFileSync(path, data)
+    fs.writeFileSync(arguments...)
     
   removeFile: (path, callback) ->
     fs.unlink(path, callback)
@@ -134,6 +134,13 @@ Tower._.extend Tower,
 
   isFileSync: (path) ->
     !@isDirectorySync(path)
+
+  chmod: (path, mode) ->
+    Tower.module('wrench').chmodSyncRecursive(path, mode)
+    # fs.chmod(path, parseInt(mode))
+
+  chown: (path, uid, gid) ->
+    Tower.module('wrench').chownSyncRecursive(path, uid, gid)
 
   expandPath: (path, root) ->
     @absolutePath(path, root)

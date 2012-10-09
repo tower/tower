@@ -122,9 +122,10 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
 
       @template 'README.md'
       
-      # @todo chmod 755
       @inside 'scripts', ->
         @template 'tower'
+
+      # @chmod 'scripts/tower', parseInt('0755')
 
       @template 'server.js'
 

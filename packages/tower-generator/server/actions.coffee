@@ -55,15 +55,15 @@ Tower.GeneratorActions =
         @log 'create', path
         # @todo better approach
         if response.type == 'image/png'
-          fs.writeFileSync path, response.text, 'binary'
+          Tower.writeFileSync(path, response.text, 'binary')
         else
-          fs.writeFileSync path, response.text
+          Tower.writeFileSync(path, response.text)
       else
         error()
 
   log: (action, path) ->
     return if @silent
-    return if action == 'create' && fs.existsSync(path)
+    return if action == 'create' && Tower.existsSync(path)
 
     key = switch action
       when 'destroy'
@@ -87,7 +87,7 @@ Tower.GeneratorActions =
     options ||= {}
 
     path    = @destinationPath(path)
-    data    = fs.readFileSync(path, 'utf-8')
+    data    = Tower.readFileSync(path, 'utf-8')
 
     if typeof callback == 'function'
       data = callback.call @, data
@@ -102,16 +102,16 @@ Tower.GeneratorActions =
 
     @log 'update', path
 
-    fs.writeFileSync path, data
+    Tower.writeFileSync path, data
 
   readFile: (file, callback) ->
-    fs.readFile(file, 'utf-8', callback)
+    Tower.readFile(file, 'utf-8', callback)
 
   createFile: (path, data, callback) ->
     path = @destinationPath(path)
     @log 'create', path
     fs.mkdirpSync _path.dirname(path)
-    fs.writeFileSync path, data
+    Tower.writeFileSync(path, data)
     callback() if typeof callback == 'function'
 
   destinationPath: (path) ->
@@ -134,9 +134,9 @@ Tower.GeneratorActions =
       sourceDirectory = directory
 
     currentSourceDirectory        = @currentSourceDirectory
-    @currentSourceDirectory       = _path.join(@currentSourceDirectory, sourceDirectory)
+    @currentSourceDirectory       = Tower.join(@currentSourceDirectory, sourceDirectory)
     currentDestinationDirectory   = @currentDestinationDirectory
-    @currentDestinationDirectory  = _path.join(@currentDestinationDirectory, directory)
+    @currentDestinationDirectory  = Tower.join(@currentDestinationDirectory, directory)
     block.call @
     @currentSourceDirectory       = currentSourceDirectory
     @currentDestinationDirectory  = currentDestinationDirectory
