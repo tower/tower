@@ -40,10 +40,11 @@ npm install tower -g
 
 You can grab the latest client tower.js [here](http://cloud.github.com/downloads/viatropos/tower/tower.js), although you don't need to (when you generate a new app it will be downloaded automatically).
 
-You will also need [grunt](https://github.com/cowboy/grunt), an awesome build tool:
+You will also need [grunt](https://github.com/cowboy/grunt), an awesome build tool, and coffee-script:
 
 ```
 npm install grunt -g
+npm install coffee-script -g
 ```
 
 Finally, make sure you have mongodb installed and running:
