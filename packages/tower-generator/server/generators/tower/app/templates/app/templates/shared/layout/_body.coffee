@@ -10,9 +10,9 @@ header id: 'header', class: 'header', role: 'banner', ->
   div class: 'container', ->
     partial 'layout/header'
 
-section id: "flash", role: "banner", ->
-  div class: "container", ->
-    partial "layout/flash"
+section id: 'flash', role: 'banner', ->
+  div class: 'container', ->
+    partial 'layout/flash'
 
 section id: 'content', role: 'main', ->
   div class: 'container', ->

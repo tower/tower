@@ -34,7 +34,7 @@ module.exports = (grunt) ->
   config =
     pkg: '<json:package.json>'
     coffee:
-      all:
+      compile:
         src: scriptPaths
         dest: 'public/javascripts'
         options:
@@ -47,15 +47,21 @@ module.exports = (grunt) ->
       stylus:
         files: ['app/stylesheets/client/application.styl']
         tasks: ['stylus']
+      templates:
+        files: ['app/templates/*.coffee', 'app/templates/shared/**/*.coffee', 'app/templates/client/**/*.coffee']
+        tasks: ['templates:compile']
     copy:
-      js:
+      javascripts:
         src: ['vendor/**/*.js']
         dest: 'public/javascripts'
-      css:
+      stylesheets:
         src: ['vendor/**/*.css']
         dest: 'public/stylesheets'
+      images:
+        src: ['vendor/**/*.{png,gif,jpg}']
+        dest: 'public/images'
     templates:
-      all: {}
+      compile: {}
     stylus:
       compile:
         options:
@@ -87,5 +93,6 @@ module.exports = (grunt) ->
 
   grunt.initConfig(config)
 
-  grunt.registerTask 'default', 'copy:js copy:css coffee:all less stylus templates'
+  grunt.registerTask 'copy:assets', 'copy:api copy:stylesheets copy:javascripts copy:images'
+  grunt.registerTask 'default', 'copy:assets coffee:compile less stylus templates'
   grunt.registerTask 'start', 'default watch'

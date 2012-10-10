@@ -56,10 +56,10 @@ Tower.ApplicationWatcher =
     ).on('change', (path) =>
       path = _path.resolve(Tower.root, path)
       if fs.existsSync(path)
-        if !Tower.Application.instance().isConsole && path.match(Tower.publicPath) || path.match(/\.styl$/)
+        if !Tower.Application.instance().isConsole && (path.match(Tower.publicPath) || path.match(/\.styl$/))
           @clientFileUpdated(path)
         else
-          @fileUpdated(path) unless path.match("/\#{_path.sep}client\#{_path.sep}/")
+          @fileUpdated(path) unless path.match(new RegExp(_.regexpEscape("#{_path.sep}client#{_path.sep}")))
       else
         @fileDeleted(path)
     ).on('unlink', (path) =>

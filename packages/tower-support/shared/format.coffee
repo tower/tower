@@ -139,6 +139,9 @@ _ = Tower._
     entityDecode: (value) ->
       sanitize(value).entityDecode()
 
+    entityEncode: (value) ->
+      sanitize(value).entityEncode()
+
     with: (value) ->
       sanitize(value).chain()
 
