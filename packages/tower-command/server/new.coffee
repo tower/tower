@@ -15,6 +15,7 @@ command = (argv) ->
   
   program
     .version(Tower.version)
+    .usage('new <app-name> [options]')
     .option('--template <name>', 'Path to an application template (can be a filesystem path or URL)')
     .option('--skip-procfile [value]', "Don't create a Procfile (for Heroku)", false)
     .option('--skip-git [value]', "Skip Git ignores and keeps", false)
@@ -42,31 +43,10 @@ command = (argv) ->
     .option('-w, --worker <names>', 'Background worker (defaults to kue)', "kue")
     # @todo Add ability to create github repo
     #   http://developer.github.com/v3/repos/#create
-    .option('-v, --version', 'output version number')
-    .option '-h, --help', '''
-\ \ Usage:
-\ \   tower new <app-name> [options]
-\ \ 
-\ \ Options:
-\ \   -T, --title <title>               project title (as opposed to its file name)
-\ \   -D, --description <description>   project tagline (one sentence)
-\ \   -K, --keywords <keywords>         project keywords (e.g. "node.js, file uploading, s3")
-\ \   -n, --namespace <namespace>       global namespace for your app (defaults to YourProjectName)
-\ \   -q, --quiet                       Prevent logging any generator output to the console
-\ \   -h, --help                        output usage information
-\ \   -v, --version                     output version number
-\ \   --skip-procfile                   skip creating a Procfile (for deploying to Heroku)
-\ \   --skip-git                        Skip Git ignores and keeps
-\ \ 
-'''
 
   program.parse(argv)
-  
-  program.help ||= program.rawArgs.length == 3
 
-  if program.help
-    console.log program.options[program.options.length - 1].description
-    process.exit()
+  program.helpIfNecessary(3)
 
   program.silent = program.quiet
 

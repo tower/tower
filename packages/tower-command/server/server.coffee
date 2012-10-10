@@ -4,36 +4,24 @@ class Tower.CommandServer
 
     program
       .version(Tower.version)
+      .usage('server [options]')
       .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)')
       .option('-p, --port <n>', 'port for the application')
       .option('--static', 'disable-watch')
       .option('--single', 'Single page app')
       .option('-v, --version')
-      .option '-h, --help', '''
-\ \ Usage:
-\ \   tower server [options]
-\ \ 
-\ \ Options:
-\ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
-\ \   -p, --port                        port for the application, default: 3000
-\ \   -h, --help                        output usage information
-\ \   -v, --version                     output version number
-\ \ 
+      .on '--help', ->
+        console.log '''
 \ \ Examples:
 \ \   tower generate scaffold Post title:string body:text belongsTo:user
 \ \   tower generate model Post title:string body:text belongsTo:user
-\ \ 
 '''
       program.parse(argv)
 
-      program.help ||= program.rawArgs.length == 3
+      program.helpIfNecessary()
       
       # @todo move these onto {Tower.config}
       Tower.isSinglePage = !!program.single
-
-      if program.help
-        console.log program.options[program.options.length - 1].description
-        process.exit()
 
   run: ->
     program     = @program

@@ -7,31 +7,18 @@ class Tower.CommandConsole
 
     program
       .version(Tower.version)
-      .option('-e, --environment [value]')
-      .option('-j, --javascript')
-      .option('-s --synchronous')
+      .usage('console [options]')
+      .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc., default: development)')
+      .option('-j, --javascript', 'run in javascript mode (coffee-script mode is default)')
+      .option('-s, --synchronous', 'allows for database operations to run synchronously, via node fibers')
       # @todo so you can login to your heroku console or whatever without having to do it separately:
       #   tower console -s -r heroku
-      .option('-r --remote')
-      .option '-h, --help', '''
-\ \ Usage:
-\ \   tower console [options]
-\ \ 
-\ \ Options:
-\ \   -e, --environment [value]         sets Tower.env (development, production, test, etc., default: development)
-\ \   -j, --javascript                  run in javascript mode (coffee-script mode is default)
-\ \   -s, --synchronous                 allows for database operations to run synchronously, via node fibers
-\ \   -h, --help                        output usage information
-\ \   -v, --version                     output version number
-\ \ 
-'''
+      .option('-r, --remote')
+
     program.parse(argv)
+    program.helpIfNecessary()
 
     program.environment ||= 'development'
-
-    if program.help
-      console.log program.options[program.options.length - 1].description
-      process.exit()
       
     Tower.env = @program.environment
 

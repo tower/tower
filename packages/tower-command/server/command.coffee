@@ -1,5 +1,10 @@
 _ = Tower._
 
+require('commander').Command.prototype.helpIfNecessary = (length) ->
+  if (length && @rawArgs.length == length) || @rawArgs.indexOf('--help') > -1 || @rawArgs.indexOf('-h') > -1
+    @outputHelp()
+    process.exit()
+
 # @todo This should `require` the minimal amount of code possible, 
 #   to execute as fast as possible.
 # 

@@ -3,25 +3,16 @@ module.exports = command = (argv) ->
   
   program
     .version(Tower.version)
-    .option('-v, --version')
-    .option '-h, --help', '''
-\ \ Usage:
-\ \   tower [command] [options]
-\ \ 
+    .usage('[command] [options]')
+    .on '--help', ->
+      console.log '''
 \ \ Commands:
-\ \   new <app-name>                    generate a new Tower application in folder "app-name"
-\ \   console                           command line prompt to your application
-\ \   generate <generator>              generate project files (models, views, controllers, scaffolds, etc.)
 \ \ 
-\ \ Options:
-\ \   -h, --help                        output usage information
-\ \   -v, --version                     output version number
-\ \ 
+\ \   tower new <app-name>          generate a new Tower application in folder "app-name"
+\ \   tower console                 command line prompt to your application
+\ \   tower generate <generator>    generate project files (models, views, controllers, scaffolds, etc.)
 '''
+
   program.parse(argv)
 
-  program.help ||= program.rawArgs.length == 2
-
-  if program.help
-    console.log program.options[program.options.length - 1].description
-    process.exit()
+  program.helpIfNecessary(2)

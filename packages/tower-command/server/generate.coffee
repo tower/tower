@@ -19,31 +19,23 @@ class Tower.CommandGenerate
     # or even `tower generate service http://twitter.com` and have it get a good name
     program
       .version(Tower.version)
-      .option('-v, --version')
-      .option '-h, --help', '''
-\ \ Usage:
-\ \   tower generate <generator> <name> [attributes] [options]
-\ \ 
+      .usage('generate <generator> <name> [attributes] [options]')
+      .on '--help', ->
+        console.log '''
 \ \ Generators:
+\ \ 
 \ \   tower generate scaffold <name> [attributes] [options]   generate model, views, and controller
 \ \   tower generate model <name> [attributes] [options]      generate a model
 \ \ 
-\ \ Options:
-\ \   -h, --help                        output usage information
-\ \   -v, --version                     output version number
-\ \ 
 \ \ Examples:
+\ \ 
 \ \   tower generate scaffold Post title:string body:text belongsTo:user
 \ \   tower generate model Post title:string body:text belongsTo:user
 \ \ 
 '''
     program.parse(argv)
 
-    program.help ||= program.rawArgs.length == 3
-
-    if program.help
-      console.log program.options[program.options.length - 1].description
-      process.exit()
+    program.helpIfNecessary(4)
 
   run: ->
     Tower.Generator.run(@program.args[1], program: @program, modelName: @program.args[2])
