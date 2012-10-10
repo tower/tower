@@ -74,7 +74,7 @@ tower generate scaffold User firstName:string lastName:string email:string
 node server
 ```
 
-Then in a second terminal window, start the watcher so files get compiled when they are changed:
+Then in a second terminal window, start the watcher so files compile when they are changed:
 
 ```
 cd app
