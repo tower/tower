@@ -69,7 +69,7 @@ test-client:
 build-test-client: check-phantomjs check-grunt
 	# tmp way of downloading vendor files
 	rm -rf test$(PATH_SEP)example$(PATH_SEP)vendor
-	$(RUN)bin$(PATH_SEP)tower new example --quiet
+	$(RUN)bin$(PATH_SEP)tower new example
 	mv example$(PATH_SEP)vendor test$(PATH_SEP)example
 	rm -rf $(RUN)example
 	$(GRUNT) --config $(RUN)grunt.coffee
