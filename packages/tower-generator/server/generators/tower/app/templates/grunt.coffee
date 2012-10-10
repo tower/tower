@@ -93,6 +93,6 @@ module.exports = (grunt) ->
 
   grunt.initConfig(config)
 
-  grunt.registerTask 'copy:assets', 'copy:api copy:stylesheets copy:javascripts copy:images'
+  grunt.registerTask 'copy:assets', 'copy:stylesheets copy:javascripts copy:images'
   grunt.registerTask 'default', 'copy:assets coffee:compile less stylus templates'
   grunt.registerTask 'start', 'default watch'
