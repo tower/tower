@@ -528,7 +528,7 @@ By having this `assets.coffee` file, you can specify exactly how you want to com
 ### Minify and Gzip
 
 ``` bash
-cake assets:compile
+cake assets:bundle
 ```
 
 ### Push to S3
