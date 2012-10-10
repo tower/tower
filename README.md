@@ -24,7 +24,7 @@ Master branch will always be functional, and for the most part in sync with the 
 - jQuery
 - Handlebars (templating)
 - Stylus (LESS is also supported)
-- MongoDB (database, it's optional. Tower can just be used in browser)
+- MongoDB (database, it's optional. Tower can just be used in the browser)
 - Redis (background jobs, also optional)
 - Mocha (tests)
 - CoffeeScript
