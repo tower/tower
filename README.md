@@ -81,6 +81,8 @@ cd app
 cake watch
 ```
 
+Having two separate windows makes development clean and clear. You can modify your code without having to run your server, and everything will still recompile and give you helpful error messages.
+
 If you run into an error during `npm install`, remove the `node_modules` folder and try again.
 
 To restart your server automatically if it crashes, run with forever:
