@@ -81,7 +81,7 @@ cd app
 cake watch
 ```
 
-Having two separate windows makes development clean and clear. You can modify your code without having to run your server, and everything will still recompile and give you helpful error messages.
+By having two separate windows, you can modify your code without having to run your server, and coffeescript/stylus/less tasks (or any task in your `grunt` file) will still be executed.
 
 If you run into an error during `npm install`, remove the `node_modules` folder and try again.
 
