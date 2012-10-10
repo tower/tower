@@ -147,7 +147,7 @@ build:
 dist:
 	$(GRUNT) dist --config $(RUN)grunt.coffee
 
-publish: dist freeze-vendor-files
+publish: dist
 	npm publish
 
 docs:
