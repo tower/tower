@@ -13,5 +13,3 @@ Tower.ControllerFlash =
     else
       $.jStorage.set('flash', {})
       messages
-
-module.exports = Tower.ControllerFlash

@@ -131,5 +131,3 @@ class Tower.Ability extends Tower.Class
       scope
     else
       throw new Error('Ability rule cannot have this scope: ' + _.stringify(scope))
-
-module.exports = Tower.Ability

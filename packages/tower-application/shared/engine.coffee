@@ -16,5 +16,3 @@ class Tower.Engine extends Tower.Hook
   unsubscribe: (key) ->
     Tower.ModelCursor.subscriptions.splice(_.indexOf(key), 1)
     delete @[key]
-
-module.exports = Tower.Engine

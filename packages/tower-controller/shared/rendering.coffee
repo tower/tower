@@ -163,5 +163,3 @@ Tower.ControllerRendering =
       options.locals ||= {}
       options.locals.flash = @flash() if Tower.isServer
       options
-
-module.exports = Tower.ControllerRendering

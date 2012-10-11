@@ -32,5 +32,3 @@ Tower.ControllerRedirecting =
     catch error
       console.log error
     @callback() if @callback
-
-module.exports = Tower.ControllerRedirecting

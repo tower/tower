@@ -12,5 +12,3 @@ Tower.ControllerElements =
 
     processElements: (target, options = {}) ->
       @elements = @extractElements(target, options)
-
-module.exports = Tower.ControllerElements

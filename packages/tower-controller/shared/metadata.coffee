@@ -65,5 +65,3 @@ Tower.ControllerMetadata =
     _compileResourceName: (type) ->
       parts                   = type.split('.')
       resourceName            = _.camelize(parts[parts.length - 1], true)
-
-module.exports = Tower.ControllerMetadata

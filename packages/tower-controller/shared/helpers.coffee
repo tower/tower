@@ -15,5 +15,3 @@ Tower.ControllerHelpers =
   layout: ->
     layout = @constructor.metadata().layout
     if typeof(layout) == 'function' then layout.call(@) else layout
-
-module.exports = Tower.ControllerHelpers

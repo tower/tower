@@ -10,5 +10,3 @@ Tower.MiddlewareLocation = (request, response, next) ->
     request.location = new Tower.NetUrl(url)
 
   next()
-
-module.exports = Tower.MiddlewareLocation

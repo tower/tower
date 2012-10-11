@@ -72,5 +72,3 @@ Tower.ControllerInstrumentation =
 
   metadata: ->
     @constructor.metadata()
-
-module.exports = Tower.ControllerInstrumentation

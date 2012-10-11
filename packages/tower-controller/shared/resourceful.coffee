@@ -242,5 +242,3 @@ Tower.ControllerResourceful =
     callback()
 
     undefined
-
-module.exports = Tower.ControllerResourceful

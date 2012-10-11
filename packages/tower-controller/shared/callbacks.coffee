@@ -14,5 +14,3 @@ Tower.ControllerCallbacks =
     # @return [Object]
     callbacks: ->
       @metadata().callbacks
-
-module.exports = Tower.ControllerCallbacks
