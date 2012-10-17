@@ -185,6 +185,9 @@ Tower.ModelCursorSerialization = Ember.Mixin.create
     @returnArray = cursor.returnArray
     @
 
+  toJSON: ->
+    @toArray().toJSON()
+
   toParams: ->
     data          = {}
     

@@ -185,8 +185,8 @@ class Tower.CommandConsole
             historyWriteStream.write(code + '\n')
         catch err
           error err
+        repl.prompt()
       ).run()
-      repl.prompt()
 
     ## Autocompletion
 

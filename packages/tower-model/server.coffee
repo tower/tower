@@ -1,4 +1,5 @@
 require './shared'
+require './shared/versioning'
 require './server/queue'
 require './server/sync'
 
