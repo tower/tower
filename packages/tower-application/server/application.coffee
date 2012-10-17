@@ -19,6 +19,7 @@ class Tower.Application extends Tower.Engine
       'app/presenters'
       'app/services'
       'app/mailers'
+      'app/abilities'
       'app/middleware'
       'app/jobs'
     ]

@@ -21,6 +21,8 @@ class Tower.ModelAttribute
   #   'array'
   #   'reference' == id of related document
   #   'geo'
+  #   # https://github.com/joelmoss/bitmask_attributes
+  #   'bitmask' == enumerable (array) that gets transformed into an integer for storage compression
   # 
   # @example Other data types
   #   'id'

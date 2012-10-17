@@ -22,6 +22,7 @@ describe 'file paths', ->
 
     expected = _.map [
       'applicationController.coffee',
+      'attachmentsController.coffee',
       'controllerScopesMetadataController.coffee',
       'customController.coffee',
       'headersController.coffee',
@@ -31,6 +32,7 @@ describe 'file paths', ->
       'testRoutesController.coffee',
       'usersController.coffee',
       'applicationController.coffee',
+      'attachmentsController.coffee',
       'controllerScopesMetadataController.coffee',
       'customController.coffee',
       'headersController.coffee',
