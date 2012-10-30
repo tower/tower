@@ -256,18 +256,19 @@ _.extend Tower,
     node  = global
     parts = string.split(".")
 
-    try
-      for part in parts
-        node = node[part]
-    catch error
-      # try doing namespace version as last resort
-      node = null
-    unless node
-      namespace = Tower.namespace()
-      if namespace && parts[0] != namespace
-        node = Tower.constant("#{namespace}.#{string}")
-      else
-        throw new Error("Constant '#{string}' wasn't found")
+    # must be something defined within an Ember.Namespace
+    # (Tower, App, etc.)
+    if Ember.Namespace.detectInstance(node[parts[0]])
+      node = node[parts.shift()]
+    else
+      node = Tower.Application.instance()
+
+    _.each parts, (part) ->
+      node = node[part]
+      return false unless node
+
+    throw new Error("Constant '#{string}' wasn't found") unless node
+
     node
 
   namespaced: (string) ->
