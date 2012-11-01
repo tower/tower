@@ -81,6 +81,8 @@ cake watch
 
 By having two separate windows, you can modify your code without having to run your server, and coffeescript/stylus/less tasks (or any task in your `grunt` file) will still be executed.
 
+Also note, grunt's watcher doesn't currently get notified when new files are created. So if you run the `tower generate` command, or otherwise create files, stop and rerun the `cake watch` command. You also might want to check out `grunt-contrib-watch` which was recently created and may solve this issue (I haven't tried it yet though).
+
 If you run into an error during `npm install`, remove the `node_modules` folder and try again.
 
 To restart your server automatically if it crashes, run with forever:
