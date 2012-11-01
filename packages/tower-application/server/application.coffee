@@ -267,7 +267,7 @@ class Tower.Application extends Tower.Engine
 
       Tower.isInitialized = true
 
-      Ember.identifyNamespaces()
+      # Ember.identifyNamespaces()
 
       done() if done
 
