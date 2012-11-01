@@ -20,8 +20,13 @@ module.exports = (grunt) ->
   githubDownloadStore = null
 
   # CoffeeScript files
-  srcPaths = _.select file.expand([
+  coffeeSrcPaths = _.select file.expand([
     'packages/**/*.coffee'
+  ]), (i) ->
+    !i.match('templates')
+
+  jsSrcPaths = _.select file.expand([
+    'packages/**/*.js'
   ]), (i) ->
     !i.match('templates')
 
@@ -79,7 +84,7 @@ module.exports = (grunt) ->
         dest: 'dist/tower.min.js'
     coffee:
       all:
-        src: srcPaths
+        src: coffeeSrcPaths
         dest: 'lib'
         strip: 'packages/'
         options:
@@ -98,6 +103,10 @@ module.exports = (grunt) ->
         src: ['dist/tower.js']
         strip: 'dist/'
         dest: _path.join('test/example', 'vendor/javascripts')
+      js:
+        src: jsSrcPaths
+        strip: 'packages/'
+        dest: 'lib'
     watch:
       packageJSON:
         files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
@@ -132,7 +141,7 @@ module.exports = (grunt) ->
     #    eqnull: true
     #    browser: true
 
-  srcPaths.forEach (name) ->
+  coffeeSrcPaths.forEach (name) ->
     config.coffee[name] =
       src: name
       dest: 'lib'
@@ -142,6 +151,15 @@ module.exports = (grunt) ->
     config.watch[name] =
       files: [name]
       tasks: ["coffee:#{name}"]
+
+  jsSrcPaths.forEach (name) ->
+    config.copy[name] =
+      src: name
+      dest: 'lib'
+      strip: 'packages/'
+    config.watch[name] =
+      files: [name]
+      tasks: ["copy:#{name}"]
 
   # clientTestPaths.forEach (name) ->
 
@@ -203,7 +221,7 @@ module.exports = (grunt) ->
 
   #grunt.loadNpmTasks 'grunt-coffee'
   grunt.registerTask 'concat:tests', concatTestsCommand.join(' ')
-  grunt.registerTask 'default', 'coffee:all copy:packageJSON build:client copy:clientForTests coffee:tests'
+  grunt.registerTask 'default', 'coffee:all copy:js copy:packageJSON build:client copy:clientForTests coffee:tests'
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
   grunt.registerTask ''
