@@ -141,7 +141,7 @@ if (command == 'dependencies') {
     }
     // if installing from github, you'll have to compile the source.
     if (isRemote) {
-      dependencies.push('coffee-script@1.3.3');
+      //dependencies.push('coffee-script@1.3.3');
     }
   }
 
