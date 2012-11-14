@@ -1,9 +1,6 @@
 _ = Tower._
 
 class Tower.ModelValidatorSet extends Tower.ModelValidator
-  constructor: (name, value, attributes, options) ->
-    super(name, _.castArray(value), attributes, options)
-
   validate: (record, attribute, errors, callback) ->
     value     = record.get(attribute)
     testValue = @getValue(record)
