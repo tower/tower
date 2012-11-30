@@ -38,5 +38,3 @@ class Tower.Controller extends Tower.Collection
 
       @formats              = if Tower.isClient then ['html'] else _.keys(metadata.mimes)
       @hasParent            = @constructor.hasParent()
-
-module.exports = Tower.Controller

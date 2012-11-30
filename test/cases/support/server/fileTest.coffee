@@ -54,6 +54,7 @@ describe 'Tower.File', ->
 
     expected = [
       'applicationController.coffee',
+      'attachmentsController.coffee',
       'controllerScopesMetadataController.coffee',
       'customController.coffee',
       'headersController.coffee',
@@ -90,6 +91,7 @@ describe 'Tower.File', ->
 
     expected = _.map [
       'applicationController.coffee',
+      'attachmentsController.coffee',
       'controllerScopesMetadataController.coffee',
       'customController.coffee',
       'headersController.coffee',

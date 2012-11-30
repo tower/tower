@@ -52,7 +52,8 @@ Tower.Route.draw ->
 
   for action in actions
     @match "/headers/#{action}", to: "headers##{action}"
-  
+
+  @resources 'attachments'
   @resources 'posts'
   @resources 'users'
 

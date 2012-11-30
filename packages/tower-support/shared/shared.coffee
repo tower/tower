@@ -270,6 +270,25 @@ _.extend Tower,
         throw new Error("Constant '#{string}' wasn't found")
     node
 
+  constantNew: (string) ->
+    node  = global
+    parts = string.split(".")
+
+    # must be something defined within an Ember.Namespace
+    # (Tower, App, etc.)
+    if Ember.Namespace.detectInstance(node[parts[0]])
+      node = node[parts.shift()]
+    else
+      node = Tower.Application.instance()
+
+    _.each parts, (part) ->
+      node = node[part]
+      return false unless node
+
+    throw new Error("Constant '#{string}' wasn't found") unless node
+
+    node
+
   namespaced: (string) ->
     namespace = Tower.namespace()
     if namespace

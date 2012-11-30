@@ -120,5 +120,3 @@ Tower.ControllerParams =
 
   _buildCursorFromGet: (cursor) ->
     @constructor._buildCursorFromGet(@get('params'), cursor)
-
-module.exports = Tower.ControllerParams

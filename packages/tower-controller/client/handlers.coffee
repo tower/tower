@@ -59,5 +59,3 @@ Tower.ControllerHandlers =
 
   redirect: ->
     Tower.goTo(Tower.urlFor(arguments...))
-
-module.exports = Tower.ControllerHandlers

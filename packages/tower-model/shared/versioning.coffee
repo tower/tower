@@ -3,18 +3,23 @@ _ = Tower._
 # @todo Inspired from mongoid::versioning, http://railscasts.com/episodes/255-undo-with-paper-trail?view=asciicast
 # @todo undo/redo example
 Tower.ModelVersioning =
+  included: ->
+    # Current version of the record
+    @field 'version', type: 'Integer', default: 1
+
+    # History of versions
+    @hasMany 'versions', type: @className(), validate: false, cyclic: true, inverseOf: null, versioned: true, embedded: true
+
+    @before 'save', 'revise', if: 'isRevisable'
+
   ClassMethods:
-    included: ->
-      # Current version of the record
-      @field 'version', type: 'Integer', default: 1
-
-      # History of versions
-      @hasMany 'versions', type: @className(), validate: false, cyclic: true, inverseOf: null, versioned: true, embedded: true
-
-      @before 'save', 'revise', if: 'isRevisable'
-
     isCyclic:   true
-    versionMax: undefined
+    versionMax: 5
+    
+    versionedAttributes: ->
+      if arguments.length
+        @_versionedAttributes = _.flatten _.args(arguments)
+      @_versionedAttributes ||= []
 
     maxVersions: (number) ->
       @versionMax = parseInt(number)
@@ -43,3 +48,9 @@ Tower.ModelVersioning =
               callback.call(@)
         else
           callback.call(@)
+
+  previousRevision: (callback) ->
+    @get('versions').last(callback)
+
+  versionedAttributes: Ember.computed ->
+    _.only(@get('attributes'), @constructor.versionedAttributes())

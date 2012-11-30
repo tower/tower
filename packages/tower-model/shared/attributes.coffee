@@ -38,6 +38,8 @@ Tower.ModelAttributes =
     # @param [Object] options
     # @option options [String] type the data type for this field
     # @option option [Object] default default value
+    # @option option [String] as shortened key to minimize JSON and mongodb storage size
+    # @option option [String] alias same as `as`
     #
     # @return [Tower.ModelAttribute]
     field: (name, options) ->

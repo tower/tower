@@ -81,5 +81,3 @@ Tower.ControllerEvents =
         handler.call controller, event
 
 Tower.ControllerEvents.ClassMethods.DOM_EVENT_PATTERN = new RegExp("^(#{Tower.ControllerEvents.ClassMethods.DOM_EVENTS.join("|")})")
-
-module.exports = Tower.ControllerEvents

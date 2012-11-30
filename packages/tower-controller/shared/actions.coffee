@@ -84,5 +84,3 @@ Tower.ControllerActions =
       return @failure(error, callback) if error
       resource.destroy (error) =>
         @respondWithStatus !!!error, callback
-
-module.exports = Tower.ControllerActions

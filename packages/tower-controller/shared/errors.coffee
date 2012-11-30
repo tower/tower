@@ -18,5 +18,3 @@ Tower.ControllerErrors =
     @render status: 401, json: error: error.toString()
 
 Tower.ControllerErrors.ClassMethods.rescueFrom = Tower.ControllerErrors.ClassMethods.rescue
-
-module.exports = Tower.ControllerErrors

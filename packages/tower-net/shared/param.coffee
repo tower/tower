@@ -1,6 +1,7 @@
 # Defines how to parse a specific URL query parameter into a database criteria.
 # 
 # @todo see if these Param classes can be refactored to a set of functions, classes/OOP may not be necessary.
+# https://github.com/visionmedia/express-params
 class Tower.NetParam
   @perPage:       20
   @sortDirection: 'ASC'

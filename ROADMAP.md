@@ -337,6 +337,8 @@ If you're excited to work on one of these things let me know and I'll point you 
 - get progress bar feedback for streaming file uploads
   - http://debuggable.com/posts/streaming-file-uploads-with-node-js:4ac094b2-b6c8-4a7f-bd07-28accbdd56cb
 - Add generator for translating different locales in tower.
+- lazy-load fields on the client, so if you have posts with large `post.get('body')` properties, maybe you only load the titles, then when clicked it fetches the body. this would prevent loading 20 large bodies in a list of 20 posts if most of the time only one or two are clicked.
+- Add `load` and `ready` actions to controller/models/modules
 
 ### TowerPassport
 

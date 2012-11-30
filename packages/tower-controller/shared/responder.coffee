@@ -84,5 +84,3 @@ class Tower.ControllerResponder
 
   jsonResourceErrors: ->
     errors: @resource.errors
-
-module.exports = Tower.ControllerResponder

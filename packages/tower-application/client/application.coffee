@@ -65,5 +65,3 @@ class Tower.Application extends Tower.Engine
 
     run: ->
       @listen()
-
-module.exports = Tower.Application

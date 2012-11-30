@@ -115,5 +115,3 @@ Tower.ControllerScopes =
     object
 
 Tower.ControllerScopes.ClassMethods.collection = Tower.ControllerScopes.ClassMethods.scope
-
-module.exports = Tower.ControllerScopes

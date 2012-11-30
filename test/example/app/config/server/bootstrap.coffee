@@ -6,7 +6,7 @@ App.configure ->
   @use 'query'
   @use 'cookieParser', Tower.config.session.key
   @use 'session', secret: Tower.config.session.secret, cookie: {domain: Tower.config.session.cookie.domain}
-  @use 'bodyParser', uploadDir: './public/uploads'
+  @use 'bodyParser', uploadDir: Tower.joinPath(Tower.srcRoot, 'tmp/uploads')
   #@use 'csrf'
   @use 'methodOverride', '_method'
   # don't expose your platform to hackers

@@ -26,6 +26,10 @@ else
 	RUN = ./
 endif
 
+# watch more files on mac
+watch-more:
+	ulimit -n 65536
+
 install-dependencies:
 	@$(shell $(INSTALL) dependencies)
 

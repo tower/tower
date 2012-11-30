@@ -116,5 +116,3 @@ Tower.ControllerResponding =
         result.push mime if success
 
       result
-
-module.exports = Tower.ControllerResponding

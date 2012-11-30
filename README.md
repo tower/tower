@@ -2,7 +2,7 @@
 
 > Full Stack Web Framework for Node.js and the Browser.
 
-Built on top of Node's Connect and Express, modeled after Ruby on Rails.  Built for the client and server from the ground up.
+Built on top of Node’s Connect and Express, modeled after Ruby on Rails.  Built for the client *and* server, from the ground up.
 
 [![Build Status](https://secure.travis-ci.org/viatropos/tower.png)](http://travis-ci.org/viatropos/tower)
 
@@ -14,9 +14,11 @@ Follow me [@viatropos](http://twitter.com/viatropos).
 - **Roadmap**: https://github.com/viatropos/tower/blob/master/ROADMAP.md
 - **Latest Docs**: https://github.com/viatropos/tower/wiki
 
-Note, Tower is still very early alpha. Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we're going. If you're up for it please contribute! The 0.5.0 release will have most of the features and will be roughly equivalent to a beta release. From there, it's performance optimization, workflow streamlining, and creating some awesome examples. 1.0 will be a plug-and-chug real-time app framework.
+Note, Tower is still very early alpha. Check out the [roadmap](https://github.com/viatropos/tower/blob/master/ROADMAP.md) to see where we’re going. If you’re up for it, please contribute!
 
-Master branch will always be functional, and for the most part in sync with the version installed through the npm registry.
+The 0.5.0 release will have most of the features, and will roughly be equivalent to a beta release. From there, it’s performance optimization, workflow streamlining, and creating some awesome examples. 1.0 will be a plug-and-chug real-time app framework.
+
+The `master` branch will always be functional, and (for the most part) in sync with the version you can install from the npm registry.
 
 ## Default Development Stack
 
@@ -24,13 +26,15 @@ Master branch will always be functional, and for the most part in sync with the 
 - jQuery
 - Handlebars (templating)
 - Stylus (LESS is also supported)
-- MongoDB (database, it's optional. Tower can just be used in the browser)
+- MongoDB (database, it’s optional. Tower can just be used in the browser)
 - Redis (background jobs, also optional)
 - Mocha (tests)
 - CoffeeScript
 - Twitter Bootstrap
 
-Includes a database-agnostic ORM with browser (memory and ajax) and MongoDB support, modeled after ActiveRecord and Mongoid for Ruby. Includes a controller architecture that works the same on both the client and server, modeled after Rails.  The routing API is pretty much exactly like Rails 3's.  Templates work on client and server as well (and you can swap in any template engine no problem).  Includes asset pipeline that works just like Rails 3's - minifies and gzips assets with an md5-hashed name for optimal browser caching, only if you so desire.  And it includes a watcher that automatically injects javascripts and stylesheets into the browser as you develop.  It solves a lot of our problems, hope it solves yours too.
+Includes a database-agnostic ORM with browser (memory and AJAX), and MongoDB support.  Tower is modeled after ActiveRecord and Mongoid for Ruby. Includes a controller architecture that works the same for both client and server, modeled after Rails.  The routing API is like that of Rails 3.  Templates also work on client and server—and you can swap in any template engine, no problem.  Includes asset pipeline that works just like Rails 3 (minifies and gzips assets with an md5-hashed name for optimal browser caching, if you desire).  And it includes a watcher that automatically injects javascripts and stylesheets into the browser *as you develop*.
+
+It solves a lot of our problems. We hope it solves yours, too.
 
 ## Install
 
@@ -38,21 +42,21 @@ Includes a database-agnostic ORM with browser (memory and ajax) and MongoDB supp
 npm install tower -g
 ```
 
-You will also need [grunt](https://github.com/cowboy/grunt), an awesome build tool, and coffee-script:
+You will also need [grunt](https://github.com/cowboy/grunt), an awesome build tool, and `coffee-script`:
 
 ```
 npm install grunt -g
 npm install coffee-script -g
 ```
 
-Finally, make sure you have mongodb installed and running:
+Finally, make sure you have `mongodb` installed and running:
 
 ```
 brew install mongodb
 mongod # starts server
 ```
 
-If you would like to try out the background-worker code, you can also install and start redis:
+If you would like to try out the background-worker code, you can also install and start `redis`:
 
 ```
 brew install redis
@@ -61,7 +65,7 @@ redis-server
 
 ## Generate
 
-In one terminal window, generate your app and start your server:
+In your terminal, generate your app and start your server:
 
 ```
 tower new app
@@ -72,18 +76,20 @@ tower generate scaffold User firstName:string lastName:string email:string
 node server
 ```
 
-Then in a second terminal window, start the watcher so files compile when they are changed:
+Then, in a second terminal, start the watcher. This will automatically compile  files when they change:
 
 ```
 cd app
 cake watch
 ```
 
-By having two separate windows, you can modify your code without having to run your server, and coffeescript/stylus/less tasks (or any task in your `grunt` file) will still be executed.
+By having two separate windows, you can modify your code without having to run your server, and coffeescript/stylus/less tasks will still be executed.  (And the same goes for any task in your `grunt` file.)
+
+Also note, grunt’s watcher doesn’t currently get notified when new files are created. So if you run the `tower generate` command (or otherwise create files), stop and rerun the `cake watch` command. You also might want to check out `grunt-contrib-watch`, which was recently created, and may solve this issue. (I haven’t tried it yet, though.)
 
 If you run into an error during `npm install`, remove the `node_modules` folder and try again.
 
-To restart your server automatically if it crashes, run with forever:
+To automatically restart your server if it crashes, run with `forever`:
 
 ```
 npm install forever -g
@@ -106,18 +112,18 @@ class App.User extends Tower.Model
   @field 'lastName'
   @field 'email', format: /\w+@\w+.com/
   @field 'activatedAt', type: 'Date', default: -> new Date()
-  
+
   @hasOne 'address', embed: true
-  
+
   @hasMany 'posts'
   @hasMany 'comments'
-  
+
   @scope 'recent', -> createdAt: '>=': -> _(3).days().ago().toDate()
-  
+
   @validates 'firstName', 'email', presence: true
-  
+
   @after 'create', 'welcome'
-  
+
   welcome: ->
     Tower.Mailer.welcome(@).deliver()
 ```
@@ -129,14 +135,14 @@ class App.Post extends Tower.Model
   @field 'body'
   @field 'tags', type: ['String'], default: []
   @field 'slug'
-  
+
   @belongsTo 'author', type: 'User'
-  
+
   @hasMany 'comments', as: 'commentable'
   @hasMany 'commenters', through: 'comments', type: 'User'
-  
+
   @before 'validate', 'slugify'
-  
+
   slugify: ->
     @set 'slug', @get('title').replace(/[^a-z0-9]+/g, '-').toLowerCase()
 ```
@@ -145,7 +151,7 @@ class App.Post extends Tower.Model
 # app/models/shared/comment.coffee
 class App.Comment extends Tower.Model
   @field 'message'
-  
+
   @belongsTo 'author', type: 'User'
   @belongsTo 'commentable', polymorphic: true
 ```
@@ -158,7 +164,7 @@ class App.Address extends Tower.Model
   @field 'state'
   @field 'zip'
   @field 'coordinates', type: 'Geo'
-  
+
   @belongsTo 'user', embed: true
 ```
 
@@ -208,19 +214,19 @@ user.get('errors')  #=> {}
 App.routes ->
   @match '/login', 'sessions#new', via: 'get', as: 'login'
   @match '/logout', 'sessions#destroy', via: 'get', as: 'logout'
-  
+
   @resources 'posts', ->
     @resources 'comments'
-    
+
   @namespace 'admin', ->
     @resources 'users'
     @resources 'posts', ->
       @resources 'comments'
-      
+
   @constraints subdomain: /^api$/, ->
     @resources 'posts', ->
       @resources 'comments'
-      
+
   @match '(/*path)', to: 'application#index', via: 'get'
 ```
 
@@ -232,33 +238,33 @@ class App.PostsController extends Tower.Controller
   index: ->
     App.Post.all (error, posts) =>
       @render 'index', locals: posts: posts
-    
+
   new: ->
     @post = App.Post.build()
     @render 'new'
-    
+
   create: ->
     @post = App.Post.build(@params.post)
-    
+
     super (success, failure) ->
       @success.html => @render 'posts/edit'
       @success.json => @render text: 'success!'
       @failure.html => @render text: 'Error', status: 404
       @failure.json => @render text: 'Error', status: 404
-    
+
   show: ->
     App.Post.find @params.id, (error, post) =>
       @render 'show'
-    
+
   edit: ->
     App.Post.find @params.id, (error, post) =>
       @render 'edit'
-    
+
   update: ->
     App.Post.find @params.id, (error, post) =>
       post.updateAttributes @params.post, (error) =>
         @redirectTo action: 'show'
-    
+
   destroy: ->
     App.Post.find @params.id, (error, post) =>
       post.destroy (error) =>
@@ -273,13 +279,13 @@ Views are all Ember.
 
 Templates adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
 
-The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It's much more powerful than Jade, and it's just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
+The default templating engine is [CoffeeCup](http://easydoc.org/coffeecup), which is pure CoffeeScript.  It’s much more powerful than Jade, and it’s just as performant if not more so.  You can set Jade or any other templating engine as the default by setting `Tower.View.engine = "jade"` in `config/application`.  Tower uses [Mint.js](http://github.com/viatropos/mint.js), which is a normalized interface to most of the Node.js templating languages.
 
 ## Styles
 
-It's all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
+It’s all using Twitter Bootstrap, so check out their docs.  http://twitter.github.com/bootstrap/
 
-Actually, all that's built in!  So for the simple case you don't even need to write anything in your controllers (skinny controllers, fat models).  The default implementation is actually a lot more robust than that, just wanted to show a simple example.
+Actually, all that’s built in!  So for the simple case you don’t even need to write anything in your controllers (skinny controllers, fat models).  The default implementation is actually a lot more robust than that, just wanted to show a simple example.
 
 ## Databases
 
@@ -347,7 +353,7 @@ module.exports =
 Since all of the controller/routing code is available on the client, you can go directly through that system just like you would the server.
 
 ``` coffeescript
-# Just request the url, and let it do it's thing
+# Just request the url, and let it do its thing
 Tower.get '/posts'
 
 # Same thing, this time passing parameters
@@ -357,11 +363,11 @@ Tower.get '/posts', createdAt: "2011-10-26..2011-10-31"
 Tower.urlFor(Post.first()) #=> "/posts/the-id"
 ```
 
-Those methods pass through the router and client-side middleware so you have access to `request` and `response` objects like you would on the server.
+Those methods pass through the router and client-side middleware, so you have access to `request` and `response` objects—just like you would on the server.
 
 ## Middleware
 
-It's built on [connect](http://github.com/sencha/connect), so you can use any of the middleware libs out there.
+It’s built on [connect](http://github.com/sencha/connect), so you can use any  middleware library you like.
 
 ## Assets
 
@@ -375,17 +381,17 @@ module.exports =
       '/vendor/javascripts/socket.io'
       '/vendor/javascripts/tower.js'
     ]
-    
+
     lib: [
       '/lib/grid.js'
       '/lib/profiler.js'
     ]
-    
+
     application: [
       '/app/models/shared/post.js'
       '/app/models/shared/comment.js'
     ]
-    
+
   stylesheets:
     vendor: [
       '/vendor/stylesheets/reset.css'
@@ -398,7 +404,7 @@ module.exports =
 
 ## Structure
 
-Here's the structure of a newly generated app with a `Post` model:
+Here’s the structure of a newly generated app with a `Post` model:
 
 ```
 .
@@ -521,9 +527,9 @@ Here's the structure of a newly generated app with a `Post` model:
 ```
 
 
-All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor`, and wherever else you might put things.  The default is to use stylus for css in `/app/assets/stylesheets`.
+All assets are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor` (and wherever else you might put things).  The default is to use Stylus for CSS in `/app/assets/stylesheets`.
 
-By having this `assets.coffee` file, you can specify exactly how you want to compile your files for the client so it's as optimized and cacheable as possible in production.
+By having this `assets.coffee` file, you can specify *exactly* how you want to compile your files for the client, to ensure it’s as optimized and cacheable as possible in production.
 
 ### Minify and Gzip
 
@@ -584,21 +590,21 @@ make install-dependencies
 
 ### Building Tower
 
-You can build Tower manually with:
+You can build tower manually with:
 
 ```
 make
 ```
 
-Or you can have it recompile the files when you change them:
+Or, you can have it recompile files whenever you change them:
 
 ```
 make watch
 ```
 
-### "Linking" Tower
+### “Linking” Tower
 
-You can symlink your local tower repo to your global npm node_modules directory, which makes it so you can use it in your apps (so if you make changes to the tower repo, you'll see them in your app). Very useful.
+You can symlink your local tower repository to your global npm `node_modules` directory, which allows you use it in your apps. That way, if you make changes to the tower repository, you’ll see them in your app! Very useful.
 
 In the tower repo:
 
@@ -642,7 +648,7 @@ Then run the tests (uses phantomjs)
 make test-client
 ```
 
-If you don't have phantomjs you can install it with:
+If you don’t have `phantomjs`, you can install it with:
 
 ```
 brew install phantomjs

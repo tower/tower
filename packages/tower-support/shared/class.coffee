@@ -23,7 +23,7 @@ if typeof global['Ember'] != 'undefined'
       @reopen(object)
 
   # In Ember 1.0pre+, Ember.Application is dependent on the browser.
-  Ember.Application = Ember.Namespace.extend() unless Ember.Application
+  Ember.Application = Ember.Namespace.extend() if Tower.isServer
 
   Ember.Object.reopenClass(coffeescriptMixin)
   Ember.Namespace.reopenClass(coffeescriptMixin)

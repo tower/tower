@@ -6,9 +6,13 @@ if process.env.TOWER_COMMAND == 'new'
   module.exports  = global.Tower = {isNew: true, toString: -> 'Tower'}
 else
   # until ember supports npm...
+  global.Ember = lookup: global
   require 'ember-metal-node'
   require 'ember-runtime-node'
   require 'ember-states-node'
+  require 'ember-routing-node'
+  require 'ember-application-node'
+
   module.exports  = global.Tower = Ember.Namespace.create()
 
 # @todo inject this into generated file rather than reading it on startup

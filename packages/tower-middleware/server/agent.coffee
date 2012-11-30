@@ -19,5 +19,3 @@ Tower.MiddlewareAgent = (request, response, next) ->
   # response.cookie("user-agent", JSON.stringify(attributes))
 
   next() if next
-
-module.exports = Tower.MiddlewareAgent

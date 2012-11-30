@@ -41,5 +41,3 @@ _.extend Tower.MiddlewareRouter,
       response.statusCode = 404
       response.setHeader('Content-Type', 'text/plain')
       response.end("No path matches #{request.url}")
-
-module.exports = Tower.MiddlewareRouter

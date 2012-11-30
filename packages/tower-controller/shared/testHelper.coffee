@@ -88,6 +88,7 @@ _.request = (method, path, options, callback) ->
   auth        = options.auth
   format      = options.format# || "form-data"
   method      = method.toLowerCase()
+  attachments = options.attachments
 
   # @todo maybe we want to give some slack and convert to `accept` header?
   throw new Error('The "content-type" header is only valid for PUT/POST') if headers['content-type'] && method == 'get'
@@ -95,6 +96,10 @@ _.request = (method, path, options, callback) ->
   newRequest = Tower.module('superagent')[method]("http://localhost:#{Tower.port}#{path}")
     .set(headers)
     .redirects(redirects)
+
+  if attachments
+    for key, value of attachments
+      newRequest.attach(key, value)
 
   params.format = format if format
 
