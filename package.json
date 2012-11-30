@@ -89,7 +89,8 @@
     "wrench": "~1.3.9",
     "gm": "~1.4.1",
     "temp": "~0.4.0",
-    "grunt-contrib-less": "~0.3.0"
+    "grunt-contrib-less": "~0.3.0",
+    "glob-whatev": "0.1.8"
   },
   "devDependencies": {
   },
