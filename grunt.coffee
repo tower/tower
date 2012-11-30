@@ -221,7 +221,8 @@ module.exports = (grunt) ->
 
   #grunt.loadNpmTasks 'grunt-coffee'
   grunt.registerTask 'concat:tests', concatTestsCommand.join(' ')
-  grunt.registerTask 'default', 'coffee:all copy:js copy:packageJSON build:client copy:clientForTests coffee:tests'
+  #grunt.registerTask 'default', 'coffee:all copy:js copy:packageJSON build:client copy:clientForTests coffee:tests'
+  grunt.registerTask 'default', 'copy:js copy:packageJSON'
   grunt.registerTask 'start', 'default watch'
   grunt.registerTask 'dist', 'build uploadToGithub'
   grunt.registerTask ''
