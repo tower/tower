@@ -1,0 +1,34 @@
+class Tower.ViewFormFieldset extends Tower.ViewComponent
+  constructor: (args, options) ->
+    super
+    #@label      = @localize("titles", options[:label], nil, (attributes[:locale_options] || {}).merge(:allow_blank => true)) if options[:label].present?
+
+    #merge_class! attributes, *[
+    #  config.fieldset_class
+    #]
+    @attributes = attributes = {}
+
+    #attributes.id ||= label.underscore.strip.gsub(/[_\s]+/, config.separator) if label.present?
+
+    delete attributes.index
+    delete attributes.parentIndex
+    delete attributes.label
+
+    @builder     = new Tower.ViewFormBuilder([],
+      template:     @template
+      model:        @model
+      attribute:    @attribute
+      index:        @index
+      parentIndex:  @parentIndex
+      live:         @live
+    )
+
+  render: (block) ->
+    @tag "fieldset", @attributes, =>
+      if @label
+        @tag "legend", class: Tower.View.legendClass, =>
+          @tag "span", @label
+      @tag Tower.View.fieldListTag, class: Tower.View.fieldListClass, =>
+        @builder.render(block)
+
+module.exports = Tower.ViewFormFieldset

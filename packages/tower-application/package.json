@@ -1,6 +1,6 @@
 {
   "name": "tower-application",
-  "version": "@VERSION",
+  "version": "0.4.2-22",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./server.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",

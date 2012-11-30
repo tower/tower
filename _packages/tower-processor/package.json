@@ -1,0 +1,42 @@
+{
+  "name": "tower-processor",
+  "version": "@VERSION",
+  "homepage": "http://viatropos.github.com/tower",
+  "main": "./server.js",
+  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "keywords": [
+    "framework",
+    "rails",
+    "node"
+  ],
+  "maintainers": [
+    {
+      "name": "Lance Pollard",
+      "email": "lancejpollard@gmail.com",
+      "web": "http://lancepollard.com"
+    }
+  ],
+  "contributors": [],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mths.be/mit"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/viatropos/tower/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viatropos/tower.git"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+
+  }
+}

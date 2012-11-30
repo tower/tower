@@ -1,0 +1,2 @@
+
+Tower.StoreTransportSockets = {};

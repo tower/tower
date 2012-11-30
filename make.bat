@@ -1,14 +1,14 @@
 REM  Created by: @TheHydroImpulse - Daniel Fagnan
-@ECHO OFF 
+@ECHO OFF
 @setlocal enableextensions enabledelayedexpansion
 
-REM Clear the screen and turn echo off (above) to keep it clean 
-CLS 
+REM Clear the screen and turn echo off (above) to keep it clean
+CLS
 
 SET PPath=
 SET NPMCOMMAND=
 
-REM Get Value from 'where make' command output 
+REM Get Value from 'where make' command output
 FOR /F "" %%i in ('where make') do SET PPath=%%i
 
 REM We first need to check if we got the real make.exe or this make.bat file.
@@ -33,12 +33,12 @@ if x%PPath:bat=%==x%PPath% (
 	:install-dependencies
 		REM Run install-dependencies manually:
 		REM We have to run the dependencies command, capture the results and run them.
-		FOR /F "tokens=*" %%i IN ('node .\bin\install dependencies') do call %%i 
+		FOR /F "tokens=*" %%i IN ('node .\bin\install dependencies') do call %%i
 		REM goto end_switch
 	:install-message
 		REM Run install-message manually:
 		REM This will only appear on global installations of Tower
-		FOR /F "tokens=*" %%i IN ('node .\bin\install message') do call %%i 
+		FOR /F "tokens=*" %%i IN ('node .\bin\install message') do call %%i
 		goto end_switch
 	:watch
 		call grunt start --config ./grunt.coffee

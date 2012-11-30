@@ -1,6 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-
 // require tower
 var root = path.join(__dirname, 'lib/tower.js');
 var rootExists = fs.existsSync(root);
@@ -19,7 +18,8 @@ if (!rootExists || process.env.TOWER_COMMAND != 'new') {
   } 
 }
 
+
 if (rootExists)
   module.exports = require(root);
 else
-  module.exports = require(path.join(__dirname, 'packages/tower.coffee'));
+  module.exports = require(path.join(__dirname, 'packages/tower'));

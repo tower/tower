@@ -1,6 +1,6 @@
 {
   "name": "tower-command",
-  "version": "@VERSION",
+  "version": "0.4.2-22",
   "homepage": "http://viatropos.github.com/tower",
   "main": "./server/command.js",
   "author": "Lance Pollard <lancejpollard@gmail.com>",

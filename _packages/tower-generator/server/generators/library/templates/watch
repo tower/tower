@@ -1,0 +1,18 @@
+require('design.io').extension('watchfile')
+
+mint  = require('mint')
+
+require("design.io-stylesheets") /(app\/client|lib\/stylesheets|vendor\/stylesheets)/
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules)/
+  paths:    ["./app/client/stylesheets", "./vendor/stylesheets/bootstrap"]
+  outputPath: (path) ->
+    "public/stylesheets/#{path}".replace(/\.(sass|scss|stylus|styl|less|css)/, ".css")
+
+require("design.io-javascripts")
+  compress: false
+  debug:    false
+  ignore:   /(public|node_modules|server|app\/views)/
+  outputPath: (path) ->
+    "public/javascripts/#{path}".replace(/\.(js|coffee)/, ".js")

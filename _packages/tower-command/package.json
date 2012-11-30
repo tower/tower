@@ -1,0 +1,48 @@
+{
+  "name": "tower-command",
+  "version": "@VERSION",
+  "homepage": "http://viatropos.github.com/tower",
+  "main": "./server/command.js",
+  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "keywords": [
+    "framework",
+    "rails",
+    "node"
+  ],
+  "maintainers": [
+    {
+      "name": "Lance Pollard",
+      "email": "lancejpollard@gmail.com",
+      "web": "http://lancepollard.com"
+    }
+  ],
+  "contributors": [],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mths.be/mit"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/viatropos/tower/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viatropos/tower.git"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "bin": {
+    "tower": "./bin/tower"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+  }
+}
