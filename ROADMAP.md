@@ -76,8 +76,8 @@ You are free to contribute any of these features in any order… I'm more of a f
 - ~~get tower src development installation working on linux~~
 - ~~get deployment working on windows azure~~
 - ~~get npm installation working on windows 7~~
-- make sure `tower console -s` works on windows
-- get tower src development installation working on windows
+- ~~make sure `tower console -s` works on windows~~
+- ~~get tower src development installation working on windows~~
 
 <a name="0.4.4" href="0.4.4"></a>
 
