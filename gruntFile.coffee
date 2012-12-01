@@ -22,23 +22,16 @@ module.exports = (grunt) ->
         strip: 'dist/'
         dest: _path.join('test/example', 'vendor/javascripts')
       js:
-        src: jsSrcPaths
+        src: ['packages/**/*.js']
         strip: 'packages/'
         dest: 'lib'
     watch:
       packageJSON:
         files: ['packages/**/package.json', 'packages/tower-generator/server/generators/**/templates/**/*']
         tasks: ['copy:packageJSON']
-
-  jsSrcPaths.forEach (name) ->
-    config.copy[name] =
-      src: name
-      dest: 'lib'
-      strip: 'packages/'
-    config.watch[name] =
-      files: [name]
-      tasks: ["copy:#{name}"]
-
+      js: 
+        files: [ 'packages/**/*.js'],
+        tasks: ["copy:js"]
 
   grunt.initConfig(config)
   grunt.registerTask 'default', 'copy:js'

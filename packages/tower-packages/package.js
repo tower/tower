@@ -5,7 +5,7 @@ var Package = (function(){
     }
 
     Package.prototype.register = function(callback) {
-
+        
     };
 
     return Package;

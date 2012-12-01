@@ -92,7 +92,9 @@
     "gm": "~1.4.1",
     "temp": "~0.4.0",
     "grunt-contrib-less": "~0.3.0",
-    "glob-whatev": "0.1.8"
+    "glob-whatev": "0.1.8",
+    "watchr": "2.1.6",
+    "minimatch": "0.2.9"
   },
   "devDependencies": {
   },
