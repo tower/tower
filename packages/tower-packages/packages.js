@@ -17,6 +17,7 @@ if (Tower.root === "/" || Tower.root == null) Tower.root = process.cwd();
 var Packages = {
 
     _packages: {},
+    _paths: [],
     found: {},
     lock: {},
     lookup: [],
@@ -32,6 +33,7 @@ var Packages = {
     },
 
     create: function(name, package) {
+        this._paths.push(package);
         require(path.join(package, "package.js"));
     },
 

@@ -434,3 +434,4 @@ Tower.Application = (function(_super) {
 })(Tower.Engine);
 
 module.exports = Tower.Application;
+Tower.Bundler.watch();
