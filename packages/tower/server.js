@@ -87,6 +87,9 @@ Tower._ = require('underscore');
 
 Tower._.mixin(require('underscore.string'));
 
+require("../tower-packages/server");
+Tower.Packages.initialize();
+
 require('../tower-support/server');
 
 if (!Tower.isNew) {
@@ -98,7 +101,6 @@ if (!Tower.isNew) {
   require('../tower-net/server');
   require('../tower-mailer/server');
   require('../tower-middleware/server');
-  require('../tower-packages/server');
 }
 
 require('../tower-command/server');

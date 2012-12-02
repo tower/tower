@@ -273,7 +273,7 @@ Tower.Application = (function(_super) {
     },
     _loadAssets: function() {
       Tower.ApplicationAssets.loadManifest();
-      return Tower.Ready.new("loadAssets");
+      //return Tower.Ready.new("loadAssets");
     },
     _loadLocales: function() {
       var path, _i, _len, _ref, _results;
@@ -305,7 +305,7 @@ Tower.Application = (function(_super) {
       return _results;
     },
     _loadApp: function(done) {
-      this._loadPackages();
+      //this._loadPackages();
       this._loadMVC();
       Tower.isInitialized = true;
       if (done) {

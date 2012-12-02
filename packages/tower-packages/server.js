@@ -1,5 +1,4 @@
 (function(){
-    require('./packages');
-    
     require('./package');
+    require('./packages');
 })();

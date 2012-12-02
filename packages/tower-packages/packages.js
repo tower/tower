@@ -1,71 +1,72 @@
 var glob = require("glob-whatev"),
     path = require("path"),
-    fs   = require("fs");
+    fs   = require("fs"),
+    _    = require("underscore");
 
-Tower.AppRoot = process.cwd();
-
+    
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-var Packages = (function(){
+_.regexpEscape = function(string) {
+    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
 
-    function Packages() {
-        this._packages = {};
-        this.found     = {};
-        this.lock      = {};
-        this.lookup    = [];
+if (Tower.root === "/" || Tower.root == null) Tower.root = process.cwd();
 
+var Packages = {
+
+    _packages: {},
+    found: {},
+    lock: {},
+    lookup: [],
+    _packagesFound: [],
+
+    initialize: function() {
         this.findLookups();
         this.findAll();
-    }   
+    },
 
-    /**
-     * Find and look inside the `package.json` and look for the `tower.packages.lookup` key.
-     * @return {[type]} [description]
-     */
-    Packages.prototype.findLookups = function() {
+    get: function(name) {
+
+    },
+
+    create: function(name, package) {
+        require(path.join(package, "package.js"));
+    },
+
+    findLookups: function() {
         var self = this;
-        fs.exists(path.join(Tower.AppRoot, 'package.json'), function(exists){
-            if (!exists) return;
+        if (fs.existsSync(path.join(Tower.AppRoot, 'package.json'))) {
+            var file = fs.readFileSync(path.join(Tower.AppRoot, 'package.json'), 'utf-8');
+            var json = JSON.parse(file);
+            self.lookup = json.tower.packages.lookup; 
+        }
+    },
 
-            fs.readFile(path.join(Tower.AppRoot, 'package.json'), 'utf-8', function(err, file){
-                if (err) throw Error();
-
-                var json = JSON.parse(file);
-                self.lookup = json.tower.packages.lookup; 
-            }); 
-
-        });
-    };
-
-    Packages.prototype.initialize = function() {
-        console.log("Initializing Packages");
-
-        // Find all the packages;
-        this.findAll();
-    };
-
-    Packages.prototype.findAll = function() {
+    findAll: function() {
         // Find all the packages.
         var basePath     = path.join(Tower.root, "packages") + path.sep; 
         var globString   = basePath + "*";
-        glob.glob(globString).forEach(function(filepath){
-            // Load the package.js file.
-            var packageFile = path.join(filepath, "package.js");
-            fs.exists(packageFile, function(exists){
-                if (exists) {
-                    console.log(12123);
-                    //require(packageFile);
-                } else {
-                    var pkg = filepath.replace(/\//g, "\\").replace(new RegExp(_.regexpEscape(basePath)), "").replace(/\\$/, "");
-                    throw Error("Package: " + pkg.capitalize() + " | Missing `package.js` file.");
+
+        var self = this;
+        this.lookup.forEach(function(_path){
+            var fullPath = path.join(Tower.root, _path);
+            var globString = path.join(fullPath, "*");
+            glob.glob(globString).forEach(function(filepath){
+                // Load the package.js file.
+                var packageFile = path.join(filepath, "package.js");
+                if (fs.existsSync(packageFile)) {
+                    var name = filepath.replace(/\//g, "\\").replace(new RegExp(_.regexpEscape(basePath)), "").replace(/\\$/, "");
+                    self._packagesFound.push({name: name, path: filepath});
+                    self.create(name, filepath); // Create the package.
                 }
             });
         });
-    };
+    }
 
-    return Packages;
-})();
+};
 
-Tower.Packages = new Packages();
+
+
+Tower.Packages = Packages;
