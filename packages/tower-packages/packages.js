@@ -29,12 +29,17 @@ var Packages = {
     },
 
     get: function(name) {
+        return this._packages[name] || "Package not found";
+    },
 
+    add: function(name, obj) {
+        this._packages[name] = obj;
     },
 
     create: function(name, package) {
         this._paths.push(package);
         require(path.join(package, "package.js"));
+        this._packages[name].path = package;
     },
 
     findLookups: function() {

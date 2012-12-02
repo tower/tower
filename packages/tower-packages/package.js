@@ -9,6 +9,7 @@
             this._files    = [];
             this._init     = [];
             callback.apply(this);
+            Tower.Packages.add(this._info.name || null, this);
         }
 
         Package.prototype.info = function(obj) {

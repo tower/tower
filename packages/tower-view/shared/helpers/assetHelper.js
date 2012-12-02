@@ -1,8 +1,28 @@
-var _;
-
 _ = Tower._;
 
 Tower.ViewAssetHelper = {
+  javascriptPackages: function() {
+    Tower.readFile(Tower.root + Tower.pathSeparator + "packages.json", 'utf-8', function(err, json){
+      json = JSON.parse(json);
+      for (var i in json.packages) {
+        var val = json.packages[i];
+        for (var k in val) {
+          //console.log(val[k]);
+        }
+
+        val.files.forEach(function(obj){
+          if (obj.type === "js") {
+            var file = "/" + obj.relative.replace(/\\/g, "/").replace(/\.js$/, "");
+            console.log(file);
+            Tower.config.assets['javascripts']['vendor'].push(file);
+            //console.log(Tower.config.assets['javascripts']['vendor']);
+            javascriptTag(file);
+          }
+        });
+      }
+    });
+    return null;
+  },
   javascripts: function() {
     var options, path, paths, sources, _i, _len;
     sources = _.args(arguments);
