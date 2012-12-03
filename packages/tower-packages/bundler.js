@@ -9,6 +9,9 @@ var Bundler = {
         css: 'vendor/stylesheets/packages/',
         images: 'public/images/packages/'
     },
+
+    _resources: [],
+
     /**
      * An array containing each package path. Watch each package, and it's
      * files for changes.
@@ -26,6 +29,7 @@ var Bundler = {
                     packageName = packageName.replace(/\\/g, "/").replace(p, "");
                 });
                 packageName = packageName.match(/^[^\/]+/)[0];
+                self.fileChanged(packageName, filepath);
                 self.build(packageName);
             },
             next: function(err,watcher){
@@ -34,6 +38,40 @@ var Bundler = {
             }
         });
 
+    },
+
+    /**
+     * When a file has been changed (or added), we would trigger this method before `build`
+     * so that we can build individual files first (coffee-script)
+     * @return {[type]} [description]
+     */
+    fileChanged: function(package, filepath) {
+        var self = this;
+        var pkg = Tower.Packages.get(package);
+        for(var i in Tower.Packages._extensions) {
+            var val = Tower.Packages._extensions[i];
+            /**
+             * If the extension matches the registered ones.
+             */
+            if (filepath.match(new RegExp("\." + i + "$"))) {
+                // Call the callback;
+                pkg._files.forEach(function(file){
+                    if (file.file === filepath) {
+                        if (typeof val === "function")
+                            val.call(self, filepath, package, filepath.replace(new RegExp("\." + i + "$"), ""), file.type);
+                    }
+                });
+            }
+        }
+    },
+    /**
+     * Adds a resource to the bundler.
+     * You can either specify a path, or the file's content. The bundler will
+     * create file serve path automatically if you pass data.
+     * @param {Object} options Contains the options for the current resource (js, css, image, etc...)
+     */
+    addResource: function(options) {
+        this._resources.push(options);
     },
 
     /**

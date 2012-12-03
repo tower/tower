@@ -55,8 +55,14 @@
             });
         };
 
-        Package.prototype.registerExtension = function(callback) {
-
+        /**
+         * Register an extension with the bundler and package manager.
+         * @param  {Function} callback When a file changes, we'll invoke this function
+         *                             for the specific file type.
+         * @return
+         */
+        Package.prototype.registerExtension = function(type, callback) {
+            Tower.Packages.register_extension(type, callback);
         }
 
         Package.register = function(callback) {

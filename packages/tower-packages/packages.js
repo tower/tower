@@ -22,6 +22,7 @@ var Packages = {
     lock: {},
     lookup: [],
     _packagesFound: [],
+    _extensions: {},
 
     initialize: function() {
         this.findLookups();
@@ -40,6 +41,10 @@ var Packages = {
         this._paths.push(package);
         require(path.join(package, "package.js"));
         this._packages[name].path = package;
+    },
+
+    registerExtension: function(type, callback) {
+        this._extensions[type] = callback;
     },
 
     findLookups: function() {
