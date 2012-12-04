@@ -12,6 +12,14 @@ var Bundler = {
 
     _resources: [],
 
+    /** 
+    *   @todo Add a serve ability. We need to hook into the router
+              to be able to serve our own package resources. 
+              These resource may be dynamic (in-memory) or static (
+              filesystem), so we need to have a more custom approach.
+    *
+    **/
+
     /**
      * An array containing each package path. Watch each package, and it's
      * files for changes.

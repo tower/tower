@@ -2,12 +2,10 @@
 
     var fs = require('fs');
     var path = require('path');
-    var gaze = require('gaze');
+    var wrench = require('wrench');
 
     var root = path.resolve(__dirname);
     var pkgRoot = path.join(root, "packages") + path.sep;
-
-    var Minimatch = require("minimatch").Minimatch;
 
     /**gaze('packages/', {forceWatchMethod: 'new'}, function(err, watcher) {
 
@@ -47,7 +45,7 @@
     watchr.watch({
         paths: globsync.glob('packages/**/*'),
         listener: function(event, filepath){
-            
+
             switch(event) {
                 case "change":
                     changed(filepath);
@@ -64,6 +62,8 @@
         next: function(err,watcher){
             if (err)  throw err;
             console.log('watching setup successfully');
+            wrench.copyDirSyncRecursive('packages', 'lib');
+            console.log('`packages` directory has been copied to `lib`');
         }
     });
 
@@ -71,7 +71,6 @@
     function changed(filepath) {
         var cleanPath = filepath.replace(pkgRoot, "").replace(/^(packages)/, "");
         var libPath = path.join("lib", cleanPath);
-        console.log(cleanPath + " has changed.");
         var contents = fs.readFileSync(filepath, "utf-8");
         fs.writeFileSync(libPath, contents);
     }
@@ -87,7 +86,8 @@
         var cleanPath = filepath.replace(pkgRoot, "").replace(/^(packages)/, "");
         var libPath = path.join("lib", cleanPath);
         console.log(cleanPath + " was deleted.");
-        fs.unlinkSync(libPath);
+        if (fs.existsSync(libPath))
+            fs.unlinkSync(libPath);
     }
 
 })();
