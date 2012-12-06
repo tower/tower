@@ -73,6 +73,7 @@ Tower.ViewRendering = {
       return "(" + template + ").call(this);";
     } else {
       mint = require("mint");
+      this.testTemplate = mint["coffee"]('javascriptPackages()', {}, function(error, result){return result;});
       return mint[mint.engine(engine || "coffee")](template, {}, function(error, result) {
         if (error) {
           return console.log(error);

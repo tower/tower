@@ -38,9 +38,10 @@ var Packages = {
     },
 
     create: function(name, package) {
+        var self = this;
         this._paths.push(package);
         require(path.join(package, "package.js"));
-        this._packages[name].path = package;
+        self._packages[name].path = package;
     },
 
     registerExtension: function(type, callback) {
@@ -69,7 +70,18 @@ var Packages = {
                 // Load the package.js file.
                 var packageFile = path.join(filepath, "package.js");
                 if (fs.existsSync(packageFile)) {
-                    var name = filepath.replace(/\//g, "\\").replace(new RegExp(_.regexpEscape(basePath)), "").replace(/\\$/, "");
+                    var name;
+                    name = filepath.replace(/\//g, "\\").replace(/\/$/, "").split('\\');
+                    
+                    function getLastElement(n, length) {
+                        if (n[length] != null && n[length] != "") {
+                            return n[length];
+                        } else {
+                            return getLastElement(n, length - 1);
+                        }
+                    }
+
+                    name = getLastElement(name, name.length - 1);
                     self._packagesFound.push({name: name, path: filepath});
                     self.create(name, filepath); // Create the package.
                 }

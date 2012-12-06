@@ -2,6 +2,7 @@ _ = Tower._;
 
 Tower.ViewAssetHelper = {
   javascriptPackages: function() {
+    var file;
     Tower.readFile(Tower.root + Tower.pathSeparator + "packages.json", 'utf-8', function(err, json){
       json = JSON.parse(json);
       for (var i in json.packages) {
@@ -12,10 +13,9 @@ Tower.ViewAssetHelper = {
 
         val.files.forEach(function(obj){
           if (obj.type === "js") {
-            var file = "/" + obj.relative.replace(/\\/g, "/").replace(/\.js$/, "");
-            console.log(file);
-            Tower.config.assets['javascripts']['vendor'].push(file);
-            //console.log(Tower.config.assets['javascripts']['vendor']);
+            file = "/" + obj.relative.replace(/\\/g, "/").replace(/\.js$/, "");
+            file = file.replace(/\/public/, "") + '.js';
+            //Tower.config.assets['javascripts']['vendor'].push(file);
             javascriptTag(file);
           }
         });

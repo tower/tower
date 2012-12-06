@@ -62,7 +62,7 @@
          * @return
          */
         Package.prototype.registerExtension = function(type, callback) {
-            Tower.Packages.register_extension(type, callback);
+            Tower.Packages.registerExtension(type, callback);
         }
 
         Package.register = function(callback) {

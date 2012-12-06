@@ -1,13 +1,14 @@
 var fs   = require('fs'),
     path = require('path'),
-    watchr = require('watchr');
+    watchr = require('watchr'),
+    wrench = require('wrench');
 
 var Bundler = {
     
     output: {
-        js: 'vendor/javascripts/packages/',
-        css: 'vendor/stylesheets/packages/',
-        images: 'public/images/packages/'
+        js: 'public/packages/',
+        css: 'public/packages/',
+        images: 'public/packages/'
     },
 
     _resources: [],
@@ -32,11 +33,16 @@ var Bundler = {
             listener: function(event, filepath){
                 // When something changes, re-bundle the package.
                 //self.build();
+                var lookup = null;
                 var packageName = filepath.replace(Tower.root, "").replace(/^\\/, "");
                 Tower.Packages.lookup.forEach(function(p){
-                    packageName = packageName.replace(/\\/g, "/").replace(p, "");
+                    packageName = packageName.replace(/\\/g, "/"); 
+                    if (packageName.match(p)) {
+                        lookup = p;
+                        packageName = packageName.replace(p, "");
+                    }
                 });
-                packageName = packageName.match(/^[^\/]+/)[0];
+                packageName = packageName.replace(/\/\//g, "/").replace(lookup, "").replace(/^\//, "").match(/^[^\/]+/)[0];
                 self.fileChanged(packageName, filepath);
                 self.build(packageName);
             },
@@ -64,9 +70,13 @@ var Bundler = {
             if (filepath.match(new RegExp("\." + i + "$"))) {
                 // Call the callback;
                 pkg._files.forEach(function(file){
-                    if (file.file === filepath) {
+                    //console.log(pkg.path.replace(/\\/g, "/"), filepath.replace(/\\/g, "/"));
+                    var shortPath = filepath.replace(/\\/g, "/").replace(pkg.path.replace(/\\/g, "/"), "");
+                    //console.log(filepath.replace(pkg.path.replace(/\\/g, "/"), "").replace(/\\/g, "/"));
+                    if (file.file === shortPath) {
+                        var serve_path = path.join(Tower.root, self.output.js, package, shortPath.replace(/\..+$/, "")); 
                         if (typeof val === "function")
-                            val.call(self, filepath, package, filepath.replace(new RegExp("\." + i + "$"), ""), file.type);
+                            val.call(self, filepath, serve_path, file.type);
                     }
                 });
             }
@@ -79,9 +89,23 @@ var Bundler = {
      * @param {Object} options Contains the options for the current resource (js, css, image, etc...)
      */
     addResource: function(options) {
-        this._resources.push(options);
+        this._compile(options);
     },
 
+    _compile: function(options) {
+        options.path = options.path + '.' + options.extension;
+        console.log(options);
+        fs.writeFileSync(options.path, options.data.toString('utf-8'));
+        this._resources.push(options);
+    },
+    /**
+     * Triggers an error;
+     * @param  {[type]} message [description]
+     * @return {[type]}
+     */
+    error: function(message) {
+        throw Error(message);
+    },
     /**
      * Build the package into different components.
      * Take all it's exported files and copy them to 
@@ -103,16 +127,47 @@ var Bundler = {
         }
 
         pkg._files.forEach(function(file){
-
             if (file.type === 'client' || file.type === '*') {
-
                 if (file.file.match(/\.js$/)) {
-
                     if (fs.existsSync(path.join(pkg.path, file))) {
                         // Copy!
+                        //console.log(path.join(Tower.root, self.output.js, package));
                         var contents = fs.readFileSync(path.join(pkg.path, file.file), 'utf-8');
-                        fs.writeFileSync(path.join(Tower.root, self.output.js, package, file.file), contents, 'utf-8');    
-                        self.addFileLock(package, path.join(Tower.root, self.output.js, package, file.file), path.join(self.output.js, package, file.file), 'js');
+                        
+                        /**finalPath.forEach(function(p, index){
+                            var newP = path.join(buildPath.join(path.sep), p);
+                            console.log(index, newP);
+                            if (!fs.existsSync(newP)) {
+                                //fs.mkdirSync(newP);
+                                buildPath += newP;
+                            }
+                        });**/
+
+                        var finalPath = [Tower.root, self.output.js, package, file.file];
+                        var previous = "";
+
+                        /** 
+                        *   Goes through each `finalPath` index one at a time.
+                        *   We also assemble the current path to the next path so we build on top.
+                        *
+                        *   ['root', 'a', 'b', 'c']
+                        *   0 => root
+                        *   1 => root/a
+                        *   2 => root/a/b
+                        *   3 => root/a/b/c
+                        **/
+                        function recursive(p) {
+
+                            if (!fs.existsSync(p)) {
+                                console.log("New Dir: " + p);
+                                //fs.mkdirSync(p);
+                            }
+
+                        }
+
+                        fs.writeFileSync(path.join(Tower.root, self.output.js, package, file.file), contents, 'utf-8');
+                        self.addFileLock(package, path.join(Tower.root, self.output.js, package, file.file), path.join(self.output.js, package, file.file), 'js'); 
+           
                     }
                 }
             }
