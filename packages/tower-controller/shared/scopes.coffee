@@ -26,7 +26,7 @@ Tower.ControllerScopes =
 
       unless scope
         if typeof name == 'string'
-          chain = Tower.constant(metadata.resourceType)
+          chain = Tower.constantNew(metadata.resourceType)
 
           unless name == 'all'
             if Tower.isClient
