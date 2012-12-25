@@ -23,7 +23,6 @@
 #   ]
 
 _.series [
-
 ], (error) =>
   # Check to see if there was an error in the seed
   if error

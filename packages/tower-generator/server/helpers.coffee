@@ -21,12 +21,12 @@ Tower.GeneratorHelpers =
 \ \ \ \ \ \ \ \ next()
 
 """
-    @injectIntoFile "data/seeds.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
+    @injectIntoFile "#{Tower.root}/data/seeds.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
 
   bootstrap: (model) ->
     @inRoot =>
       # bootstrap into client side
-      @injectIntoFile "app/config/client/bootstrap.coffee",
+      @injectIntoFile "#{Tower.root}/app/config/client/bootstrap.coffee",
         "  #{@app.namespace}.#{model.className}.load(data.#{model.namePlural}) if data.#{model.namePlural}\n",
           after: /bootstrap\ = *\(data\) *-\> *\n/i
           duplicate: false
@@ -38,12 +38,12 @@ Tower.GeneratorHelpers =
         next()
 
 """
-      @injectIntoFile "app/controllers/server/applicationController.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
+      @injectIntoFile "#{Tower.root}/app/controllers/server/applicationController.coffee", string, after: /_.series *\[ *\n/i, duplicate: false
 
   asset: (path, options = {}) ->
     bundle = options.bundle || "application"
     @inRoot =>
-      @injectIntoFile "app/config/server/assets.coffee", "      \'#{path}\'\n",
+      @injectIntoFile "#{Tower.root}/app/config/server/assets.coffee", "      \'#{path}\'\n",
         after: new RegExp("\\s*#{bundle}: *\\[[^\\]]*\\n", "i"),
         duplicate: false
 

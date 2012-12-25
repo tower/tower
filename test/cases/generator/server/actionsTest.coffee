@@ -61,7 +61,38 @@ describe 'Tower.GeneratorActions', ->
         done()
   
   test '#get'
-  test '#removeFile'
+
+
+  describe '#removeFile', ->
+    test 'removes existing file', (done) ->
+      generator.createFile cakefileDestination, "Some content", =>
+        generator.removeFile cakefileDestination
+        assert.isFalse Tower.existsSync(cakefileDestination), Error, "File #{cakefileDestination} exists"
+        done()
+
+    test "removing nonexisting file doesn't throw any errors", ->
+      remove = ->
+        generator.removeFile cakefileDestination
+
+      assert.doesNotThrow remove, Error, "#removeFile is throwing errors"
+
+  describe '#gsubFile', ->
+    beforeEach (done) ->
+      generator.createFile cakefileDestination, "Some content is good", ->
+        done()
+
+    test 'with only one target to replace', (done) ->
+      generator.gsubFile cakefileDestination, "Some", "Replaced", =>
+        generator.readFile cakefileDestination, (error, content) =>
+          assert.equal "Replaced content is good", content
+          done()
+
+    test 'with multiple targets to replace', (done) ->
+      generator.gsubFile cakefileDestination, ['Some', 'is'], "Replaced", =>
+        generator.readFile cakefileDestination, (error, content) =>
+          assert.equal "Replaced content Replaced good", content
+          done()
+
   test '#removeDir'
   test '#linkFile'
   test '#inside'

@@ -207,23 +207,32 @@ Tower.GeneratorActions =
     args.push block
     @insertIntoFile(path, args...)
 
-  gsubFile: (path, flag) ->
-    return unless behavior == 'invoke'
-    {args, options, block} = @_args(arguments, 2)
 
-    path = _path.resolve(path, destination_root)
-    @sayStatus 'gsub', @relativeToOriginalDestinationRoot(path), options.fetch('verbose', true)
+  gsubFile: (path, targets, replacement, callback) ->
+    path = @destinationPath(path)
 
-    unless options.pretend
-      content = File.binread(path)
-      content.gsub(flag, args..., block)
-      File.open path, 'wb', (file) -> file.write(content)
+    @readFile path, (readErr, data) =>
+      content = data.toString()
+      if typeof targets == 'string' or targets instanceof RegExp
+        content = content.replace(targets, replacement)
+      else if targets instanceof Array
+        for target in targets
+          content = content.replace(target, replacement)
 
-  removeFile: (path, options = {}) ->
-    # return unless behavior == "invoke"
-    path  = @destinationPath(path)
-    #@sayStatus "remove", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
-    # File.removeRecursively(path) if !options.pretend && File.exists?(path)
+      Tower.writeFile path, content, (writeErr) =>
+        @log('update', path)
+        callback() if typeof callback == 'function'
+
+
+  # todo: maybe remove file recursively
+  removeFile: (path) ->
+    path = @destinationPath(path)
+
+    try
+      @log('destroy', path)
+      fs.unlinkSync path
+    catch error
+      return
 
   removeDir: ->
     @removeFile arguments...

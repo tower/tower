@@ -4,3 +4,4 @@ describe 'Tower.Command', ->
       c: 'console'
       g: 'generate'
       s: 'server'
+      d: 'destroy'
