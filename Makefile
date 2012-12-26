@@ -28,7 +28,7 @@ endif
 
 # watch more files on mac
 watch-more:
-	ulimit -n 65536
+	ulimit -n 1000
 
 install-dependencies:
 	@$(shell $(INSTALL) dependencies)
