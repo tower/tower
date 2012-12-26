@@ -49,8 +49,8 @@ describe "Tower.CommandDestroy", ->
     test "should remove correct assets in app/config/server/assets.coffee", ->
       modelName = "bird"
       assetRefs = [
-        ///\s*#?\s*\'/app/models/shared/#{modelName}\'///g
-        ///\s*#?\s*\'/test/cases/models/shared/#{modelName}Test\'///g
+        ///\s*#?\s*\'/?app/models/shared/#{modelName}\'///g
+        ///\s*#?\s*\'/?test/cases/models/shared/#{modelName}Test\'///g
       ]
 
       content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
@@ -124,7 +124,7 @@ describe "Tower.CommandDestroy", ->
       assert.notMatch content, translationRe, "english translation was not removed"
 
     test "should remove correct assets in app/config/server/assets.coffee", ->
-      assetRe = ///\s*#?\s*\'/app/controllers/client/tanksController\'///g
+      assetRe = ///\s*#?\s*\'/?app/controllers/client/tanksController\'///g
 
       content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
 
@@ -143,7 +143,7 @@ describe "Tower.CommandDestroy", ->
       assert.isFalse Tower.existsSync("#{Tower.root}/app/views/client/boats")
 
     test "should remove correct assets in app/config/server/assets.coffee", ->
-      assetRe = ///\s*#?\s*\'/app/views/client/boats.*///g
+      assetRe = ///\s*#?\s*\'/?app/views/client/boats.*///g
 
       content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
 
@@ -201,7 +201,7 @@ describe "Tower.CommandDestroy", ->
       assert.isFalse Tower.existsSync("#{Tower.root}/test/cases/services/server/workoutTest.coffee")
 
     test "should remove correct assets in app/config/server/assets.coffee", ->
-      serviceRef = ///\s*#?\s*\'/app/services/server/workout\'///g
+      serviceRef = ///\s*#?\s*\'/?app/services/server/workout\'///g
       testServiceRef = ///s*#?\s*\'/test/cases/services/server/workoutTest\'///g
 
       content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
