@@ -129,6 +129,10 @@ class Tower.CommandDestroy
 
     Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/server/assets.coffee", assetRefs, '')
 
+  destroyLibrary: (modelName) ->
+    modelName = _.camelize(modelName, true)
+    Tower.GeneratorActions.removeDirSync("#{Tower.root}/#{modelName}")
+
   destroyScaffold: (modelName) ->
     @destroyModel(modelName)
     @destroyController(modelName)
@@ -154,6 +158,8 @@ class Tower.CommandDestroy
           @destroyMailer @program.args[2]
         when 'service'
           @destroyService @program.args[2]
+        when 'library'
+           @destroyLibrary @program.args[2]
         when 'scaffold'
           @destroyScaffold @program.args[2]
 
