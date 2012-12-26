@@ -5,9 +5,9 @@ class Tower.GeneratorServiceGenerator extends Tower.Generator
     # @todo
     scriptType = 'coffee'
 
-    @directory 'app/services'
-    @directory 'app/services/server'
-    @template "service.#{scriptType}", "app/services/server/#{@model.name}.#{scriptType}"
+    @directory "#{Tower.root}/app/services"
+    @directory "#{Tower.root}/app/services/server"
+    @template "service.#{scriptType}", "#{Tower.root}/app/services/server/#{@model.name}.#{scriptType}"
     @asset "/app/services/server/#{@model.name}"
     @generate 'mocha:service'
 

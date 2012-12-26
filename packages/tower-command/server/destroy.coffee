@@ -115,6 +115,20 @@ class Tower.CommandDestroy
 
     Tower.GeneratorActions.removeFile "#{Tower.root}/app/mailers/#{modelName}Mailer.coffee"
 
+  destroyService: (modelName) ->
+    modelName = _.camelize(modelName, true)
+
+    assetRefs = [
+      ///\s*#?\s*\'/app/services/server/#{modelName}\'///g
+      ///s*#?\s*\'/test/cases/services/server/workoutTest\'///g
+    ]
+
+    Tower.GeneratorActions.removeFile "#{Tower.root}/app/services/server/#{modelName}.coffee"
+
+    Tower.GeneratorActions.removeFile "#{Tower.root}/test/cases/services/server/#{modelName}Test.coffee"
+
+    Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/server/assets.coffee", assetRefs, '')
+
   run: ->
     if @program.args.length >= 3
       @destinationRoot  ||= process.cwd()
@@ -132,6 +146,8 @@ class Tower.CommandDestroy
           @destroyHelper @program.args[2]
         when 'mailer'
           @destroyMailer @program.args[2]
+        when 'service'
+          @destroyService @program.args[2]
         when 'scaffold'
           console.log 'scaffold'
 

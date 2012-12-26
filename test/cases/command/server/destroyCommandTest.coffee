@@ -184,3 +184,27 @@ describe "Tower.CommandDestroy", ->
 
     test "should delete app/mailers/(mailerName).coffee", ->
       assert.isFalse Tower.existsSync("#{Tower.root}/app/mailers/accountMailer.coffee")
+
+  describe "generated mailer", ->
+    before ->
+      genArgs = ["node", "tower", "generate", "service", "workout"]
+      genCommand = new Tower.CommandGenerate(genArgs)
+      genCommand.run()
+
+      destroyCommand = new Tower.CommandDestroy(["node", "tower", "destroy", "service", "workout"])
+      destroyCommand.run()
+
+    test "should delete app/services/server/(serviceName).coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/services/server/workout.coffee")
+
+    test "should delete test/cases/services/server/(serviceName)Test.coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/test/cases/services/server/workoutTest.coffee")
+
+    test "should remove correct assets in app/config/server/assets.coffee", ->
+      serviceRef = ///\s*#?\s*\'/app/services/server/workout\'///g
+      testServiceRef = ///s*#?\s*\'/test/cases/services/server/workoutTest\'///g
+
+      content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
+
+      assert.notMatch content, serviceRef, "service asset was not removed"
+      assert.notMatch content, testServiceRef, "service asset was not removed"
