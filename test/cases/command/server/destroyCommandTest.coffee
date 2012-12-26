@@ -49,7 +49,7 @@ describe "Tower.CommandDestroy", ->
     test "should remove correct assets in app/config/server/assets.coffee", ->
       modelName = "bird"
       assetRefs = [
-        ///\s*#?\s*\'app/models/shared/#{modelName}\'///g
+        ///\s*#?\s*\'/app/models/shared/#{modelName}\'///g
         ///\s*#?\s*\'/test/cases/models/shared/#{modelName}Test\'///g
       ]
 
@@ -208,3 +208,90 @@ describe "Tower.CommandDestroy", ->
 
       assert.notMatch content, serviceRef, "service asset was not removed"
       assert.notMatch content, testServiceRef, "service asset was not removed"
+
+  describe "generated scaffold", ->
+    before ->
+      genArgs = ["node", "tower", "generate", "scaffold", "dog"]
+      genCommand = new Tower.CommandGenerate(genArgs)
+      genCommand.run()
+
+      destroyCommand = new Tower.CommandDestroy(["node", "tower", "destroy", "scaffold", "dog"])
+      destroyCommand.run()
+
+    test "should delete app/models/shared/(modelName).coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/models/shared/dog.coffee")
+
+    test "should delete test/factories/(modelName)Factory.coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/test/factories/dogFactory.coffee")
+
+    test "should delete test/cases/models/shared/(modelName)Test.coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/test/cases/models/shared/dogTest.coffee")
+
+    test "should remove correct bootstrap dataset in app/controllers/server/applicationController.coffee", ->
+
+      content = Tower.readFileSync("#{Tower.root}/app/controllers/server/applicationController.coffee").toString()
+
+      # bootstrap into server side
+      namespace = Tower.namespace()
+      className = 'Dog'
+      namePlural = 'dogs'
+
+      dogRe = ///\s*\(next\)\s*=>\s*#{namespace}\.#{className}\.all\s*\(error,\s*#{namePlural}\)\s*=>\s*data\.#{namePlural}\s*=\s*#{namePlural}\s*next\(\)///g
+
+      assert.notMatch content, dogRe, "bootstrap string not removed"
+
+    test "should remove correct bootstrap in app/config/client/bootstrap.coffee", ->
+      modelName = 'dog'
+      className = 'Dog'
+      namePlural = 'dogs'
+
+      bootstrapRe = ///\s*#?\s*App\.#{className}\.load\(data\.#{namePlural}\)\sif\sdata\.#{namePlural}///g
+
+      content = Tower.readFileSync("#{Tower.root}/app/config/client/bootstrap.coffee").toString()
+
+      assert.notMatch content, bootstrapRe, "bootstrap was not removed"
+
+    test "should remove seeds in data/seeds.coffee", ->
+      modelName = 'dog'
+      className = 'Dog'
+      namePlural = 'dogs'
+
+      seedRe = ///\s*#?\s*\(callback\)\s*=>\s*_\(\d*\)\.timesAsync\s*callback,\s*\(next\)\s*=>\s*Tower\.Factory\.create\s*\'#{modelName}\',\s*\(error,\s*record\)\s*=>\s*console\.log\s*_\.stringify\(record\)\s*next\(\)///g
+
+      content = Tower.readFileSync("#{Tower.root}/data/seeds.coffee").toString()
+
+      assert.notMatch content, seedRe, "seed was not removed"
+
+    test "should delete app/controllers/server/(controllerName).coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/controllers/server/dogsController.coffee")
+
+    test "should delete app/controllers/client/(controllerName).coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/controllers/client/dogsController.coffee")
+
+    test "should delete test/cases/controllers/server/(controllerName)Test.coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/test/cases/controllers/server/dogsControllerTest.coffee")
+
+    test "should remove correct route in app/config/shared/routes.coffee", ->
+      routeRe = ///\s*#?\s*@resources\s*\'dogs\'///g
+
+      content = Tower.readFileSync("#{Tower.root}/app/config/shared/routes.coffee").toString()
+
+      assert.notMatch content, routeRe, "route was not removed"
+
+    test "should remove correct nav link in app/templates/shared/layout/_navigation.coffee", ->
+      navRe = ///\s*#?\s*li\s*\'\{\{bindAttr\s*class=\"App\.DogController[\s\S]*?dogs\'\)///g
+
+      content = Tower.readFileSync("#{Tower.root}/app/templates/shared/layout/_navigation.coffee").toString()
+      assert.notMatch content, navRe, "navigation link was not removed"
+
+    test "should remove correct translation in app/config/shared/locales/en.coffee", ->
+      translationRe = ///\s*#?\s*dogs:\s*\"Dogs\"///g
+
+      content = Tower.readFileSync("#{Tower.root}/app/config/shared/locales/en.coffee").toString()
+      assert.notMatch content, translationRe, "english translation was not removed"
+
+    test "should delete directory app/views/client/(pluralViewName)", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/views/client/dogs")
+
+    test "should delete directory app/templates/shared/(templateName)", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/templates/shared/dogs")

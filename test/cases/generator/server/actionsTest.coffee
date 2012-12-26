@@ -82,16 +82,16 @@ describe 'Tower.GeneratorActions', ->
         done()
 
     test 'with only one target to replace', (done) ->
-      generator.gsubFile cakefileDestination, "Some", "Replaced", =>
-        generator.readFile cakefileDestination, (error, content) =>
-          assert.equal "Replaced content is good", content
-          done()
+      generator.gsubFile cakefileDestination, "Some", "Replaced"
+      generator.readFile cakefileDestination, (error, content) =>
+        assert.equal "Replaced content is good", content
+        done()
 
     test 'with multiple targets to replace', (done) ->
-      generator.gsubFile cakefileDestination, ['Some', 'is'], "Replaced", =>
-        generator.readFile cakefileDestination, (error, content) =>
-          assert.equal "Replaced content Replaced good", content
-          done()
+      generator.gsubFile cakefileDestination, ['Some', 'is'], "Replaced"
+      generator.readFile cakefileDestination, (error, content) =>
+        assert.equal "Replaced content Replaced good", content
+        done()
 
 
   test '#removeDirSync', (done) ->

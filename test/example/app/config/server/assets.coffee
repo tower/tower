@@ -34,10 +34,6 @@ module.exports =
       '/app/controllers/client/birdsController'
       '/app/controllers/client/monkeysController'
       'app/models/shared/tank'
-      'app/views/client/boats/form'
-      'app/views/client/boats/index'
-      'app/views/client/boats/show'
-      'app/models/shared/monkey'
     ].concat(testModels).concat(testControllers)
     
     lib: [
@@ -79,7 +75,6 @@ module.exports =
       '/vendor/javascripts/chai'
       '/test/client'
       '/test/cases/models/shared/tankTest'
-      '/test/cases/models/shared/monkeyTest'
     ]
 
     tests: testCases

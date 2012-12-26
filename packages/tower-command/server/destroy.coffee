@@ -28,8 +28,8 @@ class Tower.CommandDestroy
 
     # remove model file reference in server assets
     assetRefs = [
-      ///\s*#?\s*\'app/models/shared/#{modelName}\'///g
-      ///\s*#?\s*\'/test/cases/models/shared/#{modelName}Test\'///g
+      ///\s*#?\s*\'/?app/models/shared/#{modelName}\'///g
+      ///\s*#?\s*\'/?test/cases/models/shared/#{modelName}Test\'///g
     ]
 
     appCtrlRef = ///\s*\(next\)\s*=>\s*#{namespace}\.#{className}\.all\s*\(error,\s*#{namePlural}\)\s*=>\s*data\.#{namePlural}\s*=\s*#{namePlural}\s*next\(\)///g
@@ -66,7 +66,7 @@ class Tower.CommandDestroy
 
     translationRef = ///\s*#?\s*#{namePlural}:\s*\"#{classNamePlural}\"///g
 
-    assetRef = ///\s*#?\s*\'/app/controllers/client/#{namePlural}Controller\'///g
+    assetRef = ///\s*#?\s*\'/?app/controllers/client/#{namePlural}Controller\'///g
 
     # remove controller files
     Tower.GeneratorActions.removeFile "#{Tower.root}/app/controllers/server/#{namePlural}Controller.coffee"
@@ -90,7 +90,7 @@ class Tower.CommandDestroy
     namePlural = _.pluralize(modelName)
     classNamePlural = _.camelize(namePlural)
 
-    assetRef = ///\s*#?\s*\'/app/views/client/#{namePlural}.*///g
+    assetRef = ///\s*#?\s*\'/?app/views/client/#{namePlural}.*///g
 
     Tower.GeneratorActions.removeDirSync("#{Tower.root}/app/views/client/#{namePlural}")
 
@@ -119,8 +119,8 @@ class Tower.CommandDestroy
     modelName = _.camelize(modelName, true)
 
     assetRefs = [
-      ///\s*#?\s*\'/app/services/server/#{modelName}\'///g
-      ///s*#?\s*\'/test/cases/services/server/workoutTest\'///g
+      ///\s*#?\s*\'/?app/services/server/#{modelName}\'///g
+      ///s*#?\s*\'/?test/cases/services/server/workoutTest\'///g
     ]
 
     Tower.GeneratorActions.removeFile "#{Tower.root}/app/services/server/#{modelName}.coffee"
@@ -128,6 +128,12 @@ class Tower.CommandDestroy
     Tower.GeneratorActions.removeFile "#{Tower.root}/test/cases/services/server/#{modelName}Test.coffee"
 
     Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/server/assets.coffee", assetRefs, '')
+
+  destroyScaffold: (modelName) ->
+    @destroyModel(modelName)
+    @destroyController(modelName)
+    @destroyView(modelName)
+    @destroyTemplate(modelName)
 
   run: ->
     if @program.args.length >= 3
@@ -149,6 +155,6 @@ class Tower.CommandDestroy
         when 'service'
           @destroyService @program.args[2]
         when 'scaffold'
-          console.log 'scaffold'
+          @destroyScaffold @program.args[2]
 
 module.exports = Tower.CommandDestroy

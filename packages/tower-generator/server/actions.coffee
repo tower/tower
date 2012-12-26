@@ -208,20 +208,20 @@ Tower.GeneratorActions =
     @insertIntoFile(path, args...)
 
 
-  gsubFile: (path, targets, replacement, callback) ->
+  gsubFile: (path, targets, replacement) ->
     path = @destinationPath(path)
 
-    @readFile path, (readErr, data) =>
-      content = data.toString()
+    try
+      content = Tower.readFileSync(path).toString()
       if typeof targets == 'string' or targets instanceof RegExp
         content = content.replace(targets, replacement)
       else if targets instanceof Array
         for target in targets
           content = content.replace(target, replacement)
-
-      Tower.writeFile path, content, (writeErr) =>
-        @log('update', path)
-        callback() if typeof callback == 'function'
+      Tower.writeFileSync(path, content)
+      @log('update', path)
+    catch error
+      return
 
 
   # todo: maybe remove file recursively
