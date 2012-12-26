@@ -129,3 +129,22 @@ describe "Tower.CommandDestroy", ->
       content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
 
       assert.notMatch content, assetRe, "assets was not removed"
+
+  describe "generated view", ->
+    before ->
+      genArgs = ["node", "tower", "generate", "view", "boat"]
+      genCommand = new Tower.CommandGenerate(genArgs)
+      genCommand.run()
+
+      destroyCommand = new Tower.CommandDestroy(["node", "tower", "destroy", "view", "boat"])
+      destroyCommand.run()
+
+    test "should delete directory app/views/client/(pluralViewName)", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/views/client/boats")
+
+    test "should remove correct assets in app/config/server/assets.coffee", ->
+      assetRe = ///\s*#?\s*\'/app/views/client/boats.*///g
+
+      content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
+
+      assert.notMatch content, assetRe, "assets was not removed"

@@ -34,6 +34,9 @@ module.exports =
       '/app/controllers/client/birdsController'
       '/app/controllers/client/monkeysController'
       'app/models/shared/tank'
+      'app/views/client/boats/form'
+      'app/views/client/boats/index'
+      'app/views/client/boats/show'
       'app/models/shared/monkey'
     ].concat(testModels).concat(testControllers)
     

@@ -229,13 +229,19 @@ Tower.GeneratorActions =
     path = @destinationPath(path)
 
     try
-      @log('destroy', path)
       fs.unlinkSync path
+      @log('destroy', path)
     catch error
       return
 
-  removeDir: ->
-    @removeFile arguments...
+  removeDirSync: (path) ->
+    path = @destinationPath(path)
+    wrench = require 'wrench'
+    try
+      wrench.rmdirSyncRecursive(path)
+      @log('destroy', path)
+    catch error
+      return
 
   _invokeWithConflictCheck: (block) ->
     if fs.existsSync(path)

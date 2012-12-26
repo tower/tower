@@ -83,6 +83,19 @@ class Tower.CommandDestroy
 
     Tower.GeneratorActions.removeFile "#{Tower.root}/test/cases/controllers/server/#{namePlural}ControllerTest.coffee"
 
+  destroyView: (modelName) ->
+    modelName = _.camelize(modelName, true)
+    namespace = Tower.namespace()
+    className = _.camelize(modelName)
+    namePlural = _.pluralize(modelName)
+    classNamePlural = _.camelize(namePlural)
+
+    assetRef = ///\s*#?\s*\'/app/views/client/#{namePlural}.*///g
+
+    Tower.GeneratorActions.removeDirSync("#{Tower.root}/app/views/client/#{namePlural}")
+
+    Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/server/assets.coffee", assetRef, '')
+
   run: ->
     if @program.args.length >= 3
       @destinationRoot  ||= process.cwd()
@@ -92,6 +105,8 @@ class Tower.CommandDestroy
           @destroyModel @program.args[2]
         when 'controller'
           @destroyController @program.args[2]
+        when 'view'
+          @destroyView @program.args[2]
         when 'scaffold'
           console.log 'scaffold'
 

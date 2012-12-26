@@ -93,7 +93,15 @@ describe 'Tower.GeneratorActions', ->
           assert.equal "Replaced content Replaced good", content
           done()
 
-  test '#removeDir'
+
+  test '#removeDirSync', (done) ->
+    testDirPath = Tower.join(destinationRoot, 'code')
+    generator.createDirectory testDirPath, (err, result) =>
+      generator.createFile 'Some content', Tower.join(testDirPath, 'test.txt'), =>
+        generator.removeDirSync testDirPath
+        assert.isFalse Tower.existsSync(testDirPath), "Directory #{testDirPath} exists"
+        done()
+
   test '#linkFile'
   test '#inside'
   test '#chmod'
