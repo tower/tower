@@ -148,3 +148,27 @@ describe "Tower.CommandDestroy", ->
       content = Tower.readFileSync("#{Tower.root}/app/config/server/assets.coffee").toString()
 
       assert.notMatch content, assetRe, "assets was not removed"
+
+  describe "generated template", ->
+    before ->
+      genArgs = ["node", "tower", "generate", "template", "cow"]
+      genCommand = new Tower.CommandGenerate(genArgs)
+      genCommand.run()
+
+      destroyCommand = new Tower.CommandDestroy(["node", "tower", "destroy", "template", "cow"])
+      destroyCommand.run()
+
+    test "should delete directory app/templates/shared/(templateName)", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/templates/shared/cows")
+
+  describe "generated helper", ->
+    before ->
+      genArgs = ["node", "tower", "generate", "helper", "bar"]
+      genCommand = new Tower.CommandGenerate(genArgs)
+      genCommand.run()
+
+      destroyCommand = new Tower.CommandDestroy(["node", "tower", "destroy", "helper", "bar"])
+      destroyCommand.run()
+
+    test "should delete app/helpers/(helperName).coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/helpers/barHelper.coffee")
