@@ -53,28 +53,46 @@ class Tower.CommandDestroy
 
     Tower.GeneratorActions.removeFile "#{Tower.root}/test/cases/models/shared/#{modelName}Test.coffee"
 
-  destroyController: (controllerName) ->
-    controllerName = _.camelize(controllerName, true)
+  destroyController: (modelName) ->
+    modelName = _.camelize(modelName, true)
+    namespace = Tower.namespace()
+    className = _.camelize(modelName)
+    namePlural = _.pluralize(modelName)
+    classNamePlural = _.camelize(namePlural)
+
+    routeRef = ///\s*#?\s*@resources\s*\'#{namePlural}\'///g
+
+    navRef = ///\s*#?\s*li\s*\'\{\{bindAttr\s*class=\"App\.#{className}Controller[\s\S]*?#{namePlural}\'\)///g
+
+    translationRef = ///\s*#?\s*#{namePlural}:\s*\"#{classNamePlural}\"///g
+
+    assetRef = ///\s*#?\s*\'/app/controllers/client/#{namePlural}Controller\'///g
 
     # remove controller files
-    Tower.GeneratorActions.removeFile "app/controllers/server/#{controllerName}Controller.coffee"
-    Tower.GeneratorActions.removeFile "app/controllers/client/#{controllerName}Controller.coffee"
+    Tower.GeneratorActions.removeFile "#{Tower.root}/app/controllers/server/#{namePlural}Controller.coffee"
 
-    Tower.GeneratorActions.removeFile "test/cases/controllers/server/#{controllerName}ControllerTest.coffee"
+    Tower.GeneratorActions.removeFile "#{Tower.root}/app/controllers/client/#{namePlural}Controller.coffee"
+
+    Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/shared/routes.coffee", routeRef, '')
+
+    Tower.GeneratorActions.gsubFile("#{Tower.root}/app/templates/shared/layout/_navigation.coffee", navRef, '')
+
+    Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/shared/locales/en.coffee", translationRef, '')
+
+    Tower.GeneratorActions.gsubFile("#{Tower.root}/app/config/server/assets.coffee", assetRef, '')
+
+    Tower.GeneratorActions.removeFile "#{Tower.root}/test/cases/controllers/server/#{namePlural}ControllerTest.coffee"
 
   run: ->
-
     if @program.args.length >= 3
       @destinationRoot  ||= process.cwd()
-
 
       switch @program.args[1]
         when 'model'
           @destroyModel @program.args[2]
         when 'controller'
-          console.log 'controller fool'
+          @destroyController @program.args[2]
         when 'scaffold'
-          console.log 'scaffold dog'
-
+          console.log 'scaffold'
 
 module.exports = Tower.CommandDestroy

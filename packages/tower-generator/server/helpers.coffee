@@ -8,9 +8,9 @@ Tower.GeneratorHelpers =
     @inRoot =>
       if @controller.namespaced
         # @todo, add namespaces and such
-        @injectIntoFile "app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
+        @injectIntoFile "#{Tower.root}/app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
       else
-        @injectIntoFile "app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
+        @injectIntoFile "#{Tower.root}/app/config/shared/routes.coffee", "  #{routingCode}\n", after: /\.Route\.draw ->\n/, duplicate: false
 
   seed: (model) ->
     string = """
@@ -56,11 +56,11 @@ Tower.GeneratorHelpers =
 #"""
 
     @inRoot =>
-      @injectIntoFile "app/templates/shared/layout/_navigation.coffee", content, after: pattern, duplicate: false
+      @injectIntoFile "#{Tower.root}/app/templates/shared/layout/_navigation.coffee", content, after: pattern, duplicate: false
 
   locale: (pattern, content) ->
     @inRoot =>
-      @injectIntoFile "app/config/shared/locales/en.coffee", content, after: pattern, duplicate: false
+      @injectIntoFile "#{Tower.root}/app/config/shared/locales/en.coffee", content, after: pattern, duplicate: false
 
   inRoot: (block) ->
     @inside ".", block

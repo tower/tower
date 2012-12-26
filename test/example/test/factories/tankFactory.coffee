@@ -1,0 +1,1 @@
+Tower.Factory.define 'tank', ->

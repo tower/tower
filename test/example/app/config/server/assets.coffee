@@ -31,6 +31,10 @@ module.exports =
       '/app/controllers/client/applicationController'
       # '/templates'
       '/app/views/client/layout/application'
+      '/app/controllers/client/birdsController'
+      '/app/controllers/client/monkeysController'
+      'app/models/shared/tank'
+      'app/models/shared/monkey'
     ].concat(testModels).concat(testControllers)
     
     lib: [
@@ -71,6 +75,8 @@ module.exports =
       '/vendor/javascripts/mocha'
       '/vendor/javascripts/chai'
       '/test/client'
+      '/test/cases/models/shared/tankTest'
+      '/test/cases/models/shared/monkeyTest'
     ]
 
     tests: testCases
