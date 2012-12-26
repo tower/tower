@@ -67,9 +67,11 @@ Tower.GeneratorActions =
 
     key = switch action
       when 'destroy'
-        `'   \x1b[36mremove\x1b[0m'`
+        `'   \033[1m\x1b[31mremove\x1b\033[0m'`
+      when 'create'
+        `'   \033[1m\x1b[32mcreate\x1b\033[0m'`
       else
-        `'   \x1b[36m'` + action + `'\x1b[0m'`
+        `'   \033[1m\x1b[36m'` + action + `'\x1b\033[0m'`
 
     console.log("#{key} : #{_path.relative(process.cwd(), path)}")
 
