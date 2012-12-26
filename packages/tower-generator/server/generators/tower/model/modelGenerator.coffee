@@ -9,7 +9,7 @@ class Tower.GeneratorModelGenerator extends Tower.Generator
     @directory "#{Tower.root}/app/models/shared"
     @template "model.#{scriptType}", "#{Tower.root}/app/models/shared/#{@model.name}.#{scriptType}"
     @template "factory.#{scriptType}", "#{Tower.root}/test/factories/#{@model.name}Factory.#{scriptType}"
-    @asset "app/models/shared/#{@model.name}"
+    @asset "/app/models/shared/#{@model.name}"
     @bootstrap @model
     @seed @model
     @generate 'mocha:model'

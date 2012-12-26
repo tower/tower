@@ -33,7 +33,7 @@ module.exports =
       '/app/views/client/layout/application'
       '/app/controllers/client/birdsController'
       '/app/controllers/client/monkeysController'
-      'app/models/shared/tank'
+      '/app/models/shared/tank'
     ].concat(testModels).concat(testControllers)
     
     lib: [
