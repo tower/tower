@@ -110,6 +110,11 @@ class Tower.CommandDestroy
 
     Tower.GeneratorActions.removeFile "#{Tower.root}/app/helpers/#{modelName}Helper.coffee"
 
+  destroyMailer: (modelName) ->
+    modelName = _.camelize(modelName, true)
+
+    Tower.GeneratorActions.removeFile "#{Tower.root}/app/mailers/#{modelName}Mailer.coffee"
+
   run: ->
     if @program.args.length >= 3
       @destinationRoot  ||= process.cwd()
@@ -125,6 +130,8 @@ class Tower.CommandDestroy
           @destroyTemplate @program.args[2]
         when 'helper'
           @destroyHelper @program.args[2]
+        when 'mailer'
+          @destroyMailer @program.args[2]
         when 'scaffold'
           console.log 'scaffold'
 

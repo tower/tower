@@ -172,3 +172,15 @@ describe "Tower.CommandDestroy", ->
 
     test "should delete app/helpers/(helperName).coffee", ->
       assert.isFalse Tower.existsSync("#{Tower.root}/app/helpers/barHelper.coffee")
+
+  describe "generated mailer", ->
+    before ->
+      genArgs = ["node", "tower", "generate", "mailer", "account"]
+      genCommand = new Tower.CommandGenerate(genArgs)
+      genCommand.run()
+
+      destroyCommand = new Tower.CommandDestroy(["node", "tower", "destroy", "mailer", "account"])
+      destroyCommand.run()
+
+    test "should delete app/mailers/(mailerName).coffee", ->
+      assert.isFalse Tower.existsSync("#{Tower.root}/app/mailers/accountMailer.coffee")
