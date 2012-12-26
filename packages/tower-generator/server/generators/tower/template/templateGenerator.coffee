@@ -5,7 +5,7 @@ class Tower.GeneratorTemplateGenerator extends Tower.Generator
     # @todo
     scriptType = 'coffee'
 
-    @directory "app/templates/shared/#{@view.directory}"
+    @directory "#{Tower.root}/app/templates/shared/#{@view.directory}"
 
     templates = [
       '_flash'
@@ -20,6 +20,6 @@ class Tower.GeneratorTemplateGenerator extends Tower.Generator
     ]
 
     for template in templates
-      @template "#{template}.#{scriptType}", "app/templates/shared/#{@view.directory}/#{template}.#{scriptType}"
+      @template "#{template}.#{scriptType}", "#{Tower.root}/app/templates/shared/#{@view.directory}/#{template}.#{scriptType}"
 
 module.exports = Tower.GeneratorViewGenerator

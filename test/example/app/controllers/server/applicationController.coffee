@@ -12,4 +12,7 @@ class App.ApplicationController extends Tower.Controller
     
     # for every model you add, you can add it to the bootstrap dataset by using this async helper.
     _.series [
+      (next) => App.Tank.all (error, tanks) =>
+        data.tanks = tanks
+        next()
     ], callback

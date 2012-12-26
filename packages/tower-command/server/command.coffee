@@ -17,6 +17,7 @@ Tower.Command =
   aliases:
     c: 'console'
     g: 'generate'
+    d: 'destroy'
     s: 'server'
     
   # Figure out the command you want to run, then run it.

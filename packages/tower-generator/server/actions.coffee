@@ -67,9 +67,11 @@ Tower.GeneratorActions =
 
     key = switch action
       when 'destroy'
-        `'   \x1b[36mremove\x1b[0m'`
+        `'   \033[1m\x1b[31mremove\x1b\033[0m'`
+      when 'create'
+        `'   \033[1m\x1b[32mcreate\x1b\033[0m'`
       else
-        `'   \x1b[36m'` + action + `'\x1b[0m'`
+        `'   \033[1m\x1b[36m'` + action + `'\x1b\033[0m'`
 
     console.log("#{key} : #{_path.relative(process.cwd(), path)}")
 
@@ -207,26 +209,41 @@ Tower.GeneratorActions =
     args.push block
     @insertIntoFile(path, args...)
 
-  gsubFile: (path, flag) ->
-    return unless behavior == 'invoke'
-    {args, options, block} = @_args(arguments, 2)
 
-    path = _path.resolve(path, destination_root)
-    @sayStatus 'gsub', @relativeToOriginalDestinationRoot(path), options.fetch('verbose', true)
+  gsubFile: (path, targets, replacement) ->
+    path = @destinationPath(path)
 
-    unless options.pretend
-      content = File.binread(path)
-      content.gsub(flag, args..., block)
-      File.open path, 'wb', (file) -> file.write(content)
+    try
+      content = Tower.readFileSync(path).toString()
+      if typeof targets == 'string' or targets instanceof RegExp
+        content = content.replace(targets, replacement)
+      else if targets instanceof Array
+        for target in targets
+          content = content.replace(target, replacement)
+      Tower.writeFileSync(path, content)
+      @log('update', path)
+    catch error
+      return
 
-  removeFile: (path, options = {}) ->
-    # return unless behavior == "invoke"
-    path  = @destinationPath(path)
-    #@sayStatus "remove", @relativeToOriginalDestinationRoot(path), options.fetch("verbose", true)
-    # File.removeRecursively(path) if !options.pretend && File.exists?(path)
 
-  removeDir: ->
-    @removeFile arguments...
+  # todo: maybe remove file recursively
+  removeFile: (path) ->
+    path = @destinationPath(path)
+
+    try
+      fs.unlinkSync path
+      @log('destroy', path)
+    catch error
+      return
+
+  removeDirSync: (path) ->
+    path = @destinationPath(path)
+    wrench = require 'wrench'
+    try
+      wrench.rmdirSyncRecursive(path)
+      @log('destroy', path)
+    catch error
+      return
 
   _invokeWithConflictCheck: (block) ->
     if fs.existsSync(path)

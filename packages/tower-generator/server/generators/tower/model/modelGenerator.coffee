@@ -5,10 +5,10 @@ class Tower.GeneratorModelGenerator extends Tower.Generator
     # @todo
     scriptType = 'coffee'
 
-    @directory 'app/models'
-    @directory 'app/models/shared'
-    @template "model.#{scriptType}", "app/models/shared/#{@model.name}.#{scriptType}"
-    @template "factory.#{scriptType}", "test/factories/#{@model.name}Factory.#{scriptType}"
+    @directory "#{Tower.root}/app/models"
+    @directory "#{Tower.root}/app/models/shared"
+    @template "model.#{scriptType}", "#{Tower.root}/app/models/shared/#{@model.name}.#{scriptType}"
+    @template "factory.#{scriptType}", "#{Tower.root}/test/factories/#{@model.name}Factory.#{scriptType}"
     @asset "/app/models/shared/#{@model.name}"
     @bootstrap @model
     @seed @model

@@ -11,6 +11,7 @@ module.exports = command = (argv) ->
 \ \   tower new <app-name>          generate a new Tower application in folder "app-name"
 \ \   tower console                 command line prompt to your application
 \ \   tower generate <generator>    generate project files (models, views, controllers, scaffolds, etc.)
+\ \   tower destroy <generator>     destroy project files (models, views, controllers, scaffolds, etc.)
 '''
 
   program.parse(argv)

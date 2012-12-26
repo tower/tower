@@ -1,4 +1,6 @@
 Tower.Route.draw ->
+  @resources 'monkeys'
+  @resources 'birds'
   @match "/", to: "application#welcome"
   @match "/sign-in", to: "sessions#new", via: "get", as: "login"
 
