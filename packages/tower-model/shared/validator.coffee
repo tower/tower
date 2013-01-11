@@ -2,29 +2,30 @@ _ = Tower._
 
 class Tower.ModelValidator
   @keys:
-    presence:   'presence'
-    required:   'required'
-    count:      'length'
-    length:     'length'
-    min:        'min'
-    max:        'max'
-    gte:        'gte'
-    '>=':       'gte'
-    gt:         'gt'
-    '>':        'gt'
-    lte:        'lte'
-    '<=':       'lte'
-    lt:         'lt'
-    '<':        'lt'
-    format:     'format'
-    uniq:       'uniqueness'
-    unique:     'uniqueness'
-    uniqueness: 'uniqueness'
-    in:         'in'
-    notIn:      'notIn'
-    except:     'except'
-    only:       'only'
-    accepts:    'accepts'
+    presence:     'presence'
+    required:     'required'
+    count:        'length'
+    length:       'length'
+    min:          'min'
+    max:          'max'
+    gte:          'gte'
+    '>=':         'gte'
+    gt:           'gt'
+    '>':          'gt'
+    lte:          'lte'
+    '<=':         'lte'
+    lt:           'lt'
+    '<':          'lt'
+    format:       'format'
+    uniq:         'uniqueness'
+    unique:       'uniqueness'
+    uniqueness:   'uniqueness'
+    in:           'in'
+    notIn:        'notIn'
+    except:       'except'
+    only:         'only'
+    accepts:      'accepts'
+    confirmation: 'confirmation'
 
   @createAll: (attributes, validations = {}) ->
     options     = _.moveProperties({}, validations, 'on', 'if', 'unless', 'allow', 'scope')
@@ -61,6 +62,8 @@ class Tower.ModelValidator
         new Tower.ModelValidatorSet('notIn', value, attributes, options)
       when 'uniqueness', 'unique'
         new Tower.ModelValidatorUniqueness(name, value, attributes, options)
+      when 'confirmation'
+        new Tower.ModelValidatorConfirmation(name, value, attributes, options)
 
   constructor: (name, value, attributes, options = {}) ->
     @name       = name
@@ -126,7 +129,7 @@ class Tower.ModelValidator
     true
 
   # Default implementation of handling failure for this validator.
-  # 
+  #
   #
   # @param [Function] callback
   #
@@ -160,5 +163,6 @@ require './validator/length'
 require './validator/presence'
 require './validator/set'
 require './validator/uniqueness'
+require './validator/confirmation'
 
 module.exports = Tower.ModelValidation
