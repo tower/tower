@@ -8,6 +8,7 @@ console.log "Running tests with #{store} store"
 Tower.store = Tower['Store' + _.camelize(store)]
 
 global.chai   = require 'chai'
+chai.Assertion.includeStack = true
 global.assert = chai.assert
 assert.isPresent = (value) ->
   assert.ok !!value
