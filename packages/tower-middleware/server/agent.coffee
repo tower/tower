@@ -9,9 +9,9 @@ Tower.MiddlewareAgent = (request, response, next) ->
     version:  agent.toVersion()
     os:       agent.os
     name:     agent.toAgent()
-    mac:      !!agent.os.match(/mac/i)
-    windows:  !!agent.os.match(/win/i)
-    linux:    !!agent.os.match(/linux/i)
+    mac:      !!agent.os.family.match(/mac/i)
+    windows:  !!agent.os.family.match(/win/i)
+    linux:    !!agent.os.family.match(/linux/i)
 
   request.agent = new Tower.NetAgent(attributes)
 
