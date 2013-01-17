@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 // require tower
-var root = path.join(__dirname, 'lib/tower.js');
+var root = path.join(__dirname, 'packages/tower.js');
 var rootExists = fs.existsSync(root);
 
 // node path resolution was broken before

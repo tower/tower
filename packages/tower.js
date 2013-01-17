@@ -37,26 +37,40 @@
 	 * Include the package system. This will include everything
 	 * we need to get started. (This will also include Ember stuff)
 	 */
-	require("./tower-packages/main");
+	var Envelope = require("./tower-packages/main");
 	/**
 	 * Create a configuration object to pass into the packages 
 	 * initialization methods:
 	 */
-	 var _config = {
+	 var config = {
 	 	/**
 	 	 * Current Environment
 	 	 * @type {Boolean}
 	 	 */
 	 	isServer: __isServer__,
 	 	isClient: __isClient__,
-
+	 	/**
+	 	 * Starting packages:
+	 	 * @type {Array}
+	 	 */
+	 	startup: [
+	 		'tower-core'
+	 	],
+	 	/**
+	 	 * Default Paths:
+	 	 * @type {Array}
+	 	 */
+	 	paths: [
+	 		"vendor/packages",
+        	"node_modules"
+	 	]
 
 	 };
 	/**
 	 * Initialize the package system, we'll need to specify some 
 	 * settings:
 	 */
-	Packages.initialize(_config);
+	var _Instance__ = new Envelope(config);
 
 })();
 

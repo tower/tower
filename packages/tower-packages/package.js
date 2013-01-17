@@ -74,5 +74,6 @@
         return Package;
     })();
 
-    global.Package = Package;
+    module.exports = Package;
+
 })();
