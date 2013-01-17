@@ -224,6 +224,7 @@ _.extend(Tower, {
   },
   constant: function(string) {
     var namespace, node, part, parts, _i, _len;
+    console.log(Tower.namespace(), 2, string);
     node = global;
     parts = string.split(".");
     try {

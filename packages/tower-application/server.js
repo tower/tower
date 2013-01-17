@@ -1,4 +1,3 @@
-
 require('./shared');
 
 require('./server/application');

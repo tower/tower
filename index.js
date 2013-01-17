@@ -19,7 +19,8 @@ if (!rootExists || process.env.TOWER_COMMAND != 'new') {
 }
 
 
-if (rootExists)
+if (rootExists) {
   module.exports = require(root);
-else
+} else {
   module.exports = require(path.join(__dirname, 'packages/tower'));
+}

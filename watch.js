@@ -3,47 +3,20 @@
     var fs = require('fs');
     var path = require('path');
     var wrench = require('wrench');
+    var _      = require('underscore');
 
     var root = path.resolve(__dirname);
     var pkgRoot = path.join(root, "packages") + path.sep;
 
-    /**gaze('packages/', {forceWatchMethod: 'new'}, function(err, watcher) {
-
-        //console.log(err, watcher);
-
-        this.on('added', function(filepath){
-            console.log(111, filepath);
-        });
-
-        this.on('changed', function(filepath){
-
-            var cleanPath = filepath.replace(root, "");
-            var libPath = path.join("lib", cleanPath);
-
-            var contents = fs.readFileSync(filepath, "utf-8");
-
-            console.log(cleanPath + " Changed.");
-
-            fs.writeFileSync(libPath, contents);
-        });
-
-        this.on('deleted', function(filepath){
-            console.log(222, filepath);
-        });
-
-
-        this.on('error', function(error){
-            console.log(error);
-        });
-
-    });**/
-
     var watchr = require('watchr')
     var globsync = require('glob-whatev');
 
+    var paths = _.select(globsync.glob('packages/**/*'), function(i){
+        return !i.match('templates');
+    });
     // Watch a directory or file
     watchr.watch({
-        paths: globsync.glob('packages/**/*'),
+        paths: paths,
         listener: function(event, filepath){
 
             switch(event) {

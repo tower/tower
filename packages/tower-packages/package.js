@@ -9,7 +9,7 @@
             this._files    = [];
             this._init     = [];
             callback.apply(this);
-            Tower.Packages.add(this._info.name || null, this);
+            Packages.add(this._info.name || null, this);
         }
 
         Package.prototype.info = function(obj) {
@@ -62,7 +62,7 @@
          * @return
          */
         Package.prototype.registerExtension = function(type, callback) {
-            Tower.Packages.registerExtension(type, callback);
+            Packages.registerExtension(type, callback);
         }
 
         Package.register = function(callback) {
@@ -74,5 +74,5 @@
         return Package;
     })();
 
-    Tower.Package = Package;
+    global.Package = Package;
 })();

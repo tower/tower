@@ -20,7 +20,16 @@ var Bundler = {
               filesystem), so we need to have a more custom approach.
     *
     **/
-
+    /**
+     * Initialize the Bundler system.
+     * @return {null}
+     */
+    initialize: function() {
+        this.buildAll();
+        // Only watch if the server is running.
+        // We'll need to listen on a ready state for that.
+        //this.watch();
+    },  
     /**
      * An array containing each package path. Watch each package, and it's
      * files for changes.
@@ -29,13 +38,13 @@ var Bundler = {
     watch: function() {
         var self = this;
         watchr.watch({
-            paths: Tower.Packages._paths,
+            paths: Packages._paths,
             listener: function(event, filepath){
                 // When something changes, re-bundle the package.
                 //self.build();
                 var lookup = null;
-                var packageName = filepath.replace(Tower.root, "").replace(/^\\/, "");
-                Tower.Packages.lookup.forEach(function(p){
+                var packageName = filepath.replace(_root, "").replace(/^\\/, "");
+                Packages.lookup.forEach(function(p){
                     packageName = packageName.replace(/\\/g, "/"); 
                     if (packageName.match(p)) {
                         lookup = p;
@@ -61,9 +70,9 @@ var Bundler = {
      */
     fileChanged: function(package, filepath) {
         var self = this;
-        var pkg = Tower.Packages.get(package);
-        for(var i in Tower.Packages._extensions) {
-            var val = Tower.Packages._extensions[i];
+        var pkg = Packages.get(package);
+        for(var i in Packages._extensions) {
+            var val = Packages._extensions[i];
             /**
              * If the extension matches the registered ones.
              */
@@ -74,7 +83,7 @@ var Bundler = {
                     var shortPath = filepath.replace(/\\/g, "/").replace(pkg.path.replace(/\\/g, "/"), "");
                     //console.log(filepath.replace(pkg.path.replace(/\\/g, "/"), "").replace(/\\/g, "/"));
                     if (file.file === shortPath) {
-                        var serve_path = path.join(Tower.root, self.output.js, package, shortPath.replace(/\..+$/, "")); 
+                        var serve_path = path.join(_root, self.output.js, package, shortPath.replace(/\..+$/, "")); 
                         if (typeof val === "function")
                             val.call(self, filepath, serve_path, file.type);
                     }
@@ -94,9 +103,15 @@ var Bundler = {
 
     _compile: function(options) {
         options.path = options.path + '.' + options.extension;
-        console.log(options);
         fs.writeFileSync(options.path, options.data.toString('utf-8'));
         this._resources.push(options);
+    },
+    /**
+     * Go through each package and build or re-build each asset file.
+     * @return {null}
+     */
+    buildAll: function() {
+
     },
     /**
      * Triggers an error;
@@ -118,12 +133,12 @@ var Bundler = {
     build: function(package) {
         var self = this;
         // Fetch the package's data.
-        var pkg = Tower.Packages.get(package);
+        var pkg = Packages.get(package);
         
         this.checkOutputValidity();
 
-        if ( ! fs.existsSync(path.join(Tower.root, this.output.js, package))) {
-            fs.mkdirSync(path.join(Tower.root, this.output.js, package));
+        if ( ! fs.existsSync(path.join(_root, this.output.js, package))) {
+            fs.mkdirSync(path.join(_root, this.output.js, package));
         }
 
         pkg._files.forEach(function(file){
@@ -131,7 +146,7 @@ var Bundler = {
                 if (file.file.match(/\.js$/)) {
                     if (fs.existsSync(path.join(pkg.path, file))) {
                         // Copy!
-                        //console.log(path.join(Tower.root, self.output.js, package));
+                        //console.log(path.join(_root, self.output.js, package));
                         var contents = fs.readFileSync(path.join(pkg.path, file.file), 'utf-8');
                         
                         /**finalPath.forEach(function(p, index){
@@ -143,18 +158,18 @@ var Bundler = {
                             }
                         });**/
 
-                        var finalPath = [Tower.root, self.output.js, package, file.file];
+                        var finalPath = [_root, self.output.js, package, file.file];
                         var previous = "";
 
                         /** 
                         *   Goes through each `finalPath` index one at a time.
                         *   We also assemble the current path to the next path so we build on top.
                         *
-                        *   ['root', 'a', 'b', 'c']
-                        *   0 => root
-                        *   1 => root/a
-                        *   2 => root/a/b
-                        *   3 => root/a/b/c
+                        *   ['_root', 'a', 'b', 'c']
+                        *   0 => _root
+                        *   1 => _root/a
+                        *   2 => _root/a/b
+                        *   3 => _root/a/b/c
                         **/
                         function recursive(p) {
 
@@ -165,8 +180,8 @@ var Bundler = {
 
                         }
 
-                        fs.writeFileSync(path.join(Tower.root, self.output.js, package, file.file), contents, 'utf-8');
-                        self.addFileLock(package, path.join(Tower.root, self.output.js, package, file.file), path.join(self.output.js, package, file.file), 'js'); 
+                        fs.writeFileSync(path.join(_root, self.output.js, package, file.file), contents, 'utf-8');
+                        self.addFileLock(package, path.join(_root, self.output.js, package, file.file), path.join(self.output.js, package, file.file), 'js'); 
            
                     }
                 }
@@ -178,7 +193,7 @@ var Bundler = {
 
     addFileLock: function(name, filename, relative, type) {
 
-        var json = require(path.join(Tower.root, 'packages.json'));
+        var json = require(path.join(_root, 'packages.json'));
 
         if (!json.packages[name]) {
             json.packages[name] = {
@@ -193,26 +208,26 @@ var Bundler = {
         });
         if (!found) {
             json.packages[name].files.push({file: filename, type: type, relative: relative});
-            fs.writeFileSync(path.join(Tower.root, 'packages.json'), JSON.stringify(json), 'utf-8');
+            fs.writeFileSync(path.join(_root, 'packages.json'), JSON.stringify(json), 'utf-8');
         }
     },
 
     checkOutputValidity: function() {
 
-        if ( ! fs.existsSync(path.join(Tower.root, this.output.js))) {
-            fs.mkdirSync(path.join(Tower.root, this.output.js));
+        if ( ! fs.existsSync(path.join(_root, this.output.js))) {
+            fs.mkdirSync(path.join(_root, this.output.js));
         }
 
-        if ( ! fs.existsSync(path.join(Tower.root, this.output.css))) {
-            fs.mkdirSync(path.join(Tower.root, this.output.css));
+        if ( ! fs.existsSync(path.join(_root, this.output.css))) {
+            fs.mkdirSync(path.join(_root, this.output.css));
         }
 
-        if ( ! fs.existsSync(path.join(Tower.root, this.output.images))) {
-            fs.mkdirSync(path.join(Tower.root, this.output.images));
+        if ( ! fs.existsSync(path.join(_root, this.output.images))) {
+            fs.mkdirSync(path.join(_root, this.output.images));
         }
 
     }
 
 };
 
-Tower.Bundler = Bundler;
+global.Bundler = Bundler;
