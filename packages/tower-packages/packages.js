@@ -1,25 +1,23 @@
 var glob = require("glob-whatev"),
     path = require("path"),
-    fs   = require("fs"),
-    _    = require("underscore");
+    fs = require("fs"),
+    _ = require("underscore");
 
-(function(){
+var Packages = (function() {
 
-    var Packages = (function(){
+    function Packages() {
 
-        function Packages() {
+        this._packages = {};
+        this._paths = [path.join(__dirname, '..')];
 
-            this._packages   = {};
-            this._paths      = [ path.join(__dirname, '..') ];
-            
 
-        }
+    }
 
-        return Packages;
-        
-    })();
+    return Packages;
 
-    var Packages = {
+})();
+
+/**var Packages = {
 
         _packages: {},
         _paths: [],
@@ -36,39 +34,19 @@ var glob = require("glob-whatev"),
             this.findAll();
         },
 
-        /**
-         * Load the specified package.
-         * @param  {String} name Package Name
-         * @return {null}
-         */
+
         load: function(name) {
 
         },
-        /**
-         * Retrieves the package's object.
-         * USAGE: `Packages.get('Auth').login()`
-         * @param  {String} name Package Name
-         * @return {Object}
-         */
+
         get: function(name) {
             return this._packages[name] || "Package not found";
         },
-        /**
-         * Adds a package to the system. This doesn't
-         * have any protection and overwrites previous values.
-         * @param {String} name Package Name
-         * @param {Object} obj  Package Object
-         */
+
         add: function(name, obj) {
             this._packages[name] = obj;
         },
-        /**
-         * Creates a new package for the system. This sets up
-         * all the getters for the package later on.
-         * @param  {} name    [description]
-         * @param  {[type]} package [description]
-         * @return {[type]}
-         */
+
         create: function(name, package) {
             var self = this;
             if (self._packages[name] != null) return;
@@ -143,8 +121,6 @@ var glob = require("glob-whatev"),
             });
         }
 
-    };
+    };**/
 
-    module.exports = Packages;
-
-});
+global.Packages = Packages;

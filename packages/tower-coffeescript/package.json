@@ -1,0 +1,10 @@
+{
+    "name": "tower-coffee-script",
+    "version": "0.0.1",
+    "author": "Daniel Fagnan <dnfagnan@gmail.com>",
+    "dependencies": {},
+
+    "devDependencies": {
+        "coffee-script": "*"
+    }
+}

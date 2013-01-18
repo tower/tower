@@ -62,7 +62,7 @@
          * @return
          */
         Package.prototype.registerExtension = function(type, callback) {
-            Packages.registerExtension(type, callback);
+            Bundler.registerExtension(type, callback);
         }
 
         Package.register = function(callback) {
@@ -72,8 +72,9 @@
         };
 
         return Package;
+
     })();
 
-    module.exports = Package;
+    global.Package = Package;
 
 })();

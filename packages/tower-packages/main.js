@@ -1,8 +1,6 @@
 (function(){
-    var self = this;
-    var Package  = new(require('./package')),
-        Packages = new(require('./packages')),
-        Bundler  = new(require('./bundler'));
+    var self = this,
+        _        = require('underscore');
 
     String.prototype.capitalize = function() {
         return this.charAt(0).toUpperCase() + this.slice(1);
@@ -20,9 +18,12 @@
             /**
              * Start the packages class:
              */
-            self.Package    = new Package();
-            self.Packages   = new Packages();
-            self.Bundler    = new Bundler();
+            require('./bundler');
+            require('./package');
+            require('./packages');
+            
+            self.Bundler = new Bundler();
+            self.Packages = new Packages();
         }
 
         return Envelope; 
