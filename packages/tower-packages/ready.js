@@ -10,7 +10,7 @@
  * USAGE: 
  *
  * Ready(['controllers', 'arrays', 'net', 'generator', 'application'], function(){
- * 		// Do something here....
+ *      // Do something here....
  * });
  *
  * Ready('controller', true);
@@ -20,30 +20,30 @@
  */
 var Ready = function(name, cb) {
 
-	if (!name) {
-		cb = name;
-		name = null;
-	}
+    if (!name) {
+        cb = name;
+        name = null;
+    }
 
-	/**
-	 * Check if the `name` parameter is a string or an array:
-	 */
-	if (name instanceof Array) {
-		/**
-		 * Is Array:
-		 */
-		for (var comp in name) {
-			this.processState(comp);
-		}
-		/**
-		 * Loop through the array and pass it to the string method.
-		 */
-	} else {
-		/**
-		 * Is String:
-		 */
-		this.processState(name);
-	}
+    /**
+     * Check if the `name` parameter is a string or an array:
+     */
+    if (name instanceof Array) {
+        /**
+         * Is Array:
+         */
+        for (var comp in name) {
+            this.processState(comp);
+        }
+        /**
+         * Loop through the array and pass it to the string method.
+         */
+    } else {
+        /**
+         * Is String:
+         */
+        this.processState(name);
+    }
 
 };
 
