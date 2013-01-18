@@ -2,8 +2,20 @@ var fs   = require('fs'),
     path = require('path'),
     watchr = require('watchr'),
     wrench = require('wrench');
-    
+
 (function(){
+
+    var Bundler = (function(){
+
+        function Bundler() {
+
+        }
+
+        return Bundler;
+
+    })();
+
+
     var Bundler = {
         
         output: {

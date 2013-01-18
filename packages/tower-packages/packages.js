@@ -4,14 +4,20 @@ var glob = require("glob-whatev"),
     _    = require("underscore");
 
 (function(){
-    
-    String.prototype.capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    };
 
-    _.regexpEscape = function(string) {
-        return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    };
+    var Packages = (function(){
+
+        function Packages() {
+
+            this._packages   = {};
+            this._paths      = [ path.join(__dirname, '..') ];
+            
+
+        }
+
+        return Packages;
+        
+    })();
 
     var Packages = {
 
