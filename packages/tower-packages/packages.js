@@ -3,40 +3,99 @@ var glob = require("glob-whatev"),
     fs = require("fs"),
     _ = require("underscore");
 
-
+/**
+ * Packages Class:
+ * @param {Function} cb Callback Function
+ */
 function Packages(cb) {
-
+    /**
+     * Storing all the packages in-memory:
+     * @type {Object}
+     */
     this._packages = {};
+    /**
+     * All the components that are marked as ready:
+     * @type {Object}
+     */
     this._readyStates = {};
+    /**
+     * All the callbacks that are waiting on a particular
+     * component to be ready:
+     * @type {Array}
+     */
     this._waitingStates = [];
+    /**
+     * All the paths where we can find packages:
+     * @type {Array}
+     */
     this._paths = [
-    path.join(__dirname, '..'), path.join(_root, 'node_modules')];
-
+        path.join(__dirname, '..'), 
+        path.join(_root, 'node_modules')
+    ];
+    /**
+     * If were running in an app, then add it's possible package folders in the
+     * path array:
+     */
     if(__isApp) {
-        this._paths.push(process.cwd());
+        this._paths.push(path.join(process.cwd(), 'vendor', 'packages'));
+        this._paths.push(path.join(process.cwd(), 'node_modules'));
     }
-
+    /**
+     * Find all the packages.
+     * @async
+     */
     this.find();
 }
-
+/**
+ * Retrieve a package by name.
+ * @param  {String} name Name of the package.
+ * @return {Object|String} Package Object.
+ */
 Packages.prototype.get = function(name) {
     return(this._packages[name] || "Package not found");
 };
-
+/**
+ * Ready Function.
+ *
+ * This method provides functionality to bind on particular
+ * ready event(s) and the callback will be fired when all dependent components
+ * are set as "ready".
+ * 
+ * @param  {String|Array}   comp Component Names
+ * @param  {Function} cb   Callback to be fired
+ * @return {Null}
+ */
 Packages.prototype.ready = function(comp, cb) {
+    /**
+     * Save the current context.
+     * @type {Object}
+     */
     var self = this;
+    /**
+     * Check if `comp` is there, and if the callback
+     * is indeed a function.
+     */
     if(comp && typeof cb == "function") {
-
+        // Set this to false automatically:
         var ready = false;
-
+        // Check if the `comp` is an Array or not:
         if(comp instanceof Array) {
+            // If it's an array
+            // loop through it and call the normal method Process:
             for(var c in comp) {
+                // Process the singular component:
                 Process(comp[c]);
             }
         } else {
+            // It's a string; 
             Process(comp);
         }
 
+        /**
+         * Process a component. This determines if it's ready or not.
+         * If it's not, it'll be added to the waiting list.
+         * @param {String} component Name
+         */
         function Process(component) {
             /**
              * Check the "readyStates" object for the particular component.
@@ -52,25 +111,29 @@ Packages.prototype.ready = function(comp, cb) {
                  * Let's add it to the waiting list and set "ready" to false:
                  */
                 self._waitingStates.push({
-                    component: component,
-                    cb: cb
+                    component: component, // (String)
+                    cb: cb // Callback (Function)
                 });
+                // Were not ready yet.
                 ready = false;
             }
 
         }
-
+        // Check if we were ready:
         if(ready) {
+            // Run the callback:
             cb.apply({});
         }
-
-    }
+    } // End of if;
 }
-
+/**
+ * Set's a component as ready.
+ * @param  {String}  component Name    
+ */
 Packages.prototype.isReady = function(component) {
-
+    // Save the current context:
     var self = this;
-
+    // Check if it's an array
     if(component instanceof Array) {
         for(var c in component) {
             Process(component[c]);
