@@ -1,4 +1,4 @@
-Tower.Package.register(function(){
+Package.register(function(){
     var coffee = require('coffee-script');
     var fs     = require('fs');
 

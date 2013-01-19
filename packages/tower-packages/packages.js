@@ -5,13 +5,59 @@ var glob = require("glob-whatev"),
 
 var Packages = (function() {
 
-    function Packages() {
+    function Packages(cb) {
 
         this._packages = {};
-        this._paths = [path.join(__dirname, '..')];
+        this._paths = [
+            path.join(__dirname, '..'),
+            path.join(_root, 'node_modules')
+        ];
 
+        if (__isApp) {
+            this._paths.push(process.cwd());
+        }
+        this.find(function(){
+        });
 
     }
+
+    Packages.prototype.add = function(name, package) {
+        this._packages[name] = package;
+    }
+
+    Packages.prototype.load = function(file) {
+        // Load the package:
+        require(file);
+    };
+
+    Packages.prototype.find = function(cb) {    
+        var self = this;
+        
+        this._paths.forEach(function(p){
+
+            fs.readdir(p, function(error, dir){
+                if (error) throw Error(error);
+                dir.forEach(function(_dir){
+                    if (_dir.match("tower-packages")) return;
+                    // Check if `package.js` exists:
+                    fs.exists(path.join(p, _dir, 'package.js'), function(exists){
+                        if (exists) {
+                            // Package is valid:
+                            self.load(path.join(p, _dir, 'package.js'));
+                        }
+                    });
+
+                
+                });
+
+            });
+
+        });
+
+        
+
+    };
+
 
     return Packages;
 

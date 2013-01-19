@@ -9,7 +9,7 @@
             this._files    = [];
             this._init     = [];
             callback.apply(this);
-            Packages.add(this._info.name || null, this);
+            Packages.add(this._info.name, this);
         }
 
         Package.prototype.info = function(obj) {
