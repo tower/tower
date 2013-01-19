@@ -30,6 +30,68 @@ Bundler.prototype.registerExtension = function(type, callback) {
     this.extensions[type] = callback;
 };
 
+Bundler.prototype.build = function(package) {
+    var self = this;
+    // Fetch the package's data.
+    var pkg = Packages.get(package);
+
+    this.checkOutputValidity();
+
+    if(!fs.existsSync(path.join(_root, this.output.js, package))) {
+        fs.mkdirSync(path.join(_root, this.output.js, package));
+    }
+
+    pkg._files.forEach(function(file) {
+        if(file.type === 'client' || file.type === '*') {
+            if(file.file.match(/\.js$/)) {
+                if(fs.existsSync(path.join(pkg.path, file))) {
+                    // Copy!
+                    //console.log(path.join(_root, self.output.js, package));
+                    var contents = fs.readFileSync(path.join(pkg.path, file.file), 'utf-8');
+
+                    /**finalPath.forEach(function(p, index){
+                                var newP = path.join(buildPath.join(path.sep), p);
+                                console.log(index, newP);
+                                if (!fs.existsSync(newP)) {
+                                    //fs.mkdirSync(newP);
+                                    buildPath += newP;
+                                }
+                            });**/
+                    /**
+
+                            var finalPath = [_root, self.output.js, package, file.file];
+                            var previous = "";
+
+                            /** 
+                            *   Goes through each `finalPath` index one at a time.
+                            *   We also assemble the current path to the next path so we build on top.
+                            *
+                            *   ['_root', 'a', 'b', 'c']
+                            *   0 => _root
+                            *   1 => _root/a
+                            *   2 => _root/a/b
+                            *   3 => _root/a/b/c
+                            **/
+                    
+                            function recursive(p) {
+
+                                if (!fs.existsSync(p)) {
+                                    console.log("New Dir: " + p);
+                                    //fs.mkdirSync(p);
+                                }
+
+                            }
+
+                            fs.writeFileSync(path.join(_root, self.output.js, package, file.file), contents, 'utf-8');
+                            self.addFileLock(package, path.join(_root, self.output.js, package, file.file), path.join(self.output.js, package, file.file), 'js'); 
+               
+                        }
+                    }
+                }
+
+            });
+};
+
 Bundler.prototype.watch = function() {
     var self = this;
     watchr.watch({
@@ -65,22 +127,22 @@ Bundler.prototype.fileChanged = function(package, filepath) {
         /**
          * If the extension matches the registered ones.
          */
-        if(filepath.match(new RegExp("\." + i + "$"))) {
-            // Call the callback;
-            pkg._files.forEach(function(file) {
-                //console.log(pkg.path.replace(/\\/g, "/"), filepath.replace(/\\/g, "/"));
-                var shortPath = filepath.replace(/\\/g, "/").replace(pkg.path.replace(/\\/g, "/"), "");
-                //console.log(filepath.replace(pkg.path.replace(/\\/g, "/"), "").replace(/\\/g, "/"));
-                if(file.file === shortPath) {
-                    var serve_path = path.join(_root, self.output.js, package, shortPath.replace(/\..+$/, ""));
-                    if(typeof val === "function") val.call(self, filepath, serve_path, file.type);
+                    if(filepath.match(new RegExp("\." + i + "$"))) {
+                        // Call the callback;
+                        pkg._files.forEach(function(file) {
+                            //console.log(pkg.path.replace(/\\/g, "/"), filepath.replace(/\\/g, "/"));
+                            var shortPath = filepath.replace(/\\/g, "/").replace(pkg.path.replace(/\\/g, "/"), "");
+                            //console.log(filepath.replace(pkg.path.replace(/\\/g, "/"), "").replace(/\\/g, "/"));
+                            if(file.file === shortPath) {
+                                var serve_path = path.join(_root, self.output.js, package, shortPath.replace(/\..+$/, ""));
+                                if(typeof val === "function") val.call(self, filepath, serve_path, file.type);
+                            }
+                        });
+                    }
                 }
-            });
-        }
-    }
-};
+            };
 
-/**var Bundler = {
+            /**var Bundler = {
         
         output: {
             js: 'public/packages/',
@@ -135,7 +197,7 @@ Bundler.prototype.fileChanged = function(package, filepath) {
                                     buildPath += newP;
                                 }
                             });**/
-/**
+            /**
 
                             var finalPath = [_root, self.output.js, package, file.file];
                             var previous = "";
@@ -150,7 +212,7 @@ Bundler.prototype.fileChanged = function(package, filepath) {
                             *   2 => _root/a/b
                             *   3 => _root/a/b/c
                             **/
-/** 
+            /** 
                             function recursive(p) {
 
                                 if (!fs.existsSync(p)) {
