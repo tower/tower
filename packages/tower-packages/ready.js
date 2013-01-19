@@ -18,7 +18,7 @@
  * @param {string/array}   name Name of the ready system.
  * @param {function/boolean} cb Callback
  */
-var Ready = function(name, cb) {
+function Ready(name, cb) {
 
     if (!name) {
         cb = name;
@@ -53,3 +53,5 @@ Ready.prototype.processState = function(name) {
 
 
 };
+
+module.exports = Ready;

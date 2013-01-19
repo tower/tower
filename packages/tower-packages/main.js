@@ -24,6 +24,13 @@
             
             self.Bundler = new Bundler();
             self.Packages = new Packages();
+
+            Packages.ready('__packages_loaded__', function(){
+                
+                
+                
+            });
+
         }
 
         return Envelope; 

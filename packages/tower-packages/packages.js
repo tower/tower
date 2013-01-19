@@ -8,6 +8,8 @@ var Packages = (function() {
     function Packages(cb) {
 
         this._packages = {};
+        this._readyStates = {};
+        this._waitingStates = [];
         this._paths = [
             path.join(__dirname, '..'),
             path.join(_root, 'node_modules')
@@ -16,9 +18,83 @@ var Packages = (function() {
         if (__isApp) {
             this._paths.push(process.cwd());
         }
-        this.find(function(){
-        });
 
+        this.find();
+    }
+
+    Packages.prototype.ready = function(comp, cb) {
+        var self = this;
+        if (comp && typeof cb == "function") {
+            
+            var ready = false;
+
+            if (comp instanceof Array) {
+                for(var c in comp) {
+                    Process(comp[c]);
+                }
+            } else {
+                Process(comp);
+            }
+
+            function Process(component) {
+                /**
+                 * Check the "readyStates" object for the particular component.
+                 */
+                if (self._readyStates[component]) {
+                    /**
+                     * The currently requested state is ready:
+                     */
+                    ready = true;
+                } else {
+                    /**
+                     * The currently requested state isn't ready yet.
+                     * Let's add it to the waiting list and set "ready" to false:
+                     */
+                    self._waitingStates.push({component: component, cb: cb});
+                    ready = false;
+                }
+
+            }
+
+            if (ready) {
+                cb.apply({});
+            }
+
+        } 
+    }
+
+    Packages.prototype.isReady = function(component) {
+            
+        var self = this;
+
+        if (component instanceof Array) {
+            for (var c in component) {
+                Process(component[c]);
+            }
+        } else {
+            Process(component);
+        }
+
+        function Process(comp) {
+            self._readyStates[comp] = true;
+            Back();
+        }
+
+        function Back() {
+
+            /**
+             * Loop through the waiting list and check for any
+             * waiting for this particular state/component:
+             */
+            for(var comp in self._waitingStates) {
+                var c = self._waitingStates[comp];
+                if (c.component === component) {
+                    c.cb.apply({});
+                    delete self._waitingStates[comp];
+                }
+            }
+
+        }
     }
 
     Packages.prototype.add = function(name, package) {
@@ -33,7 +109,7 @@ var Packages = (function() {
     Packages.prototype.find = function(cb) {    
         var self = this;
         
-        this._paths.forEach(function(p){
+        this._paths.forEach(function(p, i){
 
             fs.readdir(p, function(error, dir){
                 if (error) throw Error(error);
@@ -41,20 +117,25 @@ var Packages = (function() {
                     if (_dir.match("tower-packages")) return;
                     // Check if `package.js` exists:
                     fs.exists(path.join(p, _dir, 'package.js'), function(exists){
+                        
                         if (exists) {
                             // Package is valid:
                             self.load(path.join(p, _dir, 'package.js'));
                         }
+
+                        if (i == (self._paths.length - 1)) {
+                            process.nextTick(function(){
+                                self.isReady('__packages_loaded__');
+                            });
+                        }
+
                     });
 
-                
                 });
 
             });
 
         });
-
-        
 
     };
 

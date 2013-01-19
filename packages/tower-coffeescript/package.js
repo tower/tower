@@ -22,6 +22,7 @@ Package.register(function(){
         }
 
         contents = new Buffer(contents);
+        
         this.addResource({
             extension: 'js',
             path: serve_path,
