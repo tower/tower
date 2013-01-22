@@ -10,7 +10,7 @@ namespace('test', function(){
 
 task('test', ['test:run']);
 task('default', function(){
-    jake.logger.log('Default');
+    jake.logger.log('Please specify a task.');
 });
 
 task('watch-more', function(){
@@ -23,10 +23,55 @@ task('watch-more', function(){
     });
 });
 
-task('install-dependencies', function(){
-    var Install = require('./' + path.join('bin', 'install'));
-    var deps = new Install().run('dependencies').join(' ');
-    jake.exec('npm install ' + deps, function(){
-        jake.logger.log('Successfully installed dependencies.');
-    }, {stdout: true,stderr:true });
+namespace('install', function(){
+
+    var msg = task('message', function(){
+        var Install = require('./' + path.join('bin', 'install'));
+        new Install().run('message');
+    }, {});
+
+    task('dependencies', function(){
+        var Install = require('./' + path.join('bin', 'install'));
+        var deps = new Install().run('dependencies').join(' ');
+        jake.logger.log('Installing dependencies... (This may take some time)');
+        jake.exec('npm install ' + deps, function(err, stdout, stderr){
+            if (err || stderr) {
+                jake.logger.log(err || stderr);
+            } else {
+                jake.logger.log('Successfully installed dependencies.');
+                msg.run();
+            }
+        }, {});
+    });
+
+    task('post', ['install:dependencies']);
+});
+
+
+namespace('test', function(){
+
+    task('server', function(){
+
+    });
+
+    task('client', function(){
+
+    });
+
+    task('memory', function(){
+
+    });
+
+    task('mongodb', function(){
+
+    });
+
+});
+
+task('test', function(){
+    console.log("Test");
+});
+
+task('push', function(){
+    
 });

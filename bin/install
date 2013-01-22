@@ -7,7 +7,6 @@ Install.prototype.run = function(command) {
 
   // "dependencies" or "message"
   //var command = process.argv[process.argv.length - 1];
-
   // process.env.NODE_PATH.split(':'), process.config.variables.node_prefix
   // global npm on windows: C:\Program Files (x86)\nodejs\node_modules\
   // global node on windows: process.execPath == C:\Program Files (x86)\nodejs\node.exe
@@ -77,12 +76,13 @@ Install.prototype.run = function(command) {
         if (names.length) {
           process.nextTick(check);
         } else {
-          callback(installed);
+          var messages = callback(installed);
+          return messages;
         }
       }); 
     }
 
-    check();
+    return check();
   }
 
 
@@ -148,7 +148,8 @@ Install.prototype.run = function(command) {
     } else {
       // console.log('linked to local');
     }
-  } else if (command == 'message' && isGlobal && !isGlobalLink) { // this one doesn't install anything
+  } else if (command == 'message') { // this one doesn't install anything
+
     var style = fs.readFileSync(path.join(__dirname, 'tower.css'), 'utf8');
     var css = require('term-css');
 
@@ -283,7 +284,6 @@ Install.prototype.run = function(command) {
       message.push(renderItem('Docs', '   http://github.com/viatropos/tower/wiki'));
       message.push(renderItem('Roadmap', 'https://github.com/viatropos/tower/blob/master/ROADMAP.md'));
       message.push('');
-      
       var max = 0;
       var length;
 
@@ -308,6 +308,7 @@ Install.prototype.run = function(command) {
       message.push('\\' + border + '/');
       message.push('', '');
 
+      
       process.stdout.write(message.join('\n'));
     });
   }
