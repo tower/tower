@@ -66,7 +66,7 @@
              * @return {Null}
              */
             Packages.ready('packages.loaded', function() {
-
+                Packages.require('tower-application');
             });
             /**
              * This callback will run when the development environment has successfully started.
@@ -79,7 +79,7 @@
              *
              * @return {Null}
              */
-            Packages.ready('environment.dev.started', function() {
+            Packages.ready('environment.development.started', function() {
                 /**
                  * Start the file watcher. This is the ONLY file watcher in the system.
                  * This ensures that we have a fast, effecient development cycle. This will run

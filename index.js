@@ -16,17 +16,6 @@ if (process.platform == 'win32' && process.version <= 'v0.8.5') {
   require('./packages/tower-platform/path.js')
 }
 
-if (!rootExists || process.env.TOWER_COMMAND != 'new') {
-  try {
-    require('./packages/tower-platform/coffee-inheritance.js');
-  } catch (e) {
-    //if (process.env.DEBUG)
-    console.log(e);
-  } 
-}
-
 if (rootExists) {
   module.exports = require(root);
-} else {
-  module.exports = require(path.join(__dirname, 'packages/tower.js'));
-}
+} 

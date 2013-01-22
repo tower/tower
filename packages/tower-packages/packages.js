@@ -52,7 +52,20 @@ function Packages(cb) {
  * @return {Object|String} Package Object.
  */
 Packages.prototype.get = function(name) {
-    return(this._packages[name] || "Package not found");
+    if (this._packages[name]) return this._packages[name]
+    else throw Error("Package '"+name+"' was not found.");
+};
+/**
+ * Run/Require a particular package. This will load it's init file, if it's specified. This method will return a chainable object
+ * that you can use to load specific files within the package.
+ * @param  {String} name Package Name
+ * @return {Object}      Chainable Object
+ */
+Packages.prototype.require = function(name) {
+    var pkg = this.get(name);
+    if (pkg) {
+        console.log(pkg);
+    }
 };
 /**
  * Ready Function.
@@ -133,6 +146,7 @@ Packages.prototype.ready = function(comp, cb) {
         
         // Check if we were ready:
         if(ready) {
+            console.log(comp);
             // Run the callback:
             cb.apply({});
         }
@@ -160,7 +174,6 @@ Packages.prototype.isReady = function(component) {
     }
 
     function Back() {
-
         /**
          * Loop through the waiting list and check for any
          * waiting for this particular state/component:
@@ -179,7 +192,14 @@ Packages.prototype.isReady = function(component) {
 
                     }
                 }
+            } 
 
+            if(c.component) {
+                if (c.component === component) {
+                    _ready = true;
+                } else {
+                    continue;
+                }
             }
 
             if(_ready) {
@@ -202,7 +222,7 @@ Packages.prototype.load = function(file) {
 
 Packages.prototype.find = function(cb) {
     var self = this;
-
+    var done = false;
     this._paths.forEach(function(p, i) {
 
         fs.readdir(p, function(error, dir) {
@@ -218,9 +238,12 @@ Packages.prototype.find = function(cb) {
                     }
 
                     if(i == (self._paths.length - 1)) {
-                        process.nextTick(function() {
-                            self.isReady('packages.loaded');
-                        });
+                        if (!done) {
+                            process.nextTick(function() {
+                                self.isReady('packages.loaded');
+                            });
+                            done = true;
+                        }
                     }
 
                 });
@@ -275,68 +298,6 @@ Packages.prototype.find = function(cb) {
             });
             self._packages[name].path = package;
         },
-
-        registerExtension: function(type, callback) {
-            this._extensions[type] = callback;
-        },
-
-        findAll: function() {
-            // Find all the packages.
-            var basePath     = path.join(_root, "packages") + path.sep; 
-            var globString   = basePath + "*";
-
-            var self = this;
-
-            this._corePaths.forEach(function(_path){
-                var globString = path.join(_path, "*");
-                _.select(glob.glob(globString), function(i){return true;//return !i.match('tower-packages')}).forEach(function(filepath){
-                    var packageFile = path.join(filepath, "package.js");
-                    if (fs.existsSync(packageFile)) {
-                        var name;
-                        name = filepath.replace(/\//g, "\\").replace(/\/$/, "").split('\\');
-
-                        function getLastElement(n, length) {
-                            if (n[length] != null && n[length] != "") {
-                                return n[length];
-                            } else {
-                                return getLastElement(n, length - 1);
-                            }
-                        }
-
-                        name = getLastElement(name, name.length - 1);
-                        self._packagesFound.push({name: name, path: filepath});
-                        self.create(name, filepath); // Create the package.
-                    } else {
-                        console.log(filepath);
-                    }
-                });
-            });
-
-            this.lookup.forEach(function(_path){
-                var fullPath = path.join(_root, _path);
-                var globString = path.join(fullPath, "*");
-                glob.glob(globString).forEach(function(filepath){
-                    // Load the package.js file.
-                    var packageFile = path.join(filepath, "package.js");
-                    if (fs.existsSync(packageFile)) {
-                        var name;
-                        name = filepath.replace(/\//g, "\\").replace(/\/$/, "").split('\\');
-                        
-                        function getLastElement(n, length) {
-                            if (n[length] != null && n[length] != "") {
-                                return n[length];
-                            } else {
-                                return getLastElement(n, length - 1);
-                            }
-                        }
-
-                        name = getLastElement(name, name.length - 1);
-                        self._packagesFound.push({name: name, path: filepath});
-                        self.create(name, filepath); // Create the package.
-                    }
-                });
-            });
-        }
 
     };**/
 
