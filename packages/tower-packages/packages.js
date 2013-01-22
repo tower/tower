@@ -82,25 +82,36 @@ Packages.prototype.ready = function(comp, cb) {
         if(comp instanceof Array) {
             // If it's an array
             // loop through it and call the normal method Process:
-            for(var c in comp) {
+            //for(var c in comp) {
                 // Process the singular component:
-                Process(comp[c]);
+            //    Process(comp[c]);
+            //}
+            /**
+             * If an array is passed, that means all of the indices are required to be 
+             * ready before the callback is called.
+             */
+            var c, _c;
+            for (c in comp) {
+                _c = comp[c];
+                if (self._readyStates[_c]) {
+                    // It's ready!
+                    delete comp[c];
+                }
+            }
+
+            if (comp.length >= 1) {
+                self._waitingStates.push({
+                    components: comp,
+                    cb: cb
+                })
+            } else {
+                ready = true;
             }
         } else {
-            // It's a string; 
-            Process(comp);
-        }
-
-        /**
-         * Process a component. This determines if it's ready or not.
-         * If it's not, it'll be added to the waiting list.
-         * @param {String} component Name
-         */
-        function Process(component) {
             /**
              * Check the "readyStates" object for the particular component.
              */
-            if(self._readyStates[component]) {
+            if(self._readyStates[comp]) {
                 /**
                  * The currently requested state is ready:
                  */
@@ -111,14 +122,15 @@ Packages.prototype.ready = function(comp, cb) {
                  * Let's add it to the waiting list and set "ready" to false:
                  */
                 self._waitingStates.push({
-                    component: component, // (String)
+                    component: comp, // (String)
                     cb: cb // Callback (Function)
                 });
                 // Were not ready yet.
                 ready = false;
             }
-
         }
+
+        
         // Check if we were ready:
         if(ready) {
             // Run the callback:
@@ -155,7 +167,22 @@ Packages.prototype.isReady = function(component) {
          */
         for(var comp in self._waitingStates) {
             var c = self._waitingStates[comp];
-            if(c.component === component) {
+            if (c.components) {
+                var _ready = true;
+                for (var i in c.components) {
+                    if (!_ready) break; 
+                    // Look into the ready stated components:
+                    if (self._readyStates[c.components[i]]) {
+                        _ready = true;
+                    } else {
+                        _ready = false;
+
+                    }
+                }
+
+            }
+
+            if(_ready) {
                 c.cb.apply({});
                 delete self._waitingStates[comp];
             }
@@ -192,7 +219,7 @@ Packages.prototype.find = function(cb) {
 
                     if(i == (self._paths.length - 1)) {
                         process.nextTick(function() {
-                            self.isReady('__packages_loaded__');
+                            self.isReady('packages.loaded');
                         });
                     }
 
