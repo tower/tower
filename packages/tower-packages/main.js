@@ -55,15 +55,6 @@
              * @type {Packages}
              */
             self.Packages = new Packages();
-
-            Packages.ready(['test', 'hello', 'world'], function(){
-                console.log("Loaded...");
-            });
-
-            Packages.isReady('test');
-            Packages.isReady('hello');
-            Packages.isReady('world');
-
             /**
              * This callback will run once all the packages are loaded and found. This will ensure we
              * are good to go, and that were still not loading anymore packages. If a package
@@ -88,7 +79,7 @@
              *
              * @return {Null}
              */
-            Packages.ready('development.environment.started', function() {
+            Packages.ready('environment.dev.started', function() {
                 /**
                  * Start the file watcher. This is the ONLY file watcher in the system.
                  * This ensures that we have a fast, effecient development cycle. This will run
