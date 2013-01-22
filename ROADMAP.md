@@ -22,7 +22,8 @@ You are free to contribute any of these features in any order… I'm more of a f
 - *bundler
 - handlebar templates (everywhere)
 - ~~Tower's source in JavaScript~~
-- default language in JavaScript
+- ~~CoffeeScript support~~
+- default language is JavaScript
 - most commands are fast
 - JavaScript API
 - *background jobs in redis
