@@ -94,7 +94,8 @@
     "grunt-contrib-less": "~0.3.0",
     "glob-whatev": "0.1.8",
     "watchr": "2.1.6",
-    "minimatch": "0.2.9"
+    "minimatch": "0.2.9",
+    "jake": "latest"
   },
   "devDependencies": {
   },
