@@ -16,15 +16,15 @@ You are free to contribute any of these features in any order… I'm more of a f
 - *everything in mongodb has an API for it in the ORM
 - *authentication and authorization
 - *file uploading
-- *full routing system
+- full routing system
 - *packages
 - *IoC Container (Inversion of Control)
 - *bundler
-- *handlebar templates (everywhere)
-- *Tower's source in JavaScript
-- *default language in JavaScript
-- *most commands are fast
-- *JavaScript API
+- handlebar templates (everywhere)
+- ~~Tower's source in JavaScript~~
+- default language in JavaScript
+- most commands are fast
+- JavaScript API
 - *background jobs in redis
 - *mailer
 - *testing patterns for an app
