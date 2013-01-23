@@ -1,14 +1,6 @@
 var fs = require('fs'),
     path = require('path');
 
-namespace('test', function(){
-    task('run', function(){
-        jake.logger.log('Running Tests...');
-    });
-});
-
-
-task('test', ['test:run']);
 task('default', function(){
     jake.logger.log('Please specify a task.');
 });
@@ -46,7 +38,6 @@ namespace('install', function(){
 
     task('post', ['install:dependencies']);
 });
-
 
 namespace('test', function(){
 
