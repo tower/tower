@@ -1,6 +1,5 @@
 Package.register(function(){
     var fs     = require('fs');
-
     // Add information to the package.
     this.info({
         name: "tower-application",

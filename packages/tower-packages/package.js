@@ -1,4 +1,5 @@
 (function(){
+    var path = require('path');
 
     var Package = (function(){
 
@@ -8,6 +9,7 @@
             this._dependencies = [];
             this._files    = [];
             this._init     = [];
+            this._path     = Packages._currentPath;
             callback.apply(this);
             Packages.add(this._info.name, this);
         }
@@ -42,9 +44,10 @@
                 type = files;
             }
             files.forEach(function(file){
+                if (base) file = path.join(base, file);
                 self._files.push({file: file, type: type});
             }); 
-        }
+        };
 
         Package.prototype.init = function(files) {
             var self = this;
@@ -54,7 +57,25 @@
                 self._init.push(file);
             });
         };
-
+        /**
+         * Checks with the registered files if it's of the specified type.
+         * @param  {String}  name File name
+         * @param  {String}  type File type
+         * @return {Boolean}      True or False.
+         */
+        Package.prototype.isType = function(name, type) {
+            for (var file in this._files) {
+                var f = this._files[file];
+                if (f.file === name) {
+                    if (f.type === type) {
+                        return true;
+                    } else if (f.type === 'client' | 'server' && type === '*') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
         /**
          * Register an extension with the bundler and package manager.
          * @param  {Function} callback When a file changes, we'll invoke this function

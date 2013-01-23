@@ -13,6 +13,7 @@ function Packages(cb) {
      * @type {Object}
      */
     this._packages = {};
+    this._currentPath = null;
     /**
      * All the components that are marked as ready:
      * @type {Object}
@@ -64,7 +65,11 @@ Packages.prototype.get = function(name) {
 Packages.prototype.require = function(name) {
     var pkg = this.get(name);
     if (pkg) {
-        console.log(pkg);
+        for (var file in pkg._init) {
+            if (pkg.isType(pkg._init[file], 'server')) {
+                require(path.join(pkg._path, pkg._init[file]));
+            }
+        }
     }
 };
 /**
@@ -217,6 +222,7 @@ Packages.prototype.add = function(name, package) {
 
 Packages.prototype.load = function(file) {
     // Load the package:
+    this._currentPath = file.replace(/package.js/i, '');
     require(file);
 };
 
