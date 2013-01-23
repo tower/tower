@@ -262,49 +262,4 @@ Packages.prototype.find = function(cb) {
 
 };
 
-
-/**var Packages = {
-
-        _packages: {},
-        _paths: [],
-        _corePaths: [
-            path.join(__dirname, '..')
-        ],
-        found: {},
-        lock: {},
-        lookup: [],
-        _packagesFound: [],
-        _extensions: {},
-
-        initialize: function(config) {
-            this.findAll();
-        },
-
-
-        load: function(name) {
-
-        },
-
-        get: function(name) {
-            return this._packages[name] || "Package not found";
-        },
-
-        add: function(name, obj) {
-            this._packages[name] = obj;
-        },
-
-        create: function(name, package) {
-            var self = this;
-            if (self._packages[name] != null) return;
-            this._paths.push(package);
-            require(path.join(package, "package.js"));
-            console.log("NAME: " + name);
-            self._packages.forEach(function(a){
-                console.log(a.path);
-            });
-            self._packages[name].path = package;
-        },
-
-    };**/
-
 global.Packages = Packages;

@@ -66,7 +66,7 @@
              * @return {Null}
              */
             Packages.ready('packages.loaded', function() {
-                Packages.require('tower-application');
+                Packages.require(config.startup);
             });
             /**
              * This callback will run when the development environment has successfully started.

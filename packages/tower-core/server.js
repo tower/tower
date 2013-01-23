@@ -1,7 +1,8 @@
-var fs, _path;
+var fs, path;
 
-_path = require('path');
+path = require('path');
 
+/**
 fs = require('fs');
 
 if (process.env.TOWER_COMMAND === 'new') {
@@ -176,3 +177,4 @@ try {
 if (Tower.View) {
   Tower.View.store(new Tower.StoreFileSystem(['app/templates/shared', 'app/templates/server']));
 }
+**/
