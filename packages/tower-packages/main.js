@@ -36,7 +36,7 @@
             /**
              * Store the configuration options:
              * @type {Object}
-             */
+             */)
             this.config = config;
             /**
              * Require all the files we need that makes up the `Package` system.
@@ -50,7 +50,7 @@
              * to the global scope.
              * @type {Bundler}
              */
-            global.Bundler = Bundler = new Bundler();
+            global.Bundler = Bundler = new Bundler(;
             /**
              * Create a new instance of the `Packages` class. This will also attach itself
              * to the global scope.
