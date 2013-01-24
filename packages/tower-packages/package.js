@@ -1,7 +1,7 @@
-(function(){
+module.exports = (function(){
     var path = require('path');
 
-    var Package = (function(){
+    return (function(){
 
         function Package(callback) {
             this._callback = callback;
@@ -96,6 +96,6 @@
 
     })();
 
-    global.Package = Package;
+
 
 })();

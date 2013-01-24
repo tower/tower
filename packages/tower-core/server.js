@@ -1,7 +1,6 @@
 var fs, path;
 
 path = require('path');
-
 /**
 fs = require('fs');
 

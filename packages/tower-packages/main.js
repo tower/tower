@@ -1,4 +1,5 @@
 (function() {
+    require('harmony-reflect');
     /**
      * Variable declaration and requiring of helper modules:
      * @type {Object}
@@ -15,7 +16,7 @@
     };
     /**
      * A helper method that escapes regex characters in a string.
-     * 
+     *
      * @param  {String} string Original String
      * @return {String}        Converted/Escaped String
      */
@@ -24,7 +25,7 @@
     };
     /**
      * The Envelope Class!
-     * 
+     *
      * @class  Envelope
      * @param {Object} config Configuration Object.
      * @return {Class}
@@ -40,21 +41,29 @@
             /**
              * Require all the files we need that makes up the `Package` system.
              */
-            require('./bundler');
-            require('./package');
-            require('./packages');
+            var Bundler     = require('./bundler');
+            var Package     = require('./package');
+            var Packages    = require('./packages');
+            var Container   = require('./container');
             /**
              * Create a new instance of the `Bundler` class. This will attach itself
              * to the global scope.
              * @type {Bundler}
              */
-            self.Bundler = new Bundler();
+            global.Bundler = Bundler = new Bundler();
             /**
              * Create a new instance of the `Packages` class. This will also attach itself
              * to the global scope.
              * @type {Packages}
              */
-            self.Packages = new Packages();
+            global.Packages = Packages = new Packages();
+            global.Container = Container = new Container();
+
+            Container.set('Tower', Ember.Namespace.create());
+            Container.set('App', Ember.Namespace.create());
+            var Tower, App;
+            global.Tower    = Tower = Container.alias('Tower');
+            global.App      = App   = Container.alias('App');
             /**
              * This callback will run once all the packages are loaded and found. This will ensure we
              * are good to go, and that were still not loading anymore packages. If a package
