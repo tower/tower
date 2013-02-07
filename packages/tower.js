@@ -12,23 +12,6 @@
  * part) independent of each other. This allows flexibility and quite a
  * bit of modularity amoung packages.
  */
-/**
- * A string helper method to capitalize the first letter
- * in a word.
- * @return {String} Converted String.
- */
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-};
-/**
- * A helper method that escapes regex characters in a string.
- *
- * @param  {String} string Original String
- * @return {String}        Converted/Escaped String
- */
-_.regexpEscape = function(string) {
-    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-};
 require('harmony-reflect');
 /**
  * We need to include the main package classes which will expose a few
@@ -36,6 +19,28 @@ require('harmony-reflect');
  */
 (function() {
     var Tower, App, self, _;
+
+    global.__isApp = process.argv[2];
+    global.__dir   = process.argv[3];
+
+    _ = require('underscore');
+    /**
+     * A string helper method to capitalize the first letter
+     * in a word.
+     * @return {String} Converted String.
+     */
+    String.prototype.capitalize = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+    /**
+     * A helper method that escapes regex characters in a string.
+     *
+     * @param  {String} string Original String
+     * @return {String}        Converted/Escaped String
+     */
+    _.regexpEscape = function(string) {
+        return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    };
     /**
      * Figure out which environment we are inside: (client or server)
      */
@@ -56,25 +61,25 @@ require('harmony-reflect');
      * @type {Object}
      */
     self = this;
-    _ = require('underscore');
     /**
      * Require all the files we need that makes up the `Package` system.
      */
-    var Bundler = require('./bundler');
-    var Package = require('./package');
-    var Packages = require('./packages');
-    var Container = require('./container');
+    var Bundler = require('./tower-packages/bundler');
+    var Package = require('./tower-packages/package');
+    var Packages = require('./tower-packages/packages');
+    var Container = require('./tower-packages/container');
     /**
      * Create a new instance of the `Bundler` class. This will attach itself
      * to the global scope.
      * @type {Bundler}
      */
-    global.Bundler = Bundler = new Bundler(;
+    global.Bundler = Bundler = new Bundler();
     /**
      * Create a new instance of the `Packages` class. This will also attach itself
      * to the global scope.
      * @type {Packages}
      */
+    global.Package  = Package;
     global.Packages = Packages = new Packages();
     global.Container = Container = new Container();
 

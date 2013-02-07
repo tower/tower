@@ -1,7 +1,7 @@
 Package.register(function(){
 
     this.info({
-        name: 'tower-core',
+        name: 'tower',
         description: 'Main initialization package. Responsible for the startup phase.',
         version: '0.5.0',
         author: 'Tower'

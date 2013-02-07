@@ -34,6 +34,7 @@
     "npm": "1"
   },
   "dependencies": {
+    "tower": "latest",
     "grunt-less": "~0.1.6",
     "grunt-stylus": "~0.1.4",
     "forever-monitor": ">= 1.1.0"
