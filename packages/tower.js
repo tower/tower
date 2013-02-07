@@ -5,26 +5,44 @@
  * installed automatically through npm as dependencies to this package.
  *
  * This package is the package manager that sets the environment up, for
- * both client-side and server-side code, and initializes the next 
+ * both client-side and server-side code, and initializes the next
  * package.
  *
  * Each package has it's own tests and they are completely (for the most
  * part) independent of each other. This allows flexibility and quite a
  * bit of modularity amoung packages.
  */
-
+/**
+ * A string helper method to capitalize the first letter
+ * in a word.
+ * @return {String} Converted String.
+ */
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
+/**
+ * A helper method that escapes regex characters in a string.
+ *
+ * @param  {String} string Original String
+ * @return {String}        Converted/Escaped String
+ */
+_.regexpEscape = function(string) {
+    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+require('harmony-reflect');
 /**
  * We need to include the main package classes which will expose a few
  * global variables.
  */
 (function() {
+    var Tower, App, self, _;
     /**
      * Figure out which environment we are inside: (client or server)
      */
-    if (!global && window) { // isClient
-        var __isServer__ = window.__isClient__ = true; 
+    if(!global && window) { // isClient
+        var __isServer__ = window.__isClient__ = true;
         var __isClient__ = window.__isServer__ = false;
-    } else {                // isServer
+    } else { // isServer
         var __isServer__ = global.__isServer__ = true;
         var __isClient__ = global.__isClient__ = false;
     }
@@ -34,43 +52,75 @@
      */
     global._root = process.cwd();
     /**
-     * Include the package system. This will include everything
-     * we need to get started. (This will also include Ember stuff)
+     * Variable declaration and requiring of helper modules:
+     * @type {Object}
      */
-    var Envelope = require("./tower-packages/main");
+    self = this;
+    _ = require('underscore');
     /**
-     * Create a configuration object to pass into the packages 
-     * initialization methods:
+     * Require all the files we need that makes up the `Package` system.
      */
-     var config = {
-        /**
-         * Current Environment
-         * @type {Boolean}
-         */
-        isServer: __isServer__,
-        isClient: __isClient__,
-        /**
-         * Starting packages:
-         * @type {Array}
-         */
-        startup: [
-            'tower-core'
-        ],
-        /**
-         * Default Paths:
-         * @type {Array}
-         */
-        paths: [
-            "vendor/packages",
-            "node_modules"
-        ]
+    var Bundler = require('./bundler');
+    var Package = require('./package');
+    var Packages = require('./packages');
+    var Container = require('./container');
+    /**
+     * Create a new instance of the `Bundler` class. This will attach itself
+     * to the global scope.
+     * @type {Bundler}
+     */
+    global.Bundler = Bundler = new Bundler(;
+    /**
+     * Create a new instance of the `Packages` class. This will also attach itself
+     * to the global scope.
+     * @type {Packages}
+     */
+    global.Packages = Packages = new Packages();
+    global.Container = Container = new Container();
 
-     };
+    Container.set('Tower', {});
+    Container.set('App', {
+        Controllers: {},
+        Models: {},
+        Views: {}
+    });
+
+    global.Tower = Tower = Container.alias('Tower');
+    global.App = App = Container.alias('App');
     /**
-     * Initialize the package system, we'll need to specify some 
-     * settings:
+     * This callback will run once all the packages are loaded and found. This will ensure we
+     * are good to go, and that were still not loading anymore packages. If a package
+     * hasn't been found, we are positive that it doesn't exist.
+     *
+     * This method will run the initialization process for core packages. These are
+     * setup in the config file passed through this constructor.
+     *
+     * @return {Null}
      */
-    var _Instance__ = new Envelope(config);
+    Packages.ready('packages.loaded', function() {
+        // Initialize Tower's core:
+        Packages.require('tower');
+    });
+    /**
+     * This callback will run when the development environment has successfully started.
+     * This means that the server is running and the framework is done initializing.
+     * We can then start the bundler's watch method to start watching the filesystem.
+     * This is the ONLY file watcher in the framework, which makes things really effecient.
+     *
+     * This file watcher will NOT run in production mode. Nor will any of the "Hot Code Push".
+     * As we want to maximize performance for taking requests, not development tools.
+     *
+     * @return {Null}
+     */
+    Packages.ready('environment.development.started', function() {
+        /**
+         * Start the file watcher. This is the ONLY file watcher in the system.
+         * This ensures that we have a fast, effecient development cycle. This will run
+         * the bundler's stuff, as well as all the "Hot Code Push" and other file watching
+         * tasks.
+         */
+        Bundler.watch();
+    });
 
 })();
 
