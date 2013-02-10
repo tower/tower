@@ -18,10 +18,11 @@ require('harmony-reflect');
  * global variables.
  */
 (function() {
-    var Tower, App, self, _;
+    var Tower, App, self, _, path;
 
     global.__isApp = process.argv[2];
     global.__dir   = process.argv[3];
+    path           = require('path');
 
     _ = require('underscore');
     /**
@@ -41,6 +42,11 @@ require('harmony-reflect');
     _.regexpEscape = function(string) {
         return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     };
+
+    String.prototype.replacePathSep = function() {
+        return this.replace(new RegExp('\\|\/', path.sep));
+    };
+
     /**
      * Figure out which environment we are inside: (client or server)
      */
@@ -80,8 +86,8 @@ require('harmony-reflect');
      * @type {Packages}
      */
     global.Package  = Package;
-    global.Packages = Packages = new Packages();
     global.Container = Container = new Container();
+    global.Packages = Packages = new Packages();
 
     Container.set('Tower', {});
     Container.set('App', {
@@ -90,42 +96,35 @@ require('harmony-reflect');
         Views: {}
     });
 
-    global.Tower = Tower = Container.alias('Tower');
+    global.Tower = Tower = {};
     global.App = App = Container.alias('App');
-    /**
-     * This callback will run once all the packages are loaded and found. This will ensure we
-     * are good to go, and that were still not loading anymore packages. If a package
-     * hasn't been found, we are positive that it doesn't exist.
-     *
-     * This method will run the initialization process for core packages. These are
-     * setup in the config file passed through this constructor.
-     *
-     * @return {Null}
-     */
-    Packages.ready('packages.loaded', function() {
-        // Initialize Tower's core:
-        Packages.require('tower');
-    });
-    /**
-     * This callback will run when the development environment has successfully started.
-     * This means that the server is running and the framework is done initializing.
-     * We can then start the bundler's watch method to start watching the filesystem.
-     * This is the ONLY file watcher in the framework, which makes things really effecient.
-     *
-     * This file watcher will NOT run in production mode. Nor will any of the "Hot Code Push".
-     * As we want to maximize performance for taking requests, not development tools.
-     *
-     * @return {Null}
-     */
-    Packages.ready('environment.development.started', function() {
+
+    Packages.run(function() {
+
+        Tower.ready = Packages.include('tower', 'shared/ready');
         /**
-         * Start the file watcher. This is the ONLY file watcher in the system.
-         * This ensures that we have a fast, effecient development cycle. This will run
-         * the bundler's stuff, as well as all the "Hot Code Push" and other file watching
-         * tasks.
+         * This callback will run when the development environment has successfully started.
+         * This means that the server is running and the framework is done initializing.
+         * We can then start the bundler's watch method to start watching the filesystem.
+         * This is the ONLY file watcher in the framework, which makes things really effecient.
+         *
+         * This file watcher will NOT run in production mode. Nor will any of the "Hot Code Push".
+         * As we want to maximize performance for taking requests, not development tools.
+         *
+         * @return {Null}
          */
-        Bundler.watch();
+        Tower.ready('environment.development.started', function() {
+            /**
+             * Start the file watcher. This is the ONLY file watcher in the system.
+             * This ensures that we have a fast, effecient development cycle. This will run
+             * the bundler's stuff, as well as all the "Hot Code Push" and other file watching
+             * tasks.
+             */
+            Bundler.watch();
+        });
+
     });
+
 
 })();
 

@@ -48,11 +48,6 @@
             // Wayy too slow for the watcher. We'll need to find another way,
             //this._paths.push(path.join(process.cwd(), 'node_modules'));
         }
-        /**
-         * Find all the packages.
-         * @async
-         */
-        self.find();
     }
     /**
      * Retrieve a package by name.
@@ -84,6 +79,17 @@
             }
         }
     };
+
+    Packages.prototype.run = function(callback) {
+        this.find(callback);
+    };
+
+    Packages.prototype.include = function(package, p) {
+        // Let's get clean paths:
+        // path = path.replacePathSep();
+        var pack = this.get(package);
+        return require(path.join(pack._path, p));
+    }
     /**
      * Ready Function.
      *
@@ -237,38 +243,31 @@
         require(file);
     };
 
-    Packages.prototype.find = function() {
+    Packages.prototype.find = function(callback) {
         var self = this;
         var done = false;
         this._paths.forEach(function(p, i) {
+            var dir = fs.readdirSync(p);
 
-            fs.readdir(p, function(error, dir) {
-                if(error) throw Error(error);
-                dir.forEach(function(_dir) {
-                    if(_dir.match("tower-packages")) return;
-                    // Check if `package.js` exists:
-                    fs.exists(path.join(p, _dir, 'package.js'), function(exists) {
+            dir.forEach(function(_dir) {
+                if(_dir.match("tower-packages")) return;
 
-                        if(exists) {
-                            // Package is valid:
-                            self.load(path.join(p, _dir, 'package.js'));
-                        }
-
-                        if(i == (self._paths.length - 1)) {
-                            if(!done) {
-                                process.nextTick(function() {
-                                    self.isReady('packages.loaded');
-                                });
-                                done = true;
-                            }
-                        }
-
-                    });
-
-                });
+                if(fs.existsSync(path.join(p, _dir, 'package.js'))) {
+                    self.load(path.join(p, _dir, 'package.js'));
+                }
 
             });
+
+            if(i == (self._paths.length - 1)) {
+                if(!done) {
+                    process.nextTick(
+                    callback);
+                    done = true;
+                }
+            }
         });
+
+
     };
 
     module.exports = Packages;
