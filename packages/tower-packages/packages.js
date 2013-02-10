@@ -88,7 +88,7 @@
         // Let's get clean paths:
         // path = path.replacePathSep();
         var pack = this.get(package);
-        return require(path.join(pack._path, p));
+        return (require(path.join(pack._path, p)));
     }
     /**
      * Ready Function.

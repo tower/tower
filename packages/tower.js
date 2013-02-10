@@ -102,6 +102,9 @@ require('harmony-reflect');
     Packages.run(function() {
 
         Tower.ready = Packages.include('tower', 'shared/ready');
+
+        Packages.include('tower', 'server');
+
         /**
          * This callback will run when the development environment has successfully started.
          * This means that the server is running and the framework is done initializing.

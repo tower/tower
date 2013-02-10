@@ -1,13 +1,77 @@
 var fs, path;
 
 path = require('path');
+
+var _modules = {};
+
+function define(module, deps, callback) {
+  _modules[module] = {deps: deps, cb: callback};
+}
+
+function requireModule(module) {
+  return _modules[module].cb();
+}
+
+global.define = define;
+global.requireModule = requireModule;
+
+var jsdom = require("jsdom");
+//var doc = jsdom("<html><body></body></html>", jsdom.level(1, "core"), options);
+var document = jsdom.jsdom("<html><head></head><body><div id='#wrapper'></div></body></html>");
+var window = jsdom.createWindow();
+window.document = document;
+
+global.window = window;
+require('./shared/jquery');
+
+global.$ = window.$;
+global.Handlebars = require('handlebars');
+//window.$("body").append('<div class="testing">Hello World, It works</div>');
+//console.log(window.$(".testing").text());
 require('ember-metal-node');
+Ember.$ = $;
+//console.log(Ember);
 require('ember-runtime-node');
 require('ember-states-node');
 require('ember-routing-node');
 require('ember-application-node');
+require('ember-views-node');
 
-console.log(Ember);
+var App = Ember.Application.create({
+  init: function() {
+    //console.log(1);
+  },
+  rootElement: '#wrapper'
+});
+
+App.ApplicationController = Ember.Controller.extend();
+
+var View = Ember.View.extend({
+  classNames: ['server-view']
+});
+
+App.ApplicationView = View.extend({
+  template: Ember.Handlebars.compile('Hello World!!!'),
+  insertElement: function() {
+    this._super();
+  },
+  willInsertElement: function() {
+    this._super();
+  },
+  didInsertElement: function() {
+    this._super();
+    //console.log($("html").html());
+  }
+});
+
+var view = App.ApplicationView.create().append();
+
+App.initialize();
+
+Ember.run.scheduleOnce('afterRender', this, function() {
+      console.log($("html").html());
+});
+
 
 /**
 fs = require('fs');
