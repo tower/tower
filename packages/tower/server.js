@@ -5,7 +5,10 @@ path = require('path');
 var _modules = {};
 
 function define(module, deps, callback) {
-  _modules[module] = {deps: deps, cb: callback};
+  _modules[module] = {
+    deps: deps,
+    cb: callback
+  };
 }
 
 function requireModule(module) {
@@ -36,6 +39,8 @@ require('ember-states-node');
 require('ember-routing-node');
 require('ember-application-node');
 require('ember-views-node');
+require('./shared/handlebar-helpers');
+var helpers = Ember.Handlebars.helpers;
 
 var App = Ember.Application.create({
   init: function() {
@@ -44,14 +49,16 @@ var App = Ember.Application.create({
   rootElement: '#wrapper'
 });
 
-App.ApplicationController = Ember.Controller.extend();
+App.ApplicationController = Ember.Controller.extend({
+  name: '12222223'
+});
 
 var View = Ember.View.extend({
   classNames: ['server-view']
 });
 
 App.ApplicationView = View.extend({
-  template: Ember.Handlebars.compile('Hello World!!!'),
+  template: Ember.Handlebars.compile('Hello World!!! {{nadme}}'),
   insertElement: function() {
     this._super();
   },
@@ -69,7 +76,7 @@ var view = App.ApplicationView.create().append();
 App.initialize();
 
 Ember.run.scheduleOnce('afterRender', this, function() {
-      console.log($("html").html());
+  console.log($("html").html());
 });
 
 
