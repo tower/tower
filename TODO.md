@@ -7,6 +7,9 @@
 * Create an autoloading class
 * Create an extension on the container class. Ability to use Ember's lookup
   functionality.
+* Create a testing environment.
+	* Global tests (Acceptance testing)
+	* Package tests
 * Finish the bundler
 	* Implement the new watcher API
 	* Implement a new asset system
