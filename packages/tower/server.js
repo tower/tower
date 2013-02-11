@@ -42,6 +42,8 @@ require('ember-views-node');
 require('./shared/handlebar-helpers');
 var helpers = Ember.Handlebars.helpers;
 
+var template = Ember.Handlebars.compile('Hello World!!!');
+
 var App = Ember.Application.create({
   init: function() {
     //console.log(1);
@@ -57,25 +59,35 @@ var View = Ember.View.extend({
   classNames: ['server-view']
 });
 
+var time;
+
 App.ApplicationView = View.extend({
-  template: Ember.Handlebars.compile('Hello World!!! {{nadme}}'),
+  template: template,
   insertElement: function() {
     this._super();
   },
   willInsertElement: function() {
     this._super();
+    //time = new Date;
   },
   didInsertElement: function() {
     this._super();
     //console.log($("html").html());
+    //console.log("1", ((new Date().getTime() - time.getTime())) + 'ms');
   }
 });
 
-var view = App.ApplicationView.create().append();
+var view = App.ApplicationView.create();
 
 App.initialize();
+time = new Date;
+Em.run(function(){
+  view.append();
+});   
+console.log("1", ((new Date().getTime() - time.getTime())) + 'ms');
 
 Ember.run.scheduleOnce('afterRender', this, function() {
+  //console.log(((new Date().getTime() - time.getTime())) + 'ms');
   console.log($("html").html());
 });
 
