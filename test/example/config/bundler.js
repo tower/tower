@@ -35,10 +35,10 @@ Tower.Bundler.config( function () {
 	// requires a server restart if anything changes within it. 
 	// The public directory and all packages are watched all the time. 
 	// XXX: Directories start at your app's base path.
-	this.assets.directories({
+	this.assets.directories([
 		'vendor',
 		'public'
-	});
+	]);
 
 	// Define what output your assets will be in (type wise).
 	// 
@@ -56,6 +56,6 @@ Tower.Bundler.config( function () {
 	// 		like NGINX.
 	this.output.type('inline');
 
-	
-	
+
+
 });

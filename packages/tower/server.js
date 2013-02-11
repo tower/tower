@@ -2,7 +2,7 @@ var fs, path;
 
 path = require('path');
 
-var _modules = {};
+/**var _modules = {};
 
 function define(module, deps, callback) {
   _modules[module] = {
@@ -89,7 +89,7 @@ console.log("1", ((new Date().getTime() - time.getTime())) + 'ms');
 Ember.run.scheduleOnce('afterRender', this, function() {
   //console.log(((new Date().getTime() - time.getTime())) + 'ms');
   console.log($("html").html());
-});
+});**/
 
 
 /**
