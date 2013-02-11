@@ -127,25 +127,4 @@ Watch.prototype.on = function(event, callback) {
     return this;
 }
 
-/**
-Watch(path.join(Tower.path, 'packages', '**', '*'))
-    .ignore(/node_modules/)
-    .filter(/Test\.js$/)
-    .latency(0.2)
-    .forcePolling(false)
-    .on('changed', function(files) {
-        console.log(files);
-    })
-    .on('removed', function(files) {})
-    .on('added', function(files) {
-        console.log(files);
-    })
-    .on('ready', function(){
-        console.log("System is ready.");
-    })
-    .on('error', function(error) {
-        console.log("Error", error);
-    })  
-    .start();**/
-
 module.exports = Watch;

@@ -94,8 +94,25 @@
     };
 
     Bundler.prototype.watch = function() {
+
         var self = this;
-        watchr.watch({
+
+        Tower.watch(path.join(Tower.path, 'packages', '**', '*'))
+        .ignore(/node_modules/)
+        .filter(/Test\.js$/)
+        .latency(0.2)
+        .forcePolling(false)
+        .on('changed', function(files) {
+            console.log(files);
+        }).on('removed', function(files) {}).on('added', function(files) {
+            console.log(files);
+        }).on('ready', function() {
+            console.log("System is ready.");
+        }).on('error', function(error) {
+            console.log("Error", error);
+        }).start();
+
+        /**watchr.watch({
             paths: Packages._paths,
             listener: function(event, filepath) {
                 // When something changes, re-bundle the package.
@@ -117,7 +134,7 @@
                 if(err) throw err;
                 console.log('\033[36m' + '   info  - ' + '\033[0m' + 'watching packages for changes' + '\033[0m');
             }
-        });
+        });**/
     };
 
     Bundler.prototype.fileChanged = function(package, filepath) {
