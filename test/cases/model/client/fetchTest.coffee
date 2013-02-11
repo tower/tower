@@ -1,2 +1,0 @@
-describe 'Tower.Model fetch', ->
-  

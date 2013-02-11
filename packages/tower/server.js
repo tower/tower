@@ -2,6 +2,13 @@ var fs, path;
 
 path = require('path');
 
+// Include the Tower.ready functionality. 
+Tower.ready = require('./shared/ready');
+// Include the Tower.watch functionality. This will basically
+// be the building blocks of all the implemented watchers inside
+// Tower. The bundler will use this extensively.
+Tower.watch = require('./server/watch')
+
 /**var _modules = {};
 
 function define(module, deps, callback) {

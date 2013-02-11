@@ -96,15 +96,17 @@ require('harmony-reflect');
         Views: {}
     });
 
-    global.Tower = Tower = {};
+    global.Tower = Tower = {
+        path: __dir
+
+    };
     global.App = App = Container.alias('App');
 
     Packages.run(function() {
-
-        Tower.ready = Packages.include('tower', 'shared/ready');
-
+        // Load up the first package inside Tower. We'll load the server.js
+        // file as it's initialization. Once we load this file, we
+        // leave the rest of the system up to Tower, except the bundler. 
         Packages.include('tower', 'server');
-
         /**
          * This callback will run when the development environment has successfully started.
          * This means that the server is running and the framework is done initializing.
@@ -122,6 +124,8 @@ require('harmony-reflect');
              * This ensures that we have a fast, effecient development cycle. This will run
              * the bundler's stuff, as well as all the "Hot Code Push" and other file watching
              * tasks.
+             *
+             * This will initialize an instance of Tower.watch. 
              */
             Bundler.watch();
         });
