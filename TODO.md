@@ -16,6 +16,8 @@
 	* Implement Resolve.js (with hybrid approach)
 	* Create building process
 	* Create handlebars helpers to work with the bundler
+* Implement a `Quick Load` system. Reloading the client app when a file changes
+  but saving the state then restoring it upon refresh.
 * Implement Handlebars
 * Implement a wrapper around Ember.View 
 	* Because we'll need to implement our own `{{outlet}}` functionality
