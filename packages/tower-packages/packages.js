@@ -37,17 +37,11 @@
          * @type {Array}
          */
         this._paths = [
-        path.join(__dirname, '..'), path.join(_root, 'node_modules')];
-        /**
-         * If were running in an app, then add it's possible package folders in the
-         * path array:
-         */
-        if(__isApp) {
-            this._paths.push(path.join(process.cwd(), 'packages'));
-            // XXX 
-            // Wayy too slow for the watcher. We'll need to find another way,
-            //this._paths.push(path.join(process.cwd(), 'node_modules'));
-        }
+        path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules')];
+        this._paths.push(path.join(process.cwd(), 'packages'));
+        // XXX
+        // Wayy too slow for the watcher. We'll need to find another way,
+        //this._paths.push(path.join(process.cwd(), 'node_modules'));
     }
     /**
      * Retrieve a package by name.
@@ -88,7 +82,7 @@
         // Let's get clean paths:
         // path = path.replacePathSep();
         var pack = this.get(package);
-        return (require(path.join(pack._path, p)));
+        return(require(path.join(pack._path, p)));
     }
     /**
      * Ready Function.

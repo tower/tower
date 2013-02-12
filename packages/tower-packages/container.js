@@ -2,15 +2,37 @@
 
     function Container() {
 
-        var map = {};
-
-        this.get = function get(key) {
-            return map[key];
+        this.map = {};
+        this.resources = {
+            controller: {},
+            model: {},
+            template: {},
+            view: {}
         };
 
-        this.set = function set(key, value) {
-            map[key] = value;
+        this.get = function (key) {
+            return this.map[key];
         };
+
+        this.set = function (key, value) {
+            this.map[key] = value;
+        };
+
+        this.lookup = function (type, resource) {
+            if (this.resources[type]) {
+                if (this.resources[type][resource]) {
+                    return this.resources[type][resource];
+                }
+            }
+        };
+
+        this.resource = function (type, resource, value) {
+            if (!this.resources[type])
+            {
+                this.resources[type] = {};
+            }
+            this.resources[type][resource] = value;
+        }
 
         this.alias = function alias(name) {
             return createAlias(this, name);

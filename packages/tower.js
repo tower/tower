@@ -18,13 +18,11 @@ require('harmony-reflect');
  * global variables.
  */
 (function() {
-    var Tower, App, self, _, path;
+    var Tower, App, self, _, path, incomingOptions;
 
-    global.__isApp = process.argv[2];
-    global.__dir   = process.argv[3];
-    path           = require('path');
-
-    _ = require('underscore');
+    incomingOptions = JSON.parse(process.argv[2]);
+    path            = require('path');
+    _               = require('underscore');
     /**
      * A string helper method to capitalize the first letter
      * in a word.
@@ -39,7 +37,7 @@ require('harmony-reflect');
      * @param  {String} string Original String
      * @return {String}        Converted/Escaped String
      */
-    _.regexpEscape = function(string) {
+    _.regexpEscape  = function(string) {
         return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     };
 
@@ -48,64 +46,32 @@ require('harmony-reflect');
     };
 
     /**
-     * Figure out which environment we are inside: (client or server)
+     * Create a global Tower object. We are only going to use
+     * a traditional JavaScript object instead of an Ember Namespace.
+     *
+     * 1) We don't want to load Ember right away.
+     *
+     * @type {[type]}
      */
-    if(!global && window) { // isClient
-        var __isServer__ = window.__isClient__ = true;
-        var __isClient__ = window.__isServer__ = false;
-    } else { // isServer
-        var __isServer__ = global.__isServer__ = true;
-        var __isClient__ = global.__isClient__ = false;
-    }
-    /**
-     * Set the root path globally.
-     * @type {String}
-     */
-    global._root = process.cwd();
-    /**
-     * Variable declaration and requiring of helper modules:
-     * @type {Object}
-     */
-    self = this;
-    /**
-     * Require all the files we need that makes up the `Package` system.
-     */
-    var Bundler = require('./tower-packages/bundler');
-    var Package = require('./tower-packages/package');
-    var Packages = require('./tower-packages/packages');
-    var Container = require('./tower-packages/container');
-    /**
-     * Create a new instance of the `Bundler` class. This will attach itself
-     * to the global scope.
-     * @type {Bundler}
-     */
-    global.Bundler = Bundler = new Bundler();
-    /**
-     * Create a new instance of the `Packages` class. This will also attach itself
-     * to the global scope.
-     * @type {Packages}
-     */
-    global.Package  = Package;
-    global.Container = Container = new Container();
-    global.Packages = Packages = new Packages();
-
-    Container.set('Tower', {});
-    Container.set('App', {
-        Controllers: {},
-        Models: {},
-        Views: {}
-    });
-
-    global.Tower = Tower = {
-        path: __dir
-
+    this.Tower = Tower = {
+        path: incomingOptions.dirname,
+        env: incomingOptions.env,
+        port: incomingOptions.port,
+        cwd: process.cwd(),
+        isServer: true,
+        isClient: false
     };
-    global.App = App = Container.alias('App');
+
+    // Require all of the package system:
+    this.Bundler    = new (require('./tower-packages/bundler'))();
+    this.Package    = require('./tower-packages/package');
+    this.Packages   = new (require('./tower-packages/packages'))();
+    this.Container  = require('./tower-packages/container');
 
     Packages.run(function() {
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
-        // leave the rest of the system up to Tower, except the bundler. 
+        // leave the rest of the system up to Tower, except the bundler.
         Packages.include('tower', 'server');
         /**
          * This callback will run when the development environment has successfully started.
@@ -125,9 +91,9 @@ require('harmony-reflect');
              * the bundler's stuff, as well as all the "Hot Code Push" and other file watching
              * tasks.
              *
-             * This will initialize an instance of Tower.watch. 
+             * This will initialize an instance of Tower.watch.
              */
-            Bundler.watch();
+            Bundler.start();
         });
 
     });
