@@ -37,7 +37,10 @@
          * @type {Array}
          */
         this._paths = [
-        path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules')];
+            path.join(__dirname, '..'),
+            path.join(Tower.cwd, 'node_modules')
+        ];
+
         this._paths.push(path.join(process.cwd(), 'packages'));
         // XXX
         // Wayy too slow for the watcher. We'll need to find another way,
@@ -75,7 +78,10 @@
     };
 
     Packages.prototype.run = function(callback) {
-        this.find(callback);
+        var self = this;
+        this.find(function () {
+            callback(Object.keys(self._packages).length);
+        });
     };
 
     Packages.prototype.include = function(package, p) {

@@ -13,6 +13,10 @@
  * bit of modularity amoung packages.
  */
 require('harmony-reflect');
+
+global.log = function(str) {
+    console.log('\n       ::\033[36m' + str + '\033[0m    ');
+};
 /**
  * We need to include the main package classes which will expose a few
  * global variables.
@@ -21,8 +25,8 @@ require('harmony-reflect');
     var Tower, App, self, _, path, incomingOptions;
 
     incomingOptions = JSON.parse(process.argv[2]);
-    path            = require('path');
-    _               = require('underscore');
+    path = require('path');
+    _ = require('underscore');
     /**
      * A string helper method to capitalize the first letter
      * in a word.
@@ -37,7 +41,7 @@ require('harmony-reflect');
      * @param  {String} string Original String
      * @return {String}        Converted/Escaped String
      */
-    _.regexpEscape  = function(string) {
+    _.regexpEscape = function(string) {
         return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     };
 
@@ -63,12 +67,13 @@ require('harmony-reflect');
     };
 
     // Require all of the package system:
-    this.Bundler    = new (require('./tower-packages/bundler'))();
-    this.Package    = require('./tower-packages/package');
-    this.Packages   = new (require('./tower-packages/packages'))();
-    this.Container  = require('./tower-packages/container');
+    this.Bundler = new(require('./tower-packages/bundler'))();
+    this.Package = require('./tower-packages/package');
+    this.Packages = new(require('./tower-packages/packages'))();
+    this.Container = require('./tower-packages/container');
 
-    Packages.run(function() {
+    Packages.run(function(count) {
+        log(count + ' package(s) have been loaded.');
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
         // leave the rest of the system up to Tower, except the bundler.
