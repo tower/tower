@@ -19,17 +19,17 @@
     };
     
     // Mockup a simple Tower object for the error classes:
-    Tower.HTTP = {};
+    //Tower.HTTP = {};
     
     // XXX: This will be moved into it's own file:
-    function CIPError() {
+    /**function CIPError() {
         this.message = "Conflicting interal port number.";
         this.name    = "Tower.HTTP.CIPError";
         this.code    = 0x01;
     }
     
     CIP.prototype = new Error();
-    CIP.prototype.constructor = CIPError;
+    CIP.prototype.constructor = CIPError;**/
     
     program.version('0.5.0').usage('[options]').option('-p, --port [number]', 'Port', parseInt).option('-e, --env [string]', 'Environment Type');
 
