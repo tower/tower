@@ -39,7 +39,7 @@ describe 'Tower.ModelValidation', ->
     page.validate()
     
     assert.deepEqual page.validate(), true
-    assert.deepEqual page.get('errors'), []
+    assert.deepEqual page.get('errors'), {}
     
   describe 'presence', ->
     test 'field "name", required: true', ->

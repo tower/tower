@@ -26,10 +26,13 @@ else
 	RUN = ./
 endif
 
+all: clean
+	$(GRUNT) --config $(RUN)grunt.coffee
+	
 # watch more files on mac
 watch-more:
 	ulimit -n 65536
-
+	
 install-dependencies:
 	@$(shell $(INSTALL) dependencies)
 
@@ -38,9 +41,6 @@ install-message:
 
 post-install: install-dependencies install-message
 
-all: clean
-	$(GRUNT) --config $(RUN)grunt.coffee
-	
 check-grunt:
 ifeq ($(shell which $(GRUNT)),)
 	$(eval GRUNT = $(shell pwd)$(PATH_SEP)node_modules$(PATH_SEP)grunt$(PATH_SEP)bin$(PATH_SEP)grunt)

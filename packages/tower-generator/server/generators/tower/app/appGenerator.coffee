@@ -193,7 +193,7 @@ JAVASCRIPTS =
   'https://raw.github.com/epeli/underscore.string/master/lib/underscore.string.js': 'underscore.string.js'
   'https://raw.github.com/caolan/async/master/lib/async.js': 'async.js'
   # https://github.com/viatropos/tiny-require.js
-  'https://raw.github.com/LearnBoost/socket.io-client/master/dist/socket.io.js': 'socket.io.js'
+  'https://raw.github.com/LearnBoost/socket.io-client/494d87db67b9e69a7534bb4ef198d708c2d227f2/dist/socket.io.js': 'socket.io.js'
   # https://github.com/paulmillr/es6-shim
   'https://raw.github.com/timrwood/moment/master/moment.js': 'moment.js'
   'https://raw.github.com/andris9/jStorage/72c44323d33bb6a4c3610bdb774184e3a43a230f/jstorage.min.js': 'jstorage.js'
@@ -214,7 +214,7 @@ JAVASCRIPTS =
   'https://raw.github.com/mrdoob/stats.js/master/src/Stats.js': 'stats.js'
   'http://html5shiv.googlecode.com/svn/trunk/html5.js': 'html5.js'
 
-JAVASCRIPTS["http://cloud.github.com/downloads/viatropos/tower/tower-#{Tower.version}.js"] = 'tower.js'
+JAVASCRIPTS["http://cloud.github.com/downloads/viatropos/tower/tower-0.4.2-22.js"] = 'tower.js'
 
 JAVASCRIPTS["https://raw.github.com/twitter/bootstrap/#{twitterBootstrapCommit}/js/#{javascript}.js"] = "bootstrap/#{javascript}.js" for javascript in [
   'bootstrap-alert'

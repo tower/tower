@@ -48,8 +48,8 @@ describe 'Tower.SupportFormat', ->
       assert.deepEqual _.now().toDate().getSeconds(), (new Date).getSeconds()
       
     test 'strftime', ->
-      assert.equal _.strftime(_.now(), 'YYYY'), '2012'
-      assert.equal _.now().strftime('YYYY'), '2012'
+      assert.equal _.strftime(_.now(), 'YYYY'), '2013'
+      assert.equal _.now().strftime('YYYY'), '2013'
       
     test 'toDate', ->
       assert.equal _.toDate("Dec 25, 1995").getFullYear(), 1995

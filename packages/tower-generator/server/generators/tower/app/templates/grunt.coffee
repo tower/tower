@@ -10,7 +10,7 @@ module.exports = (grunt) ->
     defaultDatabase:  'memory'
 
   # @todo grunt.loadNpmTasks('tower-tasks')
-  require(require('path').join(Tower.srcRoot, 'lib/tower-tasks/tasks'))(grunt)
+  require(require('path').join(Tower.srcRoot, 'packages/tower-tasks/tasks'))(grunt)
 
   # script files
   scriptPaths = file.expand([
