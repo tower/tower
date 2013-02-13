@@ -2,7 +2,7 @@ var fs, path;
 
 path = require('path');
 
-// Include the Tower.ready functionality. 
+// Include the Tower.ready functionality.
 Tower.ready = require('./shared/ready');
 // Include the Tower.watch functionality. This will basically
 // be the building blocks of all the implemented watchers inside
@@ -90,7 +90,7 @@ App.initialize();
 time = new Date;
 Em.run(function(){
   view.append();
-});   
+});
 console.log("1", ((new Date().getTime() - time.getTime())) + 'ms');
 
 Ember.run.scheduleOnce('afterRender', this, function() {
@@ -113,7 +113,7 @@ if (process.env.TOWER_COMMAND === 'new') {
   global.Ember = {
     lookup: global
   };
-  
+
   module.exports = global.Tower = Ember.Namespace.create();
 }
 

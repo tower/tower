@@ -13,9 +13,15 @@
  * bit of modularity amoung packages.
  */
 require('harmony-reflect');
-
+// Create a small helper function:
 global.log = function(str) {
     console.log('\n       ::\033[36m' + str + '\033[0m    ');
+};
+
+var commandMap = {
+    server: 'tower',
+    new: 'tower-generator',
+    install: 'tower-install'
 };
 /**
  * We need to include the main package classes which will expose a few
@@ -63,7 +69,8 @@ global.log = function(str) {
         port: incomingOptions.port,
         cwd: process.cwd(),
         isServer: true,
-        isClient: false
+        isClient: false,
+        command: incomingOptions.command
     };
 
     // Require all of the package system:
@@ -74,10 +81,14 @@ global.log = function(str) {
 
     Packages.run(function(count) {
         log(count + ' package(s) have been loaded.');
+        console.log(incomingOptions);
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
         // leave the rest of the system up to Tower, except the bundler.
-        Packages.include('tower', 'server');
+        //
+        // We only want to include the main tower package if were starting
+        // a full Tower process (server, console, routes, etc...)
+        Packages.include(commandMap[Tower.command], 'server');
         /**
          * This callback will run when the development environment has successfully started.
          * This means that the server is running and the framework is done initializing.

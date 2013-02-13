@@ -7,8 +7,9 @@
         require('./packages/tower-platform/path.js')
     }
 
-    this.log = function(str) {
-        console.log('\n       ::\033[36m'+str+'\033[0m    ');
+    this.log = function(str, color) {
+        if(!color) color = '[36m';
+        console.log('\n       ::\033' + color + str + '\033[0m    ');
     };
 
     options = {
@@ -29,74 +30,51 @@
         options.env = program.env;
     }
 
-    Status = {
-        isRunning: false,
-        isCrashing: false,
-        isListening: true,
-        isExiting: false,
-        errors: [],
-        instance: null,
-        request_queue: [],
-
-        spawn: function() {
-            var self = this;
-
-            ls = spawn('node',
-                [
-                    '--harmony',
-                    path.join(__dirname, 'packages', 'tower.js'),
-                    JSON.stringify(options)
-                ]
-            );
-
-            ls.stdout.on('data', function(data) {
-                if(data) {
-                    console.log(data.toString('utf-8'));
-                }
-            });
-
-            ls.stderr.on('data', function(data) {
-                self.errors.push(data);
-                self.isCrashing = true;
-            });
-
-            ls.on('exit', function(code) {
-                if(self.isCrashing) {
-                    console.log('---------------------------', '    \033[31mApp is crashing.\033[0m', '---------------------------');
-
-                    self.errors.forEach(function(list) {
-                        console.log(list.toString());
-                    });
-
-                    self.awaitRestart();
-                }
-            });
-
-            self.instance = ls;
-
-        },
-
-        destroy: function() {
-            //console.log(this.instance.close);
-        },
-
-        awaitRestart: function() {
-            console.log('       \033[31mWaiting for file changes.\033[0m    ');
-        },
-
-        restart: function() {
-
-        }
-    };
-
     // Export a starting function that we'll call within the
     // app's main file:
-    module.exports = function() {
+    module.exports = function(command) {
 
-        function run(outer, inner, callback) {
-            Status.spawn();
-            var p = httpProxy.createServer(function(req, res, proxy) {
-                if(Status.isCrashing) {
+        if(!command) {
+            command = 'server';
+        }
+
+        function Server(options) {
+
+            this.options = options || {};
+            this.running = false;
+            this.crashing = false;
+            this.listening = true;
+            this.exiting = false;
+            this.errors = [];
+            this.proxyInstance = null;
+            this.serverInstance = null;
+            this.requestQueue = [];
+            this.process = null;
+
+        }
+
+        Server.prototype.run = function() {
+
+            // Spawn the proxy server:
+            this.startProxy();
+
+            // Spawn the http server:
+            this.startHTTP();
+
+        };
+
+        Server.prototype.startHTTP = function() {
+
+        };
+
+        Server.prototype.startProxy = function() {
+
+            var self = this;
+
+            this.proxyInstance = httpProxy.createServer(
+
+            function(req, res, proxy) {
+                if(self.listening) {
                     res.writeHead(200, {
                         'Content-Type': 'text/plain'
                     });
@@ -106,7 +84,7 @@
                     });
                     res.write('The current app is crashing.');
                     res.end();
-                } else if(Status.isListening) {
+                } else if(!self.listening) {
                     proxy.proxyRequest(req, res, {
                         host: '127.0.0.1',
                         port: inner
@@ -122,62 +100,148 @@
                         });
                     });
                 }
-                //
-                // Put your custom server logic here
-                //
-            });
+            }
 
-            p.on('upgrade', function(req, socket, head) {
-                if(Status.isListening) {
+            );
+
+            this.proxyInstance.on('upgrade', function(req, socket, head) {
+
+                if(self.listening) {
+
                     p.proxy.proxyWebSocketRequest(req, socket, head, {
                         host: '127.0.0.1',
-                        port: inner
+                        port: self.options.inner_port
                     });
+
                 } else {
+
                     var buffer = httpProxy.buffer(req);
                     Status.request_queue.push(function() {
                         p.proxy.proxyWebSocketRequest(req, socket, head, {
                             host: '127.0.0.1',
-                            port: inner,
+                            port: self.options.inner_port,
                             buffer: buffer
                         });
                     });
+
                 }
+
             });
 
-            p.on('proxyError', function(err, req, res) {
+            this.proxyInstance.on('proxyError', function(err, req, res) {
                 res.writeHead(503, {
                     'Content-Type': 'text/plain'
                 });
                 res.end('Unexpected error.');
             });
 
-            p.on('end', function() {
+            this.proxyInstance.on('end', function() {
                 console.log("The request was proxied.");
             });
 
-            p.listen(outer, function() {
+            this.proxyInstance.listen(this.options.outer_port, function() {
                 log('Proxy server has started.');
-                callback();
+                self.startProcess();
+
+                self.serverInstance = http.createServer(
+
+                function(req, res) {
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.write('request successfully proxied: ' + req.url + '\n' + JSON.stringify(req.headers, true, 2));
+                    res.end();
+                });
+
+                self.serverInstance.on('error', function(err) {
+                    // If we have a conflicting error then we'll need
+                    // to restart the proxy server and http server on a different
+                    // port.
+                    if(err.code == 'EADDRINUSE') {
+                        // Kill this instance and start a new one.
+                        self.stop('Restarting the server - Conflicting Inner Port.', '[33m');
+                        self.options.inner_port++;
+                        self.run();
+                        log('Successfully restarted!', '[32m');
+                    }
+                });
+
+                self.serverInstance.listen(self.options.inner_port, function() {
+                    log('HTTP server has started.');
+                });
+
+            }
+
+            );
+
+        };
+
+        Server.prototype.startProcess = function() {
+            var self = this,
+                ls;
+
+            ls = spawn('node', ['--harmony', path.join(__dirname, 'packages', 'tower.js'), JSON.stringify(options)]);
+
+            ls.stdout.on('data', function(data) {
+                if(data) {
+                    console.log(data.toString('utf-8'));
+                }
             });
+
+            ls.stderr.on('data', function(data) {
+                self.errors.push(data);
+                self.crashing = true;
+            });
+
+            ls.on('exit', function(code) {
+                if(self.crashing) {
+                    console.log('---------------------------', '    \033[31mApp is crashing.\033[0m', '---------------------------');
+
+                    self.errors.forEach(function(list) {
+                        console.log(list.toString());
+                    });
+                }
+            });
+
+            this.process = ls;
+        };
+
+        Server.prototype.stop = function(msg) {
+            var self = this;
+            if(msg) {
+                log(msg);
+            }
+            if(this.serverInstance._handle) {
+                this.serverInstance.close();
+            }
+
+            if(this.proxyInstance._handle) {
+                self.proxyInstance.close();
+            }
+        };
+
+        if(command && command != 'server') {
+            // Instead of spawing a new process
+            // we'll require the tower.js manually.
+            // From there, we'll include the appropriate package
+            // responsible for the command. Each package has it's own
+            // command.
+            var _server = new Server({});
+            options.command = command;
+            _server.startProcess();
+            // If it's not the server, then return false;
+            return false;
         }
 
-        run(options.port, 5000, function() {
-            http.createServer(function(req, res) {
-                res.writeHead(200, {
-                    'Content-Type': 'text/plain'
-                });
-                res.write('request successfully proxied: ' + req.url + '\n' + JSON.stringify(req.headers, true, 2));
-                res.end();
-            }).listen(5000, function() {
-                log('HTTP server has started.');
-            });
+
+        var server = new Server({
+            inner_port: 5001,
+            outer_port: 3000
         });
-    };
 
+        options.command = command;
 
-    var start_server = function(options) {
-
+        server.run();
 
     };
 
