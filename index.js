@@ -13,7 +13,22 @@
     if(process.platform == 'win32' && process.version <= 'v0.8.5') {
         require('./packages/tower-platform/path.js')
     }
-
+    
+    function Cluster () {
+        this.processes = [];
+        this.previousID = null;
+    }
+    
+    /** 
+     * Next() -> Receive the next process ID to process. 
+     * @return {Integer} -> Port number
+     * 
+    **/
+    Cluster.prototype.next = function() {
+        
+        
+    };
+    
     // Note the last color used for logging. When we change colors
     // we'll skip a line for clarity. Typically, you'd change colors
     // to notify different things.
