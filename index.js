@@ -1,5 +1,9 @@
 (function() {
+<<<<<<< HEAD
     var options, _, fs, path, program, spawn, http, httpProxy;
+=======
+    var options, _, fs, path, program, spawn, http, httpProxy, Status, Tower;
+>>>>>>> 129d486bc5afd6c0e2a93bec365d559a9d90c65d
     // Initialize variables and core modules:
     fs = require('fs'), path = require('path'), httpProxy = require('http-proxy'), http = require('http'), spawn = require('child_process').spawn, program = require('commander');
     // node path resolution was broken before
@@ -17,7 +21,20 @@
         env: 'development',
         dirname: __dirname
     };
-
+    
+    // Mockup a simple Tower object for the error classes:
+    //Tower.HTTP = {};
+    
+    // XXX: This will be moved into it's own file:
+    /**function CIPError() {
+        this.message = "Conflicting interal port number.";
+        this.name    = "Tower.HTTP.CIPError";
+        this.code    = 0x01;
+    }
+    
+    CIP.prototype = new Error();
+    CIP.prototype.constructor = CIPError;**/
+    
     program.version('0.5.0').usage('[options]').option('-p, --port [number]', 'Port', parseInt).option('-e, --env [string]', 'Environment Type');
 
     program.parse(process.argv);
@@ -59,6 +76,14 @@
             this.startProxy();
 
             // Spawn the http server:
+            // XXX: We'll need to move this into Tower's core packages, so we will
+            //      need a way to restart the process (sub and main) for conflicting
+            //      internal ports.
+            //      
+            // One way would be to call `new Tower.HTTP.CIPError();` which would be
+            // a child of the general purpose `Error` prototype/class.
+            // We could then look at the instance of the error, if it matches the previous class, then
+            // we'll do the regular restart.
             this.startHTTP();
 
         };
@@ -189,6 +214,15 @@
             });
 
             ls.stderr.on('data', function(data) {
+                if (data.code && data.code === 0x01) {
+                    // Conflicting Error:
+                    self.stop('Restarting the server - Conflicting Inner Port.', '[33m');
+                    self.options.inner_port++;
+                    self.run();
+                    log('Successfully restarted!', '[32m');
+                    
+                    return;
+                }
                 self.errors.push(data);
                 self.crashing = true;
             });
