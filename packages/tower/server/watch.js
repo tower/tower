@@ -22,7 +22,8 @@ function Watch(paths) {
             'removed': [],
             'added': [],
             'ready': [],
-            'error': []
+            'error': [],
+            'all': []
         },
         forcePolling: false,
         latency: null
@@ -80,7 +81,7 @@ Watch.prototype.forcePolling = function(bool) {
 Watch.prototype.start = function(callback) {
     var self = this;
     // XXX: Wondering if we should create multiple watchers
-    //      for multiple paths. 
+    //      for multiple paths.
     this._instance = new Gaze(this.options.paths[0], {maxListeners:0});
 
     this._instance.on('ready', function(w) {
@@ -100,8 +101,8 @@ Watch.prototype.start = function(callback) {
         self.emit('removed', [filepath]);
     });
 
-    this._instance.on('all', function(filepath) {
-        self.emit('all', [filepath]);
+    this._instance.on('all', function(event, filepath) {
+        self.emit('all', [event, filepath]);
     });
 
     this._instance.on('error', function(err) {
@@ -112,7 +113,7 @@ Watch.prototype.start = function(callback) {
 Watch.prototype.emit = function(event, args) {
     if(!event) return false;
 
-    if (this.options.events[event] == null) 
+    if (this.options.events[event] == null)
         return false;
 
     for(var i = 0; i < this.options.events[event].length; i++) {

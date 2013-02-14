@@ -121,7 +121,6 @@
 			}
 			// Check if we were ready:
 			if(ready) {
-				console.log(comp);
 				// Run the callback:
 				cb.apply({});
 			}

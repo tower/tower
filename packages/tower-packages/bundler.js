@@ -63,7 +63,7 @@
                             var finalPath = [_root, self.output.js, package, file.file];
                             var previous = "";
 
-                            /** 
+                            /**
                             *   Goes through each `finalPath` index one at a time.
                             *   We also assemble the current path to the next path so we build on top.
                             *
@@ -93,21 +93,21 @@
         });
     };
 
+    Bundler.prototype.start = function() {
+        this.watch();
+    };
+
     Bundler.prototype.watch = function() {
 
         var self = this;
 
-        Tower.watch(path.join(Tower.path, 'packages', '**', '*'))
-        .ignore(/node_modules/)
-        .filter(/Test\.js$/)
-        .latency(0.2)
-        .forcePolling(false)
-        .on('changed', function(files) {
-            console.log(files);
-        }).on('removed', function(files) {}).on('added', function(files) {
-            console.log(files);
-        }).on('ready', function() {
-            console.log("System is ready.");
+        var _watchPackages = [];
+        Packages._paths.forEach(function(i){
+            _watchPackages.push(path.join(i, '**', '*'));
+        });
+
+        Tower.watch(_watchPackages).on('all', function(event, files) {
+            log("File changed. Reloading...", ["[1m", "[30m"]);
         }).on('error', function(error) {
             console.log("Error", error);
         }).start();

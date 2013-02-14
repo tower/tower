@@ -13,9 +13,48 @@
  * bit of modularity amoung packages.
  */
 require('harmony-reflect');
+
+var Tower, util;
+global.Tower = Tower = {};
+
+util = require('util');
+
+Tower.Error = function(msg, code) {
+    var self = this;
+    //this.__proto__.message = 123;
+    this.__defineSetter__("message", function(message) {
+        self.__proto__.message = message;
+    });
+
+    this.__defineSetter__("code", function(c) {
+        self.__proto__.code = c;
+    });
+
+    this.message = msg;
+    this.code = code;
+};
+
+Tower.Error.prototype = new Error();
+Tower.Error.prototype.constructor = Tower.Error;
+
+var last_color = [];
+
 // Create a small helper function:
-global.log = function(str) {
-    console.log('\n       ::\033[36m' + str + '\033[0m    ');
+global.log = function(str, color) {
+    if(!color) color = '[36m';
+    var s = "";
+    if (color instanceof Array) {
+        color.forEach(function(ascii){
+            s += "\033" + ascii;
+        });
+    } else {
+        s = "\033" + color;
+    }
+    if (last_color !== s) {
+        util.print('\n');
+        last_color = s;
+    }
+    util.print('       ::' + s + str + '\033[0m');
 };
 
 var commandMap = {
@@ -24,12 +63,24 @@ var commandMap = {
     install: 'tower-install',
     help: 'tower-help'
 };
+
+var getCommand = function() {
+        var cmd = Tower.command.get();
+        if(commandMap[cmd]) {
+            return commandMap[cmd];
+        } else {
+            //throw Error("Command doesn't exist!", 'INVALIDCOMMAND');
+            throw new Tower.Error('Invalid Command!');
+            //throw e;
+        }
+    };
+
 /**
  * We need to include the main package classes which will expose a few
  * global variables.
  */
 (function() {
-    var Tower, App, self, _, path, incomingOptions;
+    var App, self, _, path, incomingOptions;
 
     incomingOptions = JSON.parse(process.argv[2]);
     path = require('path');
@@ -64,15 +115,20 @@ var commandMap = {
      *
      * @type {[type]}
      */
-    this.Tower = Tower = {
+    _.extend(global.Tower, {
         path: incomingOptions.dirname,
         env: incomingOptions.env,
         port: incomingOptions.port,
         cwd: process.cwd(),
         isServer: true,
         isClient: false,
-        command: incomingOptions.command
-    };
+        command: {
+            argv: incomingOptions.commandArgs,
+            get: function() {
+                return incomingOptions.command;
+            }
+        }
+    });
 
     // Require all of the package system:
     this.Bundler = new(require('./tower-packages/bundler'))();
@@ -88,7 +144,8 @@ var commandMap = {
         //
         // We only want to include the main tower package if were starting
         // a full Tower process (server, console, routes, etc...)
-        Packages.include(commandMap[Tower.command], 'server');
+        Packages.include(getCommand(), 'server');
+        Tower.ready('environment.development.started');
         /**
          * This callback will run when the development environment has successfully started.
          * This means that the server is running and the framework is done initializing.
