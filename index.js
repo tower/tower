@@ -67,6 +67,7 @@
     // Start using commander. Provide all the available options for cli
     // commands:
     program
+        // XXX: It's better to grab the current version from the `package.json` file.
         .version('0.5.0')
         .usage('[options]')
         .option('-p, --port [number]', 'Port', parseInt)
@@ -109,16 +110,26 @@
          * @param {Object} options All the options.
          */
         function Server(options) {
-
+            // Global options:
             this.options = options || {};
+            // Is the server running?
             this.running = false;
+            // Are we crashing yet?
             this.crashing = false;
+            // Are we listening, or ready to listen:
             this.listening = true;
+            // Were closing the process:
             this.exiting = false;
+            // Store all the errors we get from the sub-process:
             this.errors = [];
+            // Instance of the proxy server
             this.proxyInstance = null;
+            // Instance of the http server
+            // XXX: This will be moved to the sub-process.
             this.serverInstance = null;
+            // The request buffer.
             this.requestQueue = [];
+            // Instance of the sub-process:
             this.process = null;
 
         }
@@ -155,17 +166,18 @@
          * @return {void}
          */
         Server.prototype.startHTTP = function() {
-
+            // Create an http server:
             self.serverInstance = http.createServer(
-
+            // Handle the requests:
             function(req, res) {
                 res.writeHead(200, {
                     'Content-Type': 'text/plain'
                 });
+                // Send all the request info:
                 res.write('request successfully proxied: ' + req.url + '\n' + JSON.stringify(req.headers, true, 2));
                 res.end();
-            });
-
+            }); 
+            // Ooops... We hit an error:
             self.serverInstance.on('error', function(err) {
                 // If we have a conflicting error then we'll need
                 // to restart the proxy server and http server on a different
@@ -173,36 +185,73 @@
                 if(err.code == 'EADDRINUSE') {
                     // Kill this instance and start a new one.
                     self.stop('Restarting the server - Conflicting Inner Port.', '[33m');
+                    // Increase the port number by one:
                     self.options.inner_port++;
+                    // Re-run the server.
                     self.run();
+                    // Logging:
                     log('Successfully restarted!', '[32m');
                 }
             });
-
+            // Listen to the server ans pass the inner port from the options:
             self.serverInstance.listen(self.options.inner_port, function() {
                 log('HTTP server has started.');
             });
 
         };
-
+        
+        /**
+         * Start the proxy server. This will do a number of things:
+        **/
         Server.prototype.startProxy = function() {
-
             var self = this;
-
-            this.proxyInstance = httpProxy.createServer(
-
-            function(req, res, proxy) {
-                if(self.listening) {
+            
+            // Create the server:
+            this.proxyInstance = httpProxy.createServer( function(req, res, proxy) {
+                // Were a crashing ship:
+                if(self.crashing) {
                     res.writeHead(200, {
                         'Content-Type': 'text/plain'
                     });
-
+                    // Store each error we receive:
                     self.errors.forEach(function(err) {
                         res.write(err.toString());
                     });
+                    
+                    // Let the client know that were crashing:
                     res.write('The current app is crashing.');
+                    // End the request:
                     res.end();
-                } else if(!self.listening) {
+                } 
+                // If were listening or if the starting everything up for the first time
+                // New State:
+                else if(self.listening) {
+                    // Forward the request to the real http server:
+                    // XXX: Create a cluster class/system. If the command is `server` then we could
+                    //      read the config file for the cluster (app/config/cluster.js) and spawn/fork
+                    //      the given number of sub-processes. We would then keep track of how many requests each
+                    //      process have been given. 
+                    //      Within the config file `cluster.js` you could specify the port number of each process
+                    //      to be spawned, or could use rules. A rules would be a dynamic allocation of port numbers.
+                    //      You could have the first childprocess to be 6999 and each subsequent be +1 of the previous
+                    //      port number. 
+                    //
+                    //      var cluster: []
+                    //
+                    //          0: {
+                    //              port: 6999
+                    //              name: ''
+                    //              requests: {num: 0, history: []}
+                    //            }
+                    //
+                    //
+                    //
+                    //
+                    //
+                    //
+                    //
+                    //
+                    //      ];
                     proxy.proxyRequest(req, res, {
                         host: '127.0.0.1',
                         port: inner
@@ -256,12 +305,14 @@
             this.proxyInstance.on('end', function() {
                 console.log("The request was proxied.");
             });
-
+            
+            // Listen on the outer port:
             this.proxyInstance.listen(this.options.outer_port, function() {
                 log('Proxy server has started.');
+                // Start the process:
                 self.startProcess();
+                // Start the HTTP server:
                 self.startHTTP();
-
             }
 
             );
@@ -271,7 +322,7 @@
         Server.prototype.startProcess = function() {
             var self = this,
                 ls;
-
+            // Spawn a new process with the "--harmony" flag enabled:
             ls = spawn('node', ['--harmony', path.join(__dirname, 'packages', 'tower.js'), JSON.stringify(options)]);
 
             ls.stdout.on('data', function(data) {
@@ -282,7 +333,16 @@
 
             ls.stderr.on('data', function(data) {
                 data = data.toString('utf-8');
-
+                // XXX: We'll need to find a better way to track errors. Right now
+                //      anything passed to data will be a buffer for a string, not a native
+                //      data structure. When you call: `throw new Tower.Error()` we can't
+                //      pass anything concrete, just the error string (full consoled error string).
+                //      XXX: We could use `process.emit/send()` to send a message to the master process
+                //           but for some reason, the method doesn't exist, while node's documentation
+                //           marks is valid and existent. 
+                //      XXX: Ahhh, this method is only available for the `fork()` not `spawn()`. We'll need to 
+                //           change that up. The only difference between fork and spawn is that fork is built on spawn
+                //           but provides a communication channel.
                 if(data.code && data.code === 0x01) {
                     // Conflicting Error:
                     self.stop('Restarting the server - Conflicting Inner Port.', '[33m');
