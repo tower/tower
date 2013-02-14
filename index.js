@@ -1,5 +1,5 @@
 (function() {
-    var options, _, fs, path, program, spawn, http, httpProxy, Status;
+    var options, _, fs, path, program, spawn, http, httpProxy;
     // Initialize variables and core modules:
     fs = require('fs'), path = require('path'), httpProxy = require('http-proxy'), http = require('http'), spawn = require('child_process').spawn, program = require('commander');
     // node path resolution was broken before
@@ -79,7 +79,7 @@
                         'Content-Type': 'text/plain'
                     });
 
-                    Status.errors.forEach(function(err) {
+                    self.errors.forEach(function(err) {
                         res.write(err.toString());
                     });
                     res.write('The current app is crashing.');
@@ -92,7 +92,7 @@
                 } else {
                     // Queue up request; Not listening yet.
                     var buffer = httpProxy.buffer(req);
-                    Status.request_queue.push(function() {
+                    self.request_queue.push(function() {
                         proxy.proxyRequest(req, res, {
                             host: '127.0.0.1',
                             port: inner,
@@ -116,7 +116,7 @@
                 } else {
 
                     var buffer = httpProxy.buffer(req);
-                    Status.request_queue.push(function() {
+                    self.request_queue.push(function() {
                         p.proxy.proxyWebSocketRequest(req, socket, head, {
                             host: '127.0.0.1',
                             port: self.options.inner_port,

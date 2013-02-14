@@ -21,7 +21,8 @@ global.log = function(str) {
 var commandMap = {
     server: 'tower',
     new: 'tower-generator',
-    install: 'tower-install'
+    install: 'tower-install',
+    help: 'tower-help'
 };
 /**
  * We need to include the main package classes which will expose a few
@@ -81,7 +82,6 @@ var commandMap = {
 
     Packages.run(function(count) {
         log(count + ' package(s) have been loaded.');
-        console.log(incomingOptions);
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
         // leave the rest of the system up to Tower, except the bundler.
