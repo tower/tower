@@ -1,4 +1,4 @@
-Package.register(function(){
+Tower.Package.register(function(){
     var coffee = require('coffee-script');
     var fs     = require('fs');
 
@@ -22,7 +22,7 @@ Package.register(function(){
         }
 
         contents = new Buffer(contents);
-        
+
         this.addResource({
             extension: 'js',
             path: serve_path,

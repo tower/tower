@@ -128,4 +128,4 @@ Watch.prototype.on = function(event, callback) {
     return this;
 }
 
-module.exports = Watch;
+Tower.watch = Watch;

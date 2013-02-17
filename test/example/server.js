@@ -1,3 +1,5 @@
 (function () {
-	require('tower')();
+	require('tower')({
+        directories: 'default'
+    });
 })();

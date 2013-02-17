@@ -7,9 +7,9 @@
         this._dependencies = [];
         this._files = [];
         this._init = [];
-        this._path = Packages._currentPath;
+        this._path = Tower.Packages._currentPath;
         callback.apply(this);
-        Packages.add(this._info.name, this);
+        Tower.Packages.add(this._info.name, this);
     }
 
     Package.prototype.info = function(obj) {
@@ -85,7 +85,7 @@
      * @return
      */
     Package.prototype.registerExtension = function(type, callback) {
-        Bundler.registerExtension(type, callback);
+        Tower.Bundler.registerExtension(type, callback);
     }
 
     Package.register = function(callback) {
@@ -94,6 +94,6 @@
         }
     };
 
-    module.exports = Package;
+    Tower.Package = Package;
 
 })();

@@ -79,6 +79,11 @@ getCommand = function() {
      * @type {[type]}
      */
     Tower._.extend(global.Tower, {
+        App: {
+            directoryStyle: 'default',
+            files: []
+        },
+        create: null, // Redefined later
         path: incomingOptions.dirname,
         env: incomingOptions.env,
         port: incomingOptions.port,
@@ -94,12 +99,12 @@ getCommand = function() {
     });
 
     // Require all of the package system:
-    this.Bundler = new(require('./tower-packages/bundler'))();
-    this.Package = require('./tower-packages/package');
-    this.Packages = new(require('./tower-packages/packages'))();
-    this.Container = require('./tower-packages/container');
+    require('./tower-packages/bundler');
+    require('./tower-packages/package');
+    require('./tower-packages/packages');
+    require('./tower-packages/container');
 
-    Packages.run(function(count) {
+    Tower.Packages.run(function(count) {
         log(count + ' package(s) have been loaded.');
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
@@ -107,7 +112,7 @@ getCommand = function() {
         //
         // We only want to include the main tower package if were starting
         // a full Tower process (server, console, routes, etc...)
-        Packages.include(getCommand(), 'server');
+        Tower.Packages.require(getCommand());
         Tower.ready('environment.development.started');
         /**
          * This callback will run when the development environment has successfully started.

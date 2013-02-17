@@ -55,5 +55,5 @@
         });
     }
 
-    module.exports = Container;
+    Tower.Container = Container;
 })();

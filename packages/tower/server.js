@@ -3,11 +3,47 @@ var fs, path;
 path = require('path');
 
 // Include the Tower.ready functionality.
-Tower.ready = require('./shared/ready');
+require('./shared/ready');
 // Include the Tower.watch functionality. This will basically
 // be the building blocks of all the implemented watchers inside
 // Tower. The bundler will use this extensively.
-Tower.watch = require('./server/watch')
+require('./server/watch')
+
+// Require Tower.Application;
+Tower.Packages.require('tower-application');
+Tower.Packages.require('tower-router');
+Tower.Packages.require('tower-router');
+
+// Define some autoloading settings:
+Tower._.extend(Tower, {
+  // Autoloading for a single file application:
+  autoload: [
+    'app.js',
+    'server.js',
+    'index.js'
+  ]
+});
+
+
+// Check if the user specified an argument:
+if (Tower.command.argv[0]) {
+  Tower.App.directoryStyle = 'single';
+  Tower.App.files.push(Tower.command.argv[0]);
+}
+
+/**
+ * Create a new application instance;
+ * @return {[type]} [description]
+ */
+Tower.create = function () {
+  return new Tower.Application();
+};
+
+Tower.App.files.forEach( function (file) {
+  var f = require( path.join(Tower.cwd, file) );
+});
+
+
 
 /**var _modules = {};
 

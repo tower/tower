@@ -1,4 +1,4 @@
-Package.register(function(){
+Tower.Package.register(function(){
 
     this.info({
         name: 'tower',
@@ -6,7 +6,7 @@ Package.register(function(){
         version: '0.5.0',
         author: 'Tower'
     });
-    
+
     this.registerExtension("js", function(source_path, serve_path, type){
         this.addResource({
             extension: 'js',

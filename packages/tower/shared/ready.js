@@ -127,6 +127,6 @@
 		} // End of if;
 	}
 
-	module.exports = ready;
+	Tower.ready = ready;
 
 })();

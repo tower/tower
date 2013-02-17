@@ -1,4 +1,4 @@
-Package.register(function(){
+Tower.Package.register(function(){
     var fs     = require('fs');
 
     // Add information to the package.

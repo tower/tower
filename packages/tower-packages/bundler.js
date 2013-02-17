@@ -160,6 +160,6 @@
         }
     };
 
-    module.exports = Bundler;
+    Tower.Bundler = new Bundler();
 
 })();

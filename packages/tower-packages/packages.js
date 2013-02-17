@@ -45,6 +45,7 @@
         // XXX
         // Wayy too slow for the watcher. We'll need to find another way,
         //this._paths.push(path.join(process.cwd(), 'node_modules'));
+        this._autoload = ['server.js', 'index.js'];
     }
     /**
      * Retrieve a package by name.
@@ -61,20 +62,24 @@
      * @param  {String} name Package Name
      * @return {Object}      Chainable Object
      */
-    Packages.prototype.require = function(name) {
-        // Get the package object:
-        var pkg = this.get(name);
-        // Check if we have a valid package returned:
-        if(pkg) {
-            // Loop through the init files within the package:
-            for(var file in pkg._init) {
-                // Make sure we have a proper 'server' type on the init files:
-                if(pkg.isType(pkg._init[file], 'server')) {
-                    // Require that file:
-                    require(path.join(pkg._path, pkg._init[file]));
+    Packages.prototype.require = function(package, file) {
+        var self = this, pack = this.get(package);
+        function tryFile(i) {
+            if (!file) {
+                if (!i) { i = 0; }
+                file = self._autoload[i];
+                if (!file) {
+                    throw new Error('Cannot autoload any files within the "' + name + '" package. Tried: ' + this._autoload.join(' '));
                 }
             }
+            try {
+                return (require( path.join(pack._path, file) ));
+            } catch(e) {
+                return tryFile(i++);
+            }
         }
+
+        return tryFile(0);
     };
 
     Packages.prototype.run = function(callback) {
@@ -84,12 +89,6 @@
         });
     };
 
-    Packages.prototype.include = function(package, p) {
-        // Let's get clean paths:
-        // path = path.replacePathSep();
-        var pack = this.get(package);
-        return(require(path.join(pack._path, p)));
-    }
     /**
      * Ready Function.
      *
@@ -270,6 +269,6 @@
 
     };
 
-    module.exports = Packages;
+    Tower.Packages = new Packages();
 
 })();

@@ -1,7 +1,7 @@
-require('./shared');
+Tower.Application = function Application() {
 
-require('./server/application');
+}
 
-require('./server/assets');
-
-require('./server/watcher');
+Tower.Application.prototype.route = function() {
+    return new Tower.Router();
+};
