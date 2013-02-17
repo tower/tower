@@ -2,6 +2,5 @@
 
 var fs = require('fs');
 var path = require('path');
-var script = path.join(process.cwd(), 'scripts' , 'tower');
 
 require(path.resolve(__dirname, '../index.js'))(process.argv[2]);

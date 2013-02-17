@@ -5,7 +5,7 @@
  * Any value may be a string, function or litteral value.
  * Tower will detect the type and use it accordingly.
  */
-Tower.Bundler.config({
+Tower.Bundler.config( function() {
 	// Choose what compilation type you want for all the JavaScript:
 	//
 	// The choices are the following:
@@ -15,11 +15,7 @@ Tower.Bundler.config({
 	//
 	// 'string' compilation is more for production use, as it's quite useless
 	// in development where speed isn't as important.
-	javascript: {
-		compiler: {
-			type: 'loose'
-		}
-	}
+	js.compiler.type('loose');
 	// Choose what CSS compilation/asset you want to use:
 	//
 	// The choices are the following:
@@ -30,7 +26,7 @@ Tower.Bundler.config({
 	// 'bundled'  -> CSS files are served together into a package. This
 	// 				 makes it easy to use pre-processors and their @importing
 	// 				 ability. Creating a single CSS file to be served.
-	this.css.compiler.type('bundled');
+	css.compiler.type('bundled');
 
 	// Define what paths we should for your assets. By default, we look
 	// at every package, 'vendor', and 'public' directory.
@@ -38,7 +34,7 @@ Tower.Bundler.config({
 	// requires a server restart if anything changes within it.
 	// The public directory and all packages are watched all the time.
 	// XXX: Directories start at your app's base path.
-	this.assets.directories([
+	assets.directories([
 		'vendor',
 		'public'
 	]);

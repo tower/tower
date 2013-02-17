@@ -13,49 +13,12 @@
  * bit of modularity amoung packages.
  */
 require('harmony-reflect');
-
-var Tower, util;
+var Tower, util, log, getCommand;
 global.Tower = Tower = {};
-
+global.log = log = require('./../lib/log.js');
+require('./../lib/error.js');
 util = require('util');
 
-Tower.Error = function(msg, code) {
-    var self = this;
-    //this.__proto__.message = 123;
-    this.__defineSetter__("message", function(message) {
-        self.__proto__.message = message;
-    });
-
-    this.__defineSetter__("code", function(c) {
-        self.__proto__.code = c;
-    });
-
-    this.message = msg;
-    this.code = code;
-};
-
-Tower.Error.prototype = new Error();
-Tower.Error.prototype.constructor = Tower.Error;
-
-var last_color = [];
-
-// Create a small helper function:
-global.log = function(str, color) {
-    if(!color) color = '[36m';
-    var s = "";
-    if (color instanceof Array) {
-        color.forEach(function(ascii){
-            s += "\033" + ascii;
-        });
-    } else {
-        s = "\033" + color;
-    }
-    if (last_color !== s) {
-        util.print('\n');
-        last_color = s;
-    }
-    util.print('       ::' + s + str + '\033[0m');
-};
 
 var commandMap = {
     server: 'tower',
@@ -64,7 +27,7 @@ var commandMap = {
     help: 'tower-help'
 };
 
-var getCommand = function() {
+getCommand = function() {
         var cmd = Tower.command.get();
         if(commandMap[cmd]) {
             return commandMap[cmd];
@@ -80,11 +43,11 @@ var getCommand = function() {
  * global variables.
  */
 (function() {
-    var App, self, _, path, incomingOptions;
+    var App, self, path, incomingOptions;
 
     incomingOptions = JSON.parse(process.argv[2]);
     path = require('path');
-    _ = require('underscore');
+    Tower._ = require('underscore');
     /**
      * A string helper method to capitalize the first letter
      * in a word.
@@ -99,7 +62,7 @@ var getCommand = function() {
      * @param  {String} string Original String
      * @return {String}        Converted/Escaped String
      */
-    _.regexpEscape = function(string) {
+    Tower._.regexpEscape = function(string) {
         return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     };
 
@@ -115,7 +78,7 @@ var getCommand = function() {
      *
      * @type {[type]}
      */
-    _.extend(global.Tower, {
+    Tower._.extend(global.Tower, {
         path: incomingOptions.dirname,
         env: incomingOptions.env,
         port: incomingOptions.port,
