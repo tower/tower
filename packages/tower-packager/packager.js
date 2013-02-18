@@ -62,6 +62,7 @@ Packager = {
     _packages: {},
     _paths: [
     path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules'), path.join(process.cwd(), 'packages')],
+    _cache: {},
     _currentPath: null,
     get: function(name) {
         if(this._packages[name]) return this._packages[name]
@@ -142,6 +143,11 @@ Packager.require = function(package, explicitfile) {
             pack.dependencies.forEach(function (dep) {
                 Packager.require(dep);
             });
+            self._cache[package] = {
+                loaded: true,
+                path: fullPath,
+                dependencies: pack.dependencies
+            };
             return require(fullPath);
         } else {
             if(self._autoload.length === i) {
