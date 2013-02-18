@@ -64,6 +64,8 @@ model('users')
 **/
 
 bundler.config(function() {
-  this.js('compiler', 'loose');
-  this.css('compiler', 'bundled');
+  this
+    .js().compiler().type('loose');
+  this
+    .css().compiler().type('loose');
 });

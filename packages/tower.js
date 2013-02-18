@@ -15,8 +15,6 @@
 require('harmony-reflect');
 var Tower, util, log, getCommand;
 global.Tower = Tower = {};
-global.log = log = require('./../lib/log.js');
-require('./../lib/error.js');
 util = require('util');
 var ansi = require('ansi');
 var cursor = ansi(process.stdout);
@@ -100,13 +98,10 @@ getCommand = function() {
     });
 
     // Require all of the package system:
-    //require('./tower-packages/bundler');
     require('./tower-packager/packager');
-    require('./tower-packager/ready');
 
     Tower.Packager.run(function(count) {
-
-        //log(count + ' package(s) have been loaded.');
+        Tower.Packager.require('tower-bundler');
         cursor
             .red()
             .bg.grey()
@@ -141,7 +136,7 @@ getCommand = function() {
              *
              * This will initialize an instance of Tower.watch.
              */
-            Tower.Bundler.start();
+            Tower.Bundler.run();
         });
 
     });

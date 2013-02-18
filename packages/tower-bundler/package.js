@@ -1,3 +1,4 @@
 Tower.Packager.create('tower-bundler')
     .server()
-        .add('index.js');
+        .add('server.js')
+        .deps(['tower-watch', 'tower-ready']);

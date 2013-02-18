@@ -19,6 +19,11 @@ Package.prototype.server = function() {
     return this;
 };
 
+Package.prototype.shared = function() {
+    this.currentLayer = 'shared';
+    return this;
+};
+
 Package.prototype.deps = function(arr) {
     var self = this;
     if(!(arr instanceof Array)) return false;
@@ -118,27 +123,31 @@ Packager.require = function(package, explicitfile) {
         file;
 
     function tryFile(i) {
+
         if(!explicitfile) {
             if(!i) {
                 i = 0;
             }
             file = self._autoload[i];
             if(!file) {
-                throw new Error('Cannot autoload any files within the "' + name + '" package. Tried: ' + this._autoload.join(' '));
+                throw new Error('Cannot autoload any files within the "' + package + '" package. Tried: ' + this._autoload.join(' '));
             }
         } else {
             file = explicitfile;
         }
         var fullPath = path.join(pack.path, file);
-        console.log(fullPath);
         var exists = fs.existsSync(fullPath);
         if(exists) {
+            // Check if the package has dependencies:
+            pack.dependencies.forEach(function (dep) {
+                Packager.require(dep);
+            });
             return require(fullPath);
         } else {
-            if(file) {
+            if(self._autoload.length === i) {
                 throw new Error('Could not load "' + file + '" from the "' + package + '" package.');
             } else {
-                return tryFile(i++);
+                return tryFile(i+1);
             }
         }
     }

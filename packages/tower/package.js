@@ -2,9 +2,9 @@ Tower.Packager.create('tower')
     .server()
         .add('server.js')
         .deps([
-            'server/wonder',
+            'tower-watch',
+            'tower-ready',
             'tower-application',
-            'tower-command',
             'tower-router'
             ])
     .client()
