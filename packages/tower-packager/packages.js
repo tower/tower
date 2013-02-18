@@ -37,9 +37,7 @@
          * @type {Array}
          */
         this._paths = [
-            path.join(__dirname, '..'),
-            path.join(Tower.cwd, 'node_modules')
-        ];
+        path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules')];
 
         this._paths.push(path.join(process.cwd(), 'packages'));
         // XXX
@@ -62,20 +60,33 @@
      * @param  {String} name Package Name
      * @return {Object}      Chainable Object
      */
-    Packages.prototype.require = function(package, file) {
-        var self = this, pack = this.get(package);
+    Packages.prototype.require = function(package, explicitfile) {
+        var self = this,
+            pack = this.get(package),
+            file;
+
         function tryFile(i) {
-            if (!file) {
-                if (!i) { i = 0; }
+            if(!explicitfile) {
+                if(!i) {
+                    i = 0;
+                }
                 file = self._autoload[i];
-                if (!file) {
+                if(!file) {
                     throw new Error('Cannot autoload any files within the "' + name + '" package. Tried: ' + this._autoload.join(' '));
                 }
+            } else {
+                file = explicitfile;
             }
-            try {
-                return (require( path.join(pack._path, file) ));
-            } catch(e) {
-                return tryFile(i++);
+            var fullPath = path.join(pack._path, file);
+            var exists = fs.existsSync(fullPath);
+            if(exists) {
+                return require(fullPath);
+            } else {
+                if(file) {
+                    throw new Error('Could not load "' + file + '" from the "' + package + '" package.');
+                } else {
+                    return tryFile(i++);
+                }
             }
         }
 
@@ -84,7 +95,7 @@
 
     Packages.prototype.run = function(callback) {
         var self = this;
-        this.find(function () {
+        this.find(function() {
             callback(Object.keys(self._packages).length);
         });
     };
@@ -167,7 +178,6 @@
             }
             // Check if we were ready:
             if(ready) {
-                console.log(comp);
                 // Run the callback:
                 cb.apply({});
             }

@@ -96,7 +96,8 @@
     "watchr": "2.1.6",
     "minimatch": "0.2.9",
     "jake": "latest",
-    "nexpect": "latest"
+    "nexpect": "latest",
+    "ansi": "latest"
   },
   "devDependencies": {
   },

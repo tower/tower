@@ -18,7 +18,8 @@ global.Tower = Tower = {};
 global.log = log = require('./../lib/log.js');
 require('./../lib/error.js');
 util = require('util');
-
+var ansi = require('ansi');
+var cursor = ansi(process.stdout);
 
 var commandMap = {
     server: 'tower',
@@ -99,20 +100,26 @@ getCommand = function() {
     });
 
     // Require all of the package system:
-    require('./tower-packages/bundler');
-    require('./tower-packages/package');
-    require('./tower-packages/packages');
-    require('./tower-packages/container');
+    //require('./tower-packages/bundler');
+    require('./tower-packager/packager');
+    require('./tower-packager/ready');
 
-    Tower.Packages.run(function(count) {
-        log(count + ' package(s) have been loaded.');
+    Tower.Packager.run(function(count) {
+
+        //log(count + ' package(s) have been loaded.');
+        cursor
+            .red()
+            .bg.grey()
+            .write(count + ' package(s) have been loaded.')
+            .bg.reset()
+            .write('\n');
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
         // leave the rest of the system up to Tower, except the bundler.
         //
         // We only want to include the main tower package if were starting
         // a full Tower process (server, console, routes, etc...)
-        Tower.Packages.require(getCommand());
+        Tower.Packager.require(getCommand());
         Tower.ready('environment.development.started');
         /**
          * This callback will run when the development environment has successfully started.
@@ -134,7 +141,7 @@ getCommand = function() {
              *
              * This will initialize an instance of Tower.watch.
              */
-            Bundler.start();
+            Tower.Bundler.start();
         });
 
     });

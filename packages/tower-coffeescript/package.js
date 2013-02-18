@@ -1,4 +1,4 @@
-Tower.Package.register(function(){
+/**Tower.Package.register(function(){
     var coffee = require('coffee-script');
     var fs     = require('fs');
 
@@ -31,4 +31,4 @@ Tower.Package.register(function(){
         });
     });
 
-});
+});**/

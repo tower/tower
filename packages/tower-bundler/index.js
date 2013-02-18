@@ -34,7 +34,7 @@
     Bundler.prototype.build = function(package) {
         var self = this;
         // Fetch the package's data.
-        var pkg = Packages.get(package);
+        var pkg = Tower.Packages.get(package);
 
         this.checkOutputValidity();
 
@@ -102,7 +102,7 @@
         var self = this;
 
         var _watchPackages = [];
-        Packages._paths.forEach(function(i){
+        Tower.Packages._paths.forEach(function(i){
             _watchPackages.push(path.join(i, '**', '*'));
         });
 
@@ -139,9 +139,9 @@
 
     Bundler.prototype.fileChanged = function(package, filepath) {
         var self = this;
-        var pkg = Packages.get(package);
-        for(var i in Packages._extensions) {
-            var val = Packages._extensions[i];
+        var pkg = Tower.Packages.get(package);
+        for(var i in Tower.Packages._extensions) {
+            var val = Tower.Packages._extensions[i];
             /**
              * If the extension matches the registered ones.
              */
@@ -158,6 +158,19 @@
                 });
             }
         }
+    };
+
+    Bundler.prototype.config = function() {
+
+        return this;
+    };
+
+    /**
+     * Initialize the bundler.
+     * @return {[type]} [description]
+     */
+    Bundler.prototype.create = function() {
+        return this;
     };
 
     Tower.Bundler = new Bundler();

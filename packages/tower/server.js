@@ -2,17 +2,10 @@ var fs, path;
 
 path = require('path');
 
-// Include the Tower.ready functionality.
-require('./shared/ready');
-// Include the Tower.watch functionality. This will basically
-// be the building blocks of all the implemented watchers inside
-// Tower. The bundler will use this extensively.
-require('./server/watch')
-
 // Require Tower.Application;
 Tower.Packages.require('tower-application');
 Tower.Packages.require('tower-router');
-Tower.Packages.require('tower-router');
+Tower.Packages.require('tower-model');
 
 // Define some autoloading settings:
 Tower._.extend(Tower, {

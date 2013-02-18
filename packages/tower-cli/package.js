@@ -1,3 +1,3 @@
-Tower.Packager.create('tower-model')
+Tower.Packager.create('tower-cli')
     .server()
         .add('server.js');
