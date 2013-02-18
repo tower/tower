@@ -5,7 +5,7 @@ var app = Tower.create()
   , route = app.route
   , service = app.service
   , store = app.store
-  , bundle = app.bundle;
+  , bundler = app.bundler;
 
 route('index', { path: '/' });
 route('users.index', { path: '/users' });

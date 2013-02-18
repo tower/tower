@@ -6,8 +6,10 @@ var glob = require("glob-whatev"),
 function Package(packageName) {
     this.name = packageName;
     this.version = '';
+    this.dependencies = [];
     this.serverFiles = [];
     this.clientFiles = [];
+    this.path        = Packager._currentPath;
     this.currentLayer = null;
     Packager.add(this.name, this);
 }
@@ -17,18 +19,34 @@ Package.prototype.server = function() {
     return this;
 };
 
+Package.prototype.deps = function(arr) {
+    var self = this;
+    if(!(arr instanceof Array)) return false;
+
+    arr.forEach(function(dep) {
+        self.dependencies.push(dep);
+    });
+
+    return this;
+};
+
+Package.prototype.dep = function(dep) {
+    this.dependencies.push(dep);
+    return this;
+};
+
 Package.prototype.client = function() {
     this.currentLayer = 'client';
     return this;
 };
 
 Package.prototype.add = function(file) {
-    switch (this.currentLayer) {
-        case "server":
-            this.serverFiles.push(file);
+    switch(this.currentLayer) {
+    case "server":
+        this.serverFiles.push(file);
         break;
-        case "client":
-            this.clientFiles.push(file);
+    case "client":
+        this.clientFiles.push(file);
         break;
     }
     return this;
@@ -38,10 +56,7 @@ Packager = {
     _autoload: ['server.js', 'index.js'],
     _packages: {},
     _paths: [
-        path.join(__dirname, '..'),
-        path.join(Tower.cwd, 'node_modules'),
-        path.join(process.cwd(), 'packages')
-    ],
+    path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules'), path.join(process.cwd(), 'packages')],
     _currentPath: null,
     get: function(name) {
         if(this._packages[name]) return this._packages[name]
@@ -114,7 +129,8 @@ Packager.require = function(package, explicitfile) {
         } else {
             file = explicitfile;
         }
-        var fullPath = path.join(pack._path, file);
+        var fullPath = path.join(pack.path, file);
+        console.log(fullPath);
         var exists = fs.existsSync(fullPath);
         if(exists) {
             return require(fullPath);
