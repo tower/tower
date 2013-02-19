@@ -4,13 +4,16 @@ var glob = require("glob-whatev"),
     _ = require("underscore");
 
 function Package(packageName) {
-    this.name = packageName;
-    this.version = '';
-    this.dependencies = [];
-    this.serverFiles = [];
-    this.clientFiles = [];
-    this.path = Packager._currentPath;
-    this.currentLayer = null;
+
+    this.name           = packageName;
+    this.version        = '';
+    this.dependencies   = [];
+    this.tests          = [];
+    this.serverFiles    = [];
+    this.clientFiles    = [];
+    this.path           = Packager._currentPath;
+    this.currentLayer   = null;
+
     Packager.add(this.name, this);
 }
 
@@ -34,6 +37,17 @@ Package.prototype.deps = function(arr) {
 
     return this;
 };
+
+Package.prototype.test = function(test) {
+    this.tests.push(test);
+};
+
+Package.prototype.tests = function(tests) {
+    var self = this;
+    test.forEach(function(t) {
+        self.test(t);
+    });
+}
 
 Package.prototype.dep = function(dep) {
     this.dependencies.push(dep);
