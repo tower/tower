@@ -97,6 +97,10 @@ getCommand = function() {
         }
     });
 
+    Tower.expose = function(key, value) {
+
+    };
+
     // Require all of the package system:
     require('./tower-packager/packager');
 

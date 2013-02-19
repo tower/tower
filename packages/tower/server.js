@@ -2,11 +2,6 @@ var fs, path;
 
 path = require('path');
 
-// Require Tower.Application;
-Tower.Packager.require('tower-application');
-Tower.Packager.require('tower-router');
-Tower.Packager.require('tower-model');
-
 // Define some autoloading settings:
 Tower._.extend(Tower, {
   // Autoloading for a single file application:

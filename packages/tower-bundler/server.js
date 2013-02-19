@@ -5,6 +5,12 @@ var fs = require('fs'),
 
 Config = {
     _prev: [],
+    _platform: '',
+    _getPrev: function(i) {
+        if (i) {
+            return;
+        }
+    },
     _compiler: {
         js: {
             type: 'loose',
@@ -32,8 +38,18 @@ Config = {
     }
 };
 
+Object.defineProperty(Config, "compiler", {
+    get: function() {
+        Config._prev.push('compiler');
+        return Config;
+    },
+    configurable: true
+});
+
 Config.js = function() {
     this._prev.push('js');
+    this._platform = 'js';
+
     return this;
 };
 
@@ -218,7 +234,7 @@ Bundler.prototype.fileChanged = function(package, filepath) {
 };
 
 Bundler.prototype.config = function(callback) {
-    callback.apply(Config);
+    callback.apply(Config, [Config]);
 };
 
 /**

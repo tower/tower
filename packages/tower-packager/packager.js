@@ -9,7 +9,7 @@ function Package(packageName) {
     this.dependencies = [];
     this.serverFiles = [];
     this.clientFiles = [];
-    this.path        = Packager._currentPath;
+    this.path = Packager._currentPath;
     this.currentLayer = null;
     Packager.add(this.name, this);
 }
@@ -115,13 +115,16 @@ Packager.find = function(callback) {
         }
     });
 
-
 };
 
 Packager.require = function(package, explicitfile) {
     var self = this,
         pack = this.get(package),
         file;
+
+    if(this._cache[package]) {
+        return true;
+    }
 
     function tryFile(i) {
 
@@ -140,7 +143,7 @@ Packager.require = function(package, explicitfile) {
         var exists = fs.existsSync(fullPath);
         if(exists) {
             // Check if the package has dependencies:
-            pack.dependencies.forEach(function (dep) {
+            pack.dependencies.forEach(function(dep) {
                 Packager.require(dep);
             });
             self._cache[package] = {
@@ -153,7 +156,7 @@ Packager.require = function(package, explicitfile) {
             if(self._autoload.length === i) {
                 throw new Error('Could not load "' + file + '" from the "' + package + '" package.');
             } else {
-                return tryFile(i+1);
+                return tryFile(i + 1);
             }
         }
     }
