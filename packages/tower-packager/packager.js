@@ -5,14 +5,15 @@ var glob = require("glob-whatev"),
 
 function Package(packageName) {
 
-    this.name           = packageName;
-    this.version        = '';
-    this.dependencies   = [];
-    this.tests          = [];
-    this.serverFiles    = [];
-    this.clientFiles    = [];
-    this.path           = Packager._currentPath;
-    this.currentLayer   = null;
+    this.name = packageName;
+    this.version = '';
+    this.dependencies = [];
+    this.tests = [];
+    this.serverFiles = [];
+    this._namespace = null;
+    this.clientFiles = [];
+    this.path = Packager._currentPath;
+    this.currentLayer = null;
 
     Packager.add(this.name, this);
 }
@@ -40,6 +41,17 @@ Package.prototype.deps = function(arr) {
 
 Package.prototype.test = function(test) {
     this.tests.push(test);
+    return this;
+};
+
+Package.prototype.testing = function() {
+    this.currentLayer = 'testing';
+    return this;
+};
+
+Package.prototype.namespace = Package.prototype.ns = function(ns) {
+    this._namespace = ns;
+    return this;
 };
 
 Package.prototype.tests = function(tests) {
@@ -47,6 +59,7 @@ Package.prototype.tests = function(tests) {
     test.forEach(function(t) {
         self.test(t);
     });
+    return this;
 }
 
 Package.prototype.dep = function(dep) {
@@ -78,6 +91,44 @@ Packager = {
     path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules'), path.join(process.cwd(), 'packages')],
     _cache: {},
     _currentPath: null,
+    matchFilename: function(filename) {
+        var self = this;
+        var n = Object.keys(this._packages).length;
+        var tries = 0;
+        function tryR(_path, strip) {
+            if (tries > 4) {
+                // Cannot find it;
+                return true;
+            }
+            tries++;
+            // Strip the folder:
+            if (strip) {
+                var regex = new RegExp(_.regexpEscape(path.sep) + '([A-Za-z0-9-]+ ' + _.regexpEscape(path.sep) +')$');
+                _path = _path.replace(regex, '');
+            }
+
+            for(var i = 0; i < n; i++) {
+                var k = Object.keys(self._packages)[i];
+                if(self._packages[k].path === _path) {
+                    return self.get(self._packages[k].name);
+                }
+            }
+
+            return tryR(_path, true);
+        }
+
+        if(filename.match(/\.js$/)) {
+            // Strip it off.
+            var regex = new RegExp(_.regexpEscape(path.sep) + '([A-Za-z0-9-]+\.js|coffee)$');
+            filename = filename.replace(regex, '');
+            if(filename.charAt(filename.length) !== path.sep) {
+                filename += path.sep;
+            }
+        }
+
+
+        return tryR(filename);
+    },
     get: function(name) {
         if(this._packages[name]) return this._packages[name]
         else throw Error("Package '" + name + "' was not found.");

@@ -1,77 +1,68 @@
 var fs = require('fs'),
-    path = require('path'),
-    watchr = require('watchr'),
-    wrench = require('wrench');
+    path = require('path');
 
 Config = {
     _prev: [],
     _platform: '',
     _getPrev: function(i) {
-        if (i) {
-            return;
+        if(i) {
+            return this._prev[(this._prev.length - 1) - i];
+        } else {
+            return this._prev[(this._prev.length - 1)];
         }
     },
-    _compiler: {
-        js: {
-            type: 'loose',
-            // Individual Settings;
-            minify: false,
-            compress: false,
-            concatenate: false,
-            // If we compile everything down to single
-            // files, we will put package info comments
-            // where each package lies in the big file
-            tagPackages: true
-        },
-
-        css: {
-            type: 'loose',
-            // Individual Settings;
-            minify: false,
-            compress: false,
-            concatenate: false,
-            // If we compile everything down to single
-            // files, we will put package info comments
-            // where each package lies in the big file
-            tagPackages: true
-        }
-    }
+    _settings: {}
 };
 
-Object.defineProperty(Config, "compiler", {
-    get: function() {
-        Config._prev.push('compiler');
-        return Config;
-    },
-    configurable: true
-});
+Config.get = function() {
+    var args = arguments;
+    var s    = this._settings;
+    if (args[0] instanceof Array) {
+        args = args[0];
+    }
+    var prev = (s[args[0]]) ? s[args[0]] : false;
+    var n = args.length;
+    if (n === 1) return prev;
+    if (prev === false) return;
+    for(var i = 1; i < n; i++) {
+        prev = prev[args[i]];
+    }
+
+    return prev;
+}
 
 Config.js = function() {
     this._prev.push('js');
     this._platform = 'js';
-
+    if (!this._settings['js']) {
+        this._settings['js'] = {};
+    }
     return this;
 };
 
 Config.css = function() {
     this._prev.push('css');
+    this._platform = 'css';
+    if (!this._settings['css']) {
+        this._settings['css'] = {};
+    }
     return this;
 };
 
 Config.compiler = function() {
     this._prev.push('compiler');
+    if (!this._settings['js']) {
+        this._settings['js'] = {};
+    }
     return this;
 };
 
 Config.type = function(type) {
     this._prev.push('type');
+    var prev = this._prev[this._prev.length - 3];
     // Go two steps back:
-    if (this._prev[this._prev.length - 3]) {
-        if (this._compiler[this._prev[this._prev.length - 3]]) {
-            this._compiler[this._prev[this._prev.length - 3]].type = type;
-        } else {
-            throw new Error('There was a problem with the Bundler\'s configuration');
-        }
+    if(prev && this._compiler[prev]) {
+        this._compiler[prev].type = type;
     } else {
         throw new Error('The current bundler configuration is has incorrect syntax. Make sure you\'re using each method in the correct order.');
     }
@@ -249,4 +240,4 @@ Bundler.run = function() {
 
 };
 
-Tower.Bundler = Bundler;
+Tower.export(Bundler);

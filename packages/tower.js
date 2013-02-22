@@ -13,112 +13,141 @@
  * bit of modularity amoung packages.
  */
 require('harmony-reflect');
-var Tower, util, log, getCommand;
-global.Tower = Tower = {};
-util = require('util');
-var ansi = require('ansi');
-var cursor = ansi(process.stdout);
-
-var commandMap = {
-    server: 'tower',
-    new: 'tower-generator',
-    install: 'tower-install',
-    help: 'tower-help'
+var util, log, getCommand, App, self, path, incomingOptions, _;
+util = require('util'), _ = require('underscore'), incomingOptions = JSON.parse(process.argv[2]), path = require('path');
+/**
+ * A string helper method to capitalize the first letter
+ * in a word.
+ * @return {String} Converted String.
+ */
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
+/**
+ * A helper method that escapes regex characters in a string.
+ *
+ * @param  {String} string Original String
+ * @return {String}        Converted/Escaped String
+ */
+_.regexpEscape = function(string) {
+    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
 
-getCommand = function() {
-        var cmd = Tower.command.get();
-        if(commandMap[cmd]) {
-            return commandMap[cmd];
-        } else {
-            //throw Error("Command doesn't exist!", 'INVALIDCOMMAND');
-            throw new Tower.Error('Invalid Command!');
-            //throw e;
-        }
-    };
+String.prototype.replacePathSep = function() {
+    return this.replace(new RegExp('\\|\/', path.sep));
+};
+
+global._ = _;
 
 /**
  * We need to include the main package classes which will expose a few
  * global variables.
  */
 (function() {
-    var App, self, path, incomingOptions;
-
-    incomingOptions = JSON.parse(process.argv[2]);
-    path = require('path');
-    Tower._ = require('underscore');
     /**
-     * A string helper method to capitalize the first letter
-     * in a word.
-     * @return {String} Converted String.
+     * Tower Constructor
      */
-    String.prototype.capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    };
-    /**
-     * A helper method that escapes regex characters in a string.
-     *
-     * @param  {String} string Original String
-     * @return {String}        Converted/Escaped String
-     */
-    Tower._.regexpEscape = function(string) {
-        return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    };
 
-    String.prototype.replacePathSep = function() {
-        return this.replace(new RegExp('\\|\/', path.sep));
-    };
-
-    /**
-     * Create a global Tower object. We are only going to use
-     * a traditional JavaScript object instead of an Ember Namespace.
-     *
-     * 1) We don't want to load Ember right away.
-     *
-     * @type {[type]}
-     */
-    Tower._.extend(global.Tower, {
-        App: {
-            directoryStyle: 'default',
-            files: []
-        },
-        create: null, // Redefined later
-        path: incomingOptions.dirname,
-        env: incomingOptions.env,
-        port: incomingOptions.port,
-        cwd: process.cwd(),
-        isServer: true,
-        isClient: false,
-        command: {
+    function TowerClass() {
+        this.App = {};
+        this.container = {};
+        this._namespaces = {};
+        this.path = incomingOptions.dirname;
+        this.env = incomingOptions.env;
+        this.port = incomingOptions.port;
+        this.cwd = process.cwd();
+        this.isServer = true;
+        this.isClient = false;
+        this.command = {
             argv: incomingOptions.commandArgs,
             get: function() {
                 return incomingOptions.command;
             }
+        };
+    }
+
+    TowerClass.prototype.export = function(key, value, options) {
+        // Get the package information.
+        var orig = Error.prepareStackTrace;
+        Error.prepareStackTrace = function(_, stack) {
+            return stack;
+        };
+        var err = new Error;
+        Error.captureStackTrace(err, arguments.callee);
+        var stack = err.stack;
+        Error.prepareStackTrace = orig;
+        var filename = stack[1].receiver.id;
+        // Match the filename with the package:
+        var package = Tower.Packager.matchFilename(filename);
+        var base = false;
+        if(this[package._namespace] == null) {
+            Object.defineProperty(this, package._namespace, {
+                __proto__: null,
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: (function() {
+                    if(!value && !options) {
+                        options = value, value = key;
+                        base = true;
+                        return value;
+                    }
+                })()
+            });
         }
-    });
 
-    Tower.expose = function(key, value) {
+        base = true;
+        if(!options) options = {};
 
+        if(!base) {
+            Object.defineProperty(this[package._namespace], key, {
+                __proto__: options.proto || null,
+                enumerable: options.enumerable || true,
+                configurable: options.configurable || true,
+                writable: options.writable || true,
+                value: value
+            });
+        }
     };
+
+    TowerClass.create = function() {
+        return new this();
+    };
+
+    var commandMap = {
+        server: 'tower',
+        new: 'tower-generator',
+        install: 'tower-install',
+        help: 'tower-help'
+    };
+
+    getCommand = function() {
+        var cmd = Tower.command.get();
+        if(commandMap[cmd]) {
+            return commandMap[cmd];
+        } else {
+            //throw Error("Command doesn't exist!", 'INVALIDCOMMAND');
+            throw new Error('Invalid Command!');
+            //throw e;
+        }
+    };
+
+    var Tower = global.Tower = TowerClass.create();
 
     // Require all of the package system:
     require('./tower-packager/packager');
 
+
+
     Tower.Packager.run(function(count) {
         Tower.Packager.require('tower-bundler');
-        cursor
-            .red()
-            .bg.grey()
-            .write(count + ' package(s) have been loaded.')
-            .bg.reset()
-            .write('\n');
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
         // leave the rest of the system up to Tower, except the bundler.
         //
         // We only want to include the main tower package if were starting
         // a full Tower process (server, console, routes, etc...)
-        Tower.Packager.require(getCommand());
+        //Tower.Packager.require(getCommand());
         Tower.ready('environment.development.started');
         /**
          * This callback will run when the development environment has successfully started.

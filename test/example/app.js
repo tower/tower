@@ -18,9 +18,9 @@ route('index')
   .render('json');
 
 bundler.config(function() {
-  this.compiler
-    .js('loose', {
-      otherSettings: true
-    })
-    .css('loose');
+  this
+    .js()
+      .compiler('type', 'loose')
+    .css()
+      .compiler('type', 'loose');
 });
