@@ -1,4 +1,4 @@
-# Tower.js <img src="http://cloud.github.com/downloads/viatropos/tower/tower.png"/>
+[![tower.js logo](http://cl.ly/image/3A3q2x2j1s36/tower_margins.png)](http://towerjs.org/)
 
 > Full Stack Web Framework for Node.js and the Browser.
 
@@ -653,7 +653,6 @@ If you don’t have `phantomjs`, you can install it with:
 ```
 brew install phantomjs
 ```
-
 ## License
 
 (The MIT License)
@@ -665,3 +664,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+### Logo by [Denis Sazhin](http://dribbble.com/pachkun)
