@@ -13,8 +13,8 @@
  * bit of modularity amoung packages.
  */
 require('harmony-reflect');
-var util, log, getCommand, App, self, path, incomingOptions, _;
-util = require('util'), _ = require('underscore'), incomingOptions = JSON.parse(process.argv[2]), path = require('path');
+var util, log, getCommand, App, self, path, incomingOptions, _, fs;
+util = require('util'), _ = require('underscore'), incomingOptions = JSON.parse(process.argv[2]), path = require('path'), fs = require('fs');
 /**
  * A string helper method to capitalize the first letter
  * in a word.
@@ -49,15 +49,20 @@ global._ = _;
      */
 
     function TowerClass() {
-        this.App = {};
+        this.App = {
+            files: []
+        };
         this.container = {};
         this._namespaces = {};
         this.path = incomingOptions.dirname;
         this.env = incomingOptions.env;
         this.port = incomingOptions.port;
+        this.version = JSON.parse(fs.readFileSync('../../package.json')).version;
         this.cwd = process.cwd();
         this.isServer = true;
         this.isClient = false;
+        this.autoload = ['app.js', 'server.js', 'index.js'];
+
         this.command = {
             argv: incomingOptions.commandArgs,
             get: function() {
@@ -126,20 +131,23 @@ global._ = _;
         if(commandMap[cmd]) {
             return commandMap[cmd];
         } else {
-            //throw Error("Command doesn't exist!", 'INVALIDCOMMAND');
             throw new Error('Invalid Command!');
-            //throw e;
         }
     };
 
     var Tower = global.Tower = TowerClass.create();
 
+    // Check if the user specified an argument:
+    if (Tower.command.argv[0]) {
+      Tower.App.directoryStyle = 'single';
+      Tower.App.files.push(Tower.command.argv[0]);
+    }
+
     // Require all of the package system:
     require('./tower-packager/packager');
 
-
-
     Tower.Packager.run(function(count) {
+        // Include the tower-bundler package that will be the asset pipeline.
         Tower.Packager.require('tower-bundler');
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
@@ -147,8 +155,11 @@ global._ = _;
         //
         // We only want to include the main tower package if were starting
         // a full Tower process (server, console, routes, etc...)
-        //Tower.Packager.require(getCommand());
-        Tower.ready('environment.development.started');
+        Tower.Packager.require(getCommand());
+        // Initialize the environment:
+        if (Tower.env == 'development') {
+            Tower.ready('environment.development.started');
+        }
         /**
          * This callback will run when the development environment has successfully started.
          * This means that the server is running and the framework is done initializing.

@@ -13,6 +13,8 @@ function Package(packageName) {
     this._namespace = null;
     this.clientFiles = [];
     this.path = Packager._currentPath;
+    this.autoload = [];
+    this.isApp = false;
     this.currentLayer = null;
 
     Packager.add(this.name, this);
@@ -72,7 +74,19 @@ Package.prototype.client = function() {
     return this;
 };
 
-Package.prototype.add = function(file) {
+Package.prototype.app = function() {
+    this.isApp = true;
+    if (Packager._app) {
+        return new Error("There can only be one application package loaded at a time.");
+    }
+    Packager._app = this.name;
+    return this;
+};
+
+Package.prototype.add = function(file, init) {
+    if (init) {
+        this.autoload.push(file);
+    }
     switch(this.currentLayer) {
     case "server":
         this.serverFiles.push(file);
@@ -85,12 +99,20 @@ Package.prototype.add = function(file) {
 };
 
 Packager = {
+    _app: null,
     _autoload: ['server.js', 'index.js'],
     _packages: {},
     _paths: [
-    path.join(__dirname, '..'), path.join(Tower.cwd, 'node_modules'), path.join(process.cwd(), 'packages')],
+        path.join(__dirname, '..'),
+        path.join(Tower.cwd, 'node_modules'),
+        path.join(process.cwd(), 'packages'),
+        path.join(Tower.cwd)
+    ],
     _cache: {},
     _currentPath: null,
+    findApp: function() {
+        return this.get(this._app);
+    },
     matchFilename: function(filename) {
         var self = this;
         var n = Object.keys(this._packages).length;
@@ -165,6 +187,11 @@ Packager.find = function(callback) {
         dir.forEach(function(_dir) {
             if(_dir.match("tower-packages")) return;
 
+            // Check for a top-level `package.js`
+            if(_dir === 'package.js' && fs.existsSync(path.join(p, _dir))) {
+                self.load(path.join(p, _dir));
+            }
+
             if(fs.existsSync(path.join(p, _dir, 'package.js'))) {
                 self.load(path.join(p, _dir, 'package.js'));
             }
@@ -190,6 +217,8 @@ Packager.require = function(package, explicitfile) {
     if(this._cache[package]) {
         return true;
     }
+
+    self._autoload = self._autoload.concat(pack.autoload);
 
     function tryFile(i) {
 

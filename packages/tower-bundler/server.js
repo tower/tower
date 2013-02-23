@@ -16,14 +16,14 @@ Config = {
 
 Config.get = function() {
     var args = arguments;
-    var s    = this._settings;
-    if (args[0] instanceof Array) {
+    var s = this._settings;
+    if(args[0] instanceof Array) {
         args = args[0];
     }
     var prev = (s[args[0]]) ? s[args[0]] : false;
     var n = args.length;
-    if (n === 1) return prev;
-    if (prev === false) return;
+    if(n === 1) return prev;
+    if(prev === false) return;
     for(var i = 1; i < n; i++) {
         prev = prev[args[i]];
     }
@@ -31,10 +31,15 @@ Config.get = function() {
     return prev;
 }
 
+Config.path = function(p) {
+    this._settings[this._platform].path = p;
+    return this;
+};
+
 Config.js = function() {
     this._prev.push('js');
     this._platform = 'js';
-    if (!this._settings['js']) {
+    if(!this._settings['js']) {
         this._settings['js'] = {};
     }
     return this;
@@ -43,7 +48,7 @@ Config.js = function() {
 Config.css = function() {
     this._prev.push('css');
     this._platform = 'css';
-    if (!this._settings['css']) {
+    if(!this._settings['css']) {
         this._settings['css'] = {};
     }
     return this;
@@ -51,7 +56,7 @@ Config.css = function() {
 
 Config.compiler = function() {
     this._prev.push('compiler');
-    if (!this._settings['js']) {
+    if(!this._settings['js']) {
         this._settings['js'] = {};
     }
     return this;
@@ -81,6 +86,8 @@ function Bundler() {
     this.extensions = {};
 }
 
+Bundler._instance = null;
+
 Bundler.prototype.compile = function(options) {
     options.path = options.path + '.' + options.extension;
     fs.writeFileSync(options.path, options.data.toString('utf-8'));
@@ -98,7 +105,7 @@ Bundler.prototype.registerExtension = function(type, callback) {
 Bundler.prototype.build = function(package) {
     var self = this;
     // Fetch the package's data.
-    var pkg = Tower.Packages.get(package);
+    var pkg = Tower.Packager.get(package);
 
     this.checkOutputValidity();
 
@@ -166,12 +173,19 @@ Bundler.prototype.watch = function() {
     var self = this;
 
     var _watchPackages = [];
-    Tower.Packages._paths.forEach(function(i) {
+    Tower.Packager._paths.forEach(function(i) {
         _watchPackages.push(path.join(i, '**', '*'));
     });
 
-    Tower.watch(_watchPackages).on('all', function(event, files) {
-        log("File changed. Reloading...", ["[1m", "[30m"]);
+    function stripFilename(filename) {
+        return filename.replace(new RegExp(Tower.path), '');
+    }
+
+    Tower.watch(_watchPackages).on('all', function(event, file) {
+        var pkg = Tower.Packager.matchFilename(file);
+
+        console.log("* File [" + stripFilename(file) + "] has [" + event + "] in [" + pkg.name + "]");
+
     }).on('error', function(error) {
         console.log("Error", error);
     }).start();
@@ -200,15 +214,13 @@ Bundler.prototype.watch = function() {
             }
         });**/
 };
-
+/**
 Bundler.prototype.fileChanged = function(package, filepath) {
     var self = this;
     var pkg = Tower.Packages.get(package);
     for(var i in Tower.Packages._extensions) {
         var val = Tower.Packages._extensions[i];
-        /**
-         * If the extension matches the registered ones.
-         */
+
         if(filepath.match(new RegExp("\." + i + "$"))) {
             // Call the callback;
             pkg._files.forEach(function(file) {
@@ -222,7 +234,7 @@ Bundler.prototype.fileChanged = function(package, filepath) {
             });
         }
     }
-};
+};**/
 
 Bundler.prototype.config = function(callback) {
     callback.apply(Config, [Config]);
@@ -232,12 +244,60 @@ Bundler.prototype.config = function(callback) {
  * Initialize the bundler.
  * @return {[type]} [description]
  */
-Bundler.prototype.create = function() {
-    return this;
+Bundler.create = function() {
+    this._instance = new Bundler();
+    return this._instance;
 };
 
 Bundler.run = function() {
+    console.log("\nBundler Running... \n    Env: -> " + Tower.env);
+    if(Tower.env == 'development') {
+        // Build before we watch:
+        var p = path.join(Tower.cwd, '.tower');
+        if (!fs.existsSync(p)) {
+            fs.mkdirSync(p);
+        }
 
+        // The .tmp directory will house the intermediate compilation step for
+        // all the javascript files. If the compilation level is high (CommonJS) then
+        // we will concatenate each js file and copy them here (mimicing the directory structure).
+        //
+        // This allows us to only minify and concatenate for the file that has changed.
+        //
+        // This build solution has 2 levels involved:
+        //  LEVEL 1: -> Concatenate and Minify each client-side js file and copy the directory
+        //              structure over to .tower/.tmp
+        //  LEVEL 2: -> Merge all the files into a single .js file.
+        //
+        // There will be a handlebar helper like "{{includePackageAssets}}" or "{{packages javascript}}"
+        // and "{{packages css}}". This helper will check what environment were in. If were in development
+        // it'll then check the compilation level/type we set. If were on loose, then we'll fetch the
+        // cache.json file and insert a script tag for each resource; otherwise, we'll check the config
+        // file and see what file they specified to be compiled to and include that.
+        var temp = path.join(p, '.tmp');
+        if (!fs.existsSync(temp)) {
+            fs.mkdirSync(temp);
+        }
+
+        var file = path.join(p, 'cache.json');
+        if (!fs.existsSync(file)) {
+            // cache.json is built for an extra layer of speed.
+            // this is only used in development. In production, you would only have a single
+            // javascript file that would automatically be included in the page.
+            // cache.json is used in development for inserting all the `script` tags for each and
+            // every javascript file.
+            // Depending on the compiling level, this file may or may not be used as much, if at all.
+            fs.writeFileSync(file, JSON.stringify({
+                resources: [
+                    {type: 'js', group: []},
+                    {type: 'css', group: []}
+                ]
+            }), 'utf-8');
+        }
+
+        //this._instance.build();
+        this._instance.watch();
+    }
 };
 
 Tower.export(Bundler);

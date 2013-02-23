@@ -21,6 +21,8 @@ bundler.config(function() {
   this
     .js()
       .compiler('type', 'loose')
+      .path('public/javascript')
     .css()
-      .compiler('type', 'loose');
+      .compiler('type', 'loose')
+      .path('public/styles');
 });
