@@ -221,11 +221,11 @@ Tower.ControllerResourceful =
     if @hasParent
       @findParent (error, parent) =>
         if error || !parent
-          callbackWithScope error, Tower.constant(@resourceType)
+          callbackWithScope error, Tower.constantNew(@resourceType)
         else
           callbackWithScope(error, parent.get(@collectionName))
     else
-      callbackWithScope null, Tower.constant(@resourceType)
+      callbackWithScope null, Tower.constantNew(@resourceType)
 
     undefined
 
