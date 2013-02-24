@@ -5,7 +5,7 @@ class Tower.ModelValidatorSet extends Tower.ModelValidator
     value     = record.get(attribute)
     testValue = @getValue(record)
 
-    success = switch @name
+    success = testValue is null or switch @name
       when 'in'
         _.indexOf(testValue, value) > -1
       when 'notIn'
