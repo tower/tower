@@ -250,6 +250,7 @@ Bundler.create = function() {
 };
 
 Bundler.run = function() {
+    if (!this._instance) return false;
     console.log("\nBundler Running... \n    Env: -> " + Tower.env);
     if(Tower.env == 'development') {
         // Build before we watch:

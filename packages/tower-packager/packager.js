@@ -108,6 +108,7 @@ Packager = {
         path.join(process.cwd(), 'packages'),
         path.join(Tower.cwd)
     ],
+    status: null,
     _cache: {},
     _currentPath: null,
     findApp: function() {
@@ -152,6 +153,13 @@ Packager = {
         return tryR(filename);
     },
     get: function(name) {
+        if (name instanceof Array) {
+            var obj = [];
+            name.forEach(function (package) {
+                obj.push(this._packages[name]);
+            });
+            return;
+        }
         if(this._packages[name]) return this._packages[name]
         else throw Error("Package '" + name + "' was not found.");
     }
@@ -178,10 +186,16 @@ Packager.load = function(file) {
     require(file);
 };
 
+Packager.all = function() {
+    return this._packages;
+};
+
 Packager.find = function(callback) {
     var self = this;
     var done = false;
     this._paths.forEach(function(p, i) {
+        if (!fs.existsSync(p)) return;
+
         var dir = fs.readdirSync(p);
 
         dir.forEach(function(_dir) {
@@ -207,6 +221,10 @@ Packager.find = function(callback) {
         }
     });
 
+};
+
+Packager.tests = function (criteria) {
+    console.log("Running tests.", criteria);
 };
 
 Packager.require = function(package, explicitfile) {

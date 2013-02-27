@@ -47,7 +47,6 @@ global._ = _;
     /**
      * Tower Constructor
      */
-
     function TowerClass() {
         this.App = {
             files: []

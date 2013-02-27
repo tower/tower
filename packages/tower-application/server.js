@@ -12,4 +12,4 @@ Tower.Application.prototype.model = function(model) {
 
 Tower.Application.prototype.bundler = function() {
     return Tower.Bundler.create();
-}()
+}();
