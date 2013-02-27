@@ -233,7 +233,7 @@ exports.publish = function() {
 
 exports.test = exports.tests = function(argv) {
   var program = command();
-
+  var Criteria = require('./server/criteria');
   program.usage('[command] [options]')
     .on('--help', function() {
     console.log([
@@ -243,106 +243,8 @@ exports.test = exports.tests = function(argv) {
   program.parse(argv);
 
   program.run = function() {
-
-    var cmds = {
-      'include': 'i',
-      'exclude': 'e'
-    };
-
-    var criteria = [
-    // {lookup: 'include', criteria: [ ['filename', /regex/], ['group', 'stringpattern'], ['test', /(hello)/] ]},
-    {
-      lookup: 'exclude',
-      packages: [],
-      criterias: []
-    }, {
-      lookup: 'include',
-      packages: [],
-      criterias: []
-    }];
-    var packages = Tower.Packager.all();
-    var packageNames = [];
-    // Get all the loaded packages;
-    for (var key in packages) {
-      if (packages.hasOwnProperty(key)) {
-        packageNames.push(packages[key].name);
-      }
-    }
-
-    console.log(packageNames);
-    // Run all the tests;
-
-    function Criteria() {
-      this.include = [];
-      this.exclude = [];
-      this.packages = [];
-      this.files = [];
-    }
-
-    Criteria.getPackages = function() {
-      // If we haven't specified an include criteria then we start with
-      // all of them.
-      if (this.include.length === 0) {
-        this.packages = packageNames;
-      } else {
-        this.packages = this.include;
-      }
-
-      this.exclude.forEach(function (arr) {
-        // arr === ['search', 'value']
-        // e.g === ['package', 'string']
-        // e.g === ['package', /regex/]
-        switch (arr[0]) {
-          case "package":
-
-          break;
-          case "filename":
-            // Get all the packages included, and get all the file names:
-            console.log(Tower.Packager.get(this.packages));
-          break;
-          case "group":
-            throw new Error("Not yet implemented.");
-          break;
-          case "test":
-            throw new Error("Not yet implemented.");
-          break;
-
-        }
-      });
-
-    }
-
-    // Run all the tests if they specify all.
-    if ((argv && argv[0] === "all")) {
-      var currentCriteria = new Criteria(argv);
-
-      // Run all the tests;
-      Tower.Packager.tests(currentCriteria);
-
-      return;
-    }
-
-    // Run only the application's tests.
-    if (!argv[0]) {
-
-    }
-
-    // Loop through the different arguments;
-    argv.forEach(function(arg) {
-      // Now, let's parse by semi-colons:
-      var semiColon = arg.split(',');
-      if (semiColon && semiColon[0]) {
-        var part = semiColon[0];
-
-        if (typeof cmds[part] == "undefined") {
-          console.log("Invalid command arguments.");
-          process.exit();
-        }
-
-      }
-    });
-
-
+    var TestCommand = require('./server/testCommand');
+    TestCommand.create(argv);
   }
 
   return program;
