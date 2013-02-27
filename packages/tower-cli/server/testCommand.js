@@ -1,5 +1,55 @@
+var Criteria = require('./criteria');
+
 function TestCommand(argv) {
     this._packages = [];
+    // Get all the loaded packages;
+    this.getPackages();
+    // Check if we grabbed the tower command
+    if (argv[0] === "test" | "tests") {
+        argv.splice(0, 1);
+    }
+    // We need to figure out which criteria
+    // they specify: 'include' or 'exclude'.
+    // If they specify both:
+    //  include,.... exclude,....
+    // The latter criteria will be marked as having
+    // a higher priority and if there's a conflict
+    //
+    // include,package=['tower-cli']
+    // exclude,package=['tower-cli']
+    //
+    // then we will disregard the first and use the
+    // second.
+
+    // Loop through the arguments. We need to
+    // work with one at a time:
+    var self = this;
+    this.criteria = Criteria.create();
+    var localCriteria = [];
+
+    argv.forEach( function (command, gIndex) {
+        // Now let's split by a delimeter: ","
+        var split = command.split(',');
+        if (split.length === 1) {
+            console.log("Syntax Error: You provided an incomplete criteria.");
+            process.exit();
+        }
+
+        // Loop through the split array;
+        split.forEach( function (option, index) {
+            if (!option) {
+                console.log("Syntax Error: You provided an incomplete criteria.");
+                process.exit();
+            }
+
+            if (index === 0)
+            {
+                localCriteria.push(['method', option, []]);
+            }
+        });
+
+    });
+    console.log(localCriteria);
 }
 
 TestCommand.prototype.getPackages = function() {

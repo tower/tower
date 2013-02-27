@@ -233,7 +233,6 @@ exports.publish = function() {
 
 exports.test = exports.tests = function(argv) {
   var program = command();
-  var Criteria = require('./server/criteria');
   program.usage('[command] [options]')
     .on('--help', function() {
     console.log([

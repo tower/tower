@@ -3,13 +3,12 @@ function Criteria() {
   this.packages = [];
   this.files = [];
 
-  this.run();
-
 }
 
-Criteria.prototype.run = function() {
 
-}
+Criteria.prototype.method = function(method) {
+
+};
 
 Criteria.create = function() {
   return new Criteria(arguments);
@@ -47,3 +46,5 @@ Criteria.prototype.getPackages = function() {
   });
 
 }
+
+module.exports = Criteria;
