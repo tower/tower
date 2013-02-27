@@ -50,6 +50,5 @@ tmp
 
 runtests.sh
 =======
-lib
 dist/
 config.json
