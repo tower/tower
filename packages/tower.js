@@ -116,38 +116,29 @@ global._ = _;
     };
 
     TowerClass.create = function() {
-        return new this();
-    };
-
-    var commandMap = {
-        server: 'tower',
-        new: 'tower-generator',
-        install: 'tower-install',
-        help: 'tower-help'
-    };
-
-    getCommand = function() {
-        var cmd = Tower.command.get();
-        if(commandMap[cmd]) {
-            return commandMap[cmd];
-        } else {
-            throw new Error('Invalid Command!');
-        }
+        return new TowerClass();
     };
 
     var Tower = global.Tower = TowerClass.create();
-
-    // Check if the user specified an argument:
-    if (Tower.command.argv[0]) {
-      Tower.App.directoryStyle = 'single';
-      Tower.App.files.push(Tower.command.argv[0]);
-    }
 
     // Require all of the package system:
     require('./tower-packager/packager');
 
     Tower.Packager.run(function(count) {
         // Include the tower-bundler package that will be the asset pipeline.
+        // XXX: Allow the bundler to be somewhat turned off for production.
+        //      In production, you would use a 3rd party server (NGINX) to serve
+        //      all your assets.
+        // XXX: We should have a special handlebar helper: {{#production}}
+        //      and {{#development}}
+        //      You would place all your Tower handled assets within the development
+        //      helper and nginix/3rd party within the production.
+        //
+        //      {{#development}}
+        //          {{{assets 'css' packages='all'}}}
+        //          {{{assets 'js' packages='all'}}}
+        //      {{/development}}
+        //
         Tower.Packager.require('tower-bundler');
         // Load up the first package inside Tower. We'll load the server.js
         // file as it's initialization. Once we load this file, we
@@ -155,7 +146,7 @@ global._ = _;
         //
         // We only want to include the main tower package if were starting
         // a full Tower process (server, console, routes, etc...)
-        Tower.Packager.require(getCommand());
+        Tower.Packager.require('tower-cli');
         // Initialize the environment:
         if (Tower.env == 'development') {
             Tower.ready('environment.development.started');
