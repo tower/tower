@@ -104,7 +104,6 @@ Packager = {
     _packages: {},
     _paths: [
         path.join(__dirname, '..'),
-        path.join(Tower.cwd, 'node_modules'),
         path.join(process.cwd(), 'packages'),
         path.join(Tower.cwd)
     ],

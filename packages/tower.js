@@ -1,1 +1,1 @@
-module.exports = require('./tower-init/tower');
+module.exports = require('./tower-init/server');

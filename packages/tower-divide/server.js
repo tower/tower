@@ -9,4 +9,4 @@ function Divide() {
 
 
 // Export to Tower
-Tower.export('Divide', Divide);
+Tower.export(Divide);
