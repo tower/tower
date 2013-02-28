@@ -89,5 +89,55 @@ Tower changes how you think of MVC. It has Models, Views (and Templates) and Con
 
 **Routes:** Routes are what controllers used to be, but they are more than that. You define routes `route('index')` and you can attach various methods to that route. This is where you'd typically have controllers. 
 
-
 ----
+
+## Installation
+
+To install Tower follow these steps:
+
+1. `npm install tower -g` (use sudo if you're on OS X or Linux)
+2. Done.
+
+If you want MongoDB or other databases then make sure those are installed:
+
+* MongoDB: `brew install mongo`
+* HBase: `brew install hbase`
+* Hadoop: `brew install hadoop`
+* Cassandra: `brew install cassandra`
+* Redis: `brew install redis`
+
+## Generating Applications
+
+If you want to generate an application make sure you have Tower installed.
+
+1. `tower new ExampleApplication`
+2. `cd ExampleApplication && npm install`
+
+
+## Running Tower
+
+Make sure you're within the application's folder:
+
+`tower server` or `tower`
+
+Don't try and run Tower with node's binary.
+
+## Single File Applications
+
+For really quick you can basically write the entire app in a single file (excluding templates, and assets, of course).
+
+You can use one of the generators to get started exceptionally quickly:
+
+1. `tower new SingleFileApp --generator=singlefile`
+2. `cd SingleFileApp && npm install`
+3. `tower server`
+
+That's it. If you want to change the directory structure, then edit the `package.js` file.
+
+
+## Packages
+
+In Tower, everything's a package, even your application. This makes things standardized and simple. Want to create a new package? ….
+
+
+
