@@ -1,11 +1,31 @@
-# Tower
----
+[<img src="https://raw.github.com/TheHydroImpulse/tower/master/tower.png">](http://towerjs.org/)
+
+<div style="text-align: center">
+<a href="http://travis-ci.org/viatropos/tower"><img src="https://secure.travis-ci.org/viatropos/tower.png" alt="Build Status"/></a>
+</div>
 
 | Version | 0.5.0 | 
 | ------ |:---:|
-| Stable? | Yes |
-| Next Release | 0.5.3 |
+| Stable | 0.5.0 |
 
+**What's Tower?**
+
+Tower is a decentralized, full stack, node.js/browser framework built around convention over configuration. Tower works best within a distributed infrastructure, but don't let that scare you, a single server is still cool.  
+
+> Sounds cool and all, but why would I use it?
+
+Tower solves many problems. These solved problems allow you to concentrate on your application logic and less on the platform or framework. 
+
+The point is simple: Building large applications is difficult. That's why large companies build many small applications and services that forms a decentralized infrastructure. Many of these systems are built from scratch and require an extraordinary amount of time to build and design. 
+
+Tower's goal is to decentralize your applications with ease, but with an exception. You build your application together, in one simple step, then you tell Tower how you want it decentralized. 
+
+**Want Hadoop MapReduce jobs for your BigData set?**
+No Worries! These systems are built right into Tower. You can create standard jobs using hadoop. The rest is telling Tower about your infrastructure, that's it!
+
+**Note:** Are you in favor of Pig or Hive for abstracting Hadoop? No worries. You can offload the processing to other languages that are more suited for these tasks.
+
+Here is a rundown of the top Tower features (there's more, though):
 
 | Features | Platform |
 | -------- | -------- | 
@@ -31,6 +51,8 @@
 | Real-time |
 
 
+Models are a huge part within Tower. You should be able to manage your data in a **standardized** way, regardless of the database you use. We have built a group of built-in model adapters that work together using a standardized API. This allows you to easily work with multiple different data sources in a non ad-hoc way.
+
 | Model Adapters |  
 | -------- |
 | MongoDB |
@@ -40,11 +62,6 @@
 | Redis |
 | MySQL |
 
-
-
-**What's Tower?**
-
-Tower is a decentralized, full stack, node.js/browser framework. 
 
 **Node.js/Browser:** With the rise of client-side frameworks, people are required to double their work. Duplicating models, controllers and views. This is anything but DRY. 
 
