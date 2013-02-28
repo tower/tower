@@ -124,6 +124,9 @@ exports['new'] = function(argv) {
 
 exports.server = function(argv) {
   var program = command();
+  var CommunicationLayer = require('./../tower-init/communication');
+
+  CommunicationLayer.create();
 
   program.usage('server [options]')
     .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)', 'development')
@@ -242,7 +245,7 @@ exports.test = exports.tests = function(argv) {
   program.parse(argv);
 
   program.run = function() {
-    var TestCommand = require('./server/testCommand');
+    var TestCommand = require('./server/test/command');
     TestCommand.create(argv);
   }
 

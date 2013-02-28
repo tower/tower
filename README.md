@@ -1,173 +1,76 @@
-# Tower.js <img src="http://cloud.github.com/downloads/viatropos/tower/tower.png"/>
+# Tower
+---
 
-### Version 0.5.0 - In Development
-
-> Full Stack Web Framework for Node.js and the Browser.
-
-Built on top of Node’s Connect, Express, and Ember.js. Built for the client *and* server, from the ground up.
-
-[![Build Status](https://secure.travis-ci.org/viatropos/tower.png)](http://travis-ci.org/viatropos/tower)
-
-Follow me [@viatropos](http://twitter.com/viatropos).
-
-- **IRC**: #towerjs on irc.freenode.net
-- **Issues**: https://github.com/viatropos/tower/issues
-- **Ask a question**: http://stackoverflow.com/questions/tagged/towerjs
-- **Roadmap**: https://github.com/viatropos/tower/blob/master/ROADMAP.md
-- **Latest Docs**: https://github.com/viatropos/tower/wiki
-
-This is the 0.5.0 branch, which is under heavy development. **It's not ready!!**
-
-## Default Development Stack
-
-- Ember.js
-- jQuery
-- Handlebars (templating)
-- Stylus, LESS (You can include either package)
-- MongoDB (database, it’s optional. Tower can just be used in the browser)
-- Redis (background jobs, also optional)
-- Mocha (tests)
-- JavaScript Default (You can include the coffee-script package)
-- 
-Includes a database-agnostic ORM with browser (memory and AJAX), and MongoDB support.  Tower is modeled after ActiveRecord and Mongoid for Ruby. Includes a controller architecture that works the same for both client and server, modeled after Rails.  The routing API is like that of Rails 3.  Templates also work on client and server—and you can swap in any template engine, no problem.  Includes asset pipeline that works just like Rails 3 (minifies and gzips assets with an md5-hashed name for optimal browser caching, if you desire).  And it includes a watcher that automatically injects javascripts and stylesheets into the browser *as you develop*.
-
-It solves a lot of our problems. We hope it solves yours, too.
-
-## Install
-
-```
-npm install tower -g
-```
+| Version | 0.5.0 | 
+| ------ |:---:|
+| Stable? | Yes |
+| Next Release | 0.5.3 |
 
 
-Finally, make sure you have `mongodb` installed and running:
-
-```
-brew install mongodb
-mongod # starts server
-```
-
-If you would like to try out the background-worker code, you can also install and start `redis`:
-
-```
-brew install redis
-redis-server
-```
-
-## Generate
-
-In your terminal, generate your app and start your server:
-
-```
-tower new app
-cd app
-npm install
-tower generate scaffold Post title:string body:text
-tower generate scaffold User firstName:string lastName:string email:string
-node server
-```
+| Features | Platform |
+| -------- | -------- | 
+| Decentralized |
+| Shared Code |
+| Abstracted Ember.js | Client |
+| Hot Code Push | Both | 
+| Kick-ass Routing System |
+| Built-in Cluster |
+| Process Load Balancing |
+| Bundler |
+| Package System |
+| Model Adapters |
+| Hadoop MapReduce Integration |
+| Jobs |
+| Redis (Sessions, State, etc..) |
+| Lazy Evaluation | Client |
+| Testing 2.0 | Both |
+| REPL |
+| Generators | 
+| Scaffolding |
+| Single File Apps (Custom Directory Structures) |
+| Real-time |
 
 
-You don't need to restart the server when you run `tower generate` commands. The new bundler will automatically detect new files added.
-
-If you run into an error during `npm install`, remove the `node_modules` folder and try again.
-
-Tower includes a fail-safe system. If any errors are triggered, the process will display the error, and wait for a file change.
-The same error message will also be displayed to the browser. 
-
-
-## Views
-
-Views are all Ember.
-
-## Templates
-
-Templates adhere to the [Twitter Bootstrap 2.x](http://twitter.github.com/bootstrap/) markup conventions.
-
-## Styles
-
-You have the choice in what style framework you want (Twitter Bootstrap, Zen, etc..). Just find the tower package and install it.
-A drop in system. Do we not support a specific style framework? Build your own package and get it registered into towerjs.org.
-
-All assets (client-side) are read from `/public`, which is the compiled output of everything in `/app`, `/lib`, `/vendor` (and wherever else you might put things).  The default is to use Stylus for CSS in `/app/assets/stylesheets`.
+| Model Adapters |  
+| -------- |
+| MongoDB |
+| Cassandra |
+| Hadoop (MapReduce) |
+| HBase |
+| Redis |
+| MySQL |
 
 
-## Contributing to Tower
 
-```
-git clone https://github.com/viatropos/tower.git
-cd tower
-node index.js install
-```
+**What's Tower?**
 
-### Building Tower
+Tower is a decentralized, full stack, node.js/browser framework. 
 
-Or, you can have it recompile files whenever you change them:
+**Node.js/Browser:** With the rise of client-side frameworks, people are required to double their work. Duplicating models, controllers and views. This is anything but DRY. 
 
-```
-make watch
-```
+Tower leverages Node.js and JavaScript so that you write code a single time, for both platforms. Of course the platforms require different logic at times. 
 
-### “Linking” Tower
+**Decentralized:** Tower's core was re-built to support large server infrastructures across clusters, load balancers, and servers. You can load Tower through git and update each server with a single code repository. Tower was designed with this in mind.
 
-You can symlink your local tower repository to your global npm `node_modules` directory, which allows you use it in your apps. That way, if you make changes to the tower repository, you’ll see them in your app! Very useful.
+Do you run a different server setup/configuration for your API servers vs your application ones? No problem. You can use the built-in Tower package `divide` which allows you to control routes to particular servers. This is called being master. A server, or set of servers can be masters of particular routes. That way, you start to decentralize your application. 
 
-In the tower repo:
+**Node.js Single Thread Issue:** Node.js runs in a single thread (for simplicity sake) and doesn't allow multithreading due to the V8 engine. Tower has a built-in cluster module. Because Tower automatically runs behind a proxy server, the actual framework is run in a child process. Each child process is stateless and offloads the storing of state to a different mechanism. This allows you to spawn as many processes as you need on a single server. 
 
-```
-npm link
-```
+Think of a server as another load balancer to many many processes running on that server.
 
-In a tower app:
+----
 
-```
-npm link tower
-```
+Tower changes how you think of MVC. It has Models, Views (and Templates) and Controllers, but they are being redefined. 
 
-If you want to try installing tower from the remote npm registry, you can just unlink it and run `npm install`:
+**Models:** Models are APIs you use to define your model, that's it! `model('users')`. You don't use a model to access the data, that's left for the controllers.
 
-```
-npm unlink tower
-npm install tower
-```
+**Controllers:** Controllers are what models used to be. You use controllers to control your data and how you want to access it. `controller('users').find({ username: 'Hello_World' });`.
 
-Using `npm link` makes it very easy to mess with the source.
+**Views:** Views are the same as on the client-side. Both the client and server-side uses Handlebars. 
 
-### Running Tests
+**Templates:** These are where the Handlebar templates are contained. All your HTML and presentation data.
 
-In the tower repo, run server tests with:
+**Routes:** Routes are what controllers used to be, but they are more than that. You define routes `route('index')` and you can attach various methods to that route. This is where you'd typically have controllers. 
 
-```
-make test-server
-```
 
-To run client tests, first compile the test app and start its server:
-
-```
-make build-test-client
-make start-test-client
-```
-
-Then run the tests (uses phantomjs)
-
-```
-make test-client
-```
-
-If you don’t have `phantomjs`, you can install it with:
-
-```
-brew install phantomjs
-```
-
-## License
-
-(The MIT License)
-
-Copyright &copy; 2012 [Lance Pollard](http://twitter.com/viatropos) &lt;lancejpollard@gmail.com&gt;
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+----

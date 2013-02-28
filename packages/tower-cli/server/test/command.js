@@ -1,4 +1,6 @@
 var Criteria = require('./criteria');
+var Lexer    = require('./lexer');
+
 
 function TestCommand(argv) {
     this._packages = [];
@@ -25,7 +27,7 @@ function TestCommand(argv) {
     // work with one at a time:
     var self = this;
     this.criteria = Criteria.create();
-    var localCriteria = [];
+    /**var localCriteria = [];
 
     argv.forEach( function (command, gIndex) {
         // Now let's split by a delimeter: ","
@@ -35,21 +37,27 @@ function TestCommand(argv) {
             process.exit();
         }
 
+        localCriteria.push(['method', split[0], []]);
+
+        if (split[1]) {
+            localCriteria[gIndex][2].push(['type', split[1], []]);
+        }
+
         // Loop through the split array;
         split.forEach( function (option, index) {
             if (!option) {
                 console.log("Syntax Error: You provided an incomplete criteria.");
                 process.exit();
             }
-
-            if (index === 0)
-            {
-                localCriteria.push(['method', option, []]);
-            }
         });
 
     });
-    console.log(localCriteria);
+
+    console.log(localCriteria[1]);**/
+
+    // Create a new Lexer:
+    this.lexer = Lexer.create(argv);
+
 }
 
 TestCommand.prototype.getPackages = function() {
