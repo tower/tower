@@ -7,7 +7,7 @@ path = require('path');
  * @return {[type]} [description]
  */
 Tower.create = function () {
-  return new Tower.Application();
+  return Tower.Application.create();
 };
 
 var app = Tower.Packager.findApp();
@@ -15,6 +15,8 @@ var app = Tower.Packager.findApp();
 app.autoload.forEach(function(file) {
   require(path.join(app.path, file));
 });
+
+Tower.Application.run();
 
 /**
 

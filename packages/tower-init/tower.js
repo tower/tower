@@ -6,11 +6,13 @@
      this.App = {
          files: []
      };
+
      this.container = {};
      this._namespaces = {};
      this.path = incomingOptions.dirname;
      this.env = incomingOptions.env;
-     this.port = incomingOptions.port;
+     this.port = incomingOptions.inner_port;
+     this.outer_port = incomingOptions.outer_port;
      this.version = JSON.parse(fs.readFileSync('./package.json')).version;
      this.cwd = process.cwd();
      this.isServer = true;
