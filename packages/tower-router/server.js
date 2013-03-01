@@ -1,12 +1,16 @@
-Tower.Router = function Router() {
+Router = function Router() {
 
 
 }
 
-Tower.Router.prototype.setup = function() {
+Router.prototype.setup = function() {
     return this;
 };
 
-Tower.Router.prototype.render = function() {
+Router.prototype.render = function() {
     return this;
 };
+
+Router.Middleware = require('./middleware');
+
+Tower.export(Router);
