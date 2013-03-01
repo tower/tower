@@ -4,8 +4,7 @@ Tower.Packager.create('tower')
         .deps([
             'tower-watch',
             'tower-ready',
-            'tower-application',
-            'tower-router'
+            'tower-application'
             ])
     .client()
         .add('client.js');

@@ -23,7 +23,6 @@ Tower.Application.create = function() {
 Tower.Application.run = function() {
     this._instance.app = require('express')();
     this._instance.server = (require('http')).createServer(this._instance.app);
-    console.log(Tower.Router);
     this._instance.app.use(Tower.Router.Middleware);
     this._instance.listen();
 };
