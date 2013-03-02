@@ -17,6 +17,23 @@ route('index')
   })
   .render('json');
 
+/**
+ * Standard JavaScript extension:
+ * We want to allow for pre-processing.
+ * The first parameter is the new extension you want to watch for. This will trigger the callback and
+ * perform the wanted actions. In this case, we only need to return the same file as we aren't touching
+ * it. If you were to have  a coffee-script extension, for example, you would compile the file
+ * and return the contents within the `data` key and you would return the filename with a coffee extension
+ */
+bundler.extend(function() {
+  this.createExtension('js', function (filename, package) {
+    return {
+      filename: filename + 'js',
+      data: null
+    };
+  });
+});
+
 bundler.config(function() {
   this
     .js()
