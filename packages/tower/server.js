@@ -16,8 +16,6 @@ app.autoload.forEach(function(file) {
   require(path.join(app.path, file));
 });
 
-Tower.Application.run();
-
 /**
 
 require('../tower-command/server');

@@ -117,10 +117,11 @@ Packager = {
         var self = this;
         var n = Object.keys(this._packages).length;
         var tries = 0;
+
         function tryR(_path, strip) {
             if (tries > 4) {
                 // Cannot find it;
-                return true;
+                return false;
             }
             tries++;
             // Strip the folder:
@@ -170,6 +171,10 @@ Packager.add = function(name, instance) {
 
 Packager.create = function(packageName) {
     return new Package(packageName);
+};
+
+Packager.calledFrom = function() {
+
 };
 
 Packager.run = function(callback) {

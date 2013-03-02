@@ -184,10 +184,12 @@ Bundler.prototype.watch = function() {
     Tower.watch(_watchPackages).on('all', function(event, file) {
         var pkg = Tower.Packager.matchFilename(file);
 
-        console.log("* File [" + stripFilename(file) + "] has [" + event + "] in [" + pkg.name + "]");
+        log("* File [" + stripFilename(file) + "] has [" + event + "] in [" + pkg.name + "]");
 
     }).on('error', function(error) {
-        console.log("Error", error);
+        log("Error", error);
+    }).on('ready', function() {
+        log("Watching Files...".bold);
     }).start();
 
     /**watchr.watch({
@@ -251,7 +253,8 @@ Bundler.create = function() {
 
 Bundler.run = function() {
     if (!this._instance) return false;
-    console.log("\nBundler Running... \n    Env: -> " + Tower.env);
+    log("Bundler Running".bold);
+    log("Environment: ".bold + (Tower.env.charAt(0).toUpperCase() + Tower.env.slice(1)).underline);
     if(Tower.env == 'development') {
         // Build before we watch:
         var p = path.join(Tower.cwd, '.tower');

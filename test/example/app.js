@@ -26,3 +26,6 @@ bundler.config(function() {
       .compiler('type', 'loose')
       .path('public/styles');
 });
+
+
+app.initialize();

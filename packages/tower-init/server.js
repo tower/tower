@@ -52,8 +52,9 @@ global._ = _;
     require('./../tower-packager/packager');
 
     _.extend(Tower, {
-        export: function(key, value, options) {
-            // Get the package information.
+
+        getPackageFromStack: function() {
+             // Get the package information.
             var orig = Error.prepareStackTrace;
             Error.prepareStackTrace = function(_, stack) {
                 return stack;
@@ -62,9 +63,16 @@ global._ = _;
             Error.captureStackTrace(err, arguments.callee);
             var stack = err.stack;
             Error.prepareStackTrace = orig;
-            var filename = stack[1].receiver.id;
+            var filename = stack[2].receiver.id;
+            if (!filename) {
+                filename = stack[1].getFileName();
+            }
             // Match the filename with the package:
-            var package = Tower.Packager.matchFilename(filename);
+            return Tower.Packager.matchFilename(filename);
+        },
+
+        export: function(key, value, options) {
+            var package = this.getPackageFromStack();
             var base = false;
             if (this[package._namespace] == null) {
                 Object.defineProperty(this, package._namespace, {
@@ -98,6 +106,7 @@ global._ = _;
     });
 
     Tower.Packager.run(function(count) {
+        require('./logging');
         // Include the tower-bundler package that will be the asset pipeline.
         // XXX: Allow the bundler to be somewhat turned off for production.
         //      In production, you would use a 3rd party server (NGINX) to serve
