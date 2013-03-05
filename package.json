@@ -2,6 +2,9 @@
   "name": "tower",
   "version": "0.5.0",
   "main": "./index.js",
+  "bin": {
+    "tower": "./bin/tower"
+  },
   "dependencies": {
     "http-proxy": "latest",
     "underscore": "latest",
