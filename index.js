@@ -1,1 +1,1 @@
-require('./lib/server');
+module.exports = require('./lib/command');
