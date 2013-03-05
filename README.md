@@ -49,7 +49,7 @@ Here is a rundown of the top Tower features (there's more, though):
 | Scaffolding |
 | Single File Apps (Custom Directory Structures) |
 | Real-time |
-
+| Modular |
 
 Models are a huge part within Tower. You should be able to manage your data in a **standardized** way, regardless of the database you use. We have built a group of built-in model adapters that work together using a standardized API. This allows you to easily work with multiple different data sources in a non ad-hoc way.
 
