@@ -6,15 +6,8 @@
     "tower": "./bin/tower"
   },
   "dependencies": {
-    "http-proxy": "latest",
-    "underscore": "latest",
-    "commander": "latest"
-
-
+    "tower-cli": "http://github.com/TheHydroImpulse/tower-cli"
   },
-  "devDependencies": {
-    "mocha": "latest",
-    "should": "latest"
-  }
+  "devDependencies": {}
 
 }

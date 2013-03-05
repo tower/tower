@@ -1,1 +1,1 @@
-module.exports = require('./lib/command');
+module.exports = require('tower-cli');
