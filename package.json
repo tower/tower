@@ -8,7 +8,7 @@
   "dependencies": {
     "http-proxy": "latest",
     "underscore": "latest",
-    "commander": "latest",
+    "commander": "latest"
 
 
   },
