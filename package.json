@@ -1,18 +1,17 @@
 {
-    "name": "tower",
-    "version": "0.5.0",
-    "main": "./index.js",
-    "dependencies": {
-        "http-proxy": "latest",
-        "underscore": "latest",
-        "commander": "latest",
+  "name": "tower",
+  "version": "0.5.0",
+  "main": "./index.js",
+  "dependencies": {
+    "http-proxy": "latest",
+    "underscore": "latest",
+    "commander": "latest",
 
 
-
-    },
-    "devDependencies": {
-        "mocha": "latest",
-        "should": "latest"
-    }
+  },
+  "devDependencies": {
+    "mocha": "latest",
+    "should": "latest"
+  }
 
 }
