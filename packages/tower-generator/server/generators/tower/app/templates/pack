@@ -63,7 +63,7 @@
     "grunt": ">= 0.4.0",
     "grunt-contrib-less": ">= 0.4.0",
     "grunt-contrib-stylus": ">= 0.4.0",
-    "grunt-contrib-watch": ">= 0.4.0",
+    "grunt-contrib-watch": ">= 0.3.0",
     "grunt-contrib": ">= 0.4.0",
     "superagent": "~0.9.10",
     "wrench": "~1.4.4",
