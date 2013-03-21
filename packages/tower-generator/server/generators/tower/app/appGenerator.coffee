@@ -180,7 +180,7 @@ class Tower.GeneratorAppGenerator extends Tower.Generator
         copyVendor('images', 'public/images')
 
       # @todo grunt should only recompile file changes
-      @template "grunt.#{scriptType}", "grunt.#{scriptType}"
+      @template "Gruntfile.#{scriptType}", "Gruntfile.#{scriptType}"
 
       # github wiki
       @inside 'wiki', ->

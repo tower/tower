@@ -42,10 +42,10 @@ It solves a lot of our problems. We hope it solves yours, too.
 npm install tower -g
 ```
 
-You will also need [grunt](https://github.com/cowboy/grunt), an awesome build tool, and `coffee-script`:
+You will also need [grunt-cli](https://github.com/gruntjs/grunt-cli), an awesome build tool, and `coffee-script`:
 
 ```
-npm install grunt -g
+npm install grunt-cli -g
 npm install coffee-script -g
 ```
 

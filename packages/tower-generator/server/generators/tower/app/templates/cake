@@ -5,8 +5,6 @@ which = require('which').sync
 path  = require('path')
 
 spawnGrunt = (args = []) ->
-  args.push('--config', path.join(process.cwd(), 'grunt.coffee'))
-
   grunt   = which('grunt')
   watcher = spawn(grunt, args) 
   watcher.stdout.setEncoding('utf8')

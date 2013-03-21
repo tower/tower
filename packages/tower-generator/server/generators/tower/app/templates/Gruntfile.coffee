@@ -4,6 +4,7 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-contrib-stylus')
+  grunt.loadNpmTasks('grunt-contrib-watch')
 
   require('tower').Application.instance().initialize
     databases:        ['memory']
@@ -32,7 +33,7 @@ module.exports = (grunt) ->
   ])
 
   config =
-    pkg: '<json:package.json>'
+    pkg: grunt.file.readJSON('package.json')
     coffee:
       compile:
         src: scriptPaths
@@ -93,6 +94,6 @@ module.exports = (grunt) ->
 
   grunt.initConfig(config)
 
-  grunt.registerTask 'copy:assets', 'copy:stylesheets copy:javascripts copy:images'
-  grunt.registerTask 'default', 'copy:assets coffee:compile less stylus templates'
-  grunt.registerTask 'start', 'default watch'
+  grunt.registerTask 'copy:assets', ['copy:stylesheets', 'copy:javascripts', 'copy:images']
+  grunt.registerTask 'default', ['copy:assets', 'coffee:compile', 'less', 'stylus', 'templates']
+  grunt.registerTask 'start', ['default', 'watch']
