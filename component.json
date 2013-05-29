@@ -1,0 +1,15 @@
+{
+  "name": "tower",
+  "repo": "tower/tower",
+  "description": "Tower Main repo",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "tower/app": "*"
+  },
+  "main": "client.js",
+  "scripts": [
+    "client.js"
+  ],
+  "license": "MIT"
+}

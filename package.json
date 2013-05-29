@@ -6,7 +6,7 @@
     "tower": "./bin/tower"
   },
   "dependencies": {
-    "tower-cli": "http://github.com/TheHydroImpulse/tower-cli",
+    "tower-cli": "latest"
   },
   "devDependencies": {}
 
