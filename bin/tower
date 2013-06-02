@@ -1,4 +1,0 @@
-// XXX: Redo/Cleanup
-global.__bin__ = true;
-global.__required__ = (require.main === module) ? true : false;
-require('./../index.js');

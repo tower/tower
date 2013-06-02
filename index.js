@@ -1,9 +1,16 @@
+
+exports.version = '0.5.0';
+exports.resource = require('tower-resource');
+exports.query = require('tower-query');
+exports.adapter = require('tower-adapter');
+exports.router = require('tower-router');
+exports.route = require('tower-route');
+exports.validator = require('tower-validator');
+exports.type = require('tower-type');
+exports.memory = require('tower-memory-adapter');
+
 if ('undefined' !== typeof window) {
-  module.exports = {};
-} else {
-  if (global.__required__) {
-    require('tower-cli').run(process.argv);
-  } else {
-    module.exports = require('tower-server');
-  }
+  exports.directive = require('tower-directive');
+  exports.content = require('tower-content');
+  exports.template = require('tower-template');
 }

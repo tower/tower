@@ -1,20 +1,16 @@
 {
   "name": "tower",
-  "version": "0.5.0",
+  "version": "0.5.0pre",
   "main": "./index.js",
-
-  "description": "Full Stack Web Framework for Node.js and the Browser",
-  "homepage": "http://viatropos.github.com/tower",
+  "description": "A component for distributed applications.",
+  "homepage": "http://towerjs.org/",
   "main": "./index.js",
-  "author": "Lance Pollard <lancejpollard@gmail.com>",
   "keywords": [
     "mvc",
     "web-framework",
-    "ruby-on-rails",
     "express",
     "tower",
     "framework",
-    "rails",
     "node"
   ],
   "maintainers": [
@@ -22,21 +18,25 @@
       "name": "Lance Pollard",
       "email": "lancejpollard@gmail.com",
       "web": "http://lancepollard.com"
+    },
+    {
+      "name": "Daniel Fagnan",
+      "web": "http://hydrocodedesign.com/"
     }
   ],
   "contributors": [
-    "Lance Pollard <lancejpollard@gmail.com>",
-    "edubkendo",
-    "TheHydroImpulse <dnfagnan@gmail.com>",
-    "Sebastian Hoitz",
-    "scottkf <scott@tesoriere.com>",
-    "Jai-gouk Kim",
-    "Dave Myron",
-    "Vyacheslav Voronchuk",
-    "j-mcnally",
     "abovethewater",
+    "Dave Myron",
+    "edubkendo",
+    "j-mcnally",
+    "Jai-gouk Kim",
+    "Kristian Mandrup <kmandrup@gmail.com>",
+    "Lance Pollard <lancejpollard@gmail.com>",
     "Nov Matake",
-    "Kristian Mandrup <kmandrup@gmail.com>"
+    "scottkf <scott@tesoriere.com>",
+    "Sebastian Hoitz",
+    "TheHydroImpulse <dnfagnan@gmail.com>",
+    "Vyacheslav Voronchuk"
   ],
   "licenses": [
     {
@@ -45,25 +45,25 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/viatropos/tower/issues"
+    "url": "https://github.com/tower/tower/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/viatropos/tower.git"
+    "url": "https://github.com/tower/tower.git"
   },
   "engines": {
-    "node": ">= 0.6.0"
-  },
-  "directories": {
-    "lib": "./lib"
-  },
-
-  "bin": {
-    "tower": "./bin/tower"
+    "node": ">= 0.10.0"
   },
   "dependencies": {
-    "tower-cli": "latest"
+    "tower-cli": "latest",
+    "tower-resource": "latest",
+    "tower-query": "latest",
+    "tower-adapter": "latest",
+    "tower-router": "latest",
+    "tower-route": "latest",
+    "tower-validator": "latest",
+    "tower-type": "latest",
+    "tower-memory-adapter": "latest"
   },
   "devDependencies": {}
-
 }

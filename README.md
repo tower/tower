@@ -1,4 +1,21 @@
+# Tower
 
-<div style="text-align: center">
-<a href="http://travis-ci.org/viatropos/tower"><img src="https://secure.travis-ci.org/viatropos/tower.png" alt="Build Status"/></a>
-</div>
+A component for distributed applications.
+
+## Installation
+
+node.js:
+
+```bash
+$ npm install tower
+```
+
+browser:
+
+```bash
+$ component install tower/tower
+```
+
+## License
+
+MIT.

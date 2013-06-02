@@ -2,14 +2,28 @@
   "name": "tower",
   "repo": "tower/tower",
   "description": "Tower Main repo",
-  "version": "0.0.1",
+  "version": "0.5.0pre",
   "keywords": [],
   "dependencies": {
-    "tower/app": "*"
+    "tower/resource": "*",
+    "tower/query": "*",
+    "tower/adapter": "*",
+    "tower/client-router": "*",
+    "tower/route": "*",
+    "tower/validator": "*",
+    "tower/type": "*",
+    "tower/attr": "*",
+    "tower/param": "*",
+    "tower/memory-adapter": "*",
+    "tower/directive": "*"
+  },
+  "development": {
+    "timoxley/assert": "*",
+    "visionmedia/mocha": "*"
   },
   "main": "index.js",
   "scripts": [
-    "client.js"
+    "index.js"
   ],
   "license": "MIT"
 }
