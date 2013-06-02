@@ -14,8 +14,14 @@
     "tower/type": "*",
     "tower/attr": "*",
     "tower/param": "*",
+    "tower/content": "*",
+    "tower/template": "*",
     "tower/memory-adapter": "*",
-    "tower/directive": "*"
+    "tower/directive": "*",
+    "tower/load": "*",
+    "tower/emitter": "*",
+    "tower/expression": "*",
+    "tower/operator": "*"
   },
   "development": {
     "timoxley/assert": "*",
