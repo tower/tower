@@ -7,7 +7,7 @@
   "dependencies": {
     "tower/app": "*"
   },
-  "main": "client.js",
+  "main": "index.js",
   "scripts": [
     "client.js"
   ],

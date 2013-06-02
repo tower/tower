@@ -2,6 +2,62 @@
   "name": "tower",
   "version": "0.5.0",
   "main": "./index.js",
+
+  "description": "Full Stack Web Framework for Node.js and the Browser",
+  "homepage": "http://viatropos.github.com/tower",
+  "main": "./index.js",
+  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "keywords": [
+    "mvc",
+    "web-framework",
+    "ruby-on-rails",
+    "express",
+    "tower",
+    "framework",
+    "rails",
+    "node"
+  ],
+  "maintainers": [
+    {
+      "name": "Lance Pollard",
+      "email": "lancejpollard@gmail.com",
+      "web": "http://lancepollard.com"
+    }
+  ],
+  "contributors": [
+    "Lance Pollard <lancejpollard@gmail.com>",
+    "edubkendo",
+    "TheHydroImpulse <dnfagnan@gmail.com>",
+    "Sebastian Hoitz",
+    "scottkf <scott@tesoriere.com>",
+    "Jai-gouk Kim",
+    "Dave Myron",
+    "Vyacheslav Voronchuk",
+    "j-mcnally",
+    "abovethewater",
+    "Nov Matake",
+    "Kristian Mandrup <kmandrup@gmail.com>"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mths.be/mit"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/viatropos/tower/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viatropos/tower.git"
+  },
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+
   "bin": {
     "tower": "./bin/tower"
   },

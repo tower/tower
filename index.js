@@ -1,6 +1,9 @@
-
-if (global.__required__) {
-  require('tower-cli').run(process.argv);
+if ('undefined' !== typeof window) {
+  module.exports = {};
 } else {
-  module.exports = require('tower-server');
+  if (global.__required__) {
+    require('tower-cli').run(process.argv);
+  } else {
+    module.exports = require('tower-server');
+  }
 }

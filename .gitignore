@@ -1,1 +1,51 @@
+
 node_modules/
+## MAC OS
+.DS_Store
+*.gem
+## TEXTMATE
+*.tmproj
+tmtags
+
+## EMACS
+*~
+\#*
+.\#*
+
+## VIM
+*.swp
+
+## Ctags
+.tags
+
+## PROJECT::GENERAL
+coverage
+rdoc
+pkg
+*.log
+
+## PROJECT::SPECIFIC
+
+/log
+doc
+node_modules
+spec/secrets.coffee
+inspiration.md
+favicon.png
+dist/*.gz
+dist/*.coffee
+dist/*.min.js
+/wiki
+/example
+docs
+test/tmp
+test/example/README.md
+# test/example/package.json
+test/example/public/javascripts
+test/example/public/stylesheets
+test/example/public/swfs
+test/example/public/images
+test/example/vendor/
+tmp
+/components
+/vendor
