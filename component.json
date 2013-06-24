@@ -21,9 +21,9 @@
     "tower/load": "0.1.0",
     "tower/emitter": "0.1.0",
     "tower/operator": "0.1.0",
-    "tower/expression": "*",
-    "tower/element": "*",
-    "tower/list-directive": "*",
+    "tower/expression": "0.1.0",
+    "tower/element": "0.0.2",
+    "tower/list-directive": "0.1.0",
     "tower/interpolation-directive": "0.0.2"
   },
   "development": {
