@@ -1,25 +1,29 @@
-var fs = require('fs');
-var path = require('path');
 
-// require tower
-var root = path.join(__dirname, 'lib/tower.js');
-var rootExists = fs.existsSync(root);
+/**
+ * Module dependencies.
+ */
 
-// node path resolution was broken before
-if (process.platform == 'win32' && process.version <= 'v0.8.5') {
-  require('./path')
+exports.resource = require('tower-resource');
+exports.query = require('tower-query');
+exports.adapter = require('tower-adapter');
+exports.router = require('tower-router');
+exports.route = require('tower-route');
+exports.validator = require('tower-validator');
+exports.type = require('tower-type');
+exports.memory = require('tower-memory-adapter');
+
+if ('undefined' !== typeof window) {
+  exports.directive = require('tower-directive');
+  exports.content = require('tower-content');
+  exports.template = require('tower-template');
+
+  // basic directives
+  require('tower-list-directive');
+  require('tower-interpolation-directive');
 }
 
-if (!rootExists || process.env.TOWER_COMMAND != 'new') {
-  try {
-    require('./coffee-inheritance.js');
-  } catch (e) {
-    //if (process.env.DEBUG)
-    console.log(e);
-  } 
-}
+/**
+ * Version 0.5.0!
+ */
 
-if (rootExists)
-  module.exports = require(root);
-else
-  module.exports = require(path.join(__dirname, 'packages/tower.coffee'));
+exports.version = '0.5.0';
