@@ -20,6 +20,8 @@ browser:
 $ component install tower/tower
 ```
 
+This is installed through [component](https://github.com/component/component).
+
 ## Example
 
 This main module is just a collection of small, individual components to make it easy to get going. See the `/tower/<name>` repositories for details on how to use each one. Enjoy!
