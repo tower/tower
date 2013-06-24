@@ -4,6 +4,10 @@ Small components for building apps, manipulating data, and managing a distribute
 
 Tower is very low level now. It has minimal dependencies. It doesn't depend on jQuery, underscore, mongodb, or any such "limiting" factor. It's all JavaScript. Each micro component is around 1kb, so if you wanted to make things super lean, you can just grab the bare bones you need.
 
+Some things that were in 0.4.0 aren't there yet in 0.5.0, in particular relations. However, the new way you build modules makes writing these things much easier. This time around solid principles are in place. Everything must be fast (performance), small (size), and simple, so it requires minimal mental energy to dig into the code. Needless to say, this is still super alpha software.
+
+If there's anything in particular you're wondering about, join in the #towerjs IRC.
+
 The source for the guides on the site are here: https://github.com/tower/guides. They're very much a work in progress.
 
 ## Installation
