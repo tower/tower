@@ -24,7 +24,7 @@ This is installed through [component](https://github.com/component/component).
 
 ## Example
 
-This main module is just a collection of tiny components to make it easy to get going. See the [individual repositories] for details on how to use each one. Enjoy!
+This main module is just a collection of tiny components to make it easy to get going. See the [individual repositories](https://github.com/tower) for details on how to use each one. Enjoy!
 
 ```js
 var tower = require('tower');
