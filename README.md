@@ -1,4 +1,4 @@
-# Tower
+# Tower.js
 
 Small components for building apps, manipulating data, and managing a distributed infrastructure.
 
