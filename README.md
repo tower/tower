@@ -15,7 +15,7 @@ The source for the guides on the site are here: https://github.com/tower/guides.
 node.js:
 
 ```bash
-$ npm install tower
+$ npm install tower -g
 ```
 
 browser:
