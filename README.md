@@ -15,7 +15,13 @@ The source for the guides on the site are here: https://github.com/tower/guides.
 node.js:
 
 ```bash
-$ npm install tower -g
+$ npm install tower
+```
+
+to get the cli:
+
+```bash
+$ npm install tower-cli -g
 ```
 
 browser:
