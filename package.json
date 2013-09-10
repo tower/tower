@@ -1,6 +1,6 @@
 {
   "name": "tower",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "./index.js",
   "description": "Small components for building apps, manipulating data, and managing a distributed infrastructure.",
   "homepage": "http://towerjs.org/",
@@ -56,8 +56,15 @@
   "engines": {
     "node": ">= 0.10.0"
   },
+  "bin": {
+    "tower": "./bin/tower"
+  },
   "dependencies": {
-    "tower-cli": "0.1.0",
+    "commander": "*",
+    "tower-server": "*",
+    "tower-cookbook": "*",
+    "tower-console": "*",
+    "tower-fs": ">= 0.5.0-pre2",
     "tower-resource": "0.1.0",
     "tower-query": "0.1.0",
     "tower-adapter": "0.1.0",
@@ -66,6 +73,5 @@
     "tower-validator": "0.1.0",
     "tower-type": "0.1.0",
     "tower-memory-adapter": "0.1.0"
-  },
-  "devDependencies": {}
+  }
 }

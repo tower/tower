@@ -1,0 +1,368 @@
+#!/usr/bin/env node
+
+process.title = 'tower';
+
+/**
+ * Console UX.
+ */
+
+if ('console' === process.argv[2]) {
+  process.stdout.write('tower> ');
+} else if ('-v' === process.argv[2]) {
+  console.log(version());
+  process.exit();
+}
+
+/**
+ * Verbs to use with recipes.
+ */
+
+exports.verbs = [
+  'build',
+  'create',
+  'remove',
+  'install',
+  'uninstall',
+  'list',
+  'exec',
+  'start',
+  'stop',
+  'connect',
+  'enter',
+  'shutdown',
+  'describe',
+  'find',
+  'save',
+  'show',
+  'setup',
+  'read',
+  'update',
+  'bootstrap',
+  'clean',
+  'clear',
+  'help',
+  'fetch',
+  'register',
+  'unregister',
+  'add'
+];
+
+/**
+ * List of available commands.
+ */
+
+exports.commands = [
+  'info',
+  'server',
+  'console',
+  'generate',
+  'create',
+  'remove',
+  'list',
+  'init',
+  'search',
+  'publish',
+  'watch'
+].concat(exports.verbs);
+
+/**
+ * Command aliases.
+ *
+ * @see http://www.google.com/complete/search?output=toolbar&q=gnerate
+ */
+
+exports.aliases = {
+  c: 'console',
+  g: 'generate',
+  s: 'server',
+  'new': 'init',
+  generate: 'create',
+  shutdown: 'stop',
+  rm: 'remove'
+  // list: 'find'
+};
+
+/**
+ * Entrance point to running tower commands.
+ *
+ * @param {Array} argv The command-line arguments list.
+ * @return {Mixed} The specified command return value.
+ * @api public
+ */
+
+exports.run = function(argv){
+  var command = argv[2];
+  // Shorten the `node app.js server` call to `node app.js`
+  if (argv[1].indexOf('.') !== -1) command = 'server';
+
+  if (!command || command.match(/^-/)) command = 'info';
+  command = exports.alias(command);
+
+  if (!command || !command.match(new RegExp('^' + exports.commands.join('|') + '$')))
+    return unknownCommand(command);
+
+  return exports[command](argv);
+};
+
+/**
+ * Get command name from an alias.
+ *
+ * @param {String} name Alias name.
+ * @return {String} Command name.
+ * @api private
+ */
+
+exports.alias = function(name){
+  while (exports.aliases[name])
+    name = exports.aliases[name];
+
+  return name;
+};
+
+/**
+ * Ask a recipe to `verb`.
+ *
+ * @param {Array} argv
+ * @param {Function} fn
+ * @api private
+ */
+
+exports.verbs.forEach(function(verb){
+  exports[verb] = recipe(verb, complete);
+});
+
+/**
+ * tower info
+ *
+ * @api private
+ */
+
+exports.info = function(argv){
+  console.log([
+    '',
+    '  Usage: tower <command> <cookbook> [options]',
+    '',
+    '  Options:',
+    '',
+    '    -h, --help     output usage information',
+    '    -V, --version  output the version number',
+    '',
+    '  Commands:',
+    '',
+    '    console                    enter tower interactive console',
+    '    info <name> [prop]         output json cookbook information',
+    '    create <cookbook> <name>   execute `create` action for cookbook',
+    ''
+  ].join("\n"));
+  // Make sure the application doesn't load yet, it'll throw errors.
+  process.exit();
+};
+
+/**
+ * Create a new app
+ *
+ * Example:
+ *
+ *    tower new app
+ *
+ * This is just a special case of executing a recipe.
+ *
+ * @param {Array} argv The command-line arguments list.
+ * @param {Function} fn The function executed on app creation.
+ * @api private
+ */
+
+exports.init = function(argv, fn){
+  argv.splice(2, 1, 'create', 'app');
+  require('tower-cookbook')
+    .exec('app', 'create', argv, fn);
+};
+
+/**
+ * XXX: Check if the user is running `tower server` vs `node app.js`. We need to load the `app.js` file
+ * tower server
+ *
+ * @param {Array} argv The command-line arguments list.
+ * @return {Server} An express server instance.
+ * @api private
+ */
+
+exports.server = function(argv){
+  var program = command()
+    .usage('server [options]')
+    .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)', 'development')
+    .option('-p, --port <n>', 'port for the application')
+    .option('--static', 'disable-watch')
+    .option('--single', 'Single page app')
+    .option('-v, --version')
+    .on('--help', function(){
+      console.log([
+          '    Examples:'
+        , '      tower generate scaffold Post title:string body:text belongsTo:user'
+        , '      tower generate model Post title:string body:text belongsTo:user'
+      ].join("\n"));
+    }).parse(argv);
+
+  return require('tower-server')(program);
+};
+
+/**
+ * Switch between environment config contexts.
+ *
+ * @param {Array} argv The command-line arguments list.
+ * @api private
+ */
+
+exports.use = function(argv){
+
+};
+
+/**
+ * Enter interactive console.
+ *
+ * @param {Array} argv The command-line arguments list.
+ * @api private
+ */
+
+exports.console = function(argv){
+  var options = command()
+    .usage('console [options]')
+    .option('-e, --env [value]', 'sets Tower.env (development, production, test, etc., default: development)', 'development')
+    .option('-s, --sync', 'allows for database operations to run synchronously, via node fibers')
+    // .option('-r, --remote')
+
+  require('tower-console')({
+    env: options.env,
+    sync: !!options.sync
+  });
+};
+
+/**
+ * Search for components people might have created.
+ * @see https://github.com/component/component/blob/master/lib/component.js
+ *
+ * TODO: One use case for this is to quickly download views/snippets.
+ */
+
+exports.search = function(){
+
+};
+
+/**
+ * Notify towerjs.org of your component so other people can find it.
+ */
+
+exports.publish = function(){
+
+};
+
+exports.watch = function(){
+  require('tower-fs').watch(process.cwd());
+};
+
+/**
+ * Tower version.
+ *
+ * @api private
+ */
+
+exports.version = version;
+
+/**
+ * Return a function for executing a recipe's action.
+ *
+ * @param {String} verb String representing an action.
+ * @return {Function} Function for executing a recipe's action.
+ * @api private
+ */
+
+function recipe(verb) {
+  return function(argv, fn) {
+    pipeable(function(err, data){
+      // [ 'node', '/usr/local/share/npm/bin/tower', 'create', 'recipe', 'my-recipe', '-o', 'tmp' ]
+      // XXX: so you can do `tower <verb> .` and have it <verb> the recipe you are currently in.
+      // `data` is a JSON string (if from tower) or another string piped from another command.
+      if (data) argv.push('--data', data);
+      require('tower-cookbook')
+        .exec(argv[3], verb, argv, function(err){
+          if (err) throw err
+          process.exit();
+        });
+    });
+  }
+}
+
+/**
+ * Constructs commander object.
+ *
+ * @return {Commander} A commander object.
+ * @api private
+ */
+
+function command() {
+  return require('commander').version(exports.version());
+}
+
+/**
+ * Show the current Tower version number
+ *
+ * @return {String} String representing the current Tower version number.
+ */
+function version() {
+  return '0.5.0';
+}
+
+/**
+ * Handles unknown CLI commands
+ *
+ * @param {String} name The unknown command's name.
+ * @api private
+ */
+
+function unknownCommand(name) {
+  // Throw a new error:
+  console.error('Command [' + process.argv[2] + '] was not found.');
+  process.exit();
+}
+
+// Don't run during tests.
+if (process.argv[1].match(/tower$/)) exports.run(process.argv);
+
+function complete(){
+  //process.stdin.resume();
+}
+
+// $ tower list ec2:images -i ami-7539b41c | tower create ec2:instance
+function pipeable(fn) {
+  var data = '';
+
+  process.stdin.setEncoding('utf8');
+  process.stdin
+    .on('readable', readable)
+    .on('end', function(){
+      withPipe(data);
+    });
+
+  function readable(){
+    var chunk = process.stdin.read();
+    if (null === chunk) {
+      withoutPipe();
+    } else {
+      data += chunk;
+    }
+  }
+
+  // this passes file data
+  // $ ./b.js < ./a.js
+  // this pipes a to b
+  // $ ./a.js | ./b.js
+  // this doesn't work (replaces b with a)
+  // $ ./a.js > ./b.js
+  function withPipe(data) {
+    fn(null, data);
+  }
+
+  function withoutPipe() {
+    fn(null);
+  }
+}
