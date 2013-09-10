@@ -18,6 +18,12 @@ node.js:
 $ npm install tower
 ```
 
+to get the cli:
+
+```bash
+$ npm install tower-cli -g
+```
+
 browser:
 
 ```bash
@@ -73,4 +79,4 @@ $ tower stop
 
 ## License
 
-MIT
+MIT.
