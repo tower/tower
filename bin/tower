@@ -14,6 +14,15 @@ if ('console' === process.argv[2]) {
 }
 
 /**
+ * Show the current Tower version number
+ *
+ * @return {String} String representing the current Tower version number.
+ */
+function version() {
+  return '0.5.1';
+}
+
+/**
  * Verbs to use with recipes.
  */
 
@@ -301,15 +310,6 @@ function recipe(verb) {
 
 function command() {
   return require('commander').version(exports.version());
-}
-
-/**
- * Show the current Tower version number
- *
- * @return {String} String representing the current Tower version number.
- */
-function version() {
-  return '0.5.0';
 }
 
 /**
