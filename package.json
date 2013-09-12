@@ -1,6 +1,6 @@
 {
   "name": "tower",
-  "version": "0.5.1",
+  "version": "0.5.11",
   "main": "./index.js",
   "description": "Small components for building apps, manipulating data, and managing a distributed infrastructure.",
   "homepage": "http://towerjs.org/",
