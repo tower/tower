@@ -11,6 +11,7 @@ exports.route = require('tower-route');
 exports.validator = require('tower-validator');
 exports.type = require('tower-type');
 exports.memory = require('tower-memory-adapter');
+exports.server = require('tower-server');
 
 if ('undefined' !== typeof window) {
   exports.directive = require('tower-directive');
