@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 
 process.title = 'tower';
 
@@ -215,8 +215,7 @@ exports.server = function(argv){
         , '      tower generate model Post title:string body:text belongsTo:user'
       ].join("\n"));
     }).parse(argv);
-
-  return require('tower-server')(program);
+  return require('tower-proxy')(program);
 };
 
 /**
