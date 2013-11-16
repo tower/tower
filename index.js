@@ -7,11 +7,12 @@ exports.resource = require('tower-resource');
 exports.query = require('tower-query');
 exports.adapter = require('tower-adapter');
 exports.router = require('tower-router');
-exports.route = require('tower-route');
 exports.validator = require('tower-validator');
 exports.type = require('tower-type');
 exports.memory = require('tower-memory-adapter');
 exports.server = require('tower-server');
+exports.view = require('tower-view');
+exports.route = require('tower-server-route');
 
 if ('undefined' !== typeof window) {
   exports.directive = require('tower-directive');
