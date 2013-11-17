@@ -4,6 +4,8 @@ process.title = 'tower';
 
 /**
  * Console UX.
+ *
+ * XXX: Maybe move this into `tower-console`?
  */
 
 if ('console' === process.argv[2]) {
@@ -18,6 +20,7 @@ if ('console' === process.argv[2]) {
  *
  * @return {String} String representing the current Tower version number.
  */
+
 function version() {
   return '0.5.1';
 }
@@ -66,6 +69,7 @@ exports.verbs = [
 
 exports.commands = [
   'info',
+  'install',
   'server',
   'console',
   'generate',
@@ -105,8 +109,11 @@ exports.aliases = {
 
 exports.run = function(argv){
   var command = argv[2];
+
+  // XXX: We're moving away from these "shortcuts".
+  //
   // Shorten the `node app.js server` call to `node app.js`
-  if (argv[1].indexOf('.') !== -1) command = 'server';
+  //if (argv[1].indexOf('.') !== -1) command = 'server';
 
   if (!command || command.match(/^-/)) command = 'info';
   command = exports.alias(command);
@@ -162,9 +169,11 @@ exports.info = function(argv){
     '',
     '  Commands:',
     '',
-    '    console                    enter tower interactive console',
-    '    info <name> [prop]         output json cookbook information',
-    '    create <cookbook> <name>   execute `create` action for cookbook',
+    '    server                         Start the server.',
+    '    install <namespace>/<module>   install a tower package.',
+    '    console                        enter tower interactive console',
+    '    info <name> [prop]             output json cookbook information',
+    '    create <cookbook> <name>       execute `create` action for cookbook',
     ''
   ].join("\n"));
   // Make sure the application doesn't load yet, it'll throw errors.
@@ -191,6 +200,23 @@ exports.init = function(argv, fn){
     .exec('app', 'create', argv, fn);
 };
 
+
+/**
+ * XXX: Implement
+ *
+ * @param {Array} argv The command-line arguments list.
+ * @api private
+ */
+
+exports.install = function(argv){
+  var program = command()
+    .usage('install [options]')
+    .on('--help', function(){
+      console.log([].join("\n"));
+    }).parse(argv);
+  console.log("tower install isn't currently implemented.");
+};
+
 /**
  * XXX: Check if the user is running `tower server` vs `node app.js`. We need to load the `app.js` file
  * tower server
@@ -205,8 +231,9 @@ exports.server = function(argv){
     .usage('server [options]')
     .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)', 'development')
     .option('-p, --port <n>', 'port for the application')
-    .option('--static', 'disable-watch')
-    .option('--single', 'Single page app')
+    .option('-disable-watcher', 'Disable the file watcher.')
+    //.option('--static', 'disable-watch')
+    //.option('--single', 'Single page app')
     .option('-v, --version')
     .on('--help', function(){
       console.log([
@@ -243,10 +270,11 @@ exports.console = function(argv){
     .option('-s, --sync', 'allows for database operations to run synchronously, via node fibers')
     // .option('-r, --remote')
 
-  require('tower-console')({
+  // XXX: Remove the `Fiber` dependency in `tower-console`
+  /**require('tower-console')({
     env: options.env,
     sync: !!options.sync
-  });
+  });**/
 };
 
 /**

@@ -63,7 +63,6 @@
     "commander": "*",
     "tower-server": "*",
     "tower-cookbook": "*",
-    "tower-console": "*",
     "tower-fs": ">= 0.5.0-pre2",
     "tower-resource": "0.1.0",
     "tower-query": "0.1.0",
