@@ -2,6 +2,8 @@
 
 Small components for building apps, manipulating data, and managing a distributed infrastructure.
 
+**Note:** Tower is currently under active development and isn't fully ready for use. Please be aware of this before opening any issues.
+
 Tower is very low level now. It has minimal dependencies. It doesn't depend on jQuery, underscore, mongodb, or any such "limiting" factor. It's all JavaScript. Each micro component is around 1kb, so if you wanted to make things super lean, you can just grab the bare bones you need.
 
 Some things that were in 0.4.0 aren't there yet in 0.5.0, in particular relations. However, the new way you build modules makes writing these things much easier. This time around solid API principles are in place. Everything must be fast (performance), small (file size), and simple, so it requires minimal mental energy to dig into the code. Needless to say, this is still super alpha software.
