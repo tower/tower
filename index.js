@@ -29,3 +29,26 @@ if ('undefined' !== typeof window) {
  */
 
 exports.version = '0.5.0';
+
+/**
+ * Initialize
+ */
+
+exports.initialize = function() {
+  var program = require('commander')
+    .usage('server [options]')
+    .option('-e, --environment [value]', 'sets Tower.env (development, production, test, etc.)', 'development')
+    .option('-p, --port <n>', 'port for the application')
+    .option('-disable-watcher', 'Disable the file watcher.')
+    //.option('--static', 'disable-watch')
+    //.option('--single', 'Single page app')
+    .option('-v, --version')
+    .on('--help', function(){
+      console.log([
+          '    Examples:'
+        , '      tower generate scaffold Post title:string body:text belongsTo:user'
+        , '      tower generate model Post title:string body:text belongsTo:user'
+      ].join("\n"));
+    }).parse(process.argv);
+  return require('tower-proxy')(program);
+};

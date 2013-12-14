@@ -1,14 +1,18 @@
 # Tower.js
 
-Small components for building apps, manipulating data, and managing a distributed infrastructure.
+[http://tower.github.io](http://tower.github.io)
+
+Small components for building apps, manipulating data, and managing a distributed application.
+
+Tower represents a different way to build applications. We present a non-monolithic, distribution of modules that can be used in together, to form Tower, or separately in a normal Node.js program. This ensures that Tower isn't a lock in, and provides extremely coordinated modules.
+
+Currently, many applications are developed as a single unit. This makes it much harder to develop in teams and to manage the complexity. Thus, Tower provides you the tools to create fully modular applications in a manageable way. This includes tools for both the client-side and server-side. Tower uses the standard Node.js platform (NPM) on the server and component for the client-side.
 
 **Note:** Tower is currently under active development and isn't fully ready for use. Please be aware of this before opening any issues.
 
 Tower is very low level now. It has minimal dependencies. It doesn't depend on jQuery, underscore, mongodb, or any such "limiting" factor. It's all JavaScript. Each micro component is around 1kb, so if you wanted to make things super lean, you can just grab the bare bones you need.
 
-Some things that were in 0.4.0 aren't there yet in 0.5.0, in particular relations. However, the new way you build modules makes writing these things much easier. This time around solid API principles are in place. Everything must be fast (performance), small (file size), and simple, so it requires minimal mental energy to dig into the code. Needless to say, this is still super alpha software.
-
-If there's anything in particular you're wondering about, join in the #towerjs IRC.
+If there's anything in particular you're wondering about, create a new issue. The IRC is no longer used much.
 
 The source for the guides on the site are here: https://github.com/tower/guides. They're very much a work in progress.
 
@@ -17,13 +21,7 @@ The source for the guides on the site are here: https://github.com/tower/guides.
 node.js:
 
 ```bash
-$ npm install tower
-```
-
-to get the cli:
-
-```bash
-$ npm install tower-cli -g
+$ npm install tower -g # You may need to prepend with `sudo`
 ```
 
 browser:
@@ -71,7 +69,6 @@ $ tower <verb> <object> [options]
 
 ```bash
 $ tower create recipe my-recipe
-$ tower install recipe my-recipe
 $ tower start mongodb
 $ tower stop mongodb
 $ tower enter mongodb
